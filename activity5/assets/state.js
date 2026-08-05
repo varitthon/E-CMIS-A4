@@ -128,6 +128,7 @@ function importActivity4Handoffs(target) {
   let changed = false;
   for (const handoff of records) {
     if (!["18/1ก", "18/1ข", "18/4"].includes(handoff?.sourceDecision)) continue;
+    if (!handoff.outgoingLetterNo || !handoff.outgoingLetterDate || !handoff.destinationUnit || !handoff.dispatchedAt) continue;
     if (target.cases.some((item) => item.sourceReference === handoff.sourceReference || item.activity4HandoffId === handoff.handoffId)) continue;
     target.cases.push(createImportedActivity4Case(handoff));
     changed = true;

@@ -73,11 +73,6 @@
                   <input id="trackingPin" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="5424" maxlength="4" autocomplete="off" />
                   <span class="hint">ตัวเลข 4 หลักที่ได้รับตอนยื่นเรื่อง</span>
                 </div>
-                <div class="field">
-                  <label for="identityLast4">ข้อมูลยืนยันตัวตน 4 หลักท้าย (ถ้ามี)</label>
-                  <input id="identityLast4" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="1234" maxlength="4" autocomplete="off" />
-                  <span class="hint">เลขบัตรประชาชน หรือหมายเลขโทรศัพท์ ตามข้อมูลที่ให้ไว้</span>
-                </div>
               </div>
               <p class="tracking-feedback" id="trackingFeedback" aria-live="polite"></p>
               <div data-human-verification="tracking-lookup"></div>
@@ -98,7 +93,6 @@
             <ol>
               <li>กรอกเลขรับบริการ เช่น <strong>690001</strong></li>
               <li>กรอก PIN ตัวเลข 4 หลัก เช่น <strong>5424</strong></li>
-              <li>กรอกเลขบัตรประชาชนหรือหมายเลขโทรศัพท์ 4 หลักท้าย ตามข้อมูลที่ให้ไว้</li>
               <li>ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ แล้วกด “ตรวจสอบสถานะ”</li>
             </ol>
             <p class="privacy-note">ระบบจะแสดงเฉพาะสถานะที่เปิดเผยต่อผู้ร้องได้ และไม่แสดงข้อมูลการพิจารณาภายใน</p>
@@ -197,15 +191,14 @@
         lookup = document.getElementById("lookup"),
         serviceNumber = document.getElementById("serviceNumber"),
         trackingPin = document.getElementById("trackingPin"),
-        identityLast4 = document.getElementById("identityLast4"),
         feedback = document.getElementById("trackingFeedback"),
         result = document.getElementById("result"),
         shownNo = document.getElementById("shownNo"),
         trackingGuide = document.getElementById("trackingGuide"),
         forgot = document.getElementById("forgot");
       function showResult() {
-        [serviceNumber, trackingPin, identityLast4].forEach((input) => input.classList.remove("invalid"));
-        const credentials = window.ECMIS.parseTrackingCredentials(serviceNumber.value, trackingPin.value, identityLast4.value);
+        [serviceNumber, trackingPin].forEach((input) => input.classList.remove("invalid"));
+        const credentials = window.ECMIS.parseTrackingCredentials(serviceNumber.value, trackingPin.value);
         let savedCases = [], workspaceCases = {};
         try {
           const storedCases = JSON.parse(localStorage.getItem("ecmis-demo-cases") || "[]");
@@ -214,38 +207,26 @@
           savedCases.push(...Object.values(workspaceCases).map((state) => ({
             yearSequence: state?.caseData?.trackingYear,
             pin: state?.caseData?.trackingCode,
-            identityLast4: state?.caseData?.identityLast4,
-            id4: state?.caseData?.id4,
-            phone: state?.caseData?.phone,
-            anonymousDetected: state?.caseData?.anonymousDetected,
           })));
         } catch {
           savedCases = [];
           workspaceCases = {};
         }
-        const demoCase = { yearSequence: "690001", pin: "5424", id4: "1234", anonymousDetected: false };
+        const demoCase = { yearSequence: "690001", pin: "5424" };
         const candidate = credentials && [demoCase, ...savedCases].find((record) =>
           window.ECMIS.parseServiceNumber(record?.yearSequence) === credentials.serviceNumber
         );
         const expectedPin = candidate && window.ECMIS.parseFourDigits(candidate.pin);
-        const phoneDigits = String(candidate?.phone || "").replace(/\D/g, "");
-        const expectedIdentityLast4 = candidate && (
-          window.ECMIS.parseFourDigits(candidate.identityLast4) ||
-          window.ECMIS.parseFourDigits(candidate.id4) ||
-          (phoneDigits.length >= 4 ? phoneDigits.slice(-4) : null)
-        );
-        const anonymousCase = candidate?.anonymousDetected === true;
-        const authorized = Boolean(candidate && expectedPin === credentials.pin && (anonymousCase || expectedIdentityLast4 === credentials.identityLast4));
+        const authorized = Boolean(candidate && expectedPin === credentials.pin);
         if (!authorized) {
           feedback.textContent = "ไม่สามารถยืนยันข้อมูลสำหรับติดตามเรื่องได้";
-          [serviceNumber, trackingPin, identityLast4].forEach((input) => input.classList.add("invalid"));
+          [serviceNumber, trackingPin].forEach((input) => input.classList.add("invalid"));
           trackingGuide.hidden = false;
           result.hidden = true;
           return;
         }
         serviceNumber.value = credentials.serviceNumber;
         trackingPin.value = credentials.pin;
-        identityLast4.value = credentials.identityLast4;
         const matchedWorkspaceState = Object.values(workspaceCases).find((state) => state?.caseData?.trackingYear === credentials.serviceNumber) || null;
         shownNo.textContent = credentials.serviceNumber;
         feedback.textContent = "พบข้อมูลสถานะล่าสุดแล้ว";

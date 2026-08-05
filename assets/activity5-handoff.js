@@ -17,23 +17,38 @@
     return `A5-${String(sourceReference || "").replace(/[^0-9A-Za-zก-๙_-]/g, "-")}`;
   }
 
-  function isEligible(state, approvingRole = "division") {
+  function hasDispatchEvidence(handoff) {
     return Boolean(
-      state?.workflow?.complete
-      && ["division", "acting"].includes(approvingRole)
-      && ELIGIBLE_DECISIONS.has(state?.documentData?.decision)
+      handoff?.outgoingLetterNo
+      && handoff?.outgoingLetterDate
+      && handoff?.destinationUnit
+      && handoff?.dispatchedAt
     );
   }
 
-  function create(storage, state, approvedAt = new Date().toISOString(), approvingRole = "division") {
-    if (!isEligible(state, approvingRole)) return { created: false, eligible: false, handoff: null };
+  function isEligible(state, dispatchingRole = "officer") {
+    return Boolean(
+      state?.workflow?.complete
+      && state?.workflow?.stage === "activity5-dispatch"
+      && ["officer", "regional-officer"].includes(dispatchingRole)
+      && ELIGIBLE_DECISIONS.has(state?.documentData?.decision)
+      && state?.documentData?.dispatchConfirmedAt
+      && state?.documentData?.dispatchLetterNo
+      && state?.documentData?.dispatchLetterDate
+      && state?.documentData?.dispatchSentDate
+      && state?.documentData?.dispatchDestinationUnit
+    );
+  }
+
+  function create(storage, state, dispatchedAt = new Date().toISOString(), dispatchingRole = "officer") {
+    if (!isEligible(state, dispatchingRole)) return { created: false, eligible: false, handoff: null };
 
     const source = state.caseData || {};
     const sourceReference = String(source.id || "").trim();
     if (!sourceReference) return { created: false, eligible: false, handoff: null };
 
     const store = read(storage);
-    if (store.records[sourceReference]) {
+    if (hasDispatchEvidence(store.records[sourceReference])) {
       return { created: false, eligible: true, handoff: store.records[sourceReference] };
     }
 
@@ -47,9 +62,19 @@
       complainant: String(source.complainant || ""),
       agency: String(source.agency || ""),
       unit: String(source.region || ""),
-      approvedAt,
-      approvedBy: approvingRole === "acting" ? "ผู้รักษาราชการแทนตามคำสั่ง" : "ผอ.กบค.",
-      appointmentOrder: approvingRole === "acting" ? String(state.documentData.actingOrder || "") : "",
+      signedDocumentVersion: state.documentVersions?.at(-1)?.version || null,
+      approvedAt: String(state.documentData.approvedAt || ""),
+      approvedBy: String(state.documentData.approvedBy || ""),
+      appointmentOrder: String(state.documentData.actingOrder || ""),
+      outgoingLetterNo: String(state.documentData.dispatchLetterNo || ""),
+      outgoingLetterDate: String(state.documentData.dispatchLetterDate || ""),
+      dispatchMethod: String(state.documentData.dispatchSendMethod || ""),
+      emsTrackingNo: String(state.documentData.dispatchEms || ""),
+      dispatchProofName: String(state.documentData.dispatchProofName || ""),
+      destinationUnit: String(state.documentData.dispatchDestinationUnit || ""),
+      dispatchNote: String(state.documentData.dispatchNote || ""),
+      dispatchedBy: "เจ้าหน้าที่รับเรื่อง ศรร.",
+      dispatchedAt,
       sourceSystem: "Activity4HTMLPrototype"
     };
     store.records[sourceReference] = handoff;

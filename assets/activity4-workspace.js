@@ -189,7 +189,7 @@
     input.addEventListener('change',()=>learnContextSuggestion(context,input.value));
     render();
   }
-  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',divisionOpinion:'',divisionAdditionalDetail:'',internalLetterNo:'',internalLetterDate:'',caseNumber:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',divisionOpinion:'',divisionAdditionalDetail:'',internalLetterNo:'',internalLetterDate:'',caseNumber:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',dispatchLetterNo:'',dispatchLetterDate:'',dispatchSendMethod:'EMS',dispatchEms:'',dispatchSentDate:'',dispatchProofName:'',dispatchDestinationUnit:item.region||'',dispatchNote:'',dispatchConfirmedAt:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
   function issueCaseNumber(state){
     if(state.documentData.caseNumber)return state.documentData.caseNumber;
     const buddhistYear=new Date().getFullYear()+543;
@@ -219,7 +219,7 @@
   }
   function saveState(id,state){const intakeChannel=document.getElementById('wiChannel');const intakeRegion=document.getElementById('wiIntakeRegion');const anonymous=document.getElementById('wiAnonymous');if(intakeChannel){state.caseData.channel=intakeChannel.value;const usesIntakeRegion=['Walk-In','จดหมาย'].includes(intakeChannel.value);state.caseData.intakeRegion=usesIntakeRegion?(intakeRegion?.value||''):'';if(usesIntakeRegion&&intakeRegion?.value)state.caseData.region=intakeRegion.value}if(anonymous){state.caseData.anonymous=anonymous.checked;state.documentData.anonymous=anonymous.checked}const store=readStore();store[id]=state;writeStore(store)}
   function activity5Handoff(state){return window.ECMISActivity5Handoff?.read(localStorage).records[state.caseData.id]||null}
-  function activity5Link(state){const handoff=activity5Handoff(state);return handoff?`<a class="ws-button primary" href="activity5/index.html#/cases/${encodeURIComponent(handoff.activity5CaseId)}">เปิด Activity 5</a>`:''}
+  function activity5Link(state){if(state.workflow.stage!=='activity5-dispatch'||!state.workflow.complete)return '';const handoff=activity5Handoff(state);return handoff?`<a class="ws-button primary" href="activity5/index.html#/cases/${encodeURIComponent(handoff.activity5CaseId)}">เปิด Activity 5</a>`:''}
   function notify(icon,title,text){if(window.Swal)return Swal.fire({icon,title,text,confirmButtonText:'ปิด',confirmButtonColor:'#082b50'});alert(`${title}\n${text}`)}
   function confirmDo(title,text,confirmButtonText='ยืนยัน'){if(!window.Swal)return Promise.resolve({isConfirmed:confirm(`${title}\n${text}`)});return Swal.fire({icon:'question',title,text,showCancelButton:true,confirmButtonText,cancelButtonText:'ยกเลิก',confirmButtonColor:'#082b50',cancelButtonColor:'#687789'})}
   function fontSizeControls(){return `<div class="ws-font-controls" role="group" aria-label="ปรับขนาดตัวอักษร"><span>ขนาดตัวอักษร</span><button type="button" data-font-size="decrease" aria-label="ลดขนาดตัวอักษร">A−</button><button type="button" data-font-size="reset" aria-label="ใช้ขนาดตัวอักษรปกติ">A</button><button type="button" data-font-size="increase" aria-label="เพิ่มขนาดตัวอักษร">A+</button><output id="fontSizeValue" aria-live="polite">106%</output></div>`}
@@ -341,13 +341,16 @@
     const w=state.workflow,d=state.documentData;
     const isAnonymous=w.stage==='anonymous-box'||w.owner==='anonymous';
     const isNacc=d.decision==='send-nacc';
+    const isActivity5= ['18/1ก','18/1ข','18/4'].includes(d.decision);
     const stages=isAnonymous
       ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่พิจารณา','ผู้มีอำนาจมีคำสั่ง','กล่องบัตรสนเท่ห์']
       :isNacc
         ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. อนุมัติ','จัดส่ง ป.ป.ช.']
-        :['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. มีคำสั่ง'];
+        :isActivity5
+          ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. ลงนาม','เจ้าหน้าที่จัดส่งไปยังเขต']
+          :['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. มีคำสั่ง'];
     const assigned=state.assignmentHistory.length>0||Boolean(d.assignedOfficer);
-    const stageIndex={admin:assigned?1:0,officer:2,center:3,division:4,acting:4,'anonymous-box':4,'nacc-dispatch':5};
+    const stageIndex={admin:assigned?1:0,officer:2,center:3,division:4,acting:4,'anonymous-box':4,'nacc-dispatch':5,'officer-dispatch':5,'activity5-dispatch':5};
     const currentIndex=w.complete?stages.length-1:Math.min(stageIndex[w.stage]??0,stages.length-1);
     const currentLabel=w.complete?'ดำเนินการเสร็จสิ้น':w.status;
     const nextLabel=w.complete?'ไม่มีขั้นตอนถัดไป':stages[currentIndex+1]||'รอผลการดำเนินการ';
@@ -623,6 +626,7 @@
     $('#wsRole').value=selectedRole;updateRoleControls();$('#wsRole').onchange=e=>{selectedRole=e.target.value;activeRole=selectedRole==='regional-officer'?'officer':selectedRole;sessionStorage.setItem('ecmis-a4-role',selectedRole);updateRoleControls();delete $('#caseListView').dataset.anonymousReady;if(selectedId&&!canRegionalAccess(getState(selectedId).caseData))selectedId=null;syncUrl();if(selectedId)renderDetail();else{$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden')}renderList()};
     if(regionalRegionSelect)regionalRegionSelect.onchange=e=>{activeRegion=e.target.value;sessionStorage.setItem('ecmis-a4-regional-region',activeRegion);updateRoleControls();selectedId=null;syncUrl();$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');renderList()};
     const duplicateObserver=new MutationObserver(()=>{
+      enhanceActivity5Dispatch();
       enhanceNaccDispatch();
       enhanceNaccTransferReasons();
       enhanceSmartInputs();
@@ -729,6 +733,28 @@
         state.workflow.owner='anonymous';state.workflow.stage='anonymous-box';state.workflow.status=`รอ ${ANONYMOUS_CHAIN_STEPS[step+1]}`;
       }
       saveState(selectedId,state);notify('success',isFinal?'ส่งกิจกรรมที่ 7 แล้ว':'ส่งตามลำดับชั้นแล้ว',`สถานะปัจจุบัน: ${state.workflow.status}`);renderDetail();renderList();
+    }
+    function captureActivity5Dispatch(state){
+      const d=state.documentData,value=id=>$(`#${id}`)?.value?.trim()||'';
+      d.dispatchLetterNo=value('dispatchLetterNo')||d.dispatchLetterNo;
+      d.dispatchLetterDate=value('dispatchLetterDate')||d.dispatchLetterDate;
+      d.dispatchSendMethod=value('dispatchSendMethod')||d.dispatchSendMethod||'EMS';
+      d.dispatchEms=value('dispatchEms')||d.dispatchEms;
+      d.dispatchSentDate=value('dispatchSentDate')||d.dispatchSentDate;
+      d.dispatchDestinationUnit=value('dispatchDestinationUnit')||d.dispatchDestinationUnit;
+      d.dispatchNote=value('dispatchNote')||d.dispatchNote;
+      d.dispatchProofName=$('#dispatchProof')?.files?.[0]?.name||d.dispatchProofName;
+      return state;
+    }
+    function enhanceActivity5Dispatch(){
+      if(!isOfficerRole(selectedRole)||!selectedId)return;
+      const state=getState(selectedId),d=state.documentData;
+      if(!['officer-dispatch','activity5-dispatch'].includes(state.workflow.stage))return;
+      const body=$('.ws-editor-body');if(!body||body.dataset.activity5Dispatch)return;
+      body.dataset.activity5Dispatch='true';
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผอ.กบค. ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section><section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="dispatchLetterDate" type="date" value="${escapeHtml(d.dispatchLetterDate||'')}"></div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><input id="dispatchSentDate" type="date" value="${escapeHtml(d.dispatchSentDate||'')}"></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
+      const actions=$('.ws-actions');if(actions)actions.innerHTML=state.workflow.complete?activity5Link(state):'<button class="ws-button secondary" data-action="activity5-dispatch-draft">บันทึกร่างข้อมูลจัดส่ง</button><button class="ws-button primary" data-action="activity5-dispatch-confirm">ยืนยันจัดส่งไปยังเขต</button>';
     }
     function enhanceNaccDispatch(){
       if(!isOfficerRole(activeRole)||!selectedId)return;
@@ -930,7 +956,6 @@
       state=capture(state);
       const d=state.documentData,w=state.workflow;
       const add=text=>state.decisionHistory.push({text,time:now()});
-      let handoffResult=null;
       if(action==='draft'){
         state.documentVersions.push({version:state.documentVersions.length+1,actor:ROLE_LABELS[activeRole],time:now()});
         saveState(selectedId,state);notify('success','บันทึกร่างแล้ว','ข้อมูลถูกเก็บในเรื่องนี้และจะแสดงให้ผู้ดำเนินการคนถัดไปเห็น');renderDetail();return;
@@ -990,20 +1015,27 @@
           d.approvedAt=new Date().toISOString();d.approvedBy=approvalActor;issueCaseNumber(state);
           d.publicStatus='สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป';
         }
+        if(caseNumberEligible){d.approvedAt=d.approvedAt||new Date().toISOString();d.approvedBy=d.approvedBy||approvalActor}
         const anonymousRejected=d.decision==='not-accept'&&d.anonymous;
         if(anonymousRejected){
           w.owner='anonymous';w.stage='anonymous-box';w.status='รอหัวหน้าพนักงานผู้ตรวจเสนอ';w.complete=false;
           add(`${approvalActor} อนุมัติไม่รับไว้ดำเนินการและส่งเข้ากล่องบัตรสนเท่ห์`);
+        }else if(caseNumberEligible){
+          d.dispatchDestinationUnit=d.proposedRegion||state.caseData.region||'';
+          w.owner='officer';w.stage='officer-dispatch';w.status='รอเจ้าหน้าที่รับเรื่องดำเนินการจัดส่ง';w.complete=false;
+          add(`${approvalActor} ลงนามอนุมัติ${d.caseNumber?`และออกเลขสำนวน ${d.caseNumber}`:''} แล้ว ส่งงานกลับเจ้าหน้าที่รับเรื่อง ศรร. เพื่อบันทึกข้อมูลจัดส่งไปยัง ${d.proposedRegion||state.caseData.region||'เขตผู้รับผิดชอบ'}`);
         }else{
           w.complete=true;w.status='ดำเนินการเสร็จสิ้น';add(`${approvalActor} อนุมัติผลการพิจารณา${d.caseNumber?` และออกเลขสำนวน ${d.caseNumber}`:''}${d.internalLetterNo?` เลขหนังสือ ${d.internalLetterNo} ลงวันที่ ${d.internalLetterDate}`:''}`);
-          handoffResult=window.ECMISActivity5Handoff?.create(localStorage,state,new Date().toISOString(),activeRole)||null;if(handoffResult?.eligible)w.status='ส่งต่อ Activity 5 แล้ว';
         }
       }
       if(['center-return','center-send'].includes(action)&&d.centerAdditionalDetail)add('ผอ.ศรร. เพิ่มรายละเอียดประกอบการพิจารณา โดยไม่แก้ไขข้อมูลคำร้องเดิม');
       if(['division-center','division-return','approve'].includes(action)&&d.divisionAdditionalDetail)add(`${ROLE_LABELS[activeRole]} เพิ่มรายละเอียดประกอบการพิจารณา โดยไม่แก้ไขข้อมูลคำร้องเดิม`);
       state.documentVersions.push({version:state.documentVersions.length+1,actor:ROLE_LABELS[activeRole],time:now()});saveState(selectedId,state);
-      const handoffText=handoffResult?.eligible?(handoffResult.created?' สร้างข้อมูลส่งต่อ Activity 5 แล้ว':' พบข้อมูลส่งต่อ Activity 5 เดิมและไม่สร้างซ้ำ'):'';
-      notify('success','บันทึกและส่งงานแล้ว',`สถานะปัจจุบัน: ${w.status}${handoffText}`);renderDetail();renderList();
+      if(w.stage==='officer-dispatch'){
+        notify('success','ลงนามอนุมัติแล้ว','ส่งงานกลับเจ้าหน้าที่รับเรื่อง ศรร. ตามเขต เพื่อบันทึกเลขหนังสือ เลข EMS และข้อมูลการจัดส่ง');
+        selectedRole='officer';activeRole='officer';sessionStorage.setItem('ecmis-a4-role',selectedRole);$('#wsRole').value=selectedRole;updateRoleControls();renderDetail();renderList();return;
+      }
+      notify('success','บันทึกและส่งงานแล้ว',`สถานะปัจจุบัน: ${w.status}`);renderDetail();renderList();
     }
     root.addEventListener('click',async event=>{
       const manageSuggestionsButton=event.target.closest('#manageSuggestions');
@@ -1022,6 +1054,28 @@
         suggestionButton.closest('.smart-suggestions')?.classList.add('suggestion-selected');
         setTimeout(()=>suggestionButton.closest('.smart-suggestions')?.classList.remove('suggestion-selected'),650);
         return;
+      }
+      const activity5DispatchButton=event.target.closest('[data-action="activity5-dispatch-draft"],[data-action="activity5-dispatch-confirm"]');
+      if(activity5DispatchButton){
+        event.preventDefault();event.stopImmediatePropagation();
+        const action=activity5DispatchButton.dataset.action;
+        const state=captureActivity5Dispatch(getState(selectedId)),d=state.documentData;
+        if(action==='activity5-dispatch-draft'){
+          state.documentVersions.push({version:state.documentVersions.length+1,actor:'เจ้าหน้าที่รับเรื่อง ศรร.',time:now()});saveState(selectedId,state);
+          notify('success','บันทึกร่างข้อมูลจัดส่งแล้ว','ข้อมูลยังไม่ได้รับการยืนยันจัดส่งไปยังเขตผู้รับผิดชอบ');return;
+        }
+        if(!d.dispatchLetterNo||!d.dispatchLetterDate||!d.dispatchSentDate||!d.dispatchDestinationUnit){notify('warning','ข้อมูลการจัดส่งยังไม่ครบ','กรอกเลขหนังสือ วันที่หนังสือ วันที่จัดส่ง และหน่วยงานหรือเขตปลายทางให้ครบ');return}
+        if(d.dispatchSendMethod==='EMS'&&!d.dispatchEms){notify('warning','ยังไม่มีเลข EMS','กรอกเลข EMS ก่อนยืนยันการจัดส่ง');return}
+        const confirmation=await confirmDo('ยืนยันการจัดส่งไปยังเขตผู้รับผิดชอบ',`ยืนยันว่าได้จัดส่งเรื่องไปยัง ${d.dispatchDestinationUnit} ตามข้อมูลที่บันทึกไว้`,'ยืนยันจัดส่ง');
+        if(!confirmation.isConfirmed)return;
+        const time=now(),dispatchedAt=new Date().toISOString();
+        d.dispatchConfirmedAt=dispatchedAt;state.workflow.stage='activity5-dispatch';state.workflow.status=`จัดส่งเรื่องไปยัง ${d.dispatchDestinationUnit} แล้ว`;state.workflow.complete=true;state.workflow.owner='officer';
+        state.decisionHistory.push({text:`เจ้าหน้าที่รับเรื่อง ศรร. ยืนยันจัดส่งไปยัง ${d.dispatchDestinationUnit} เลขหนังสือ ${d.dispatchLetterNo} · ${d.dispatchSendMethod}${d.dispatchEms?` ${d.dispatchEms}`:''}`,time});
+        state.documentVersions.push({version:state.documentVersions.length+1,actor:'เจ้าหน้าที่รับเรื่อง ศรร.',time});
+        const handoffResult=window.ECMISActivity5Handoff?.create(localStorage,state,dispatchedAt,'officer')||null;
+        if(!handoffResult?.eligible){state.workflow.stage='officer-dispatch';state.workflow.status='รอเจ้าหน้าที่รับเรื่องดำเนินการจัดส่ง';state.workflow.complete=false;d.dispatchConfirmedAt='';notify('error','บันทึกการจัดส่งไม่สำเร็จ','ตรวจสอบข้อมูลการจัดส่งและลองยืนยันอีกครั้ง');return}
+        saveState(selectedId,state);
+        notify('success','ยืนยันการจัดส่งเรียบร้อยแล้ว',`จัดส่งเรื่องไปยัง ${d.dispatchDestinationUnit} แล้ว ระบบส่งข้อมูลเข้าสู่กระบวนงานกิจกรรมที่ 5 เรียบร้อยแล้ว`);renderDetail();renderList();return;
       }
       const approveNaccButton=event.target.closest('[data-action="approve"]');
       if(approveNaccButton&&getState(selectedId).documentData.decision==='send-nacc'){
