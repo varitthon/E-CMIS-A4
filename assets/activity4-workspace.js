@@ -76,23 +76,79 @@
     if(settings.usage[usageKey]>=2&&!settings.contexts[context].includes(text))settings.contexts[context].unshift(text);
     writeSuggestionSettings(settings);
   }
-  function attachIntelligentSuggestion(id,label,context=id){
-    const input=$(`#${id}`);if(!input||input.parentElement.querySelector(`.smart-suggestions[data-context="${context}"]`))return;
-    const settings=readSuggestionSettings();
-    const suggestions=[...(settings.contexts[context]||[]),...settings.keywords].filter((text,index,array)=>array.indexOf(text)===index).slice(0,10);
-    const panel=document.createElement('div');panel.className='smart-suggestions';panel.dataset.context=context;panel.innerHTML=`<div class="smart-suggestion-hero"><span class="smart-suggestion-signal"></span><div><strong>${label}</strong><span>วิเคราะห์ตามบทบาทและบริบทของช่องข้อมูลนี้</span></div><b>INTELLIGENT · ${suggestions.length}</b></div><select class="smart-suggestion-select"><option value="">เลือกข้อความแนะนำเพื่อเติมลงในช่องนี้</option>${suggestions.map(text=>`<option value="${escapeHtml(text)}">${escapeHtml(text)}</option>`).join('')}</select>`;
-    input.insertAdjacentElement('afterend',panel);
-    $('.smart-suggestion-select',panel).addEventListener('change',event=>{
-      const text=event.target.value;if(!text)return;
-      if(!input.value.includes(text))input.value=[input.value.trim(),text].filter(Boolean).join('\n');
-      input.dispatchEvent(new Event('input',{bubbles:true}));
-      panel.classList.add('suggestion-selected');
-      setTimeout(()=>panel.classList.remove('suggestion-selected'),650);
-      event.target.value='';
-    });
-    input.addEventListener('change',()=>learnContextSuggestion(context,input.value));
+  function correctThaiWriting(value){
+    const replacements=[
+      [/\s{2,}/g,' '],[/เจา้หน้าที่/g,'เจ้าหน้าที่'],[/จังหวะด/g,'จังหวัด'],[/อัติโนมัติ/g,'อัตโนมัติ'],
+      [/ผอ\.?\s*ศรร\.?/g,'ผอ.ศรร.'],[/ผอ\.?\s*กบค\.?/g,'ผอ.กบค.'],[/ป\.?ป\.?ช\.?/g,'ป.ป.ช.'],[/ป\.?ป\.?ท\.?/g,'ป.ป.ท.'],
+      [/ส่งกลับไปแก้/g,'ส่งกลับเพื่อแก้ไข'],[/เช็ค/g,'ตรวจสอบ']
+    ];
+    return replacements.reduce((text,[pattern,replacement])=>text.replace(pattern,replacement),value).trim();
   }
-  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],anonymous:Boolean(item.anonymous),officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',divisionOpinion:'',divisionAdditionalDetail:'',internalLetterNo:'',internalLetterDate:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function formalizeWriting(value){
+    return correctThaiWriting(value)
+      .replace(/อยากให้/g,'เห็นควรให้')
+      .replace(/โอเค/g,'เห็นชอบ')
+      .replace(/ทำต่อ/g,'ดำเนินการต่อ')
+      .replace(/ส่งต่อไป/g,'ส่งต่อเพื่อดำเนินการ');
+  }
+  function contextualSuggestions(context,value){
+    const settings=readSuggestionSettings();
+    const unique=[...(settings.contexts[context]||[]),...settings.keywords].filter((text,index,array)=>array.indexOf(text)===index&&!value.includes(text));
+    const terms=value.toLowerCase().split(/\s+/).filter(term=>term.length>1);
+    return unique.map((text,index)=>({text,index,score:terms.reduce((score,term)=>score+(text.toLowerCase().includes(term)?2:0),0)+(settings.usage[`${context}:${text}`]||0)})).sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,3).map(item=>item.text);
+  }
+  function attachIntelligentSuggestion(id,label,context=id){
+    const input=$(`#${id}`);if(!input||input.parentElement.querySelector(`.smart-inline[data-context="${context}"]`))return;
+    input.closest('.ws-field')?.classList.add('smart-field');
+    const panel=document.createElement('div');panel.className='smart-inline';panel.dataset.context=context;
+    const popoverId=`smart-inline-${id}`;
+    panel.innerHTML=`<button type="button" class="smart-inline-trigger" aria-expanded="false" aria-controls="${popoverId}"><span class="smart-inline-dot"></span><span>คำแนะนำการเขียน</span><small>พร้อมตรวจ</small></button><div class="smart-inline-popover ws-hidden" id="${popoverId}" role="listbox"></div>`;
+    input.insertAdjacentElement('afterend',panel);
+    input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-controls',popoverId);input.setAttribute('aria-expanded','false');
+    const trigger=$('.smart-inline-trigger',panel),popover=$('.smart-inline-popover',panel);
+    let closeTimer=0,renderTimer=0,activeIndex=-1;
+    const open=()=>{clearTimeout(closeTimer);panel.classList.add('open');popover.classList.remove('ws-hidden');trigger.setAttribute('aria-expanded','true');input.setAttribute('aria-expanded','true')};
+    const close=()=>{panel.classList.remove('open');popover.classList.add('ws-hidden');trigger.setAttribute('aria-expanded','false');input.setAttribute('aria-expanded','false');activeIndex=-1};
+    const applyValue=value=>{input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();panel.classList.add('suggestion-selected');setTimeout(()=>panel.classList.remove('suggestion-selected'),420)};
+    const render=()=>{
+      const value=input.value.trim(),corrected=correctThaiWriting(value),formal=formalizeWriting(value),suggestions=contextualSuggestions(context,value);
+      const actions=[];
+      if(value&&corrected!==value)actions.push(`<button type="button" role="option" class="smart-inline-action" data-smart-value="${escapeHtml(corrected)}"><span>แก้คำและช่องว่าง</span><small>${escapeHtml(corrected)}</small></button>`);
+      if(value&&formal!==value&&formal!==corrected)actions.push(`<button type="button" role="option" class="smart-inline-action" data-smart-value="${escapeHtml(formal)}"><span>ปรับเป็นภาษาราชการ</span><small>${escapeHtml(formal)}</small></button>`);
+      const suggestionHtml=suggestions.map(text=>`<button type="button" role="option" class="smart-inline-suggestion" data-smart-suggestion="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join('');
+      popover.innerHTML=`${actions.join('')}${suggestionHtml?`<div class="smart-inline-suggestions"><span>${value?'ข้อความที่เกี่ยวข้อง':'เริ่มต้นด้วยข้อความแนะนำ'}</span>${suggestionHtml}</div>`:''}${!actions.length&&!suggestions.length?'<p class="smart-inline-clear">ข้อความชัดเจนแล้ว</p>':''}`;
+      $('small',trigger).textContent=actions.length?`พบ ${actions.length} จุดที่ปรับได้`:suggestions.length?`${suggestions.length} ข้อเสนอ`:'ตรวจแล้ว';
+      $$('[data-smart-value]',popover).forEach(button=>button.onclick=()=>applyValue(button.dataset.smartValue));
+      $$('[data-smart-suggestion]',popover).forEach(button=>button.onclick=()=>{const text=button.dataset.smartSuggestion;if(input.tagName==='INPUT')applyValue(text);else if(!input.value.includes(text))applyValue([input.value.trim(),text].filter(Boolean).join('\n'))});
+      activeIndex=-1;
+    };
+    trigger.onclick=()=>{render();panel.classList.contains('open')?close():open()};
+    input.addEventListener('focus',()=>{render();open()});
+    input.addEventListener('input',()=>{clearTimeout(renderTimer);renderTimer=setTimeout(()=>{render();open()},180)});
+    input.addEventListener('keydown',event=>{
+      if(event.key==='Escape'||event.key==='Tab'){close();return}
+      if(event.ctrlKey&&event.code==='Space'){event.preventDefault();render();open();return}
+      if(!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;
+      const options=$$('[role="option"]',popover);if(!options.length)return;
+      if(event.key==='Enter'){if(activeIndex<0)return;event.preventDefault();options[activeIndex].click();return}
+      event.preventDefault();open();activeIndex=event.key==='ArrowDown'?(activeIndex+1)%options.length:(activeIndex-1+options.length)%options.length;
+      options.forEach((option,index)=>option.classList.toggle('is-active',index===activeIndex));options[activeIndex].scrollIntoView({block:'nearest'});
+    });
+    input.addEventListener('blur',()=>{closeTimer=setTimeout(close,180)});
+    panel.addEventListener('mousedown',event=>event.preventDefault());
+    input.addEventListener('change',()=>learnContextSuggestion(context,input.value));
+    render();
+  }
+  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],anonymous:Boolean(item.anonymous),officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',divisionOpinion:'',divisionAdditionalDetail:'',internalLetterNo:'',internalLetterDate:'',caseNumber:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function issueCaseNumber(state){
+    if(state.documentData.caseNumber)return state.documentData.caseNumber;
+    const buddhistYear=new Date().getFullYear()+543;
+    const key=`ecmis-a4-case-sequence-${buddhistYear}`;
+    const next=Math.max(1,Number(localStorage.getItem(key)||0)+1);
+    localStorage.setItem(key,String(next));
+    state.documentData.caseNumber=`${String(next).padStart(4,'0')}/${buddhistYear}`;
+    return state.documentData.caseNumber;
+  }
   function getState(id){
     const store=readStore();
     const state=store[id]||initialState(CASES.find(c=>c.id===id)||CASES[0]);
@@ -102,6 +158,8 @@
       return {...entry,text:`[${action}] ${entry.text||''}`};
     });
     state.anonymousHistory=state.anonymousHistory||[];
+    const legacyCaseNumber=String(state.documentData.caseNumber||'').match(/^สส\s*(\d{4})\/(\d{4})$/);
+    if(legacyCaseNumber)state.documentData.caseNumber=`${legacyCaseNumber[2]}/${legacyCaseNumber[1]}`;
     return state;
   }
   function saveState(id,state){const intakeChannel=document.getElementById('wiChannel');const intakeRegion=document.getElementById('wiIntakeRegion');const anonymous=document.getElementById('wiAnonymous');if(intakeChannel){state.caseData.channel=intakeChannel.value;const usesIntakeRegion=['Walk-In','จดหมาย'].includes(intakeChannel.value);state.caseData.intakeRegion=usesIntakeRegion?(intakeRegion?.value||''):'';if(usesIntakeRegion&&intakeRegion?.value)state.caseData.region=intakeRegion.value}if(anonymous){state.caseData.anonymous=anonymous.checked;state.documentData.anonymous=anonymous.checked}const store=readStore();store[id]=state;writeStore(store)}
@@ -362,6 +420,7 @@
       enhanceSmartInputs();
       enhanceReviewRoute();
       enhanceActingIdentity();
+      enhanceCaseIssuance();
       enhanceAnonymousSuboption();
       enhanceAnonymousList();
       enhanceAnonymousBox();
@@ -401,6 +460,13 @@
       order.placeholder='เลขที่คำสั่งและวันที่';
       order.closest('.ws-field')?.insertAdjacentHTML('beforebegin',`<div class="ws-callout"><strong>ผู้รักษาราชการแทน: ${escapeHtml(d.actingOfficer||'ยังไม่ระบุ')}</strong><br>เหตุที่ผู้มีอำนาจไม่อยู่: ${escapeHtml(d.absenceReasonType||'ยังไม่ระบุ')} ${escapeHtml(d.absenceNote||'')}</div>`);
       order.dataset.identityReady='true';
+    }
+    function enhanceCaseIssuance(){
+      if(!['division','acting'].includes(activeRole)||!selectedId)return;
+      const state=getState(selectedId),d=state.documentData;
+      if(!['18/1ก','18/1ข','18/4'].includes(d.decision)||$('#caseIssuanceStatus'))return;
+      const anchor=$('#internalLetterNo')?.closest('.ws-section')||$('.ws-editor-body');
+      anchor?.insertAdjacentHTML('afterend',`<section class="case-issuance" id="caseIssuanceStatus"><span>การออกเลขสำนวน</span><strong>${escapeHtml(d.caseNumber||'ยังไม่ออกเลขสำนวน')}</strong><p>${d.caseNumber?escapeHtml(d.publicStatus):'ระบบจะออกเลขสำนวนหลัง ผอ.กบค. หรือผู้รักษาราชการแทนลงนามอนุมัติเท่านั้น'}</p></section>`);
     }
     function enhanceAnonymousSuboption(){
       if(activeRole!=='officer'||!selectedId)return;
@@ -666,12 +732,19 @@
         if(['18/1ก','18/1ข','18/4'].includes(d.decision)&&(!d.internalLetterNo||!d.internalLetterDate))return notify('warning','ข้อมูลหนังสือยังไม่ครบ','กรอกเลขหนังสือและวันที่หนังสือก่อนอนุมัติรับไว้ดำเนินการ');
         if(activeRole==='acting'){d.actingOrder=$('#actingOrder')?.value?.trim()||d.actingOrder||'';if(!d.actingOrder)return notify('warning','ยังไม่มีคำสั่งแต่งตั้ง','กรอกเลขที่คำสั่งและวันที่แต่งตั้งผู้รักษาราชการแทนก่อนอนุมัติ')}
         const approvalActor=activeRole==='acting'?`${d.actingOfficer||ROLE_LABELS[activeRole]} ตาม ${d.actingOrder}`:ROLE_LABELS[activeRole];
+        const acceptedDecision=['18/1ก','18/1ข','18/4'].includes(d.decision);
+        if(acceptedDecision&&!d.caseNumber){
+          const confirmed=await confirmDo('ลงนามอนุมัติและออกเลขสำนวน','หลังยืนยัน ระบบจะออกเลขสำนวนและเปิดเผยสถานะรับไว้ดำเนินการแก่ผู้ร้อง','ลงนามและออกเลขสำนวน');
+          if(!confirmed.isConfirmed)return;
+          d.approvedAt=new Date().toISOString();d.approvedBy=approvalActor;issueCaseNumber(state);
+          d.publicStatus='สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป';
+        }
         const anonymousRejected=d.decision==='not-accept'&&d.anonymous;
         if(anonymousRejected){
           w.owner='anonymous';w.stage='anonymous-box';w.status='รอหัวหน้าพนักงานผู้ตรวจเสนอ';w.complete=false;
           add(`${approvalActor} อนุมัติไม่รับไว้ดำเนินการและส่งเข้ากล่องบัตรสนเท่ห์`);
         }else{
-          w.complete=true;w.status='ดำเนินการเสร็จสิ้น';add(`${approvalActor} อนุมัติผลการพิจารณา${d.internalLetterNo?` เลขหนังสือ ${d.internalLetterNo} ลงวันที่ ${d.internalLetterDate}`:''}`);
+          w.complete=true;w.status='ดำเนินการเสร็จสิ้น';add(`${approvalActor} อนุมัติผลการพิจารณา${d.caseNumber?` และออกเลขสำนวน ${d.caseNumber}`:''}${d.internalLetterNo?` เลขหนังสือ ${d.internalLetterNo} ลงวันที่ ${d.internalLetterDate}`:''}`);
           handoffResult=window.ECMISActivity5Handoff?.create(localStorage,state,new Date().toISOString(),activeRole)||null;if(handoffResult?.eligible)w.status='ส่งต่อ Activity 5 แล้ว';
         }
       }

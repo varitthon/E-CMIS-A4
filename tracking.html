@@ -239,6 +239,12 @@
           result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.id}<br><strong>เลขหนังสือส่งสำนักงาน ป.ป.ช.:</strong> ${data.naccLetterNo}<br><strong>วันที่จัดส่ง:</strong> ${data.naccSentDate}<br><strong>เลข EMS:</strong> ${data.naccEms || "ไม่ได้ใช้ EMS"}<br><strong>มติบอร์ด:</strong> ${data.naccBoardNo}`;
           const timeline = result.querySelector(".timeline");
           if (!timeline.querySelector("[data-nacc-forwarded]")) timeline.insertAdjacentHTML("beforeend", `<li data-nacc-forwarded><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong><time>${data.naccSentDate}</time><span>เลขหนังสือ ${data.naccLetterNo}${data.naccEms ? ` · EMS ${data.naccEms}` : ""}</span></li>`);
+        } else if (matchedWorkspaceState?.workflow?.complete && matchedWorkspaceState?.documentData?.caseNumber) {
+          const data = matchedWorkspaceState.documentData;
+          result.querySelector("h2").textContent = data.publicStatus || "สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป";
+          result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.id}<br><strong>เลขสำนวน:</strong> ${data.caseNumber}<br><strong>ผู้รับผิดชอบ:</strong> ${data.assignedOfficer || "สำนักงาน ป.ป.ท."}<br><strong>ช่องทางติดต่อ:</strong> สายด่วน 1206`;
+          const timeline = result.querySelector(".timeline");
+          if (!timeline.querySelector("[data-case-issued]")) timeline.insertAdjacentHTML("beforeend", `<li data-case-issued><strong>ผอ.กบค. ลงนามอนุมัติ</strong><time>${data.internalLetterDate || "ล่าสุด"}</time><span>ระบบออกเลขสำนวน ${data.caseNumber}</span></li>`);
         }
       }
       lookup.addEventListener("submit", (e) => {
