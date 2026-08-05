@@ -2,17 +2,24 @@
   const STORAGE_KEY = 'ecmis-a4-workspace-v3';
   const BACKUP_STORAGE_KEY = 'ecmis-a4-officer-backups-v1';
   const SUGGESTION_STORAGE_KEY = 'ecmis-a4-suggestions-v1';
+  const FONT_SIZE_STORAGE_KEY = 'ecmis-a4-font-size-v2';
+  const DEFAULT_FONT_SIZE_STEP = 1;
   const THAI_LOCATION_URL = 'https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest/province_with_district_and_sub_district.json';
   const STAFF_LOCATION_FALLBACK = [
     {name_th:'กรุงเทพมหานคร',districts:[{name_th:'เขตพระนคร',sub_districts:[{name_th:'พระบรมมหาราชวัง',zip_code:10200},{name_th:'วังบูรพาภิรมย์',zip_code:10200}]},{name_th:'เขตดุสิต',sub_districts:[{name_th:'ดุสิต',zip_code:10300},{name_th:'วชิรพยาบาล',zip_code:10300}]}]},
     {name_th:'นนทบุรี',districts:[{name_th:'เมืองนนทบุรี',sub_districts:[{name_th:'สวนใหญ่',zip_code:11000},{name_th:'ตลาดขวัญ',zip_code:11000},{name_th:'ท่าทราย',zip_code:11000}]},{name_th:'ปากเกร็ด',sub_districts:[{name_th:'ปากเกร็ด',zip_code:11120},{name_th:'บางตลาด',zip_code:11120}]}]},
     {name_th:'ชลบุรี',districts:[{name_th:'เมืองชลบุรี',sub_districts:[{name_th:'บางปลาสร้อย',zip_code:20000},{name_th:'มะขามหย่ง',zip_code:20000}]},{name_th:'ศรีราชา',sub_districts:[{name_th:'ศรีราชา',zip_code:20110},{name_th:'สุรศักดิ์',zip_code:20110}]}]}
   ];
-  const ROLE_LABELS = { admin:'ธุรการ ศรร.', officer:'เจ้าหน้าที่รับเรื่อง', center:'ผอ.ศรร.', division:'ผอ.กบค.', acting:'ผู้รักษาราชการแทนตามคำสั่ง', anonymous:'กล่องบัตรสนเท่ห์', activity7:'กิจกรรมที่ 7' };
+  const ROLE_LABELS = { admin:'ธุรการ ศรร.', officer:'เจ้าหน้าที่รับเรื่อง', 'regional-officer':'เจ้าหน้าที่เขต', center:'ผอ.ศรร.', division:'ผอ.กบค.', acting:'ผู้รักษาราชการแทนตามคำสั่ง', anonymous:'กล่องบัตรสนเท่ห์', activity7:'กิจกรรมที่ 7' };
   const ANONYMOUS_CHAIN_STEPS = ['หัวหน้าพนักงานผู้ตรวจเสนอ','หัวหน้าพนักงานผู้ให้ความเห็น','หัวหน้าพนักงานผู้อนุมัติส่งต่อ'];
   const ACTIVITY7_STORAGE_KEY = 'ecmis-a4-a7-handoffs-v1';
-  const OFFICERS = ['คุณสุพจน์ (พี่ฮอต)','คุณนครินทร์','คุณวารี','คุณอาภรณ์','คุณสุธาทิพย์','คุณรัชพล'];
+  const OFFICERS = ['คุณสุพจน์','คุณนครินทร์','คุณวารี','คุณอาภรณ์','คุณสุธาทิพย์','คุณรัชพล'];
   const REGIONS = ['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'];
+  const REGIONAL_REGIONS = REGIONS.filter(region=>region!=='ส่วนกลาง');
+  const REGIONAL_CHANNELS = ['Walk-In','จดหมาย','เบอร์โทร ปปท. เขต 1-9'];
+  const isOfficerRole = role => ['officer','regional-officer'].includes(role);
+  const channelKey = channel => String(channel||'').toLowerCase().replace(/[-\s]/g,'');
+  const isRegionalChannel = channel => ['walkin','จดหมาย',channelKey('เบอร์โทร ปปท. เขต 1-9')].includes(channelKey(channel));
   const NACC_TRANSFER_REASONS = [
     'เจ้าหน้าที่ของรัฐอยู่ในอำนาจหน้าที่ของคณะกรรมการ ป.ป.ช.',
     'ร้องเรียนความผิดตาม พ.ร.บ. ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ',
@@ -23,12 +30,11 @@
     'จัดซื้อจัดจ้างไม่เกิน 2 ล้านบาท',
     'กรณีไม่เกี่ยวกับสัมปทานโดยรัฐ'
   ];
-  const DUPLICATE_NOTE = 'ระบบตรวจพบเรื่องที่อาจซ้ำกับ ECMIS-2569-000127 ความใกล้เคียง 92% โปรดให้เจ้าหน้าที่ผู้รับผิดชอบตรวจสอบและเปรียบเทียบข้อเท็จจริงก่อนดำเนินการต่อ';
   const DEFAULT_SUGGESTIONS = {
     keywords:['โปรดตรวจสอบข้อเท็จจริงเพิ่มเติม','พบข้อมูลที่ควรตรวจสอบความเชื่อมโยง','เอกสารประกอบยังไม่ครบถ้วน','เสนอให้ตรวจสอบอำนาจหน้าที่ของหน่วยงาน'],
     notAcceptReasons:['ข้อเท็จจริงไม่เพียงพอต่อการดำเนินการ','ไม่อยู่ในอำนาจหน้าที่ของสำนักงาน ป.ป.ท.','ไม่ปรากฏพฤติการณ์หรือบุคคลที่เกี่ยวข้องชัดเจน','เรื่องอยู่ระหว่างการพิจารณาของหน่วยงานอื่น','ผู้ร้องถอนเรื่องหรือไม่ประสงค์ดำเนินการต่อ'],
     contexts:{
-      adminNote:['ตรวจพบประเด็นที่ต้องให้ผู้รับผิดชอบตรวจสอบเพิ่มเติม','โปรดตรวจสอบเอกสารแนบและความครบถ้วนของข้อมูล','มอบหมายตามพื้นที่เกิดเหตุและลักษณะเรื่องร้องเรียน'],
+      adminNote:['มีความเป็นไปได้ว่าเป็นเรื่องเดียวกับเรื่องที่ระบบตรวจพบ','ข้อมูลผู้ร้องและข้อเท็จจริงมีความเชื่อมโยงกับเรื่องเดิม ควรตรวจสอบเพิ่มเติม','ผลตรวจอัตโนมัติพบความใกล้เคียง แต่ยังไม่เพียงพอที่จะสรุปว่าเป็นเรื่องซ้ำ'],
       officerOpinion:['เห็นควรรับไว้ตรวจสอบข้อเท็จจริงเพิ่มเติม','เสนอให้รวบรวมเอกสารและข้อมูลจากหน่วยงานที่เกี่ยวข้อง','ข้อเท็จจริงเบื้องต้นมีประเด็นที่อยู่ในอำนาจดำเนินการ'],
       absenceNote:['ผอ.ศรร. ไม่อยู่ระหว่างวันที่กำหนด จึงเสนอผู้รักษาการพิจารณา','ดำเนินการตามคำสั่งมอบหมายผู้รักษาราชการแทน'],
       centerOpinion:['เห็นชอบตามความเห็นและข้อเสนอของเจ้าหน้าที่รับเรื่อง','ส่งกลับให้ตรวจสอบข้อเท็จจริงและเอกสารเพิ่มเติม','เห็นควรเสนอ ผอ.กบค. พิจารณาต่อไป'],
@@ -45,11 +51,49 @@
     usage:{}
   };
   const CASES = [
-    {id:'ECMIS-2569-000184',trackingYear:'690001',trackingCode:'5FT4',complainant:'นายสมชาย ใจดี',id4:'1234',subject:'ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ',agency:'สำนักงานจัดการทรัพย์สินภาครัฐ',channel:'Website',province:'กรุงเทพมหานคร',region:'ส่วนกลาง',received:'3 สิงหาคม 2569 09:10 น.',type:'การจัดซื้อจัดจ้าง',place:'สำนักงานจัดการทรัพย์สินภาครัฐ กรุงเทพมหานคร',detail:'ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง',damage:'เกิดความเสียหายต่องบประมาณของหน่วยงาน',request:'ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง',attachments:['ใบเสนอราคา.pdf','สำเนาประกาศจัดซื้อ.pdf','ภาพถ่ายเอกสาร.jpg']},
+    {id:'ECMIS-2569-000184',trackingYear:'690001',trackingCode:'5FT4',complainant:'นายสมชาย ใจดี',citizenId:'1-1001-00123-45-6',id4:'1234',subject:'ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ',agency:'สำนักงานจัดการทรัพย์สินภาครัฐ',channel:'Website',province:'กรุงเทพมหานคร',region:'ส่วนกลาง',received:'3 สิงหาคม 2569 09:10 น.',type:'การจัดซื้อจัดจ้าง',place:'สำนักงานจัดการทรัพย์สินภาครัฐ กรุงเทพมหานคร',detail:'ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง',damage:'เกิดความเสียหายต่องบประมาณของหน่วยงาน',request:'ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง',attachments:['ใบเสนอราคา.pdf','สำเนาประกาศจัดซื้อ.pdf','ภาพถ่ายเอกสาร.jpg']},
     {id:'ECMIS-2569-000183',trackingYear:'690002',trackingCode:'K9P2',complainant:'นางสาวรัตนา แสงทอง',id4:'7812',subject:'ร้องเรียนการใช้อำนาจโดยมิชอบของเจ้าหน้าที่',agency:'องค์การบริหารส่วนตำบลตัวอย่าง',channel:'สายด่วน 1206',province:'ชลบุรี',region:'เขต 2',received:'3 สิงหาคม 2569 08:45 น.',type:'ใช้อำนาจโดยมิชอบ',place:'จังหวัดชลบุรี',detail:'เจ้าหน้าที่เรียกรับผลประโยชน์จากประชาชน',damage:'ประชาชนได้รับความเดือดร้อน',request:'ขอให้ตรวจสอบข้อเท็จจริง',attachments:[]},
     {id:'ECMIS-2569-000182',trackingYear:'690003',trackingCode:'8DMR',complainant:'ขอปกปิดข้อมูล',id4:'4456',subject:'ขอให้ตรวจสอบการเบิกจ่ายงบประมาณโครงการ',agency:'สำนักงานจังหวัดตัวอย่าง',channel:'หนังสือราชการ',province:'นครราชสีมา',region:'เขต 3',received:'2 สิงหาคม 2569 15:20 น.',type:'เบิกจ่ายงบประมาณ',place:'จังหวัดนครราชสีมา',detail:'พบความผิดปกติในการเบิกจ่าย',damage:'งบประมาณอาจเสียหาย',request:'ขอให้ตรวจสอบ',attachments:['เอกสารประกอบ.pdf']},
     {id:'ECMIS-2569-000181',trackingYear:'690004',trackingCode:'H7QW',complainant:'นายวิชัย กล้าหาญ',id4:'9090',subject:'ร้องเรียนการเรียกรับผลประโยชน์',agency:'เทศบาลเมืองตัวอย่าง',channel:'Walk-in',province:'ขอนแก่น',region:'เขต 4',received:'2 สิงหาคม 2569 13:05 น.',type:'เรียกรับผลประโยชน์',place:'จังหวัดขอนแก่น',detail:'เจ้าหน้าที่เรียกรับเงินเพื่อแลกกับการอนุมัติ',damage:'ผู้ร้องเสียประโยชน์',request:'ขอให้ดำเนินการตามกฎหมาย',attachments:[]}
   ];
+  const DUPLICATE_REFERENCE_CASES = [{id:'ECMIS-2569-000127',complainant:'นายสมชาย ใจดี',citizenId:'1-1001-00123-45-6',id4:'1234',subject:'ขอให้ตรวจสอบการจัดซื้อวัสดุสำนักงานที่ไม่เป็นไปตามระเบียบ',agency:'สำนักงานจัดการทรัพย์สินภาครัฐ',province:'กรุงเทพมหานคร',place:'สำนักงานจัดการทรัพย์สินภาครัฐ กรุงเทพมหานคร',received:'2 สิงหาคม 2569 15:20 น.',detail:'พบการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบและมีพฤติการณ์เอื้อประโยชน์แก่ผู้เสนอราคา'}];
+  const THAI_MONTHS={มกราคม:0,กุมภาพันธ์:1,มีนาคม:2,เมษายน:3,พฤษภาคม:4,มิถุนายน:5,กรกฎาคม:6,สิงหาคม:7,กันยายน:8,ตุลาคม:9,พฤศจิกายน:10,ธันวาคม:11,'ม.ค.':0,'ก.พ.':1,'มี.ค.':2,'เม.ย.':3,'พ.ค.':4,'มิ.ย.':5,'ก.ค.':6,'ส.ค.':7,'ก.ย.':8,'ต.ค.':9,'พ.ย.':10,'ธ.ค.':11};
+  function normalizeComparable(value=''){return String(value).toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')}
+  function normalizeCitizenId(value=''){return String(value).replace(/\D/g,'')}
+  function textSimilarity(left='',right=''){
+    const a=normalizeComparable(left),b=normalizeComparable(right);
+    if(!a||!b)return 0;if(a===b)return 1;
+    const pairs=value=>{const result=[];for(let i=0;i<value.length-1;i++)result.push(value.slice(i,i+2));return result};
+    const aPairs=pairs(a),bPairs=pairs(b),counts=new Map();aPairs.forEach(pair=>counts.set(pair,(counts.get(pair)||0)+1));
+    let overlap=0;bPairs.forEach(pair=>{const count=counts.get(pair)||0;if(count){overlap++;counts.set(pair,count-1)}});
+    return (2*overlap)/(aPairs.length+bPairs.length);
+  }
+  function parseThaiReceived(value=''){
+    const match=String(value).match(/(\d{1,2})\s+([^\s]+)\s+(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+    if(!match||THAI_MONTHS[match[2]]===undefined)return null;
+    return new Date(Number(match[3])-543,THAI_MONTHS[match[2]],Number(match[1]),Number(match[4]||0),Number(match[5]||0)).getTime();
+  }
+  function analyzeDuplicateCase(caseData,candidates=null){
+    const storedCases=Object.values(readStore()).map(state=>state?.caseData).filter(Boolean);
+    const pool=[...new Map((candidates||[...DUPLICATE_REFERENCE_CASES,...CASES,...storedCases]).map(candidate=>[candidate.id,candidate])).values()];
+    const ranked=pool.filter(candidate=>candidate.id!==caseData.id).map(candidate=>{
+      let score=0;const signals=[];
+      const citizen=normalizeCitizenId(caseData.citizenId),candidateCitizen=normalizeCitizenId(candidate.citizenId);
+      if((citizen&&candidateCitizen&&citizen===candidateCitizen)||(!citizen&&!candidateCitizen&&caseData.id4&&caseData.id4===candidate.id4)){score+=35;signals.push('เลขประจำตัวประชาชนตรงกัน')}
+      if(normalizeComparable(caseData.complainant)&&normalizeComparable(caseData.complainant)===normalizeComparable(candidate.complainant)){score+=10;signals.push('ผู้ร้องเป็นบุคคลเดียวกัน')}
+      if(normalizeComparable(caseData.agency)&&normalizeComparable(caseData.agency)===normalizeComparable(candidate.agency)){score+=10;signals.push('ผู้ถูกร้องหรือหน่วยงานตรงกัน')}
+      const narrativeSimilarity=textSimilarity(`${caseData.subject||''} ${caseData.detail||''}`,`${candidate.subject||''} ${candidate.detail||''}`);
+      const narrativeScore=Math.round(narrativeSimilarity*25);score+=narrativeScore;if(narrativeScore>=12)signals.push(`เนื้อหาใกล้เคียง ${Math.round(narrativeSimilarity*100)}%`);
+      const sameProvince=normalizeComparable(caseData.province)&&normalizeComparable(caseData.province)===normalizeComparable(candidate.province);
+      const placeSimilarity=textSimilarity(caseData.place,candidate.place);
+      if(sameProvince||placeSimilarity>=.7){score+=10;signals.push('พื้นที่เกิดเหตุสัมพันธ์กัน')}
+      const received=parseThaiReceived(caseData.received),candidateReceived=parseThaiReceived(candidate.received);
+      if(received&&candidateReceived){const hours=Math.abs(received-candidateReceived)/36e5;if(hours<=24){score+=10;signals.push('รับเรื่องภายในช่วงเวลา 24 ชั่วโมง')}else if(hours<=168){score+=6;signals.push('รับเรื่องภายในช่วงเวลา 7 วัน')}else if(hours<=720){score+=3;signals.push('รับเรื่องภายในช่วงเวลา 30 วัน')}}
+      return {caseId:candidate.id,score:Math.min(100,score),signals};
+    }).sort((a,b)=>b.score-a.score);
+    const best=ranked[0]||{caseId:'',score:0,signals:[]};
+    return {...best,level:best.score>=80?'high':best.score>=55?'review':'low'};
+  }
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
   const escapeHtml = (v='') => String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -152,7 +196,11 @@
   function getState(id){
     const store=readStore();
     const state=store[id]||initialState(CASES.find(c=>c.id===id)||CASES[0]);
+    ['assignedOfficer','backupOfficer','previousOfficer','previousBackupOfficer'].forEach(field=>{
+      if(state.documentData[field]==='คุณสุพจน์ (พี่ฮอต)')state.documentData[field]='คุณสุพจน์';
+    });
     state.assignmentHistory=(state.assignmentHistory||[]).map(entry=>{
+      entry={...entry,text:String(entry.text||'').replaceAll('คุณสุพจน์ (พี่ฮอต)','คุณสุพจน์')};
       if(/^\[(มอบหมาย|ดึงกลับ|มอบหมายใหม่)\]/.test(entry.text||''))return entry;
       const action=entry.action==='recall'||entry.text?.includes('ดึงงานกลับ')?'ดึงกลับ':entry.action==='reassign'||entry.text?.includes('เปลี่ยนผู้รับผิดชอบ')?'มอบหมายใหม่':'มอบหมาย';
       return {...entry,text:`[${action}] ${entry.text||''}`};
@@ -167,7 +215,31 @@
   function activity5Link(state){const handoff=activity5Handoff(state);return handoff?`<a class="ws-button primary" href="activity5/index.html#/cases/${encodeURIComponent(handoff.activity5CaseId)}">เปิด Activity 5</a>`:''}
   function notify(icon,title,text){if(window.Swal)return Swal.fire({icon,title,text,confirmButtonText:'ปิด',confirmButtonColor:'#082b50'});alert(`${title}\n${text}`)}
   function confirmDo(title,text,confirmButtonText='ยืนยัน'){if(!window.Swal)return Promise.resolve({isConfirmed:confirm(`${title}\n${text}`)});return Swal.fire({icon:'question',title,text,showCancelButton:true,confirmButtonText,cancelButtonText:'ยกเลิก',confirmButtonColor:'#082b50',cancelButtonColor:'#687789'})}
-  function header(roleSelect=true){return `<header class="ws-topbar"><div class="ws-topbar-inner"><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a>${roleSelect?`<div class="ws-profile"><button type="button" class="ws-admin-tool ws-button secondary" id="manageSuggestions">จัดการคำแนะนำ</button><button type="button" class="ws-admin-tool ws-button secondary" id="manageBackups">จัดการผู้ปฏิบัติงานแทน</button><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRole"><option value="admin">ธุรการ ศรร.</option><option value="officer">เจ้าหน้าที่รับเรื่อง</option><option value="center">ผอ.ศรร.</option><option value="division">ผอ.กบค.</option><option value="acting">ผู้รักษาราชการแทนตามคำสั่ง</option></select></div>`:`<a class="ws-button secondary" href="staff-workflow.html">กลับรายการเจ้าหน้าที่</a>`}</div></header>`}
+  function fontSizeControls(){return `<div class="ws-font-controls" role="group" aria-label="ปรับขนาดตัวอักษร"><span>ขนาดตัวอักษร</span><button type="button" data-font-size="decrease" aria-label="ลดขนาดตัวอักษร">A−</button><button type="button" data-font-size="reset" aria-label="ใช้ขนาดตัวอักษรปกติ">A</button><button type="button" data-font-size="increase" aria-label="เพิ่มขนาดตัวอักษร">A+</button><output id="fontSizeValue" aria-live="polite">106%</output></div>`}
+  function applyFontSize(step){
+    const normalized=Math.max(-1,Math.min(3,Number(step)||0));
+    const fontSize=16+normalized;
+    document.documentElement.style.fontSize=`${fontSize}px`;
+    localStorage.setItem(FONT_SIZE_STORAGE_KEY,String(normalized));
+    const output=$('#fontSizeValue');
+    if(output)output.textContent=`${Math.round((fontSize/16)*100)}%`;
+    $$('[data-font-size]').forEach(button=>button.classList.toggle('active',button.dataset.fontSize==='reset'&&normalized===DEFAULT_FONT_SIZE_STEP));
+    return normalized;
+  }
+  function initFontSizeControls(){
+    const storedStep=localStorage.getItem(FONT_SIZE_STORAGE_KEY);
+    let step=storedStep===null?DEFAULT_FONT_SIZE_STEP:Number(storedStep);
+    step=applyFontSize(step);
+    document.addEventListener('click',event=>{
+      const button=event.target.closest('[data-font-size]');
+      if(!button)return;
+      if(button.dataset.fontSize==='reset')step=DEFAULT_FONT_SIZE_STEP;
+      if(button.dataset.fontSize==='decrease')step-=1;
+      if(button.dataset.fontSize==='increase')step+=1;
+      step=applyFontSize(step);
+    });
+  }
+  function header(roleSelect=true){return `<header class="ws-topbar"><div class="ws-topbar-inner"><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a>${roleSelect?`<div class="ws-profile">${fontSizeControls()}<button type="button" class="ws-admin-tool ws-button secondary" id="manageSuggestions">จัดการคำแนะนำ</button><button type="button" class="ws-admin-tool ws-button secondary" id="manageBackups">จัดการผู้ปฏิบัติงานแทน</button><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRole"><option value="admin">ธุรการ ศรร.</option><option value="officer">เจ้าหน้าที่รับเรื่อง</option><option value="regional-officer">เจ้าหน้าที่เขต</option><option value="center">ผอ.ศรร.</option><option value="division">ผอ.กบค.</option><option value="acting">ผู้รักษาราชการแทนตามคำสั่ง</option></select><label class="ws-hidden" id="wsRegionalRegionField"><span>พื้นที่รับผิดชอบ</span><select class="ws-role-select" id="wsRegionalRegion">${REGIONAL_REGIONS.map(region=>`<option value="${region}">${region}</option>`).join('')}</select></label></div>`:`<div class="ws-profile">${fontSizeControls()}<a class="ws-button secondary" href="staff-workflow.html">กลับรายการเจ้าหน้าที่</a></div>`}</div></header>`}
   function attachmentList(c){return `<div class="ws-attachment-list"><h3>เอกสารแนบ ${c.attachments.length} รายการ</h3>${c.attachments.length?`<ol>${c.attachments.map(name=>`<li><button type="button" class="ws-attachment-open" data-attachment="${escapeHtml(name)}">${escapeHtml(name)}</button></li>`).join('')}</ol>`:'<p class="ws-empty">ไม่มีเอกสารแนบ</p>'}</div>`}
   function caseReadonly(c){return `<div class="ws-readonly"><dl><div><dt>ผู้ร้องเรียน</dt><dd>${escapeHtml(c.complainant)}</dd></div><div><dt>หน่วยงานที่ถูกร้อง</dt><dd>${escapeHtml(c.agency)}</dd></div><div><dt>ชื่อเรื่องร้องเรียน</dt><dd>${escapeHtml(c.subject)}</dd></div><div><dt>สถานที่เกิดเหตุ</dt><dd>${escapeHtml(c.place)}</dd></div><div><dt>เลขติดตาม</dt><dd>${c.trackingYear} / ${c.trackingCode}</dd></div><div><dt>เอกสารแนบ</dt><dd>${c.attachments.length} รายการ</dd></div></dl></div>${attachmentList(c)}`}
   function adminCaseSummary(c){return `<div class="ws-readonly ws-admin-summary"><dl><div><dt>ผู้ร้องเรียน</dt><dd>${escapeHtml(c.complainant)}</dd></div><div><dt>เลขบัตรประชาชน 4 หลักท้าย</dt><dd>${escapeHtml(c.id4)}</dd></div><div class="ws-field-full"><dt>ชื่อเรื่องร้องเรียน</dt><dd>${escapeHtml(c.subject)}</dd></div><div><dt>ผู้ถูกร้อง/หน่วยงาน</dt><dd>${escapeHtml(c.agency)}</dd></div><div><dt>ประเภทเรื่อง</dt><dd>${escapeHtml(c.type)}</dd></div><div class="ws-field-full"><dt>รายละเอียดพฤติการณ์</dt><dd>${escapeHtml(c.detail)}</dd></div><div><dt>สถานที่เกิดเหตุ</dt><dd>${escapeHtml(c.place)}</dd></div><div><dt>จังหวัด/เขตพื้นที่</dt><dd>${escapeHtml(c.province)} · ${escapeHtml(c.region)}</dd></div><div class="ws-field-full"><dt>ความเสียหายหรือความเดือดร้อน</dt><dd>${escapeHtml(c.damage)}</dd></div><div class="ws-field-full"><dt>ความประสงค์ของผู้ร้อง</dt><dd>${escapeHtml(c.request)}</dd></div></dl></div>${attachmentList(c)}`}
@@ -238,7 +310,7 @@
       <article class="a4-paper template-receipt">
         <header class="receipt-header"><img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท."><div class="receipt-code-box"><strong>58/2-02</strong><span>แบบแจ้งเลขเรื่องร้องเรียน/เลขติดตาม PCMS</span></div></header>
         <div class="doc-heading"><h2>แบบแจ้งเลขเรื่องร้องเรียนและเลขติดตามเรื่องร้องเรียน</h2><p>ระบบการตรวจสอบข้อเท็จจริง สำนักงาน ป.ป.ท.</p><p>ศูนย์รับเรื่องร้องเรียน/สำนักงาน ป.ป.ท. เขต ${escapeHtml(c.region||'ส่วนกลาง')}</p></div>
-        <div class="receipt-fields"><p>วันที่ <strong>${escapeHtml(c.received)}</strong></p><p>เรื่องที่ <strong>${escapeHtml(c.id)}</strong></p><p>เลขรับบริการ <strong>${escapeHtml(c.trackingYear)}</strong></p><p>รหัสติดตาม 4 ตัว <strong>${escapeHtml(c.trackingCode)}</strong></p><p>หน่วยงานที่รับเรื่องร้องเรียน <strong>ศูนย์รับเรื่องร้องเรียน สำนักงาน ป.ป.ท.</strong></p><p>โทร: <strong>สายด่วน 1206</strong></p><p>ที่อยู่ <strong>99 หมู่ 4 อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</strong></p></div>
+        <div class="receipt-fields"><p><span>วันที่ลงรับ</span><strong>${escapeHtml(c.received)}</strong></p><p><span>เลขเรื่อง</span><strong>${escapeHtml(c.id)}</strong></p><p><span>เลขรับบริการ</span><strong>${escapeHtml(c.trackingYear)}</strong></p><p><span>รหัสติดตาม 4 ตัว</span><strong>${escapeHtml(c.trackingCode)}</strong></p><p class="receipt-field-wide"><span>หน่วยงานที่รับเรื่องร้องเรียน</span><strong>ศูนย์รับเรื่องร้องเรียน สำนักงาน ป.ป.ท.</strong></p><p><span>ช่องทางติดต่อ</span><strong>สายด่วน 1206</strong></p><p class="receipt-field-address"><span>ที่อยู่</span><strong>99 หมู่ 4 อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</strong></p></div>
         <p class="receipt-instruction">ท่านสามารถติดตามเรื่องร้องเรียนของท่านได้ที่หน่วยงานข้างต้น<br>หรือติดตามสถานะเรื่องร้องเรียนตาม QR CODE ด้านท้ายหนังสือฉบับนี้<br>โดยให้ท่านใส่เลขเรื่องร้องเรียน และเลขติดตามตามที่กำหนด</p>
         <p class="receipt-officer">เจ้าหน้าที่ผู้รับเรื่อง <strong>${escapeHtml(c.receivingOfficer||'........................................................')}</strong> ตำแหน่ง <strong>เจ้าหน้าที่รับเรื่องร้องเรียน</strong></p>
         <div class="receipt-signature-row">${qr?`<figure><img class="doc-qr" src="${qr}" alt="QR Code ติดตามเรื่อง"><figcaption>ระบบติดตามสถานะเรื่องร้องเรียน</figcaption></figure>`:'<div class="doc-qr"></div>'}<div><p>ศูนย์รับเรื่องร้องเรียน/สำนักงาน ป.ป.ท.</p><p>สำนักงาน ป.ป.ท.</p></div></div>
@@ -256,7 +328,28 @@
     return docs.map(([id,name],i)=>`<button class="ws-doc-tab ${i?'':'active'}" data-doc="${id}" aria-selected="${i?'false':'true'}">${name}</button>`).join('');
   }
   function documentPaper(state,id,role){if(role==='admin')return '';return id==='form3'?form3Paper(state):officialOutgoingDocument(state,id)}
-  function stagebar(state,role){if(role==='admin'){const assigned=state.assignmentHistory.length>0||Boolean(state.documentData.assignedOfficer);return ['ลงรับเรื่อง','ตรวจคำแนะนำเรื่องซ้ำ','มอบหมายเจ้าหน้าที่'].map((label,index)=>`<span class="ws-stage ${assigned||index===0?'done':index===1?'active':''}">${label}</span>`).join('')}const isNacc=state.documentData.decision==='send-nacc';const stages=isNacc?['ธุรการลงรับ','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. ให้ความเห็น','ผอ.กบค. อนุมัติ','จัดส่ง ป.ป.ช.']:['ธุรการลงรับ','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. ให้ความเห็น','ผอ.กบค. มีคำสั่ง'];const stageIndex={admin:0,officer:1,center:2,division:3,'nacc-dispatch':4,complete:stages.length}[state.workflow.stage]??stages.length-1;return stages.map((label,index)=>`<span class="ws-stage ${state.workflow.complete||index<stageIndex?'done':index===stageIndex?'active':''}">${label}</span>`).join('')}
+  function stagebar(state){
+    const w=state.workflow,d=state.documentData;
+    const isAnonymous=w.stage==='anonymous-box'||w.owner==='anonymous';
+    const isNacc=d.decision==='send-nacc';
+    const stages=isAnonymous
+      ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่พิจารณา','ผู้มีอำนาจมีคำสั่ง','กล่องบัตรสนเท่ห์']
+      :isNacc
+        ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. อนุมัติ','จัดส่ง ป.ป.ช.']
+        :['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. มีคำสั่ง'];
+    const assigned=state.assignmentHistory.length>0||Boolean(d.assignedOfficer);
+    const stageIndex={admin:assigned?1:0,officer:2,center:3,division:4,acting:4,'anonymous-box':4,'nacc-dispatch':5};
+    const currentIndex=w.complete?stages.length-1:Math.min(stageIndex[w.stage]??0,stages.length-1);
+    const currentLabel=w.complete?'ดำเนินการเสร็จสิ้น':w.status;
+    const nextLabel=w.complete?'ไม่มีขั้นตอนถัดไป':stages[currentIndex+1]||'รอผลการดำเนินการ';
+    const nodes=stages.map((label,index)=>{
+      const status=w.complete||index<currentIndex?'done':index===currentIndex?'active':'pending';
+      const mark=status==='done'?'✓':status==='active'?'●':'•••';
+      const detail=status==='done'?'ดำเนินการแล้ว':status==='active'?'ขั้นตอนปัจจุบัน':'รอดำเนินการ';
+      return `<li class="ws-stage ${status}"><span class="ws-stage-node" aria-hidden="true">${mark}</span><small>ขั้น ${index+1}</small><strong>${escapeHtml(label)}</strong><em>${detail}</em></li>`;
+    }).join('');
+    return `<div class="ws-stage-summary"><div><span>ขั้นตอนปัจจุบัน</span><strong>${escapeHtml(currentLabel)}</strong><small>ผู้รับผิดชอบ: ${escapeHtml(ROLE_LABELS[w.owner]||w.owner||'ยังไม่ระบุ')}</small></div><div class="ws-stage-next"><span>ขั้นตอนถัดไป</span><strong>${escapeHtml(nextLabel)}</strong></div><b>ขั้นตอน ${currentIndex+1} / ${stages.length}</b></div><div class="ws-stage-caption"><span>แสดงลำดับการดำเนินงานของเรื่องนี้</span><strong>ผ่านแล้ว ${w.complete?stages.length:currentIndex} ขั้น · รออีก ${w.complete?0:stages.length-currentIndex-1} ขั้น</strong></div><ol class="ws-stage-track">${nodes}</ol>`;
+  }
   function officialOutgoingDocument(state,id){
     const c=state.caseData,d=state.documentData;
     const signature=`<div class="official-signature"><p>(........................................................)</p><p>${id==='1-04'?'ผู้อำนวยการสำนัก/กอง':'เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ'}</p>${id==='1-11'?'<p>หรือผู้ที่ได้รับมอบหมาย</p>':''}</div>`;
@@ -276,13 +369,18 @@
     return '<div class="document-placeholder">ยังไม่มีเอกสารที่ยืนยันสำหรับขั้นตอนนี้</div>';
   }
   function renderWalkin(){
+    const params=new URLSearchParams(location.search);
+    const intakeRole=params.get('role')||'';
+    const requestedRegion=params.get('region')||'';
+    const regionalIntake=intakeRole==='regional-officer';
+    const regionalRegion=REGIONAL_REGIONS.includes(requestedRegion)?requestedRegion:'เขต 1';
     document.body.classList.add('walkin-mode');
-    const shell=document.createElement('div');shell.className='a4-walkin-shell';shell.innerHTML=`${header(false)}<main class="ws-container"><div class="ws-page-head"><div><p class="ws-kicker">Activity 4 · ช่องทาง Walk-in</p><h1>บันทึกข้อมูลเรื่องร้องเรียน</h1><p>กรอกข้อมูล ตรวจสอบเอกสาร และลงรับเรื่องเพื่อออกใบแจ้งเลขติดตาม</p></div></div><div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">1-02 / แบบ Walk-in</p><h2>ข้อมูลเรื่องร้องเรียน</h2></div><span class="ws-status">กำลังจัดทำ</span></header><div class="ws-editor-body"><div class="ws-section"><h3>ข้อมูลผู้ร้อง</h3><div class="ws-grid-2"><div class="ws-field"><label>ชื่อ-นามสกุลผู้ร้อง</label><input id="wiComplainant" value="นายสมชาย ใจดี"></div><div class="ws-field"><label>เลขบัตรประชาชน</label><input id="wiCitizen" value="1-1001-00123-45-6"></div><div class="ws-field"><label>โทรศัพท์</label><input id="wiPhone" value="0812345678"></div><div class="ws-field"><label>อีเมล</label><input id="wiEmail" value="somchai@example.com"></div></div></div><div class="ws-section"><h3>รายละเอียดคำร้อง</h3><div class="ws-grid-2"><div class="ws-field ws-field-full"><label>ชื่อเรื่องร้องเรียน</label><input id="wiSubject" value="ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ"></div><div class="ws-field"><label>ชื่อผู้ถูกร้อง/หน่วยงาน</label><input id="wiAccused" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>ตำแหน่ง/สังกัด</label><input id="wiPosition" value="เจ้าหน้าที่ผู้รับผิดชอบโครงการ"></div><div class="ws-field ws-field-full"><label>รายละเอียดพฤติการณ์</label><textarea id="wiDetail">ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง</textarea><small>ระบุบุคคล การกระทำ วันเวลา สถานที่ และความเกี่ยวข้องกับผู้ร้องให้ชัดเจน</small></div><div class="ws-field ws-field-full"><label>สถานที่เกิดเหตุ</label><input id="wiPlace" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>จังหวัด</label><input id="wiProvince" list="wiProvinceOptions" autocomplete="off" placeholder="ระบุจังหวัด"><datalist id="wiProvinceOptions"></datalist></div><div class="ws-field"><label>อำเภอ/เขต</label><input id="wiDistrict" list="wiDistrictOptions" autocomplete="off" placeholder="ระบุอำเภอ/เขต"><datalist id="wiDistrictOptions"></datalist></div><div class="ws-field"><label>ตำบล/แขวง</label><input id="wiSubdistrict" list="wiSubdistrictOptions" autocomplete="off" placeholder="ระบุตำบล/แขวง"><datalist id="wiSubdistrictOptions"></datalist></div><div class="ws-field"><label>รหัสไปรษณีย์</label><input id="wiPostcode" readonly placeholder="รหัสไปรษณีย์"></div><div class="ws-field"><label>ความเสียหาย/ความเดือดร้อน</label><textarea id="wiDamage">เกิดความเสียหายต่องบประมาณของหน่วยงาน</textarea></div><div class="ws-field"><label>ความประสงค์ของผู้ร้อง</label><textarea id="wiRequest">ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง</textarea></div></div></div><div class="ws-section"><h3>เอกสารและเจ้าหน้าที่ผู้รับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label>เอกสารแนบ</label><input id="wiFiles" type="file" multiple></div><div class="ws-field"><label>เจ้าหน้าที่ผู้รับเรื่อง</label><select id="wiOfficer">${OFFICERS.map(x=>`<option>${x}</option>`).join('')}</select></div></div></div></div></section><aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs"><button class="ws-doc-tab active" data-wi-tab="complaint">แบบคำร้อง Walk-in</button><button class="ws-doc-tab" data-wi-tab="receipt">58/2-02 ใบติดตาม</button></div><span class="ws-status" id="wiDocStatus">ยังไม่ลงรับ</span></div><div class="ws-paper-stage" id="wiPreview"></div></aside></div></main><div class="ws-actions"><button class="ws-button secondary" id="wiDraft">บันทึกร่าง</button><button class="ws-button secondary" id="wiPrint">พิมพ์เอกสาร</button><button class="ws-button primary" id="wiReceive">ลงรับและออกเอกสารติดตาม</button></div>`;document.body.appendChild(shell);
+    const shell=document.createElement('div');shell.className='a4-walkin-shell';shell.innerHTML=`${header(false)}<main class="ws-container"><div class="ws-page-head"><div><p class="ws-kicker">ช่องทางรับเรื่อง</p><h1>บันทึกข้อมูลเรื่องร้องเรียน</h1><p>กรอกข้อมูล ตรวจสอบเอกสาร และลงรับเรื่องเพื่อออกใบแจ้งเลขติดตาม</p></div></div><div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">1-02 / แบบบันทึกเรื่องร้องเรียน</p><h2>ข้อมูลเรื่องร้องเรียน</h2></div><span class="ws-status">กำลังจัดทำ</span></header><div class="ws-editor-body"><div class="ws-section"><h3>ข้อมูลผู้ร้อง</h3><div class="ws-grid-2"><div class="ws-field"><label>ชื่อ-นามสกุลผู้ร้อง</label><input id="wiComplainant" value="นายสมชาย ใจดี"></div><div class="ws-field"><label>เลขบัตรประชาชน</label><input id="wiCitizen" value="1-1001-00123-45-6"></div><div class="ws-field"><label>โทรศัพท์</label><input id="wiPhone" value="0812345678"></div><div class="ws-field"><label>อีเมล</label><input id="wiEmail" value="somchai@example.com"></div></div></div><div class="ws-section"><h3>รายละเอียดคำร้อง</h3><div class="ws-grid-2"><div class="ws-field ws-field-full"><label>ชื่อเรื่องร้องเรียน</label><input id="wiSubject" value="ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ"></div><div class="ws-field"><label>ชื่อผู้ถูกร้อง/หน่วยงาน</label><input id="wiAccused" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>ตำแหน่ง/สังกัด</label><input id="wiPosition" value="เจ้าหน้าที่ผู้รับผิดชอบโครงการ"></div><div class="ws-field ws-field-full"><label>รายละเอียดพฤติการณ์</label><textarea id="wiDetail">ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง</textarea><small>ระบุบุคคล การกระทำ วันเวลา สถานที่ และความเกี่ยวข้องกับผู้ร้องให้ชัดเจน</small></div><div class="ws-field ws-field-full"><label>สถานที่เกิดเหตุ</label><input id="wiPlace" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>จังหวัด</label><input id="wiProvince" list="wiProvinceOptions" autocomplete="off" placeholder="ระบุจังหวัด"><datalist id="wiProvinceOptions"></datalist></div><div class="ws-field"><label>อำเภอ/เขต</label><input id="wiDistrict" list="wiDistrictOptions" autocomplete="off" placeholder="ระบุอำเภอ/เขต"><datalist id="wiDistrictOptions"></datalist></div><div class="ws-field"><label>ตำบล/แขวง</label><input id="wiSubdistrict" list="wiSubdistrictOptions" autocomplete="off" placeholder="ระบุตำบล/แขวง"><datalist id="wiSubdistrictOptions"></datalist></div><div class="ws-field"><label>รหัสไปรษณีย์</label><input id="wiPostcode" readonly placeholder="รหัสไปรษณีย์"></div><div class="ws-field"><label>ความเสียหาย/ความเดือดร้อน</label><textarea id="wiDamage">เกิดความเสียหายต่องบประมาณของหน่วยงาน</textarea></div><div class="ws-field"><label>ความประสงค์ของผู้ร้อง</label><textarea id="wiRequest">ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง</textarea></div></div></div><div class="ws-section"><h3>เอกสารและเจ้าหน้าที่ผู้รับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label>เอกสารแนบ</label><input id="wiFiles" type="file" multiple></div><div class="ws-field"><label>เจ้าหน้าที่ผู้รับเรื่อง</label><select id="wiOfficer">${OFFICERS.map(x=>`<option>${x}</option>`).join('')}</select></div></div></div></div></section><aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs"><button class="ws-doc-tab active" data-wi-tab="complaint">แบบคำร้องเรียน</button><button class="ws-doc-tab" data-wi-tab="receipt">58/2-02 ใบติดตาม</button></div><span class="ws-status" id="wiDocStatus">ยังไม่ลงรับ</span></div><div class="ws-paper-stage" id="wiPreview"></div></aside></div></main><div class="ws-actions"><button class="ws-button secondary" id="wiDraft">บันทึกร่าง</button><button class="ws-button secondary" id="wiPrint">พิมพ์เอกสาร</button><button class="ws-button primary" id="wiReceive">ลงรับและออกเอกสารติดตาม</button></div>`;document.body.appendChild(shell);
     [['wiSubject','ผู้ช่วยอัจฉริยะสำหรับหัวข้อเรื่อง'],['wiDetail','ผู้ช่วยอัจฉริยะสำหรับรายละเอียดพฤติการณ์'],['wiDamage','ผู้ช่วยอัจฉริยะสำหรับความเสียหาย'],['wiRequest','ผู้ช่วยอัจฉริยะสำหรับความประสงค์ของผู้ร้อง']].forEach(([id,label])=>attachIntelligentSuggestion(id,label));
     let tab='complaint',receipt=null;const val=id=>$(id.startsWith('#')?id:'#'+id)?.value||'';
-    const intakeChannels=['Walk-In','สายด่วน 1206','เบอร์โทร ปปท. เขต 1-9','Email','Website','ทางรัฐ','สปน. 1111','Traffy Fondue','ศปท. ป.ป.ท.','การข่าวภายใน ป.ป.ท.','ศนธ. / กนป.','เครือข่ายภาคประชาชน','ข้อสั่งการ','หนังสือจากหน่วยงานอื่น','จดหมาย','ม.62 (ป.ป.ช.)'];
-    const channelSection=document.createElement('div');channelSection.className='ws-section';channelSection.innerHTML=`<h3>ช่องทางรับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label for="wiChannel">ช่องทางที่ได้รับเรื่องร้องเรียน</label><select id="wiChannel">${intakeChannels.map(channel=>`<option>${channel}</option>`).join('')}</select></div><div class="ws-field" id="wiIntakeRegionField"><label for="wiIntakeRegion">เขตที่รับเรื่อง</label><select id="wiIntakeRegion"><option value="">โปรดระบุเขตที่รับเรื่อง</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(region=>`<option>${region}</option>`).join('')}</select></div></div>`;$('.ws-editor-body',shell).prepend(channelSection);$('.ws-kicker',shell).textContent='Activity 4 · ช่องทางรับเรื่อง';
-    const toggleIntakeRegion=()=>{const visible=['Walk-In','จดหมาย'].includes($('#wiChannel',shell).value);$('#wiIntakeRegionField',shell).classList.toggle('ws-hidden',!visible);$('#wiIntakeRegion',shell).disabled=!visible;if(!visible)$('#wiIntakeRegion',shell).value=''};$('#wiChannel',shell).addEventListener('change',toggleIntakeRegion);toggleIntakeRegion();
+    const intakeChannels=regionalIntake?REGIONAL_CHANNELS:['Walk-In','สายด่วน 1206','เบอร์โทร ปปท. เขต 1-9','Email','สปน. 1111','Traffy Fondue','ศปท. ป.ป.ท.','การข่าวภายใน ป.ป.ท.','ศนธ. / กนป.','เครือข่ายภาคประชาชน','ข้อสั่งการ','หนังสือจากหน่วยงานอื่น','จดหมาย','ม.62 (ป.ป.ช.)'];
+    const channelSection=document.createElement('div');channelSection.className='ws-section';channelSection.innerHTML=`<h3>ช่องทางรับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label for="wiChannel">ช่องทางที่ได้รับเรื่องร้องเรียน</label><select id="wiChannel">${intakeChannels.map(channel=>`<option>${channel}</option>`).join('')}</select></div><div class="ws-field" id="wiIntakeRegionField"><label for="wiIntakeRegion">เขตที่รับเรื่อง</label><select id="wiIntakeRegion"><option value="">โปรดระบุเขตที่รับเรื่อง</option>${REGIONS.map(region=>`<option value="${region}" ${regionalIntake&&region===regionalRegion?'selected':''}>${region}</option>`).join('')}</select></div></div>`;$('.ws-editor-body',shell).prepend(channelSection);$('.ws-kicker',shell).textContent=regionalIntake?`ช่องทางรับเรื่อง · ${regionalRegion}`:'ช่องทางรับเรื่อง';
+    const toggleIntakeRegion=()=>{const visible=regionalIntake||['Walk-In','จดหมาย'].includes($('#wiChannel',shell).value);$('#wiIntakeRegionField',shell).classList.toggle('ws-hidden',!visible);$('#wiIntakeRegion',shell).disabled=regionalIntake||!visible;if(regionalIntake)$('#wiIntakeRegion',shell).value=regionalRegion;else if(!visible)$('#wiIntakeRegion',shell).value=''};$('#wiChannel',shell).addEventListener('change',toggleIntakeRegion);toggleIntakeRegion();
     const anonymousField=document.createElement('div');anonymousField.className='ws-field ws-field-full';anonymousField.innerHTML='<label class="ws-choice"><input type="checkbox" id="wiAnonymous"><span><strong>ยื่นเป็นบัตรสนเท่ห์</strong><small>ปกปิดข้อมูลผู้ร้อง</small></span></label>';$('#wiEmail',shell).closest('.ws-field').after(anonymousField);
     const receiptTab=$('[data-wi-tab="receipt"]',shell);receiptTab.disabled=true;receiptTab.textContent='58/2-02 ใบแจ้งเลขติดตาม';
     const provinceInput=$('#wiProvince',shell);
@@ -377,19 +475,53 @@
       .then(response=>{if(!response.ok)throw new Error('location data unavailable');return response.json()})
       .then(data=>{staffLocations=flattenStaffLocations(data);populateStaffLocationOptions()})
       .catch(()=>{staffLocations=flattenStaffLocations(STAFF_LOCATION_FALLBACK);populateStaffLocationOptions()});
-    const complaintPaper=()=>`<article class="a4-paper template-petition" id="activePaper">
-      <header class="petition-header"><p>แบบแจ้งการร้องเรียน/เบาะแส</p><img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท."><div><strong>เขียนที่</strong> ........................................................<br><strong>วันที่</strong> ........ เดือน .................... พ.ศ. ........</div></header>
-      <div class="doc-heading"><h2>แจ้งการร้องเรียน/เบาะแส<br>สำนักงาน ป.ป.ท.</h2></div>
-      <div class="official-subject"><strong>เรียน</strong><span>เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</span></div>
-      <section class="petition-section"><h3>ข้อมูลผู้ร้องเรียน</h3><p>${checkMark($('#wiAnonymous',shell).checked)} ยื่นเป็นบัตรสนเท่ห์และขอปกปิดข้อมูลผู้ร้อง</p><p><strong>ชื่อ-นามสกุล</strong> ${escapeHtml(val('wiComplainant'))} <strong>หมายเลขบัตรประชาชน</strong> ${escapeHtml(val('wiCitizen'))}</p><p><strong>หมายเลขโทรศัพท์ที่ติดต่อได้</strong> ${escapeHtml(val('wiPhone'))} <strong>EMAIL</strong> ${escapeHtml(val('wiEmail'))}</p><p><strong>สถานะเครือข่ายของสำนักงาน ป.ป.ท.</strong> ${checkMark(true)} เป็นเครือข่าย ป.ป.ท.</p></section>
-      <section class="petition-section"><h3>ข้อมูลบุคคล/หน่วยงานที่ร้องเรียน</h3><p>${checkMark(true)} ร้องเรียนเจ้าหน้าที่ของรัฐ/หน่วยงาน</p><p><strong>ชื่อหรือหน่วยงานที่ร้องเรียน</strong> ${escapeHtml(val('wiAccused'))}</p><p><strong>ตำแหน่ง/สังกัด</strong> ${escapeHtml(val('wiPosition'))}</p><p><strong>ชื่อเรื่องร้องเรียน</strong> ${escapeHtml(val('wiSubject'))}</p><h3>รายละเอียดการร้องเรียน/แจ้งเบาะแส</h3><div class="petition-detail">${escapeHtml(val('wiDetail'))}</div></section>
-      <section class="petition-section"><p><strong>วันเวลาเกิดเหตุ</strong> ไม่ระบุ</p><p><strong>สถานที่เกิดเหตุ</strong> ${escapeHtml(val('wiPlace'))} ตำบล/แขวง ${escapeHtml(val('wiSubdistrict'))} อำเภอ/เขต ${escapeHtml(val('wiDistrict'))} จังหวัด ${escapeHtml(val('wiProvince'))} ${escapeHtml(val('wiPostcode'))}</p><p><strong>ความเดือดร้อนเสียหายที่ได้รับ</strong> ${escapeHtml(val('wiDamage'))}</p><p><strong>มีความประสงค์ให้สำนักงาน ป.ป.ท. ดำเนินการ</strong> ${escapeHtml(val('wiRequest'))}</p><p><strong>ได้มอบเอกสารประกอบเรื่องร้องเรียน</strong> ${val('wiFiles')?'ตามรายการเอกสารที่แนบ':'ไม่มีเอกสารแนบ'}</p></section>
-      <p class="petition-certification">ทั้งนี้ ผู้ร้องเรียนได้อ่านข้อความแล้วและเจ้าหน้าที่ได้อ่านให้ผู้ร้องเรียนฟังแล้ว ขอรับรองว่าถูกต้องตามที่ให้ถ้อยคำไว้ จึงลงลายมือชื่อไว้เป็นหลักฐาน</p>
-      <div class="petition-signatures"><div><p>ลงชื่อ ........................................................</p><p>(${escapeHtml(val('wiComplainant'))})</p><p>ผู้ร้องเรียน</p></div><div><p>เจ้าหน้าที่ผู้รับเรื่อง ........................................................</p><p>${escapeHtml(val('wiOfficer'))}</p><p>ตำแหน่ง เจ้าหน้าที่รับเรื่องร้องเรียน</p></div></div>
-      <p class="official-form-code">แบบ ปปท. 1-02</p>
-    </article>`;
+    const complaintPaper=()=>{
+      const fullName=val('wiComplainant').trim();
+      const prefix=(fullName.match(/^(นาย|นางสาว|นาง|เด็กชาย|เด็กหญิง)/)||[])[1]||'';
+      const nameWithoutPrefix=fullName.slice(prefix.length).trim();
+      const nameParts=nameWithoutPrefix.split(/\s+/).filter(Boolean);
+      const firstName=nameParts.length>1?nameParts.slice(0,-1).join(' '):nameWithoutPrefix;
+      const lastName=nameParts.length>1?nameParts.at(-1):'';
+      const accused=val('wiAccused');
+      const isAgency=/สำนักงาน|กรม|กระทรวง|เทศบาล|องค์การ|หน่วยงาน|มหาวิทยาลัย|โรงพยาบาล/.test(accused);
+      const attachments=[...($('#wiFiles',shell)?.files||[])].map(file=>file.name);
+      const field=value=>escapeHtml(value||'................................................................');
+      return `<article class="a4-paper template-petition" id="activePaper">
+        <header class="petition-header"><p>“ตัวอย่างแจ้งการร้องเรียน-เบาะแส”</p><img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท."><div><strong>เขียนที่</strong> ................................................<br><strong>วันที่</strong> ......... เดือน .................. พ.ศ. .......</div></header>
+        <div class="doc-heading"><h2>แจ้งการร้องเรียน/เบาะแส<br>สำนักงาน ป.ป.ท.</h2></div>
+        <div class="official-subject"><strong>เรียน</strong><span>เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</span></div>
+        <section class="petition-section"><h3>ข้อมูลผู้ร้องเรียน</h3>
+          <p>${checkMark($('#wiAnonymous',shell).checked)} ขอปกปิดชื่อและไม่ประสงค์จะเปิดเผยตัวตน</p>
+          <p>คำนำหน้านาม ${field(prefix)} ชื่อ ${field(firstName)} นามสกุล ${field(lastName)} หมายเลขบัตรประชาชน ${field(val('wiCitizen'))}</p>
+          <p>ที่อยู่ปัจจุบัน ................................................................ ซอย ........................................................ หมู่ที่ .................... ตำบล/แขวง ........................................................</p>
+          <p>อำเภอ/เขต ........................................................ จังหวัด ........................................................ รหัสไปรษณีย์ ....................................</p>
+          <p>หมายเลขโทรศัพท์ที่ติดต่อได้ ${field(val('wiPhone'))} EMAIL ${field(val('wiEmail'))}</p>
+          <p>ท่านเป็นเครือข่ายของสำนักงาน ป.ป.ท. ${checkMark(false)} ไม่ได้เป็นเครือข่าย&nbsp;&nbsp;&nbsp; ${checkMark(true)} เป็นเครือข่าย ${field('')}</p>
+        </section>
+        <section class="petition-section"><h3>ข้อมูลบุคคล/หน่วยงานที่ร้องเรียน</h3>
+          <p>${checkMark(!isAgency)} ร้องเรียนเจ้าหน้าที่ของรัฐ (กรณีมากกว่า 1 รายให้เพิ่มในรายละเอียดการร้องเรียน/เบาะแส)</p>
+          <p>คำนำหน้านาม ${field('')} ชื่อ ${field(isAgency?'':accused)} นามสกุล ${field('')}</p>
+          <p>ตำแหน่ง ${field(val('wiPosition'))} สังกัด ${field(isAgency?'':accused)}</p>
+          <p>กรม ${field('')} กระทรวง ${field('')}</p>
+          <p>${checkMark(isAgency)} ร้องเรียนหน่วยงาน กรม ${field(isAgency?accused:'')} กระทรวง/อื่น ๆ ${field('')}</p>
+          <p>ชื่อโครงการที่ต้องการร้องเรียน (ถ้ามี) ${field(val('wiSubject'))}</p>
+          <h3>รายละเอียดการร้องเรียน/แจ้งเบาะแส</h3><div class="petition-detail">${escapeHtml(val('wiDetail'))}</div>
+          <p class="petition-inline-sign">ลงชื่อ...(ผู้ร้อง)....................................................</p>
+        </section>
+        <section class="petition-section petition-followup">
+          <p><strong>วันเวลาเกิดเหตุ</strong>&nbsp;&nbsp; วันที่ ................................................................... เวลาเกิดเหตุ ................................................</p>
+          <p><strong>สถานที่เกิดเหตุ</strong>&nbsp;&nbsp; ตำบล ${field(val('wiSubdistrict'))} อำเภอ ${field(val('wiDistrict'))} จังหวัด ${field(val('wiProvince'))}</p>
+          <p><strong>ความเดือดร้อนเสียหายที่ได้รับ</strong> ${field(val('wiDamage'))}</p>
+          <p><strong>มีความประสงค์ให้สำนักงาน ป.ป.ท. ดำเนินการ</strong> ${field(val('wiRequest'))}</p>
+          <p><strong>ในกรณีเดียวกันมีการร้องเรียนไปที่หน่วยงานอื่นใดหรือไม่ ผลดำเนินการเป็นประการใด</strong> ................................................................................................................................................................</p>
+          <p><strong>ได้มอบเอกสารประกอบเรื่องร้องเรียน ดังนี้</strong></p>
+          <div class="petition-attachments">${attachments.length?attachments.map((name,index)=>`<p>${index+1}. ${escapeHtml(name)}</p>`).join(''):'<p>............................................................................................................................................................</p><p>............................................................................................................................................................</p><p>............................................................................................................................................................</p>'}</div>
+        </section>
+        <div class="petition-signature"><p>ลงชื่อ .....................................................................</p><p>(${escapeHtml(fullName||'.................................................................')})</p><p>ผู้ร้องเรียน</p></div>
+      </article>`;
+    };
     const render=()=>{$('#wiPreview').innerHTML=tab==='receipt'&&receipt?receiptPaper(receipt,receipt.qr):complaintPaper()};$$('input,textarea,select',shell).forEach(x=>x.addEventListener('input',render));$$('[data-wi-tab]',shell).forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.wiTab;$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x===b));render()}));
-    $('#wiDraft').onclick=()=>{localStorage.setItem('ecmis-walkin-draft',JSON.stringify({subject:val('wiSubject'),complainant:val('wiComplainant'),detail:val('wiDetail')}));notify('success','บันทึกร่างแล้ว','ข้อมูลยังไม่ถูกลงรับและยังไม่ออกเลขติดตาม')};$('#wiPrint').onclick=()=>window.print();$('#wiReceive').onclick=async()=>{if(!val('wiSubject')||!val('wiDetail'))return notify('warning','ข้อมูลไม่ครบ','กรอกชื่อเรื่องร้องเรียนและรายละเอียดพฤติการณ์ก่อนลงรับ');const ok=await confirmDo('ยืนยันการลงรับเรื่อง','เมื่อกดลงรับ ระบบจะออกเลขติดตามและ QR Code โปรดพิมพ์หรือบันทึกเอกสารเพื่อมอบให้ผู้ร้อง','ลงรับเรื่อง');if(!ok.isConfirmed)return;const pair=window.ECMIS?.createTrackingNumber?.()||{yearSequence:'690001',verificationCode:'5FT4'};const url=new URL(`tracking.html?yearSequence=${encodeURIComponent(pair.yearSequence)}&source=walkin`,location.href).href;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createDataURL(5,8)}catch{}receipt={id:`ECMIS-2569-${pair.yearSequence.replace(/\D/g,'').slice(-4).padStart(6,'0')}`,trackingYear:pair.yearSequence,trackingCode:pair.verificationCode,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),agency:val('wiAccused'),channel:'Walk-in',province:val('wiProvince'),region:'ส่วนกลาง',place:val('wiPlace'),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};const state=initialState(receipt);saveState(receipt.id,state);$('#wiDocStatus').textContent='ลงรับแล้ว';$('#wiDocStatus').classList.add('success');receiptTab.disabled=false;tab='receipt';$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x.dataset.wiTab==='receipt'));render();notify('success','ลงรับเรื่องเรียบร้อยแล้ว',`เลขรับบริการ ${pair.yearSequence} / รหัสติดตาม ${pair.verificationCode} โปรดพิมพ์ใบแจ้งเลขติดตามและมอบให้ผู้ร้อง`) };render();
+    $('#wiDraft').onclick=()=>{localStorage.setItem('ecmis-walkin-draft',JSON.stringify({subject:val('wiSubject'),complainant:val('wiComplainant'),detail:val('wiDetail'),channel:val('wiChannel'),region:regionalIntake?regionalRegion:val('wiIntakeRegion')}));notify('success','บันทึกร่างแล้ว','ข้อมูลยังไม่ถูกลงรับและยังไม่ออกเลขติดตาม')};$('#wiPrint').onclick=()=>window.print();$('#wiReceive').onclick=async()=>{const selectedChannel=val('wiChannel');const selectedRegion=regionalIntake?regionalRegion:val('wiIntakeRegion');if(!val('wiSubject')||!val('wiDetail'))return notify('warning','ข้อมูลไม่ครบ','กรอกชื่อเรื่องร้องเรียนและรายละเอียดพฤติการณ์ก่อนลงรับ');if(regionalIntake&&(!isRegionalChannel(selectedChannel)||!REGIONAL_REGIONS.includes(selectedRegion)))return notify('warning','ข้อมูลรับเรื่องไม่ถูกต้อง','เจ้าหน้าที่เขตรับเรื่องได้เฉพาะ Walk-In จดหมาย หรือเบอร์โทร ปปท. เขต 1-9 และต้องบันทึกในเขตของตน');if(['Walk-In','จดหมาย'].includes(selectedChannel)&&!selectedRegion)return notify('warning','ยังไม่ได้ระบุเขต','เลือกเขตที่รับเรื่องก่อนลงรับ');const ok=await confirmDo('ยืนยันการลงรับเรื่อง','เมื่อกดลงรับ ระบบจะออกเลขติดตามและ QR Code โปรดพิมพ์หรือบันทึกเอกสารเพื่อมอบให้ผู้ร้อง','ลงรับเรื่อง');if(!ok.isConfirmed)return;const pair=window.ECMIS?.createTrackingNumber?.()||{yearSequence:'690001',verificationCode:'5FT4'};const url=new URL(`tracking.html?yearSequence=${encodeURIComponent(pair.yearSequence)}&source=walkin`,location.href).href;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createDataURL(5,8)}catch{}receipt={id:`ECMIS-2569-${pair.yearSequence.replace(/\D/g,'').slice(-4).padStart(6,'0')}`,trackingYear:pair.yearSequence,trackingCode:pair.verificationCode,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),citizenId:val('wiCitizen'),id4:normalizeCitizenId(val('wiCitizen')).slice(-4),agency:val('wiAccused'),channel:selectedChannel,province:val('wiProvince'),region:selectedRegion||'ส่วนกลาง',place:val('wiPlace'),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};const state=initialState(receipt);saveState(receipt.id,state);$('#wiDocStatus').textContent='ลงรับแล้ว';$('#wiDocStatus').classList.add('success');receiptTab.disabled=false;tab='receipt';$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x.dataset.wiTab==='receipt'));render();notify('success','ลงรับเรื่องเรียบร้อยแล้ว',`เลขรับบริการ ${pair.yearSequence} / รหัสติดตาม ${pair.verificationCode} โปรดพิมพ์ใบแจ้งเลขติดตามและมอบให้ผู้ร้อง`) };render();
     const receiveComplaint=$('#wiReceive').onclick;
     $('#wiReceive').onclick=async()=>{
       await receiveComplaint();
@@ -405,61 +537,62 @@
     };
   }
   function renderStaff(){
-    const root=$('#staffApp');if(!root)return;const params=new URLSearchParams(location.search);let activeRole=params.get('role')||sessionStorage.getItem('ecmis-a4-role')||'admin';let selectedId=params.get('case')||null;let filters={};
-    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">Activity 4 · งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่อง Walk-in</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผอ.ศรร.</option><option>รอ ผอ.กบค.</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><input id="filterDate" type="date"></div></div></section><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับบริการ/วันที่</th><th>ผู้ร้องเรียน</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
-    root.querySelector('a[href="complaint-form.html?mode=walkin"]')?.setAttribute('href','staff-intake.html');
+    const root=$('#staffApp');if(!root)return;const params=new URLSearchParams(location.search);let selectedRole=params.get('role')||sessionStorage.getItem('ecmis-a4-role')||'admin';let activeRole=selectedRole==='regional-officer'?'officer':selectedRole;let activeRegion=REGIONAL_REGIONS.includes(params.get('region'))?params.get('region'):(sessionStorage.getItem('ecmis-a4-regional-region')||'เขต 1');if(!REGIONAL_REGIONS.includes(activeRegion))activeRegion='เขต 1';let selectedId=params.get('case')||null;let filters={};
+    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่องร้องเรียน</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผอ.ศรร.</option><option>รอ ผอ.กบค.</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><input id="filterDate" type="date"></div></div></section><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับบริการ/วันที่</th><th>ผู้ร้องเรียน</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
+    const updateIntakeLink=()=>root.querySelector('a[href^="staff-intake.html"],a[href="complaint-form.html?mode=walkin"]')?.setAttribute('href',selectedRole==='regional-officer'?`staff-intake.html?role=regional-officer&region=${encodeURIComponent(activeRegion)}`:'staff-intake.html');
+    updateIntakeLink();
     const roleSelect=$('#wsRole');
     if(roleSelect&&!roleSelect.querySelector('option[value="anonymous"]'))roleSelect.insertAdjacentHTML('beforeend','<option value="anonymous">กล่องบัตรสนเท่ห์</option>');
-    const pagePrimary=root.querySelector('.ws-page-head .ws-button.primary');
-    pagePrimary?.insertAdjacentHTML('beforebegin','<a class="ws-button secondary" href="staff-workflow.html?role=anonymous&box=anonymous">กล่องบัตรสนเท่ห์</a>');
-    const updateAdminTools=()=>$$('.ws-admin-tool').forEach(button=>button.classList.toggle('ws-hidden',activeRole!=='admin'));
-    $('#wsRole').value=activeRole;updateAdminTools();$('#wsRole').onchange=e=>{activeRole=e.target.value;sessionStorage.setItem('ecmis-a4-role',activeRole);updateAdminTools();delete $('#caseListView').dataset.anonymousReady;if(selectedId)renderDetail();renderList()};
+    const regionalRegionField=$('#wsRegionalRegionField'),regionalRegionSelect=$('#wsRegionalRegion');
+    const updateRoleControls=()=>{
+      const regional=selectedRole==='regional-officer';
+      $$('.ws-admin-tool').forEach(button=>button.classList.toggle('ws-hidden',selectedRole!=='admin'));
+      regionalRegionField?.classList.toggle('ws-hidden',!regional);
+      if(regionalRegionSelect)regionalRegionSelect.value=activeRegion;
+      const channelFilter=$('#filterChannel');
+      if(channelFilter)channelFilter.innerHTML=`<option value="">ทุกช่องทาง</option>${(regional?REGIONAL_CHANNELS:['Website','Walk-in','สายด่วน 1206','หนังสือราชการ']).map(channel=>`<option>${channel}</option>`).join('')}`;
+      const regionFilter=$('#filterRegion');
+      if(regionFilter){regionFilter.disabled=regional;regionFilter.value=regional?activeRegion:''}
+      updateIntakeLink();
+    };
+    $('#wsRole').value=selectedRole;updateRoleControls();$('#wsRole').onchange=e=>{selectedRole=e.target.value;activeRole=selectedRole==='regional-officer'?'officer':selectedRole;sessionStorage.setItem('ecmis-a4-role',selectedRole);updateRoleControls();delete $('#caseListView').dataset.anonymousReady;if(selectedId&&!canRegionalAccess(getState(selectedId).caseData))selectedId=null;if(selectedId)renderDetail();else{$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden')}renderList()};
+    if(regionalRegionSelect)regionalRegionSelect.onchange=e=>{activeRegion=e.target.value;sessionStorage.setItem('ecmis-a4-regional-region',activeRegion);updateRoleControls();selectedId=null;$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');renderList()};
     const duplicateObserver=new MutationObserver(()=>{
       enhanceNaccDispatch();
       enhanceNaccTransferReasons();
       enhanceSmartInputs();
       enhanceReviewRoute();
-      enhanceActingIdentity();
       enhanceCaseIssuance();
       enhanceAnonymousSuboption();
       enhanceAnonymousList();
       enhanceAnonymousBox();
-      const check=$('#dupCheck');
-      if(!check||check.dataset.autoChecked||activeRole!=='admin'||!selectedId?.endsWith('184'))return;
-      check.dataset.autoChecked='true';
+      const result=$('.duplicate-auto-result[data-level="high"]');
+      if(!result||result.dataset.alerted||activeRole!=='admin'||!selectedId)return;
+      result.dataset.alerted='true';
       const warningKey=`ecmis-duplicate-warning-${selectedId}`;
-      check.dataset.silent=sessionStorage.getItem(warningKey)==='shown'?'true':'false';
+      if(sessionStorage.getItem(warningKey)==='shown')return;
       sessionStorage.setItem(warningKey,'shown');
-      setTimeout(()=>check.click(),0);
+      if(window.Swal)setTimeout(()=>Swal.fire({icon:'warning',title:'ระบบพบเรื่องที่อาจซ้ำ',html:`<div class="duplicate-alert-card"><span>ความใกล้เคียง</span><strong>${escapeHtml(result.dataset.score)}%</strong><p>พบความเชื่อมโยงกับ <b>${escapeHtml(result.dataset.caseId)}</b></p><p>โปรดบันทึกความเห็นประกอบก่อนมอบหมายงาน</p></div>`,width:680,confirmButtonText:'รับทราบ',confirmButtonColor:'#082b50'}),0);
     });
     duplicateObserver.observe(root,{childList:true,subtree:true});
     ['Search','Channel','Region','Province','Type','Status','Duplicate','Date'].forEach(x=>{$(`#filter${x}`).addEventListener(x==='Search'?'input':'change',renderList)});
-    function allCases(){const stored=readStore();const ids=new Set(CASES.map(c=>c.id));const extra=Object.values(stored).map(s=>s.caseData).filter(c=>!ids.has(c.id));return [...CASES,...extra]}
+    function allCases(){const stored=readStore();const ids=new Set(CASES.map(c=>c.id));const extra=Object.values(stored).map(s=>s.caseData).filter(c=>!ids.has(c.id));return [...CASES,...extra].filter(canRegionalAccess)}
+    function canRegionalAccess(caseData){return selectedRole!=='regional-officer'||(caseData?.region===activeRegion&&isRegionalChannel(caseData?.channel))}
     function enhanceReviewRoute(){
       const planner=$('.route-planner');
-      if(activeRole!=='officer'||!selectedId||!planner||planner.dataset.routeRestored)return;
+      if(!isOfficerRole(activeRole)||!selectedId||!planner||planner.dataset.routeRestored)return;
       const d=getState(selectedId).documentData;
       const route=d.reviewRoute||'center';
       const panel=$('#absenceBox');
       const impact=$('.route-impact',planner);
-      if(panel&&impact&&!$('#actingOfficer',panel))impact.insertAdjacentHTML('beforebegin',`<div class="ws-grid-2" style="margin-top:.7rem"><div class="ws-field"><label>ผู้พิจารณาแทน *</label><select id="actingOfficer"><option value="">เลือกผู้พิจารณาแทน</option><option value="ผอ.กบค." ${d.actingOfficer==='ผอ.กบค.'?'selected':''}>ผอ.กบค. — เสนอข้ามขั้นตอน</option><option value="ผอ.กลุ่มมติ" ${d.actingOfficer==='ผอ.กลุ่มมติ'?'selected':''}>ผอ.กลุ่มมติ — ผู้รักษาราชการแทน</option><option value="ผู้รักษาราชการแทนตามคำสั่ง" ${d.actingOfficer==='ผู้รักษาราชการแทนตามคำสั่ง'?'selected':''}>ผู้รักษาราชการแทนอื่นตามคำสั่ง</option></select></div><div class="ws-field"><label>เลขที่คำสั่งและวันที่ *</label><input id="actingOrder" value="${escapeHtml(d.actingOrder||'')}" placeholder="เช่น คำสั่งที่ 123/2569 ลงวันที่ 4 สิงหาคม 2569"></div></div>`);
+      if(panel&&impact&&!$('#actingOfficer',panel))impact.insertAdjacentHTML('beforebegin',`<div class="ws-field" style="margin-top:.7rem"><label>ผู้พิจารณา *</label><select id="actingOfficer"><option value="">เลือกผู้พิจารณา</option><option value="ผอ.กบค." ${d.actingOfficer==='ผอ.กบค.'?'selected':''}>ผอ.กบค.</option><option value="ผอ.กลุ่มมติ" ${d.actingOfficer==='ผอ.กลุ่มมติ'?'selected':''}>ผอ.กลุ่มมติ</option><option value="ผู้รักษาราชการแทนตามคำสั่ง" ${d.actingOfficer==='ผู้รักษาราชการแทนตามคำสั่ง'?'selected':''}>ผู้รักษาราชการแทนตามคำสั่ง</option></select></div>`);
       const exceptional=$('.route-option.exceptional',planner);
-      if(exceptional){$('strong',exceptional).textContent='กำหนดผู้พิจารณาแทนเป็นกรณีพิเศษ';$('small',exceptional).textContent='ใช้เมื่อผู้มีอำนาจไม่สามารถปฏิบัติหน้าที่ โดยต้องระบุเหตุผลและคำสั่งอ้างอิง'}
-      if(impact)$('span',impact).textContent='ระบบส่งเรื่องไปยังผู้พิจารณาแทนที่เลือก พร้อมเก็บเหตุผล ผู้รักษาการ และคำสั่งอ้างอิงใน Log';
+      if(exceptional){$('strong',exceptional).textContent='กำหนดผู้พิจารณาเป็นกรณีพิเศษ';$('small',exceptional).textContent='ใช้เมื่อผู้มีอำนาจไม่สามารถปฏิบัติหน้าที่ โดยต้องระบุเหตุผล'}
+      if(impact)$('span',impact).textContent='ระบบส่งเรื่องไปยังผู้พิจารณาที่เลือก พร้อมเก็บเหตุผลและผู้ดำเนินการใน Log';
       const input=$(`input[name="route"][value="${route}"]`,planner);
       if(input)input.checked=true;
       panel?.classList.toggle('ws-hidden',route!=='division');
       planner.dataset.routeRestored='true';
-    }
-    function enhanceActingIdentity(){
-      if(activeRole!=='acting'||!selectedId)return;
-      const order=$('#actingOrder');
-      if(!order||order.dataset.identityReady)return;
-      const d=getState(selectedId).documentData;
-      order.value=d.actingOrder||order.value;
-      order.placeholder='เลขที่คำสั่งและวันที่';
-      order.closest('.ws-field')?.insertAdjacentHTML('beforebegin',`<div class="ws-callout"><strong>ผู้รักษาราชการแทน: ${escapeHtml(d.actingOfficer||'ยังไม่ระบุ')}</strong><br>เหตุที่ผู้มีอำนาจไม่อยู่: ${escapeHtml(d.absenceReasonType||'ยังไม่ระบุ')} ${escapeHtml(d.absenceNote||'')}</div>`);
-      order.dataset.identityReady='true';
     }
     function enhanceCaseIssuance(){
       if(!['division','acting'].includes(activeRole)||!selectedId)return;
@@ -469,7 +602,7 @@
       anchor?.insertAdjacentHTML('afterend',`<section class="case-issuance" id="caseIssuanceStatus"><span>การออกเลขสำนวน</span><strong>${escapeHtml(d.caseNumber||'ยังไม่ออกเลขสำนวน')}</strong><p>${d.caseNumber?escapeHtml(d.publicStatus):'ระบบจะออกเลขสำนวนหลัง ผอ.กบค. หรือผู้รักษาราชการแทนลงนามอนุมัติเท่านั้น'}</p></section>`);
     }
     function enhanceAnonymousSuboption(){
-      if(activeRole!=='officer'||!selectedId)return;
+      if(!isOfficerRole(activeRole)||!selectedId)return;
       const checkbox=$('#anonymous');
       if(!checkbox||checkbox.dataset.suboptionReady)return;
       const choice=checkbox.closest('.ws-choice');
@@ -530,7 +663,7 @@
       saveState(selectedId,state);notify('success',isFinal?'ส่งกิจกรรมที่ 7 แล้ว':'ส่งตามลำดับชั้นแล้ว',`สถานะปัจจุบัน: ${state.workflow.status}`);renderDetail();renderList();
     }
     function enhanceNaccDispatch(){
-      if(activeRole!=='officer'||!selectedId)return;
+      if(!isOfficerRole(activeRole)||!selectedId)return;
       const state=getState(selectedId),d=state.documentData;
       if(state.workflow.stage!=='nacc-dispatch')return;
       const body=$('.ws-editor-body');if(!body||body.dataset.naccDispatch)return;
@@ -539,7 +672,7 @@
       const refreshDispatchPreview=()=>{const working=captureNaccDispatch(getState(selectedId));const previewValues=$$('.public-result-preview strong');if(previewValues[1])previewValues[1].textContent=working.documentData.naccLetterNo||'รอบันทึก';if(previewValues[2])previewValues[2].textContent=working.documentData.naccEms||'รอบันทึก';if($('#paperStage'))$('#paperStage').innerHTML=documentPaper(working,'1-11',activeRole)};
       $$('input,select,textarea',body).forEach(field=>field.addEventListener('input',refreshDispatchPreview));
       if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
-      const actions=$('.ws-actions');if(actions)actions.innerHTML=state.workflow.complete?'<button class="ws-button secondary" data-action="print">พิมพ์หนังสือ ปปท. 1-11</button>':'<button class="ws-button ghost" data-action="reset">เริ่มข้อมูลเรื่องนี้ใหม่</button><button class="ws-button secondary" data-action="nacc-draft">บันทึกร่างการจัดส่ง</button><button class="ws-button secondary" data-action="print">พิมพ์หนังสือ ปปท. 1-11</button><button class="ws-button primary" data-action="nacc-dispatch-confirm">ยืนยันส่งและแจ้งผู้ร้อง</button>';
+      const actions=$('.ws-actions');if(actions)actions.innerHTML=state.workflow.complete?'<button class="ws-button secondary" data-action="print">พิมพ์หนังสือ ปปท. 1-11</button>':'<button class="ws-button ghost" data-action="reset">ล้างข้อมูลและเริ่มใหม่</button><button class="ws-button secondary" data-action="nacc-draft">บันทึกร่างการจัดส่ง</button><button class="ws-button secondary" data-action="print">พิมพ์หนังสือ ปปท. 1-11</button><button class="ws-button primary" data-action="nacc-dispatch-confirm">ยืนยันส่งและแจ้งผู้ร้อง</button>';
       const naccTab=$('[data-doc="1-11"]');if(naccTab){$$('[data-doc]').forEach(tab=>tab.classList.toggle('active',tab===naccTab));$('#paperStage').innerHTML=documentPaper(state,'1-11',activeRole)}
       attachIntelligentSuggestion('naccBoardNote','ผู้ช่วยอัจฉริยะสำหรับข้อความแจ้งมติบอร์ด');
     }
@@ -617,14 +750,13 @@
     function enhanceSmartInputs(){
       const settings=readSuggestionSettings();
       [
-        ['adminNote','ผู้ช่วยอัจฉริยะสำหรับหมายเหตุธุรการ'],
+        ['adminNote','ผู้ช่วยอัจฉริยะสำหรับความเห็นธุรการเกี่ยวกับผลตรวจเรื่องซ้ำ'],
         ['officerOpinion','ผู้ช่วยอัจฉริยะสำหรับความเห็นเจ้าหน้าที่'],
         ['absenceNote','ผู้ช่วยอัจฉริยะสำหรับเหตุผลการลาและผู้รักษาการ'],
         ['centerOpinion','ผู้ช่วยอัจฉริยะสำหรับความเห็น ผอ.ศรร.'],
         ['centerAdditionalDetail','ผู้ช่วยอัจฉริยะสำหรับรายละเอียดเพิ่มเติม ผอ.ศรร.'],
         ['divisionOpinion','ผู้ช่วยอัจฉริยะสำหรับคำสั่ง ผอ.กบค.'],
-        ['divisionAdditionalDetail','ผู้ช่วยอัจฉริยะสำหรับรายละเอียดเพิ่มเติม ผอ.กบค.'],
-        ['actingOrder','ผู้ช่วยอัจฉริยะสำหรับคำสั่งรักษาราชการแทน']
+        ['divisionAdditionalDetail','ผู้ช่วยอัจฉริยะสำหรับรายละเอียดเพิ่มเติม ผอ.กบค.']
       ].forEach(([id,label])=>attachIntelligentSuggestion(id,label));
       const reasonInput=$('#notAcceptReason');
       if(reasonInput&&!reasonInput.parentElement.querySelector('.not-accept-multi')){
@@ -654,35 +786,32 @@
       d.naccNotified=Boolean($('#naccNotifyComplainant')?.checked);
       return state;
     }
-    function putDuplicateInNote(){
-      const note=$('#adminNote');
-      if(!note)return;
-      if(!note.value.includes('ECMIS-2569-000127'))note.value=[note.value.trim(),DUPLICATE_NOTE].filter(Boolean).join('\n');
-      note.dispatchEvent(new Event('input',{bubbles:true}));
-      note.focus();
-      note.scrollIntoView({behavior:'smooth',block:'center'});
-      notify('success','ใส่ข้อมูลในหมายเหตุแล้ว','เจ้าหน้าที่ผู้รับผิดชอบจะเห็นคำเตือนเรื่องซ้ำนี้');
+    function renderList(){const q=$('#filterSearch').value.trim().toLowerCase(),channel=$('#filterChannel').value,region=$('#filterRegion').value,province=$('#filterProvince').value,type=$('#filterType').value,status=$('#filterStatus').value,dup=$('#filterDuplicate').value,date=$('#filterDate').value;const cases=allCases(),states=cases.map(c=>getState(c.id));$('#dashboardTotal').textContent=cases.length;$('#dashboardPending').textContent=states.filter(s=>s.workflow.stage==='admin'&&!s.workflow.complete).length;$('#dashboardReview').textContent=states.filter(s=>s.workflow.stage!=='admin'&&!s.workflow.complete).length;$('#dashboardDone').textContent=states.filter(s=>s.workflow.complete).length;const rows=cases.filter(c=>{const s=getState(c.id);const searchable=[c.id,c.complainant,c.subject,c.agency].join(' ').toLowerCase();const risk=analyzeDuplicateCase(c).level==='low'?'low':'high';return(!q||searchable.includes(q))&&(!channel||c.channel===channel)&&(!region||c.region===region)&&(!province||c.province===province)&&(!type||c.type===type)&&(!status||s.workflow.status===status)&&(!dup||risk===dup)&&(!date||c.received.includes(new Date(date).getDate().toString()))});$('#caseRows').innerHTML=rows.map(c=>{const s=getState(c.id),analysis=analyzeDuplicateCase(c),risk=analysis.level!=='low';return `<tr data-case="${c.id}" tabindex="0"><td><strong>${c.id}</strong><small>${c.received}</small></td><td><strong>${escapeHtml(c.complainant)}</strong><small>เลขบัตร •••••••••${c.id4||'ไม่ระบุ'}</small></td><td><strong>${escapeHtml(c.subject)}</strong><small>${escapeHtml(c.agency)}</small></td><td><strong>${escapeHtml(c.province)}</strong><small>${escapeHtml(c.region)}</small></td><td>${c.channel}</td><td><span class="ws-status ${s.workflow.complete?'success':''}">${s.workflow.status}</span><small>ผู้รับผิดชอบ: ${ROLE_LABELS[s.workflow.owner]||s.workflow.owner}</small></td><td><span class="ws-status ${risk?'danger':'success'}">${risk?`ควรตรวจสอบ ${analysis.score}%`:'ยังไม่พบสัญญาณ'}</span></td></tr>`}).join('')||'<tr><td colspan="7" class="ws-empty">ไม่พบรายการตามเงื่อนไข</td></tr>';$$('[data-case]').forEach(r=>{const open=()=>{selectedId=r.dataset.case;renderDetail()};r.onclick=open;r.onkeydown=e=>{if(e.key==='Enter')open()}})}
+    function editorFor(state){const d=state.documentData,c=state.caseData,w=state.workflow;if(activeRole==='admin'){
+      const duplicate=analyzeDuplicateCase(c);
+      const duplicateCard=duplicate.level==='low'
+        ?`<div class="duplicate-auto-result duplicate-auto-clear" data-level="low"><div><span>ตรวจสอบอัตโนมัติแล้ว</span><strong>ยังไม่พบเรื่องที่มีความใกล้เคียงอย่างมีนัยสำคัญ</strong><p>ระบบเปรียบเทียบข้อมูลผู้ร้อง เนื้อหา พื้นที่ และช่วงเวลารับเรื่องแล้ว</p></div></div>`
+        :`<div class="duplicate-auto-result ${duplicate.level==='high'?'duplicate-critical':''}" data-level="${duplicate.level}" data-case-id="${escapeHtml(duplicate.caseId)}" data-score="${duplicate.score}"><div><span>ระบบตรวจสอบอัตโนมัติ</span><strong>${duplicate.level==='high'?'พบความเสี่ยงเรื่องร้องเรียนซ้ำระดับสูง':'พบเรื่องที่ควรตรวจสอบเพิ่มเติม'}</strong><p>เรื่องเดิม ${escapeHtml(duplicate.caseId)} · ความใกล้เคียง ${duplicate.score}%</p><div class="duplicate-signal-list">${duplicate.signals.map(signal=>`<small>${escapeHtml(signal)}</small>`).join('')}</div></div></div><div class="duplicate-opinion-suggestions"><span>คำแนะนำสำหรับความเห็นธุรการ</span><div><button type="button" data-suggestion-target="adminNote" data-suggestion-text="${escapeHtml(`มีความเป็นไปได้ว่าเป็นเรื่องเดียวกับ ${duplicate.caseId} เนื่องจากข้อมูลมีความใกล้เคียง ${duplicate.score}%`)}">น่าจะเป็นเรื่องเดียวกัน</button><button type="button" data-suggestion-target="adminNote" data-suggestion-text="${escapeHtml(`เรื่องนี้อาจเกี่ยวข้องกับ ${duplicate.caseId} ควรให้เจ้าหน้าที่ผู้รับผิดชอบตรวจสอบข้อเท็จจริงเพิ่มเติม`)}">อาจเป็นเรื่องที่เกี่ยวข้องกัน</button><button type="button" data-suggestion-target="adminNote" data-suggestion-text="ผลตรวจอัตโนมัติพบความเชื่อมโยง แต่ข้อมูลยังไม่เพียงพอที่จะสรุปว่าเป็นเรื่องซ้ำ">ยังสรุปไม่ได้</button></div></div>`;
+      return `<div class="ws-section"><h3>1. ข้อมูลคำร้องเรียนเดิม</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. ผลตรวจสอบเรื่องซ้ำ</h3>${duplicateCard}<p class="duplicate-policy-note">ผลวิเคราะห์เป็นข้อมูลประกอบการพิจารณา ธุรการมีหน้าที่บันทึกความเห็นและมอบหมายต่อ โดยไม่มีสิทธิปฏิเสธหรือยุติเรื่องจากผลตรวจอัตโนมัติเพียงอย่างเดียว</p></div><div class="ws-section"><h3>3. ลงรับและมอบหมายเจ้าหน้าที่</h3><div class="ws-grid-2"><div class="ws-field"><label>เจ้าหน้าที่รับผิดชอบหลัก</label><select id="adminAssignee"><option value="">เลือกเจ้าหน้าที่</option>${OFFICERS.map(x=>`<option ${d.assignedOfficer===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ผู้ปฏิบัติงานแทน</label><select id="adminBackup"><option value="">ไม่กำหนด</option>${OFFICERS.map(x=>`<option ${d.backupOfficer===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>ความเห็นธุรการเกี่ยวกับผลตรวจเรื่องซ้ำ</label><textarea id="adminNote" placeholder="บันทึกว่าเรื่องนี้น่าจะเป็นเรื่องเดียวกัน เกี่ยวข้องกัน หรือยังไม่สามารถสรุปได้">${escapeHtml(d.adminNote)}</textarea></div></div><h3 style="margin-top:1rem">ประวัติการมอบหมาย</h3><ul class="ws-history">${state.assignmentHistory.length?state.assignmentHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการมอบหมาย</li>'}</ul></div>`;
     }
-    function renderList(){const q=$('#filterSearch').value.trim().toLowerCase(),channel=$('#filterChannel').value,region=$('#filterRegion').value,province=$('#filterProvince').value,type=$('#filterType').value,status=$('#filterStatus').value,dup=$('#filterDuplicate').value,date=$('#filterDate').value;const cases=allCases(),states=cases.map(c=>getState(c.id));$('#dashboardTotal').textContent=cases.length;$('#dashboardPending').textContent=states.filter(s=>s.workflow.stage==='admin'&&!s.workflow.complete).length;$('#dashboardReview').textContent=states.filter(s=>s.workflow.stage!=='admin'&&!s.workflow.complete).length;$('#dashboardDone').textContent=states.filter(s=>s.workflow.complete).length;const rows=cases.filter(c=>{const s=getState(c.id);const searchable=[c.id,c.complainant,c.subject,c.agency].join(' ').toLowerCase();const risk=c.id.endsWith('184')?'high':'low';return(!q||searchable.includes(q))&&(!channel||c.channel===channel)&&(!region||c.region===region)&&(!province||c.province===province)&&(!type||c.type===type)&&(!status||s.workflow.status===status)&&(!dup||risk===dup)&&(!date||c.received.includes(new Date(date).getDate().toString()))});$('#caseRows').innerHTML=rows.map(c=>{const s=getState(c.id),risk=c.id.endsWith('184');return `<tr data-case="${c.id}" tabindex="0"><td><strong>${c.id}</strong><small>${c.received}</small></td><td><strong>${escapeHtml(c.complainant)}</strong><small>เลขบัตร •••••••••${c.id4}</small></td><td><strong>${escapeHtml(c.subject)}</strong><small>${escapeHtml(c.agency)}</small></td><td><strong>${escapeHtml(c.province)}</strong><small>${escapeHtml(c.region)}</small></td><td>${c.channel}</td><td><span class="ws-status ${s.workflow.complete?'success':''}">${s.workflow.status}</span><small>ผู้รับผิดชอบ: ${ROLE_LABELS[s.workflow.owner]||s.workflow.owner}</small></td><td><span class="ws-status ${risk?'danger':'success'}">${risk?'ควรตรวจสอบ':'ยังไม่พบสัญญาณ'}</span></td></tr>`}).join('')||'<tr><td colspan="7" class="ws-empty">ไม่พบรายการตามเงื่อนไข</td></tr>';$$('[data-case]').forEach(r=>{const open=()=>{selectedId=r.dataset.case;renderDetail()};r.onclick=open;r.onkeydown=e=>{if(e.key==='Enter')open()}})}
-    function editorFor(state){const d=state.documentData,c=state.caseData,w=state.workflow;if(activeRole==='admin')return `<div class="ws-section"><h3>1. ข้อมูลคำร้องเรียนเดิม</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. ตรวจคำแนะนำเรื่องซ้ำ</h3><div class="ws-callout">ระบบพบเพียงสัญญาณว่าอาจเป็นเรื่องซ้ำ ธุรการบันทึกคำแนะนำและมอบหมายต่อได้ แต่ไม่มีสิทธิปฏิเสธหรือยุติเรื่อง</div><div class="ws-field" style="margin-top:.7rem"><label>ตรวจเลขบัตรประชาชน 4 หลักท้าย</label><div class="ws-inline-action"><input id="dupInput" maxlength="4" value="${c.id4}"><button class="ws-button secondary" id="dupCheck">ตรวจสอบ</button></div></div><div id="dupResult" class="ws-hidden ws-callout" style="margin-top:.7rem">พบเรื่องเดิม ECMIS-2569-000127 โอกาสซ้ำ 92% โปรดบันทึกข้อสังเกตไว้ในหมายเหตุเพื่อให้เจ้าหน้าที่ผู้รับผิดชอบตรวจสอบต่อ</div></div><div class="ws-section"><h3>3. ลงรับและมอบหมายเจ้าหน้าที่</h3><div class="ws-grid-2"><div class="ws-field"><label>เจ้าหน้าที่รับผิดชอบหลัก</label><select id="adminAssignee"><option value="">เลือกเจ้าหน้าที่</option>${OFFICERS.map(x=>`<option ${d.assignedOfficer===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ผู้ปฏิบัติงานแทน</label><select id="adminBackup"><option value="">ไม่กำหนด</option>${OFFICERS.map(x=>`<option ${d.backupOfficer===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>หมายเหตุหรือรายละเอียดเพิ่มเติม</label><textarea id="adminNote" placeholder="บันทึกข้อสังเกตเรื่องซ้ำหรือข้อมูลที่ต้องแจ้งเจ้าหน้าที่ผู้รับผิดชอบ">${escapeHtml(d.adminNote)}</textarea></div></div><h3 style="margin-top:1rem">ประวัติการมอบหมาย</h3><ul class="ws-history">${state.assignmentHistory.length?state.assignmentHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการมอบหมาย</li>'}</ul></div>`;
       if(activeRole==='officer')return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'ยังไม่ระบุ')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>หมายเหตุธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}${d.divisionAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.กบค.: ${escapeHtml(d.divisionAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>พิจารณาตามแบบฟอร์ม 3</h3><div class="ws-choice-grid">${[['18/1ก','รับไว้ดำเนินการ 18/1 (ก)'],['18/1ข','รับไว้ดำเนินการ 18/1 (ข)'],['18/4','รับไว้ดำเนินการ 18/4'],['58/2','ดำเนินการตาม 58/2'],['send-nacc','ส่งสำนักงาน ป.ป.ช.'],['not-accept','ไม่รับไว้ดำเนินการ']].map(([v,l])=>`<label class="ws-choice"><input type="radio" name="decision" value="${v}" ${d.decision===v?'checked':''}><span><strong>${l}</strong></span></label>`).join('')}</div><div class="ws-field" style="margin-top:.8rem"><label>เขตที่เสนอให้มอบหมาย *</label><select id="proposedRegion"><option value="">เลือกเขตที่เสนอ</option>${REGIONS.map(region=>`<option value="${region}" ${(d.proposedRegion||c.region)===region?'selected':''}>${region}</option>`).join('')}</select><small>ผอ.ศรร. จะเห็นข้อมูลนี้เพื่อพิจารณาเห็นชอบหรือส่งกลับแก้ไข</small></div><div id="naccReasonBox" class="${d.decision==='send-nacc'?'':'ws-hidden'}" style="margin-top:.8rem"><h3>เหตุผลส่งต่อ เลือกได้หลายข้อ</h3><div class="ws-choice-grid">${NACC_TRANSFER_REASONS.map(x=>`<label class="ws-choice"><input type="checkbox" name="naccReason" value="${escapeHtml(x)}" ${d.reasons.includes(x)?'checked':''}><span><strong>${escapeHtml(x)}</strong></span></label>`).join('')}</div></div><div id="notAcceptBox" class="${d.decision==='not-accept'?'':'ws-hidden'}" style="margin-top:.8rem"><div class="ws-field"><label>เหตุผลที่ไม่รับไว้ดำเนินการ</label><textarea id="notAcceptReason">${escapeHtml(d.notAcceptReason)}</textarea></div><label class="ws-choice" style="margin-top:.6rem"><input type="checkbox" id="anonymous" ${d.anonymous?'checked':''}><span><strong>เป็นบัตรสนเท่ห์</strong><small>เมื่อได้รับอนุมัติ ส่งข้อมูลต่อกิจกรรมที่ 7</small></span></label></div><div class="ws-field" style="margin-top:.8rem"><label>ความเห็นเจ้าหน้าที่รับเรื่อง</label><textarea id="officerOpinion">${escapeHtml(d.officerOpinion)}</textarea></div><section class="route-planner"><header><div><span>เส้นทางการพิจารณา</span><h3>กำหนดผู้รับพิจารณาลำดับถัดไป</h3></div><small>ใช้ลำดับปกติเป็นค่าเริ่มต้น</small></header><div class="route-options"><label class="route-option standard"><input type="radio" name="route" value="center" checked><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span>ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>ดำเนินการตามลำดับปกติ</strong><small>ส่งให้ ผอ.ศรร. พิจารณาก่อนเสนอ ผอ.กบค.</small></label><label class="route-option exceptional"><input type="radio" name="route" value="division"><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span class="route-skipped">ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>เสนอข้ามขั้นตอนเป็นกรณีพิเศษ</strong><small>ใช้เมื่อ ผอ.ศรร. ไม่สามารถปฏิบัติหน้าที่ และต้องบันทึกเหตุผล</small></label></div><div class="route-exception-panel ws-hidden" id="absenceBox"><div class="route-exception-head"><span>กรณีพิเศษ</span><strong>บันทึกเหตุผลประกอบการส่งตรงถึง ผอ.กบค.</strong></div><div class="ws-grid-2"><div class="ws-field"><label>ประเภทเหตุผล *</label><select id="absenceReasonType"><option value="">เลือกประเภทเหตุผล</option>${['ลาราชการ','ติดภารกิจราชการ','ไม่สามารถปฏิบัติหน้าที่','มีคำสั่งให้เสนอโดยตรง','อื่น ๆ'].map(reason=>`<option value="${reason}" ${d.absenceReasonType===reason?'selected':''}>${reason}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>รายละเอียดและช่วงเวลาที่ไม่อยู่ *</label><textarea id="absenceNote" placeholder="ระบุเหตุผล วันที่หรือช่วงเวลา และข้อมูลอ้างอิงที่เกี่ยวข้อง">${escapeHtml(d.absenceNote)}</textarea></div></div><div class="route-impact"><strong>ผลของเส้นทางนี้</strong><span>เรื่องจะส่งตรงถึง ผอ.กบค. พร้อมบันทึก Log โดย ผอ.กบค. สามารถอนุมัติให้ ผอ.ศรร. กลับมาให้ความเห็นเพิ่มเติมภายหลังได้</span></div></div></section></div>`;
       if(activeRole==='center')return `<div class="ws-section"><h3>ข้อมูลจากเจ้าหน้าที่รับเรื่อง</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem"><strong>เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}</strong><br>ผลเสนอ: ${d.decision}<br>ความเห็น: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}</div></div><div class="ws-section"><h3>ความเห็น ผอ.ศรร.</h3><div class="ws-choice-grid"><label class="ws-choice"><input type="radio" name="centerDecision" value="agree" ${d.centerDecision!=='disagree'?'checked':''}><span><strong>เห็นชอบให้มอบหมาย ${escapeHtml(d.proposedRegion||c.region||'เขตที่เสนอ')}</strong></span></label><label class="ws-choice"><input type="radio" name="centerDecision" value="disagree" ${d.centerDecision==='disagree'?'checked':''}><span><strong>ไม่เห็นชอบ/ส่งกลับแก้ไข</strong></span></label></div><div class="ws-field" style="margin-top:.7rem"><label>ความเห็นและข้อเสนอแนะ</label><textarea id="centerOpinion">${escapeHtml(d.centerOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ผอ.ศรร.</label><textarea id="centerAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบการพิจารณา">${escapeHtml(d.centerAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>`;
       const centerText=d.centerOpinion|| (d.absenceNote?`ข้ามขั้นตอนตามหมายเหตุ: ${d.absenceNote}`:'ยังไม่ระบุ');
       const acceptedDecision=['18/1ก','18/1ข','18/4'].includes(d.decision);
-      const internalLetterFields=acceptedDecision?`<div class="ws-section"><h3>ข้อมูลหนังสือรับไว้ดำเนินการ</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="internalLetterNo" value="${escapeHtml(d.internalLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="internalLetterDate" type="date" value="${escapeHtml(d.internalLetterDate||'')}"></div></div><div class="ws-callout" style="margin-top:.7rem">ต้องบันทึกเลขหนังสือและวันที่หนังสือก่อนอนุมัติรับไว้ดำเนินการ</div></div>`:'';
-      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผอ.ศรร.: ${escapeHtml(centerText)}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทนตามคำสั่ง':'คำสั่ง ผอ.กบค.'}</h3>${activeRole==='acting'?'<div class="ws-field"><label>อ้างอิงคำสั่งแต่งตั้ง</label><input id="actingOrder" placeholder="เลขที่คำสั่ง/วันที่"></div>':''}<div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ${activeRole==='acting'?'ผู้รักษาราชการแทน':'ผอ.กบค.'}</label><textarea id="divisionAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบคำสั่ง">${escapeHtml(d.divisionAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${internalLetterFields}`}
-    function actionsFor(state){const reset='<button class="ws-button ghost" data-action="reset">เริ่มข้อมูลเรื่องนี้ใหม่</button>';if(activeRole==='admin'){const canRecall=state.documentData.assignedOfficer&&state.workflow.stage==='officer'&&!state.workflow.complete;return `${reset}${canRecall?'<button class="ws-button danger" data-action="recall-assignment">ดึงงานกลับ</button>':''}<button class="ws-button secondary" data-action="draft">บันทึกร่าง</button><button class="ws-button primary" data-action="assign">${state.workflow.status==='รอมอบหมายใหม่'?'มอบหมายใหม่':'ลงรับและมอบหมาย'}</button>`}if(activeRole==='officer')return `${reset}<button class="ws-button secondary" data-action="draft">บันทึก Form 3</button><button class="ws-button secondary" data-action="print">พิมพ์ Form 3</button><button class="ws-button primary" data-action="officer-send">บันทึกและส่งพิจารณา</button>`;if(activeRole==='center')return `${reset}<button class="ws-button danger" data-action="center-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="center-send">บันทึกและส่ง ผอ.กบค.</button>`;return `${reset}${activity5Link(state)}<button class="ws-button secondary" data-action="division-center">ขอความเห็น ผอ.ศรร.</button><button class="ws-button danger" data-action="division-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="approve">อนุมัติและดำเนินการต่อ</button>`}
+      const internalLetterFields=acceptedDecision?`<div class="ws-section" id="approvalDocumentSection"><h3>ข้อมูลหนังสือรับไว้ดำเนินการ</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="internalLetterNo" value="${escapeHtml(d.internalLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="internalLetterDate" type="date" value="${escapeHtml(d.internalLetterDate||'')}"></div></div><aside class="approval-readiness" aria-label="ลำดับการอนุมัติและออกเลขสำนวน"><header><span>ข้อมูลประกอบการลงนาม</span><strong>โปรดตรวจสอบเลขหนังสือและวันที่หนังสือให้ครบถ้วน</strong><p>เมื่อข้อมูลเรียบร้อยแล้ว ผอ.กบค. สามารถลงนามอนุมัติ และระบบจะออกเลขสำนวนตามลำดับ</p></header><ol><li><b>1</b><span><strong>ตรวจสอบหนังสือ</strong><small>เลขหนังสือและวันที่หนังสือครบถ้วน</small></span></li><li><b>2</b><span><strong>ลงนามอนุมัติ</strong><small>ผอ.กบค. ยืนยันผลการพิจารณา</small></span></li><li><b>3</b><span><strong>ออกเลขสำนวน</strong><small>ระบบออกเลขและแจ้งสถานะแก่ผู้ร้อง</small></span></li></ol></aside></div>`:'';
+      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผอ.ศรร.: ${escapeHtml(centerText)}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทน':'คำสั่ง ผอ.กบค.'}</h3><div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ${activeRole==='acting'?'ผู้รักษาราชการแทน':'ผอ.กบค.'}</label><textarea id="divisionAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบคำสั่ง">${escapeHtml(d.divisionAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${internalLetterFields}`}
+    function actionsFor(state){const reset='<button class="ws-button ghost" data-action="reset">ล้างข้อมูลและเริ่มใหม่</button>';if(activeRole==='admin'){const hasAssignedWork=Boolean(state.documentData.assignedOfficer)&&state.assignmentHistory.some(entry=>['assign','reassign'].includes(entry.action)||/\[(มอบหมาย|มอบหมายใหม่)\]|มอบหมายให้/.test(entry.text||''));const canRecall=hasAssignedWork&&!state.workflow.complete&&!['nacc-dispatch','anonymous-box'].includes(state.workflow.stage);return `${reset}${canRecall?'<button class="ws-button danger" data-action="recall-assignment">ดึงงานกลับ</button>':''}<button class="ws-button secondary" data-action="draft">บันทึกร่าง</button><button class="ws-button primary" data-action="assign">${state.workflow.status==='รอมอบหมายใหม่'?'มอบหมายใหม่':'ลงรับและมอบหมาย'}</button>`}if(activeRole==='officer')return `${reset}<button class="ws-button secondary" data-action="draft">บันทึก Form 3</button><button class="ws-button secondary" data-action="print">พิมพ์ Form 3</button><button class="ws-button primary" data-action="officer-send">บันทึกและส่งพิจารณา</button>`;if(activeRole==='center')return `${reset}<button class="ws-button danger" data-action="center-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="center-send">บันทึกและส่ง ผอ.กบค.</button>`;return `${reset}${activity5Link(state)}<button class="ws-button secondary" data-action="division-center">ขอความเห็น ผอ.ศรร.</button><button class="ws-button danger" data-action="division-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="approve">อนุมัติและดำเนินการต่อ</button>`}
     function operationalWorkspace(state){const w=state.workflow;const editor=`<section class="ws-card ws-editor ${activeRole==='admin'?'ws-admin-workspace':''}"><header class="ws-editor-head"><div><p class="ws-kicker">งานของ ${ROLE_LABELS[activeRole]}</p><h2>${w.complete?'ตรวจสอบข้อมูลที่ดำเนินการแล้ว':'ดำเนินการเรื่องร้องเรียน'}</h2></div><span class="ws-status">${w.status}</span></header><div class="ws-editor-body">${editorFor(state)}${activeRole==='admin'?'':`<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการตัดสินใจ</li>'}</ul></div>`}</div></section>`;if(activeRole==='admin')return `<div class="ws-admin-layout">${editor}</div>`;return `<div class="document-workspace">${editor}<aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabs(state,activeRole)}</div><button class="ws-button secondary" data-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="paperStage">${documentPaper(state,'form3',activeRole)}</div></aside></div>`}
-    function renderDetail(){const state=getState(selectedId),c=state.caseData,w=state.workflow;$('#caseListView').classList.add('ws-hidden');const view=$('#caseDetailView');view.classList.remove('ws-hidden');view.innerHTML=`<button class="ws-button ghost" id="backList" style="margin-bottom:.8rem">กลับรายการเรื่องร้องเรียน</button><section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel)} · ${escapeHtml(c.region)}</p><h1>${c.id}</h1><div class="ws-case-meta"><span>${escapeHtml(c.subject)}</span><span>รับเรื่อง ${c.received}</span><span>เลขติดตาม ${c.trackingYear} / ${c.trackingCode}</span></div></div><div><span class="ws-status ${w.complete?'success':''}">${w.status}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">ผู้รับผิดชอบ: ${ROLE_LABELS[w.owner]}</p></div></section><nav class="ws-card ws-stagebar">${stagebar(state,activeRole)}</nav>${operationalWorkspace(state)}<div class="ws-actions">${actionsFor(state)}</div>`;$('#backList').onclick=()=>{view.classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');selectedId=null;renderList()};wireDetail(state)}
+    function renderDetail(){const state=getState(selectedId),c=state.caseData,w=state.workflow;$('#caseListView').classList.add('ws-hidden');const view=$('#caseDetailView');view.classList.remove('ws-hidden');view.innerHTML=`<button class="ws-button ghost" id="backList" style="margin-bottom:.8rem">กลับรายการเรื่องร้องเรียน</button><section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel)} · ${escapeHtml(c.region)}</p><h1>${c.id}</h1><div class="ws-case-meta"><span>${escapeHtml(c.subject)}</span><span>รับเรื่อง ${c.received}</span><span>เลขติดตาม ${c.trackingYear} / ${c.trackingCode}</span></div></div><div><span class="ws-status ${w.complete?'success':''}">${w.status}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">ผู้รับผิดชอบ: ${ROLE_LABELS[w.owner]}</p></div></section><nav class="ws-card ws-stagebar" aria-label="สถานะและลำดับการดำเนินงาน">${stagebar(state)}</nav>${operationalWorkspace(state)}<div class="ws-actions">${actionsFor(state)}</div>`;$('#backList').onclick=()=>{view.classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');selectedId=null;renderList()};wireDetail(state);enhanceSmartInputs()}
     function capture(state){const d=state.documentData;const value=id=>$('#'+id)?.value?.trim()||'';if(activeRole==='admin'){d.assignedOfficer=value('adminAssignee');d.backupOfficer=value('adminBackup');d.adminNote=value('adminNote')}if(activeRole==='officer'){d.decision=$('input[name="decision"]:checked')?.value||d.decision;d.reasons=$$('input[name="naccReason"]:checked').map(x=>x.value);d.notAcceptReason=value('notAcceptReason');d.anonymous=$('#anonymous')?.checked||false;d.proposedRegion=value('proposedRegion')||d.proposedRegion;d.officerOpinion=value('officerOpinion');d.reviewRoute=$('input[name="route"]:checked')?.value||'center';d.absenceReasonType=value('absenceReasonType');d.absenceNote=value('absenceNote');d.actingOfficer=value('actingOfficer')||d.actingOfficer;d.actingOrder=value('actingOrder')||d.actingOrder}if(activeRole==='center'){d.centerDecision=$('input[name="centerDecision"]:checked')?.value||'';d.centerOpinion=value('centerOpinion');d.centerAdditionalDetail=value('centerAdditionalDetail')}if(activeRole==='division'||activeRole==='acting'){d.divisionOpinion=value('divisionOpinion');d.divisionAdditionalDetail=value('divisionAdditionalDetail');d.internalLetterNo=value('internalLetterNo')||d.internalLetterNo;d.internalLetterDate=value('internalLetterDate')||d.internalLetterDate;d.actingOrder=value('actingOrder')||d.actingOrder}return state}
-    function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>x.addEventListener('input',refreshPaper));$$('input[name="decision"]').forEach(x=>x.onchange=()=>{$('#naccReasonBox').classList.toggle('ws-hidden',x.value!=='send-nacc');$('#notAcceptBox').classList.toggle('ws-hidden',x.value!=='not-accept');refreshPaper()});$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$('#dupCheck')?.addEventListener('click',()=>{if($('#dupInput').value==='1234')$('#dupResult').classList.remove('ws-hidden');else notify('info','ยังไม่พบเรื่องใกล้เคียง','ผลนี้เป็นเพียงตัวช่วย เจ้าหน้าที่ยังต้องตรวจสอบข้อมูลด้วยตนเอง')});$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state))}
+    function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>x.addEventListener('input',refreshPaper));$$('input[name="decision"]').forEach(x=>x.onchange=()=>{$('#naccReasonBox').classList.toggle('ws-hidden',x.value!=='send-nacc');$('#notAcceptBox').classList.toggle('ws-hidden',x.value!=='not-accept');refreshPaper()});$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state))}
     async function handleAction(action,state){
       if(action==='print'){window.print();return}
       if(action==='reset'){
-        const ok=await confirmDo('เริ่มข้อมูลเรื่องนี้ใหม่','ลบเฉพาะข้อมูลกระบวนงานของเรื่องนี้ในเบราว์เซอร์ ข้อมูลเรื่องอื่นไม่เปลี่ยน','เริ่มใหม่');
+        const ok=await confirmDo('ล้างข้อมูลและเริ่มใหม่','ข้อมูลกระบวนงานและประวัติของเรื่องนี้จะถูกล้าง โดยไม่กระทบเรื่องอื่น','ล้างข้อมูล');
         if(!ok.isConfirmed)return;
         const store=readStore();delete store[selectedId];writeStore(store);
-        notify('success','เริ่มข้อมูลเรื่องนี้ใหม่แล้ว','ประวัติและร่างของเรื่องนี้ถูกล้างออก');renderDetail();renderList();return;
+        notify('success','ล้างข้อมูลแล้ว','พร้อมเริ่มดำเนินการเรื่องนี้ใหม่');renderDetail();renderList();return;
       }
       state=capture(state);
       const d=state.documentData,w=state.workflow;
@@ -708,10 +837,9 @@
         if(route==='division'&&!d.absenceReasonType)return notify('warning','ยังไม่ได้เลือกประเภทเหตุผล','เลือกประเภทเหตุผลที่ต้องส่งข้าม ผอ.ศรร.');
         if(route==='division'&&!d.absenceNote)return notify('warning','รายละเอียดเหตุผลไม่ครบ','ระบุเหตุผล ช่วงเวลา และข้อมูลอ้างอิงก่อนส่งตรงถึง ผอ.กบค.');
         if(route==='division'&&!d.actingOfficer)return notify('warning','ยังไม่ได้เลือกผู้พิจารณาแทน','เลือก ผอ.กบค. หรือผู้รักษาราชการแทนตามคำสั่ง');
-        if(route==='division'&&!d.actingOrder)return notify('warning','ยังไม่มีคำสั่งอ้างอิง','กรอกเลขที่คำสั่งและวันที่แต่งตั้งผู้รักษาราชการแทน');
         const useActing=route==='division'&&d.actingOfficer!=='ผอ.กบค.';
         w.owner=route==='division'?(useActing?'acting':'division'):'center';w.stage=w.owner;w.status=route==='division'?`รอ ${d.actingOfficer}`:'รอ ผอ.ศรร.';
-        add(route==='division'?`เจ้าหน้าที่รับเรื่องเสนอให้มอบหมาย ${d.proposedRegion} เนื่องจาก ${d.absenceReasonType}: ${d.absenceNote} ส่งให้ ${d.actingOfficer} ตาม ${d.actingOrder}`:`เจ้าหน้าที่รับเรื่องเสนอให้มอบหมาย ${d.proposedRegion} และส่ง ผอ.ศรร.`);
+        add(route==='division'?`เจ้าหน้าที่รับเรื่องเสนอให้มอบหมาย ${d.proposedRegion} เนื่องจาก ${d.absenceReasonType}: ${d.absenceNote} ส่งให้ ${d.actingOfficer}`:`เจ้าหน้าที่รับเรื่องเสนอให้มอบหมาย ${d.proposedRegion} และส่ง ผอ.ศรร.`);
       }
       if(action==='center-return'){
         if(!d.centerOpinion)return notify('warning','ต้องระบุเหตุผล','กรอกประเด็นที่ต้องแก้ไขก่อนส่งกลับ');
@@ -729,9 +857,15 @@
       }
       if(action==='approve'){
         if(!d.divisionOpinion)return notify('warning','ยังไม่มีคำสั่ง','กรอกความเห็นและคำสั่งก่อนอนุมัติ');
-        if(['18/1ก','18/1ข','18/4'].includes(d.decision)&&(!d.internalLetterNo||!d.internalLetterDate))return notify('warning','ข้อมูลหนังสือยังไม่ครบ','กรอกเลขหนังสือและวันที่หนังสือก่อนอนุมัติรับไว้ดำเนินการ');
-        if(activeRole==='acting'){d.actingOrder=$('#actingOrder')?.value?.trim()||d.actingOrder||'';if(!d.actingOrder)return notify('warning','ยังไม่มีคำสั่งแต่งตั้ง','กรอกเลขที่คำสั่งและวันที่แต่งตั้งผู้รักษาราชการแทนก่อนอนุมัติ')}
-        const approvalActor=activeRole==='acting'?`${d.actingOfficer||ROLE_LABELS[activeRole]} ตาม ${d.actingOrder}`:ROLE_LABELS[activeRole];
+        if(['18/1ก','18/1ข','18/4'].includes(d.decision)&&(!d.internalLetterNo||!d.internalLetterDate)){
+          const section=$('#approvalDocumentSection');
+          section?.classList.remove('needs-attention');
+          requestAnimationFrame(()=>section?.classList.add('needs-attention'));
+          section?.scrollIntoView({behavior:'smooth',block:'center'});
+          (!d.internalLetterNo?$('#internalLetterNo'):$('#internalLetterDate'))?.focus({preventScroll:true});
+          return notify('info','กรุณาตรวจสอบข้อมูลประกอบการลงนาม','โปรดระบุเลขหนังสือและวันที่หนังสือให้ครบถ้วน เพื่อดำเนินการลงนามและออกเลขสำนวน');
+        }
+        const approvalActor=activeRole==='acting'?(d.actingOfficer||ROLE_LABELS[activeRole]):ROLE_LABELS[activeRole];
         const acceptedDecision=['18/1ก','18/1ข','18/4'].includes(d.decision);
         if(acceptedDecision&&!d.caseNumber){
           const confirmed=await confirmDo('ลงนามอนุมัติและออกเลขสำนวน','หลังยืนยัน ระบบจะออกเลขสำนวนและเปิดเผยสถานะรับไว้ดำเนินการแก่ผู้ร้อง','ลงนามและออกเลขสำนวน');
@@ -778,10 +912,6 @@
         event.stopImmediatePropagation();
         const state=capture(getState(selectedId)),d=state.documentData;
         if(!d.divisionOpinion){notify('warning','ยังไม่มีคำสั่ง','กรอกความเห็นและคำสั่งก่อนอนุมัติส่ง ป.ป.ช.');return}
-        if(activeRole==='acting'){
-          d.actingOrder=$('#actingOrder')?.value?.trim()||d.actingOrder||'';
-          if(!d.actingOrder){notify('warning','ยังไม่มีคำสั่งแต่งตั้ง','กรอกเลขที่คำสั่งและวันที่แต่งตั้งผู้รักษาราชการแทน');return}
-        }
         const confirmation=await confirmDo('อนุมัติส่งสำนักงาน ป.ป.ช.','ส่งงานกลับเจ้าหน้าที่รับเรื่องเพื่อออกหนังสือและบันทึกหลักฐานการจัดส่ง','อนุมัติและส่งจัดทำหนังสือ');
         if(!confirmation.isConfirmed)return;
         const time=now();
@@ -789,16 +919,17 @@
         state.workflow.stage='nacc-dispatch';
         state.workflow.status='รอจัดส่งสำนักงาน ป.ป.ช.';
         state.workflow.complete=false;
-        const approvalActor=activeRole==='acting'?`${d.actingOfficer||ROLE_LABELS[activeRole]} ตาม ${d.actingOrder}`:ROLE_LABELS[activeRole];
+        const approvalActor=activeRole==='acting'?(d.actingOfficer||ROLE_LABELS[activeRole]):ROLE_LABELS[activeRole];
         state.decisionHistory.push({text:`${approvalActor} อนุมัติให้ส่งสำนักงาน ป.ป.ช. และส่งงานกลับเจ้าหน้าที่รับเรื่องเพื่อจัดส่ง`,time});
         if(d.divisionAdditionalDetail)state.decisionHistory.push({text:`${ROLE_LABELS[activeRole]} เพิ่มรายละเอียดประกอบการพิจารณา โดยไม่แก้ไขข้อมูลคำร้องเดิม`,time});
         state.documentVersions.push({version:state.documentVersions.length+1,actor:ROLE_LABELS[activeRole],time});
         saveState(selectedId,state);
         notify('success','อนุมัติส่ง ป.ป.ช. แล้ว','เรื่องอยู่ในขั้นตอนรอเจ้าหน้าที่บันทึกเลขหนังสือและหลักฐานการจัดส่ง');
+        selectedRole='officer';
         activeRole='officer';
-        sessionStorage.setItem('ecmis-a4-role',activeRole);
-        $('#wsRole').value=activeRole;
-        updateAdminTools();
+        sessionStorage.setItem('ecmis-a4-role',selectedRole);
+        $('#wsRole').value=selectedRole;
+        updateRoleControls();
         renderDetail();
         renderList();
         return;
@@ -903,50 +1034,6 @@
         else alert(`เปิดไฟล์แนบ: ${name}`);
         return;
       }
-      const notifyDuplicateButton=event.target.closest('#notifyDuplicateResult');
-      if(notifyDuplicateButton){
-        event.preventDefault();
-        const confirmation=await confirmDo('ยืนยันการแจ้งผลเรื่องซ้ำ','บันทึกและแจ้งผู้ร้องว่าเรื่องนี้ซ้ำกับ ECMIS-2569-000127','แจ้งผลเรื่องซ้ำ');
-        if(!confirmation.isConfirmed)return;
-        const state=getState(selectedId);
-        const time=now();
-        state.duplicateNotification={status:'sent',duplicateCaseId:'ECMIS-2569-000127',similarity:92,actor:'ธุรการ ศรร.',time};
-        state.decisionHistory.push({text:'[แจ้งผลเรื่องซ้ำ] ธุรการ ศรร. แจ้งผู้ร้องว่าเรื่องซ้ำกับ ECMIS-2569-000127 ความใกล้เคียง 92%',time});
-        saveState(selectedId,state);
-        notifyDuplicateButton.disabled=true;
-        notifyDuplicateButton.textContent='แจ้งผลแล้ว';
-        notify('success','แจ้งผลเรื่องซ้ำแล้ว','ระบบบันทึกประวัติการแจ้งไว้ในเรื่องร้องเรียนแล้ว');
-        return;
-      }
-      const copyDuplicateButton=event.target.closest('#copyDuplicateNote');
-      if(copyDuplicateButton){
-        event.preventDefault();
-        putDuplicateInNote();
-        return;
-      }
-      const duplicateButton=event.target.closest('#dupCheck');
-      if(duplicateButton){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        const silent=duplicateButton.dataset.silent==='true';
-        delete duplicateButton.dataset.silent;
-        const duplicateResult=$('#dupResult');
-        if($('#dupInput').value==='1234'){
-          duplicateResult.classList.remove('ws-hidden');
-          duplicateResult.classList.add('duplicate-critical');
-          const notified=getState(selectedId).duplicateNotification?.status==='sent';
-          duplicateResult.innerHTML=`<div><strong>คำเตือนระดับสูง: พบความเสี่ยงเรื่องร้องเรียนซ้ำ</strong><p>เรื่องเดิม ECMIS-2569-000127 · ความใกล้เคียง 92%</p><p>ต้องตรวจสอบและเปรียบเทียบข้อเท็จจริงก่อนดำเนินการต่อ</p></div><div class="duplicate-alert-actions"><button type="button" class="ws-button secondary" id="copyDuplicateNote">ใส่ในหมายเหตุ</button><button type="button" class="ws-button danger" id="notifyDuplicateResult" ${notified?'disabled':''}>${notified?'แจ้งผลแล้ว':'แจ้งผลเรื่องซ้ำ'}</button></div>`;
-          if(window.Swal&&!silent){
-            const result=await Swal.fire({icon:'error',title:'คำเตือน: ความเสี่ยงเรื่องซ้ำสูง',html:'<div class="duplicate-alert-card"><span>ความใกล้เคียง</span><strong>92%</strong><p>พบเรื่องเดิม <b>ECMIS-2569-000127</b></p><p>กรุณาตรวจสอบและเปรียบเทียบข้อเท็จจริงก่อนมอบหมายงาน</p></div>',width:720,showCancelButton:true,confirmButtonText:'ใส่ในหมายเหตุ',cancelButtonText:'ปิดคำเตือน',confirmButtonColor:'#a52c25',cancelButtonColor:'#687789',allowOutsideClick:false});
-            if(result.isConfirmed)putDuplicateInNote();
-          }
-          else if(!window.Swal&&!silent)alert('พบเรื่องร้องเรียนที่อาจซ้ำ\nเรื่องเดิม ECMIS-2569-000127\nความใกล้เคียง 92%');
-        }else{
-          duplicateResult.classList.add('ws-hidden');
-          notify('info','ยังไม่พบเรื่องใกล้เคียง','ผลนี้เป็นเพียงข้อมูลประกอบ เจ้าหน้าที่ยังต้องตรวจสอบข้อเท็จจริง');
-        }
-        return;
-      }
       const button=event.target.closest('[data-action="recall-assignment"]');
       if(!button)return;
       event.preventDefault();
@@ -954,7 +1041,7 @@
       const state=getState(selectedId);
       const previousOfficer=state.documentData.assignedOfficer;
       const previousBackupOfficer=state.documentData.backupOfficer||'';
-      if(state.workflow.complete||state.workflow.stage!=='officer'||!previousOfficer){notify('warning','ไม่สามารถดึงงานกลับได้','เรื่องไม่ได้อยู่ในขั้นตอนที่ธุรการสามารถดึงกลับเพื่อมอบหมายใหม่');return}
+      if(state.workflow.complete||['nacc-dispatch','anonymous-box'].includes(state.workflow.stage)||!previousOfficer){notify('warning','ไม่สามารถดึงงานกลับได้','เรื่องไม่ได้อยู่ในขั้นตอนที่ธุรการสามารถดึงกลับเพื่อมอบหมายใหม่');return}
       let reason='';
       if(window.Swal){
         const result=await Swal.fire({icon:'warning',title:'ดึงงานกลับเพื่อมอบหมายใหม่',text:`ผู้รับผิดชอบปัจจุบัน: ${previousOfficer}`,input:'textarea',inputLabel:'เหตุผลการดึงงานกลับ',inputPlaceholder:'ระบุเหตุผลที่มอบหมายผิดคน',inputValidator:value=>value.trim()?'':'กรุณาระบุเหตุผล',showCancelButton:true,confirmButtonText:'ดึงงานกลับ',cancelButtonText:'ยกเลิก',confirmButtonColor:'#a52c25'});
@@ -979,7 +1066,7 @@
       renderDetail();
       renderList();
     },true);
-    renderList();if(selectedId)renderDetail();
+    renderList();if(selectedId&&canRegionalAccess(getState(selectedId).caseData))renderDetail();else selectedId=null;
   }
-  document.addEventListener('DOMContentLoaded',()=>{if($('#walkinApp'))renderWalkin();if($('#staffApp'))renderStaff()});
+  document.addEventListener('DOMContentLoaded',()=>{if($('#walkinApp'))renderWalkin();if($('#staffApp'))renderStaff();initFontSizeControls()});
 })();
