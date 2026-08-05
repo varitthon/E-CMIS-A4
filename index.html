@@ -1177,14 +1177,13 @@ table.dataTable thead th{ color:var(--ecmis-navy); font-family:var(--serif); }
             <form id="quickTrackForm" novalidate>
               <div class="quick-track-fields">
                 <input type="text" class="form-control" id="quickTrackYearSequence" inputmode="numeric" maxlength="6" placeholder="690001" aria-label="เลขรับบริการ" autocomplete="off">
-                <input type="text" class="form-control" id="quickTrackVerificationCode" maxlength="4" placeholder="5FT4" aria-label="รหัสยืนยัน" autocomplete="off">
                 <button class="btn btn-track-status" type="submit">ค้นหา</button>
               </div>
               <p class="quick-track-feedback" id="quickTrackFeedback" aria-live="polite"></p>
               <div data-human-verification="quick-track"></div>
             </form>
             <div class="hint">
-              <i class="fa-solid fa-circle-info me-1"></i> กรอกเลขรับบริการ พร้อมรหัสยืนยัน
+              <i class="fa-solid fa-circle-info me-1"></i> กรอกเลขรับบริการ 6 หลัก แล้วกรอก PIN ในหน้าติดตาม
             </div>
           </div>
         </div>
@@ -1795,22 +1794,16 @@ function trackStatus(useQuickForm = false){
     return;
   }
   const sequenceInput = document.getElementById('quickTrackYearSequence');
-  const codeInput = document.getElementById('quickTrackVerificationCode');
   const feedback = document.getElementById('quickTrackFeedback');
   sequenceInput.classList.remove('is-invalid');
-  codeInput.classList.remove('is-invalid');
   const compactSequence = sequenceInput.value.replace(/\s/g, '');
-  const code = codeInput.value.trim().toUpperCase();
   const sequenceValid = /^\d{6}$/.test(compactSequence);
-  const codeValid = /^[A-Z0-9]{4}$/.test(code);
-  if(!sequenceValid || !codeValid){
+  if(!sequenceValid){
     if(!sequenceValid) sequenceInput.classList.add('is-invalid');
-    if(!codeValid) codeInput.classList.add('is-invalid');
-    feedback.textContent = 'กรอกเลขทั้ง 2 ส่วนให้ครบและถูกต้อง';
+    feedback.textContent = 'กรอกเลขรับบริการ 6 หลักให้ถูกต้อง';
     return;
   }
-  const yearSequence = compactSequence;
-  window.location.href = `tracking.html?yearSequence=${encodeURIComponent(yearSequence)}&verificationCode=${encodeURIComponent(code)}`;
+  window.location.href = `tracking.html?serviceNumber=${encodeURIComponent(compactSequence)}`;
 }
 
 document.getElementById('quickTrackForm').addEventListener('submit', function(event){

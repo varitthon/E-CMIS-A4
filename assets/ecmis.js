@@ -120,10 +120,9 @@
     document.querySelectorAll("[data-track-form]").forEach((f) =>
       f.addEventListener("submit", (e) => {
         e.preventDefault();
-        const v = f.querySelector("input").value.trim().toUpperCase();
-        const match = v.match(/^(\d{2}\s?\d{4})[\s·-]+([A-Z0-9]{4})$/);
-        if (match) {
-          location.href = `tracking.html?yearSequence=${encodeURIComponent(match[1])}&verificationCode=${encodeURIComponent(match[2])}`;
+        const serviceNumber = parseServiceNumber(f.querySelector("input").value);
+        if (serviceNumber) {
+          location.href = `tracking.html?serviceNumber=${encodeURIComponent(serviceNumber)}`;
         }
       }),
     );
@@ -152,7 +151,7 @@
         : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`.slice(-8).toUpperCase();
       return {
         yearSequence: "",
-        verificationCode: "",
+        pin: "",
         pendingReference: `PENDING-${year}-${String(pendingSequence).padStart(6, "0")}-${randomPart}`,
         allocationStatus: "pending",
         capacityLevel: "exhausted",
@@ -161,18 +160,15 @@
     }
     const sequence = normalizedPrevious + 1;
     localStorage.setItem(sequenceKey, String(sequence));
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(4);
-    if (globalThis.crypto?.getRandomValues) {
-      globalThis.crypto.getRandomValues(bytes);
-    } else {
-      for (let index = 0; index < bytes.length; index += 1) {
-        bytes[index] = Math.floor(Math.random() * 256);
-      }
+    if (!globalThis.crypto?.getRandomValues) {
+      throw new Error("Secure random number generation is unavailable");
     }
-    const verificationCode = [...bytes]
-      .map((value) => alphabet[value % alphabet.length])
-      .join("");
+    const randomValue = new Uint32Array(1);
+    const unbiasedLimit = Math.floor(0x100000000 / 10000) * 10000;
+    do {
+      globalThis.crypto.getRandomValues(randomValue);
+    } while (randomValue[0] >= unbiasedLimit);
+    const pin = String(randomValue[0] % 10000).padStart(4, "0");
     const yearSequence = `${year}${String(sequence).padStart(4, "0")}`;
     const capacityLevel = sequence >= 9900 ? "emergency" : sequence >= 9000 ? "critical" : sequence >= 8000 ? "warning" : "normal";
     const capacityMessage = capacityLevel === "emergency"
@@ -182,28 +178,34 @@
         : capacityLevel === "warning"
           ? `เลขรับบริการปี ${year} ใช้ถึง ${String(sequence).padStart(4, "0")} แล้ว โปรดติดตามจำนวนเลขคงเหลือ`
           : "";
-    return { yearSequence, verificationCode, allocationStatus: "allocated", capacityLevel, capacityMessage };
+    return { yearSequence, pin, allocationStatus: "allocated", capacityLevel, capacityMessage };
   }
-  function parseTrackingPair(yearSequence, verificationCode) {
-    const compactSequence = String(yearSequence || "").replace(/\s/g, "");
-    const code = String(verificationCode || "").trim().toUpperCase();
-    if (!/^\d{6}$/.test(compactSequence) || !/^[A-Z0-9]{4}$/.test(code)) {
-      return null;
-    }
-    return {
-      yearSequence: compactSequence,
-      verificationCode: code,
-      display: `${compactSequence} · ${code}`,
-    };
+  function parseServiceNumber(value) {
+    const digits = String(value || "").replace(/\s/g, "");
+    return /^\d{6}$/.test(digits) ? digits : null;
+  }
+  function parseFourDigits(value) {
+    const digits = String(value || "").trim();
+    return /^\d{4}$/.test(digits) ? digits : null;
+  }
+  function parseTrackingCredentials(serviceNumber, pin, identityLast4 = "") {
+    const parsedServiceNumber = parseServiceNumber(serviceNumber);
+    const parsedPin = parseFourDigits(pin);
+    const parsedIdentityLast4 = String(identityLast4 || "").trim() ? parseFourDigits(identityLast4) : "";
+    if (!parsedServiceNumber || !parsedPin || parsedIdentityLast4 === null) return null;
+    return { serviceNumber: parsedServiceNumber, yearSequence: parsedServiceNumber, pin: parsedPin, identityLast4: parsedIdentityLast4 };
   }
   function saveCaseMetadata(metadata) {
     const pending = metadata.allocationStatus === "pending" || !metadata.yearSequence;
     const safeRecord = {
       yearSequence: String(metadata.yearSequence || ""),
-      verificationCode: String(metadata.verificationCode || ""),
+      pin: String(metadata.pin || ""),
+      identityLast4: String(metadata.identityLast4 || ""),
+      id4: String(metadata.id4 || ""),
+      phone: String(metadata.phone || ""),
       pendingReference: String(metadata.pendingReference || ""),
       allocationStatus: pending ? "pending" : "allocated",
-      trackingNumber: `${metadata.yearSequence || ""} ${metadata.verificationCode || ""}`.trim(),
+      trackingNumber: String(metadata.yearSequence || ""),
       subject: String(metadata.subject || ""),
       attachmentCount: Number(metadata.attachmentCount || 0),
       anonymousDetected: Boolean(metadata.anonymousDetected),
@@ -245,7 +247,9 @@
     setTheme,
     openLab,
     createTrackingNumber,
-    parseTrackingPair,
+    parseServiceNumber,
+    parseFourDigits,
+    parseTrackingCredentials,
     saveCaseMetadata,
     createDemoSession,
   };

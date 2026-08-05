@@ -1,6 +1,10 @@
 (() => {
   const province = document.getElementById('province');
   const district = document.getElementById('district');
+  const subdistrict = document.getElementById('subdistrict');
+  const provinceOptions = document.getElementById('provinceOptions');
+  const districtOptions = document.getElementById('districtOptions');
+  const subdistrictOptions = document.getElementById('subdistrictOptions');
   const districtHint = document.getElementById('districtHint');
   const form = document.getElementById('memberRegisterForm');
   const locationUrl = 'https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest/province_with_district_and_sub_district.json';
@@ -12,14 +16,25 @@
     {name_th:'ขอนแก่น',districts:['เมืองขอนแก่น','บ้านฝาง','พระยืน','หนองเรือ','ชุมแพ','สีชมพู','น้ำพอง','อุบลรัตน์','กระนวน','บ้านไผ่','เปือยน้อย','พล','แวงใหญ่','แวงน้อย','หนองสองห้อง','ภูเวียง','มัญจาคีรี','ชนบท','เขาสวนกวาง','ภูผาม่าน','ซำสูง','โคกโพธิ์ไชย','หนองนาคำ','บ้านแฮด','โนนศิลา','เวียงเก่า']},
     {name_th:'สงขลา',districts:['เมืองสงขลา','สทิงพระ','จะนะ','นาทวี','เทพา','สะบ้าย้อย','ระโนด','กระแสสินธุ์','รัตภูมิ','สะเดา','หาดใหญ่','นาหม่อม','ควนเนียง','บางกล่ำ','สิงหนคร','คลองหอยโข่ง']}
   ];
-  let locations = [];
+  let locationRows = [];
   function isValidCitizenId(value){
     const digits=String(value).replace(/\D/g,'');
     if(digits.length!==13)return false;
     const sum=[...digits.slice(0,12)].reduce((total,digit,index)=>total+(Number(digit)*(13-index)),0);
     return (11-(sum%11))%10===Number(digits[12]);
   }
-  const normalize = records => records.map(item => ({name_th:item.name_th,districts:(item.districts || item.amphure || []).map(entry => typeof entry === 'string' ? entry : entry.name_th)}));
+  const flattenLocations = records => records.flatMap(provinceItem =>
+    (provinceItem.districts || provinceItem.amphure || []).flatMap(districtItem => {
+      const districtName=typeof districtItem==='string'?districtItem:districtItem.name_th;
+      const subdistricts=typeof districtItem==='string'?[]:(districtItem.sub_districts || districtItem.tambon || []);
+      if(!subdistricts.length)return [{province:provinceItem.name_th,district:districtName,subdistrict:''}];
+      return subdistricts.map(subdistrictItem=>({
+        province:provinceItem.name_th,
+        district:districtName,
+        subdistrict:typeof subdistrictItem==='string'?subdistrictItem:subdistrictItem.name_th
+      }));
+    })
+  );
   function validateCitizenIdInput(input){
     const digits=input.value.replace(/\D/g,'');
     const feedback=document.getElementById('citizenIdFeedback');
@@ -38,10 +53,37 @@
     input.value=parts.join('-');
     validateCitizenIdInput(input);
   }
-  function renderProvinces(){province.innerHTML='<option value="">เลือกจังหวัด</option>'+locations.map(item=>`<option value="${item.name_th}">${item.name_th}</option>`).join('');}
-  function renderDistricts(){const selected=locations.find(item=>item.name_th===province.value);district.innerHTML='<option value="">เลือกอำเภอ/เขต</option>';if(!selected){district.disabled=true;districtHint.textContent='รายการอำเภอ/เขตจะเปลี่ยนตามจังหวัดที่เลือก';return}selected.districts.filter(Boolean).forEach(name=>district.add(new Option(name,name)));district.disabled=false;districtHint.textContent=`พบ ${selected.districts.length} อำเภอ/เขตในจังหวัดที่เลือก`;}
-  fetch(locationUrl).then(response=>{if(!response.ok)throw new Error('location data unavailable');return response.json()}).then(data=>{locations=normalize(data);renderProvinces()}).catch(()=>{locations=normalize(fallback);renderProvinces();districtHint.textContent='ขณะนี้แสดงข้อมูลพื้นที่สำรองสำหรับหน้าจอต้นแบบ'});
-  province.addEventListener('change',renderDistricts);
+  function renderLocationOptions(){
+    const provinceValue=province.value.trim();
+    const districtValue=district.value.trim();
+    const provinces=[...new Set(locationRows.map(item=>item.province))].sort((a,b)=>a.localeCompare(b,'th'));
+    provinceOptions.replaceChildren(...provinces.map(name=>{const option=document.createElement('option');option.value=name;return option}));
+    const districts=new Map();
+    locationRows.filter(item=>!provinceValue||item.province===provinceValue).forEach(item=>districts.set(`${item.province}|${item.district}`,item));
+    districtOptions.replaceChildren(...[...districts.values()].sort((a,b)=>a.district.localeCompare(b.district,'th')).map(item=>{const option=document.createElement('option');option.value=provinceValue?item.district:`${item.district} — ${item.province}`;return option}));
+    const subdistricts=locationRows.filter(item=>item.subdistrict&&(!provinceValue||item.province===provinceValue)&&(!districtValue||item.district===districtValue));
+    subdistrictOptions.replaceChildren(...subdistricts.sort((a,b)=>a.subdistrict.localeCompare(b.subdistrict,'th')).map(item=>{const option=document.createElement('option');option.value=provinceValue&&districtValue?item.subdistrict:`${item.subdistrict} — ${item.district} — ${item.province}`;return option}));
+    const districtCount=new Set(locationRows.filter(item=>!provinceValue||item.province===provinceValue).map(item=>item.district)).size;
+    districtHint.textContent=provinceValue&&districtCount?`พบ ${districtCount} อำเภอ/เขตในจังหวัดที่ระบุ`:'ค้นหาได้โดยไม่จำเป็นต้องเลือกจังหวัดก่อน';
+  }
+  function findLocation(type,entered){
+    const provinceValue=province.value.trim();
+    const districtValue=district.value.trim();
+    if(type==='district'){
+      const decorated=locationRows.find(item=>`${item.district} — ${item.province}`===entered);
+      if(decorated)return decorated;
+      const matches=locationRows.filter(item=>item.district===entered&&(!provinceValue||item.province===provinceValue));
+      return matches.length===1?matches[0]:null;
+    }
+    const decorated=locationRows.find(item=>`${item.subdistrict} — ${item.district} — ${item.province}`===entered);
+    if(decorated)return decorated;
+    const matches=locationRows.filter(item=>item.subdistrict===entered&&(!provinceValue||item.province===provinceValue)&&(!districtValue||item.district===districtValue));
+    return matches.length===1?matches[0]:null;
+  }
+  fetch(locationUrl).then(response=>{if(!response.ok)throw new Error('location data unavailable');return response.json()}).then(data=>{locationRows=flattenLocations(data);renderLocationOptions()}).catch(()=>{locationRows=flattenLocations(fallback);renderLocationOptions();districtHint.textContent='ค้นหาได้จากรายการพื้นที่ที่มีอยู่'});
+  province.addEventListener('change',()=>{const valid=locationRows.some(item=>item.province===province.value&&item.district===district.value&&(!subdistrict.value||item.subdistrict===subdistrict.value));if(!valid){district.value='';subdistrict.value=''}renderLocationOptions()});
+  district.addEventListener('change',()=>{const match=findLocation('district',district.value.trim());subdistrict.value='';if(match){province.value=match.province;district.value=match.district}renderLocationOptions()});
+  subdistrict.addEventListener('change',()=>{const match=findLocation('subdistrict',subdistrict.value.trim());if(match){province.value=match.province;district.value=match.district;subdistrict.value=match.subdistrict}renderLocationOptions()});
   document.getElementById('citizenId').addEventListener('input',event=>formatCitizenIdInput(event.target));
   document.getElementById('phone').addEventListener('input',event=>{event.target.value=event.target.value.replace(/\D/g,'').slice(0,10)});
   document.querySelectorAll('[data-font]').forEach(button=>button.addEventListener('click',()=>{const step=Number(button.dataset.font);document.documentElement.style.fontSize=step===0?'16px':`${16+(step*2)}px`}));

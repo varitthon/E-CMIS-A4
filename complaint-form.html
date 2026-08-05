@@ -218,6 +218,8 @@ body.high-contrast #trackingNoBox{ background:#000 !important; border-color:#fff
 .form-label .req{ color:var(--ecmis-red); margin-left:2px; }
 .form-control, .form-select{ font-size:.9rem; border-radius:8px; border-color:#dfe3ea; }
 .form-control:focus, .form-select:focus{ box-shadow:0 0 0 .2rem rgba(201,162,39,.15); border-color:var(--ecmis-gold); }
+.form-control[readonly].postcode-field{ background:#e3e8ee; color:#25384b; border-color:#c5ced8; opacity:1; font-weight:600; }
+body.high-contrast .form-control[readonly].postcode-field{ background:#252525 !important; color:#fff !important; }
 .char-counter{ font-size:.74rem; color:#9aa4b5; text-align:right; margin-top:.3rem; }
 .privacy-request{margin-bottom:1.5rem;padding:1rem 1.15rem;border:1px solid #e1e6ed;border-radius:14px;background:#f7f9fb}
 .privacy-choice{display:flex;align-items:flex-start;gap:.7rem;cursor:pointer}
@@ -657,45 +659,22 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
             </div>
             <div class="col-md-4">
               <label class="form-label">จังหวัด<span class="req">*</span></label>
-              <select class="form-select" id="province" required>
-                <option value="">โปรดระบุจังหวัด</option>
-                <option>กรุงเทพมหานคร</option><option>สมุทรปราการ</option><option>นนทบุรี</option><option>ปทุมธานี</option>
-                <option>พระนครศรีอยุธยา</option><option>อ่างทอง</option><option>ลพบุรี</option><option>สิงห์บุรี</option>
-                <option>ชัยนาท</option><option>สระบุรี</option><option>ชลบุรี</option><option>ระยอง</option>
-                <option>จันทบุรี</option><option>ตราด</option><option>ฉะเชิงเทรา</option><option>ปราจีนบุรี</option>
-                <option>นครนายก</option><option>สระแก้ว</option><option>นครราชสีมา</option><option>บุรีรัมย์</option>
-                <option>สุรินทร์</option><option>ศรีสะเกษ</option><option>อุบลราชธานี</option><option>ยโสธร</option>
-                <option>ชัยภูมิ</option><option>อำนาจเจริญ</option><option>บึงกาฬ</option><option>หนองบัวลำภู</option>
-                <option>ขอนแก่น</option><option>อุดรธานี</option><option>เลย</option><option>หนองคาย</option>
-                <option>มหาสารคาม</option><option>ร้อยเอ็ด</option><option>กาฬสินธุ์</option><option>สกลนคร</option>
-                <option>นครพนม</option><option>มุกดาหาร</option><option>เชียงใหม่</option><option>ลำพูน</option>
-                <option>ลำปาง</option><option>อุตรดิตถ์</option><option>แพร่</option><option>น่าน</option>
-                <option>พะเยา</option><option>เชียงราย</option><option>แม่ฮ่องสอน</option><option>นครสวรรค์</option>
-                <option>อุทัยธานี</option><option>กำแพงเพชร</option><option>ตาก</option><option>สุโขทัย</option>
-                <option>พิษณุโลก</option><option>พิจิตร</option><option>เพชรบูรณ์</option><option>ราชบุรี</option>
-                <option>กาญจนบุรี</option><option>สุพรรณบุรี</option><option>นครปฐม</option><option>สมุทรสาคร</option>
-                <option>สมุทรสงคราม</option><option>เพชรบุรี</option><option>ประจวบคีรีขันธ์</option><option>นครศรีธรรมราช</option>
-                <option>กระบี่</option><option>พังงา</option><option>ภูเก็ต</option><option>สุราษฎร์ธานี</option>
-                <option>ระนอง</option><option>ชุมพร</option><option>สงขลา</option><option>สตูล</option>
-                <option>ตรัง</option><option>พัทลุง</option><option>ปัตตานี</option><option>ยะลา</option>
-                <option>นราธิวาส</option><option>ไม่ระบุ</option>
-              </select>
+              <input class="form-control" id="province" list="provinceOptions" autocomplete="off" placeholder="ค้นหาหรือระบุจังหวัด" required>
+              <datalist id="provinceOptions"></datalist>
             </div>
             <div class="col-md-4">
               <label class="form-label">อำเภอ/เขต</label>
-              <select class="form-select" id="district">
-                <option value="">โปรดระบุอำเภอ/เขต</option>
-              </select>
+              <input class="form-control" id="district" list="districtOptions" autocomplete="off" placeholder="ค้นหาหรือระบุอำเภอ/เขต">
+              <datalist id="districtOptions"></datalist>
             </div>
             <div class="col-md-4">
               <label class="form-label">ตำบล/แขวง</label>
-              <select class="form-select" id="subdistrict">
-                <option value="">โปรดระบุตำบล/แขวง</option>
-              </select>
+              <input class="form-control" id="subdistrict" list="subdistrictOptions" autocomplete="off" placeholder="ค้นหาหรือระบุตำบล/แขวง">
+              <datalist id="subdistrictOptions"></datalist>
             </div>
             <div class="col-md-4">
               <label class="form-label">รหัสไปรษณีย์</label>
-              <input type="text" class="form-control" id="postcode" maxlength="5" placeholder="รหัสไปรษณีย์" readonly>
+              <input type="text" class="form-control postcode-field" id="postcode" maxlength="5" placeholder="รหัสไปรษณีย์" readonly>
             </div>
             <div class="col-md-8">
               <div class="field-label-row">
@@ -774,7 +753,7 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
             <div class="small text-muted">หมายเลขติดตามคำร้องของท่านคือ</div>
             <div style="font-size:1.3rem;font-weight:700;color:var(--ecmis-navy)" id="trackingNoDisplay">—</div>
             <img id="trackingQr" class="tracking-qr d-none" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="QR code สำหรับติดตามคำร้อง">
-            <div class="small mt-2 fw-semibold" style="color:var(--ecmis-red)">กรุณาบันทึก QR และเลขติดตามทั้ง 2 ส่วนทันที เพื่อใช้ติดตามเรื่องและส่งข้อมูลเพิ่มเติม</div>
+            <div class="small mt-2 fw-semibold" style="color:var(--ecmis-red)">กรุณาบันทึกเลขรับบริการและ PIN ทันที โดย QR มีเฉพาะเลขรับบริการและไม่มี PIN</div>
             <div class="tracking-save-actions d-none" id="trackingSaveActions">
               <button type="button" class="btn-tracking-save" onclick="copyTrackingNo()"><i class="fa-solid fa-copy me-1"></i>คัดลอกหมายเลข</button>
               <button type="button" class="btn-tracking-save" onclick="saveTrackingQr()"><i class="fa-solid fa-download me-1"></i>บันทึก QR</button>
@@ -945,6 +924,12 @@ function getComplainantIdentityState(){
     providedFields,
     confidentialityRequested:document.getElementById('confidentialityToggle').checked
   };
+}
+function getTrackingIdentityLast4(){
+  const nationalIdDigits=document.getElementById('nationalId').value.replace(/\D/g,'');
+  if(isValidThaiNationalId(nationalIdDigits)) return nationalIdDigits.slice(-4);
+  const phoneDigits=document.getElementById('phone').value.replace(/\D/g,'');
+  return phoneDigits.length>=4?phoneDigits.slice(-4):'';
 }
 
 // --- national ID: digits only, auto-format with dashes (x-xxxx-xxxxx-xx-x), verify checksum ---
@@ -1305,7 +1290,7 @@ function appendReviewRow(container, labelText, valueText){
 function buildReviewSummary(){
   const identity = getComplainantIdentityState();
   const accusedCount = document.querySelectorAll('.accused-card').length;
-  const provinceText = document.getElementById('province').selectedOptions[0]?.text || '-';
+  const provinceText = val('province');
   const networkText = document.getElementById('networkStatus').selectedOptions[0]?.text || '-';
   const reviewBody = document.getElementById('reviewBody');
   reviewBody.replaceChildren();
@@ -1329,11 +1314,16 @@ function buildReviewSummary(){
 
 // --- step 2 -> submit ---
 function submitComplaint(){
+  const identity = getComplainantIdentityState();
+  const identityLast4 = getTrackingIdentityLast4();
+  if(!identity.isAnonymous&&!identityLast4){
+    Swal.fire({icon:'warning',title:'ข้อมูลยืนยันตัวตนสำหรับติดตามเรื่องไม่ครบ',text:'กรุณากรอกเลขบัตรประชาชนที่ถูกต้อง หรือหมายเลขโทรศัพท์อย่างน้อย 4 หลัก เพื่อใช้ยืนยันตัวตนเมื่อติดตามเรื่อง',confirmButtonColor:'#0b2e59'});
+    return;
+  }
   if(!window.PACCHumanVerification.require('complaint-submit')){
     Swal.fire({icon:'warning', title:'กรุณายืนยันตัวตนก่อนส่งคำร้อง', text:'คลิกที่ช่อง "ฉันไม่ใช่โปรแกรมอัตโนมัติ" เพื่อยืนยันก่อนดำเนินการต่อ', confirmButtonColor:'#0b2e59'});
     return;
   }
-  const identity = getComplainantIdentityState();
   const hasContact = val('phone') !== '-' || val('email') !== '-';
   const trackingWarning = !hasContact
       ? 'ท่านไม่ได้ระบุข้อมูลติดต่อ กรุณาจดจำเลขติดตามไว้ด้วยตนเอง เนื่องจากสำนักงานไม่สามารถแจ้งผลกลับได้'
@@ -1341,7 +1331,7 @@ function submitComplaint(){
   Swal.fire({
     icon:'question',
     title:'ยืนยันการส่งคำร้อง?',
-    html:'เมื่อส่งคำร้องแล้วจะไม่สามารถแก้ไขได้ หากต้องการแก้ไขให้กดย้อนกลับ<br><strong style="display:block;margin-top:.75rem;color:#8a5a12">หลังส่งสำเร็จ ระบบจะแสดง QR และเลขติดตาม 2 ส่วน กรุณาบันทึกไว้ทันที</strong><span style="display:block;margin-top:.5rem">' + trackingWarning + '</span>',
+    html:'เมื่อส่งคำร้องแล้วจะไม่สามารถแก้ไขได้ หากต้องการแก้ไขให้กดย้อนกลับ<br><strong style="display:block;margin-top:.75rem;color:#8a5a12">หลังส่งสำเร็จ ระบบจะแสดง QR เลขรับบริการ และ PIN 4 หลัก กรุณาบันทึกไว้ทันที</strong><span style="display:block;margin-top:.5rem">' + trackingWarning + '</span>',
     showCancelButton:true,
     confirmButtonText:'ส่งคำร้อง',
     cancelButtonText:'ยกเลิก',
@@ -1353,19 +1343,22 @@ function submitComplaint(){
       const pendingAllocation = trackingPair.allocationStatus === 'pending';
       currentTrackingNo = pendingAllocation
         ? trackingPair.pendingReference
-        : `${trackingPair.yearSequence} · ${trackingPair.verificationCode}`;
+        : `${trackingPair.yearSequence} · PIN ${trackingPair.pin}`;
       window.ECMIS.saveCaseMetadata({
         ...trackingPair,
         subject:val('complaintSubject'),
         attachmentCount:uploadedFiles.length,
         anonymousDetected:identity.isAnonymous,
         confidentialityRequested:identity.confidentialityRequested,
-        identityFieldsProvided:identity.providedFields.length
+        identityFieldsProvided:identity.providedFields.length,
+        identityLast4:identity.isAnonymous?'':identityLast4,
+        id4:isValidThaiNationalId(document.getElementById('nationalId').value.replace(/\D/g,''))?document.getElementById('nationalId').value.replace(/\D/g,'').slice(-4):'',
+        phone:document.getElementById('phone').value.replace(/\D/g,'')
       });
       document.getElementById('trackingNoDisplay').textContent = currentTrackingNo;
       const qrImg = document.getElementById('trackingQr');
       if(!pendingAllocation){
-        const trackingUrl = new URL(`tracking.html?yearSequence=${encodeURIComponent(trackingPair.yearSequence)}&verificationCode=${encodeURIComponent(trackingPair.verificationCode)}`, window.location.href).href;
+        const trackingUrl = new URL(`tracking.html?serviceNumber=${encodeURIComponent(trackingPair.yearSequence)}`, window.location.href).href;
         const qr = qrcode(0, 'M');
         qr.addData(trackingUrl);
         qr.make();
@@ -1385,7 +1378,7 @@ function submitComplaint(){
         title:pendingAllocation?'ส่งคำร้องสำเร็จและรอจัดสรรเลขรับบริการ':'ส่งคำร้องสำเร็จ!',
         html:pendingAllocation
           ? `สำนักงาน ป.ป.ท. ได้รับคำร้องแล้ว<br>เลขอ้างอิงชั่วคราว<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b>${capacityNotice}`
-          : `สำนักงาน ป.ป.ท. ได้รับคำร้องของท่านเรียบร้อยแล้ว<br>เลขติดตามทั้ง 2 ส่วนคือ<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b><br><strong style="display:block;margin-top:.75rem;color:#8a2f27">กรุณาบันทึก QR และเลขติดตามทั้ง 2 ส่วนทันที หากสูญหายอาจไม่สามารถติดตามเรื่องได้</strong>${capacityNotice}`,
+          : `สำนักงาน ป.ป.ท. ได้รับคำร้องของท่านเรียบร้อยแล้ว<br>เลขรับบริการและ PIN คือ<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b><br><strong style="display:block;margin-top:.75rem;color:#8a2f27">กรุณาบันทึกเลขรับบริการและ PIN ทันที โดย QR ไม่มี PIN หากสูญหายอาจไม่สามารถติดตามเรื่องได้</strong>${capacityNotice}`,
         confirmButtonColor:'#0b2e59',
         confirmButtonText:'รับทราบ'
       }).then(() => { goToStep(3); });
@@ -1445,6 +1438,9 @@ const provinceField = document.getElementById('province');
 const districtField = document.getElementById('district');
 const subdistrictField = document.getElementById('subdistrict');
 const postcodeField = document.getElementById('postcode');
+const provinceOptions = document.getElementById('provinceOptions');
+const districtOptions = document.getElementById('districtOptions');
+const subdistrictOptions = document.getElementById('subdistrictOptions');
 let locationRows = [];
 
 function buildLocationRows(provinces){
@@ -1458,74 +1454,73 @@ function buildLocationRows(provinces){
   ));
 }
 
-function renderDistrictOptions(province='',selectedDistrict=''){
+function renderLocationOptions(province='',district=''){
+  const provinces=[...new Set(locationRows.map(item=>item.province))].sort((a,b)=>a.localeCompare(b,'th'));
+  provinceOptions.replaceChildren(...[...provinces,'ไม่ระบุ'].map(name=>{
+    const option=document.createElement('option');
+    option.value=name;
+    return option;
+  }));
   const unique=new Map();
   locationRows
     .filter(item=>!province||item.province===province)
     .forEach(item=>unique.set(`${item.province}|${item.district}`,item));
-  districtField.innerHTML='<option value="">โปรดระบุอำเภอ/เขต</option>';
-  [...unique.values()].sort((a,b)=>a.district.localeCompare(b.district,'th')).forEach(item=>{
-    const value=province?item.district:`${item.province}|${item.district}`;
-    const text=province?item.district:`${item.district} — ${item.province}`;
-    const option=new Option(text,value);
-    option.dataset.province=item.province;
-    option.dataset.district=item.district;
-    districtField.add(option);
-  });
-  const selected=[...districtField.options].find(option=>option.dataset.district===selectedDistrict);
-  if(selected)selected.selected=true;
-}
-
-function renderSubdistrictOptions(province='',district='',selectedSubdistrict=''){
+  districtOptions.replaceChildren(...[...unique.values()].sort((a,b)=>a.district.localeCompare(b.district,'th')).map(item=>{
+    const option=document.createElement('option');
+    option.value=province?item.district:`${item.district} — ${item.province}`;
+    return option;
+  }));
   const items=locationRows.filter(item=>(!province||item.province===province)&&(!district||item.district===district));
-  subdistrictField.innerHTML='<option value="">โปรดระบุตำบล/แขวง</option>';
-  items.sort((a,b)=>a.subdistrict.localeCompare(b.subdistrict,'th')).forEach(item=>{
-    const scoped=province&&district;
-    const value=scoped?item.subdistrict:`${item.province}|${item.district}|${item.subdistrict}`;
-    const text=scoped?item.subdistrict:`${item.subdistrict} — ${item.district} — ${item.province}`;
-    const option=new Option(text,value);
-    option.dataset.province=item.province;
-    option.dataset.district=item.district;
-    option.dataset.subdistrict=item.subdistrict;
-    option.dataset.postcode=item.postcode;
-    subdistrictField.add(option);
-  });
-  const selected=[...subdistrictField.options].find(option=>option.dataset.subdistrict===selectedSubdistrict);
-  if(selected)selected.selected=true;
+  subdistrictOptions.replaceChildren(...items.sort((a,b)=>a.subdistrict.localeCompare(b.subdistrict,'th')).map(item=>{
+    const option=document.createElement('option');
+    option.value=province&&district?item.subdistrict:`${item.subdistrict} — ${item.district} — ${item.province}`;
+    return option;
+  }));
 }
 
 function initializeLocationFields(){
   locationRows=buildLocationRows(thaiLocations);
-  renderDistrictOptions(provinceField.value);
-  renderSubdistrictOptions(provinceField.value);
+  renderLocationOptions(provinceField.value,districtField.value);
+}
+
+function findLocation(type,entered){
+  const province=provinceField.value.trim();
+  const district=districtField.value.trim();
+  if(type==='district'){
+    const decorated=locationRows.find(item=>`${item.district} — ${item.province}`===entered);
+    if(decorated)return decorated;
+    const matches=locationRows.filter(item=>item.district===entered&&(!province||item.province===province));
+    return matches.length===1?matches[0]:null;
+  }
+  const decorated=locationRows.find(item=>`${item.subdistrict} — ${item.district} — ${item.province}`===entered);
+  if(decorated)return decorated;
+  const matches=locationRows.filter(item=>item.subdistrict===entered&&(!province||item.province===province)&&(!district||item.district===district));
+  return matches.length===1?matches[0]:null;
 }
 
 provinceField.addEventListener('change',()=>{
-  postcodeField.value='';
-  renderDistrictOptions(provinceField.value);
-  renderSubdistrictOptions(provinceField.value);
+  const province=provinceField.value.trim();
+  const current=locationRows.find(item=>item.province===province&&item.district===districtField.value&&item.subdistrict===subdistrictField.value);
+  if(!current){districtField.value='';subdistrictField.value='';postcodeField.value=''}
+  renderLocationOptions(province,districtField.value);
 });
 districtField.addEventListener('change',()=>{
-  const selected=districtField.selectedOptions[0];
-  const province=selected?.dataset.province||provinceField.value;
-  const district=selected?.dataset.district||'';
+  const match=findLocation('district',districtField.value.trim());
   postcodeField.value='';
-  if(!district){renderSubdistrictOptions(province);return}
-  provinceField.value=province;
-  renderDistrictOptions(province,district);
-  renderSubdistrictOptions(province,district);
+  subdistrictField.value='';
+  if(!match){renderLocationOptions(provinceField.value.trim());return}
+  provinceField.value=match.province;
+  districtField.value=match.district;
+  renderLocationOptions(match.province,match.district);
 });
 subdistrictField.addEventListener('change',()=>{
-  const selected=subdistrictField.selectedOptions[0];
-  const province=selected?.dataset.province||provinceField.value;
-  const district=selected?.dataset.district||districtField.value;
-  const subdistrict=selected?.dataset.subdistrict||'';
-  const postcode=selected?.dataset.postcode||'';
-  if(!subdistrict){postcodeField.value='';return}
-  provinceField.value=province;
-  renderDistrictOptions(province,district);
-  renderSubdistrictOptions(province,district,subdistrict);
-  postcodeField.value=postcode;
+  const match=findLocation('subdistrict',subdistrictField.value.trim());
+  if(!match){postcodeField.value='';return}
+  provinceField.value=match.province;
+  districtField.value=match.district;
+  subdistrictField.value=match.subdistrict;
+  postcodeField.value=match.postcode;
+  renderLocationOptions(match.province,match.district);
 });
 
 fetch(thaiLocationUrl)

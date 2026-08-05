@@ -18,7 +18,7 @@
     .supplement-main{margin-top:-2.5rem;padding-bottom:4rem}
     .supplement-card{max-width:1040px;margin:auto}
     .task-label{margin:0;color:#8a6810;font-size:.78rem;font-weight:800;letter-spacing:.06em}
-    .lookup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(13rem,.55fr) auto;gap:.8rem;align-items:end}
+    .lookup-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:.8rem;align-items:end}
     .lookup-grid .field{margin:0}
     .field-help,.form-feedback{color:var(--muted);font-size:.78rem}
     .form-feedback{min-height:1.35rem;margin:.7rem 0 0}
@@ -52,7 +52,7 @@
     <div class="shell">
       <p class="task-label">เอกสารประกอบเรื่องเดิม</p>
       <h1>ส่งเอกสารเพิ่มเติม</h1>
-      <p>ค้นหาเรื่องร้องเรียนเดิมด้วยเลขรับบริการและรหัสยืนยัน จากนั้นกรอกรายละเอียดหรือแนบเอกสารที่ต้องการส่งเพิ่มเติม</p>
+      <p>ค้นหาเรื่องร้องเรียนเดิมด้วยเลขรับบริการ PIN และข้อมูลยืนยันตัวตน 4 หลักท้ายตามที่เคยให้ไว้ จากนั้นกรอกรายละเอียดหรือแนบเอกสารที่ต้องการส่งเพิ่มเติม</p>
     </div>
   </section>
 
@@ -67,9 +67,14 @@
             <span class="field-help">ตัวเลข 6 หลัก เช่น 690001</span>
           </div>
           <div class="field">
-            <label for="verificationCode">รหัสยืนยัน</label>
-            <input id="verificationCode" name="verificationCode" maxlength="4" placeholder="5FT4" autocomplete="off" required>
-            <span class="field-help">อักษรอังกฤษหรือตัวเลข 4 ตัว</span>
+            <label for="trackingPin">PIN ติดตามเรื่อง 4 หลัก</label>
+            <input id="trackingPin" name="trackingPin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="5424" autocomplete="off" required>
+            <span class="field-help">ตัวเลข 4 หลัก</span>
+          </div>
+          <div class="field">
+            <label for="identityLast4">ข้อมูลยืนยันตัวตน 4 หลักท้าย (ถ้ามี)</label>
+            <input id="identityLast4" name="identityLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="1234" autocomplete="off">
+            <span class="field-help">เลขบัตรประชาชน หรือหมายเลขโทรศัพท์ ตามข้อมูลที่ให้ไว้</span>
           </div>
           <button class="primary" type="submit"><i class="fa-solid fa-search"></i>ค้นหาเรื่อง</button>
         </form>
@@ -117,7 +122,8 @@
   <script>
     const lookupForm=document.getElementById('lookupForm');
     const serviceNumber=document.getElementById('serviceNumber');
-    const verificationCode=document.getElementById('verificationCode');
+    const trackingPin=document.getElementById('trackingPin');
+    const identityLast4=document.getElementById('identityLast4');
     const lookupFeedback=document.getElementById('lookupFeedback');
     const caseWorkspace=document.getElementById('caseWorkspace');
     const supplementForm=document.getElementById('supplementForm');
@@ -126,21 +132,16 @@
     const fileList=document.getElementById('fileList');
 
     function openCase(){
-      const sequence=serviceNumber.value.replace(/\D/g,'').slice(0,6);
-      const code=verificationCode.value.trim().toUpperCase();
-      serviceNumber.value=sequence;
-      verificationCode.value=code;
-      if(!/^\d{6}$/.test(sequence)||!/^[A-Z0-9]{4}$/.test(code)){
-        lookupFeedback.textContent='กรอกเลขรับบริการ 6 หลัก และรหัสยืนยัน 4 ตัวให้ครบ';
+      const credentials=window.ECMIS.parseTrackingCredentials(serviceNumber.value,trackingPin.value,identityLast4.value);
+      serviceNumber.value=credentials?.serviceNumber||serviceNumber.value.replace(/\D/g,'').slice(0,6);
+      trackingPin.value=credentials?.pin||trackingPin.value.replace(/\D/g,'').slice(0,4);
+      identityLast4.value=credentials?.identityLast4||identityLast4.value.replace(/\D/g,'').slice(0,4);
+      if(!credentials||credentials.serviceNumber!=='690001'||credentials.pin!=='5424'||credentials.identityLast4!=='1234'){
+        lookupFeedback.textContent='ไม่สามารถยืนยันข้อมูลสำหรับติดตามเรื่องได้';
         caseWorkspace.hidden=true;
         return;
       }
-      if(sequence!=='690001'||code!=='5FT4'){
-        lookupFeedback.textContent='ไม่พบเรื่องร้องเรียนที่ตรงกับข้อมูลที่ระบุ';
-        caseWorkspace.hidden=true;
-        return;
-      }
-      document.getElementById('caseServiceNumber').textContent=sequence;
+      document.getElementById('caseServiceNumber').textContent=credentials.serviceNumber;
       lookupFeedback.textContent='พบเรื่องร้องเรียนแล้ว สามารถส่งข้อมูลหรือเอกสารเพิ่มเติมได้';
       caseWorkspace.hidden=false;
       caseWorkspace.scrollIntoView({behavior:'smooth',block:'start'});
@@ -185,8 +186,7 @@
     });
 
     const params=new URLSearchParams(location.search);
-    serviceNumber.value=(params.get('yearSequence')||'').replace(/\D/g,'').slice(0,6);
-    verificationCode.value=(params.get('verificationCode')||'').toUpperCase().slice(0,4);
+    serviceNumber.value=(params.get('serviceNumber')||params.get('yearSequence')||'').replace(/\D/g,'').slice(0,6);
   </script>
 </body>
 </html>

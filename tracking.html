@@ -14,7 +14,7 @@
     <script src="assets/ecmis.js" defer></script>
     <script src="assets/human-verification.js" defer></script>
     <style>
-      .tracking-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.65fr);gap:.8rem}.tracking-feedback{min-height:1.5rem;margin:.6rem 0;color:#9b2c2c;font-size:.85rem}.tracking-pair input.invalid{border-color:#9b2c2c;box-shadow:0 0 0 3px rgba(155,44,44,.12)}.tracking-guide{border-top:4px solid var(--accent)}.tracking-guide ol{margin:1rem 0 0;padding-left:1.25rem}.tracking-guide li{padding:.3rem 0}.tracking-guide .privacy-note{margin-top:1.25rem;padding:1rem;border-radius:var(--control-radius);background:#f3f6f9;color:var(--muted)}
+      .tracking-pair{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}.tracking-feedback{min-height:1.5rem;margin:.6rem 0;color:#9b2c2c;font-size:.85rem}.tracking-pair input.invalid{border-color:#9b2c2c;box-shadow:0 0 0 3px rgba(155,44,44,.12)}.tracking-guide{border-top:4px solid var(--accent)}.tracking-guide ol{margin:1rem 0 0;padding-left:1.25rem}.tracking-guide li{padding:.3rem 0}.tracking-guide .privacy-note{margin-top:1.25rem;padding:1rem;border-radius:var(--control-radius);background:#f3f6f9;color:var(--muted)}
       @media(max-width:650px){.tracking-pair{grid-template-columns:1fr}}
     </style>
   </head>
@@ -64,14 +64,19 @@
               <h2>ค้นหาเรื่อง</h2>
               <div class="tracking-pair">
                 <div class="field">
-                  <label for="yearSequence">เลขรับบริการ</label>
-                  <input id="yearSequence" type="text" inputmode="numeric" placeholder="690001" maxlength="6" autocomplete="off" />
+                  <label for="serviceNumber">เลขรับบริการ 6 หลัก</label>
+                  <input id="serviceNumber" type="text" inputmode="numeric" pattern="[0-9]{6}" placeholder="690001" maxlength="6" autocomplete="off" />
                   <span class="hint">ปี พ.ศ. 2 หลัก และลำดับ 4 หลัก</span>
                 </div>
                 <div class="field">
-                  <label for="verificationCode">รหัสยืนยัน</label>
-                  <input id="verificationCode" type="text" placeholder="5FT4" maxlength="4" autocomplete="off" />
-                  <span class="hint">อักษรพิมพ์ใหญ่หรือตัวเลข 4 ตัว</span>
+                  <label for="trackingPin">PIN ติดตามเรื่อง 4 หลัก</label>
+                  <input id="trackingPin" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="5424" maxlength="4" autocomplete="off" />
+                  <span class="hint">ตัวเลข 4 หลักที่ได้รับตอนยื่นเรื่อง</span>
+                </div>
+                <div class="field">
+                  <label for="identityLast4">ข้อมูลยืนยันตัวตน 4 หลักท้าย (ถ้ามี)</label>
+                  <input id="identityLast4" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="1234" maxlength="4" autocomplete="off" />
+                  <span class="hint">เลขบัตรประชาชน หรือหมายเลขโทรศัพท์ ตามข้อมูลที่ให้ไว้</span>
                 </div>
               </div>
               <p class="tracking-feedback" id="trackingFeedback" aria-live="polite"></p>
@@ -88,12 +93,13 @@
             </button>
           </div>
           <aside class="panel tracking-guide" id="trackingGuide">
-            <p class="kicker">เลขติดตาม 2 ส่วน</p>
+            <p class="kicker">ข้อมูลยืนยันการติดตาม</p>
             <h2>เตรียมข้อมูลก่อนค้นหา</h2>
             <ol>
               <li>กรอกเลขรับบริการ เช่น <strong>690001</strong></li>
-              <li>กรอกรหัสยืนยัน 4 ตัว เช่น <strong>5FT4</strong></li>
-              <li>กด “ตรวจสอบสถานะ” เพื่อดูความคืบหน้าล่าสุด</li>
+              <li>กรอก PIN ตัวเลข 4 หลัก เช่น <strong>5424</strong></li>
+              <li>กรอกเลขบัตรประชาชนหรือหมายเลขโทรศัพท์ 4 หลักท้าย ตามข้อมูลที่ให้ไว้</li>
+              <li>ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ แล้วกด “ตรวจสอบสถานะ”</li>
             </ol>
             <p class="privacy-note">ระบบจะแสดงเฉพาะสถานะที่เปิดเผยต่อผู้ร้องได้ และไม่แสดงข้อมูลการพิจารณาภายใน</p>
           </aside>
@@ -189,52 +195,59 @@
     <script>
       const params = new URLSearchParams(location.search),
         lookup = document.getElementById("lookup"),
-        yearSequence = document.getElementById("yearSequence"),
-        verificationCode = document.getElementById("verificationCode"),
+        serviceNumber = document.getElementById("serviceNumber"),
+        trackingPin = document.getElementById("trackingPin"),
+        identityLast4 = document.getElementById("identityLast4"),
         feedback = document.getElementById("trackingFeedback"),
         result = document.getElementById("result"),
         shownNo = document.getElementById("shownNo"),
         trackingGuide = document.getElementById("trackingGuide"),
         forgot = document.getElementById("forgot");
       function showResult() {
-        yearSequence.classList.remove("invalid");
-        verificationCode.classList.remove("invalid");
-        const pair = window.ECMIS.parseTrackingPair(yearSequence.value, verificationCode.value);
-        if (!pair) {
-          if (!/^\d{2}\s?\d{4}$/.test(yearSequence.value.trim())) yearSequence.classList.add("invalid");
-          if (!/^[A-Z0-9]{4}$/.test(verificationCode.value.trim().toUpperCase())) verificationCode.classList.add("invalid");
-          feedback.textContent = "กรอกเลขทั้ง 2 ส่วนให้ครบและถูกต้อง";
-          result.hidden = true;
-          trackingGuide.hidden = false;
-          return;
-        }
-        yearSequence.value = pair.yearSequence;
-        verificationCode.value = pair.verificationCode;
-        let savedCases = [], matchedWorkspaceState = null;
+        [serviceNumber, trackingPin, identityLast4].forEach((input) => input.classList.remove("invalid"));
+        const credentials = window.ECMIS.parseTrackingCredentials(serviceNumber.value, trackingPin.value, identityLast4.value);
+        let savedCases = [], workspaceCases = {};
         try {
           const storedCases = JSON.parse(localStorage.getItem("ecmis-demo-cases") || "[]");
           if (Array.isArray(storedCases)) savedCases = storedCases;
-          const workspaceCases = JSON.parse(localStorage.getItem("ecmis-a4-workspace-v3") || "{}");
-          matchedWorkspaceState = Object.values(workspaceCases).find((state) => state?.caseData?.trackingYear === pair.yearSequence && state?.caseData?.trackingCode === pair.verificationCode) || null;
+          workspaceCases = JSON.parse(localStorage.getItem("ecmis-a4-workspace-v3") || "{}");
           savedCases.push(...Object.values(workspaceCases).map((state) => ({
             yearSequence: state?.caseData?.trackingYear,
-            verificationCode: state?.caseData?.trackingCode,
+            pin: state?.caseData?.trackingCode,
+            identityLast4: state?.caseData?.identityLast4,
+            id4: state?.caseData?.id4,
+            phone: state?.caseData?.phone,
+            anonymousDetected: state?.caseData?.anonymousDetected,
           })));
         } catch {
           savedCases = [];
+          workspaceCases = {};
         }
-        const isDemoPair = pair.yearSequence === "690001" && pair.verificationCode === "5FT4";
-        const isSavedPair = savedCases.some((record) => {
-          const savedPair = window.ECMIS.parseTrackingPair(record?.yearSequence, record?.verificationCode);
-          return savedPair?.yearSequence === pair.yearSequence && savedPair?.verificationCode === pair.verificationCode;
-        });
-        if (!isDemoPair && !isSavedPair) {
-          feedback.textContent = "ไม่พบเรื่องร้องเรียนที่ตรงกับเลขติดตามนี้";
+        const demoCase = { yearSequence: "690001", pin: "5424", id4: "1234", anonymousDetected: false };
+        const candidate = credentials && [demoCase, ...savedCases].find((record) =>
+          window.ECMIS.parseServiceNumber(record?.yearSequence) === credentials.serviceNumber
+        );
+        const expectedPin = candidate && window.ECMIS.parseFourDigits(candidate.pin);
+        const phoneDigits = String(candidate?.phone || "").replace(/\D/g, "");
+        const expectedIdentityLast4 = candidate && (
+          window.ECMIS.parseFourDigits(candidate.identityLast4) ||
+          window.ECMIS.parseFourDigits(candidate.id4) ||
+          (phoneDigits.length >= 4 ? phoneDigits.slice(-4) : null)
+        );
+        const anonymousCase = candidate?.anonymousDetected === true;
+        const authorized = Boolean(candidate && expectedPin === credentials.pin && (anonymousCase || expectedIdentityLast4 === credentials.identityLast4));
+        if (!authorized) {
+          feedback.textContent = "ไม่สามารถยืนยันข้อมูลสำหรับติดตามเรื่องได้";
+          [serviceNumber, trackingPin, identityLast4].forEach((input) => input.classList.add("invalid"));
           trackingGuide.hidden = false;
           result.hidden = true;
           return;
         }
-        shownNo.textContent = pair.display;
+        serviceNumber.value = credentials.serviceNumber;
+        trackingPin.value = credentials.pin;
+        identityLast4.value = credentials.identityLast4;
+        const matchedWorkspaceState = Object.values(workspaceCases).find((state) => state?.caseData?.trackingYear === credentials.serviceNumber) || null;
+        shownNo.textContent = credentials.serviceNumber;
         feedback.textContent = "พบข้อมูลสถานะล่าสุดแล้ว";
         trackingGuide.hidden = true;
         result.hidden = false;
@@ -258,13 +271,10 @@
         showResult();
       });
       addEventListener("load", () => {
-        yearSequence.value = params.get("yearSequence") || "";
-        verificationCode.value = (params.get("verificationCode") || "").toUpperCase();
-        if (yearSequence.value && verificationCode.value) {
-          feedback.textContent = "ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ แล้วกดตรวจสอบสถานะ";
-        } else if (yearSequence.value && params.get("source") === "walkin") {
-          feedback.textContent = `เลขรับบริการ ${yearSequence.value} กรอกรหัสติดตาม 4 ตัวจากเอกสาร 58/2-02`;
-          verificationCode.focus();
+        serviceNumber.value = params.get("serviceNumber") || params.get("yearSequence") || "";
+        if (serviceNumber.value) {
+          feedback.textContent = "กรอก PIN และข้อมูลยืนยันที่เกี่ยวข้อง แล้วจึงตรวจสอบสถานะ";
+          trackingPin.focus();
         }
       });
       document.getElementById("forgotOpen").onclick = () => forgot.showModal();
