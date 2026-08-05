@@ -142,7 +142,24 @@
     const year = String(buddhistYear).slice(-2);
     const sequenceKey = `ecmis-public-sequence-${year}`;
     const previous = Number.parseInt(localStorage.getItem(sequenceKey) || "0", 10);
-    const sequence = Number.isFinite(previous) ? Math.min(previous + 1, 9999) : 1;
+    const normalizedPrevious = Number.isFinite(previous) ? Math.max(0, previous) : 0;
+    if (normalizedPrevious >= 9999) {
+      const pendingKey = `ecmis-public-pending-sequence-${year}`;
+      const pendingSequence = Number.parseInt(localStorage.getItem(pendingKey) || "0", 10) + 1;
+      localStorage.setItem(pendingKey, String(pendingSequence));
+      const randomPart = globalThis.crypto?.randomUUID
+        ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()
+        : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`.slice(-8).toUpperCase();
+      return {
+        yearSequence: "",
+        verificationCode: "",
+        pendingReference: `PENDING-${year}-${String(pendingSequence).padStart(6, "0")}-${randomPart}`,
+        allocationStatus: "pending",
+        capacityLevel: "exhausted",
+        capacityMessage: "เลขรับบริการของปีนี้ครบ 9999 แล้ว ระบบบันทึกเรื่องไว้ในสถานะรอจัดสรรเลขรับบริการ",
+      };
+    }
+    const sequence = normalizedPrevious + 1;
     localStorage.setItem(sequenceKey, String(sequence));
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const bytes = new Uint8Array(4);
@@ -157,7 +174,15 @@
       .map((value) => alphabet[value % alphabet.length])
       .join("");
     const yearSequence = `${year}${String(sequence).padStart(4, "0")}`;
-    return { yearSequence, verificationCode };
+    const capacityLevel = sequence >= 9900 ? "emergency" : sequence >= 9000 ? "critical" : sequence >= 8000 ? "warning" : "normal";
+    const capacityMessage = capacityLevel === "emergency"
+      ? `เลขรับบริการปี ${year} เหลือ ${9999 - sequence} หมายเลข ต้องเตรียมกระบวนการจัดสรรเลขฉุกเฉินทันที`
+      : capacityLevel === "critical"
+        ? `เลขรับบริการปี ${year} ใช้ถึง ${String(sequence).padStart(4, "0")} แล้ว อยู่ในระดับวิกฤต`
+        : capacityLevel === "warning"
+          ? `เลขรับบริการปี ${year} ใช้ถึง ${String(sequence).padStart(4, "0")} แล้ว โปรดติดตามจำนวนเลขคงเหลือ`
+          : "";
+    return { yearSequence, verificationCode, allocationStatus: "allocated", capacityLevel, capacityMessage };
   }
   function parseTrackingPair(yearSequence, verificationCode) {
     const compactSequence = String(yearSequence || "").replace(/\s/g, "");
@@ -172,16 +197,19 @@
     };
   }
   function saveCaseMetadata(metadata) {
+    const pending = metadata.allocationStatus === "pending" || !metadata.yearSequence;
     const safeRecord = {
       yearSequence: String(metadata.yearSequence || ""),
       verificationCode: String(metadata.verificationCode || ""),
+      pendingReference: String(metadata.pendingReference || ""),
+      allocationStatus: pending ? "pending" : "allocated",
       trackingNumber: `${metadata.yearSequence || ""} ${metadata.verificationCode || ""}`.trim(),
       subject: String(metadata.subject || ""),
       attachmentCount: Number(metadata.attachmentCount || 0),
       channel: "Website",
       submittedAt: new Date().toISOString(),
-      internalStatus: "รอตรวจสอบความซ้ำซ้อน",
-      publicStatus: "รับข้อมูลแล้ว",
+      internalStatus: pending ? "รอจัดสรรเลขรับบริการ" : "รอตรวจสอบความซ้ำซ้อน",
+      publicStatus: pending ? "รอจัดสรรเลขรับบริการ" : "รับข้อมูลแล้ว",
     };
     const key = "ecmis-demo-cases";
     let records = [];
@@ -192,7 +220,7 @@
       records = [];
     }
     records = records
-      .filter((record) => record.trackingNumber !== safeRecord.trackingNumber)
+      .filter((record) => pending ? record.pendingReference !== safeRecord.pendingReference : record.trackingNumber !== safeRecord.trackingNumber)
       .slice(-19);
     records.push(safeRecord);
     localStorage.setItem(key, JSON.stringify(records));

@@ -3,21 +3,190 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="refresh" content="0;url=complaint-form.html#additional-documents">
   <title>ส่งเอกสารเพิ่มเติม | E-CMIS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;family=Noto+Serif+Thai:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/ecmis.css">
-  <script>location.replace('complaint-form.html#additional-documents');</script>
+  <link rel="stylesheet" href="assets/human-verification.css">
+  <link rel="stylesheet" href="assets/public-form-consistency.css">
+  <script src="assets/ecmis.js" defer></script>
+  <script src="assets/human-verification.js" defer></script>
+  <style>
+    .supplement-hero{padding:2.8rem 0 5rem;background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff}
+    .supplement-hero p{max-width:720px;margin:.5rem 0 0;color:#dbe5ef}
+    .supplement-main{margin-top:-2.5rem;padding-bottom:4rem}
+    .supplement-card{max-width:1040px;margin:auto}
+    .task-label{margin:0;color:#8a6810;font-size:.78rem;font-weight:800;letter-spacing:.06em}
+    .lookup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(13rem,.55fr) auto;gap:.8rem;align-items:end}
+    .lookup-grid .field{margin:0}
+    .field-help,.form-feedback{color:var(--muted);font-size:.78rem}
+    .form-feedback{min-height:1.35rem;margin:.7rem 0 0}
+    .case-workspace{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(18rem,.75fr);gap:1rem;margin-top:1rem}
+    .case-workspace[hidden]{display:none}
+    .section-title{display:flex;align-items:center;gap:.6rem;margin:0 0 1rem;color:var(--brand);font-size:1.1rem}
+    .section-title i{color:#a98412}
+    .case-data{display:grid;gap:.8rem}
+    .case-row{padding-bottom:.75rem;border-bottom:1px solid var(--line)}
+    .case-row:last-child{padding-bottom:0;border-bottom:0}
+    .case-row span{display:block;color:var(--muted);font-size:.75rem}
+    .case-row strong{display:block;margin-top:.12rem;color:var(--brand);font-size:.92rem}
+    .file-list{display:grid;gap:.5rem;margin-top:.75rem}
+    .file-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem .75rem;border-radius:9px;background:#f3f6f9;color:#34465a;font-size:.82rem}
+    .submit-actions{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.25rem}
+    .privacy-note{display:flex;gap:.65rem;margin-top:1rem;padding:.85rem 1rem;border-radius:10px;background:#eef4f8;color:#405468;font-size:.8rem}
+    .privacy-note i{margin-top:.2rem;color:var(--brand)}
+    @media(max-width:800px){.lookup-grid,.case-workspace{grid-template-columns:1fr}.submit-actions{display:grid}.submit-actions>*{width:100%}}
+  </style>
 </head>
 <body>
-  <main class="section">
+  <a class="skip" href="#mainContent">ข้ามไปยังเนื้อหาหลัก</a>
+  <header class="site-head">
+    <div class="shell nav">
+      <a class="brand" href="index.html"><img class="brand-logo" src="https://www.pacc.go.th/images/pacc_logo.png" alt="ตราสำนักงาน ป.ป.ท."><span>E-CMIS<small>สำนักงาน ป.ป.ท.</small></span></a>
+      <nav class="nav-links" aria-label="เมนูหลัก"><a href="index.html">หน้าแรก</a><a href="complaint-form.html">ยื่นเรื่องร้องเรียน</a><a href="tracking.html">ติดตามเรื่องร้องเรียน</a><a href="additional-documents.html" aria-current="page">ส่งเอกสารเพิ่มเติม</a></nav>
+    </div>
+  </header>
+
+  <section class="supplement-hero">
     <div class="shell">
-      <section class="panel" aria-labelledby="redirectTitle">
-        <h1 id="redirectTitle">กำลังเปิดหน้าส่งเอกสารเพิ่มเติม</h1>
-        <p>หากระบบไม่เปลี่ยนหน้าอัตโนมัติ ให้กดปุ่มด้านล่าง</p>
-        <a class="button primary" href="complaint-form.html#additional-documents">เปิดหน้าส่งเอกสารเพิ่มเติม</a>
+      <p class="task-label">เอกสารประกอบเรื่องเดิม</p>
+      <h1>ส่งเอกสารเพิ่มเติม</h1>
+      <p>ค้นหาเรื่องร้องเรียนเดิมด้วยเลขรับบริการและรหัสยืนยัน จากนั้นกรอกรายละเอียดหรือแนบเอกสารที่ต้องการส่งเพิ่มเติม</p>
+    </div>
+  </section>
+
+  <main class="supplement-main" id="mainContent">
+    <div class="shell">
+      <section class="panel supplement-card" aria-labelledby="lookupTitle">
+        <h2 class="section-title" id="lookupTitle"><i class="fa-solid fa-magnifying-glass"></i>ค้นหาเรื่องร้องเรียนเดิม</h2>
+        <form id="lookupForm" class="lookup-grid" novalidate>
+          <div class="field">
+            <label for="serviceNumber">เลขรับบริการ</label>
+            <input id="serviceNumber" name="serviceNumber" inputmode="numeric" maxlength="6" placeholder="690001" autocomplete="off" required>
+            <span class="field-help">ตัวเลข 6 หลัก เช่น 690001</span>
+          </div>
+          <div class="field">
+            <label for="verificationCode">รหัสยืนยัน</label>
+            <input id="verificationCode" name="verificationCode" maxlength="4" placeholder="5FT4" autocomplete="off" required>
+            <span class="field-help">อักษรอังกฤษหรือตัวเลข 4 ตัว</span>
+          </div>
+          <button class="primary" type="submit"><i class="fa-solid fa-search"></i>ค้นหาเรื่อง</button>
+        </form>
+        <div data-human-verification="additional-lookup"></div>
+        <p class="form-feedback" id="lookupFeedback" aria-live="polite"></p>
+
+        <div class="case-workspace" id="caseWorkspace" hidden>
+          <form class="panel" id="supplementForm" novalidate>
+            <h2 class="section-title"><i class="fa-solid fa-file-circle-plus"></i>ข้อมูลและเอกสารที่ต้องการเพิ่มเติม</h2>
+            <div class="field">
+              <label for="supplementDetail">รายละเอียดเพิ่มเติม</label>
+              <textarea id="supplementDetail" maxlength="3000" placeholder="อธิบายข้อมูลใหม่หรือเหตุผลที่ส่งเพิ่มเติม"></textarea>
+              <span class="field-help">กรอกรายละเอียดหรือเลือกเอกสารอย่างน้อย 1 รายการ</span>
+            </div>
+            <div class="field">
+              <label for="supplementFiles">เอกสารเพิ่มเติม</label>
+              <input id="supplementFiles" type="file" multiple accept=".png,.jpg,.jpeg,.pdf,.doc,.docx,.xls,.xlsx">
+              <span class="field-help">เลือกได้หลายไฟล์ ขนาดรวมไม่เกิน 50 MB</span>
+              <div class="file-list" id="fileList" aria-live="polite"></div>
+            </div>
+            <div data-human-verification="additional-submit"></div>
+            <div class="submit-actions">
+              <button class="secondary" type="button" id="changeCase">ค้นหาเรื่องอื่น</button>
+              <button class="primary" type="submit"><i class="fa-solid fa-paper-plane"></i>ส่งข้อมูลเพิ่มเติม</button>
+            </div>
+          </form>
+
+          <aside class="panel" aria-label="ข้อมูลเรื่องร้องเรียนเดิม">
+            <h2 class="section-title"><i class="fa-solid fa-shield-halved"></i>เรื่องร้องเรียนที่พบ</h2>
+            <div class="case-data">
+              <div class="case-row"><span>เลขรับบริการ</span><strong id="caseServiceNumber">690001</strong></div>
+              <div class="case-row"><span>หัวข้อเรื่อง</span><strong>การจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ</strong></div>
+              <div class="case-row"><span>วันที่ยื่นเรื่อง</span><strong>31 กรกฎาคม 2569</strong></div>
+              <div class="case-row"><span>หน่วยงานที่ถูกร้องเรียน</span><strong>สำนักงานตัวอย่างส่วนกลาง</strong></div>
+              <div class="case-row"><span>สถานะ</span><strong>อยู่ระหว่างพิจารณา</strong></div>
+            </div>
+            <div class="privacy-note"><i class="fa-solid fa-lock"></i><span>หน้านี้ไม่ขอให้กรอกข้อมูลส่วนตัว และแสดงเฉพาะข้อมูลที่จำเป็นสำหรับยืนยันเรื่องเดิม</span></div>
+          </aside>
+        </div>
       </section>
     </div>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const lookupForm=document.getElementById('lookupForm');
+    const serviceNumber=document.getElementById('serviceNumber');
+    const verificationCode=document.getElementById('verificationCode');
+    const lookupFeedback=document.getElementById('lookupFeedback');
+    const caseWorkspace=document.getElementById('caseWorkspace');
+    const supplementForm=document.getElementById('supplementForm');
+    const supplementDetail=document.getElementById('supplementDetail');
+    const supplementFiles=document.getElementById('supplementFiles');
+    const fileList=document.getElementById('fileList');
+
+    function openCase(){
+      const sequence=serviceNumber.value.replace(/\D/g,'').slice(0,6);
+      const code=verificationCode.value.trim().toUpperCase();
+      serviceNumber.value=sequence;
+      verificationCode.value=code;
+      if(!/^\d{6}$/.test(sequence)||!/^[A-Z0-9]{4}$/.test(code)){
+        lookupFeedback.textContent='กรอกเลขรับบริการ 6 หลัก และรหัสยืนยัน 4 ตัวให้ครบ';
+        caseWorkspace.hidden=true;
+        return;
+      }
+      if(sequence!=='690001'||code!=='5FT4'){
+        lookupFeedback.textContent='ไม่พบเรื่องร้องเรียนที่ตรงกับข้อมูลที่ระบุ';
+        caseWorkspace.hidden=true;
+        return;
+      }
+      document.getElementById('caseServiceNumber').textContent=sequence;
+      lookupFeedback.textContent='พบเรื่องร้องเรียนแล้ว สามารถส่งข้อมูลหรือเอกสารเพิ่มเติมได้';
+      caseWorkspace.hidden=false;
+      caseWorkspace.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    lookupForm.addEventListener('submit',event=>{
+      event.preventDefault();
+      if(!window.PACCHumanVerification.require('additional-lookup'))return;
+      openCase();
+    });
+
+    supplementFiles.addEventListener('change',()=>{
+      const files=[...supplementFiles.files];
+      const total=files.reduce((sum,file)=>sum+file.size,0);
+      if(total>50*1024*1024){
+        supplementFiles.value='';
+        fileList.textContent='ขนาดไฟล์รวมเกิน 50 MB';
+        return;
+      }
+      fileList.innerHTML=files.map(file=>`<div class="file-item"><span><i class="fa-regular fa-file"></i> ${file.name}</span><small>${(file.size/1024/1024).toFixed(2)} MB</small></div>`).join('');
+    });
+
+    document.getElementById('changeCase').addEventListener('click',()=>{
+      caseWorkspace.hidden=true;
+      lookupFeedback.textContent='';
+      lookupForm.scrollIntoView({behavior:'smooth',block:'center'});
+      serviceNumber.focus();
+    });
+
+    supplementForm.addEventListener('submit',event=>{
+      event.preventDefault();
+      if(!window.PACCHumanVerification.require('additional-submit'))return;
+      if(!supplementDetail.value.trim()&&!supplementFiles.files.length){
+        Swal.fire({icon:'warning',title:'ยังไม่มีข้อมูลเพิ่มเติม',text:'กรอกรายละเอียดหรือเลือกเอกสารอย่างน้อย 1 รายการ',confirmButtonColor:'#0a2647'});
+        return;
+      }
+      Swal.fire({icon:'success',title:'ส่งข้อมูลเพิ่มเติมเรียบร้อยแล้ว',text:`ระบบเชื่อมโยงข้อมูลกับเลขรับบริการ ${serviceNumber.value} แล้ว`,confirmButtonColor:'#0a2647'}).then(()=>{
+        supplementForm.reset();
+        fileList.textContent='';
+        window.PACCHumanVerification.reset('additional-submit');
+      });
+    });
+
+    const params=new URLSearchParams(location.search);
+    serviceNumber.value=(params.get('yearSequence')||'').replace(/\D/g,'').slice(0,6);
+    verificationCode.value=(params.get('verificationCode')||'').toUpperCase().slice(0,4);
+  </script>
 </body>
 </html>

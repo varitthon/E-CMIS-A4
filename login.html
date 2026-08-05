@@ -6,7 +6,7 @@
 <title>เข้าสู่ระบบ | E-CMIS</title>
 
 <!-- Google Font: Thai (body + serif display for headings) -->
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Bootstrap 5 -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +15,10 @@
 <!-- SweetAlert2 -->
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-rich.css" rel="stylesheet">
+<link href="assets/human-verification.css" rel="stylesheet">
+<link href="assets/public-form-consistency.css" rel="stylesheet">
 <script src="assets/ecmis.js" defer></script>
+<script src="assets/human-verification.js" defer></script>
 <script src="assets/qrcode-generator.js" defer></script>
 
 <style>
@@ -375,6 +378,7 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
           </div>
           <a href="#" onclick="openForgotPassword(); return false;">ลืมรหัสผ่าน?</a>
         </div>
+        <div data-human-verification="credential-login"></div>
         <button type="submit" class="btn-login-submit">
           <i class="fa-solid fa-right-to-bracket"></i>เข้าสู่ระบบ
         </button>
@@ -526,6 +530,7 @@ function enterStaffWorkflow(authMethod){
 // --- username/email login (mock) ---
 function handleLogin(event){
   event.preventDefault();
+  if(!window.PACCHumanVerification.require('credential-login')) return;
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   if(!username || !password){

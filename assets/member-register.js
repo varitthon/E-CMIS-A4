@@ -20,14 +20,32 @@
     return (11-(sum%11))%10===Number(digits[12]);
   }
   const normalize = records => records.map(item => ({name_th:item.name_th,districts:(item.districts || item.amphure || []).map(entry => typeof entry === 'string' ? entry : entry.name_th)}));
+  function validateCitizenIdInput(input){
+    const digits=input.value.replace(/\D/g,'');
+    const feedback=document.getElementById('citizenIdFeedback');
+    input.classList.remove('is-valid','is-invalid');
+    feedback.className='member-id-feedback';
+    feedback.textContent='';
+    if(!digits.length){input.setCustomValidity('');return}
+    if(digits.length<13){input.setCustomValidity('กรอกเลขประจำตัวประชาชนให้ครบ 13 หลัก');feedback.classList.add('show','info');feedback.innerHTML=`<i class="fa-solid fa-circle-info"></i> กรอกให้ครบ 13 หลัก (ขณะนี้ ${digits.length}/13)`;return}
+    if(isValidCitizenId(digits)){input.setCustomValidity('');input.classList.add('is-valid');feedback.classList.add('show','valid');feedback.innerHTML='<i class="fa-solid fa-circle-check"></i> เลขประจำตัวประชาชนถูกต้อง';return}
+    input.setCustomValidity('เลขประจำตัวประชาชนไม่ถูกต้อง');input.classList.add('is-invalid');feedback.classList.add('show','invalid');feedback.innerHTML='<i class="fa-solid fa-circle-exclamation"></i> เลขประจำตัวประชาชนไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+  }
+  function formatCitizenIdInput(input){
+    const digits=input.value.replace(/\D/g,'').slice(0,13);
+    const groups=[1,4,5,2,1];let index=0;const parts=[];
+    for(const length of groups){if(index>=digits.length)break;parts.push(digits.slice(index,index+length));index+=length}
+    input.value=parts.join('-');
+    validateCitizenIdInput(input);
+  }
   function renderProvinces(){province.innerHTML='<option value="">เลือกจังหวัด</option>'+locations.map(item=>`<option value="${item.name_th}">${item.name_th}</option>`).join('');}
   function renderDistricts(){const selected=locations.find(item=>item.name_th===province.value);district.innerHTML='<option value="">เลือกอำเภอ/เขต</option>';if(!selected){district.disabled=true;districtHint.textContent='รายการอำเภอ/เขตจะเปลี่ยนตามจังหวัดที่เลือก';return}selected.districts.filter(Boolean).forEach(name=>district.add(new Option(name,name)));district.disabled=false;districtHint.textContent=`พบ ${selected.districts.length} อำเภอ/เขตในจังหวัดที่เลือก`;}
   fetch(locationUrl).then(response=>{if(!response.ok)throw new Error('location data unavailable');return response.json()}).then(data=>{locations=normalize(data);renderProvinces()}).catch(()=>{locations=normalize(fallback);renderProvinces();districtHint.textContent='ขณะนี้แสดงข้อมูลพื้นที่สำรองสำหรับหน้าจอต้นแบบ'});
   province.addEventListener('change',renderDistricts);
-  document.getElementById('citizenId').addEventListener('input',event=>{const digits=event.target.value.replace(/\D/g,'').slice(0,13);event.target.value=digits.replace(/(\d)(\d{4})(\d{5})(\d{2})(\d)/,'$1-$2-$3-$4-$5');event.target.setCustomValidity(digits.length===13&&!isValidCitizenId(digits)?'เลขประจำตัวประชาชนไม่ถูกต้อง':'')});
+  document.getElementById('citizenId').addEventListener('input',event=>formatCitizenIdInput(event.target));
   document.getElementById('phone').addEventListener('input',event=>{event.target.value=event.target.value.replace(/\D/g,'').slice(0,10)});
   document.querySelectorAll('[data-font]').forEach(button=>button.addEventListener('click',()=>{const step=Number(button.dataset.font);document.documentElement.style.fontSize=step===0?'16px':`${16+(step*2)}px`}));
   document.getElementById('contrastButton').addEventListener('click',()=>document.body.classList.toggle('high-contrast'));
   document.getElementById('languageButton').addEventListener('click',()=>Swal.fire({icon:'info',title:'หน้าจอต้นแบบภาษาไทย',text:'ยังไม่ได้จัดทำข้อความภาษาอังกฤษในขอบเขตนี้',confirmButtonColor:'#0a2647'}));
-  form.addEventListener('submit',event=>{event.preventDefault();const citizen=document.getElementById('citizenId');const citizenDigits=citizen.value.replace(/\D/g,'');const phoneDigits=document.getElementById('phone').value.replace(/\D/g,'');citizen.setCustomValidity(isValidCitizenId(citizenDigits)?'':'เลขประจำตัวประชาชนไม่ถูกต้อง');document.getElementById('phone').setCustomValidity(phoneDigits.length===10?'':'invalid');if(!form.checkValidity()){form.classList.add('was-validated');form.querySelector(':invalid')?.focus();return}Swal.fire({icon:'success',title:'ลงทะเบียนสมาชิกเรียบร้อยแล้ว',confirmButtonText:'กลับหน้าหลัก',confirmButtonColor:'#0a2647'}).then(()=>{window.location.href='index.html'});});
+  form.addEventListener('submit',event=>{event.preventDefault();const citizen=document.getElementById('citizenId');const phoneDigits=document.getElementById('phone').value.replace(/\D/g,'');validateCitizenIdInput(citizen);document.getElementById('phone').setCustomValidity(phoneDigits.length===10?'':'invalid');if(!form.checkValidity()){form.classList.add('was-validated');form.querySelector(':invalid')?.focus();return}Swal.fire({icon:'success',title:'ลงทะเบียนสมาชิกเรียบร้อยแล้ว',confirmButtonText:'กลับหน้าหลัก',confirmButtonColor:'#0a2647'}).then(()=>{window.location.href='index.html'});});
 })();

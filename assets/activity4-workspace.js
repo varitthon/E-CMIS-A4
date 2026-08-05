@@ -521,11 +521,52 @@
       </article>`;
     };
     const render=()=>{$('#wiPreview').innerHTML=tab==='receipt'&&receipt?receiptPaper(receipt,receipt.qr):complaintPaper()};$$('input,textarea,select',shell).forEach(x=>x.addEventListener('input',render));$$('[data-wi-tab]',shell).forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.wiTab;$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x===b));render()}));
-    $('#wiDraft').onclick=()=>{localStorage.setItem('ecmis-walkin-draft',JSON.stringify({subject:val('wiSubject'),complainant:val('wiComplainant'),detail:val('wiDetail'),channel:val('wiChannel'),region:regionalIntake?regionalRegion:val('wiIntakeRegion')}));notify('success','บันทึกร่างแล้ว','ข้อมูลยังไม่ถูกลงรับและยังไม่ออกเลขติดตาม')};$('#wiPrint').onclick=()=>window.print();$('#wiReceive').onclick=async()=>{const selectedChannel=val('wiChannel');const selectedRegion=regionalIntake?regionalRegion:val('wiIntakeRegion');if(!val('wiSubject')||!val('wiDetail'))return notify('warning','ข้อมูลไม่ครบ','กรอกชื่อเรื่องร้องเรียนและรายละเอียดพฤติการณ์ก่อนลงรับ');if(regionalIntake&&(!isRegionalChannel(selectedChannel)||!REGIONAL_REGIONS.includes(selectedRegion)))return notify('warning','ข้อมูลรับเรื่องไม่ถูกต้อง','เจ้าหน้าที่เขตรับเรื่องได้เฉพาะ Walk-In จดหมาย หรือเบอร์โทร ปปท. เขต 1-9 และต้องบันทึกในเขตของตน');if(['Walk-In','จดหมาย'].includes(selectedChannel)&&!selectedRegion)return notify('warning','ยังไม่ได้ระบุเขต','เลือกเขตที่รับเรื่องก่อนลงรับ');const ok=await confirmDo('ยืนยันการลงรับเรื่อง','เมื่อกดลงรับ ระบบจะออกเลขติดตามและ QR Code โปรดพิมพ์หรือบันทึกเอกสารเพื่อมอบให้ผู้ร้อง','ลงรับเรื่อง');if(!ok.isConfirmed)return;const pair=window.ECMIS?.createTrackingNumber?.()||{yearSequence:'690001',verificationCode:'5FT4'};const url=new URL(`tracking.html?yearSequence=${encodeURIComponent(pair.yearSequence)}&source=walkin`,location.href).href;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createDataURL(5,8)}catch{}receipt={id:`ECMIS-2569-${pair.yearSequence.replace(/\D/g,'').slice(-4).padStart(6,'0')}`,trackingYear:pair.yearSequence,trackingCode:pair.verificationCode,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),citizenId:val('wiCitizen'),id4:normalizeCitizenId(val('wiCitizen')).slice(-4),agency:val('wiAccused'),channel:selectedChannel,province:val('wiProvince'),region:selectedRegion||'ส่วนกลาง',place:val('wiPlace'),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};const state=initialState(receipt);saveState(receipt.id,state);$('#wiDocStatus').textContent='ลงรับแล้ว';$('#wiDocStatus').classList.add('success');receiptTab.disabled=false;tab='receipt';$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x.dataset.wiTab==='receipt'));render();notify('success','ลงรับเรื่องเรียบร้อยแล้ว',`เลขรับบริการ ${pair.yearSequence} / รหัสติดตาม ${pair.verificationCode} โปรดพิมพ์ใบแจ้งเลขติดตามและมอบให้ผู้ร้อง`) };render();
+    $('#wiDraft').onclick=()=>{localStorage.setItem('ecmis-walkin-draft',JSON.stringify({subject:val('wiSubject'),complainant:val('wiComplainant'),detail:val('wiDetail'),channel:val('wiChannel'),region:regionalIntake?regionalRegion:val('wiIntakeRegion')}));notify('success','บันทึกร่างแล้ว','ข้อมูลยังไม่ถูกลงรับและยังไม่ออกเลขติดตาม')};
+    $('#wiPrint').onclick=()=>window.print();
+    $('#wiReceive').onclick=async()=>{
+      const selectedChannel=val('wiChannel');
+      const selectedRegion=regionalIntake?regionalRegion:val('wiIntakeRegion');
+      if(!val('wiSubject')||!val('wiDetail'))return notify('warning','ข้อมูลไม่ครบ','กรอกชื่อเรื่องร้องเรียนและรายละเอียดพฤติการณ์ก่อนลงรับ');
+      if(regionalIntake&&(!isRegionalChannel(selectedChannel)||!REGIONAL_REGIONS.includes(selectedRegion)))return notify('warning','ข้อมูลรับเรื่องไม่ถูกต้อง','เจ้าหน้าที่เขตรับเรื่องได้เฉพาะ Walk-In จดหมาย หรือเบอร์โทร ปปท. เขต 1-9 และต้องบันทึกในเขตของตน');
+      if(['Walk-In','จดหมาย'].includes(selectedChannel)&&!selectedRegion)return notify('warning','ยังไม่ได้ระบุเขต','เลือกเขตที่รับเรื่องก่อนลงรับ');
+      const ok=await confirmDo('ยืนยันการลงรับเรื่อง','เมื่อกดลงรับ ระบบจะออกเลขติดตามและ QR Code โปรดพิมพ์หรือบันทึกเอกสารเพื่อมอบให้ผู้ร้อง','ลงรับเรื่อง');
+      if(!ok.isConfirmed)return;
+      const pair=window.ECMIS?.createTrackingNumber?.()||{yearSequence:'690001',verificationCode:'5FT4',allocationStatus:'allocated',capacityLevel:'normal'};
+      const pendingAllocation=pair.allocationStatus==='pending';
+      const pendingReference=pair.pendingReference||'';
+      let qr='';
+      if(!pendingAllocation){
+        const url=new URL(`tracking.html?yearSequence=${encodeURIComponent(pair.yearSequence)}&verificationCode=${encodeURIComponent(pair.verificationCode)}&source=walkin`,location.href).href;
+        try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createDataURL(5,8)}catch{}
+      }
+      const caseId=pendingAllocation?`ECMIS-${pendingReference}`:`ECMIS-2569-${pair.yearSequence.replace(/\D/g,'').slice(-4).padStart(6,'0')}`;
+      receipt={id:caseId,trackingYear:pair.yearSequence,trackingCode:pair.verificationCode,pendingReference,allocationStatus:pair.allocationStatus,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),citizenId:val('wiCitizen'),id4:normalizeCitizenId(val('wiCitizen')).slice(-4),agency:val('wiAccused'),channel:selectedChannel,province:val('wiProvince'),region:selectedRegion||'ส่วนกลาง',place:val('wiPlace'),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};
+      const state=initialState(receipt);
+      if(pendingAllocation){state.workflow.status='รอจัดสรรเลขรับบริการ';state.workflow.owner='admin';state.workflow.stage='admin'}
+      saveState(receipt.id,state);
+      $('#wiDocStatus').textContent=pendingAllocation?'รอจัดสรรเลขรับบริการ':'ลงรับแล้ว';
+      $('#wiDocStatus').classList.add('success');
+      receiptTab.disabled=pendingAllocation;
+      tab=pendingAllocation?'complaint':'receipt';
+      $$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x.dataset.wiTab===tab));
+      render();
+      if(pendingAllocation)return notify('warning','บันทึกเรื่องแล้วและรอจัดสรรเลขรับบริการ',`เลขอ้างอิงชั่วคราว ${pendingReference} ระบบไม่วนกลับไปใช้เลขเดิม`);
+      const capacityText=pair.capacityMessage?` ${pair.capacityMessage}`:'';
+      const capacityTitle=pair.capacityLevel==='normal'?'ลงรับเรื่องเรียบร้อยแล้ว':`ลงรับเรื่องแล้ว · แจ้งเตือนระดับ ${pair.capacityLevel}`;
+      notify(pair.capacityLevel==='normal'?'success':'warning',capacityTitle,`เลขรับบริการ ${pair.yearSequence} / รหัสติดตาม ${pair.verificationCode} โปรดพิมพ์ใบแจ้งเลขติดตามและมอบให้ผู้ร้อง${capacityText}`);
+    };
+    render();
     const receiveComplaint=$('#wiReceive').onclick;
     $('#wiReceive').onclick=async()=>{
       await receiveComplaint();
       if(!receipt)return;
+      if(receipt.allocationStatus==='pending'){
+        receiptTab.disabled=true;
+        tab='complaint';
+        $$('[data-wi-tab]',shell).forEach(item=>item.classList.toggle('active',item.dataset.wiTab==='complaint'));
+        render();
+        return;
+      }
       const requiresTrackingDocument=['Walk-In','จดหมาย'].includes(val('wiChannel'));
       receiptTab.disabled=!requiresTrackingDocument;
       if(requiresTrackingDocument){receipt.region=val('wiIntakeRegion')||'ส่วนกลาง';render()}
@@ -866,8 +907,8 @@
           return notify('info','กรุณาตรวจสอบข้อมูลประกอบการลงนาม','โปรดระบุเลขหนังสือและวันที่หนังสือให้ครบถ้วน เพื่อดำเนินการลงนามและออกเลขสำนวน');
         }
         const approvalActor=activeRole==='acting'?(d.actingOfficer||ROLE_LABELS[activeRole]):ROLE_LABELS[activeRole];
-        const acceptedDecision=['18/1ก','18/1ข','18/4'].includes(d.decision);
-        if(acceptedDecision&&!d.caseNumber){
+        const caseNumberEligible=['18/1ก','18/1ข','18/4'].includes(d.decision);
+        if(caseNumberEligible&&!d.caseNumber){
           const confirmed=await confirmDo('ลงนามอนุมัติและออกเลขสำนวน','หลังยืนยัน ระบบจะออกเลขสำนวนและเปิดเผยสถานะรับไว้ดำเนินการแก่ผู้ร้อง','ลงนามและออกเลขสำนวน');
           if(!confirmed.isConfirmed)return;
           d.approvedAt=new Date().toISOString();d.approvedBy=approvalActor;issueCaseNumber(state);

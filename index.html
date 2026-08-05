@@ -6,7 +6,7 @@
 <title>E-CMIS | ระบบบริหารจัดการและติดตามสำนวนคดี</title>
 
 <!-- Google Font: Thai (body + serif display for headings) -->
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Bootstrap 5 -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +17,9 @@
 <!-- SweetAlert2 -->
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-rich.css" rel="stylesheet">
+<link href="assets/human-verification.css" rel="stylesheet">
 <script src="assets/ecmis.js" defer></script>
+<script src="assets/human-verification.js" defer></script>
 
 <style>
 :root{
@@ -1179,6 +1181,7 @@ table.dataTable thead th{ color:var(--ecmis-navy); font-family:var(--serif); }
                 <button class="btn btn-track-status" type="submit">ค้นหา</button>
               </div>
               <p class="quick-track-feedback" id="quickTrackFeedback" aria-live="polite"></p>
+              <div data-human-verification="quick-track"></div>
             </form>
             <div class="hint">
               <i class="fa-solid fa-circle-info me-1"></i> กรอกเลขรับบริการ พร้อมรหัสยืนยัน
@@ -1812,6 +1815,7 @@ function trackStatus(useQuickForm = false){
 
 document.getElementById('quickTrackForm').addEventListener('submit', function(event){
   event.preventDefault();
+  if(!window.PACCHumanVerification.require('quick-track')) return;
   trackStatus(true);
 });
 

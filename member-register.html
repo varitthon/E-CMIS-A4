@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ลงทะเบียนสมาชิก | E-CMIS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;family=Noto+Serif+Thai:wght@600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <link href="assets/ecmis-rich.css" rel="stylesheet">
+  <link href="assets/human-verification.css" rel="stylesheet">
+  <link href="assets/public-form-consistency.css" rel="stylesheet">
   <script src="assets/ecmis.js" defer></script>
+  <script src="assets/human-verification.js" defer></script>
   <script src="assets/member-register.js" defer></script>
   <style>
     :root{--navy:#0a2647;--navy-dark:#051425;--gold:#c9a227;--paper:#f7f6f2;--ink:#20262e;--muted:#667085;--line:#d9dee6}
@@ -30,7 +33,7 @@
     <section class="page-head"><div class="shell"><p class="breadcrumb"><a href="index.html">หน้าแรก</a> / ลงทะเบียนสมาชิก</p><h1>ลงทะเบียนสมาชิกผู้ร้องเรียน</h1><p>สมัครสมาชิกด้วยเลขประจำตัวประชาชน อีเมล และเบอร์โทรศัพท์ เพื่อเตรียมติดตามเรื่องและส่งข้อมูลเพิ่มเติมได้สะดวกขึ้น</p></div></section>
     <div class="shell"><form class="register-card" id="memberRegisterForm" novalidate>
       <section class="form-section" aria-labelledby="identityTitle"><h2 class="section-title" id="identityTitle"><span>1</span>ข้อมูลสมาชิก</h2><div class="row g-3">
-        <div class="col-12"><label class="form-label" for="citizenId">เลขประจำตัวประชาชน <span class="required">*</span></label><input class="form-control" id="citizenId" name="citizenId" inputmode="numeric" maxlength="17" placeholder="x-xxxx-xxxxx-xx-x" required><div class="invalid-feedback">กรอกเลขประจำตัวประชาชน 13 หลักให้ถูกต้อง</div></div>
+        <div class="col-12"><label class="form-label" for="citizenId">เลขประจำตัวประชาชน <span class="required">*</span></label><input class="form-control" id="citizenId" name="citizenId" inputmode="numeric" maxlength="17" placeholder="x-xxxx-xxxxx-xx-x" aria-describedby="citizenIdFeedback" required><div class="member-id-feedback" id="citizenIdFeedback" aria-live="polite"></div></div>
         <div class="col-md-3"><label class="form-label" for="titlePrefix">คำนำหน้า</label><select class="form-select" id="titlePrefix" name="titlePrefix"><option value="">เลือกคำนำหน้า</option><option>นาย</option><option>นาง</option><option>นางสาว</option><option>อื่น ๆ</option></select></div>
         <div class="col-md-4"><label class="form-label" for="firstName">ชื่อ <span class="required">*</span></label><input class="form-control" id="firstName" name="firstName" required><div class="invalid-feedback">กรอกชื่อ</div></div>
         <div class="col-md-5"><label class="form-label" for="lastName">นามสกุล <span class="required">*</span></label><input class="form-control" id="lastName" name="lastName" required><div class="invalid-feedback">กรอกนามสกุล</div></div>
@@ -45,10 +48,12 @@
         <div class="col-md-6"><label class="form-label" for="subdistrict">ตำบล/แขวง</label><input class="form-control" id="subdistrict" name="subdistrict"></div><div class="col-md-6"><label class="form-label" for="occupation">อาชีพ</label><input class="form-control" id="occupation" name="occupation"></div>
       </div></section>
       <section class="form-section" aria-labelledby="privacyTitle"><h2 class="section-title" id="privacyTitle"><span>3</span>ความประสงค์ในการปกปิดข้อมูล</h2><div class="privacy-box"><p>ขอให้สำนักงาน ป.ป.ท. ปกปิดชื่อ-สกุล เลขประจำตัวประชาชน ที่อยู่ โทรศัพท์ และอีเมลของผู้ร้องเรียน</p><div class="d-flex flex-wrap gap-4"><div class="form-check"><input class="form-check-input" type="radio" name="privacyPreference" id="privacyYes" value="conceal" required><label class="form-check-label" for="privacyYes">มีความประสงค์ให้ปกปิด</label></div><div class="form-check"><input class="form-check-input" type="radio" name="privacyPreference" id="privacyNo" value="disclose" required><label class="form-check-label" for="privacyNo">ไม่มีความประสงค์ให้ปกปิด</label></div></div></div></section>
-      <div class="form-actions"><a class="btn-cancel" href="index.html">ยกเลิก</a><button class="btn-register" type="submit"><i class="fa-solid fa-user-plus me-2"></i>ลงทะเบียนสมาชิก</button></div>
+      <div class="form-section"><div data-human-verification="member-register"></div></div>
+      <div class="form-actions public-action-pair"><a class="btn-cancel" href="index.html">ยกเลิก</a><button class="btn-register" type="submit"><i class="fa-solid fa-user-plus me-2"></i>ลงทะเบียนสมาชิก</button></div>
     </form></div>
   </main>
   <footer class="site-foot"><div class="shell site-foot-inner"><p><strong>สำนักงาน ป.ป.ท.</strong><br>99 หมู่ 4 อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</p><p>สายด่วน 1206 · pacc@pacc.go.th</p></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>document.getElementById('memberRegisterForm').addEventListener('submit',event=>{if(window.PACCHumanVerification.require('member-register'))return;event.preventDefault();event.stopImmediatePropagation()},true);</script>
 </body>
 </html>

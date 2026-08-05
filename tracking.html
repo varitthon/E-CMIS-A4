@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>ติดตามเรื่องร้องเรียน | E-CMIS</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;family=Noto+Serif+Thai:wght@500;600;700;800&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/ecmis.css" />
+    <link rel="stylesheet" href="assets/human-verification.css" />
+    <link rel="stylesheet" href="assets/public-form-consistency.css" />
     <script src="assets/ecmis.js" defer></script>
+    <script src="assets/human-verification.js" defer></script>
     <style>
       .tracking-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.65fr);gap:.8rem}.tracking-feedback{min-height:1.5rem;margin:.6rem 0;color:#9b2c2c;font-size:.85rem}.tracking-pair input.invalid{border-color:#9b2c2c;box-shadow:0 0 0 3px rgba(155,44,44,.12)}.tracking-guide{border-top:4px solid var(--accent)}.tracking-guide ol{margin:1rem 0 0;padding-left:1.25rem}.tracking-guide li{padding:.3rem 0}.tracking-guide .privacy-note{margin-top:1.25rem;padding:1rem;border-radius:var(--control-radius);background:#f3f6f9;color:var(--muted)}
       @media(max-width:650px){.tracking-pair{grid-template-columns:1fr}}
@@ -72,6 +75,7 @@
                 </div>
               </div>
               <p class="tracking-feedback" id="trackingFeedback" aria-live="polite"></p>
+              <div data-human-verification="tracking-lookup"></div>
               <button type="submit" class="primary">ตรวจสอบสถานะ</button>
             </form>
             <button
@@ -145,12 +149,13 @@
               required
             />
           </div>
-          <div class="actions dialog-actions">
+          <div class="actions dialog-actions public-action-pair">
             <button type="button" class="button secondary" id="forgotClose">
               ยกเลิก
             </button>
             <button type="submit" class="primary">ส่งคำขอ</button>
           </div>
+          <div data-human-verification="tracking-recovery"></div>
         </form>
         <p class="hint">
           แนวทางการใช้งาน: ส่งลิงก์ยืนยันแบบใช้ครั้งเดียวภายในกำหนดเวลา และบันทึกการใช้งานเพื่อความปลอดภัย
@@ -249,13 +254,14 @@
       }
       lookup.addEventListener("submit", (e) => {
         e.preventDefault();
+        if (!window.PACCHumanVerification.require("tracking-lookup")) return;
         showResult();
       });
       addEventListener("load", () => {
         yearSequence.value = params.get("yearSequence") || "";
         verificationCode.value = (params.get("verificationCode") || "").toUpperCase();
         if (yearSequence.value && verificationCode.value) {
-          showResult();
+          feedback.textContent = "ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ แล้วกดตรวจสอบสถานะ";
         } else if (yearSequence.value && params.get("source") === "walkin") {
           feedback.textContent = `เลขรับบริการ ${yearSequence.value} กรอกรหัสติดตาม 4 ตัวจากเอกสาร 58/2-02`;
           verificationCode.focus();
@@ -265,6 +271,7 @@
       document.getElementById("forgotClose").onclick = () => forgot.close();
       document.getElementById("forgotForm").addEventListener("submit", (e) => {
         e.preventDefault();
+        if (!window.PACCHumanVerification.require("tracking-recovery")) return;
         document.getElementById("forgotResult").textContent =
           "ระบบได้ส่งลิงก์ใช้ครั้งเดียวสำหรับกู้คืนหมายเลขติดตามไปยังอีเมลที่ระบุแล้ว";
         e.target.reset();
