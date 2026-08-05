@@ -52,7 +52,7 @@ body.high-contrast .form-section-card,
 body.high-contrast .review-card,
 body.high-contrast .form-page-header,
 body.high-contrast .form-hint-card,
-body.high-contrast .anon-toggle,
+body.high-contrast .privacy-request,
 body.high-contrast .accused-card,
 body.high-contrast .new-feature-banner,
 body.high-contrast .captcha-box,
@@ -66,7 +66,7 @@ body.high-contrast a{ color:#ffd400 !important; }
 body.high-contrast .form-section-title,
 body.high-contrast .form-label,
 body.high-contrast .char-counter,
-body.high-contrast .anon-note,
+body.high-contrast .privacy-request small,
 body.high-contrast .review-row .label,
 body.high-contrast .review-row .value,
 body.high-contrast .step-label,
@@ -219,10 +219,10 @@ body.high-contrast #trackingNoBox{ background:#000 !important; border-color:#fff
 .form-control, .form-select{ font-size:.9rem; border-radius:8px; border-color:#dfe3ea; }
 .form-control:focus, .form-select:focus{ box-shadow:0 0 0 .2rem rgba(201,162,39,.15); border-color:var(--ecmis-gold); }
 .char-counter{ font-size:.74rem; color:#9aa4b5; text-align:right; margin-top:.3rem; }
-.anon-toggle{ background:#f7f8fb; border:1px solid #e5e8ee; border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem; }
-.anon-toggle .form-check-input{ width:2.4em; height:1.3em; cursor:pointer; }
-.anon-toggle .form-check-input:checked{ background-color:var(--ecmis-navy); border-color:var(--ecmis-navy); }
-.anon-note{ font-size:.8rem; color:#6b7280; margin-top:.5rem; }
+.privacy-request{margin-bottom:1.5rem;padding:1rem 1.15rem;border:1px solid #e1e6ed;border-radius:14px;background:#f7f9fb}
+.privacy-choice{display:flex;align-items:flex-start;gap:.7rem;cursor:pointer}
+.privacy-choice input{flex:0 0 auto;margin-top:.25rem}
+.privacy-choice span{display:grid;gap:.12rem}.privacy-choice strong{color:var(--ecmis-navy);font-size:.88rem}.privacy-choice small{color:#6b7280;font-size:.76rem}
 
 /* ---------- File dropzone ---------- */
 .file-dropzone{
@@ -528,12 +528,11 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
         <div class="form-section-card">
           <div class="form-section-title"><span class="step-badge">1</span>ข้อมูลผู้ร้อง</div>
 
-          <div class="anon-toggle">
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="anonToggle">
-              <label class="form-check-label fw-semibold" for="anonToggle">ยื่นเป็นบัตรสนเท่ห์ (ขอปกปิดข้อมูลผู้ร้อง)</label>
-            </div>
-            <div class="anon-note"><i class="fa-solid fa-lock me-1"></i>ท่านยังคงกรอกข้อมูลผู้ร้องได้ตามปกติ โดยระบบจะกำหนดเรื่องนี้เป็นบัตรสนเท่ห์และปกปิดข้อมูลผู้ร้อง</div>
+          <div class="privacy-request">
+            <label class="privacy-choice" for="confidentialityToggle">
+              <input class="form-check-input" type="checkbox" id="confidentialityToggle">
+              <span><strong>ขอปกปิดข้อมูลผู้ร้อง</strong><small>ใช้เมื่อให้ข้อมูลตัวตนแก่สำนักงาน แต่ไม่ประสงค์ให้เปิดเผยชื่อ ที่อยู่ โทรศัพท์ อีเมล และข้อมูลระบุตัวตน</small></span>
+            </label>
           </div>
 
           <div class="row g-3">
@@ -934,6 +933,20 @@ wireCounter('agencyName', 'agencyNameCounter', 150);
 wireCounter('incidentPlace', 'incidentPlaceCounter', 300);
 wireCounter('desiredAction', 'desiredActionCounter', 1500);
 
+const complainantIdentityFields=['nationalId','firstName','lastName','address','phone','email'];
+function getComplainantIdentityState(){
+  const providedFields=complainantIdentityFields.filter(id=>{
+    const element=document.getElementById(id);
+    return element&&element.value.trim();
+  });
+  const isAnonymous=providedFields.length===0;
+  return {
+    isAnonymous,
+    providedFields,
+    confidentialityRequested:document.getElementById('confidentialityToggle').checked
+  };
+}
+
 // --- national ID: digits only, auto-format with dashes (x-xxxx-xxxxx-xx-x), verify checksum ---
 function formatNationalId(el){
   const digits = el.value.replace(/\D/g, '').slice(0, 13);
@@ -1290,16 +1303,16 @@ function appendReviewRow(container, labelText, valueText){
   container.appendChild(row);
 }
 function buildReviewSummary(){
-  const anon = document.getElementById('anonToggle').checked;
+  const identity = getComplainantIdentityState();
   const accusedCount = document.querySelectorAll('.accused-card').length;
   const provinceText = document.getElementById('province').selectedOptions[0]?.text || '-';
   const networkText = document.getElementById('networkStatus').selectedOptions[0]?.text || '-';
   const reviewBody = document.getElementById('reviewBody');
   reviewBody.replaceChildren();
-  if(anon){
-    appendReviewRow(reviewBody, 'รูปแบบการร้องเรียน', 'บัตรสนเท่ห์ — ปกปิดข้อมูลผู้ร้อง');
+  if(identity.isAnonymous){
+    appendReviewRow(reviewBody, 'ข้อมูลผู้ร้อง', 'ไม่ได้ระบุ');
   } else {
-    appendReviewRow(reviewBody, 'รูปแบบการร้องเรียน', 'เปิดเผยตัวตน');
+    appendReviewRow(reviewBody, 'การปกปิดข้อมูลผู้ร้อง', identity.confidentialityRequested?'ขอปกปิดข้อมูลผู้ร้อง':'ไม่ได้ขอปกปิดข้อมูลผู้ร้อง');
     appendReviewRow(reviewBody, 'ชื่อ-นามสกุล', `${val('titlePrefix')} ${val('firstName')} ${val('lastName')}`);
     appendReviewRow(reviewBody, 'โทรศัพท์ / อีเมล', `${val('phone')} / ${val('email')}`);
   }
@@ -1320,11 +1333,9 @@ function submitComplaint(){
     Swal.fire({icon:'warning', title:'กรุณายืนยันตัวตนก่อนส่งคำร้อง', text:'คลิกที่ช่อง "ฉันไม่ใช่โปรแกรมอัตโนมัติ" เพื่อยืนยันก่อนดำเนินการต่อ', confirmButtonColor:'#0b2e59'});
     return;
   }
+  const identity = getComplainantIdentityState();
   const hasContact = val('phone') !== '-' || val('email') !== '-';
-  const isAnonymousWithoutContact = document.getElementById('anonToggle').checked && !hasContact;
-  const trackingWarning = isAnonymousWithoutContact
-    ? 'ท่านไม่ได้ระบุข้อมูลติดต่อและยื่นแบบไม่เปิดเผยตัวตน กรุณาจดจำเลขติดตามไว้ด้วยตนเอง การติดตามทำได้ผ่านเว็บไซต์เท่านั้น'
-    : !hasContact
+  const trackingWarning = !hasContact
       ? 'ท่านไม่ได้ระบุข้อมูลติดต่อ กรุณาจดจำเลขติดตามไว้ด้วยตนเอง เนื่องจากสำนักงานไม่สามารถแจ้งผลกลับได้'
       : 'สำนักงานจะใช้ข้อมูลติดต่อที่ระบุไว้สำหรับแจ้งความคืบหน้าตามความเหมาะสม';
   Swal.fire({
@@ -1346,7 +1357,10 @@ function submitComplaint(){
       window.ECMIS.saveCaseMetadata({
         ...trackingPair,
         subject:val('complaintSubject'),
-        attachmentCount:uploadedFiles.length
+        attachmentCount:uploadedFiles.length,
+        anonymousDetected:identity.isAnonymous,
+        confidentialityRequested:identity.confidentialityRequested,
+        identityFieldsProvided:identity.providedFields.length
       });
       document.getElementById('trackingNoDisplay').textContent = currentTrackingNo;
       const qrImg = document.getElementById('trackingQr');
