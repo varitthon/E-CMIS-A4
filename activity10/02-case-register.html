@@ -17,20 +17,25 @@
 
   <div class="page-head">
     <div>
-      <h1><i class="fa-solid fa-folder-open me-2"></i>ลงทะเบียนรับสำนวนคดี / คำร้อง (Case Intake Register)</h1>
-      <div class="sub">บันทึกรับสำนวนคดีจากพนักงานอัยการ, ศาลปกครอง และคำร้องขอเปิดเผยข้อมูล พร้อมคำนวณ SLA อัตโนมัติ</div>
+      <h1><i class="fa-solid fa-folder-open me-2"></i>ลงทะเบียนรับสำนวนคดี / คำร้อง (รับหนังสือกระดาษจากสารบรรณกลางภายนอก)</h1>
+      <div class="sub">บันทึกรับหนังสือกระดาษจากสารบรรณกลางภายนอก, อัยการ, ศาลปกครอง เพื่อออกเลขที่สำนวน ป.ป.ท. และคำนวณ SLA</div>
     </div>
-    <span class="flow-ref ms-auto">ผัง: 10.1 - 10.3 Intake Module</span>
+    <span class="flow-ref ms-auto">ผัง: 10.1 - 10.3 Paper Intake</span>
   </div>
 
   <div class="row g-3">
     <div class="col-lg-10 mx-auto">
       <div class="card card-ecmis mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span><i class="fa-solid fa-pen-to-square me-2"></i>แบบฟอร์มลงทะเบียนรับเรื่องใหม่</span>
-          <span class="st st-regular">ระบบออกเลขที่สำนวนอัตโนมัติ</span>
+        <div class="card-header bg-navy text-white d-flex align-items-center justify-content-between" style="background:#0F2A62; color:white;">
+          <span><i class="fa-solid fa-file-arrow-up me-2"></i>แบบฟอร์มบันทึกรับหนังสือกระดาษจากสารบรรณกลางภายนอก</span>
+          <span class="st st-regular">ระบบออกเลขที่สำนวนคดี ป.ป.ท. อัตโนมัติ</span>
         </div>
         <div class="card-body">
+          
+          <div class="alert alert-warning py-2 small mb-4">
+            <i class="fa-solid fa-circle-info me-2"></i> <strong>ข้อกำหนดกระบวนงาน:</strong> สารบรรณกลางเป็นหน่วยงานภายนอกระบบ ออกเลขหนังสือเป็นกระดาษข้างนอก เจ้าหน้าที่ธุรการกองกฎหมายจะนำเลขหนังสือกระดาษฉบับเดิมมากรอกลงระบบ พร้อมแนบไฟล์สแกน PDF เพื่อสร้างสำนวนคดีในระบบ E-CMIS ป.ป.ท.
+          </div>
+
           <form onsubmit="handleCaseSubmit(event)">
             
             <h5 class="text-navy fw-bold border-bottom pb-2 mb-3"><i class="fa-solid fa-list-ol me-2"></i>1. ประเภทกระบวนงานกฎหมาย</h5>
@@ -45,35 +50,41 @@
                 </select>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-bold">ช่องทางการรับเรื่อง / ที่มา <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold">ช่องทางการส่งหนังสือกระดาษภายนอก <span class="text-danger">*</span></label>
                 <select class="form-select" id="caseSourceChannel" onchange="calculateSLA()" required>
-                  <option value="central_mail">ส่วนกลาง (บันทึกแจ้งผู้รับผิดชอบ - SLA 7 วัน)</option>
-                  <option value="area_direct">เขตพื้นที่โดยตรง (บันทึกแจ้งส่วนกลาง - SLA 10 วัน)</option>
-                  <option value="oag_api">ระบบสารบรรณอัยการ (OAG API)</option>
-                  <option value="ecourt_api">ระบบศาลปกครอง (e-Court API)</option>
-                  <option value="walk_in">ยื่นด้วยตนเอง (Walk-in)</option>
-                  <option value="email">ยื่นออนไลน์ / Email (SLA 60 วัน)</option>
+                  <option value="central_mail">หนังสือส่งจากสารบรรณกลาง (กระดาษ - SLA 7 วัน)</option>
+                  <option value="area_direct">หนังสือส่งจากสารบรรณเขตพื้นที่ (กระดาษ - SLA 10 วัน)</option>
+                  <option value="oag_api">หนังสือส่งจากสำนักงานอัยการสูงสุด (กระดาษ / ไปรษณีย์)</option>
+                  <option value="ecourt_api">หมายเรียก / คำสั่งศาลปกครอง (กระดาษ / e-Court)</option>
+                  <option value="walk_in">ประชาชนยื่นด้วยตนเอง ณ ศูนย์รับเรื่อง (กระดาษ)</option>
+                  <option value="email">ยื่นผ่านระบบ Email / เว็บไซต์ (SLA 60 วัน)</option>
                 </select>
               </div>
             </div>
 
-            <h5 class="text-navy fw-bold border-bottom pb-2 mb-3"><i class="fa-solid fa-file-lines me-2"></i>2. ข้อมูลรายละเอียดสำนวน</h5>
+            <h5 class="text-navy fw-bold border-bottom pb-2 mb-3"><i class="fa-solid fa-newspaper me-2"></i>2. เลขที่หนังสือและอัปโหลดไฟล์สแกนหนังสือกระดาษ</h5>
             <div class="row g-3 mb-3">
               <div class="col-md-4">
-                <label class="form-label fw-bold">เลขที่หนังสือรับ / คำร้องเดิม</label>
-                <input type="text" class="form-control" id="docNoInput" placeholder="เช่น นร 1204/1582" required>
+                <label class="form-label fw-bold">เลขที่หนังสือภายนอก (กระดาษ) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="docNoInput" placeholder="เช่น อส 0014/2569 หรือ นร 1204/1582" required>
+                <small class="text-muted" style="font-size:0.75rem;">* เลขที่ออกโดยสารบรรณกลางภายนอก</small>
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-bold">วันที่รับเรื่องเข้าระบบ <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold">วันที่ในหนังสือกระดาษ / วันที่รับเข้า <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" id="dateReceived" value="2026-08-06" onchange="calculateSLA()" required>
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-bold">หน่วยงานส่งเรื่อง / ศาล / อัยการ</label>
-                <input type="text" class="form-control" id="sourceInput" placeholder="ระบุหน่วยงานส่งเรื่อง..." required>
+                <label class="form-label fw-bold">หน่วยงานภายนอกที่ส่งเรื่อง <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="sourceInput" placeholder="ระบุ เช่น สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามฯ 1" required>
               </div>
-              <div class="col-12">
-                <label class="form-label fw-bold">หัวข้อเรื่อง / สาระสำคัญ <span class="text-danger">*</span></label>
+              <div class="col-md-8">
+                <label class="form-label fw-bold">หัวข้อเรื่อง / สาระสำคัญในหนังสือกระดาษ <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" id="titleInput" placeholder="ระบุหัวข้อคดี หรือ เรื่องขอเปิดเผยข้อมูล..." required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">แนบไฟล์สแกนหนังสือกระดาษ (PDF) <span class="text-danger">*</span></label>
+                <input type="file" class="form-control" accept=".pdf,.png,.jpg" required>
+                <small class="text-muted" style="font-size:0.75rem;">* สแกนเอกสารฉบับจริงเป็นไฟล์ PDF</small>
               </div>
             </div>
 
@@ -81,7 +92,7 @@
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <div class="p-3 bg-light rounded border">
-                  <small class="text-muted d-block">กรอบเวลาตามกฎหมาย (Auto-SLA Rule):</small>
+                  <small class="text-muted d-block">กรอบเวลาตามกฎหมายนับจากวันลงรับ:</small>
                   <strong class="text-navy fs-5" id="slaRuleText">15 วัน (พิจารณาความเห็นแย้งคำสั่งอัยการ)</strong><br>
                   <small class="text-danger">วันที่ครบกำหนด (Due Date): <span id="slaDueDateText">2026-08-21</span></small>
                 </div>
@@ -99,7 +110,7 @@
 
             <div class="d-flex justify-content-end gap-2 border-top pt-3">
               <a href="01-work-inbox.html" class="btn btn-outline-secondary"><i class="fa-solid fa-xmark me-1"></i>ยกเลิก</a>
-              <button type="submit" class="btn btn-navy"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกและออกเลขสำนวนคดี</button>
+              <button type="submit" class="btn btn-navy"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกและสร้างสำนวนคดี ป.ป.ท.</button>
             </div>
 
           </form>
@@ -135,10 +146,10 @@
       ruleLabel = "30 วัน (จัดทำคำให้การต่อศาลปกครอง)";
     } else if (channel === "central_mail") {
       days = 7;
-      ruleLabel = "7 วัน (ส่วนกลางรับเรื่องทำบันทึกแจ้ง)";
+      ruleLabel = "7 วัน (สารบรรณกลางส่งเรื่องให้กองกฎหมาย)";
     } else if (channel === "area_direct") {
       days = 10;
-      ruleLabel = "10 วัน (เขตพื้นที่รับเรื่องแจ้งส่วนกลาง)";
+      ruleLabel = "10 วัน (สารบรรณเขตพื้นที่ส่งเรื่อง)";
     }
     
     currentSLADays = days;
@@ -162,17 +173,18 @@
     const created = Activity10.addCase({
       category: cat,
       title: title,
-      source: source,
+      source: `${source} (กระดาษ)`,
       docNo: docNo,
       officer: officer,
       slaTotalDays: currentSLADays,
-      dueDate: dueDate
+      dueDate: dueDate,
+      docType: "สแกนหนังสือกระดาษสารบรรณกลาง"
     });
 
     Swal.fire({
       icon: 'success',
-      title: 'ลงทะเบียนสำนวนสำเร็จ!',
-      html: `ออกเลขที่สำนวนคดีเรียบร้อยแล้ว:<br><strong class="fs-4 text-navy">${created.id}</strong><br><small class="text-muted">บันทึกข้อมูลเข้า Work Inbox แบบ Real-time แล้ว</small>`,
+      title: 'บันทึกหนังสือกระดาษและออกเลขสำนวนสำเร็จ!',
+      html: `เลขที่หนังสือกระดาษ: <strong>${docNo}</strong><br>ออกเลขที่สำนวนคดี ป.ป.ท.: <strong class="fs-4 text-navy">${created.id}</strong><br><small class="text-muted">จัดส่งเข้า Work Inbox ของนิติกรเรียบร้อยแล้ว</small>`,
       confirmButtonText: 'ไปยัง Work Inbox',
       confirmButtonColor: '#0F2A62'
     }).then(() => {
