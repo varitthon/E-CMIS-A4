@@ -26,8 +26,8 @@
     'ร้องเรียนพฤติการณ์ร่ำรวยผิดปกติ',
     'เรื่องทรัพยากรธรรมชาติ',
     'เรื่องความมั่นคงชาติ',
-    'กรณีที่ไม่ใช่ความผิดข้ามชาติ',
-    'จัดซื้อจัดจ้างไม่เกิน 2 ล้านบาท',
+    'กรณีความผิดข้ามชาติ',
+    'จัดซื้อจัดจ้างเกิน 2 ล้านบาท',
     'กรณีไม่เกี่ยวกับสัมปทานโดยรัฐ'
   ];
   const DEFAULT_SUGGESTIONS = {
@@ -60,6 +60,11 @@
   const DUPLICATE_REFERENCE_CASES = [{id:'ECMIS-2569-000127',complainant:'นายสมชาย ใจดี',citizenId:'1-1001-00123-45-6',id4:'1234',subject:'ขอให้ตรวจสอบการจัดซื้อวัสดุสำนักงานที่ไม่เป็นไปตามระเบียบ',agency:'สำนักงานจัดการทรัพย์สินภาครัฐ',province:'กรุงเทพมหานคร',place:'สำนักงานจัดการทรัพย์สินภาครัฐ กรุงเทพมหานคร',received:'2 สิงหาคม 2569 15:20 น.',detail:'พบการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบและมีพฤติการณ์เอื้อประโยชน์แก่ผู้เสนอราคา'}];
   const THAI_MONTHS={มกราคม:0,กุมภาพันธ์:1,มีนาคม:2,เมษายน:3,พฤษภาคม:4,มิถุนายน:5,กรกฎาคม:6,สิงหาคม:7,กันยายน:8,ตุลาคม:9,พฤศจิกายน:10,ธันวาคม:11,'ม.ค.':0,'ก.พ.':1,'มี.ค.':2,'เม.ย.':3,'พ.ค.':4,'มิ.ย.':5,'ก.ค.':6,'ส.ค.':7,'ก.ย.':8,'ต.ค.':9,'พ.ย.':10,'ธ.ค.':11};
   function normalizeComparable(value=''){return String(value).toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')}
+  function formatInternalReceiptNumber(value=''){
+    const text=String(value||'').trim().replace(/\s+/g,'');
+    const match=text.match(/^ECMIS-(\d{4})-(\d{1,6})$/i);
+    return match?`ECMIS-${match[1]}-${match[2].padStart(6,'0')}`:text;
+  }
   function normalizeCitizenId(value=''){return String(value).replace(/\D/g,'')}
   function isValidThaiCitizenId(value=''){
     const digits=normalizeCitizenId(value);if(!/^\d{13}$/.test(digits))return false;
@@ -189,15 +194,46 @@
     input.addEventListener('change',()=>learnContextSuggestion(context,input.value));
     render();
   }
-  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',divisionOpinion:'',divisionAdditionalDetail:'',internalLetterNo:'',internalLetterDate:'',caseNumber:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',dispatchLetterNo:'',dispatchLetterDate:'',dispatchSendMethod:'EMS',dispatchEms:'',dispatchSentDate:'',dispatchProofName:'',dispatchDestinationUnit:item.region||'',dispatchNote:'',dispatchConfirmedAt:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',officerSignature:{signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:''},centerSignature:{signed:false,signerName:'',signerRole:'ผอ.ศรร.',signedAt:'',signatureId:''},divisionOpinion:'',divisionAdditionalDetail:'',divisionSignature:{signed:false,signerName:'',signerRole:'ผอ.กบค.',signedAt:'',signatureId:''},internalLetterNo:'',internalLetterDate:'',caseNumber:'',caseNumberIssuedAt:'',caseNumberIssuedBy:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',dispatchLetterNo:'',dispatchLetterDate:'',dispatchSendMethod:'EMS',dispatchEms:'',dispatchSentDate:'',dispatchProofName:'',dispatchDestinationUnit:item.region||'',dispatchNote:'',dispatchConfirmedAt:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function currentCaseSequence(buddhistYear){
+    const key=`ecmis-a4-case-sequence-${buddhistYear}`;
+    const storedSequence=Number(localStorage.getItem(key)||0);
+    const stateSequences=Object.values(readStore()).map(state=>String(state?.documentData?.caseNumber||'').match(/^(\d{4})\/(\d{4})$/)).filter(match=>match&&Number(match[2])===buddhistYear).map(match=>Number(match[1]));
+    return Math.max(0,storedSequence,...stateSequences);
+  }
+  function formatCaseSequence(sequence,buddhistYear){return `${String(sequence).padStart(4,'0')}/${buddhistYear}`}
   function issueCaseNumber(state){
     if(state.documentData.caseNumber)return state.documentData.caseNumber;
     const buddhistYear=new Date().getFullYear()+543;
     const key=`ecmis-a4-case-sequence-${buddhistYear}`;
-    const next=Math.max(1,Number(localStorage.getItem(key)||0)+1);
+    const next=currentCaseSequence(buddhistYear)+1;
     localStorage.setItem(key,String(next));
-    state.documentData.caseNumber=`${String(next).padStart(4,'0')}/${buddhistYear}`;
+    state.documentData.caseNumber=formatCaseSequence(next,buddhistYear);
+    state.documentData.caseNumberIssuedAt=new Date().toISOString();
+    state.documentData.caseNumberIssuedBy=state.documentData.divisionSignature?.signerName||state.documentData.approvedBy||'ผอ.กบค.';
     return state.documentData.caseNumber;
+  }
+  function signatureRecord(role,signerName){
+    const signedAt=new Date().toISOString();
+    const signatureId=`SIG-${signedAt.replace(/\D/g,'').slice(0,14)}-${Math.random().toString(16).slice(2,10).toUpperCase()}`;
+    return {signed:true,signerName,signerRole:role,signedAt,signatureId};
+  }
+  function signatureCard(state,type){
+    const d=state.documentData,isCenter=type==='center',isOfficer=type==='officer',signature=isCenter?d.centerSignature:isOfficer?d.officerSignature:d.divisionSignature;
+    const role=isCenter?'ผอ.ศรร.':isOfficer?'เจ้าหน้าที่รับเรื่อง':(activeRole==='acting'?(d.actingOfficer||'ผู้รักษาราชการแทน'):'ผอ.กบค.');
+    const action=isCenter?'center-sign':isOfficer?'officer-sign':'division-sign';
+    const signedTime=signature?.signedAt?new Date(signature.signedAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}):'';
+    const proof=signature?.signed
+      ?`<div class="signature-proof"><span>ลงนามแล้ว</span><strong>${escapeHtml(signature.signerName)}</strong><small>${escapeHtml(signature.signerRole)} · ${escapeHtml(signedTime)}</small><code>${escapeHtml(signature.signatureId)}</code></div>`
+      :`<div class="signature-pending"><span>รอลงนาม</span><strong>${escapeHtml(role)}</strong><small>ตรวจสอบความเห็นและยืนยันการลงนามในระบบ</small></div><button type="button" class="ws-button primary" data-action="${action}">ตรวจสอบและลงนาม</button>`;
+    return `<section class="signature-workflow"><header><div><span>ลายมือชื่ออิเล็กทรอนิกส์</span><h3>${escapeHtml(role)}</h3></div><b class="${signature?.signed?'signed':''}">${signature?.signed?'ลงนามแล้ว':'รอลงนาม'}</b></header><ol><li class="done"><i>1</i><span>ตรวจสอบผลพิจารณา</span></li><li class="${signature?.signed?'done':'current'}"><i>2</i><span>ยืนยันและลงนาม</span></li><li class="${signature?.signed?'done':''}"><i>3</i><span>บันทึกหลักฐาน</span></li></ol><div class="signature-workflow-body">${proof}</div></section>`;
+  }
+  function caseIssuanceCard(state){
+    const d=state.documentData,buddhistYear=new Date().getFullYear()+543,eligible=['18/1ก','18/1ข','18/4'].includes(d.decision);
+    if(!eligible)return `<section class="case-issuance neutral"><span>การออกเลขสำนวน</span><strong>กรณีนี้ไม่ออกเลขสำนวน</strong><p>ผลพิจารณา ${escapeHtml(d.decision||'ยังไม่ระบุ')}</p></section>`;
+    const latest=currentCaseSequence(buddhistYear),next=latest+1;
+    if(d.caseNumber)return `<section class="case-issuance issued"><span>เลขสำนวนที่ออกแล้ว</span><strong>${escapeHtml(d.caseNumber)}</strong><p>เลขล่าสุดของปี ${buddhistYear} · ออกหลัง ${escapeHtml(d.divisionSignature?.signerRole||'ผอ.กบค.')} ลงนาม</p></section>`;
+    return `<section class="case-issuance"><span>ลำดับเลขสำนวน ปี ${buddhistYear}</span><div class="case-sequence-preview"><p><small>เลขล่าสุด</small><strong>${formatCaseSequence(latest,buddhistYear)}</strong></p><p><small>เลขถัดไป</small><strong>${formatCaseSequence(next,buddhistYear)}</strong></p></div><p>เลขถัดไปยังไม่ถูกจอง ระบบจะออกเลขหลัง ผอ.กบค. ลงนามอนุมัติสำเร็จ</p></section>`;
   }
   function getState(id){
     const store=readStore();
@@ -212,14 +248,32 @@
       return {...entry,text:`[${action}] ${entry.text||''}`};
     });
     state.anonymousHistory=state.anonymousHistory||[];
+    state.documentData.officerSignature={signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:'',...(state.documentData.officerSignature||{})};
+    state.documentData.centerSignature={signed:false,signerName:'',signerRole:'ผอ.ศรร.',signedAt:'',signatureId:'',...(state.documentData.centerSignature||{})};
+    state.documentData.divisionSignature={signed:false,signerName:'',signerRole:'ผอ.กบค.',signedAt:'',signatureId:'',...(state.documentData.divisionSignature||{})};
+    state.documentData.caseNumberIssuedAt=state.documentData.caseNumberIssuedAt||state.documentData.approvedAt||'';
+    state.documentData.caseNumberIssuedBy=state.documentData.caseNumberIssuedBy||state.documentData.approvedBy||'';
     if(!String(state.documentData.documentSubject||'').trim())state.documentData.documentSubject=state.caseData.subject||'';
     const legacyCaseNumber=String(state.documentData.caseNumber||'').match(/^สส\s*(\d{4})\/(\d{4})$/);
     if(legacyCaseNumber)state.documentData.caseNumber=`${legacyCaseNumber[2]}/${legacyCaseNumber[1]}`;
+    const dispatchComplete=Boolean(
+      state.documentData.dispatchLetterNo&&
+      state.documentData.dispatchLetterDate&&
+      state.documentData.dispatchSentDate&&
+      state.documentData.dispatchDestinationUnit&&
+      state.documentData.dispatchConfirmedAt
+    );
+    if(state.workflow.stage==='activity5-dispatch'&&!dispatchComplete){
+      state.workflow.owner='officer';
+      state.workflow.stage='officer-dispatch';
+      state.workflow.status='รอเจ้าหน้าที่รับเรื่อง ศรร. บันทึกข้อมูลและยืนยันการจัดส่ง';
+      state.workflow.complete=false;
+    }
     return state;
   }
   function saveState(id,state){const intakeChannel=document.getElementById('wiChannel');const intakeRegion=document.getElementById('wiIntakeRegion');const anonymous=document.getElementById('wiAnonymous');if(intakeChannel){state.caseData.channel=intakeChannel.value;const usesIntakeRegion=['Walk-In','จดหมาย'].includes(intakeChannel.value);state.caseData.intakeRegion=usesIntakeRegion?(intakeRegion?.value||''):'';if(usesIntakeRegion&&intakeRegion?.value)state.caseData.region=intakeRegion.value}if(anonymous){state.caseData.anonymous=anonymous.checked;state.documentData.anonymous=anonymous.checked}const store=readStore();store[id]=state;writeStore(store)}
   function activity5Handoff(state){return window.ECMISActivity5Handoff?.read(localStorage).records[state.caseData.id]||null}
-  function activity5Link(state){if(state.workflow.stage!=='activity5-dispatch'||!state.workflow.complete)return '';const handoff=activity5Handoff(state);return handoff?`<a class="ws-button primary" href="activity5/index.html#/cases/${encodeURIComponent(handoff.activity5CaseId)}">เปิด Activity 5</a>`:''}
+  function activity5Link(state){if(state.workflow.stage!=='activity5-dispatch'||!state.workflow.complete)return '';const handoff=activity5Handoff(state);return handoff?`<a class="ws-button primary" href="activity5/index.html#/cases/${encodeURIComponent(handoff.activity5CaseId)}">เปิดกระบวนงานลำดับถัดไป</a>`:''}
   function notify(icon,title,text){if(window.Swal)return Swal.fire({icon,title,text,confirmButtonText:'ปิด',confirmButtonColor:'#082b50'});alert(`${title}\n${text}`)}
   function confirmDo(title,text,confirmButtonText='ยืนยัน'){if(!window.Swal)return Promise.resolve({isConfirmed:confirm(`${title}\n${text}`)});return Swal.fire({icon:'question',title,text,showCancelButton:true,confirmButtonText,cancelButtonText:'ยกเลิก',confirmButtonColor:'#082b50',cancelButtonColor:'#687789'})}
   function fontSizeControls(){return `<div class="ws-font-controls" role="group" aria-label="ปรับขนาดตัวอักษร"><span>ขนาดตัวอักษร</span><button type="button" data-font-size="decrease" aria-label="ลดขนาดตัวอักษร">A−</button><button type="button" data-font-size="reset" aria-label="ใช้ขนาดตัวอักษรปกติ">A</button><button type="button" data-font-size="increase" aria-label="เพิ่มขนาดตัวอักษร">A+</button><output id="fontSizeValue" aria-live="polite">106%</output></div>`}
@@ -259,14 +313,16 @@
     const selected = value => d.decision===value;
     const naccReasons = NACC_TRANSFER_REASONS.map(reason=>[reason,reason]);
     const reasonChecked = key => d.reasons.some(reason=>reason.includes(key));
-    const assignment = escapeHtml(d.assignedOfficer||'................................................................................');
-    const line = value => escapeHtml(value||'................................................................................');
+    const writingArea = (checked,value,compact) => checked&&value ? `<p class="form3-writing-text${compact?' compact':''}">${escapeHtml(value)}</p>` : `<div class="form3-writing-lines${compact?' compact':''}"></div>`;
+    const signedLine = signature => signature?.signed
+      ?`<p class="form3-digital-signature"><strong>${escapeHtml(signature.signerName)}</strong><small>${escapeHtml(signature.signerRole)} · ${escapeHtml(new Date(signature.signedAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}))}</small><code>${escapeHtml(signature.signatureId)}</code></p>`
+      :'<p class="form3-signature-line"></p><p class="form3-signature-name"></p><p class="form3-signature-position">ตำแหน่ง</p>';
     return `<article class="a4-paper template-form3" id="activePaper">
       <p class="document-confidential confidential-top">ลับ</p>
       <header class="form3-header">
         <img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท.">
         <div class="form3-title">ระบบบริหารจัดการเรื่องร้องเรียน สำนักงาน ป.ป.ท.</div>
-        <div class="form3-number"><strong>เลขรับเรื่องที่</strong> ${escapeHtml(c.id)}<br><strong>วันที่</strong> ${escapeHtml(c.received)}</div>
+        <div class="form3-number"><strong>เลขรับเรื่องที่</strong> ${escapeHtml(formatInternalReceiptNumber(c.id))}<br><strong>วันที่</strong> ${escapeHtml(c.received)}</div>
       </header>
       <div class="official-subject"><strong>เรื่อง</strong><span>การพิจารณารับและกลั่นกรองเรื่องร้องเรียน/เบาะแส กรณี ${escapeHtml(d.documentSubject||c.subject)}</span><strong>เรียน</strong><span>เลขาธิการคณะกรรมการ ป.ป.ท.</span></div>
       <p class="form3-intro">ได้พิจารณาแล้ว จึงขอเสนอเพื่ออนุมัติ ดำเนินการตาม พ.ร.บ. ป.ป.ท. ดังนี้</p>
@@ -275,36 +331,34 @@
           <h3>${checkMark(selected('send-nacc'))} ไม่รับไว้ดำเนินการ ส่งสำนักงาน ป.ป.ช.</h3>
           <p class="form3-section-label">เหตุที่ไม่สามารถรับไว้ดำเนินการ</p>
           ${naccReasons.map(([key,label])=>`<p>${checkMark(selected('send-nacc')&&reasonChecked(key))} ${label}</p>`).join('')}
-          <p>${checkMark(selected('send-nacc')&&d.naccOtherChecked)} <strong>อื่น ๆ</strong> ${line(selected('send-nacc')&&d.naccOtherChecked?d.naccOtherReason:'')}</p>
-          <div class="form3-writing-lines"></div>
+          <p>${checkMark(selected('send-nacc')&&d.naccOtherChecked)} <strong>อื่น ๆ</strong></p>
+          ${writingArea(selected('send-nacc')&&d.naccOtherChecked,d.naccOtherReason,false)}
           <h3>${checkMark(selected('not-accept'))} ไม่รับไว้ดำเนินการ</h3>
-          <p class="form3-free-text">${line(d.notAcceptReason)}</p>
-          <p>${checkMark(selected('not-accept')&&d.notAcceptOtherChecked)} <strong>อื่น ๆ</strong> ${line(selected('not-accept')&&d.notAcceptOtherChecked?d.notAcceptOtherReason:'')}</p>
-          <div class="form3-writing-lines compact"></div>
+          ${writingArea(selected('not-accept'),d.notAcceptReason,true)}
         </section>
         <section class="form3-decision-column form3-accept-column">
           <h3>${checkMark(selected('18/1ก'))} รับไว้ตรวจสอบ กรณี มาตรา 18/1 (ก)</h3>
-          <p>${checkMark(selected('18/1ก'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ก')?'กองบริหารคดี':'................................................................................'}</p>
-          <p>${checkMark(selected('18/1ก'))} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${selected('18/1ก')?assignment:'................................................................................'}</p>
+          <p>${checkMark(selected('18/1ก'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ก')?'กองบริหารคดี':''}</p>
+          <p>${checkMark(false)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line"></p>
           <h3>${checkMark(selected('18/1ข'))} รับไว้ตรวจสอบ กรณี มาตรา 18/1 (ข)</h3>
-          <p>${checkMark(selected('18/1ข'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ข')?'กองบริหารคดี':'................................................................................'}</p>
-          <p>${checkMark(selected('18/1ข'))} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${selected('18/1ข')?assignment:'................................................................................'}</p>
+          <p>${checkMark(selected('18/1ข'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ข')?'กองบริหารคดี':''}</p>
+          <p>${checkMark(false)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line"></p>
           <h3>${checkMark(selected('18/4'))} รับไว้ตรวจสอบ กรณี มาตรา 18/4</h3>
-          <p>${checkMark(selected('18/4'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/4')?'กองบริหารคดี':'................................................................................'}</p>
-          <p>${checkMark(selected('18/4'))} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${selected('18/4')?assignment:'................................................................................'}</p>
+          <p>${checkMark(selected('18/4'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/4')?'กองบริหารคดี':''}</p>
+          <p>${checkMark(false)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line"></p>
           <h3>${checkMark(selected('58/2'))} รับไว้ตรวจสอบ กรณี มาตรา 58/2</h3>
-          <p>${checkMark(selected('58/2'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('58/2')?'กองบริหารคดี':'................................................................................'}</p>
-          <p>${checkMark(selected('58/2'))} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${selected('58/2')?assignment:'................................................................................'}</p>
+          <p>${checkMark(selected('58/2'))} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('58/2')?'กองบริหารคดี':''}</p>
+          <p>${checkMark(false)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line"></p>
         </section>
       </div>
       <div class="form3-footer-block">
         <p><strong><em>หมายเหตุ</em></strong> ให้สแกนเอกสารที่สำคัญและจำเป็นลงในระบบฯ<br><span>ทั้งนี้ กรณีส่งเรื่องไปยังระบบไต่สวนให้นำเข้าเอกสารที่สแกนลงในระบบไต่สวนด้วย</span></p>
         <p class="form3-submit">จึงเรียนมาเพื่อโปรดพิจารณา</p>
-        <div class="form3-operator"><p>.....................................................................</p><p>ชื่อผู้ดำเนินการ</p><p>ตำแหน่งผู้ดำเนินการ</p></div>
+        <div class="form3-operator">${d.officerSignature?.signed?`<p class="form3-digital-signature"><strong>${escapeHtml(d.officerSignature.signerName)}</strong><small>${escapeHtml(d.officerSignature.signerRole)} · ${escapeHtml(new Date(d.officerSignature.signedAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}))}</small><code>${escapeHtml(d.officerSignature.signatureId)}</code></p>`:'<p class="form3-signature-line"></p>'}<p class="form3-signature-name">ชื่อผู้ดำเนินการ</p><p class="form3-signature-position">ตำแหน่งผู้ดำเนินการ</p></div>
       </div>
       <div class="form3-opinion-grid">
-        <section><h3>ความเห็น ผู้บังคับบัญชาชั้นต้น</h3><p>${line(d.centerOpinion)}</p>${d.centerAdditionalDetail?`<p><strong>รายละเอียดเพิ่มเติมประกอบการพิจารณา:</strong> ${escapeHtml(d.centerAdditionalDetail)}</p>`:''}<p>.....................................................................</p><p>(...................................................................)</p><p>ตำแหน่ง ................................................................</p></section>
-        <section><h3>ความเห็น ผู้อำนวยการสำนัก/กอง</h3><p>${line(d.divisionOpinion)}</p>${d.divisionAdditionalDetail?`<p><strong>รายละเอียดเพิ่มเติมประกอบการพิจารณา:</strong> ${escapeHtml(d.divisionAdditionalDetail)}</p>`:''}<p>.....................................................................</p><p>(...................................................................)</p><p>ตำแหน่ง ................................................................</p></section>
+        <section><h3>ความเห็น ผู้บังคับบัญชาชั้นต้น</h3><p class="form3-opinion-line">${escapeHtml(d.centerOpinion||'')}</p>${d.centerAdditionalDetail?`<p class="form3-opinion-line"><strong>รายละเอียดเพิ่มเติมประกอบการพิจารณา:</strong> ${escapeHtml(d.centerAdditionalDetail)}</p>`:''}${signedLine(d.centerSignature)}</section>
+        <section><h3>ความเห็น ผู้อำนวยการสำนัก/กอง</h3><p class="form3-opinion-line">${escapeHtml(d.divisionOpinion||'')}</p>${d.divisionAdditionalDetail?`<p class="form3-opinion-line"><strong>รายละเอียดเพิ่มเติมประกอบการพิจารณา:</strong> ${escapeHtml(d.divisionAdditionalDetail)}</p>`:''}${signedLine(d.divisionSignature)}</section>
       </div>
       <p class="document-confidential confidential-bottom">ลับ</p>
     </article>`;
@@ -319,7 +373,7 @@
       <article class="a4-paper template-receipt">
         <header class="receipt-header"><img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท."><div class="receipt-code-box"><strong>58/2-02</strong><span>แบบแจ้งเลขเรื่องร้องเรียน/เลขติดตาม PCMS</span></div></header>
         <div class="doc-heading"><h2>แบบแจ้งเลขเรื่องร้องเรียนและเลขติดตามเรื่องร้องเรียน</h2><p>ระบบการตรวจสอบข้อเท็จจริง สำนักงาน ป.ป.ท.</p><p>ศูนย์รับเรื่องร้องเรียน/สำนักงาน ป.ป.ท. เขต ${escapeHtml(c.region||'ส่วนกลาง')}</p></div>
-        <div class="receipt-fields"><p><span>วันที่ลงรับ</span><strong>${escapeHtml(c.received)}</strong></p><p><span>เลขเรื่อง</span><strong>${escapeHtml(c.id)}</strong></p><p><span>เลขรับบริการ</span><strong>${escapeHtml(c.trackingYear)}</strong></p><p><span>PIN ติดตามเรื่อง 4 หลัก</span><strong>${escapeHtml(c.trackingCode)}</strong></p><p class="receipt-field-wide"><span>หน่วยงานที่รับเรื่องร้องเรียน</span><strong>ศูนย์รับเรื่องร้องเรียน สำนักงาน ป.ป.ท.</strong></p><p><span>ช่องทางติดต่อ</span><strong>สายด่วน 1206</strong></p><p class="receipt-field-address"><span>ที่อยู่</span><strong>99 หมู่ 4 อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</strong></p></div>
+        <div class="receipt-fields"><p><span>วันที่ลงรับ</span><strong>${escapeHtml(c.received)}</strong></p><p><span>เลขรับเรื่อง</span><strong>${escapeHtml(formatInternalReceiptNumber(c.id))}</strong></p><p><span>เลขรับบริการ</span><strong>${escapeHtml(c.trackingYear)}</strong></p><p><span>PIN ติดตามเรื่อง 4 หลัก</span><strong>${escapeHtml(c.trackingCode)}</strong></p><p class="receipt-field-wide"><span>หน่วยงานที่รับเรื่องร้องเรียน</span><strong>ศูนย์รับเรื่องร้องเรียน สำนักงาน ป.ป.ท.</strong></p><p><span>ช่องทางติดต่อ</span><strong>สายด่วน 1206</strong></p><p class="receipt-field-address"><span>ที่อยู่</span><strong>99 หมู่ 4 อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</strong></p></div>
         <p class="receipt-instruction">ท่านสามารถติดตามเรื่องร้องเรียนของท่านได้ที่หน่วยงานข้างต้น<br>หรือติดตามสถานะเรื่องร้องเรียนตาม QR CODE ด้านท้ายหนังสือฉบับนี้<br>โดยให้ท่านใส่เลขเรื่องร้องเรียน และเลขติดตามตามที่กำหนด</p>
         <p class="receipt-officer">เจ้าหน้าที่ผู้รับเรื่อง <strong>${escapeHtml(c.receivingOfficer||'........................................................')}</strong> ตำแหน่ง <strong>เจ้าหน้าที่รับเรื่องร้องเรียน</strong></p>
         <div class="receipt-signature-row">${qr?`<figure><img class="doc-qr" src="${qr}" alt="QR Code ติดตามเรื่อง"><figcaption>ระบบติดตามสถานะเรื่องร้องเรียน</figcaption></figure>`:'<div class="doc-qr"></div>'}<div><p>ศูนย์รับเรื่องร้องเรียน/สำนักงาน ป.ป.ท.</p><p>สำนักงาน ป.ป.ท.</p></div></div>
@@ -339,28 +393,28 @@
   function documentPaper(state,id,role){if(role==='admin')return '';return id==='form3'?form3Paper(state):officialOutgoingDocument(state,id)}
   function stagebar(state){
     const w=state.workflow,d=state.documentData;
-    const isAnonymous=w.stage==='anonymous-box'||w.owner==='anonymous';
-    const isNacc=d.decision==='send-nacc';
-    const isActivity5= ['18/1ก','18/1ข','18/4'].includes(d.decision);
-    const stages=isAnonymous
-      ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่พิจารณา','ผู้มีอำนาจมีคำสั่ง','กล่องบัตรสนเท่ห์']
-      :isNacc
-        ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. อนุมัติ','จัดส่ง ป.ป.ช.']
-        :isActivity5
-          ?['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. ลงนาม','เจ้าหน้าที่จัดส่งไปยังเขต']
-          :['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำ Form 3','ผอ.ศรร. พิจารณา','ผอ.กบค. มีคำสั่ง'];
+    const branchLabel=w.stage==='anonymous-box'||(d.decision==='not-accept'&&d.anonymous)
+      ?'กล่องบัตรสนเท่ห์'
+      :w.stage==='nacc-dispatch'||d.decision==='send-nacc'
+        ?'เจ้าหน้าที่จัดส่งสำนักงาน ป.ป.ช.'
+        :['officer-dispatch','activity5-dispatch'].includes(w.stage)||['18/1ก','18/1ข','18/4'].includes(d.decision)
+          ?'เจ้าหน้าที่จัดส่งไปยังเขต'
+          :'ผอ.กบค. มีคำสั่ง';
+    const stages=['ลงรับและตรวจเรื่อง','มอบหมายเจ้าหน้าที่','เจ้าหน้าที่จัดทำแบบฟอร์ม 3','ผอ.ศรร. พิจารณาและลงนาม','ผอ.กบค. พิจารณาและลงนาม',branchLabel];
     const assigned=state.assignmentHistory.length>0||Boolean(d.assignedOfficer);
-    const stageIndex={admin:assigned?1:0,officer:2,center:3,division:4,acting:4,'anonymous-box':4,'nacc-dispatch':5,'officer-dispatch':5,'activity5-dispatch':5};
-    const currentIndex=w.complete?stages.length-1:Math.min(stageIndex[w.stage]??0,stages.length-1);
-    const currentLabel=w.complete?'ดำเนินการเสร็จสิ้น':w.status;
-    const nextLabel=w.complete?'ไม่มีขั้นตอนถัดไป':stages[currentIndex+1]||'รอผลการดำเนินการ';
+    const stageIndex={admin:assigned?1:0,officer:2,center:3,division:4,acting:4,'division-order':5,'anonymous-box':5,'nacc-dispatch':5,'officer-dispatch':5,'activity5-dispatch':5};
+    const currentIndex=Math.min(stageIndex[w.stage]??0,stages.length-1);
+    const terminalComplete=w.complete&&currentIndex===stages.length-1;
+    const currentLabel=terminalComplete?'ดำเนินการเสร็จสิ้น':w.status;
+    const nextLabel=terminalComplete?'ไม่มีขั้นตอนถัดไป':stages[currentIndex+1]||'รอผลการดำเนินการ';
     const nodes=stages.map((label,index)=>{
-      const status=w.complete||index<currentIndex?'done':index===currentIndex?'active':'pending';
+      const status=index<currentIndex||terminalComplete&&index===currentIndex?'done':index===currentIndex?'active':'pending';
       const mark=status==='done'?'✓':status==='active'?'●':'•••';
       const detail=status==='done'?'ดำเนินการแล้ว':status==='active'?'ขั้นตอนปัจจุบัน':'รอดำเนินการ';
       return `<li class="ws-stage ${status}"><span class="ws-stage-node" aria-hidden="true">${mark}</span><small>ขั้น ${index+1}</small><strong>${escapeHtml(label)}</strong><em>${detail}</em></li>`;
     }).join('');
-    return `<div class="ws-stage-summary"><div><span>ขั้นตอนปัจจุบัน</span><strong>${escapeHtml(currentLabel)}</strong><small>ผู้รับผิดชอบ: ${escapeHtml(ROLE_LABELS[w.owner]||w.owner||'ยังไม่ระบุ')}</small></div><div class="ws-stage-next"><span>ขั้นตอนถัดไป</span><strong>${escapeHtml(nextLabel)}</strong></div><b>ขั้นตอน ${currentIndex+1} / ${stages.length}</b></div><div class="ws-stage-caption"><span>แสดงลำดับการดำเนินงานของเรื่องนี้</span><strong>ผ่านแล้ว ${w.complete?stages.length:currentIndex} ขั้น · รออีก ${w.complete?0:stages.length-currentIndex-1} ขั้น</strong></div><ol class="ws-stage-track">${nodes}</ol>`;
+    const completedCount=currentIndex+(terminalComplete?1:0);
+    return `<div class="ws-stage-summary"><div><span>ขั้นตอนปัจจุบัน</span><strong>${escapeHtml(currentLabel)}</strong><small>ผู้รับผิดชอบ: ${escapeHtml(ROLE_LABELS[w.owner]||w.owner||'ยังไม่ระบุ')}</small></div><div class="ws-stage-next"><span>ขั้นตอนถัดไป</span><strong>${escapeHtml(nextLabel)}</strong></div><b>ขั้นตอน ${currentIndex+1} / ${stages.length}</b></div><div class="ws-stage-caption"><span>แสดงลำดับการดำเนินงานของเรื่องนี้</span><strong>ผ่านแล้ว ${completedCount} ขั้น · รออีก ${stages.length-completedCount-(terminalComplete?0:1)} ขั้น</strong></div><ol class="ws-stage-track">${nodes}</ol>`;
   }
   function officialOutgoingDocument(state,id){
     const c=state.caseData,d=state.documentData;
@@ -368,7 +422,7 @@
     if(id==='1-04')return `<article class="a4-paper template-memo" id="activePaper">
       <div class="memo-heading"><img class="memo-garuda" src="${GARUDA_IMAGE}" alt="ตราครุฑ"><h2>บันทึกข้อความ</h2></div>
       <div class="memo-metadata"><p><strong>ส่วนราชการ</strong> สำนัก/กอง ........................................................ <strong>โทร.</strong> ........................</p><p><strong>ที่</strong> ปป ๐๐ ....../........ <strong>วันที่</strong> ........................................................</p><p><strong>เรื่อง</strong> ส่งสำนวนเรื่องกล่าวหาร้องเรียน กรณี ${escapeHtml(d.documentSubject||c.subject)}</p><p><strong>เรียน</strong> ผู้อำนวยการสำนัก/กอง</p></div>
-      <div class="official-body"><p>ตามที่พระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริตในภาครัฐ พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม ตามมาตรา ๑๘/๔ (๒) กำหนดให้ ในกรณีที่เป็นเรื่องที่อยู่ในหน้าที่และอำนาจของคณะกรรมการ ป.ป.ท. ตามพระราชบัญญัตินี้และมิใช่เป็นกรณีที่ปรากฏว่าการกระทำของเจ้าหน้าที่ของรัฐมีลักษณะเป็นการทุจริตต่อหน้าที่รวมอยู่ด้วย และเรื่องนั้นมิได้รับมอบหมายจากคณะกรรมการ ป.ป.ช. ตามมาตรา ๑๘/๑ เมื่อเลขาธิการสั่งให้ดำเนินการต่อไปแล้ว ให้พนักงาน ป.ป.ท. มีอำนาจดำเนินการไต่สวนตามพระราชบัญญัตินี้ การไต่สวนดังกล่าวให้อยู่ภายใต้การกำกับดูแลของคณะกรรมการ ป.ป.ท. นั้น</p><p>ในการนี้ สำนัก/กอง ได้ตรวจสอบแล้ว พบว่าเป็นเรื่องร้องเรียนซึ่งอยู่ในอำนาจหน้าที่ จึงขอส่งเรื่องร้องเรียนกรณีประพฤติมิชอบให้ดำเนินการ คือ เรื่องที่ <strong>${escapeHtml(d.documentSubject||c.subject)}</strong> (เลขรับเรื่องที่ <strong>${escapeHtml(c.id)}</strong> ลงวันที่ <strong>${escapeHtml(c.received)}</strong>) จำนวน <strong>${c.attachments.length}</strong> รายการ ทั้งนี้ เมื่อได้รับเรื่องแล้ว ให้พิจารณามอบหมายผู้รับผิดชอบสำนวนดำเนินการตามอำนาจหน้าที่ พร้อมสรุปพฤติการณ์โดยย่อและระบุชื่อเจ้าของสำนวนลงในระบบไต่สวนด้วย รายละเอียดตามเอกสารที่แนบมาพร้อมนี้</p><p>จึงเรียนมาเพื่อโปรดพิจารณา</p></div>${signature}<p class="official-form-code">ปปท. 1-04</p>
+      <div class="official-body"><p>ตามที่พระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริตในภาครัฐ พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม ตามมาตรา ๑๘/๔ (๒) กำหนดให้ ในกรณีที่เป็นเรื่องที่อยู่ในหน้าที่และอำนาจของคณะกรรมการ ป.ป.ท. ตามพระราชบัญญัตินี้และมิใช่เป็นกรณีที่ปรากฏว่าการกระทำของเจ้าหน้าที่ของรัฐมีลักษณะเป็นการทุจริตต่อหน้าที่รวมอยู่ด้วย และเรื่องนั้นมิได้รับมอบหมายจากคณะกรรมการ ป.ป.ช. ตามมาตรา ๑๘/๑ เมื่อเลขาธิการสั่งให้ดำเนินการต่อไปแล้ว ให้พนักงาน ป.ป.ท. มีอำนาจดำเนินการไต่สวนตามพระราชบัญญัตินี้ การไต่สวนดังกล่าวให้อยู่ภายใต้การกำกับดูแลของคณะกรรมการ ป.ป.ท. นั้น</p><p>ในการนี้ สำนัก/กอง ได้ตรวจสอบแล้ว พบว่าเป็นเรื่องร้องเรียนซึ่งอยู่ในอำนาจหน้าที่ จึงขอส่งเรื่องร้องเรียนกรณีประพฤติมิชอบให้ดำเนินการ คือ เรื่องที่ <strong>${escapeHtml(d.documentSubject||c.subject)}</strong> (เลขรับเรื่องที่ <strong>${escapeHtml(formatInternalReceiptNumber(c.id))}</strong> ลงวันที่ <strong>${escapeHtml(c.received)}</strong>) จำนวน <strong>${c.attachments.length}</strong> รายการ ทั้งนี้ เมื่อได้รับเรื่องแล้ว ให้พิจารณามอบหมายผู้รับผิดชอบสำนวนดำเนินการตามอำนาจหน้าที่ พร้อมสรุปพฤติการณ์โดยย่อและระบุชื่อเจ้าของสำนวนลงในระบบไต่สวนด้วย รายละเอียดตามเอกสารที่แนบมาพร้อมนี้</p><p>จึงเรียนมาเพื่อโปรดพิจารณา</p></div>${signature}<p class="official-form-code">ปปท. 1-04</p>
     </article>`;
     if(id==='1-11')return `<article class="a4-paper template-official-letter" id="activePaper">
       <div class="official-letter-head"><p><strong>ที่</strong> ${escapeHtml(d.naccLetterNo||'ปป ๐๐.../.....')}</p><p>สำนักงาน ป.ป.ท.<br>อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ<br>อำเภอปากเกร็ด จังหวัดนนทบุรี ๑๑๑๒๐</p></div>
@@ -597,7 +651,7 @@
   }
   function renderStaff(){
     const root=$('#staffApp');if(!root)return;const params=new URLSearchParams(location.search);let selectedRole=params.get('role')||sessionStorage.getItem('ecmis-a4-role')||'admin';let activeRole=selectedRole==='regional-officer'?'officer':selectedRole;let activeRegion=REGIONAL_REGIONS.includes(params.get('region'))?params.get('region'):(sessionStorage.getItem('ecmis-a4-regional-region')||'เขต 1');if(!REGIONAL_REGIONS.includes(activeRegion))activeRegion='เขต 1';let selectedId=params.get('case')||null;let adminQueue=['unassigned','assigned'].includes(params.get('queue'))?params.get('queue'):'unassigned';let filters={};
-    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่องร้องเรียน</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น','นนทบุรี'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผอ.ศรร.</option><option>รอ ผอ.กบค.</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><input id="filterDate" type="date"></div></div></section><nav id="adminQueueTabs" class="admin-queue-tabs ws-hidden" aria-label="คิวมอบหมายงาน"><button type="button" class="admin-queue-tab" data-queue="unassigned">ยังไม่มอบหมาย (0)</button><button type="button" class="admin-queue-tab" data-queue="assigned">มอบหมายแล้ว (0)</button></nav><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับบริการ/วันที่</th><th>ผู้ร้องเรียน</th><th>ประเภทผู้ร้อง</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
+    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่องร้องเรียน</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขรับเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น','นนทบุรี'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผอ.ศรร.</option><option>รอ ผอ.กบค.</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><input id="filterDate" type="date"></div></div></section><nav id="adminQueueTabs" class="admin-queue-tabs ws-hidden" aria-label="คิวมอบหมายงาน"><button type="button" class="admin-queue-tab" data-queue="unassigned">ยังไม่มอบหมาย (0)</button><button type="button" class="admin-queue-tab" data-queue="assigned">มอบหมายแล้ว (0)</button></nav><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับเรื่อง/วันที่</th><th>ผู้ร้องเรียน</th><th>ประเภทผู้ร้อง</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
     const updateIntakeLink=()=>root.querySelector('a[href^="staff-intake.html"],a[href="complaint-form.html?mode=walkin"]')?.setAttribute('href',selectedRole==='regional-officer'?`staff-intake.html?role=regional-officer&region=${encodeURIComponent(activeRegion)}`:'staff-intake.html');
     updateIntakeLink();
     const roleSelect=$('#wsRole');
@@ -666,13 +720,7 @@
       panel?.classList.toggle('ws-hidden',route!=='division');
       planner.dataset.routeRestored='true';
     }
-    function enhanceCaseIssuance(){
-      if(!['division','acting'].includes(activeRole)||!selectedId)return;
-      const state=getState(selectedId),d=state.documentData;
-      if(!['18/1ก','18/1ข','18/4'].includes(d.decision)||$('#caseIssuanceStatus'))return;
-      const anchor=$('#internalLetterNo')?.closest('.ws-section')||$('.ws-editor-body');
-      anchor?.insertAdjacentHTML('afterend',`<section class="case-issuance" id="caseIssuanceStatus"><span>การออกเลขสำนวน</span><strong>${escapeHtml(d.caseNumber||'ยังไม่ออกเลขสำนวน')}</strong><p>${d.caseNumber?escapeHtml(d.publicStatus):'ระบบจะออกเลขสำนวนหลัง ผอ.กบค. หรือผู้รักษาราชการแทนลงนามอนุมัติเท่านั้น'}</p></section>`);
-    }
+    function enhanceCaseIssuance(){}
     function enhanceAnonymousSuboption(){
       if(!isOfficerRole(activeRole)||!selectedId)return;
       const checkbox=$('#anonymous');
@@ -752,7 +800,7 @@
       if(!['officer-dispatch','activity5-dispatch'].includes(state.workflow.stage))return;
       const body=$('.ws-editor-body');if(!body||body.dataset.activity5Dispatch)return;
       body.dataset.activity5Dispatch='true';
-      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผอ.กบค. ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section><section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="dispatchLetterDate" type="date" value="${escapeHtml(d.dispatchLetterDate||'')}"></div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><input id="dispatchSentDate" type="date" value="${escapeHtml(d.dispatchSentDate||'')}"></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผอ.กบค. ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section>${caseIssuanceCard(state)}<section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="dispatchLetterDate" type="date" value="${escapeHtml(d.dispatchLetterDate||'')}"></div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><input id="dispatchSentDate" type="date" value="${escapeHtml(d.dispatchSentDate||'')}"></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
       if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
       const actions=$('.ws-actions');if(actions)actions.innerHTML=state.workflow.complete?activity5Link(state):'<button class="ws-button secondary" data-action="activity5-dispatch-draft">บันทึกร่างข้อมูลจัดส่ง</button><button class="ws-button primary" data-action="activity5-dispatch-confirm">ยืนยันจัดส่งไปยังเขต</button>';
     }
@@ -842,7 +890,6 @@
       if(selectedId)renderDetail();
     }
     function enhanceSmartInputs(){
-      const settings=readSuggestionSettings();
       [
         ['adminNote','ผู้ช่วยอัจฉริยะสำหรับความเห็นธุรการเกี่ยวกับผลตรวจเรื่องซ้ำ'],
         ['officerOpinion','ผู้ช่วยอัจฉริยะสำหรับความเห็นเจ้าหน้าที่'],
@@ -857,27 +904,16 @@
       const otherReasonControl=(checkboxId,inputId,checked,value,placeholder)=>`<div class="reason-other"><label class="ws-choice"><input type="checkbox" id="${checkboxId}" ${checked?'checked':''}><span><strong>อื่น ๆ</strong></span></label><div class="ws-field"><label for="${inputId}">ระบุเหตุผลอื่น ๆ</label><input id="${inputId}" value="${escapeHtml(value||'')}" placeholder="${placeholder}"></div></div>`;
       const naccReasonBox=$('#naccReasonBox');
       if(naccReasonBox&&currentData&&!$('#naccOtherChecked'))naccReasonBox.insertAdjacentHTML('beforeend',otherReasonControl('naccOtherChecked','naccOtherReason',currentData.naccOtherChecked,currentData.naccOtherReason,'ระบุเหตุผลหรือประเภทเรื่องเพิ่มเติม'));
-      const reasonInput=$('#notAcceptReason');
-      if(reasonInput&&!reasonInput.parentElement.querySelector('.not-accept-multi')){
-        const selected=new Set(reasonInput.value.split('\n').map(value=>value.trim()).filter(Boolean));
-        const fieldLabel=reasonInput.parentElement.querySelector('label');
-        const panel=document.createElement('div');panel.className='not-accept-multi';panel.innerHTML=`<div class="smart-suggestion-head"><strong>เหตุผลไม่รับไว้ดำเนินการ</strong><span>เลือกได้มากกว่าหนึ่งข้อ</span></div><div class="reason-option-grid">${settings.notAcceptReasons.map(reason=>`<label><input type="checkbox" value="${escapeHtml(reason)}" ${selected.has(reason)?'checked':''}><span>${escapeHtml(reason)}</span></label>`).join('')}</div>`;
-        reasonInput.parentElement.insertBefore(panel,reasonInput);
-        fieldLabel?.classList.add('ws-hidden');
-        reasonInput.classList.add('ws-hidden');
-        panel.addEventListener('change',()=>{
-          reasonInput.value=$$('input:checked',panel).map(input=>input.value).join('\n');
-          reasonInput.dispatchEvent(new Event('input',{bubbles:true}));
-        });
-      }
-      if(reasonInput&&currentData&&!$('#notAcceptOtherChecked'))reasonInput.parentElement.insertAdjacentHTML('beforeend',otherReasonControl('notAcceptOtherChecked','notAcceptOtherReason',currentData.notAcceptOtherChecked,currentData.notAcceptOtherReason,'ระบุเหตุผลที่ไม่รับไว้ดำเนินการ'));
+      const notAcceptReason=$('#notAcceptReason');
+      const notAcceptLabel=notAcceptReason?.parentElement.querySelector('label');
+      if(notAcceptLabel){notAcceptLabel.setAttribute('for','notAcceptReason');notAcceptLabel.textContent='เหตุผลที่ไม่รับไว้ดำเนินการ *'}
       const refreshOtherReasonPaper=()=>{
         const paper=$('#paperStage');
         if(!paper||!selectedId)return;
         const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';
         paper.innerHTML=documentPaper(capture(getState(selectedId)),activeDoc,activeRole);
       };
-      ['naccOtherChecked','naccOtherReason','notAcceptOtherChecked','notAcceptOtherReason'].forEach(id=>$('#'+id)?.addEventListener('input',refreshOtherReasonPaper));
+      ['naccOtherChecked','naccOtherReason'].forEach(id=>{const el=$('#'+id);if(el&&!el.dataset.otherReasonBound){el.dataset.otherReasonBound='true';el.addEventListener('input',refreshOtherReasonPaper)}});
     }
     function captureNaccDispatch(state){
       const d=state.documentData,value=id=>$(`#${id}`)?.value?.trim()||'';
@@ -913,7 +949,7 @@
       $('#caseRows').innerHTML=rows.map(c=>{const s=getState(c.id),analysis=analyzeDuplicateCase(c),risk=analysis.level!=='low',anonymous=s.documentData.anonymous;return `<tr data-case="${c.id}" class="${risk?'duplicate-risk-row':''}" tabindex="0"><td><strong>${c.id}</strong><small>${c.received}</small></td><td><strong>${escapeHtml(c.complainant)}</strong><small>${anonymous?'ไม่มีข้อมูลระบุตัวผู้ร้อง':`เลขบัตร •••••••••${c.id4||'ไม่ระบุ'}`}</small></td><td><span class="ws-status ${anonymous?'danger':'success'}">${anonymous?'บัตรสนเท่ห์':'ไม่ใช่บัตรสนเท่ห์'}</span>${c.confidentialityRequested?'<small>ขอปกปิดข้อมูลผู้ร้อง</small>':'<small>ไม่ได้ขอปกปิดข้อมูล</small>'}</td><td><strong>${escapeHtml(c.subject)}</strong><small>${escapeHtml(c.agency)}</small></td><td><strong>${escapeHtml(c.province)}</strong><small>${escapeHtml(c.region)}</small></td><td>${c.channel}</td><td><span class="ws-status ${s.workflow.complete?'success':''}">${s.workflow.status}</span><small>ผู้รับผิดชอบ: ${ROLE_LABELS[s.workflow.owner]||s.workflow.owner}</small></td><td><span class="ws-status ${risk?'danger':'success'}">${risk?`ควรตรวจสอบ ${analysis.score}%`:'ยังไม่พบสัญญาณ'}</span></td></tr>`}).join('')||'<tr><td colspan="8" class="ws-empty">ไม่พบรายการตามเงื่อนไข</td></tr>';
       $$('[data-case]').forEach(r=>{const open=()=>{selectedId=r.dataset.case;syncUrl();renderDetail()};r.onclick=open;r.onkeydown=e=>{if(e.key==='Enter')open()}});
     }
-    function editorFor(state){const d=state.documentData,c=state.caseData,w=state.workflow;if(activeRole==='admin'){
+    function editorFor(state){const d=state.documentData,c=state.caseData,w=state.workflow;if(activeRole==='officer'&&!['officer','admin'].includes(w.owner)&&!w.complete)return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}</div><div class="ws-callout" style="margin:.4rem 0 .9rem">ส่งให้ ${escapeHtml(ROLE_LABELS[w.owner]||w.owner)} พิจารณาแล้ว — ข้อมูลถูกล็อค รอผลการพิจารณา</div><div class="ws-section"><h3>ผลการพิจารณาที่ส่งไปแล้ว</h3><div class="ws-readonly"><dl><div><dt>ผลการพิจารณา</dt><dd>${({'18/1ก':'รับไว้ดำเนินการ 18/1 (ก)','18/1ข':'รับไว้ดำเนินการ 18/1 (ข)','18/4':'รับไว้ดำเนินการ 18/4','58/2':'ดำเนินการตาม 58/2','send-nacc':'ส่งสำนักงาน ป.ป.ช.','not-accept':'ไม่รับไว้ดำเนินการ'})[d.decision]||d.decision}</dd></div><div><dt>ชื่อเรื่องสำหรับเอกสาร</dt><dd>${escapeHtml(d.documentSubject||c.subject)}</dd></div><div><dt>เขตที่เสนอให้มอบหมาย</dt><dd>${escapeHtml(d.proposedRegion||c.region||'ไม่ระบุ')}</dd></div><div><dt>ความเห็นเจ้าหน้าที่</dt><dd>${escapeHtml(d.officerOpinion||'ไม่ระบุ')}</dd></div>${d.reasons.length?`<div><dt>เหตุผลส่ง ป.ป.ช.</dt><dd>${d.reasons.map(escapeHtml).join(', ')}</dd></div>`:''}${d.naccOtherChecked&&d.naccOtherReason?`<div><dt>อื่น ๆ (ส่ง ป.ป.ช.)</dt><dd>${escapeHtml(d.naccOtherReason)}</dd></div>`:''}${d.notAcceptReason?`<div><dt>เหตุผลไม่รับไว้ดำเนินการ</dt><dd>${escapeHtml(d.notAcceptReason)}</dd></div>`:''}${d.notAcceptOtherChecked&&d.notAcceptOtherReason?`<div><dt>อื่น ๆ (ไม่รับฯ)</dt><dd>${escapeHtml(d.notAcceptOtherReason)}</dd></div>`:''}${d.anonymous?`<div><dt>บัตรสนเท่ห์</dt><dd>ใช่</dd></div>`:''}${d.reviewRoute==='division'?`<div><dt>เส้นทาง</dt><dd>ส่งตรง ผอ.กบค.${d.absenceReasonType?` (${escapeHtml(d.absenceReasonType)})`:''}</dd></div>`:''}</dl></div></div>`;if(activeRole==='admin'){
       const duplicate=analyzeDuplicateCase(c);
       const duplicateCard=duplicate.level==='low'
         ?`<div class="duplicate-auto-result duplicate-auto-clear" data-level="low"><div><span>ตรวจสอบอัตโนมัติแล้ว</span><strong>ยังไม่พบเรื่องที่มีความใกล้เคียงอย่างมีนัยสำคัญ</strong><p>ระบบเปรียบเทียบข้อมูลผู้ร้อง เนื้อหา พื้นที่ และช่วงเวลารับเรื่องแล้ว</p></div></div>`
@@ -923,16 +959,14 @@
       if(state.assignmentHistory.length>0)return `<div class="ws-section"><h3>1. ข้อมูลเรื่องร้องเรียน</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. การมอบหมายงาน</h3><div class="ws-callout">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'รอมอบหมายใหม่')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>ความเห็นธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}</div>${assignmentFields}${assignmentHistory}</div>`;
       return `<div class="ws-section"><h3>1. ข้อมูลเรื่องร้องเรียน</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. ผลตรวจเรื่องซ้ำและความเห็นธุรการ</h3>${duplicateCard}<p class="duplicate-policy-note">ผลวิเคราะห์เป็นข้อมูลประกอบการพิจารณา ธุรการมีหน้าที่บันทึกความเห็นและมอบหมายต่อ โดยไม่มีสิทธิปฏิเสธหรือยุติเรื่องจากผลตรวจอัตโนมัติเพียงอย่างเดียว</p><div class="ws-field screening-admin-opinion"><label>ความเห็นธุรการเกี่ยวกับผลตรวจเรื่องซ้ำ</label><textarea id="adminNote" placeholder="บันทึกว่าเรื่องนี้น่าจะเป็นเรื่องเดียวกัน เกี่ยวข้องกัน หรือยังไม่สามารถสรุปได้">${escapeHtml(d.adminNote)}</textarea></div></div><div class="ws-section"><h3>3. ลงรับและมอบหมายเจ้าหน้าที่</h3>${assignmentFields}${assignmentHistory}</div>`;
     }
-      if(activeRole==='officer')return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}${officerSubjectFields(state)}<div class="ws-callout" style="margin-top:.7rem">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'ยังไม่ระบุ')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>หมายเหตุธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}${d.divisionAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.กบค.: ${escapeHtml(d.divisionAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>พิจารณาตามแบบฟอร์ม 3</h3><div class="ws-choice-grid">${[['18/1ก','รับไว้ดำเนินการ 18/1 (ก)'],['18/1ข','รับไว้ดำเนินการ 18/1 (ข)'],['18/4','รับไว้ดำเนินการ 18/4'],['58/2','ดำเนินการตาม 58/2'],['send-nacc','ส่งสำนักงาน ป.ป.ช.'],['not-accept','ไม่รับไว้ดำเนินการ']].map(([v,l])=>`<label class="ws-choice"><input type="radio" name="decision" value="${v}" ${d.decision===v?'checked':''}><span><strong>${l}</strong></span></label>`).join('')}</div><div class="ws-field" style="margin-top:.8rem"><label>เขตที่เสนอให้มอบหมาย *</label><select id="proposedRegion"><option value="">เลือกเขตที่เสนอ</option>${REGIONS.map(region=>`<option value="${region}" ${(d.proposedRegion||c.region)===region?'selected':''}>${region}</option>`).join('')}</select><small>ผอ.ศรร. จะเห็นข้อมูลนี้เพื่อพิจารณาเห็นชอบหรือส่งกลับแก้ไข</small></div><div id="naccReasonBox" class="${d.decision==='send-nacc'?'':'ws-hidden'}" style="margin-top:.8rem"><h3>เหตุผลส่งต่อ เลือกได้หลายข้อ</h3><div class="ws-choice-grid">${NACC_TRANSFER_REASONS.map(x=>`<label class="ws-choice"><input type="checkbox" name="naccReason" value="${escapeHtml(x)}" ${d.reasons.includes(x)?'checked':''}><span><strong>${escapeHtml(x)}</strong></span></label>`).join('')}</div></div><div id="notAcceptBox" class="${d.decision==='not-accept'?'':'ws-hidden'}" style="margin-top:.8rem"><div class="ws-field"><label>เหตุผลที่ไม่รับไว้ดำเนินการ</label><textarea id="notAcceptReason">${escapeHtml(d.notAcceptReason)}</textarea></div><label class="ws-choice" style="margin-top:.6rem"><input type="checkbox" id="anonymous" ${d.anonymous?'checked':''}><span><strong>เป็นบัตรสนเท่ห์</strong><small>เมื่อได้รับอนุมัติ ส่งข้อมูลต่อกิจกรรมที่ 7</small></span></label></div><div class="ws-field" style="margin-top:.8rem"><label>ความเห็นเจ้าหน้าที่รับเรื่อง</label><textarea id="officerOpinion">${escapeHtml(d.officerOpinion)}</textarea></div><section class="route-planner"><header><div><span>เส้นทางการพิจารณา</span><h3>กำหนดผู้รับพิจารณาลำดับถัดไป</h3></div><small>ใช้ลำดับปกติเป็นค่าเริ่มต้น</small></header><div class="route-options"><label class="route-option standard"><input type="radio" name="route" value="center" checked><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span>ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>ดำเนินการตามลำดับปกติ</strong><small>ส่งให้ ผอ.ศรร. พิจารณาก่อนเสนอ ผอ.กบค.</small></label><label class="route-option exceptional"><input type="radio" name="route" value="division"><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span class="route-skipped">ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>เสนอข้ามขั้นตอนเป็นกรณีพิเศษ</strong><small>ใช้เมื่อ ผอ.ศรร. ไม่สามารถปฏิบัติหน้าที่ และต้องบันทึกเหตุผล</small></label></div><div class="route-exception-panel ws-hidden" id="absenceBox"><div class="route-exception-head"><span>กรณีพิเศษ</span><strong>บันทึกเหตุผลประกอบการส่งตรงถึง ผอ.กบค.</strong></div><div class="ws-grid-2"><div class="ws-field"><label>ประเภทเหตุผล *</label><select id="absenceReasonType"><option value="">เลือกประเภทเหตุผล</option>${['ลาราชการ','ติดภารกิจราชการ','ไม่สามารถปฏิบัติหน้าที่','มีคำสั่งให้เสนอโดยตรง','อื่น ๆ'].map(reason=>`<option value="${reason}" ${d.absenceReasonType===reason?'selected':''}>${reason}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>รายละเอียดและช่วงเวลาที่ไม่อยู่ *</label><textarea id="absenceNote" placeholder="ระบุเหตุผล วันที่หรือช่วงเวลา และข้อมูลอ้างอิงที่เกี่ยวข้อง">${escapeHtml(d.absenceNote)}</textarea></div></div><div class="route-impact"><strong>ผลของเส้นทางนี้</strong><span>เรื่องจะส่งตรงถึง ผอ.กบค. พร้อมบันทึก Log โดย ผอ.กบค. สามารถอนุมัติให้ ผอ.ศรร. กลับมาให้ความเห็นเพิ่มเติมภายหลังได้</span></div></div></section></div>`;
-      if(activeRole==='center')return `<div class="ws-section"><h3>ข้อมูลจากเจ้าหน้าที่รับเรื่อง</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem"><strong>เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}</strong><br>ผลเสนอ: ${d.decision}<br>ความเห็น: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}</div></div><div class="ws-section"><h3>ความเห็น ผอ.ศรร.</h3><div class="ws-choice-grid"><label class="ws-choice"><input type="radio" name="centerDecision" value="agree" ${d.centerDecision!=='disagree'?'checked':''}><span><strong>เห็นชอบให้มอบหมาย ${escapeHtml(d.proposedRegion||c.region||'เขตที่เสนอ')}</strong></span></label><label class="ws-choice"><input type="radio" name="centerDecision" value="disagree" ${d.centerDecision==='disagree'?'checked':''}><span><strong>ไม่เห็นชอบ/ส่งกลับแก้ไข</strong></span></label></div><div class="ws-field" style="margin-top:.7rem"><label>ความเห็นและข้อเสนอแนะ</label><textarea id="centerOpinion">${escapeHtml(d.centerOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ผอ.ศรร.</label><textarea id="centerAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบการพิจารณา">${escapeHtml(d.centerAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>`;
+      if(activeRole==='officer'){if(isOfficerRole(activeRole)&&!['officer','admin'].includes(w.owner)&&!w.complete)return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}</div><div class="ws-callout" style="margin:.4rem 0 .9rem">ส่งให้ ${escapeHtml(ROLE_LABELS[w.owner]||w.owner)} พิจารณาแล้ว — ข้อมูลถูกล็อค รอผลการพิจารณา</div><div class="ws-section"><h3>ผลการพิจารณาที่ส่งไปแล้ว</h3><div class="ws-readonly"><dl><div><dt>ผลการพิจารณา</dt><dd>${({'18/1ก':'รับไว้ดำเนินการ 18/1 (ก)','18/1ข':'รับไว้ดำเนินการ 18/1 (ข)','18/4':'รับไว้ดำเนินการ 18/4','58/2':'ดำเนินการตาม 58/2','send-nacc':'ส่งสำนักงาน ป.ป.ช.','not-accept':'ไม่รับไว้ดำเนินการ'})[d.decision]||d.decision}</dd></div><div><dt>ชื่อเรื่องสำหรับเอกสาร</dt><dd>${escapeHtml(d.documentSubject||c.subject)}</dd></div><div><dt>เขตที่เสนอให้มอบหมาย</dt><dd>${escapeHtml(d.proposedRegion||c.region||'ไม่ระบุ')}</dd></div><div><dt>ความเห็นเจ้าหน้าที่</dt><dd>${escapeHtml(d.officerOpinion||'ไม่ระบุ')}</dd></div>${d.reasons.length?`<div><dt>เหตุผลส่ง ป.ป.ช.</dt><dd>${d.reasons.map(escapeHtml).join(', ')}</dd></div>`:''}${d.naccOtherChecked&&d.naccOtherReason?`<div><dt>อื่น ๆ (ส่ง ป.ป.ช.)</dt><dd>${escapeHtml(d.naccOtherReason)}</dd></div>`:''}${d.notAcceptReason?`<div><dt>เหตุผลไม่รับไว้ดำเนินการ</dt><dd>${escapeHtml(d.notAcceptReason)}</dd></div>`:''}${d.notAcceptOtherChecked&&d.notAcceptOtherReason?`<div><dt>อื่น ๆ (ไม่รับฯ)</dt><dd>${escapeHtml(d.notAcceptOtherReason)}</dd></div>`:''}${d.anonymous?`<div><dt>บัตรสนเท่ห์</dt><dd>ใช่</dd></div>`:''}${d.reviewRoute==='division'?`<div><dt>เส้นทาง</dt><dd>ส่งตรง ผอ.กบค.${d.absenceReasonType?` (${escapeHtml(d.absenceReasonType)})`:''}</dd></div>`:''}</dl></div></div>`;return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}${officerSubjectFields(state)}<div class="ws-callout" style="margin-top:.7rem">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'ยังไม่ระบุ')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>หมายเหตุธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}${d.divisionAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.กบค.: ${escapeHtml(d.divisionAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>พิจารณาตามแบบฟอร์ม 3</h3><div class="ws-choice-grid">${[['18/1ก','รับไว้ดำเนินการ 18/1 (ก)'],['18/1ข','รับไว้ดำเนินการ 18/1 (ข)'],['18/4','รับไว้ดำเนินการ 18/4'],['58/2','ดำเนินการตาม 58/2'],['send-nacc','ส่งสำนักงาน ป.ป.ช.'],['not-accept','ไม่รับไว้ดำเนินการ']].map(([v,l])=>`<label class="ws-choice"><input type="radio" name="decision" value="${v}" ${d.decision===v?'checked':''}><span><strong>${l}</strong></span></label>`).join('')}</div><div class="ws-field" style="margin-top:.8rem"><label>เขตที่เสนอให้มอบหมาย *</label><select id="proposedRegion"><option value="">เลือกเขตที่เสนอ</option>${REGIONS.map(region=>`<option value="${region}" ${(d.proposedRegion||c.region)===region?'selected':''}>${region}</option>`).join('')}</select><small>ผอ.ศรร. จะเห็นข้อมูลนี้เพื่อพิจารณาเห็นชอบหรือส่งกลับแก้ไข</small></div><div id="naccReasonBox" class="${d.decision==='send-nacc'?'':'ws-hidden'}" style="margin-top:.8rem"><h3>เหตุผลส่งต่อ เลือกได้หลายข้อ</h3><div class="ws-choice-grid">${NACC_TRANSFER_REASONS.map(x=>`<label class="ws-choice"><input type="checkbox" name="naccReason" value="${escapeHtml(x)}" ${d.reasons.includes(x)?'checked':''}><span><strong>${escapeHtml(x)}</strong></span></label>`).join('')}</div></div><div id="notAcceptBox" class="${d.decision==='not-accept'?'':'ws-hidden'}" style="margin-top:.8rem"><div class="ws-field"><label>เหตุผลที่ไม่รับไว้ดำเนินการ</label><textarea id="notAcceptReason">${escapeHtml(d.notAcceptReason)}</textarea></div><label class="ws-choice" style="margin-top:.6rem"><input type="checkbox" id="anonymous" ${d.anonymous?'checked':''}><span><strong>เป็นบัตรสนเท่ห์</strong><small>เมื่อได้รับอนุมัติ ส่งข้อมูลต่อกิจกรรมที่ 7</small></span></label></div><div class="ws-field" style="margin-top:.8rem"><label>ความเห็นเจ้าหน้าที่รับเรื่อง</label><textarea id="officerOpinion">${escapeHtml(d.officerOpinion)}</textarea></div><section class="route-planner"><header><div><span>เส้นทางการพิจารณา</span><h3>กำหนดผู้รับพิจารณาลำดับถัดไป</h3></div><small>ใช้ลำดับปกติเป็นค่าเริ่มต้น</small></header><div class="route-options"><label class="route-option standard"><input type="radio" name="route" value="center" checked><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span>ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>ดำเนินการตามลำดับปกติ</strong><small>ส่งให้ ผอ.ศรร. พิจารณาก่อนเสนอ ผอ.กบค.</small></label><label class="route-option exceptional"><input type="radio" name="route" value="division"><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span class="route-skipped">ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>เสนอข้ามขั้นตอนเป็นกรณีพิเศษ</strong><small>ใช้เมื่อ ผอ.ศรร. ไม่สามารถปฏิบัติหน้าที่ และต้องบันทึกเหตุผล</small></label></div><div class="route-exception-panel ws-hidden" id="absenceBox"><div class="route-exception-head"><span>กรณีพิเศษ</span><strong>บันทึกเหตุผลประกอบการส่งตรงถึง ผอ.กบค.</strong></div><div class="ws-grid-2"><div class="ws-field"><label>ประเภทเหตุผล *</label><select id="absenceReasonType"><option value="">เลือกประเภทเหตุผล</option>${['ลาราชการ','ติดภารกิจราชการ','ไม่สามารถปฏิบัติหน้าที่','มีคำสั่งให้เสนอโดยตรง','อื่น ๆ'].map(reason=>`<option value="${reason}" ${d.absenceReasonType===reason?'selected':''}>${reason}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>รายละเอียดและช่วงเวลาที่ไม่อยู่ *</label><textarea id="absenceNote" placeholder="ระบุเหตุผล วันที่หรือช่วงเวลา และข้อมูลอ้างอิงที่เกี่ยวข้อง">${escapeHtml(d.absenceNote)}</textarea></div></div><div class="route-impact"><strong>ผลของเส้นทางนี้</strong><span>เรื่องจะส่งตรงถึง ผอ.กบค. พร้อมบันทึก Log โดย ผอ.กบค. สามารถอนุมัติให้ ผอ.ศรร. กลับมาให้ความเห็นเพิ่มเติมภายหลังได้</span></div></div></section>${signatureCard(state,'officer')}</div>`}
+      if(activeRole==='center')return `<div class="ws-section"><h3>ข้อมูลจากเจ้าหน้าที่รับเรื่อง</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem"><strong>เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}</strong><br>ผลเสนอ: ${d.decision}<br>ความเห็น: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}</div></div><div class="ws-section"><h3>ความเห็น ผอ.ศรร.</h3><div class="ws-choice-grid"><label class="ws-choice"><input type="radio" name="centerDecision" value="agree" ${d.centerDecision!=='disagree'?'checked':''}><span><strong>เห็นชอบให้มอบหมาย ${escapeHtml(d.proposedRegion||c.region||'เขตที่เสนอ')}</strong></span></label><label class="ws-choice"><input type="radio" name="centerDecision" value="disagree" ${d.centerDecision==='disagree'?'checked':''}><span><strong>ไม่เห็นชอบ/ส่งกลับแก้ไข</strong></span></label></div><div class="ws-field" style="margin-top:.7rem"><label>ความเห็นและข้อเสนอแนะ</label><textarea id="centerOpinion">${escapeHtml(d.centerOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ผอ.ศรร.</label><textarea id="centerAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบการพิจารณา">${escapeHtml(d.centerAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${signatureCard(state,'center')}`;
       const centerText=d.centerOpinion|| (d.absenceNote?`ข้ามขั้นตอนตามหมายเหตุ: ${d.absenceNote}`:'ยังไม่ระบุ');
-      const acceptedDecision=['18/1ก','18/1ข','18/4'].includes(d.decision);
-      const internalLetterFields=acceptedDecision?`<div class="ws-section" id="approvalDocumentSection"><h3>ข้อมูลหนังสือรับไว้ดำเนินการ</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="internalLetterNo" value="${escapeHtml(d.internalLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="internalLetterDate" type="date" value="${escapeHtml(d.internalLetterDate||'')}"></div></div><aside class="approval-readiness" aria-label="ลำดับการอนุมัติและออกเลขสำนวน"><header><span>ข้อมูลประกอบการลงนาม</span><strong>โปรดตรวจสอบเลขหนังสือและวันที่หนังสือให้ครบถ้วน</strong><p>เมื่อข้อมูลเรียบร้อยแล้ว ผอ.กบค. สามารถลงนามอนุมัติ และระบบจะออกเลขสำนวนตามลำดับ</p></header><ol><li><b>1</b><span><strong>ตรวจสอบหนังสือ</strong><small>เลขหนังสือและวันที่หนังสือครบถ้วน</small></span></li><li><b>2</b><span><strong>ลงนามอนุมัติ</strong><small>ผอ.กบค. ยืนยันผลการพิจารณา</small></span></li><li><b>3</b><span><strong>ออกเลขสำนวน</strong><small>ระบบออกเลขและแจ้งสถานะแก่ผู้ร้อง</small></span></li></ol></aside></div>`:'';
-      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผอ.ศรร.: ${escapeHtml(centerText)}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทน':'คำสั่ง ผอ.กบค.'}</h3><div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ${activeRole==='acting'?'ผู้รักษาราชการแทน':'ผอ.กบค.'}</label><textarea id="divisionAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบคำสั่ง">${escapeHtml(d.divisionAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${internalLetterFields}`}
-    function actionsFor(state){const reset='<button class="ws-button ghost" data-action="reset">ล้างข้อมูลและเริ่มใหม่</button>';if(activeRole==='admin'){const hasAssignedWork=Boolean(state.documentData.assignedOfficer)&&state.assignmentHistory.some(entry=>['assign','reassign'].includes(entry.action)||/\[(มอบหมาย|มอบหมายใหม่)\]|มอบหมายให้/.test(entry.text||''));const canRecall=hasAssignedWork&&!state.workflow.complete&&!['nacc-dispatch','anonymous-box'].includes(state.workflow.stage);return `${reset}${canRecall?'<button class="ws-button danger" data-action="recall-assignment">ดึงงานกลับ</button>':''}<button class="ws-button secondary" data-action="draft">บันทึกร่าง</button><button class="ws-button primary" data-action="assign">${state.workflow.status==='รอมอบหมายใหม่'?'มอบหมายใหม่':'ลงรับและมอบหมาย'}</button>`}if(activeRole==='officer')return `${reset}<button class="ws-button secondary" data-action="draft">บันทึก Form 3</button><button class="ws-button secondary" data-action="print">พิมพ์ Form 3</button><button class="ws-button primary" data-action="officer-send">บันทึกและส่งพิจารณา</button>`;if(activeRole==='center')return `${reset}<button class="ws-button danger" data-action="center-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="center-send">บันทึกและส่ง ผอ.กบค.</button>`;return `${reset}${activity5Link(state)}<button class="ws-button secondary" data-action="division-center">ขอความเห็น ผอ.ศรร.</button><button class="ws-button danger" data-action="division-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="approve">อนุมัติและดำเนินการต่อ</button>`}
+      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผอ.ศรร.: ${escapeHtml(centerText)}${d.centerAdditionalDetail?`<br>รายละเอียดเพิ่มเติม ผอ.ศรร.: ${escapeHtml(d.centerAdditionalDetail)}`:''}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทน':'คำสั่ง ผอ.กบค.'}</h3><div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea></div><div class="ws-field" style="margin-top:.7rem"><label>รายละเอียดเพิ่มเติมโดย ${activeRole==='acting'?'ผู้รักษาราชการแทน':'ผอ.กบค.'}</label><textarea id="divisionAdditionalDetail" placeholder="เพิ่มข้อเท็จจริงหรือประเด็นประกอบคำสั่ง">${escapeHtml(d.divisionAdditionalDetail||'')}</textarea><small>ระบบบันทึกเป็นข้อมูลประกอบการพิจารณา โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${signatureCard(state,'division')}${caseIssuanceCard(state)}`}
+    function actionsFor(state){const reset='<button class="ws-button ghost" data-action="reset">ล้างข้อมูลและเริ่มใหม่</button>';if(activeRole==='admin'){const hasAssignedWork=Boolean(state.documentData.assignedOfficer)&&state.assignmentHistory.some(entry=>['assign','reassign'].includes(entry.action)||/\[(มอบหมาย|มอบหมายใหม่)\]|มอบหมายให้/.test(entry.text||''));const canRecall=hasAssignedWork&&!state.workflow.complete&&!['nacc-dispatch','anonymous-box'].includes(state.workflow.stage);return `${reset}${canRecall?'<button class="ws-button danger" data-action="recall-assignment">ดึงงานกลับ</button>':''}<button class="ws-button secondary" data-action="draft">บันทึกร่าง</button><button class="ws-button primary" data-action="assign">${state.workflow.status==='รอมอบหมายใหม่'?'มอบหมายใหม่':'ลงรับและมอบหมาย'}</button>`}if(activeRole==='officer'){const officerLocked=!['officer','admin'].includes(state.workflow.owner)&&!state.workflow.complete;return officerLocked?`<button class="ws-button secondary" data-action="print">พิมพ์ Form 3</button>`:`${reset}<button class="ws-button secondary" data-action="draft">บันทึก Form 3</button><button class="ws-button secondary" data-action="print">พิมพ์ Form 3</button><button class="ws-button primary" data-action="officer-send">บันทึกและส่งพิจารณา</button>`}if(activeRole==='center')return `${reset}<button class="ws-button danger" data-action="center-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="center-send">บันทึกและส่ง ผอ.กบค.</button>`;return `${reset}${activity5Link(state)}<button class="ws-button secondary" data-action="division-center">ขอความเห็น ผอ.ศรร.</button><button class="ws-button danger" data-action="division-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="approve">อนุมัติและดำเนินการต่อ</button>`}
     function operationalWorkspace(state){const w=state.workflow;const editor=`<section class="ws-card ws-editor ${activeRole==='admin'?'ws-admin-workspace':''}"><header class="ws-editor-head"><div><p class="ws-kicker">งานของ ${ROLE_LABELS[activeRole]}</p><h2>${w.complete?'ตรวจสอบข้อมูลที่ดำเนินการแล้ว':'ดำเนินการเรื่องร้องเรียน'}</h2></div><span class="ws-status">${w.status}</span></header><div class="ws-editor-body">${editorFor(state)}${activeRole==='admin'?'':`<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการตัดสินใจ</li>'}</ul></div>`}</div></section>`;if(activeRole==='admin')return `<div class="ws-admin-layout">${editor}</div>`;return `<div class="document-workspace">${editor}<aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabs(state,activeRole)}</div><button class="ws-button secondary" data-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="paperStage">${documentPaper(state,'form3',activeRole)}</div></aside></div>`}
     function renderDetail(){const state=getState(selectedId),c=state.caseData,w=state.workflow;$('#caseListView').classList.add('ws-hidden');const view=$('#caseDetailView');view.classList.remove('ws-hidden');view.innerHTML=`<button class="ws-button ghost" id="backList" style="margin-bottom:.8rem">กลับรายการเรื่องร้องเรียน</button><section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel)} · ${escapeHtml(c.region)}</p><h1>${c.id}</h1><div class="ws-case-meta"><span>${escapeHtml(c.subject)}</span><span>รับเรื่อง ${c.received}</span><span>เลขรับบริการ ${c.trackingYear} / PIN ${c.trackingCode}</span></div></div><div><span class="ws-status ${w.complete?'success':''}">${w.status}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">ผู้รับผิดชอบ: ${ROLE_LABELS[w.owner]}</p></div></section><nav class="ws-card ws-stagebar" aria-label="สถานะและลำดับการดำเนินงาน">${stagebar(state)}</nav>${operationalWorkspace(state)}<div class="ws-actions">${actionsFor(state)}</div>`;$('#backList').onclick=()=>{view.classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');selectedId=null;syncUrl();renderList()};wireDetail(state);enhanceSmartInputs()}
-    function capture(state){const d=state.documentData;const value=id=>$('#'+id)?.value?.trim()||'';if(activeRole==='admin'){d.assignedOfficer=value('adminAssignee');d.backupOfficer=value('adminBackup');if($('#adminNote'))d.adminNote=value('adminNote')}if(activeRole==='officer'){d.documentSubject=value('documentSubject')||state.caseData.subject||'';d.decision=$('input[name="decision"]:checked')?.value||d.decision;d.reasons=$$('input[name="naccReason"]:checked').map(x=>x.value);d.notAcceptReason=value('notAcceptReason');d.anonymous=$('#anonymous')?.checked||false;d.proposedRegion=value('proposedRegion')||d.proposedRegion;d.officerOpinion=value('officerOpinion');d.reviewRoute=$('input[name="route"]:checked')?.value||'center';d.absenceReasonType=value('absenceReasonType');d.absenceNote=value('absenceNote');d.actingOfficer=value('actingOfficer')||d.actingOfficer;d.actingOrder=value('actingOrder')||d.actingOrder}if(activeRole==='center'){d.centerDecision=$('input[name="centerDecision"]:checked')?.value||'';d.centerOpinion=value('centerOpinion');d.centerAdditionalDetail=value('centerAdditionalDetail')}if(activeRole==='division'||activeRole==='acting'){d.divisionOpinion=value('divisionOpinion');d.divisionAdditionalDetail=value('divisionAdditionalDetail');d.internalLetterNo=value('internalLetterNo')||d.internalLetterNo;d.internalLetterDate=value('internalLetterDate')||d.internalLetterDate;d.actingOrder=value('actingOrder')||d.actingOrder}return state}
+    function capture(state){const d=state.documentData;const value=id=>$('#'+id)?.value?.trim()||'';if(activeRole==='admin'){d.assignedOfficer=value('adminAssignee');d.backupOfficer=value('adminBackup');if($('#adminNote'))d.adminNote=value('adminNote')}if(activeRole==='officer'){d.documentSubject=value('documentSubject')||state.caseData.subject||'';d.decision=$('input[name="decision"]:checked')?.value||d.decision;d.reasons=$$('input[name="naccReason"]:checked').map(x=>x.value);d.notAcceptReason=value('notAcceptReason');d.anonymous=$('#anonymous')?.checked||false;d.proposedRegion=value('proposedRegion')||d.proposedRegion;d.officerOpinion=value('officerOpinion');d.reviewRoute=$('input[name="route"]:checked')?.value||'center';d.absenceReasonType=value('absenceReasonType');d.absenceNote=value('absenceNote');d.actingOfficer=value('actingOfficer')||d.actingOfficer;d.actingOrder=value('actingOrder')||d.actingOrder}if(activeRole==='center'){d.centerDecision=$('input[name="centerDecision"]:checked')?.value||'';d.centerOpinion=value('centerOpinion');d.centerAdditionalDetail=value('centerAdditionalDetail')}if(activeRole==='division'||activeRole==='acting'){d.divisionOpinion=value('divisionOpinion');d.divisionAdditionalDetail=value('divisionAdditionalDetail');d.actingOrder=value('actingOrder')||d.actingOrder}return state}
     function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>x.addEventListener('input',refreshPaper));$$('input[name="decision"]').forEach(x=>x.onchange=()=>{$('#naccReasonBox').classList.toggle('ws-hidden',x.value!=='send-nacc');$('#notAcceptBox').classList.toggle('ws-hidden',x.value!=='not-accept');refreshPaper()});$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state))}
     const captureBase=capture;
     capture=state=>{
@@ -940,8 +974,6 @@
       if(activeRole==='officer'){
         d.naccOtherChecked=$('#naccOtherChecked')?.checked||false;
         d.naccOtherReason=$('#naccOtherReason')?.value?.trim()||'';
-        d.notAcceptOtherChecked=$('#notAcceptOtherChecked')?.checked||false;
-        d.notAcceptOtherReason=$('#notAcceptOtherReason')?.value?.trim()||'';
       }
       return captured;
     };
@@ -956,7 +988,35 @@
       state=capture(state);
       const d=state.documentData,w=state.workflow;
       const add=text=>state.decisionHistory.push({text,time:now()});
-      if(action==='draft'){
+      if(action==='officer-sign'){
+        if(!d.officerOpinion)return notify('warning','ยังไม่มีความเห็นเจ้าหน้าที่','กรอกข้อเท็จจริงและความเห็นก่อนลงนาม');
+        const officerName=d.assignedOfficer||'เจ้าหน้าที่รับเรื่อง';
+        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        if(!confirmed.isConfirmed)return;
+        d.officerSignature=signatureRecord('เจ้าหน้าที่รับเรื่อง',officerName);
+        add(`เจ้าหน้าที่รับเรื่อง ${officerName} ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.officerSignature.signatureId}`);
+        saveState(selectedId,state);notify('success','ลงนามเรียบร้อย','ระบบบันทึกหลักฐานการลงนามของเจ้าหน้าที่รับเรื่องแล้ว');renderDetail();return;
+      }
+      if(action==='center-sign'){
+        if(d.centerDecision==='disagree')return notify('warning','ยังไม่สามารถลงนามเห็นชอบ','กรณีไม่เห็นชอบให้ใช้คำสั่งส่งกลับเจ้าหน้าที่แก้ไข');
+        if(!d.centerOpinion)return notify('warning','ยังไม่มีความเห็น ผอ.ศรร.','กรอกความเห็นก่อนลงนาม');
+        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        if(!confirmed.isConfirmed)return;
+        d.centerSignature=signatureRecord('ผอ.ศรร.','ผอ.ศรร.');
+        add(`ผอ.ศรร. ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.centerSignature.signatureId}`);
+        saveState(selectedId,state);notify('success','ลงนามเรียบร้อย','ระบบบันทึกหลักฐานการลงนามของ ผอ.ศรร. แล้ว');renderDetail();return;
+      }
+      if(action==='division-sign'){
+        if(!d.divisionOpinion)return notify('warning','ยังไม่มีคำสั่ง ผอ.กบค.','กรอกความเห็นและคำสั่งก่อนลงนาม');
+        if(d.reviewRoute!=='division'&&!d.centerSignature?.signed)return notify('warning','ยังไม่มีลายมือชื่อ ผอ.ศรร.','ต้องให้ ผอ.ศรร. ลงนามก่อนส่งตามลำดับปกติ');
+        const signer=activeRole==='acting'?(d.actingOfficer||'ผู้รักษาราชการแทน'):'ผอ.กบค.';
+        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        if(!confirmed.isConfirmed)return;
+        d.divisionSignature=signatureRecord(signer,signer);
+        add(`${signer} ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.divisionSignature.signatureId}`);
+        saveState(selectedId,state);notify('success','ลงนามเรียบร้อย','ระบบบันทึกหลักฐานการลงนามแล้ว พร้อมดำเนินการอนุมัติ');renderDetail();return;
+      }
+      if(action==='draft'){if(activeRole==='officer'&&!['officer','admin'].includes(w.owner)&&!w.complete)return notify('warning','ข้อมูลถูกล็อค','เรื่องนี้อยู่ระหว่างการพิจารณาของผู้มีอำนาจ');
         state.documentVersions.push({version:state.documentVersions.length+1,actor:ROLE_LABELS[activeRole],time:now()});
         saveState(selectedId,state);notify('success','บันทึกร่างแล้ว','ข้อมูลถูกเก็บในเรื่องนี้และจะแสดงให้ผู้ดำเนินการคนถัดไปเห็น');renderDetail();return;
       }
@@ -969,12 +1029,13 @@
         adminQueue='assigned';syncUrl();
         w.owner='officer';w.stage='officer';w.status='รอเจ้าหน้าที่พิจารณา';add(`ธุรการ ศรร. ลงรับและมอบหมายให้ ${d.assignedOfficer}`);
       }
-      if(action==='officer-send'){
+      if(action==='officer-send'){if(!['officer','admin'].includes(w.owner)&&!w.complete)return notify('warning','ข้อมูลถูกล็อค','เรื่องนี้อยู่ระหว่างการพิจารณาของผู้มีอำนาจ');
+        if(!d.officerSignature?.signed)return notify('warning','ยังไม่ได้ลงนาม','เจ้าหน้าที่รับเรื่องต้องตรวจสอบและลงนามก่อนส่งพิจารณา');
         if(!d.proposedRegion)return notify('warning','ยังไม่ได้เลือกเขตที่เสนอ','เลือกเขตที่เสนอให้มอบหมายก่อนส่งพิจารณา');
         if(!d.officerOpinion)return notify('warning','ยังไม่มีความเห็นเจ้าหน้าที่','กรอกข้อเท็จจริงและความเห็นก่อนส่งพิจารณา');
         if(d.decision==='send-nacc'&&d.naccOtherChecked&&!d.naccOtherReason)return notify('warning','ยังไม่ได้ระบุเหตุผลอื่น ๆ','กรอกเหตุผลอื่น ๆ สำหรับส่งสำนักงาน ป.ป.ช.');
         if(d.decision==='send-nacc'&&!d.reasons.length&&!(d.naccOtherChecked&&d.naccOtherReason))return notify('warning','ยังไม่ได้เลือกเหตุผล','เลือกเหตุผลส่งสำนักงาน ป.ป.ช. อย่างน้อย 1 ข้อ');
-        if(d.decision==='not-accept'&&d.notAcceptOtherChecked&&!d.notAcceptOtherReason)return notify('warning','ยังไม่ได้ระบุเหตุผลอื่น ๆ','กรอกเหตุผลอื่น ๆ สำหรับไม่รับไว้ดำเนินการ');
+        if(d.decision==='not-accept'&&!d.notAcceptReason)return notify('warning','ยังไม่ได้ระบุเหตุผล','กรอกเหตุผลที่ไม่รับไว้ดำเนินการก่อนส่งพิจารณา');
         const route=$('input[name="route"]:checked')?.value;
         if(route==='division'&&!d.absenceReasonType)return notify('warning','ยังไม่ได้เลือกประเภทเหตุผล','เลือกประเภทเหตุผลที่ต้องส่งข้าม ผอ.ศรร.');
         if(route==='division'&&!d.absenceNote)return notify('warning','รายละเอียดเหตุผลไม่ครบ','ระบุเหตุผล ช่วงเวลา และข้อมูลอ้างอิงก่อนส่งตรงถึง ผอ.กบค.');
@@ -985,57 +1046,54 @@
       }
       if(action==='center-return'){
         if(!d.centerOpinion)return notify('warning','ต้องระบุเหตุผล','กรอกประเด็นที่ต้องแก้ไขก่อนส่งกลับ');
-        w.owner='officer';w.stage='officer';w.status='ส่งกลับเจ้าหน้าที่แก้ไข';d.centerDecision='disagree';add(`ผอ.ศรร. ไม่เห็นชอบการมอบหมาย ${d.proposedRegion||'เขตที่เสนอ'} และส่งกลับเจ้าหน้าที่รับเรื่องแก้ไข`);
+        w.owner='officer';w.stage='officer';w.status='ส่งกลับเจ้าหน้าที่แก้ไข';d.centerDecision='disagree';d.officerSignature={signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:''};add(`ผอ.ศรร. ไม่เห็นชอบการมอบหมาย ${d.proposedRegion||'เขตที่เสนอ'} และส่งกลับเจ้าหน้าที่รับเรื่องแก้ไข`);
       }
       if(action==='center-send'){
         if(d.centerDecision==='disagree')return notify('warning','เลือกไม่เห็นชอบ','กดส่งกลับเจ้าหน้าที่แก้ไขเพื่อดำเนินการตามความเห็น');
         if(!d.centerOpinion)return notify('warning','ยังไม่มีความเห็น ผอ.ศรร.','กรอกความเห็นก่อนส่ง ผอ.กบค.');
+        if(!d.centerSignature?.signed)return notify('warning','ยังไม่ได้ลงนาม','ผอ.ศรร. ต้องตรวจสอบและลงนามก่อนส่ง ผอ.กบค.');
         w.owner='division';w.stage='division';w.status='รอ ผอ.กบค.';add(`ผอ.ศรร. เห็นชอบให้มอบหมาย ${d.proposedRegion||'เขตที่เสนอ'} และส่ง ผอ.กบค.`);
       }
       if(action==='division-center'){w.owner='center';w.stage='center';w.status='รอ ผอ.ศรร. ให้ความเห็นเพิ่มเติม';add('ผอ.กบค. อนุมัติให้ ผอ.ศรร. กลับเข้าขั้นตอนเพื่อให้ความเห็นเพิ่มเติม')}
       if(action==='division-return'){
         if(!d.divisionOpinion)return notify('warning','ต้องระบุเหตุผล','กรอกคำสั่งหรือประเด็นที่ต้องแก้ไข');
-        w.owner='officer';w.stage='officer';w.status='ส่งกลับเจ้าหน้าที่แก้ไข';add('ผอ.กบค. ส่งกลับเจ้าหน้าที่รับเรื่องแก้ไข');
+        w.owner='officer';w.stage='officer';w.status='ส่งกลับเจ้าหน้าที่แก้ไข';d.officerSignature={signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:''};add('ผอ.กบค. ส่งกลับเจ้าหน้าที่รับเรื่องแก้ไข');
       }
       if(action==='approve'){
         if(!d.divisionOpinion)return notify('warning','ยังไม่มีคำสั่ง','กรอกความเห็นและคำสั่งก่อนอนุมัติ');
-        if(['18/1ก','18/1ข','18/4'].includes(d.decision)&&(!d.internalLetterNo||!d.internalLetterDate)){
-          const section=$('#approvalDocumentSection');
-          section?.classList.remove('needs-attention');
-          requestAnimationFrame(()=>section?.classList.add('needs-attention'));
-          section?.scrollIntoView({behavior:'smooth',block:'center'});
-          (!d.internalLetterNo?$('#internalLetterNo'):$('#internalLetterDate'))?.focus({preventScroll:true});
-          return notify('info','กรุณาตรวจสอบข้อมูลประกอบการลงนาม','โปรดระบุเลขหนังสือและวันที่หนังสือให้ครบถ้วน เพื่อดำเนินการลงนามและออกเลขสำนวน');
-        }
-        const approvalActor=activeRole==='acting'?(d.actingOfficer||ROLE_LABELS[activeRole]):ROLE_LABELS[activeRole];
+        if(!d.divisionSignature?.signed)return notify('warning','ยังไม่ได้ลงนาม','ผอ.กบค. หรือผู้รักษาราชการแทนต้องลงนามก่อนอนุมัติ');
+        const approvalActor=d.divisionSignature.signerName;
+        d.approvedAt=d.approvedAt||d.divisionSignature.signedAt;
+        d.approvedBy=d.approvedBy||approvalActor;
         const caseNumberEligible=['18/1ก','18/1ข','18/4'].includes(d.decision);
         if(caseNumberEligible&&!d.caseNumber){
-          const confirmed=await confirmDo('ลงนามอนุมัติและออกเลขสำนวน','หลังยืนยัน ระบบจะออกเลขสำนวนและเปิดเผยสถานะรับไว้ดำเนินการแก่ผู้ร้อง','ลงนามและออกเลขสำนวน');
+          const buddhistYear=new Date().getFullYear()+543;
+          const nextNumber=formatCaseSequence(currentCaseSequence(buddhistYear)+1,buddhistYear);
+          const confirmed=await confirmDo('ยืนยันอนุมัติและออกเลขสำนวน',`ระบบจะออกเลขสำนวน ${nextNumber} และแจ้งสถานะรับไว้ดำเนินการแก่ผู้ร้อง`,'อนุมัติและออกเลข');
           if(!confirmed.isConfirmed)return;
-          d.approvedAt=new Date().toISOString();d.approvedBy=approvalActor;issueCaseNumber(state);
+          d.approvedAt=d.divisionSignature.signedAt;d.approvedBy=approvalActor;issueCaseNumber(state);
           d.publicStatus='สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป';
         }
-        if(caseNumberEligible){d.approvedAt=d.approvedAt||new Date().toISOString();d.approvedBy=d.approvedBy||approvalActor}
         const anonymousRejected=d.decision==='not-accept'&&d.anonymous;
         if(anonymousRejected){
           w.owner='anonymous';w.stage='anonymous-box';w.status='รอหัวหน้าพนักงานผู้ตรวจเสนอ';w.complete=false;
           add(`${approvalActor} อนุมัติไม่รับไว้ดำเนินการและส่งเข้ากล่องบัตรสนเท่ห์`);
         }else if(caseNumberEligible){
           d.dispatchDestinationUnit=d.proposedRegion||state.caseData.region||'';
-          w.owner='officer';w.stage='officer-dispatch';w.status='รอเจ้าหน้าที่รับเรื่องดำเนินการจัดส่ง';w.complete=false;
+          w.owner='officer';w.stage='officer-dispatch';w.status='อนุมัติแล้ว รอเจ้าหน้าที่รับเรื่อง ศรร. บันทึกข้อมูลการจัดส่ง';w.complete=false;
           add(`${approvalActor} ลงนามอนุมัติ${d.caseNumber?`และออกเลขสำนวน ${d.caseNumber}`:''} แล้ว ส่งงานกลับเจ้าหน้าที่รับเรื่อง ศรร. เพื่อบันทึกข้อมูลจัดส่งไปยัง ${d.proposedRegion||state.caseData.region||'เขตผู้รับผิดชอบ'}`);
         }else{
-          w.complete=true;w.status='ดำเนินการเสร็จสิ้น';add(`${approvalActor} อนุมัติผลการพิจารณา${d.caseNumber?` และออกเลขสำนวน ${d.caseNumber}`:''}${d.internalLetterNo?` เลขหนังสือ ${d.internalLetterNo} ลงวันที่ ${d.internalLetterDate}`:''}`);
+          w.stage='division-order';w.complete=true;w.status='ดำเนินการเสร็จสิ้น';add(`${approvalActor} อนุมัติผลการพิจารณา${d.caseNumber?` และออกเลขสำนวน ${d.caseNumber}`:''}`);
         }
       }
       if(['center-return','center-send'].includes(action)&&d.centerAdditionalDetail)add('ผอ.ศรร. เพิ่มรายละเอียดประกอบการพิจารณา โดยไม่แก้ไขข้อมูลคำร้องเดิม');
       if(['division-center','division-return','approve'].includes(action)&&d.divisionAdditionalDetail)add(`${ROLE_LABELS[activeRole]} เพิ่มรายละเอียดประกอบการพิจารณา โดยไม่แก้ไขข้อมูลคำร้องเดิม`);
       state.documentVersions.push({version:state.documentVersions.length+1,actor:ROLE_LABELS[activeRole],time:now()});saveState(selectedId,state);
       if(w.stage==='officer-dispatch'){
-        notify('success','ลงนามอนุมัติแล้ว','ส่งงานกลับเจ้าหน้าที่รับเรื่อง ศรร. ตามเขต เพื่อบันทึกเลขหนังสือ เลข EMS และข้อมูลการจัดส่ง');
+        notify('success','อนุมัติและลงนามเรียบร้อยแล้ว','ระบบส่งงานกลับเจ้าหน้าที่รับเรื่อง ศรร. เพื่อบันทึกเลขหนังสือขาออก วันที่หนังสือ วิธีจัดส่ง เลข EMS และหน่วยงานหรือเขตปลายทาง');
         selectedRole='officer';activeRole='officer';sessionStorage.setItem('ecmis-a4-role',selectedRole);$('#wsRole').value=selectedRole;updateRoleControls();renderDetail();renderList();return;
       }
-      notify('success','บันทึกและส่งงานแล้ว',`สถานะปัจจุบัน: ${w.status}`);renderDetail();renderList();
+      notify('success','บันทึกผลการพิจารณาเรียบร้อยแล้ว',`สถานะปัจจุบัน: ${w.status}`);renderDetail();renderList();
     }
     root.addEventListener('click',async event=>{
       const manageSuggestionsButton=event.target.closest('#manageSuggestions');
@@ -1073,9 +1131,9 @@
         state.decisionHistory.push({text:`เจ้าหน้าที่รับเรื่อง ศรร. ยืนยันจัดส่งไปยัง ${d.dispatchDestinationUnit} เลขหนังสือ ${d.dispatchLetterNo} · ${d.dispatchSendMethod}${d.dispatchEms?` ${d.dispatchEms}`:''}`,time});
         state.documentVersions.push({version:state.documentVersions.length+1,actor:'เจ้าหน้าที่รับเรื่อง ศรร.',time});
         const handoffResult=window.ECMISActivity5Handoff?.create(localStorage,state,dispatchedAt,'officer')||null;
-        if(!handoffResult?.eligible){state.workflow.stage='officer-dispatch';state.workflow.status='รอเจ้าหน้าที่รับเรื่องดำเนินการจัดส่ง';state.workflow.complete=false;d.dispatchConfirmedAt='';notify('error','บันทึกการจัดส่งไม่สำเร็จ','ตรวจสอบข้อมูลการจัดส่งและลองยืนยันอีกครั้ง');return}
+        if(!handoffResult?.eligible){state.workflow.stage='officer-dispatch';state.workflow.status='อนุมัติแล้ว รอเจ้าหน้าที่รับเรื่อง ศรร. บันทึกข้อมูลการจัดส่ง';state.workflow.complete=false;d.dispatchConfirmedAt='';notify('error','บันทึกการจัดส่งไม่สำเร็จ','ตรวจสอบข้อมูลการจัดส่งและลองยืนยันอีกครั้ง');return}
         saveState(selectedId,state);
-        notify('success','ยืนยันการจัดส่งเรียบร้อยแล้ว',`จัดส่งเรื่องไปยัง ${d.dispatchDestinationUnit} แล้ว ระบบส่งข้อมูลเข้าสู่กระบวนงานกิจกรรมที่ 5 เรียบร้อยแล้ว`);renderDetail();renderList();return;
+        notify('success','ยืนยันการจัดส่งเรียบร้อยแล้ว',`จัดส่งเรื่องไปยัง ${d.dispatchDestinationUnit} แล้ว และส่งข้อมูลเข้าสู่กระบวนงานลำดับถัดไปเรียบร้อยแล้ว`);renderDetail();renderList();return;
       }
       const approveNaccButton=event.target.closest('[data-action="approve"]');
       if(approveNaccButton&&getState(selectedId).documentData.decision==='send-nacc'){

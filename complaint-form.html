@@ -751,9 +751,12 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
           <div id="trackingNoBox">
             <i class="fa-solid fa-circle-check mb-2" style="font-size:1.6rem;color:var(--ecmis-gold)"></i>
             <div class="small text-muted">หมายเลขติดตามคำร้องของท่านคือ</div>
-            <div style="font-size:1.3rem;font-weight:700;color:var(--ecmis-navy)" id="trackingNoDisplay">—</div>
+            <div style="display:flex;gap:.6rem;justify-content:center;margin:.45rem 0 .2rem" id="trackingNoDisplay">
+              <div style="flex:1;max-width:11rem;border:1px solid #c9d4e4;border-radius:.6rem;padding:.55rem .6rem;background:#f4f7fb"><div style="font-size:1.35rem;font-weight:800;color:var(--ecmis-navy);letter-spacing:.06em;font-variant-numeric:tabular-nums" id="trackingServiceNo">—</div><div class="small text-muted" style="margin-top:.15rem">เลขรับบริการ</div></div>
+              <div style="flex:1;max-width:11rem;border:1px solid #c9d4e4;border-radius:.6rem;padding:.55rem .6rem;background:#f4f7fb"><div style="font-size:1.35rem;font-weight:800;color:var(--ecmis-navy);letter-spacing:.06em;font-variant-numeric:tabular-nums" id="trackingGenNo">—</div><div class="small text-muted" style="margin-top:.15rem">รหัสติดตาม</div></div>
+            </div>
             <img id="trackingQr" class="tracking-qr d-none" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="QR code สำหรับติดตามคำร้อง">
-            <div class="small mt-2 fw-semibold" style="color:var(--ecmis-red)">กรุณาบันทึกเลขรับบริการและ PIN ทันที โดย QR มีเฉพาะเลขรับบริการและไม่มี PIN</div>
+            <div class="small mt-2 fw-semibold" style="color:var(--ecmis-red)">กรุณาบันทึกเลขรับบริการและรหัสติดตามไว้ทันที เพื่อใช้ติดตามสถานะภายหลัง</div>
             <div class="tracking-save-actions d-none" id="trackingSaveActions">
               <button type="button" class="btn-tracking-save" onclick="copyTrackingNo()"><i class="fa-solid fa-copy me-1"></i>คัดลอกหมายเลข</button>
               <button type="button" class="btn-tracking-save" onclick="saveTrackingQr()"><i class="fa-solid fa-download me-1"></i>บันทึก QR</button>
@@ -1331,7 +1334,7 @@ function submitComplaint(){
   Swal.fire({
     icon:'question',
     title:'ยืนยันการส่งคำร้อง?',
-    html:'เมื่อส่งคำร้องแล้วจะไม่สามารถแก้ไขได้ หากต้องการแก้ไขให้กดย้อนกลับ<br><strong style="display:block;margin-top:.75rem;color:#8a5a12">หลังส่งสำเร็จ ระบบจะแสดง QR เลขรับบริการ และ PIN 4 หลัก กรุณาบันทึกไว้ทันที</strong><span style="display:block;margin-top:.5rem">' + trackingWarning + '</span>',
+    html:'เมื่อส่งคำร้องแล้วจะไม่สามารถแก้ไขได้ หากต้องการแก้ไขให้กดย้อนกลับ<br><strong style="display:block;margin-top:.75rem;color:#8a5a12">หลังส่งสำเร็จ ระบบจะแสดง QR เลขรับบริการ และรหัสติดตาม 4 หลัก กรุณาบันทึกไว้ทันที</strong><span style="display:block;margin-top:.5rem">' + trackingWarning + '</span>',
     showCancelButton:true,
     confirmButtonText:'ส่งคำร้อง',
     cancelButtonText:'ยกเลิก',
@@ -1343,7 +1346,7 @@ function submitComplaint(){
       const pendingAllocation = trackingPair.allocationStatus === 'pending';
       currentTrackingNo = pendingAllocation
         ? trackingPair.pendingReference
-        : `${trackingPair.yearSequence} · PIN ${trackingPair.pin}`;
+        : `${trackingPair.yearSequence} ${trackingPair.pin}`;
       window.ECMIS.saveCaseMetadata({
         ...trackingPair,
         subject:val('complaintSubject'),
@@ -1355,14 +1358,26 @@ function submitComplaint(){
         id4:isValidThaiNationalId(document.getElementById('nationalId').value.replace(/\D/g,''))?document.getElementById('nationalId').value.replace(/\D/g,'').slice(-4):'',
         phone:document.getElementById('phone').value.replace(/\D/g,'')
       });
-      document.getElementById('trackingNoDisplay').textContent = currentTrackingNo;
+      document.getElementById('trackingServiceNo').textContent = trackingPair.yearSequence;
+      document.getElementById('trackingGenNo').textContent = trackingPair.pin;
       const qrImg = document.getElementById('trackingQr');
       if(!pendingAllocation){
-        const trackingUrl = new URL(`tracking.html?serviceNumber=${encodeURIComponent(trackingPair.yearSequence)}`, window.location.href).href;
+        const trackingUrl = new URL(`tracking.html?serviceNumber=${encodeURIComponent(trackingPair.yearSequence)}&pin=${encodeURIComponent(trackingPair.pin)}`, window.location.href).href;
         const qr = qrcode(0, 'M');
         qr.addData(trackingUrl);
         qr.make();
-        qrImg.src = qr.createDataURL(5, 12);
+        const cellSize=5,margin=12,textH=44,qrPx=qr.getModuleCount()*cellSize+margin*2;
+        const canvas=document.createElement('canvas');
+        canvas.width=qrPx;canvas.height=qrPx+textH;
+        const ctx=canvas.getContext('2d');
+        ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='#000000';
+        for(let r=0;r<qr.getModuleCount();r++)for(let c=0;c<qr.getModuleCount();c++)if(qr.isDark(r,c))ctx.fillRect(c*cellSize+margin,r*cellSize+margin,cellSize,cellSize);
+        ctx.fillStyle='#0b2e59';ctx.font='700 21px -apple-system,Segoe UI,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(`${trackingPair.yearSequence}  ${trackingPair.pin}`,canvas.width/2,qrPx+16);
+        ctx.fillStyle='#6b7280';ctx.font='12px -apple-system,Segoe UI,sans-serif';
+        ctx.fillText('เลขรับบริการ · รหัสติดตาม',canvas.width/2,qrPx+33);
+        qrImg.src=canvas.toDataURL('image/png');
         qrImg.classList.remove('d-none');
         document.getElementById('trackingLink').href = trackingUrl;
         document.getElementById('trackingSaveActions').classList.remove('d-none');
@@ -1378,7 +1393,7 @@ function submitComplaint(){
         title:pendingAllocation?'ส่งคำร้องสำเร็จและรอจัดสรรเลขรับบริการ':'ส่งคำร้องสำเร็จ!',
         html:pendingAllocation
           ? `สำนักงาน ป.ป.ท. ได้รับคำร้องแล้ว<br>เลขอ้างอิงชั่วคราว<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b>${capacityNotice}`
-          : `สำนักงาน ป.ป.ท. ได้รับคำร้องของท่านเรียบร้อยแล้ว<br>เลขรับบริการและ PIN คือ<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b><br><strong style="display:block;margin-top:.75rem;color:#8a2f27">กรุณาบันทึกเลขรับบริการและ PIN ทันที โดย QR ไม่มี PIN หากสูญหายอาจไม่สามารถติดตามเรื่องได้</strong>${capacityNotice}`,
+          : `สำนักงาน ป.ป.ท. ได้รับคำร้องของท่านเรียบร้อยแล้ว<br>เลขรับบริการและรหัสติดตามคือ<br><b style="font-size:1.3rem;color:#0b2e59">${currentTrackingNo}</b><br><strong style="display:block;margin-top:.75rem;color:#8a2f27">กรุณาบันทึกเลขรับบริการและรหัสติดตามไว้ทันที เพื่อใช้ติดตามสถานะภายหลัง</strong>${capacityNotice}`,
         confirmButtonColor:'#0b2e59',
         confirmButtonText:'รับทราบ'
       }).then(() => { goToStep(3); });

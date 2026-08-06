@@ -120,12 +120,14 @@
     cases.forEach(item=>{const stored=storedComplainantActivity[item.id];if(stored&&Array.isArray(stored.complainantActivity)){item.complainantActivity=stored.complainantActivity;item.complainantUpdated=stored.complainantUpdated||item.complainantUpdated}});
     try{
       const workspace=JSON.parse(localStorage.getItem('ecmis-a4-workspace-v3')||'{}');
-      const accepted=Object.values(workspace).find(state=>state?.workflow?.complete&&state?.documentData?.caseNumber);
+      const accepted=Object.values(workspace).find(state=>state?.documentData?.approvedAt&&state?.documentData?.caseNumber);
       if(accepted){
         const data=accepted.documentData,source=accepted.caseData||{},target=cases.find(item=>item.id===source.trackingYear)||cases[0];
+        const issuedAt=data.caseNumberIssuedAt||data.approvedAt;
+        const issuedAtText=issuedAt?new Date(issuedAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}):'ล่าสุด';
         target.status=data.publicStatus||'สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป';
-        target.tone='accepted';target.caseNo=data.caseNumber;target.letter=data.internalLetterNo||'—';target.owner=data.assignedOfficer||source.region||'สำนักงาน ป.ป.ท.';target.officerUpdated=data.internalLetterDate||target.officerUpdated;
-        target.timeline.push(['ผอ. กบค. ลงนามอนุมัติ',data.internalLetterDate||'ล่าสุด',`ออกเลขสำนวน ${data.caseNumber}`]);
+        target.tone='accepted';target.caseNo=data.caseNumber;target.letter=data.dispatchLetterNo||'—';target.owner=data.assignedOfficer||source.region||'สำนักงาน ป.ป.ท.';target.officerUpdated=issuedAtText;
+        target.timeline.push(['ผอ. กบค. ลงนามอนุมัติ',issuedAtText,`ออกเลขสำนวน ${data.caseNumber}`]);
       }
       const forwarded=workspace['ECMIS-2569-000184'];
       if(forwarded?.workflow?.complete&&forwarded?.documentData?.decision==='send-nacc'){

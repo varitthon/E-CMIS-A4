@@ -69,7 +69,7 @@
                   <span class="hint">ปี พ.ศ. 2 หลัก และลำดับ 4 หลัก</span>
                 </div>
                 <div class="field">
-                  <label for="trackingPin">PIN ติดตามเรื่อง 4 หลัก</label>
+                  <label for="trackingPin">รหัสติดตาม 4 หลัก</label>
                   <input id="trackingPin" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="5424" maxlength="4" autocomplete="off" />
                   <span class="hint">ตัวเลข 4 หลักที่ได้รับตอนยื่นเรื่อง</span>
                 </div>
@@ -92,7 +92,7 @@
             <h2>เตรียมข้อมูลก่อนค้นหา</h2>
             <ol>
               <li>กรอกเลขรับบริการ เช่น <strong>690001</strong></li>
-              <li>กรอก PIN ตัวเลข 4 หลัก เช่น <strong>5424</strong></li>
+              <li>กรอกรหัสติดตาม 4 หลัก เช่น <strong>5424</strong></li>
               <li>ยืนยันว่าไม่ใช่โปรแกรมอัตโนมัติ แล้วกด “ตรวจสอบสถานะ”</li>
             </ol>
             <p class="privacy-note">ระบบจะแสดงเฉพาะสถานะที่เปิดเผยต่อผู้ร้องได้ และไม่แสดงข้อมูลการพิจารณาภายใน</p>
@@ -101,7 +101,7 @@
             <span class="status-chip public">สถานะสาธารณะ</span>
             <h2>อยู่ระหว่างพิจารณา</h2>
             <p class="token" id="shownNo"></p>
-            <div class="notice"><strong>เลขรับบริการ:</strong> ECMIS-2569-000184<br /><strong>เลขหนังสือส่งหน่วยงานภายนอก:</strong> จะแสดงเมื่อสำนักงานออกหนังสือแล้ว</div>
+            <div class="notice"><strong>เลขรับบริการ:</strong> 690001<br /><strong>เลขหนังสือส่งหน่วยงานภายนอก:</strong> จะแสดงเมื่อสำนักงานออกหนังสือแล้ว</div>
             <ol class="timeline">
               <li>
                 <strong>รับข้อมูลแล้ว</strong
@@ -235,15 +235,17 @@
         if (matchedWorkspaceState?.workflow?.complete && matchedWorkspaceState?.documentData?.decision === "send-nacc") {
           const data = matchedWorkspaceState.documentData;
           result.querySelector("h2").textContent = "ส่งสำนักงาน ป.ป.ช. แล้ว";
-          result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.id}<br><strong>เลขหนังสือส่งสำนักงาน ป.ป.ช.:</strong> ${data.naccLetterNo}<br><strong>วันที่จัดส่ง:</strong> ${data.naccSentDate}<br><strong>เลข EMS:</strong> ${data.naccEms || "ไม่ได้ใช้ EMS"}<br><strong>มติบอร์ด:</strong> ${data.naccBoardNo}`;
+          result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.trackingYear}<br><strong>เลขหนังสือส่งสำนักงาน ป.ป.ช.:</strong> ${data.naccLetterNo}<br><strong>วันที่จัดส่ง:</strong> ${data.naccSentDate}<br><strong>เลข EMS:</strong> ${data.naccEms || "ไม่ได้ใช้ EMS"}<br><strong>มติบอร์ด:</strong> ${data.naccBoardNo}`;
           const timeline = result.querySelector(".timeline");
           if (!timeline.querySelector("[data-nacc-forwarded]")) timeline.insertAdjacentHTML("beforeend", `<li data-nacc-forwarded><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong><time>${data.naccSentDate}</time><span>เลขหนังสือ ${data.naccLetterNo}${data.naccEms ? ` · EMS ${data.naccEms}` : ""}</span></li>`);
-        } else if (matchedWorkspaceState?.workflow?.complete && matchedWorkspaceState?.documentData?.caseNumber) {
+        } else if (matchedWorkspaceState?.documentData?.approvedAt && matchedWorkspaceState?.documentData?.caseNumber) {
           const data = matchedWorkspaceState.documentData;
+          const issuedAt = data.caseNumberIssuedAt || data.approvedAt;
+          const issuedAtText = issuedAt ? new Date(issuedAt).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" }) : "ล่าสุด";
           result.querySelector("h2").textContent = data.publicStatus || "สำนักงานได้รับเรื่องของท่านไว้แล้ว และจะดำเนินการเรื่องของท่านต่อไป";
-          result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.id}<br><strong>เลขสำนวน:</strong> ${data.caseNumber}<br><strong>ผู้รับผิดชอบ:</strong> ${data.assignedOfficer || "สำนักงาน ป.ป.ท."}<br><strong>ช่องทางติดต่อ:</strong> สายด่วน 1206`;
+          result.querySelector(".notice").innerHTML = `<strong>เลขรับบริการ:</strong> ${matchedWorkspaceState.caseData.trackingYear}<br><strong>เลขสำนวน:</strong> ${data.caseNumber}<br><strong>ผู้รับผิดชอบ:</strong> ${data.assignedOfficer || "สำนักงาน ป.ป.ท."}<br><strong>ช่องทางติดต่อ:</strong> สายด่วน 1206`;
           const timeline = result.querySelector(".timeline");
-          if (!timeline.querySelector("[data-case-issued]")) timeline.insertAdjacentHTML("beforeend", `<li data-case-issued><strong>ผอ.กบค. ลงนามอนุมัติ</strong><time>${data.internalLetterDate || "ล่าสุด"}</time><span>ระบบออกเลขสำนวน ${data.caseNumber}</span></li>`);
+          if (!timeline.querySelector("[data-case-issued]")) timeline.insertAdjacentHTML("beforeend", `<li data-case-issued><strong>ผอ.กบค. ลงนามอนุมัติ</strong><time>${issuedAtText}</time><span>ระบบออกเลขสำนวน ${data.caseNumber}</span></li>`);
         }
       }
       lookup.addEventListener("submit", (e) => {
@@ -253,8 +255,12 @@
       });
       addEventListener("load", () => {
         serviceNumber.value = params.get("serviceNumber") || params.get("yearSequence") || "";
-        if (serviceNumber.value) {
-          feedback.textContent = "กรอก PIN และข้อมูลยืนยันที่เกี่ยวข้อง แล้วจึงตรวจสอบสถานะ";
+        const qrPin = params.get("pin") || params.get("code") || "";
+        if (qrPin) trackingPin.value = qrPin;
+        if (serviceNumber.value && qrPin) {
+          showResult();
+        } else if (serviceNumber.value) {
+          feedback.textContent = "กรอกรหัสติดตามและข้อมูลยืนยันที่เกี่ยวข้อง แล้วจึงตรวจสอบสถานะ";
           trackingPin.focus();
         }
       });

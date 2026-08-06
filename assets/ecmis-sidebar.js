@@ -54,6 +54,9 @@
     } else {
       list.push({ label: 'เรื่องรอพิจารณา', icon: 'review', href: roleUrl('staff-workflow.html', role) });
     }
+    if (role !== 'anonymous') {
+      list.push({ label: 'สำนวนคดี (กิจกรรมที่ 5)', icon: 'review', href: roleUrl('staff-workflow.html', role, { view: 'a5' }) });
+    }
     return list;
   }
 
@@ -62,6 +65,8 @@
     const current = new URL(location.href);
     const target = new URL(item.href, location.href);
     if (current.pathname.split('/').pop() !== target.pathname.split('/').pop()) return false;
+    if (target.searchParams.has('view')) return current.searchParams.get('view') === target.searchParams.get('view');
+    if (current.searchParams.has('view')) return false;
     if (target.searchParams.has('queue')) return current.searchParams.get('queue') === target.searchParams.get('queue');
     return !current.searchParams.has('queue');
   }
