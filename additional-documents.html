@@ -52,7 +52,7 @@
     <div class="shell">
       <p class="task-label">เอกสารประกอบเรื่องเดิม</p>
       <h1>ส่งเอกสารเพิ่มเติม</h1>
-      <p>ค้นหาเรื่องร้องเรียนเดิมด้วยเลขรับบริการ PIN และข้อมูลยืนยันตัวตน 4 หลักท้ายตามที่เคยให้ไว้ จากนั้นกรอกรายละเอียดหรือแนบเอกสารที่ต้องการส่งเพิ่มเติม</p>
+      <p>ค้นหาเรื่องร้องเรียนเดิมด้วยเลขรับบริการและ PIN จากนั้นกรอกรายละเอียดหรือแนบเอกสารที่ต้องการส่งเพิ่มเติม</p>
     </div>
   </section>
 
@@ -70,11 +70,6 @@
             <label for="trackingPin">PIN ติดตามเรื่อง 4 หลัก</label>
             <input id="trackingPin" name="trackingPin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="5424" autocomplete="off" required>
             <span class="field-help">ตัวเลข 4 หลัก</span>
-          </div>
-          <div class="field">
-            <label for="identityLast4">ข้อมูลยืนยันตัวตน 4 หลักท้าย (ถ้ามี)</label>
-            <input id="identityLast4" name="identityLast4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="1234" autocomplete="off">
-            <span class="field-help">เลขบัตรประชาชน หรือหมายเลขโทรศัพท์ ตามข้อมูลที่ให้ไว้</span>
           </div>
           <button class="primary" type="submit"><i class="fa-solid fa-search"></i>ค้นหาเรื่อง</button>
         </form>
@@ -123,7 +118,6 @@
     const lookupForm=document.getElementById('lookupForm');
     const serviceNumber=document.getElementById('serviceNumber');
     const trackingPin=document.getElementById('trackingPin');
-    const identityLast4=document.getElementById('identityLast4');
     const lookupFeedback=document.getElementById('lookupFeedback');
     const caseWorkspace=document.getElementById('caseWorkspace');
     const supplementForm=document.getElementById('supplementForm');
@@ -132,11 +126,10 @@
     const fileList=document.getElementById('fileList');
 
     function openCase(){
-      const credentials=window.ECMIS.parseTrackingCredentials(serviceNumber.value,trackingPin.value,identityLast4.value);
+      const credentials=window.ECMIS.parseTrackingCredentials(serviceNumber.value,trackingPin.value);
       serviceNumber.value=credentials?.serviceNumber||serviceNumber.value.replace(/\D/g,'').slice(0,6);
       trackingPin.value=credentials?.pin||trackingPin.value.replace(/\D/g,'').slice(0,4);
-      identityLast4.value=credentials?.identityLast4||identityLast4.value.replace(/\D/g,'').slice(0,4);
-      if(!credentials||credentials.serviceNumber!=='690001'||credentials.pin!=='5424'||credentials.identityLast4!=='1234'){
+      if(!credentials||credentials.serviceNumber!=='690001'||credentials.pin!=='5424'){
         lookupFeedback.textContent='ไม่สามารถยืนยันข้อมูลสำหรับติดตามเรื่องได้';
         caseWorkspace.hidden=true;
         return;
