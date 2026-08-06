@@ -194,7 +194,7 @@
     input.addEventListener('change',()=>learnContextSuggestion(context,input.value));
     render();
   }
-  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',documentPack:{caseType:'18/1ก',pages:{complainant:10,n103:3},steps:{}},officerSignature:{signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:''},centerSignature:{signed:false,signerName:'',signerRole:'ผอ.ศรร.',signedAt:'',signatureId:''},divisionOpinion:'',divisionAdditionalDetail:'',divisionSignature:{signed:false,signerName:'',signerRole:'ผอ.กบค.',signedAt:'',signatureId:''},internalLetterNo:'',internalLetterDate:'',caseNumber:'',caseNumberIssuedAt:'',caseNumberIssuedBy:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',dispatchLetterNo:'',dispatchLetterDate:'',dispatchSendMethod:'EMS',dispatchEms:'',dispatchSentDate:'',dispatchProofName:'',dispatchDestinationUnit:item.region||'',dispatchNote:'',dispatchConfirmedAt:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
+  function initialState(item){return {caseData:{...item},documentData:{decision:'18/1ก',reasons:[],naccOtherChecked:false,naccOtherReason:'',anonymous:Boolean(item.anonymousDetected??item.anonymous),documentSubject:item.subject||'',officerOpinion:'',proposedRegion:item.region||'',reviewRoute:'center',centerDecision:'',centerOpinion:'',centerAdditionalDetail:'',documentPack:{caseType:'18/1ก',sourceVersion:'official-forms-1-01-to-1-07',pages:{complainant:10,n103:2},steps:{}},officerSignature:{signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:''},centerSignature:{signed:false,signerName:'',signerRole:'ผอ.ศรร.',signedAt:'',signatureId:''},divisionOpinion:'',divisionAdditionalDetail:'',divisionSignature:{signed:false,signerName:'',signerRole:'ผอ.กบค.',signedAt:'',signatureId:''},internalLetterNo:'',internalLetterDate:'',caseNumber:'',caseNumberIssuedAt:'',caseNumberIssuedBy:'',publicStatus:'',approvedAt:'',approvedBy:'',actingOfficer:'',actingOrder:'',assignedOfficer:'',backupOfficer:'',previousOfficer:'',previousBackupOfficer:'',adminNote:'',absenceReasonType:'',absenceNote:'',notAcceptReason:'',notAcceptOtherChecked:false,notAcceptOtherReason:'',dispatchLetterNo:'',dispatchLetterDate:'',dispatchSendMethod:'EMS',dispatchEms:'',dispatchSentDate:'',dispatchProofName:'',dispatchDestinationUnit:item.region||'',dispatchNote:'',dispatchConfirmedAt:'',naccLetterNo:'',naccLetterDate:'',naccSendMethod:'EMS',naccEms:'',naccSentDate:'',naccBoardNo:'',naccBoardDate:'',naccBoardNote:'',naccProofName:'',naccNotified:true},workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false},assignmentHistory:[],decisionHistory:[],anonymousHistory:[],documentVersions:[]}}
   function currentCaseSequence(buddhistYear){
     const key=`ecmis-a4-case-sequence-${buddhistYear}`;
     const storedSequence=Number(localStorage.getItem(key)||0);
@@ -218,19 +218,48 @@
     const signatureId=`SIG-${signedAt.replace(/\D/g,'').slice(0,14)}-${Math.random().toString(16).slice(2,10).toUpperCase()}`;
     return {signed:true,signerName,signerRole:role,signedAt,signatureId};
   }
+  function confirmSignature(state,signerName,signerRole){
+    const caseNo=formatInternalReceiptNumber(state.caseData.id);
+    const subject=state.documentData.documentSubject||state.caseData.subject||'-';
+    const documentName='แบบบันทึกการพิจารณาและกลั่นกรองเรื่องร้องเรียน/เบาะแส';
+    if(!window.Swal){
+      return Promise.resolve({isConfirmed:confirm(`ยืนยันการลงนามเอกสาร\nผู้ลงนาม: ${signerName}\nหน้าที่: ${signerRole}\nเลขรับเรื่อง: ${caseNo}\nเอกสาร: ${documentName}`)});
+    }
+    return Swal.fire({
+      title:'ยืนยันการลงนามเอกสาร',
+      html:`<div class="signature-confirm-summary"><p>โปรดตรวจสอบข้อมูลก่อนลงนาม</p><dl><div><dt>ผู้ลงนาม</dt><dd>${escapeHtml(signerName)}</dd></div><div><dt>หน้าที่</dt><dd>${escapeHtml(signerRole)}</dd></div><div><dt>เลขรับเรื่อง</dt><dd>${escapeHtml(caseNo)}</dd></div><div><dt>เอกสาร</dt><dd>${escapeHtml(documentName)}</dd></div><div class="wide"><dt>เรื่อง</dt><dd>${escapeHtml(subject)}</dd></div></dl><small>เมื่อยืนยัน ระบบจะบันทึกวันเวลาและรหัสหลักฐานการลงนามไว้ในประวัติเอกสาร</small></div>`,
+      input:'checkbox',
+      inputValue:0,
+      inputPlaceholder:'ข้าพเจ้าได้ตรวจสอบเอกสารและยืนยันการลงนาม',
+      inputValidator:value=>value?undefined:'กรุณายืนยันว่าได้ตรวจสอบเอกสารแล้ว',
+      showCancelButton:true,
+      confirmButtonText:'ยืนยันและลงนาม',
+      cancelButtonText:'ยกเลิก',
+      confirmButtonColor:'#082b50',
+      cancelButtonColor:'#6b7785',
+      reverseButtons:true,
+      focusCancel:true,
+      customClass:{popup:'ecmis-signature-dialog'}
+    });
+  }
   function signatureCard(state,type,roleContext){
     const d=state.documentData,isCenter=type==='center',isOfficer=type==='officer',signature=isCenter?d.centerSignature:isOfficer?d.officerSignature:d.divisionSignature;
     const role=isCenter?'ผอ.ศรร.':isOfficer?'เจ้าหน้าที่รับเรื่อง':(roleContext==='acting'?(d.actingOfficer||'ผู้รักษาราชการแทน'):'ผอ.กบค.');
     const action=isCenter?'center-sign':isOfficer?'officer-sign':'division-sign';
     const signedTime=signature?.signedAt?new Date(signature.signedAt).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}):'';
     const proof=signature?.signed
-      ?`<div class="signature-proof"><span>ลงนามแล้ว</span><strong>${escapeHtml(signature.signerName)}</strong><small>${escapeHtml(signature.signerRole)} · ${escapeHtml(signedTime)}</small><code>${escapeHtml(signature.signatureId)}</code></div>`
-      :`<div class="signature-pending"><span>รอลงนาม</span><strong>${escapeHtml(role)}</strong><small>ตรวจสอบความเห็นและยืนยันการลงนามในระบบ</small></div><button type="button" class="ws-button primary" data-action="${action}">ตรวจสอบและลงนาม</button>`;
-    return `<section class="signature-workflow"><header><div><span>ลายมือชื่ออิเล็กทรอนิกส์</span><h3>${escapeHtml(role)}</h3></div><b class="${signature?.signed?'signed':''}">${signature?.signed?'ลงนามแล้ว':'รอลงนาม'}</b></header><ol><li class="done"><i>1</i><span>ตรวจสอบผลพิจารณา</span></li><li class="${signature?.signed?'done':'current'}"><i>2</i><span>ยืนยันและลงนาม</span></li><li class="${signature?.signed?'done':''}"><i>3</i><span>บันทึกหลักฐาน</span></li></ol><div class="signature-workflow-body">${proof}</div></section>`;
+      ?`<div class="signature-proof"><span>ผู้ลงนาม</span><strong>${escapeHtml(signature.signerName)}</strong><small>${escapeHtml(signature.signerRole)} · ${escapeHtml(signedTime)}</small><code>${escapeHtml(signature.signatureId)}</code></div>`
+      :`<div class="signature-pending"><span>ผู้มีหน้าที่ลงนาม</span><strong>${escapeHtml(role)}</strong><small>แบบบันทึกการพิจารณาและกลั่นกรองเรื่องร้องเรียน/เบาะแส</small></div><button type="button" class="ws-button primary" data-action="${action}">ลงนามเอกสาร</button>`;
+    return `<section class="signature-workflow"><header><div><span>การลงนามเอกสารอิเล็กทรอนิกส์</span><h3>${escapeHtml(role)}</h3></div><b class="${signature?.signed?'signed':''}">${signature?.signed?'ลงนามแล้ว':'รอการลงนาม'}</b></header><div class="signature-workflow-body">${proof}</div></section>`;
   }
   function packCaseTypeOf(state){
-    const d=state.documentData,pack=d.documentPack||{};
-    return pack.caseType||(d.decision==='18/4'?'18/4':(d.decision==='not-accept'&&d.anonymous?'anon':(d.decision==='58/2'?'582':'18/1ก')));
+    const d=state.documentData;
+    if(d.decision==='18/1ข')return '18/1ข';
+    if(d.decision==='18/4')return '18/4';
+    if(d.decision==='58/2')return '582';
+    if(d.decision==='send-nacc')return 'send-nacc';
+    if(d.decision==='not-accept')return d.anonymous?'anon':'not-accept';
+    return '18/1ก';
   }
   function packTotal(state){
     const pack=state.documentData.documentPack||{pages:{}},ct=packCaseTypeOf(state);
@@ -240,21 +269,20 @@
   function todayTH(){return new Date().toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})}
   function documentPackPanel(state){
     const d=state.documentData,caseType=packCaseTypeOf(state);
-    const pack=d.documentPack||{pages:{complainant:10,n103:3}};
-    const pages=pack.pages||{complainant:10,n103:3};
+    const pack=d.documentPack||{pages:{complainant:10,n103:2}};
+    const pages=pack.pages||{complainant:10,n103:2};
     const extShown=caseType==='18/4'||caseType==='62';
     const extDoc=caseType==='18/4'?'f104':caseType==='62'?'f105':'';
     const stepItem=(no,name,meta,badge,docKey,extra,openHtml)=>`<li class="pack-step"><b class="pack-step-no">${no}</b><div class="pack-step-body"><strong>${name}</strong><small>${meta}</small>${extra||''}</div>${openHtml||(docKey?`<button type="button" class="pack-open" data-doc-open="${docKey}">เปิดเอกสาร</button>`:'')}<span class="pack-badge ${badge==='ไม่นับหน้า'?'muted':''}">${badge}</span></li>`;
-    const caseTypeSelect=`<select class="pack-casetype" id="packCaseType">${[['18/1ก','18/1 (ก) รับไว้ดำเนินการ'],['18/1ข','18/1 (ข)'],['18/4','18/4 กรณีประพฤติมิชอบ'],['62','ม.62 (รับจาก ป.ป.ช.)'],['anon','บัตรสนเท่ห์'],['582','58/2 ตรวจสอบข้อเท็จจริง']].map(([v,l])=>`<option value="${v}" ${caseType===v?'selected':''}>${l}</option>`).join('')}</select>`;
-    const step4Extra=`${caseTypeSelect}<div class="pack-ext${caseType==='18/4'?'':' ws-hidden'}" id="packExt184"><span class="pack-badge">หน้า 6</span> 1-04 บันทึกส่งเรื่องร้องเรียนให้หน่วยงาน (ประพฤติมิชอบ ม.18/4)<br><span class="pack-badge">หน้า 8</span> 1-06 หนังสือแจ้งผู้ร้องเรียน กรณีรับไว้ดำเนินการ 18/4</div><div class="pack-ext${caseType==='62'?'':' ws-hidden'}" id="packExt62"><span class="pack-badge">หน้า 7</span> 1-05 บันทึกส่งสำนวน (คดีรับจาก ป.ป.ช. ม.62)<br><span class="pack-badge">หน้า 9</span> 1-07 หนังสือแจ้งผู้ร้องเรียน (ป.ป.ช. ส่ง ป.ป.ท. ม.62)</div><div class="pack-ext${extShown?' ws-hidden':''}" id="packExtNone">${caseType==='anon'?'ไม่ส่งหนังสือภายนอก — บัตรสนเท่ห์':caseType==='582'?'ใช้ชุดแบบพิมพ์ 58-2-01..14 (แยกต่างหาก)':'ไม่ส่งหนังสือภายนอก — รับไว้ดำเนินการเอง'}</div>`;
-    return `<div class="ws-section pack-card"><div class="pack-head"><p class="ws-kicker">เอกสารส่งพิจารณา · เจ้าหน้าที่รับเรื่องเป็นผู้จัดทำ</p><h3>จัดทำชุดเอกสาร (หลังพิมพ์แบบฟอร์ม 3)</h3></div><p class="pack-order-hint">ลำดับงาน: พิมพ์แบบฟอร์ม 3 → ทำเอกสาร 103 → ปะหน้า → ทำปกหนังสือ — กด "เปิดเอกสาร" เพื่อสร้าง/ดูเอกสารในช่องขวา</p><ol class="pack-steps">
-      ${stepItem(1,'ปกลับ (ปกหลัง)','ใส่ข้างนอกเล่ม — รอลูกค้าส่งมา','ไม่นับหน้า','paklap')}
-      ${stepItem(2,'ปกฟ้า — สำนวนการไต่สวน (แบบ 1-01)','สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ','ปกหน้า · ไม่นับหน้า','pakfa')}
-      ${stepItem(3,'บันทึกข้อความภายใน — ตัวอย่างบันทึกการตรวจสอบเรื่องร้องเรียน (แบบ 1-03 / บันทึก 103)','ทั้ง 18/1 (ก) และ ม.62 หน้าตาเหมือนกัน — เริ่มจากเอกสารนี้','ตามตัวอย่าง หน้า 4-5 · 3 แผ่น','n103')}
-      ${stepItem(4,'หนังสือภายนอก (ถ้ามี)','ไม่ส่งกรณีบัตรสนเท่ห์ — คัดแยกตามมาตรา','ตามมาตรา','',step4Extra,extDoc?`<button type="button" class="pack-open" data-doc-open="${extDoc}">เปิดเอกสาร</button>`:'')}
-      ${stepItem(5,'แบบระบบบริหารจัดการเรื่องร้องเรียน (PCMS)','แบบฟอร์มที่ใช้อยู่ในปัจจุบัน','ตามตัวอย่าง หน้า 1','pcms')}
-      ${stepItem(6,'ข้อมูลเรื่องร้องเรียน ต้นฉบับ + เอกสารแนบ','เอกสารจากผู้ร้อง — นำจำนวนแผ่นมานับหน้าด้วย','ตามตัวอย่าง หน้า 2-3 ต่อเนื่อง','')}
-    </ol><div class="pack-count-card"><h4>นับจำนวนหน้า <small>นับหน้าไม่รวมตัวเอง (ไม่นับปก)</small></h4><div class="pack-count-grid"><div class="ws-field"><label>เอกสารผู้ร้อง (ต้นฉบับ + แนบ รวมแบบฟอร์ม PCMS)</label><input id="packComplaintPages" type="number" min="0" value="${pages.complainant}"></div><div class="ws-field"><label>เอกสาร 103 (แบบ 1-03)</label><input id="packN103Pages" type="number" min="0" value="${pages.n103}"></div><div class="ws-field"><label>หนังสือภายนอก (ตามมาตรา)</label><input id="packExtPages" type="number" value="${extShown?2:0}" disabled></div></div><div class="pack-total"><div><span>รวมหน้า</span><strong id="packTotalPages">—</strong><small>หน้า (ไม่รวมตัวเอง)</small></div><div><span>รวมทั้งเล่ม</span><strong id="packTotalCover">—</strong><small>แผ่น (มีปกฟ้า)</small></div></div><p class="pack-note">สูตร: แผ่นผู้ร้อง + แผ่น 103 + หนังสือภายนอก − 1 (ไม่รวมตัวเอง) = จำนวนหน้า · รวมปกฟ้า = จำนวนหน้า + 1 แผ่น<br>อ้างอิงจาก PM: ผู้ร้อง 10 แผ่น + 103 ไป 3 แผ่น = 12 หน้า (ไม่รวมตัวเอง) · มีปก = 13 แผ่น</p></div></div>`;
+    const step4Extra=`<div class="pack-ext${caseType==='18/4'?'':' ws-hidden'}" id="packExt184"><span class="pack-badge">หน้า 6</span> 1-04 บันทึกส่งเรื่องร้องเรียนให้หน่วยงาน (ประพฤติมิชอบ ม.18/4)<br><span class="pack-badge">หน้า 8</span> 1-06 หนังสือแจ้งผู้ร้องเรียน กรณีรับไว้ดำเนินการ 18/4</div><div class="pack-ext${extShown?' ws-hidden':''}" id="packExtNone">${caseType==='anon'?'ไม่ส่งหนังสือภายนอก — บัตรสนเท่ห์':caseType==='582'?'ใช้ชุดแบบพิมพ์ 58-2-01..14 (แยกต่างหาก)':caseType==='send-nacc'?'ใช้ชุดหนังสือส่งสำนักงาน ป.ป.ช. ตามผลพิจารณา':caseType==='not-accept'?'ไม่จัดทำหนังสือในชุดรับไว้ดำเนินการ':'ไม่ส่งหนังสือภายนอก — รับไว้ดำเนินการเอง'}</div>`;
+    const hint=(strong,body)=>`<span class="complaint-hint"><button type="button" aria-label="ดูคำแนะนำ">?</button><span class="complaint-hint-box" role="tooltip"><strong>${strong}</strong>${body}</span></span>`;
+    return `<div class="ws-section pack-card"><div class="pack-head"><p class="ws-kicker">เอกสารส่งพิจารณา · เจ้าหน้าที่รับเรื่องเป็นผู้จัดทำ</p><h3>จัดทำและเรียงชุดเอกสาร ${hint('ลำดับการจัดทำเอกสาร','1 พิมพ์ PCMS Form 3 → 2 จัดทำแบบ 1-03 → 3 ปะหน้าและเรียงเอกสาร → 4 จัดทำปกสำนวน 1-01 — รายการด้านล่างเรียงตามชุดเอกสารจริง กด "เปิดเอกสาร" เพื่อดูแบบในช่องขวา')}</h3></div><ol class="pack-steps">
+      ${stepItem(1,'แบบ 1-01 แบบปกสำนวน (สีฟ้า)','','หน้าที่ 1 · ไม่นับหน้า','pakfa')}
+      ${stepItem(2,'ข้อมูลเรื่องร้องเรียน ต้นฉบับและเอกสารแนบ','แบบ 1-02 ใช้ 2 หน้า','หน้าที่ 2-3 ต่อเนื่อง','','',`<button type="button" class="pack-open" data-doc-open="form3">เปิด PCMS Form 3</button>`)}
+      ${stepItem(3,'แบบ 1-03 แบบบันทึกการตรวจสอบเรื่องร้องเรียน','','หน้าที่ 4-5 · 2 หน้า','n103')}
+      ${stepItem(4,'หนังสือส่งเรื่องและหนังสือแจ้งผู้ร้อง (ตามกรณี)','เลือกตามผลพิจารณา','หน้าที่ 6-9','',step4Extra,extDoc?`<button type="button" class="pack-open" data-doc-open="${extDoc}">เปิดเอกสาร</button>`:'')}
+      ${stepItem(5,'ปกลับ (ปกหลัง)','ยังไม่มีไฟล์ต้นฉบับ','ไม่นับหน้า','paklap')}
+    </ol><div class="pack-count-card"><h4>นับจำนวนหน้า ${hint('นับหน้าไม่รวมตัวเอง และไม่นับปก','สูตรตามงานจริง: เอกสารผู้ร้อง + แบบ 1-03 + หนังสือตามกรณี − 1 = เลขหน้าสุดท้าย จากนั้นบวกปกสำนวน 1 แผ่น')}</h4><div class="pack-count-grid"><div class="ws-field"><label>ข้อมูลเรื่องร้องเรียนและเอกสารแนบ</label><input id="packComplaintPages" type="number" min="0" value="${pages.complainant}"></div><div class="ws-field"><label>แบบ 1-03 บันทึกการตรวจสอบเรื่องร้องเรียน</label><input id="packN103Pages" type="number" min="2" value="${pages.n103}"></div><div class="ws-field"><label>หนังสือตามกรณี</label><input id="packExtPages" type="number" value="${extShown?2:0}" disabled></div></div><div class="pack-total"><div><span>เลขหน้าสุดท้าย</span><strong id="packTotalPages">—</strong><small>หน้า (ไม่รวมตัวเอง)</small></div><div><span>จำนวนแผ่นรวมปกหน้า</span><strong id="packTotalCover">—</strong><small>แผ่น</small></div></div></div></div>`;
   }
   function updatePackCount(){
     const complainant=Number($('#packComplaintPages')?.value)||0;
@@ -289,7 +317,11 @@
     state.workflow=state.workflow&&state.workflow.owner?state.workflow:{owner:'admin',stage:'admin',status:'รอลงรับและมอบหมาย',complete:false};
     state.decisionHistory=state.decisionHistory||[];
     state.documentVersions=state.documentVersions||[];
-    state.documentData.documentPack={caseType:'18/1ก',pages:{complainant:10,n103:3},steps:{},...(state.documentData.documentPack||{})};
+    const storedDocumentPack=state.documentData.documentPack||{};
+    state.documentData.documentPack={caseType:'18/1ก',sourceVersion:'official-forms-1-01-to-1-07',pages:{complainant:10,n103:2},steps:{},...storedDocumentPack};
+    if(storedDocumentPack.sourceVersion!=='official-forms-1-01-to-1-07'){
+      state.documentData.documentPack.pages={...(storedDocumentPack.pages||{}),n103:2};
+    }
     state.documentData.officerSignature={signed:false,signerName:'',signerRole:'เจ้าหน้าที่รับเรื่อง',signedAt:'',signatureId:'',...(state.documentData.officerSignature||{})};
     state.documentData.centerSignature={signed:false,signerName:'',signerRole:'ผอ.ศรร.',signedAt:'',signatureId:'',...(state.documentData.centerSignature||{})};
     state.documentData.divisionSignature={signed:false,signerName:'',signerRole:'ผอ.กบค.',signedAt:'',signatureId:'',...(state.documentData.divisionSignature||{})};
@@ -428,10 +460,9 @@
   function docTabs(state,role){
     if(role==='admin')return '';
     const caseType=packCaseTypeOf(state),d=state.documentData;
-    const docs=[['form3','แบบฟอร์ม 3'],['n103','บันทึก 103'],['pakfa','ปกฟ้า 1-01']];
-    if(caseType==='18/4')docs.push(['f104','ปปท. 1-04'],['f106','ปปท. 1-06']);
-    else if(caseType==='62')docs.push(['f105','ปปท. 1-05'],['f107','ปปท. 1-07']);
-    docs.push(['pcms','PCMS (แบบฟอร์ม 3)'],['paklap','ปกลับ']);
+    const docs=[['form3','PCMS Form 3'],['n103','1-03 บันทึกการตรวจสอบ'],['pakfa','1-01 ปกสำนวน (สีฟ้า)'],['paklap','ปกลับ']];
+    if(caseType==='18/4')docs.push(['f104','1-04 บันทึกส่งเรื่อง'],['f106','1-06 หนังสือแจ้งผู้ร้อง']);
+    else if(caseType==='62')docs.push(['f105','1-05 บันทึกส่งเรื่อง ม.62'],['f107','1-07 หนังสือแจ้งผู้ร้อง ม.62']);
     if((state.workflow.complete||state.workflow.stage==='nacc-dispatch')&&d.decision==='send-nacc')docs.push(['1-11','ปปท. 1-11']);
     return docs.map(([id,name],i)=>`<button class="ws-doc-tab ${i?'':'active'}" data-doc="${id}" aria-selected="${i?'false':'true'}">${name}</button>`).join('');
   }
@@ -483,11 +514,12 @@
     const c=state.caseData,d=state.documentData,caseType=packCaseTypeOf(state);
     const signer=name=>`<p>(${escapeHtml(name||'.....................................')})</p>`;
     const decisionLabel={'18/1ก':'รับไว้ดำเนินการ 18/1 (ก)','18/1ข':'รับไว้ดำเนินการ 18/1 (ข)','18/4':'รับไว้ดำเนินการ 18/4','58/2':'ดำเนินการตาม 58/2','send-nacc':'ส่งสำนักงาน ป.ป.ช.','not-accept':'ไม่รับไว้ดำเนินการ'};
-    if(id==='pakfa')return `<article class="a4-paper template-cover" id="activePaper">
-      <div class="cover-band"></div>
-      <div class="cover-head"><img class="memo-garuda" src="${GARUDA_IMAGE}" alt="ตราครุฑ"><div><h1>สำนวนการไต่สวน</h1><p>สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p></div></div>
+    if(id==='pakfa')return `<article class="a4-paper template-cover official-blue-cover" id="activePaper">
+      <p class="official-page-label">หน้าที่ 1</p>
+      <p class="cover-reference">ตัวอย่างปกสำนวนการไต่สวน<br>(ใช้ปกสีฟ้า)</p>
+      <div class="cover-head"><img class="memo-garuda" src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท."><div><h1>สำนวนการไต่สวน</h1><p>สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p></div></div>
       <div class="cover-body">
-        <p class="cover-subject"><strong>เรื่องที่</strong> ${escapeHtml(d.documentSubject||c.subject)}</p>
+        <p class="cover-subject"><strong>เรื่องที่</strong> ${escapeHtml(formatInternalReceiptNumber(c.id)||'....................')}</p>
         <div class="cover-parties"><p><span>${escapeHtml(c.complainant||'.....................................')}${d.anonymous?' (ปกปิดตัวตน)':''}</span><b>ผู้กล่าวหา</b></p><p class="cover-between">ระหว่าง</p><p><span>.........................................................</span><b>ผู้ถูกกล่าวหา</b></p></div>
         <p class="cover-ground">เป็นกรณีกล่าวหาว่ากระทำการ <label><input type="checkbox" ${d.decision==='18/4'?'':'checked'} disabled> ทุจริตต่อหน้าที่</label> <label><input type="checkbox" ${d.decision==='18/4'?'checked':''} disabled> ประพฤติมิชอบ</label> <label><input type="checkbox" disabled> อื่น ๆ ................................</label></p>
         <p class="cover-field"><strong>ข้อกล่าวหา</strong> ${escapeHtml(c.detail||'.....................................')}</p>
@@ -500,9 +532,42 @@
         <p class="cover-field"><strong>พนักงาน ป.ป.ท. ผู้รับผิดชอบสำนวนไต่สวน</strong> ${escapeHtml(d.assignedOfficer||'.....................................')}<br><strong>เจ้าหน้าที่ ป.ป.ท. ผู้ช่วย</strong> ${escapeHtml(d.backupOfficer||'.....................................')}</p>
       </div>
       <p class="official-form-code">ปปท. 1-01</p>
-      <p class="cover-mock">ตัวอย่างปกสำนวนการไต่สวน · ใช้ปกสีฟ้า</p>
     </article>`;
-    if(id==='n103')return `<article class="a4-paper template-memo" id="activePaper">
+    if(id==='n103')return `<div class="document-page-set official-n103-set" id="activePaper">
+      <article class="a4-paper template-memo official-n103-page">
+        <p class="official-page-label">หน้าที่ 4</p>
+        <p class="official-sample-title">ตัวอย่างบันทึกการตรวจสอบเรื่องร้องเรียน</p>
+        <aside class="memo-receipt-box"><strong>ศูนย์รับเรื่องร้องเรียน</strong><span>เลขรับ ..........</span><span>วันที่ ...............</span></aside>
+        <div class="memo-heading"><img class="memo-garuda" src="${GARUDA_IMAGE}" alt="ตราครุฑ"><h2>บันทึกข้อความ</h2></div>
+        <div class="memo-metadata"><p><strong>ส่วนราชการ</strong> กองบริหารคดี ศูนย์รับเรื่องร้องเรียน <strong>โทร.</strong> ๑๙๐๕</p><p><strong>ที่</strong> ปป ๐๐ ........................................ <strong>วันที่</strong> ........................................</p></div>
+        <div class="official-subject"><strong>เรื่อง</strong><span>การตรวจสอบเรื่องร้องเรียน เรื่องที่ ${escapeHtml(formatInternalReceiptNumber(c.id))}</span><strong>เรียน</strong><span>เลขาธิการคณะกรรมการ ป.ป.ท.</span></div>
+        <div class="official-body n103-body">
+          <p>ตามที่พระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริตในภาครัฐ พ.ศ. 2551 และที่แก้ไขเพิ่มเติม ตามมาตรา 18/1 ในการดำเนินงานเกี่ยวกับเรื่องที่ได้รับมอบหมายจากคณะกรรมการ ป.ป.ช. และมาตรา 18/4 เมื่อความปรากฏต่อคณะกรรมการ ป.ป.ท. หรือสำนักงาน ว่าจะมีการกล่าวหาหรือไม่ ว่ามีเจ้าหน้าที่ของรัฐผู้ใดประพฤติมิชอบให้พนักงาน ป.ป.ท. มีอำนาจดำเนินการไต่สวนตามพระราชบัญญัตินี้ การไต่สวนดังกล่าวให้อยู่ภายใต้การกำกับดูแลของคณะกรรมการ ป.ป.ท. ซึ่งสำนักงาน ป.ป.ช. ประจำจังหวัด ............................. มีหนังสือ ลับ ที่ ปช .......................... ลงวันที่ ...................................... ส่งเรื่องตามเลขติดตามที่ ต1 .......................... ให้สำนักงาน ป.ป.ท. พิจารณาดำเนินการ กรณีคณะกรรมการ ป.ป.ช. มีมติในการประชุม ครั้งที่ ............... เมื่อวันที่ ..................................... มอบหมายให้คณะกรรมการ ป.ป.ท. ดำเนินการแทน ตามพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. 2561 มาตรา 62</p>
+          <p>๑. ผู้กล่าวหา/ร้องเรียน : ${escapeHtml(c.complainant||'......................................................................................................................')}${d.anonymous?' (ปกปิดตัวตน)':''}</p>
+          <p>๒. ผู้ถูกร้องเรียน : ${escapeHtml(c.agency||'............................................................................................................................')}</p>
+          <p>๓. สถานที่เกิดเหตุ : ${escapeHtml(c.place||'..............................................................................................................')}</p>
+          <p>๔. ข้อพิจารณา/ข้อเสนอ : เห็นควรพิจารณา ดังนี้</p>
+          <p>๔.๑ กรณีดำเนินการเกี่ยวกับสำนวนที่มีการกล่าวหาเจ้าหน้าที่ของรัฐกระทำการประพฤติมิชอบ ตามมาตรา 18/4 (2) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. 2551 และที่แก้ไขเพิ่มเติม มีผลบังคับใช้เมื่อวันที่ 19 กุมภาพันธ์ 2568 ได้บัญญัติให้คณะกรรมการ ป.ป.ท. มีอำนาจพิจารณากรณีกล่าวหาเจ้าหน้าที่ของรัฐกระทำการประพฤติมิชอบ และคณะกรรมการ ป.ป.ท. มีมติในการประชุมครั้งที่ 12/2568 เมื่อวันที่ 19 กุมภาพันธ์ 2568 เห็นชอบให้ใช้ระเบียบและประกาศคณะกรรมการ ป.ป.ท. ที่เกี่ยวข้องไปพลางก่อนจนกว่าจะมีการแก้ไขเพิ่มเติมให้สอดคล้องกับพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต และที่แก้ไขเพิ่มเติม</p>
+          <p>๔.๒ กรณีดำเนินการเกี่ยวกับสำนวนที่รับมาจากสำนักงาน ป.ป.ช. คณะกรรมการ ป.ป.ท. มีมติการประชุมครั้งที่ 82/2561 เมื่อวันที่ 6 พฤศจิกายน 2561 กำหนดแนวทางดำเนินการเกี่ยวกับสำนวนที่ได้รับจากสำนักงาน ป.ป.ช. โดยมีมติว่า “ให้สำนักงาน ป.ป.ท. ดำเนินการตามระเบียบคณะกรรมการ ป.ป.ท. ว่าด้วยหลักเกณฑ์ วิธีการและเงื่อนไขเกี่ยวกับการแสวงหาข้อเท็จจริงและรวบรวมพยานหลักฐาน พ.ศ. 2559 และกฎหมายที่เกี่ยวข้องต่อไป”</p>
+          <p>ทั้งนี้ ตามข้อ ๔.๑ – ๔.๒ ให้ดำเนินการตามที่บัญญัติไว้ตามกฎกระทรวงแบ่งส่วนราชการสำนักงาน ป.ป.ท. พ.ศ. 2560 ข้อ ๑๑, ข้อ 14, ข้อ 16 และข้อ ๑7 ประกอบกับประกาศสำนักนายกรัฐมนตรี เรื่อง กำหนดเขตพื้นที่ของสำนักงานป้องกันและปราบปรามการทุจริตในภาครัฐ เขต ๑ - ๙ และประกาศสำนักงาน ป.ป.ท. เรื่อง กำหนดส่วนราชการและหน่วยงานภาครัฐที่อยู่ในอำนาจและความรับผิดชอบของ กปท. ๑ – ๕ และหนังสือกองบริหารคดี ที่ ปป 0004/ว 315 ลงวันที่ 1 พฤศจิกายน 2567 ซึ่งเลขาธิการ</p>
+        </div>
+        <p class="official-form-code">ปปท. 1-03</p>
+      </article>
+      <article class="a4-paper template-memo official-n103-page">
+        <p class="official-page-label">หน้าที่ 5</p>
+        <p class="memo-continuation">- ๒ -</p>
+        <div class="official-body n103-body n103-continuation">
+          <p>คณะกรรมการ ป.ป.ท. ได้เห็นชอบและอนุมัติเมื่อวันที่ 18 ตุลาคม 2567 ให้มีการรับสำนวนคดีที่อยู่ในความรับผิดชอบของ ปปท. เขต 3 ปปท. เขต 4 ปปท. เขต ๕ และ ปปท. เขต ๖ โดยให้ กปท. 1 – 4 และ กอท. รับสำนวนที่คณะกรรมการ ป.ป.ช. มอบหมายให้คณะกรรมการ ป.ป.ท. ดำเนินการแทน ตามมาตรา ๖๒ แห่งพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑ ไปดำเนินการตามอำนาจหน้าที่ ตั้งแต่วันที่ ๑ ตุลาคม 2567 เป็นต้นไป ต่อมา กบค. ได้หนังสือ ด่วนที่สุด ที่ ปป 0004/2306 ลงวันที่ 5 มีนาคม 2568 ซึ่งเลขาธิการคณะกรรมการ ป.ป.ท. ได้เห็นชอบและอนุมัติเมื่อวันที่ 3 มีนาคม 2568 ให้ระงับการจ่ายสำนวนคดีตามมาตรา 62 ที่อยู่ในความรับผิดชอบของ ปปท. เขต 6 ให้กับ กปท. 4 ตั้งแต่วันที่ 1 มีนาคม 2568 เป็นต้นไป และให้ กบค. จ่ายสำนวนคดีตามมาตรา 62 ที่อยู่ในอำนาจให้ ปปท. เขต 6 ดำเนินการตามอำนาจหน้าที่ต่อไป และคำสั่งสำนักงาน ป.ป.ท. ที่ 529/2560 เรื่อง มอบอำนาจในการพิจารณาเรื่องร้องเรียนกล่าวหา มอบหมายให้ผู้อำนวยการกองบริหารคดีมีอำนาจพิจารณามอบหมายเรื่องร้องเรียนกล่าวหา ซึ่งเรื่องร้องเรียนที่ ${escapeHtml(formatInternalReceiptNumber(c.id))} อยู่ในอำนาจของสำนักงาน ปปท. เขต ${escapeHtml(d.proposedRegion||'......')} จึงเห็นควรมอบหมายให้สำนักงาน ปปท. เขต ${escapeHtml(d.proposedRegion||'......')} ดำเนินการตามอำนาจหน้าที่ต่อไป และแจ้งผู้เกี่ยวข้องทราบ ทั้งนี้ ได้จัดส่งสำนวนคดีพร้อมเอกสาร จำนวน ${packTotal(state)} แผ่น และเอกสารชื่อผู้ใช้งานและรหัสผ่านสำหรับรายงานผลการติดตามเรื่องกล่าวหาตามมาตรา 65 จำนวน 1 แผ่น มาพร้อมนี้</p>
+          <p>จึงเรียนมาเพื่อโปรดพิจารณา</p>
+        </div>
+        <div class="official-signature n103-signature">${signer(d.officerSignature?.signed?d.officerSignature.signerName:'')}<p>เจ้าหน้าที่ ป.ป.ท./พนักงาน ป.ป.ท.</p></div>
+        <div class="memo-opinion"><p><strong>ความเห็นผู้บังคับบัญชาชั้นต้น</strong> เห็นควรมอบหมายให้สำนักงานป้องกันและปราบปรามการทุจริตในภาครัฐ เขต ${escapeHtml(d.proposedRegion||'........')} ดำเนินการตามอำนาจหน้าที่ และแจ้งผู้เกี่ยวข้องทราบ</p>${signer('')}<p>เจ้าหน้าที่ ป.ป.ท./พนักงาน ป.ป.ท.<br>ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</p></div>
+        <div class="memo-opinion"><p><strong>ความเห็นผู้อำนวยการกอง</strong> เรื่องที่ ............................. เห็นควรดำเนินการตามเสนอ (ส่งสำนักงาน ปปท. เขต .....)</p>${signer('')}<p>ผู้อำนวยการกองบริหารคดี</p></div>
+        <div class="memo-opinion"><p><strong>ความเห็นเลขาธิการคณะกรรมการ ป.ป.ท.</strong> เรื่องที่ ........................</p><p>- เห็นชอบ/ดำเนินการตามเสนอ</p><p>- ลงนามแล้ว</p>${signer('')}<p>ผู้อำนวยการกองบริหารคดี ปฏิบัติราชการแทน<br>เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p></div>
+        <p class="official-form-code">ปปท. 1-03</p>
+      </article>
+    </div>`;
+    if(id==='n103Legacy')return `<article class="a4-paper template-memo" id="activePaper">
       <div class="memo-heading"><img class="memo-garuda" src="${GARUDA_IMAGE}" alt="ตราครุฑ"><h2>บันทึกข้อความ</h2></div>
       <div class="memo-metadata"><p><strong>ส่วนราชการ</strong> ศูนย์รับเรื่องร้องเรียน กองบริหารคดี <strong>โทร.</strong> ....................</p><p><strong>ที่</strong> ปป ๐๐ ....../......... <strong>วันที่</strong> ${escapeHtml(c.received||todayTH())}</p></div>
       <div class="official-subject"><strong>เรื่อง</strong><span>การตรวจสอบเรื่องร้องเรียน เรื่องที่ ${escapeHtml(formatInternalReceiptNumber(c.id))}</span><strong>เรียน</strong><span>เลขาธิการคณะกรรมการ ป.ป.ท.</span></div>
@@ -568,18 +633,7 @@
       <p class="official-form-code">ปปท. 1-07</p>
     </article>`;
     if(id==='pcms')return form3Paper(state); // PCMS ของจริง = ระบบบริหารจัดการเรื่องร้องเรียน (แบบฟอร์ม 3) — หน้า 1 ของเล่ม
-    if(id==='paklap')return `<article class="a4-paper template-cover template-paklap" id="activePaper">
-      <div class="cover-band"></div>
-      <div class="cover-head"><img class="memo-garuda" src="${GARUDA_IMAGE}" alt="ตราครุฑ"><div><h1>สำนวนการไต่สวน</h1><p>สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p></div></div>
-      <div class="cover-body">
-        <p class="cover-subject"><strong>เรื่อง</strong> ${escapeHtml(d.documentSubject||c.subject)}</p>
-        <p class="cover-field"><strong>เลขรับบริการ</strong> ${escapeHtml(c.trackingYear||'')} ${escapeHtml(c.trackingCode||'')}</p>
-        <p class="cover-field"><strong>ผู้กล่าวหา</strong> ${escapeHtml(c.complainant||'.....................................')}${d.anonymous?' (ปกปิดตัวตน)':''}</p>
-        <p class="cover-field"><strong>มาตรา</strong> ${escapeHtml(caseType==='18/4'?'18/4':caseType==='62'?'ม.62 (รับจาก ป.ป.ช.)':caseType==='582'?'58/2':'18/1 (ก)/(ข)')}</p>
-        <p class="cover-mock">แบบจำลอง — รออนุมัติแบบพิมพ์จริง</p>
-      </div>
-      <p class="official-form-code">ปกลับ (ปกหลัง)</p>
-    </article>`;
+    if(id==='paklap')return `<div class="document-placeholder document-source-missing" id="activePaper"><strong>ปกลับ (ปกหลัง)</strong><p>ยังไม่มีไฟล์ต้นฉบับปกลับในชุดเอกสารอ้างอิง จึงไม่สร้างแบบเอกสารแทน</p></div>`;
     return '<div class="document-placeholder">ยังไม่มีเอกสารนี้ในชุดของกรณีนี้</div>';
   }
   function renderWalkin(){
@@ -1115,14 +1169,14 @@
     function operationalWorkspace(state){const w=state.workflow;const editor=`<section class="ws-card ws-editor ${activeRole==='admin'?'ws-admin-workspace':''}"><header class="ws-editor-head"><div><p class="ws-kicker">งานของ ${ROLE_LABELS[activeRole]}</p><h2>${w.complete?'ตรวจสอบข้อมูลที่ดำเนินการแล้ว':'ดำเนินการเรื่องร้องเรียน'}</h2></div><span class="ws-status">${w.status}</span></header><div class="ws-editor-body">${editorFor(state)}${activeRole==='admin'?'':`<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการตัดสินใจ</li>'}</ul></div>`}</div></section>`;if(activeRole==='admin')return `<div class="ws-admin-layout">${editor}</div>`;return `<div class="document-workspace">${editor}<aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabs(state,activeRole)}</div><button class="ws-button secondary" data-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="paperStage">${documentPaper(state,'form3',activeRole)}</div></aside></div>`}
     function renderDetail(){const state=getState(selectedId),c=state.caseData,w=state.workflow;$('#caseListView').classList.add('ws-hidden');const view=$('#caseDetailView');view.classList.remove('ws-hidden');view.innerHTML=`<button class="ws-button ghost" id="backList" style="margin-bottom:.8rem">กลับรายการเรื่องร้องเรียน</button><section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel)} · ${escapeHtml(c.region)}</p><h1>${c.id}</h1><div class="ws-case-meta"><span>${escapeHtml(c.subject)}</span><span>รับเรื่อง ${c.received}</span><span>เลขรับบริการ ${c.trackingYear} / PIN ${c.trackingCode}</span></div></div><div><span class="ws-status ${w.complete?'success':''}">${w.status}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">ผู้รับผิดชอบ: ${ROLE_LABELS[w.owner]}</p></div></section><nav class="ws-card ws-stagebar" aria-label="สถานะและลำดับการดำเนินงาน">${stagebar(state)}</nav>${operationalWorkspace(state)}<div class="ws-actions">${actionsFor(state)}</div>`;$('#backList').onclick=()=>{view.classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');selectedId=null;syncUrl();renderList()};wireDetail(state);enhanceSmartInputs()}
     function capture(state){const d=state.documentData;const value=id=>$('#'+id)?.value?.trim()||'';if(activeRole==='admin'){d.assignedOfficer=value('adminAssignee');d.backupOfficer=value('adminBackup');if($('#adminNote'))d.adminNote=value('adminNote')}if(activeRole==='officer'){d.documentSubject=value('documentSubject')||state.caseData.subject||'';d.decision=$('input[name="decision"]:checked')?.value||d.decision;d.reasons=$$('input[name="naccReason"]:checked').map(x=>x.value);d.notAcceptReason=value('notAcceptReason');d.anonymous=$('#anonymous')?.checked||false;d.proposedRegion=value('proposedRegion')||d.proposedRegion;d.officerOpinion=value('officerOpinion');d.reviewRoute=$('input[name="route"]:checked')?.value||'center';d.absenceReasonType=value('absenceReasonType');d.absenceNote=value('absenceNote');d.actingOfficer=value('actingOfficer')||d.actingOfficer;d.actingOrder=value('actingOrder')||d.actingOrder}if(activeRole==='center'){d.centerDecision=$('input[name="centerDecision"]:checked')?.value||'';d.centerOpinion=value('centerOpinion');d.centerAdditionalDetail=value('centerAdditionalDetail')}if(activeRole==='division'||activeRole==='acting'){d.divisionOpinion=value('divisionOpinion');d.divisionAdditionalDetail=value('divisionAdditionalDetail');d.actingOrder=value('actingOrder')||d.actingOrder}return state}
-    function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>x.addEventListener('input',refreshPaper));$$('input[name="decision"]').forEach(x=>x.onchange=()=>{$('#naccReasonBox').classList.toggle('ws-hidden',x.value!=='send-nacc');$('#notAcceptBox').classList.toggle('ws-hidden',x.value!=='not-accept');refreshPaper()});$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state));$$('.pack-open').forEach(b=>b.onclick=()=>{const tab=$$('[data-doc]').find(t=>t.dataset.doc===b.dataset.docOpen);if(tab)tab.onclick()});$('#packComplaintPages')?.addEventListener('input',updatePackCount);$('#packN103Pages')?.addEventListener('input',updatePackCount);$('#packCaseType')?.addEventListener('change',e=>{state.documentData.documentPack={...(state.documentData.documentPack||{}),caseType:e.target.value};saveState(selectedId,state);renderDetail()});updatePackCount()}
+    function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||'form3';paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};const applyDecision=()=>{const updated=capture(state);updated.documentData.documentPack={...(updated.documentData.documentPack||{}),caseType:packCaseTypeOf(updated)};saveState(selectedId,updated);renderDetail()};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>x.addEventListener('input',refreshPaper));$$('input[name="decision"]').forEach(x=>x.onchange=applyDecision);$('#anonymous')?.addEventListener('change',applyDecision);$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state));$$('.pack-open').forEach(b=>b.onclick=()=>{const tab=$$('[data-doc]').find(t=>t.dataset.doc===b.dataset.docOpen);if(tab)tab.onclick()});$('#packComplaintPages')?.addEventListener('input',updatePackCount);$('#packN103Pages')?.addEventListener('input',updatePackCount);updatePackCount()}
     const captureBase=capture;
     capture=state=>{
       const captured=captureBase(state),d=captured.documentData;
       if(activeRole==='officer'){
         d.naccOtherChecked=$('#naccOtherChecked')?.checked||false;
         d.naccOtherReason=$('#naccOtherReason')?.value?.trim()||'';
-        d.documentPack={caseType:$('#packCaseType')?.value||d.documentPack?.caseType||'18/1ก',pages:{complainant:Number($('#packComplaintPages')?.value)||0,n103:Number($('#packN103Pages')?.value)||0}};
+        d.documentPack={...(d.documentPack||{}),sourceVersion:'official-forms-1-01-to-1-07',caseType:packCaseTypeOf(captured),pages:{complainant:Number($('#packComplaintPages')?.value)||0,n103:Number($('#packN103Pages')?.value)||0}};
       }
       return captured;
     };
@@ -1140,7 +1194,7 @@
       if(action==='officer-sign'){
         if(!d.officerOpinion)return notify('warning','ยังไม่มีความเห็นเจ้าหน้าที่','กรอกข้อเท็จจริงและความเห็นก่อนลงนาม');
         const officerName=d.assignedOfficer||'เจ้าหน้าที่รับเรื่อง';
-        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        const confirmed=await confirmSignature(state,officerName,'เจ้าหน้าที่รับเรื่อง');
         if(!confirmed.isConfirmed)return;
         d.officerSignature=signatureRecord('เจ้าหน้าที่รับเรื่อง',officerName);
         add(`เจ้าหน้าที่รับเรื่อง ${officerName} ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.officerSignature.signatureId}`);
@@ -1149,7 +1203,7 @@
       if(action==='center-sign'){
         if(d.centerDecision==='disagree')return notify('warning','ยังไม่สามารถลงนามเห็นชอบ','กรณีไม่เห็นชอบให้ใช้คำสั่งส่งกลับเจ้าหน้าที่แก้ไข');
         if(!d.centerOpinion)return notify('warning','ยังไม่มีความเห็น ผอ.ศรร.','กรอกความเห็นก่อนลงนาม');
-        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        const confirmed=await confirmSignature(state,'ผอ.ศรร.','ผู้อำนวยการศูนย์รับเรื่องร้องเรียน');
         if(!confirmed.isConfirmed)return;
         d.centerSignature=signatureRecord('ผอ.ศรร.','ผอ.ศรร.');
         add(`ผอ.ศรร. ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.centerSignature.signatureId}`);
@@ -1159,9 +1213,9 @@
         if(!d.divisionOpinion)return notify('warning','ยังไม่มีคำสั่ง ผอ.กบค.','กรอกความเห็นและคำสั่งก่อนลงนาม');
         if(d.reviewRoute!=='division'&&!d.centerSignature?.signed)return notify('warning','ยังไม่มีลายมือชื่อ ผอ.ศรร.','ต้องให้ ผอ.ศรร. ลงนามก่อนส่งตามลำดับปกติ');
         const signer=activeRole==='acting'?(d.actingOfficer||'ผู้รักษาราชการแทน'):'ผอ.กบค.';
-        const confirmed=await confirmDo('ยืนยันการลงนามอิเล็กทรอนิกส์','ระบบจะบันทึกผู้ลงนาม วันเวลา และรหัสหลักฐานของเอกสารฉบับนี้','ลงนาม');
+        const confirmed=await confirmSignature(state,signer,activeRole==='acting'?'ผู้รักษาราชการแทน ผอ.กบค.':'ผู้อำนวยการกองบริหารคดี');
         if(!confirmed.isConfirmed)return;
-        d.divisionSignature=signatureRecord(signer,signer);
+        d.divisionSignature=signatureRecord(activeRole==='acting'?'ผู้รักษาราชการแทน ผอ.กบค.':'ผอ.กบค.',signer);
         add(`${signer} ลงนามอิเล็กทรอนิกส์ รหัสหลักฐาน ${d.divisionSignature.signatureId}`);
         saveState(selectedId,state);notify('success','ลงนามเรียบร้อย','ระบบบันทึกหลักฐานการลงนามแล้ว พร้อมดำเนินการอนุมัติ');renderDetail();return;
       }

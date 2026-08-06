@@ -99,7 +99,14 @@
       host.prepend(overlay);
       overlay.addEventListener('click', () => document.body.classList.remove('ecmis-sidebar-mobile-open'));
     }
-    sidebar.innerHTML = `<div class="ecmis-sidebar-brand"><span class="ecmis-sidebar-logo">ป.ป.ท.</span><span class="ecmis-sidebar-brand-text"><strong>E-CMIS</strong><small>COMPLAINT MANAGEMENT</small></span></div><nav class="ecmis-sidebar-nav"><div class="ecmis-sidebar-section">เมนูตามสิทธิ์</div>${menuMarkup(role)}</nav><footer class="ecmis-sidebar-footer"><div class="ecmis-sidebar-user"><span class="ecmis-sidebar-avatar">${ROLE_LABELS[role].slice(0, 2)}</span><span class="ecmis-sidebar-user-copy"><strong>${ROLE_LABELS[role]}</strong><small>สิทธิ์การทำงานปัจจุบัน</small></span></div><button type="button" class="ecmis-sidebar-toggle" aria-label="ย่อหรือขยายเมนู" title="ย่อหรือขยายเมนู"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button></footer>`;
+    sidebar.innerHTML = `<div class="ecmis-sidebar-brand"><span class="ecmis-sidebar-logo">ป.ป.ท.</span><span class="ecmis-sidebar-brand-text"><strong>E-CMIS</strong><small>COMPLAINT MANAGEMENT</small></span></div><nav class="ecmis-sidebar-nav"><div class="ecmis-sidebar-section">เมนูตามสิทธิ์</div>${menuMarkup(role)}</nav><footer class="ecmis-sidebar-footer"><div class="ecmis-sidebar-user"><span class="ecmis-sidebar-avatar">${ROLE_LABELS[role].slice(0, 2)}</span><span class="ecmis-sidebar-user-copy"><strong>${ROLE_LABELS[role]}</strong><small>สิทธิ์การทำงานปัจจุบัน</small></span></div><button type="button" class="ecmis-sidebar-toggle" aria-label="ย่อหรือขยายเมนู" title="ย่อหรือขยายเมนู"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button type="button" class="ecmis-sidebar-logout" aria-label="ออกจากระบบ" title="ออกจากระบบ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="ecmis-sidebar-label">ออกจากระบบ</span></button></footer>`;
+    sidebar.querySelector('.ecmis-sidebar-logout').addEventListener('click', () => {
+      sessionStorage.removeItem(ROLE_KEY);
+      sessionStorage.removeItem(REGION_KEY);
+      localStorage.removeItem(COLLAPSED_KEY);
+      sessionStorage.removeItem('ecmis-a4-sidebar-command');
+      location.href = 'index.html';
+    });
     sidebar.querySelector('.ecmis-sidebar-toggle').addEventListener('click', () => {
       const collapsed = document.body.classList.toggle('ecmis-sidebar-collapsed');
       localStorage.setItem(COLLAPSED_KEY, String(collapsed));

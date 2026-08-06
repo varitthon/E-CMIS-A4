@@ -74,7 +74,7 @@
       document.body.appendChild(dialog);
     }
     if (!document.querySelector("[data-version]")) {
-      const footer = document.querySelector("footer");
+      const footer = document.querySelector("footer.site-footer, footer.site-foot");
       if (footer) {
         const version = document.createElement("button");
         version.type = "button";
