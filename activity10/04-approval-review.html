@@ -29,17 +29,17 @@
       <!-- Case Overview Card -->
       <div class="card card-ecmis mb-4">
         <div class="card-header bg-navy text-white d-flex align-items-center justify-content-between" style="background:#0F2A62; color:white;">
-          <span><i class="fa-solid fa-file-contract me-2"></i>รายละเอียดสำนวน: คดี-10.1-2569/001</span>
-          <span class="st st-urgent"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 3 วัน</span>
+          <span><i class="fa-solid fa-file-contract me-2"></i>รายละเอียดสำนวน: <span id="reviewCaseId">คดี-10.1-2569/001</span></span>
+          <span class="st st-urgent" id="reviewSlaBadge"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 3 วัน</span>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-8">
-              <h5 class="fw-bold text-navy">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคาร</h5>
-              <p class="text-muted small mb-0">เสนอจาก: <strong>นายณัฐพล บัวทุม (นิติกรเจ้าของสำนวน)</strong> | เสนอเมื่อ: 6 สิงหาคม 2569</p>
+              <h5 class="fw-bold text-navy" id="reviewTitle">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคาร</h5>
+              <p class="text-muted small mb-0">เสนอจาก: <strong id="reviewOfficer">นายณัฐพล บัวทุม (นิติกรเจ้าของสำนวน)</strong> | วันที่เสนอ: 6 สิงหาคม 2569</p>
             </div>
             <div class="col-md-4 text-end">
-              <span class="badge bg-warning text-dark fs-6">10.1 ความเห็นแย้ง</span>
+              <span class="badge bg-warning text-dark fs-6" id="reviewCategoryBadge">10.1 ความเห็นแย้ง</span>
             </div>
           </div>
         </div>
@@ -78,15 +78,20 @@
       <div class="card card-ecmis mb-4">
         <div class="card-header"><i class="fa-solid fa-check-to-slot me-2"></i>คำสั่งและบันทึกความเห็นของผู้บังคับบัญชา</div>
         <div class="card-body">
+          <div class="p-3 bg-light rounded border mb-3 small">
+            <strong>ความเห็นร่างของนิติกร:</strong><br>
+            <span id="reviewLegalOpinion">...</span>
+          </div>
+
           <form onsubmit="handleApproveSubmit(event)">
             <div class="mb-3">
               <label class="form-label fw-bold">ความเห็น/คำสั่งผู้บังคับบัญชา <span class="text-danger">*</span></label>
-              <textarea class="form-control" rows="4" required>เห็นชอบตามความเห็นของนิติกรเจ้าของสำนวน นำเสนอรองเลขาธิการ ป.ป.ท. พิจารณาให้ความเห็นชอบ และเสนอเลขาธิการ ป.ป.ท. ส่งเรื่องให้อัยการสูงสุดชี้ขาดต่อไป</textarea>
+              <textarea class="form-control" rows="3" id="bossCommentText" required>เห็นชอบตามความเห็นของนิติกรเจ้าของสำนวน นำเสนอรองเลขาธิการ ป.ป.ท. พิจารณาให้ความเห็นชอบ และเสนอเลขาธิการ ป.ป.ท. ส่งเรื่องให้อัยการสูงสุดชี้ขาดต่อไป</textarea>
             </div>
             
             <div class="d-flex justify-content-end gap-2 border-top pt-3">
               <button type="button" class="btn btn-outline-danger" onclick="rejectBack()"><i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับให้นิติกรแก้ไข</button>
-              <a href="05-digital-signature.html" class="btn btn-success px-4"><i class="fa-solid fa-file-signature me-1"></i>ไปยังหน้าลงนามดิจิทัล (e-Signature)</a>
+              <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-file-signature me-1"></i>ไปยังหน้าลงนามดิจิทัล (e-Signature)</button>
             </div>
           </form>
         </div>
@@ -101,8 +106,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('04-approval-review.html');
+  let currentCaseId = "";
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentCaseId = urlParams.get('caseId') || "คดี-10.1-2569/001";
+    loadReviewDetails(currentCaseId);
+  });
+
+  function loadReviewDetails(id) {
+    const item = Activity10.getCaseById(id);
+    if (!item) return;
+
+    document.getElementById("reviewCaseId").innerText = item.id;
+    document.getElementById("reviewTitle").innerText = item.title;
+    document.getElementById("reviewOfficer").innerText = item.officer;
+    document.getElementById("reviewCategoryBadge").innerText = item.categoryName;
+    document.getElementById("reviewSlaBadge").innerHTML = `<i class="fa-solid fa-clock me-1"></i>SLA เหลือ ${item.slaDaysRemaining} วัน`;
+    document.getElementById("reviewLegalOpinion").innerText = item.legalOpinion || "อยู่ระหว่างยกร่างความเห็น";
+  }
 
   function rejectBack() {
     Swal.fire({
@@ -114,6 +139,7 @@
       confirmButtonColor: '#DB2626'
     }).then((res) => {
       if(res.isConfirmed) {
+        Activity10.updateCaseStatus(currentCaseId, "DRAFTING_OPINION", "ส่งกลับให้นิติกรแก้ไข", "bg-warning text-dark", "legal_officer");
         Swal.fire({ icon:'info', title:'ส่งกลับแก้ไขเรียบร้อยแล้ว', timer:1000, showConfirmButton:false })
           .then(() => { window.location.href = "01-work-inbox.html"; });
       }
@@ -122,7 +148,8 @@
 
   function handleApproveSubmit(e) {
     e.preventDefault();
-    window.location.href = "05-digital-signature.html";
+    Activity10.updateCaseStatus(currentCaseId, "PENDING_SECGEN", "เสนอเลขาธิการ ป.ป.ท. ลงนาม", "bg-success text-white", "sec_gen");
+    window.location.href = `05-digital-signature.html?caseId=${encodeURIComponent(currentCaseId)}`;
   }
 </script>
 </body>

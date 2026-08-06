@@ -1,179 +1,220 @@
 /**
- * E-CMIS Activity 10: Legal Case Management Logic & Mock State Engine
+ * E-CMIS Activity 10: Production-Grade Legal System Engine & Data Store
+ * Project: กิจกรรมที่ 10 (ระบบกฎหมายในทางคดี)
  */
 
-// Mock Datastore for Activity 10 Cases
-const ECMIS_A10_DATA = {
-  cases: [
+(function(global) {
+  'use strict';
+
+  // Seed Data for Activity 10 Cases
+  const INITIAL_CASES = [
     {
       id: "คดี-10.1-2569/001",
-      title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคาร",
+      title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง",
       category: "10.1",
-      categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
-      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต",
-      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการ)",
+      categoryName: "10.1 คดีชั้นอัยการ (ความเห็นแย้ง)",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
+      assignedRole: "legal_officer", // legal_officer, dir_legal, sec_gen, admin_legal
       status: "กำลังร่างความเห็นแย้ง",
+      statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
-      slaDays: 7,
+      slaTotalDays: 15,
       slaDaysRemaining: 3,
       slaAlert: "sla-warning",
-      dateReceived: "2026-08-01",
-      dueDate: "2026-08-08",
-      workflowStep: 2, // 1: ธุรการ, 2: นิติกร, 3: ผอ.กอง, 4: เลขาธิการ, 5: ส่ง อสส.
-      documents: [
-        { name: "คำสั่งไม่ฟ้องเด็ดขาดจากพนักงานอัยการ.pdf", type: "pdf", size: "2.4 MB" },
-        { name: "รายงานการไต่สวนข้อเท็จจริง (กจ.7).pdf", type: "pdf", size: "8.1 MB" }
-      ]
+      dateReceived: "2026-07-28",
+      dueDate: "2026-08-12",
+      workflowStep: 2,
+      docType: "คำสั่งไม่ฟ้องพนักงานอัยการ",
+      docNo: "อส 0014/2569",
+      legalOpinion: "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พยานเอกสารและพยานบุคคลที่ ป.ป.ท. ได้รวบรวมไว้ ปรากฏพยานหลักฐานชัดเจนว่าผู้ถูกกล่าวหามีเจตนาละเว้นการปฏิบัติหน้าที่ตามระเบียบการจัดซื้อจัดจ้างฯ จึงเห็นควรเสนอทำความเห็นแย้งคำสั่งไม่ฟ้องส่งอัยการสูงสุดชี้ขาด",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
     },
     {
       id: "คำร้อง-10.2-2569/014",
-      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนคดีบริหารงานผิดพลาด",
+      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนข้อเท็จจริงคดีบริหารงานผิดพลาด",
       category: "10.2.1",
-      categoryName: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
-      source: "ศูนย์รับเรื่องร้องเรียน (Walk-in)",
+      categoryName: "10.2.1 ขอเปิดเผยข้อมูลข่าวสาร",
+      source: "ศูนย์รับเรื่องร้องเรียน ป.ป.ท. (ยื่น Walk-in)",
       officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
-      status: "รอคณะอนุกรรมการฯ พิจารณา",
-      statusBadge: "bg-info text-dark",
-      slaDays: 60,
-      slaDaysRemaining: 22, // ครึ่งทาง 30 วัน
+      assignedRole: "admin_legal",
+      status: "รออนุกรรมการฯ พิจารณา",
+      statusCode: "PENDING_SUBCOMMITTEE",
+      statusBadge: "bg-info text-white",
+      slaTotalDays: 60,
+      slaDaysRemaining: 22,
       slaAlert: "sla-normal",
       dateReceived: "2026-07-15",
       dueDate: "2026-09-13",
       workflowStep: 3,
-      documents: [
-        { name: "หนังสือคำร้องขอเปิดเผยข้อมูลข่าวสาร.pdf", type: "pdf", size: "1.1 MB" }
-      ]
+      docType: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
+      docNo: "คร 102/2569",
+      legalOpinion: "เห็นควรเสนอคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ พิจารณาเปิดเผยข้อมูลบางส่วนโดยปกปิดข้อมูลส่วนบุคคล",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
     },
     {
       id: "อุทธรณ์-10.2-2569/005",
-      title: "คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบวินัยข้าราชการ",
+      title: "คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบสวนวินัยข้าราชการระดับสูง",
       category: "10.2.2",
-      categoryName: "คำอุทธรณ์การไม่เปิดเผยข้อมูล",
+      categoryName: "10.2.2 อุทธรณ์การไม่เปิดเผยข้อมูล",
       source: "ระบบรับเรื่องร้องเรียนออนไลน์ (Email)",
       officer: "นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)",
+      assignedRole: "dir_legal",
       status: "เสนอ ผอ.กองกฎหมาย",
+      statusCode: "PENDING_DIRECTOR",
       statusBadge: "bg-primary text-white",
-      slaDays: 60,
-      slaDaysRemaining: 8, // ใกล้ครบกำหนด 45/60 วัน
+      slaTotalDays: 60,
+      slaDaysRemaining: 8,
       slaAlert: "sla-danger",
       dateReceived: "2026-06-20",
       dueDate: "2026-08-19",
       workflowStep: 3,
-      documents: [
-        { name: "หนังสือคำอุทธรณ์ของผู้ร้อง.pdf", type: "pdf", size: "3.5 MB" }
-      ]
+      docType: "หนังสือคำอุทธรณ์ของผู้ร้อง",
+      docNo: "อท 55/2569",
+      legalOpinion: "เห็นควรเสนอคณะอนุกรรมการฯ มีมติยกคำอุทธรณ์ เนื่องจากเป็นเอกสารลับทางราชการตามมาตรา 15 (2)",
+      signatureStamped: true,
+      signedBy: "นางสาวณพัสตร์ ศรีสมเกียรติ (ผอ.กองกฎหมาย)",
+      signedDate: "2026-08-05 14:30 น."
     },
     {
       id: "คดีปกครอง-10.3-2569/002",
       title: "คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม",
       category: "10.3",
-      categoryName: "คดีปกครอง (ศาลปกครอง)",
-      source: "ศาลปกครองสูงสุด (e-Court)",
+      categoryName: "10.3 คดีปกครอง (ศาลปกครอง)",
+      source: "ศาลปกครองสูงสุด (e-Court System)",
       officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
+      assignedRole: "sec_gen",
       status: "รอลงนามอนุมัติร่างคำให้การ",
+      statusCode: "PENDING_SECGEN",
       statusBadge: "bg-success text-white",
-      slaDays: 30,
+      slaTotalDays: 30,
       slaDaysRemaining: 5,
       slaAlert: "sla-danger",
       dateReceived: "2026-07-20",
       dueDate: "2026-08-19",
       workflowStep: 4,
-      documents: [
-        { name: "หมายเรียกและสำเนาคำฟ้องศาลปกครองสูงสุด.pdf", type: "pdf", size: "5.7 MB" },
-        { name: "ร่างคำให้การเพิ่มเติมต่อศาลปกครอง.docx", type: "docx", size: "450 KB" }
-      ]
+      docType: "หมายเรียกและสำเนาคำฟ้องศาลปกครอง",
+      docNo: "ศป 145/2569",
+      legalOpinion: "ยกร่างคำให้การเพิ่มเติมเสนอศาลปกครองสูงสุด ยืนยันว่าการออกคำสั่ง ป.ป.ท. เป็นไปโดยชอบด้วยกฎหมาย",
+      signatureStamped: true,
+      signedBy: "นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)",
+      signedDate: "2026-08-06 09:15 น."
     }
-  ],
-  
-  roles: [
-    { id: "admin_legal", name: "ธุรการกองกฎหมาย", badge: "ธุรการ" },
-    { id: "legal_officer", name: "นิติกรเจ้าของสำนวน", badge: "นิติกร" },
-    { id: "dir_legal", name: "ผู้อำนวยการกองกฎหมาย", badge: "ผอ.กอง" },
-    { id: "sec_gen", name: "เลขาธิการ ป.ป.ท. / รองเลขาธิการ", badge: "เลขาธิการ" }
-  ],
-  
-  currentRole: "legal_officer"
-};
+  ];
 
-// Initialize App Scripts
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("E-CMIS Activity 10 App Initialized");
-  renderRoleSwitcher();
-});
-
-// Render Role Switcher UI
-function renderRoleSwitcher() {
-  const container = document.getElementById("roleSwitcherContainer");
-  if (!container) return;
-  
-  let html = `
-    <div class="dropdown">
-      <button class="role-switcher-badge dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fa-solid fa-user-shield"></i>
-        <span>สวมบทบาท: ${getRoleName(ECMIS_A10_DATA.currentRole)}</span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow">
-        <li><h6 class="dropdown-header">เลือกบทบาทปฏิบัติงาน</h6></li>
-  `;
-  
-  ECMIS_A10_DATA.roles.forEach(r => {
-    const activeClass = r.id === ECMIS_A10_DATA.currentRole ? 'active' : '';
-    html += `
-      <li>
-        <a class="dropdown-item ${activeClass}" href="#" onclick="switchRole('${r.id}')">
-          <span class="badge bg-secondary me-2">${r.badge}</span>${r.name}
-        </a>
-      </li>
-    `;
-  });
-  
-  html += `</ul></div>`;
-  container.innerHTML = html;
-}
-
-function getRoleName(roleId) {
-  const role = ECMIS_A10_DATA.roles.find(r => r.id === roleId);
-  return role ? role.name : roleId;
-}
-
-function switchRole(roleId) {
-  ECMIS_A10_DATA.currentRole = roleId;
-  renderRoleSwitcher();
-  
-  Swal.fire({
-    icon: 'success',
-    title: 'สลับบทบาทเรียบร้อย',
-    text: `ปัจจุบันคุณกำลังสวมบทบาท: ${getRoleName(roleId)}`,
-    timer: 1500,
-    showConfirmButton: false
-  });
-  
-  if (typeof refreshCurrentPage === 'function') {
-    refreshCurrentPage();
+  // Load Persisted Cases from LocalStorage
+  function loadCases() {
+    try {
+      const stored = localStorage.getItem("ecmis_activity10_cases");
+      if (stored) return JSON.parse(stored);
+    } catch(e) {
+      console.warn("Could not load localStorage, using initial seed data");
+    }
+    saveCases(INITIAL_CASES);
+    return INITIAL_CASES;
   }
-}
 
-// Digital Signature Canvas Simulator
-function initSignatureCanvas(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  let drawing = false;
-  
-  ctx.strokeStyle = "#0f172a";
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = "round";
-  
-  canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-  canvas.addEventListener('mousemove', e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
-  canvas.addEventListener('mouseup', () => { drawing = false; });
-  canvas.addEventListener('mouseleave', () => { drawing = false; });
-}
+  function saveCases(cases) {
+    try {
+      localStorage.setItem("ecmis_activity10_cases", JSON.stringify(cases));
+    } catch(e) {
+      console.warn("Could not save to localStorage", e);
+    }
+  }
 
-function clearSignatureCanvas(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
+  // Activity 10 Engine API
+  const Activity10 = {
+    getCases: loadCases,
+    
+    getCaseById(id) {
+      const cases = loadCases();
+      return cases.find(c => c.id === id) || cases[0];
+    },
+
+    addCase(newCaseData) {
+      const cases = loadCases();
+      const count = cases.length + 1;
+      const category = newCaseData.category || "10.1";
+      const caseId = `คดี-${category}-2569/00${count}`;
+
+      const createdCase = {
+        id: caseId,
+        title: newCaseData.title || "สำนวนคดีกฎหมายใหม่",
+        category: category,
+        categoryName: newCaseData.categoryName || `${category} สำนวนใหม่`,
+        source: newCaseData.source || "ศูนย์รับเรื่องร้องเรียน",
+        officer: newCaseData.officer || "นายณัฐพล บัวทุม (นิติกรเจ้าของสำนวน)",
+        assignedRole: "legal_officer",
+        status: "กำลังร่างความเห็น",
+        statusCode: "DRAFTING_OPINION",
+        statusBadge: "bg-warning text-dark",
+        slaTotalDays: newCaseData.slaTotalDays || 15,
+        slaDaysRemaining: newCaseData.slaTotalDays || 15,
+        slaAlert: "sla-normal",
+        dateReceived: new Date().toISOString().split('T')[0],
+        dueDate: newCaseData.dueDate || "2026-08-25",
+        workflowStep: 2,
+        docType: newCaseData.docType || "เอกสารแนบสำนวน",
+        docNo: newCaseData.docNo || "นร 10/2569",
+        legalOpinion: newCaseData.legalOpinion || "อยู่ระหว่างตรวจพิจารณาข้อเท็จจริงและพยานหลักฐาน",
+        signatureStamped: false,
+        signedBy: "",
+        signedDate: ""
+      };
+
+      cases.unshift(createdCase);
+      saveCases(cases);
+      return createdCase;
+    },
+
+    updateCaseStatus(id, newStatusCode, newStatusText, newBadgeClass, nextRole) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = newStatusCode;
+        item.status = newStatusText;
+        item.statusBadge = newBadgeClass || item.statusBadge;
+        if (nextRole) item.assignedRole = nextRole;
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    saveLegalOpinion(id, opinionText) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.legalOpinion = opinionText;
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    stampSignature(id, signerName) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.signatureStamped = true;
+        item.signedBy = signerName || "ผู้บังคับบัญชาอนุมัติ";
+        item.signedDate = new Date().toLocaleString('th-TH');
+        item.statusCode = "FINAL_DISPATCHED";
+        item.status = "ลงนามชี้ขาดเรียบร้อย";
+        item.statusBadge = "bg-success text-white";
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    resetData() {
+      saveCases(INITIAL_CASES);
+      return INITIAL_CASES;
+    }
+  };
+
+  global.Activity10 = Activity10;
+
+})(typeof window !== 'undefined' ? window : this);

@@ -61,7 +61,7 @@
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <label class="form-label fw-bold">เลขที่หนังสือรับ / คำร้องเดิม</label>
-                <input type="text" class="form-control" placeholder="เช่น นร 1204/1582" required>
+                <input type="text" class="form-control" id="docNoInput" placeholder="เช่น นร 1204/1582" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">วันที่รับเรื่องเข้าระบบ <span class="text-danger">*</span></label>
@@ -69,11 +69,11 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">หน่วยงานส่งเรื่อง / ศาล / อัยการ</label>
-                <input type="text" class="form-control" placeholder="ระบุหน่วยงานส่งเรื่อง..." required>
+                <input type="text" class="form-control" id="sourceInput" placeholder="ระบุหน่วยงานส่งเรื่อง..." required>
               </div>
               <div class="col-12">
                 <label class="form-label fw-bold">หัวข้อเรื่อง / สาระสำคัญ <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" placeholder="ระบุหัวข้อคดี หรือ เรื่องขอเปิดเผยข้อมูล..." required>
+                <input type="text" class="form-control" id="titleInput" placeholder="ระบุหัวข้อคดี หรือ เรื่องขอเปิดเผยข้อมูล..." required>
               </div>
             </div>
 
@@ -82,24 +82,24 @@
               <div class="col-md-6">
                 <div class="p-3 bg-light rounded border">
                   <small class="text-muted d-block">กรอบเวลาตามกฎหมาย (Auto-SLA Rule):</small>
-                  <strong class="text-navy fs-5" id="slaRuleText">60 วัน (คำอุทธรณ์การเปิดเผยข้อมูล)</strong><br>
-                  <small class="text-danger">วันที่ครบกำหนด (Due Date): <span id="slaDueDateText">2026-10-05</span></small>
+                  <strong class="text-navy fs-5" id="slaRuleText">15 วัน (พิจารณาความเห็นแย้งคำสั่งอัยการ)</strong><br>
+                  <small class="text-danger">วันที่ครบกำหนด (Due Date): <span id="slaDueDateText">2026-08-21</span></small>
                 </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-bold">มอบหมายนิติกรเจ้าของสำนวน <span class="text-danger">*</span></label>
-                <select class="form-select" required>
-                  <option value="1">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ - กลุ่มงานคดี)</option>
-                  <option value="2">นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ - กลุ่มงานคดี)</option>
-                  <option value="3">นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)</option>
-                  <option value="4">นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)</option>
+                <select class="form-select" id="officerSelect" required>
+                  <option value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ - กลุ่มงานคดี)</option>
+                  <option value="นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)">นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ - กลุ่มงานคดี)</option>
+                  <option value="นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)">นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)</option>
+                  <option value="นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)">นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)</option>
                 </select>
               </div>
             </div>
 
             <div class="d-flex justify-content-end gap-2 border-top pt-3">
               <a href="01-work-inbox.html" class="btn btn-outline-secondary"><i class="fa-solid fa-xmark me-1"></i>ยกเลิก</a>
-              <button type="submit" class="btn btn-navy"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกและออกเลขสำนวน</button>
+              <button type="submit" class="btn btn-navy"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกและออกเลขสำนวนคดี</button>
             </div>
 
           </form>
@@ -114,8 +114,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('02-case-register.html');
+  let currentSLADays = 15;
 
   function calculateSLA() {
     const cat = document.getElementById("caseCategory").value;
@@ -139,6 +141,7 @@
       ruleLabel = "10 วัน (เขตพื้นที่รับเรื่องแจ้งส่วนกลาง)";
     }
     
+    currentSLADays = days;
     const dueDate = new Date(dateRec);
     dueDate.setDate(dueDate.getDate() + days);
     
@@ -148,11 +151,29 @@
 
   function handleCaseSubmit(e) {
     e.preventDefault();
+    
+    const cat = document.getElementById("caseCategory").value;
+    const title = document.getElementById("titleInput").value;
+    const source = document.getElementById("sourceInput").value;
+    const docNo = document.getElementById("docNoInput").value;
+    const officer = document.getElementById("officerSelect").value;
+    const dueDate = document.getElementById("slaDueDateText").innerText;
+
+    const created = Activity10.addCase({
+      category: cat,
+      title: title,
+      source: source,
+      docNo: docNo,
+      officer: officer,
+      slaTotalDays: currentSLADays,
+      dueDate: dueDate
+    });
+
     Swal.fire({
       icon: 'success',
       title: 'ลงทะเบียนสำนวนสำเร็จ!',
-      html: `ออกเลขที่สำนวนคดีเรียบร้อยแล้ว:<br><strong class="fs-4 text-navy">คดี-10.1-2569/005</strong>`,
-      confirmButtonText: 'ตกลงไปยัง Work Inbox',
+      html: `ออกเลขที่สำนวนคดีเรียบร้อยแล้ว:<br><strong class="fs-4 text-navy">${created.id}</strong><br><small class="text-muted">บันทึกข้อมูลเข้า Work Inbox แบบ Real-time แล้ว</small>`,
+      confirmButtonText: 'ไปยัง Work Inbox',
       confirmButtonColor: '#0F2A62'
     }).then(() => {
       window.location.href = "01-work-inbox.html";

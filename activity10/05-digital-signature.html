@@ -27,13 +27,13 @@
     <div class="col-lg-8 mx-auto">
       <div class="card card-ecmis">
         <div class="card-header bg-navy text-white d-flex align-items-center justify-content-between" style="background:#0F2A62; color:white;">
-          <span><i class="fa-solid fa-signature me-2"></i>ลงลายมือชื่อดิจิทัล (Digital Signature Stamping)</span>
+          <span><i class="fa-solid fa-signature me-2"></i>ลงลายมือชื่อดิจิทัลสำหรับสำนวน: <span id="sigCaseId">คดี-10.1-2569/001</span></span>
           <span class="st st-regular">Digital PKI Certificate Active</span>
         </div>
         <div class="card-body p-4 text-center">
           
           <div class="alert alert-info py-2 small mb-4">
-            <i class="fa-solid fa-shield-halved me-1"></i> ระบบกำลังจำลองการลงลายมือชื่อของ <strong>ผู้อำนวยการกองกฎหมาย (นางสาวณพัสตร์ ศรีสมเกียรติ)</strong>
+            <i class="fa-solid fa-shield-halved me-1"></i> ระบบกำลังจำลองการลงลายมือชื่อของ <strong id="sigUserTitle">เลขาธิการคณะกรรมการ ป.ป.ท. (นายอภิชาติ สุจริตกุล)</strong>
           </div>
 
           <div class="mb-4">
@@ -45,10 +45,10 @@
           </div>
 
           <!-- Preview Stamp -->
-          <div class="p-3 border border-success rounded bg-light d-inline-block mb-4 text-start" style="min-width: 320px;">
+          <div class="p-3 border border-success rounded bg-light d-inline-block mb-4 text-start" style="min-width: 340px;">
             <div class="text-success fw-bold"><i class="fa-solid fa-certificate me-1"></i>ELECTRONIC SIGNATURE STAMP</div>
-            <small class="d-block text-muted">ผู้ลงนาม: ผู้อำนวยการกองกฎหมาย</small>
-            <small class="d-block text-muted">วันเวลา: 6 สิงหาคม 2569 | Timestamp Verified</small>
+            <small class="d-block text-muted">ผู้ลงนาม: <span id="stampUser">นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)</span></small>
+            <small class="d-block text-muted">วันเวลา: <span id="stampTime">6 สิงหาคม 2569 | Timestamp Verified</span></small>
             <small class="d-block text-success font-monospace" style="font-size:0.65rem;">SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</small>
           </div>
 
@@ -68,9 +68,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('05-digital-signature.html');
 
+  let currentCaseId = "";
   const canvas = document.getElementById("sigCanvas");
   const ctx = canvas.getContext("2d");
   let drawing = false;
@@ -82,15 +84,23 @@
   canvas.addEventListener("mousemove", e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
   canvas.addEventListener("mouseup", () => drawing = false);
 
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentCaseId = urlParams.get('caseId') || "คดี-10.1-2569/001";
+    document.getElementById("sigCaseId").innerText = currentCaseId;
+  });
+
   function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   function confirmSignature() {
+    Activity10.stampSignature(currentCaseId, "นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)");
+
     Swal.fire({
       icon: 'success',
       title: 'อนุมัติและประทับ e-Signature สำเร็จ!',
-      html: `สำนวนถูกลงนามและส่งต่อไปยัง <strong>รองเลขาธิการ ป.ป.ท.</strong> เรียบร้อยแล้ว<br><small class="text-muted">บันทึก Audit Trail สารบรรณอิเล็กทรอนิกส์แล้ว</small>`,
+      html: `สำนวน <strong class="text-navy">${currentCaseId}</strong> ถูกลงนามและส่งต่อไปยัง <strong>อัยการสูงสุด (อสส.) / ศาลปกครอง</strong> เรียบร้อยแล้ว<br><small class="text-muted">บันทึก Audit Trail สารบรรณอิเล็กทรอนิกส์แล้ว</small>`,
       confirmButtonText: 'กลับไปยัง Work Inbox',
       confirmButtonColor: '#0F2A62'
     }).then(() => {

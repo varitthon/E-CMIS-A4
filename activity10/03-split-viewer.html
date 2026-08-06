@@ -28,11 +28,16 @@
 .pdf-page-view {
   background: #ffffff;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  padding: 40px 50px;
+  padding: 45px 55px;
   min-height: 900px;
   font-family: 'TH Sarabun PSK', 'Angsana New', serif;
   font-size: 16pt;
   line-height: 1.6;
+}
+.official-garuda-img {
+  height: 65px;
+  display: block;
+  margin: 0 auto 10px auto;
 }
 </style>
 </head>
@@ -42,11 +47,11 @@
 
   <div class="page-head py-2 px-3 mb-2">
     <div>
-      <h1 class="fs-5 m-0"><i class="fa-solid fa-columns me-2 text-primary"></i>Split-Screen Viewer — สำนวน คดี-10.1-2569/001</h1>
-      <small class="text-muted">เปิดดูคำฟ้อง/คำสั่งอัยการ PDF คู่กับกรอบยกร่างความเห็นแย้งและ Knowledge Base</small>
+      <h1 class="fs-5 m-0"><i class="fa-solid fa-columns me-2 text-primary"></i>Split-Screen Viewer — <span id="headerCaseId">สำนวน คดี-10.1-2569/001</span></h1>
+      <small class="text-muted" id="headerCaseTitle">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</small>
     </div>
     <div class="d-flex align-items-center gap-2 ms-auto">
-      <span class="st st-urgent"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 3 วัน</span>
+      <span class="st st-urgent" id="headerSlaBadge"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 3 วัน</span>
       <a href="01-work-inbox.html" class="btn btn-xs btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับไป Work Inbox</a>
     </div>
   </div>
@@ -56,17 +61,18 @@
     <!-- LEFT: Document View -->
     <div class="split-pane-half border">
       <div class="bg-navy text-white p-2 d-flex align-items-center justify-content-between" style="background:#0F2A62;">
-        <span class="small fw-bold"><i class="fa-solid fa-file-pdf me-2 text-danger"></i>คำสั่งไม่ฟ้องเด็ดขาดจากพนักงานอัยการ.pdf</span>
+        <span class="small fw-bold"><i class="fa-solid fa-file-pdf me-2 text-danger"></i><span id="docFileNameLabel">คำสั่งไม่ฟ้องเด็ดขาดจากพนักงานอัยการ.pdf</span></span>
         <div class="btn-group btn-group-sm">
-          <button class="btn btn-xs btn-outline-light"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-          <button class="btn btn-xs btn-outline-light"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+          <button class="btn btn-xs btn-outline-light" onclick="zoomDoc(1.1)"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+          <button class="btn btn-xs btn-outline-light" onclick="zoomDoc(0.9)"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
         </div>
       </div>
       <div class="p-3 bg-secondary flex-grow-1 overflow-auto d-flex justify-content-center">
-        <div class="pdf-page-view w-100" style="max-width: 720px;">
-          <div class="text-center fw-bold mb-3" style="font-size: 20pt;">คำสั่งไม่ฟ้องเด็ดขาดของพนักงานอัยการ</div>
-          <div class="text-end mb-3">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต<br>วันที่ 28 กรกฎาคม 2569</div>
-          <p><strong>เรื่อง:</strong> คำสั่งเด็ดขาดไม่สั่งฟ้องในคดีอาญาที่ 45/2569</p>
+        <div class="pdf-page-view w-100" id="pdfDocumentPane" style="max-width: 720px; transition: transform 0.2s ease;">
+          <img src="pacc_logo.png" alt="ตราครุฑ ป.ป.ท." class="official-garuda-img">
+          <div class="text-center fw-bold mb-3" style="font-size: 20pt;" id="docHeaderTitle">คำสั่งไม่ฟ้องเด็ดขาดของพนักงานอัยการ</div>
+          <div class="text-end mb-3"><span id="docHeaderSource">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</span><br>วันที่ 28 กรกฎาคม 2569</div>
+          <p><strong>เรื่อง:</strong> <span id="docHeaderSubject">คำสั่งเด็ดขาดไม่สั่งฟ้องในคดีอาญาที่ อส 0014/2569</span></p>
           <p><strong>เรียน:</strong> เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (เลขาธิการ ป.ป.ท.)</p>
           <p style="text-indent: 2em;">ตามที่ สำนักงาน ป.ป.ท. ได้ส่งรายงานการไต่สวนข้อเท็จจริง คดีกล่าวหาข้าราชการตำแหน่งนักบริหาร ในข้อหาปฏิบัติหรือเว้นการปฏิบัติหน้าที่โดยมิชอบในการจัดซื้อจัดจ้างโครงการปรับปรุงอาคารฯ นั้น</p>
           <p style="text-indent: 2em;">พนักงานอัยการได้พิจารณาพยานหลักฐานในสำนวนแล้ว เห็นว่า พยานหลักฐานยังไม่พอฟังได้ว่าผู้ถูกกล่าวหากระทำความผิดตามข้อกล่าวหา จึงมีคำสั่งเด็ดขาด<strong>ไม่สั่งฟ้อง</strong>ผู้ถูกกล่าวหาในคดีนี้</p>
@@ -98,9 +104,7 @@
 
           <div class="mb-3">
             <label class="form-label fw-bold">สาระสำคัญพยานหลักฐานและข้อกฎหมาย <span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="8" id="draftText" required>จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พยานเอกสารและพยานบุคคลที่ ป.ป.ท. ได้รวบรวมไว้ ปรากฏพยานหลักฐานชัดเจนว่าผู้ถูกกล่าวหามีเจตนาละเว้นการปฏิบัติหน้าที่ตามระเบียบการจัดซื้อจัดจ้างฯ ซึ่งทำให้เกิดความเสียหายแก่ทางราชการ การที่พนักงานอัยการมีคำสั่งไม่ฟ้องโดยอ้างว่าพยานหลักฐานไม่พอนั้น นิติกรเห็นว่าเป็นการด่วนสรุปข้อเท็จจริง
-
-จึงเห็นควรเสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ เพื่อเสนอเลขาธิการ ป.ป.ท. ส่งเรื่องให้อัยการสูงสุดพิจารณาชี้ขาดต่อไป</textarea>
+            <textarea class="form-control" rows="10" id="draftText" required></textarea>
           </div>
 
           <div class="d-flex justify-content-end gap-2 border-top pt-3">
@@ -120,8 +124,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('03-split-viewer.html');
+  let currentCaseId = "";
+  let currentZoom = 1.0;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentCaseId = urlParams.get('caseId') || "คดี-10.1-2569/001";
+    loadCaseDetails(currentCaseId);
+  });
+
+  function loadCaseDetails(id) {
+    const item = Activity10.getCaseById(id);
+    if (!item) return;
+
+    document.getElementById("headerCaseId").innerText = item.id;
+    document.getElementById("headerCaseTitle").innerText = item.title;
+    document.getElementById("headerSlaBadge").innerHTML = `<i class="fa-solid fa-clock me-1"></i>SLA เหลือ ${item.slaDaysRemaining} วัน`;
+    document.getElementById("docFileNameLabel").innerText = `${item.docType || 'เอกสารต้นเรื่อง'}.pdf`;
+    document.getElementById("docHeaderSubject").innerText = item.title;
+    document.getElementById("docHeaderSource").innerText = item.source;
+    document.getElementById("draftText").value = item.legalOpinion || "อยู่ระหว่างยกร่างความเห็น";
+  }
+
+  function zoomDoc(factor) {
+    currentZoom *= factor;
+    document.getElementById("pdfDocumentPane").style.transform = `scale(${currentZoom})`;
+    document.getElementById("pdfDocumentPane").style.transformOrigin = "top center";
+  }
 
   function searchKM() {
     Swal.fire({
@@ -129,25 +161,38 @@
       html: `<div class="text-start small">
         <div class="p-2 border rounded mb-2 bg-light">
           <strong>คดีตัวอย่าง 1/2567:</strong> การทำความเห็นแย้งคดีจัดซื้อจัดจ้าง
-          <button class="btn btn-xs btn-primary float-end" onclick="insertKM()">แทรกข้อความ</button>
+          <button class="btn btn-xs btn-primary float-end" onclick="insertKM(1)">แทรกข้อความ</button>
+        </div>
+        <div class="p-2 border rounded bg-light">
+          <strong>คดีตัวอย่าง 5/2568:</strong> แนวคำพิพากษาคดีปกครองขอเปิดเผยข้อมูล
+          <button class="btn btn-xs btn-primary float-end" onclick="insertKM(2)">แทรกข้อความ</button>
         </div>
       </div>`,
       showConfirmButton: false
     });
   }
 
-  function insertKM() {
+  function insertKM(type) {
     Swal.close();
-    document.getElementById("draftText").value += "\n\n(อ้างอิงบรรทัดฐาน ป.ป.ท. 1/2567: ตามมาตรา 172 แห่ง พ.ร.บ. ประกอบรัฐธรรมนูญฯ)";
+    const addText = type === 1 
+      ? "\n\n(อ้างอิงบรรทัดฐาน ป.ป.ท. 1/2567: ตามมาตรา 172 แห่ง พ.ร.บ. ประกอบรัฐธรรมนูญฯ)"
+      : "\n\n(อ้างอิงแนวคำพิพากษาศาลปกครองสูงสุดที่ อ.145/2569)";
+    document.getElementById("draftText").value += addText;
     Swal.fire({ icon:'success', title:'แทรกแนวคดีเรียบร้อย', timer:1000, showConfirmButton:false });
   }
 
   function saveDraft() {
-    Swal.fire({ icon:'success', title:'บันทึกร่างสำเร็จ', timer:1000, showConfirmButton:false });
+    const text = document.getElementById("draftText").value;
+    Activity10.saveLegalOpinion(currentCaseId, text);
+    Swal.fire({ icon:'success', title:'บันทึกร่างสำเร็จ', text:'ร่างความเห็นของคุณถูกบันทึกลงระบบแล้ว', timer:1200, showConfirmButton:false });
   }
 
   function submitApproval(e) {
     e.preventDefault();
+    const text = document.getElementById("draftText").value;
+    Activity10.saveLegalOpinion(currentCaseId, text);
+    Activity10.updateCaseStatus(currentCaseId, "PENDING_DIRECTOR", "เสนอ ผอ.กองกฎหมาย", "bg-primary text-white", "dir_legal");
+
     Swal.fire({
       icon: 'question',
       title: 'ยืนยันการส่งเสนออนุมัติ?',
@@ -157,7 +202,7 @@
       confirmButtonColor: '#0F2A62'
     }).then((res) => {
       if(res.isConfirmed) {
-        window.location.href = "04-approval-review.html";
+        window.location.href = `04-approval-review.html?caseId=${encodeURIComponent(currentCaseId)}`;
       }
     });
   }
