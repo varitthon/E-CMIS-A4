@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>e-Signature ลงนามดิจิทัล | E-CMIS กิจกรรมที่ 10</title>
+<link rel="icon" type="image/png" href="pacc_logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<link href="assets/ecmis-app.css" rel="stylesheet">
+</head>
+<body>
+
+<main class="app-main">
+
+  <div class="page-head">
+    <div>
+      <h1><i class="fa-solid fa-file-signature me-2"></i>e-Signature — การลงลายมือชื่อดิจิทัลและประทับเวลา (Timestamp)</h1>
+      <div class="sub">ลงลายมือชื่ออิเล็กทรอนิกส์พร้อมตราประทับในระบบดิจิทัล 100% สำหรับเอกสารความเห็นแย้ง และคำสั่งทางกฎหมาย</div>
+    </div>
+    <span class="flow-ref ms-auto">Digital Certificate Signed</span>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8 mx-auto">
+      <div class="card card-ecmis">
+        <div class="card-header bg-navy text-white d-flex align-items-center justify-content-between" style="background:#0F2A62; color:white;">
+          <span><i class="fa-solid fa-signature me-2"></i>ลงลายมือชื่อดิจิทัล (Digital Signature Stamping)</span>
+          <span class="st st-regular">Digital PKI Certificate Active</span>
+        </div>
+        <div class="card-body p-4 text-center">
+          
+          <div class="alert alert-info py-2 small mb-4">
+            <i class="fa-solid fa-shield-halved me-1"></i> ระบบกำลังจำลองการลงลายมือชื่อของ <strong>ผู้อำนวยการกองกฎหมาย (นางสาวณพัสตร์ ศรีสมเกียรติ)</strong>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold d-block">วาดลายมือชื่อด้วยเมาส์หรือ touch screen:</label>
+            <canvas id="sigCanvas" width="450" height="160" style="border: 2px dashed #7C8CA3; border-radius: 8px; background: #ffffff; cursor: crosshair;"></canvas>
+            <div class="mt-2">
+              <button type="button" class="btn btn-xs btn-outline-danger" onclick="clearCanvas()"><i class="fa-solid fa-trash me-1"></i>ล้างลายเซ็น</button>
+            </div>
+          </div>
+
+          <!-- Preview Stamp -->
+          <div class="p-3 border border-success rounded bg-light d-inline-block mb-4 text-start" style="min-width: 320px;">
+            <div class="text-success fw-bold"><i class="fa-solid fa-certificate me-1"></i>ELECTRONIC SIGNATURE STAMP</div>
+            <small class="d-block text-muted">ผู้ลงนาม: ผู้อำนวยการกองกฎหมาย</small>
+            <small class="d-block text-muted">วันเวลา: 6 สิงหาคม 2569 | Timestamp Verified</small>
+            <small class="d-block text-success font-monospace" style="font-size:0.65rem;">SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</small>
+          </div>
+
+          <div class="d-flex justify-content-center gap-2 border-top pt-3">
+            <a href="04-approval-review.html" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i>ย้อนกลับ</a>
+            <button type="button" class="btn btn-success px-4" onclick="confirmSignature()"><i class="fa-solid fa-check-circle me-1"></i>อนุมัติและประทับลายมือชื่อดิจิทัล</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js"></script>
+<script>
+  ECMIS.renderShell('05-digital-signature.html');
+
+  const canvas = document.getElementById("sigCanvas");
+  const ctx = canvas.getContext("2d");
+  let drawing = false;
+
+  ctx.strokeStyle = "#0F2A62";
+  ctx.lineWidth = 2.5;
+
+  canvas.addEventListener("mousedown", e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+  canvas.addEventListener("mousemove", e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
+  canvas.addEventListener("mouseup", () => drawing = false);
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function confirmSignature() {
+    Swal.fire({
+      icon: 'success',
+      title: 'อนุมัติและประทับ e-Signature สำเร็จ!',
+      html: `สำนวนถูกลงนามและส่งต่อไปยัง <strong>รองเลขาธิการ ป.ป.ท.</strong> เรียบร้อยแล้ว<br><small class="text-muted">บันทึก Audit Trail สารบรรณอิเล็กทรอนิกส์แล้ว</small>`,
+      confirmButtonText: 'กลับไปยัง Work Inbox',
+      confirmButtonColor: '#0F2A62'
+    }).then(() => {
+      window.location.href = "01-work-inbox.html";
+    });
+  }
+</script>
+</body>
+</html>

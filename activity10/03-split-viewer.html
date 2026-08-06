@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Split-Screen Viewer & Editor | E-CMIS กิจกรรมที่ 10</title>
+<link rel="icon" type="image/png" href="pacc_logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<link href="assets/ecmis-app.css" rel="stylesheet">
+<style>
+.split-container {
+  display: flex;
+  height: calc(100vh - 120px);
+  gap: 8px;
+  background: #cbd5e1;
+}
+.split-pane-half {
+  flex: 1;
+  background: #ffffff;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+}
+.pdf-page-view {
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  padding: 40px 50px;
+  min-height: 900px;
+  font-family: 'TH Sarabun PSK', 'Angsana New', serif;
+  font-size: 16pt;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<main class="app-main p-2" style="max-width: 100%;">
+
+  <div class="page-head py-2 px-3 mb-2">
+    <div>
+      <h1 class="fs-5 m-0"><i class="fa-solid fa-columns me-2 text-primary"></i>Split-Screen Viewer — สำนวน คดี-10.1-2569/001</h1>
+      <small class="text-muted">เปิดดูคำฟ้อง/คำสั่งอัยการ PDF คู่กับกรอบยกร่างความเห็นแย้งและ Knowledge Base</small>
+    </div>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <span class="st st-urgent"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 3 วัน</span>
+      <a href="01-work-inbox.html" class="btn btn-xs btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับไป Work Inbox</a>
+    </div>
+  </div>
+
+  <div class="split-container">
+    
+    <!-- LEFT: Document View -->
+    <div class="split-pane-half border">
+      <div class="bg-navy text-white p-2 d-flex align-items-center justify-content-between" style="background:#0F2A62;">
+        <span class="small fw-bold"><i class="fa-solid fa-file-pdf me-2 text-danger"></i>คำสั่งไม่ฟ้องเด็ดขาดจากพนักงานอัยการ.pdf</span>
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-xs btn-outline-light"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+          <button class="btn btn-xs btn-outline-light"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+        </div>
+      </div>
+      <div class="p-3 bg-secondary flex-grow-1 overflow-auto d-flex justify-content-center">
+        <div class="pdf-page-view w-100" style="max-width: 720px;">
+          <div class="text-center fw-bold mb-3" style="font-size: 20pt;">คำสั่งไม่ฟ้องเด็ดขาดของพนักงานอัยการ</div>
+          <div class="text-end mb-3">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต<br>วันที่ 28 กรกฎาคม 2569</div>
+          <p><strong>เรื่อง:</strong> คำสั่งเด็ดขาดไม่สั่งฟ้องในคดีอาญาที่ 45/2569</p>
+          <p><strong>เรียน:</strong> เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (เลขาธิการ ป.ป.ท.)</p>
+          <p style="text-indent: 2em;">ตามที่ สำนักงาน ป.ป.ท. ได้ส่งรายงานการไต่สวนข้อเท็จจริง คดีกล่าวหาข้าราชการตำแหน่งนักบริหาร ในข้อหาปฏิบัติหรือเว้นการปฏิบัติหน้าที่โดยมิชอบในการจัดซื้อจัดจ้างโครงการปรับปรุงอาคารฯ นั้น</p>
+          <p style="text-indent: 2em;">พนักงานอัยการได้พิจารณาพยานหลักฐานในสำนวนแล้ว เห็นว่า พยานหลักฐานยังไม่พอฟังได้ว่าผู้ถูกกล่าวหากระทำความผิดตามข้อกล่าวหา จึงมีคำสั่งเด็ดขาด<strong>ไม่สั่งฟ้อง</strong>ผู้ถูกกล่าวหาในคดีนี้</p>
+          <br>
+          <div class="text-end">(นายสมชาย สุจริตธรรม)<br>อัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Legal Draft Form -->
+    <div class="split-pane-half border">
+      <div class="bg-light p-2 border-bottom d-flex align-items-center justify-content-between">
+        <span class="fw-bold text-navy"><i class="fa-solid fa-pen-to-square me-2"></i>กรอบยกร่างความเห็นของนิติกร</span>
+        <button class="btn btn-xs btn-outline-primary" onclick="searchKM()"><i class="fa-solid fa-lightbulb me-1"></i>ค้นหาตัวอย่างคดี (KM Base)</button>
+      </div>
+      <div class="p-3 flex-grow-1 overflow-auto">
+        <form onsubmit="submitApproval(event)">
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold">ความเห็นเสนอผู้บังคับบัญชา <span class="text-danger">*</span></label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="op" id="op1" checked>
+              <label class="btn btn-outline-danger btn-sm" for="op1"><i class="fa-solid fa-thumbs-down me-1"></i>เห็นควรทำความเห็นแย้งคำสั่งอัยการ</label>
+              
+              <input type="radio" class="btn-check" name="op" id="op2">
+              <label class="btn btn-outline-success btn-sm" for="op2"><i class="fa-solid fa-thumbs-up me-1"></i>เห็นชอบตามคำสั่งอัยการ (ไม่แย้ง)</label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">สาระสำคัญพยานหลักฐานและข้อกฎหมาย <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="8" id="draftText" required>จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พยานเอกสารและพยานบุคคลที่ ป.ป.ท. ได้รวบรวมไว้ ปรากฏพยานหลักฐานชัดเจนว่าผู้ถูกกล่าวหามีเจตนาละเว้นการปฏิบัติหน้าที่ตามระเบียบการจัดซื้อจัดจ้างฯ ซึ่งทำให้เกิดความเสียหายแก่ทางราชการ การที่พนักงานอัยการมีคำสั่งไม่ฟ้องโดยอ้างว่าพยานหลักฐานไม่พอนั้น นิติกรเห็นว่าเป็นการด่วนสรุปข้อเท็จจริง
+
+จึงเห็นควรเสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ เพื่อเสนอเลขาธิการ ป.ป.ท. ส่งเรื่องให้อัยการสูงสุดพิจารณาชี้ขาดต่อไป</textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 border-top pt-3">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="saveDraft()"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง</button>
+            <button type="submit" class="btn btn-sm btn-navy"><i class="fa-solid fa-paper-plane me-1"></i>ส่งเสนออนุมัติ (e-Approval)</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js"></script>
+<script>
+  ECMIS.renderShell('03-split-viewer.html');
+
+  function searchKM() {
+    Swal.fire({
+      title: '💡 Knowledge Base ตัวอย่างแนวคำวินิจฉัย',
+      html: `<div class="text-start small">
+        <div class="p-2 border rounded mb-2 bg-light">
+          <strong>คดีตัวอย่าง 1/2567:</strong> การทำความเห็นแย้งคดีจัดซื้อจัดจ้าง
+          <button class="btn btn-xs btn-primary float-end" onclick="insertKM()">แทรกข้อความ</button>
+        </div>
+      </div>`,
+      showConfirmButton: false
+    });
+  }
+
+  function insertKM() {
+    Swal.close();
+    document.getElementById("draftText").value += "\n\n(อ้างอิงบรรทัดฐาน ป.ป.ท. 1/2567: ตามมาตรา 172 แห่ง พ.ร.บ. ประกอบรัฐธรรมนูญฯ)";
+    Swal.fire({ icon:'success', title:'แทรกแนวคดีเรียบร้อย', timer:1000, showConfirmButton:false });
+  }
+
+  function saveDraft() {
+    Swal.fire({ icon:'success', title:'บันทึกร่างสำเร็จ', timer:1000, showConfirmButton:false });
+  }
+
+  function submitApproval(e) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'question',
+      title: 'ยืนยันการส่งเสนออนุมัติ?',
+      text: 'ร่างความเห็นจะถูกส่งไปยัง ผอ.กองกฎหมาย เพื่อพิจารณา e-Approval',
+      showCancelButton: true,
+      confirmButtonText: 'ตกลงส่งอนุมัติ',
+      confirmButtonColor: '#0F2A62'
+    }).then((res) => {
+      if(res.isConfirmed) {
+        window.location.href = "04-approval-review.html";
+      }
+    });
+  }
+</script>
+</body>
+</html>
