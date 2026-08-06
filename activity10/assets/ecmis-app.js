@@ -943,11 +943,17 @@ const NAV = [
   { section:'ภาพรวมระบบ' },
   { href:'01-work-inbox.html',            icon:'fa-inbox',            label:'Work Inbox (คิวงาน)', badge:true },
   { href:'02-case-register.html',         icon:'fa-folder-open',      label:'ทะเบียนสำนวน/คำร้อง' },
-  { section:'กระบวนงานกฎหมายในทางคดี (กิจกรรมที่ 10)' },
+  { section:'10.1 คดีชั้นอัยการ/ศาล' },
   { href:'03-split-viewer.html',          icon:'fa-columns',          label:'Split-Screen Viewer (ยกร่าง)', step:1 },
   { href:'04-approval-review.html',       icon:'fa-user-check',       label:'e-Approval (เสนอพิจารณา)', step:2 },
   { href:'05-digital-signature.html',     icon:'fa-file-signature',   label:'e-Signature (ลงนามดิจิทัล)', step:3 },
-  { href:'06-board-resolution.html',      icon:'fa-scale-balanced',   label:'มติและผลคำวินิจฉัยชี้ขาด', step:4 }
+  { href:'06-board-resolution.html',      icon:'fa-scale-balanced',   label:'มติและผลคำวินิจฉัยชี้ขาด', step:4 },
+  { section:'10.2 คำร้อง/คำอุทธรณ์เปิดเผยข้อมูล' },
+  { href:'07-info-request-form.html',     icon:'fa-envelope-open-text',label:'คำร้อง/คำอุทธรณ์ข้อมูลข่าวสาร', step:5 },
+  { href:'08-subcommittee-appeal-review.html', icon:'fa-users-gear',  label:'คณะอนุกรรมการวินิจฉัยอุทธรณ์', step:6 },
+  { section:'10.3 ระบบการจัดการคดีปกครอง' },
+  { href:'09-admin-court-notice.html',    icon:'fa-landmark-flag',    label:'คดีปกครอง (หมายเรียก/คำให้การ)', step:7 },
+  { href:'10-legal-knowledge-base.html',  icon:'fa-lightbulb',        label:'คลังความรู้คดีตัวอย่าง (KM)', step:8 }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ
