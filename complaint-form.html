@@ -582,17 +582,17 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
             </div>
             <div class="col-12">
               <label class="form-label">สถานะเครือข่าย ป.ป.ท.<span class="req">*</span></label>
-              <select class="form-select" id="networkStatus" required onchange="toggleNetworkVerifyCode()">
+              <select class="form-select" id="networkStatus" required>
                 <option selected>เครือข่าย ป.ป.ท.</option>
                 <option>เครือข่ายภาคเอกชน</option>
                 <option>เครือข่ายประชาชน/ประชาสังคม</option>
                 <option>เครือข่ายขบวน/สภาองค์กรชุมชน</option>
               </select>
             </div>
-            <div class="col-12" id="networkVerifyCodeWrap">
+            <div class="col-12">
               <label class="form-label" for="networkVerifyCode">รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.<span class="req">*</span></label>
-              <input type="text" class="form-control" id="networkVerifyCode" maxlength="20" placeholder="กรอกรหัสยืนยันการเป็นเครือข่าย ป.ป.ท." required>
-              <div class="small text-muted" style="margin-top:.25rem">ใช้สำหรับยืนยันว่าท่านเป็นเครือข่าย ป.ป.ท. จริง กรุณากรอกรหัสที่ได้รับจากสำนักงาน</div>
+              <input type="text" class="form-control" id="networkVerifyCode" maxlength="15" placeholder="กรอกรหัสยืนยันการเป็นเครือข่าย ป.ป.ท." required>
+              <div class="small text-muted" style="margin-top:.25rem">ใช้สำหรับยืนยันว่าท่านเป็นเครือข่าย ป.ป.ท. จริง กรุณากรอกรหัสที่ได้รับจากสำนักงาน (ความยาวไม่เกิน 15 ตัวอักษร)</div>
             </div>
           </div>
         </div>
@@ -916,20 +916,6 @@ wireCounter('complaintDetail', 'complaintDetailCounter', 3000);
 wireCounter('agencyName', 'agencyNameCounter', 150);
 wireCounter('incidentPlace', 'incidentPlaceCounter', 300);
 wireCounter('desiredAction', 'desiredActionCounter', 1500);
-
-function toggleNetworkVerifyCode(){
-  const isNetworkMember = document.getElementById('networkStatus').value === 'เครือข่าย ป.ป.ท.';
-  const wrap = document.getElementById('networkVerifyCodeWrap');
-  const codeInput = document.getElementById('networkVerifyCode');
-  wrap.classList.toggle('d-none', !isNetworkMember);
-  codeInput.disabled = !isNetworkMember;
-  codeInput.required = isNetworkMember;
-  if(!isNetworkMember){
-    codeInput.value = '';
-    codeInput.classList.remove('is-invalid');
-  }
-}
-toggleNetworkVerifyCode();
 
 const complainantIdentityFields=['nationalId','firstName','lastName','address','phone','email'];
 function getComplainantIdentityState(){
@@ -1322,9 +1308,7 @@ function buildReviewSummary(){
   }
   appendReviewRow(reviewBody, 'หัวข้อเรื่องร้องเรียน', val('complaintSubject'));
   appendReviewRow(reviewBody, 'สถานะเครือข่าย ป.ป.ท.', networkText);
-  if(document.getElementById('networkStatus').value === 'เครือข่าย ป.ป.ท.'){
-    appendReviewRow(reviewBody, 'รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.', val('networkVerifyCode'));
-  }
+  appendReviewRow(reviewBody, 'รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.', val('networkVerifyCode'));
   appendReviewRow(reviewBody, 'รายละเอียดการร้องเรียน', val('complaintDetail'));
   appendReviewRow(reviewBody, 'หน่วยงานที่ถูกร้องเรียน', val('agencyName'));
   appendReviewRow(reviewBody, 'สถานที่เกิดเหตุ', val('incidentPlace'));
