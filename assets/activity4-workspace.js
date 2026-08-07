@@ -402,7 +402,7 @@
   function documentPackPanel(state){
     const d=state.documentData,pack=d.documentPack||{pages:{complainant:10,'1-03':2}},pages=pack.pages||{};
     const ids=officialDocumentIds(state);
-    const stepItem=(no,id)=>{const doc=OFFICIAL_DOCUMENTS[id]||{name:'ปกลับ (ปกหลัง)',register:'none'};const isCover=['1-01','back-cover'].includes(id);return `<li class="pack-step"><b class="pack-step-no">${no}</b><div class="pack-step-body"><strong>${id==='back-cover'?'':'ปปท. '+id+' '}${escapeHtml(doc.name)}</strong><small>${isCover?'แบบพิมพ์จริงไม่มีปกหลัง — ชุดเอกสารมีเพียงปกหน้า (แบบ 1-01)':escapeHtml(documentRegisterLabel(doc))}</small></div><button type="button" class="pack-open" data-doc-open="${id}">เปิดเอกสาร</button><span class="pack-badge ${isCover?'muted':''}">${isCover?'ไม่นับหน้า':`${doc.pages} หน้า`}</span></li>`};
+    const stepItem=(no,id)=>{const doc=OFFICIAL_DOCUMENTS[id]||{name:'ปกหน้า (แบบ 1-01)',register:'none'};const isCover=['1-01','back-cover'].includes(id);return `<li class="pack-step"><b class="pack-step-no">${no}</b><div class="pack-step-body"><strong>${id==='back-cover'?'':'ปปท. '+id+' '}${escapeHtml(doc.name)}</strong><small>${isCover?'แบบพิมพ์จริงไม่มีปกหลัง — ชุดเอกสารมีเพียงปกหน้า (แบบ 1-01)':escapeHtml(documentRegisterLabel(doc))}</small></div><button type="button" class="pack-open" data-doc-open="${id}">เปิดเอกสาร</button><span class="pack-badge ${isCover?'muted':''}">${isCover?'ไม่นับหน้า':`${doc.pages} หน้า`}</span></li>`};
     const hint=(strong,body)=>`<span class="complaint-hint"><button type="button" aria-label="ดูคำแนะนำ">?</button><span class="complaint-hint-box" role="tooltip"><strong>${strong}</strong>${body}</span></span>`;
     const countInputs=ids.filter(id=>id!=='1-01'&&id!=='1-02').map((id,index)=>`<div class="pack-count-row"><span class="pack-count-no">${index+2}</span><span class="pack-count-name" title="${escapeHtml(OFFICIAL_DOCUMENTS[id].name)}">ปปท. ${id} ${escapeHtml(OFFICIAL_DOCUMENTS[id].name)}</span><input type="number" min="0" value="${Number(pages[id])||OFFICIAL_DOCUMENTS[id].pages}" data-pack-page="${id}" aria-label="จำนวนหน้า ปปท. ${id}"></div>`).join('');
     return `<div class="ws-section pack-card"><div class="pack-head"><p class="ws-kicker">เอกสารส่งพิจารณา · เจ้าหน้าที่รับเรื่องเป็นผู้จัดทำ</p><h3>จัดทำและเรียงชุดเอกสาร ${hint('ลำดับการจัดทำ','จัดทำแบบบันทึกการพิจารณาและกลั่นกรองเรื่องร้องเรียน/เบาะแสก่อน จากนั้นจัดทำเอกสารตามผลพิจารณา และเรียงชุดเอกสารตามรายการด้านล่าง')}</h3></div><ol class="pack-steps">${stepItem(1,'back-cover')}${ids.map((id,index)=>stepItem(index+2,id)).join('')}</ol>${usesReviewRecord(state)?`<div class="pack-work-record"><strong>${REVIEW_RECORD_NAME}</strong><small>เอกสารบันทึกผลพิจารณาในระบบ แยกจากแบบ 1-02</small><button type="button" class="pack-open" data-doc-open="${REVIEW_RECORD_ID}">เปิดเอกสาร</button></div>`:''}<div class="pack-count-card"><h4>นับจำนวนหน้า ${hint('นับหน้าไม่รวมตัวเอง และไม่นับปก','เอกสารผู้ร้องและเอกสารแนบ รวมเอกสารตามผลพิจารณา แล้วลบ 1 เพื่อได้เลขหน้าสุดท้าย จากนั้นบวกปกสำนวน 1 แผ่น')}</h4><div class="pack-count-table"><div class="pack-count-row pack-count-head"><span>ลำดับ</span><span>รายการเอกสาร</span><span>หน้า</span></div><div class="pack-count-row"><span class="pack-count-no">1</span><span class="pack-count-name" title="ข้อมูลเรื่องร้องเรียนและเอกสารแนบ">ข้อมูลเรื่องร้องเรียน (${usesForm102(state.caseData.channel)?'แบบ 1-02':'ต้นฉบับ'}) และเอกสารแนบ</span><input id="packComplaintPages" data-pack-page="complainant" type="number" min="0" value="${Number(pages.complainant)||10}" aria-label="จำนวนหน้าข้อมูลเรื่องร้องเรียนและเอกสารแนบ"></div>${countInputs}<div class="pack-count-row pack-count-total-row"><span class="pack-count-no">รวม</span><span class="pack-count-name"></span><strong class="pack-count-total-val" id="packTotalSum">—</strong></div></div><div class="pack-total"><div><span>เลขหน้าสุดท้าย</span><strong id="packTotalPages">—</strong><small>หน้า (ไม่รวมตัวเอง)</small></div><div><span>จำนวนแผ่นรวมปกหน้า</span><strong id="packTotalCover">—</strong><small>แผ่น</small></div></div></div></div>`;
@@ -422,6 +422,59 @@
     if(d.caseNumber)return `<section class="case-issuance issued"><span>เลขสำนวนที่ออกแล้ว</span><strong>${escapeHtml(d.caseNumber)}</strong><p>เลขล่าสุดของปี ${buddhistYear} · ออกหลัง ${escapeHtml(d.divisionSignature?.signerRole||'ผู้อำนวยการกองบริหารคดี')} ลงนาม</p></section>`;
     return `<section class="case-issuance"><span>ลำดับเลขสำนวน ปี ${buddhistYear}</span><div class="case-sequence-preview"><p><small>เลขล่าสุด</small><strong>${formatCaseSequence(latest,buddhistYear)}</strong></p><p><small>เลขถัดไป</small><strong>${formatCaseSequence(next,buddhistYear)}</strong></p></div><p>เลขถัดไปยังไม่ถูกจอง ระบบจะออกเลขหลัง ผู้อำนวยการกองบริหารคดี ลงนามอนุมัติสำเร็จ</p></section>`;
   }
+
+  function parseThaiDate(text){
+    const m=String(text||'').match(/(\d{1,2})\s+([\u0E00-\u0E7F]+)\s+(\d{4})/);
+    if(!m)return null;
+    const months={มกราคม:1,กุมภาพันธ์:2,มีนาคม:3,เมษายน:4,พฤษภาคม:5,มิถุนายน:6,กรกฎาคม:7,สิงหาคม:8,กันยายน:9,ตุลาคม:10,พฤศจิกายน:11,ธันวาคม:12};
+    const mon=months[m[2]];
+    if(!mon)return null;
+    return new Date(Number(m[3])-543,mon-1,Number(m[1]));
+  }
+  function prescriptionLevel(days){
+    if(days===null)return null;
+    if(days<0)return {key:'expired',label:'ขาดอายุความแล้ว',color:'#7a0000'};
+    if(days<=90)return {key:'red',label:'เหลือไม่ถึง 3 เดือน',color:'#c0392b'};
+    if(days<=180)return {key:'orange',label:'เหลือไม่ถึง 6 เดือน',color:'#d35400'};
+    if(days<=365)return {key:'yellow',label:'เหลือไม่ถึง 1 ปี',color:'#b8860b'};
+    return {key:'green',label:'เหลือเกิน 1 ปี',color:'#1e7e34'};
+  }
+  function remainingYMD(expireTs){
+    const now=Date.now();
+    if(expireTs<=now)return {text:'หมดอายุความแล้ว',days:Math.floor((now-expireTs)/86400000)};
+    const days=Math.floor((expireTs-now)/86400000);
+    let y=Math.floor(days/365),m=Math.floor((days%365)/30),d=days%30;
+    if(m>=12){y+=1;m-=12}
+    const parts=[];
+    if(y)parts.push(y+' ปี');
+    if(m)parts.push(m+' เดือน');
+    if(d)parts.push(d+' วัน');
+    return {text:parts.length?parts.join(' '):'0 วัน',days};
+  }
+  function caseAgeCard(state){
+    const d=state.documentData;
+    if(!d.caseNumber||!d.caseNumberIssuedAt)return '';
+    const issued=Date.parse(d.caseNumberIssuedAt);
+    if(!issued)return '';
+    const ageDays=Math.max(0,Math.floor((Date.now()-issued)/86400000));
+    const issuedText=new Date(issued).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+    const base=parseThaiDate(state.caseData&&state.caseData.received)||new Date(issued);
+    const expire=base.getTime()+2*365*86400000;
+    const remain=remainingYMD(expire);
+    const lv=prescriptionLevel(remain.days);
+    const badge=lv?`<span class="age-badge" style="background:${lv.color}">${lv.label}</span>`:'<span class="age-badge age-badge-none">ไม่ระบุอายุความ</span>';
+    const received=parseThaiDate(state.caseData&&state.caseData.received);
+    let r213='';
+    if(received){
+      const deadline=received.getTime()+60*86400000;
+      const left=Math.floor((deadline-Date.now())/86400000);
+      const dlText=new Date(deadline).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+      const lv=left<0?{label:'ครบกำหนดแล้ว',color:'#7a0000'}:left<=5?{label:'เหลือไม่ถึง 5 วัน',color:'#c0392b'}:left<=15?{label:'เหลือไม่ถึง 15 วัน',color:'#d35400'}:{label:'อยู่ในกรอบ',color:'#1e7e34'};
+      r213=`<div class="age-row"><span><strong>รายงาน 213 (60 วัน)</strong> เหลือ ${Math.max(0,left)} วัน · ครบ ${dlText}</span><span class="age-badge" style="background:${lv.color}">${lv.label}</span></div>`;
+    }
+    return `<section class="case-age"><div class="age-row"><span><strong>อายุเรื่อง</strong> ${ageDays} วัน</span><small>เริ่มนับ ${issuedText} (หลัง ผู้อำนวยการกองบริหารคดี ลงนามอนุมัติ)</small></div><div class="age-row"><span><strong>อายุความ</strong> ${remain.text}</span>${badge}</div>${r213}</section>`;
+  }
+
   function getState(id){
     const store=readStore();
     const raw=store[id];
@@ -500,7 +553,18 @@
       step=applyFontSize(step);
     });
   }
-  function header(roleSelect=true){return `<header class="ws-topbar"><div class="ws-topbar-inner"><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a>${roleSelect?`<div class="ws-profile">${fontSizeControls()}<button type="button" class="ws-admin-tool ws-button secondary" id="manageSuggestions">จัดการคำแนะนำ</button><button type="button" class="ws-admin-tool ws-button secondary" id="manageBackups">จัดการผู้ปฏิบัติงานแทน</button><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRole"><option value="admin">ธุรการ ศรร.</option><option value="officer">เจ้าหน้าที่รับเรื่อง</option><option value="regional-officer">เจ้าหน้าที่เขต</option><option value="center">ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</option><option value="division">ผู้อำนวยการกองบริหารคดี</option><option value="acting">ผู้รักษาราชการแทนตามคำสั่ง</option></select><label class="ws-hidden" id="wsRegionalRegionField"><span>พื้นที่รับผิดชอบ</span><select class="ws-role-select" id="wsRegionalRegion">${REGIONAL_REGIONS.map(region=>`<option value="${region}">${region}</option>`).join('')}</select></label></div>`:`<div class="ws-profile">${fontSizeControls()}<a class="ws-button secondary" href="staff-workflow.html">กลับรายการเจ้าหน้าที่</a></div>`}</div></header>`}
+
+  const SEARCH_ACTIONS=[
+    {label:'ลงรับและมอบหมาย (ธุรการ ศรร.)',kw:'มอบหมาย ลงรับ assign',action:'assign'},
+    {label:'บันทึกและส่งพิจารณา (เจ้าหน้าที่รับเรื่อง)',kw:'ส่งพิจารณา บันทึกส่ง officer',action:'officer-send'},
+    {label:'บันทึกและส่ง ผู้อำนวยการกองบริหารคดี (ผอ.ศรร.)',kw:'ส่ง ผอ.กบค center เห็นชอบ',action:'center-send'},
+    {label:'อนุมัติและดำเนินการต่อ (ผอ.กบค.)',kw:'อนุมัติ approve ลงนาม',action:'approve'},
+    {label:'พิมพ์/PDF เอกสาร',kw:'พิมพ์ pdf print',action:'print'},
+    {label:'แก้ไขเอกสาร (โหมดแก้ไขเหมือน Word)',kw:'แก้ไขเอกสาร word edit',action:'toggle-edit'},
+    {label:'ส่งกลับเจ้าหน้าที่แก้ไข',kw:'ส่งกลับ แก้ไข return',action:'division-return'},
+  ];
+
+  function header(roleSelect=true){return `<header class="ws-topbar"><div class="ws-topbar-inner"><div class="ws-search"><input id="wsSearchInput" type="search" placeholder="ค้นหาคดี เอกสาร ฟังก์ชัน..." autocomplete="off" aria-label="ค้นหาทุกอย่าง"><div class="ws-search-results ws-hidden" id="wsSearchResults"></div></div><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a>${roleSelect?`<div class="ws-profile">${fontSizeControls()}<button type="button" class="ws-admin-tool ws-button secondary" id="manageSuggestions">จัดการคำแนะนำ</button><button type="button" class="ws-admin-tool ws-button secondary" id="manageBackups">จัดการผู้ปฏิบัติงานแทน</button><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRole"><option value="admin">ธุรการ ศรร.</option><option value="officer">เจ้าหน้าที่รับเรื่อง</option><option value="regional-officer">เจ้าหน้าที่เขต</option><option value="center">ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</option><option value="division">ผู้อำนวยการกองบริหารคดี</option><option value="acting">ผู้รักษาราชการแทนตามคำสั่ง</option></select><label class="ws-hidden" id="wsRegionalRegionField"><span>พื้นที่รับผิดชอบ</span><select class="ws-role-select" id="wsRegionalRegion">${REGIONAL_REGIONS.map(region=>`<option value="${region}">${region}</option>`).join('')}</select></label></div>`:`<div class="ws-profile">${fontSizeControls()}<a class="ws-button secondary" href="staff-workflow.html">กลับรายการเจ้าหน้าที่</a></div>`}</div></header>`}
   function formatFileSize(bytes){if(!bytes)return'';if(bytes>=1048576)return`${(bytes/1048576).toFixed(1)} MB`;if(bytes>=1024)return`${Math.round(bytes/1024)} KB`;return`${bytes} B`}
   function attachmentName(a){return typeof a==='string'?a:(a&&a.name?a.name:'')}
   function attachmentDetails(a){if(typeof a==='string')return'';const parts=[];if(a.type)parts.push(a.type);if(a.pages)parts.push(`${a.pages} หน้า`);if(a.size)parts.push(a.size);return parts.length?` (${parts.join(' · ')})`:''}
@@ -515,32 +579,198 @@
   function caseView(state){const w=state.documentData.workingCopy;if(!w)return state.caseData;const merged={};for(const key in state.caseData)merged[key]=state.caseData[key];for(const key in w)if(w[key]!==undefined&&w[key]!=='')merged[key]=w[key];return merged}
   function workingCopyChanged(state,key){const w=state.documentData.workingCopy;return !!w&&String(w[key]||'')!==String(state.caseData[key]||'')}
   function workingCopySection(state){const c=state.caseData,w=ensureWorkingCopy(state);const cap=key=>key[0].toUpperCase()+key.slice(1);const num=registryReceiptNumber(c)||'....................';const field=(key,label,full,textarea)=>`<div class="ws-field${full?' ws-field-full':''}"><label for="wc${cap(key)}">${label}</label>${textarea?`<textarea id="wc${cap(key)}">${escapeHtml(w[key])}</textarea>`:`<input id="wc${cap(key)}" value="${escapeHtml(w[key])}">`}</div>`;return `<div class="ws-section working-copy-section"><div class="wc-section-head"><h3>สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)</h3><span class="wc-copy-chip">สำเนา</span></div><div class="wc-tabs" role="tablist" aria-label="เลือกฉบับเอกสาร"><button type="button" class="wc-tab" data-wc-tab="original" aria-selected="false">ฉบับผู้ร้อง</button><button type="button" class="wc-tab active" data-wc-tab="copy" aria-selected="true">ฉบับเจ้าหน้าที่</button></div><div class="wc-panel ws-hidden" data-wc-panel="original"><div class="wc-orig-note">ต้นฉบับของผู้ร้อง เลขรับ ${escapeHtml(num)} — ระบบไม่แก้ไขข้อมูลนี้ เจ้าหน้าที่แก้ไขได้เฉพาะในฉบับเจ้าหน้าที่</div>${workingCopyOriginalView(c)}</div><div class="wc-panel" data-wc-panel="copy"><div class="wc-editor-banner"><strong>แก้ไขในสำเนาเท่านั้น</strong> — ต้นฉบับของผู้ร้อง (เลขรับ ${escapeHtml(num)}) อยู่ในแท็บ "ฉบับผู้ร้อง" และไม่ถูกเขียนทับ</div><div class="ws-grid-2">${field('complainant','ผู้ร้องเรียน')}${field('citizenId','เลขบัตรประชาชน')}${field('phone','โทรศัพท์')}${field('email','อีเมล')}${field('address','ที่อยู่',true)}${field('agency','ผู้ถูกร้อง/หน่วยงาน')}${field('subject','เรื่องร้องเรียน')}${field('type','ประเภทเรื่อง')}${field('detail','รายละเอียดพฤติการณ์',true,true)}${field('place','สถานที่เกิดเหตุ')}${field('province','จังหวัด')}${field('region','เขตพื้นที่')}${field('damage','ความเสียหายหรือความเดือดร้อน',true)}${field('request','ความประสงค์ของผู้ร้อง',true)}</div></div></div>`}
-  function workingCopyPaper(state){const c=state.caseData,w=ensureWorkingCopy(state);const num=registryReceiptNumber(c)||'....................';const edited=key=>workingCopyChanged(state,key)?` <em class="wc-edited">แก้ไขโดยเจ้าหน้าที่</em>`:'';const item=(no,key,label,extra)=>`<div class="wc-item"><p class="wc-item-head"><span class="wc-no">${no}</span><span class="wc-label">${label}</span>${edited(key)}</p><p class="form3-free-text">${escapeHtml(w[key]||'')}</p>${extra||''}</div>`;return `<article class="a4-paper template-working-copy" id="activePaper">
+  function complainantOriginalPaper(state){
+    const c=state.caseData;
+    const num=registryReceiptNumber(c)||'....................';
+    return `<article class="a4-paper template-official-form template-complainant-original" id="activePaper">
       <p class="document-confidential confidential-top">ลับ</p>
-      <span class="wc-stamp" aria-hidden="true">สำเนา</span>
       <header class="form3-header">
-        <img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท.">
-        <h2 class="form3-title">สำเนาเรื่องร้องเรียน<br><span class="wc-title-sub">(ฉบับเจ้าหน้าที่)</span></h2>
-        <div class="form3-number"><strong>เลขรับเรื่องที่</strong> ${escapeHtml(num)}<br><strong>วันที่</strong> ${escapeHtml(c.received)}<br><strong>ช่องทาง</strong> ${escapeHtml(c.channel||'-')}</div>
+        <img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท." class="form3-pacc-logo">
+        <div class="form3-header-right">
+          <p class="form3-system-name">ระบบบริหารจัดการเรื่องร้องเรียน สำนักงาน ป.ป.ท.</p>
+          <h2 class="official-form-title">แบบบันทึกข้อมูลเรื่องร้องเรียน (ฉบับต้นฉบับ)</h2>
+          <div class="form3-number">
+            <strong>เลขรับเรื่องที่</strong> ${escapeHtml(num)}<br>
+            <strong>วันที่รับเรื่อง</strong> ${escapeHtml(c.received||'-')}<br>
+            <strong>ช่องทางยื่นเรื่อง</strong> ${escapeHtml(c.channel||'-')}
+          </div>
+        </div>
       </header>
-      <p class="form3-intro">ศูนย์รับเรื่องร้องเรียน สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p>
-      <section class="wc-items">
-        ${item('๑','complainant','ผู้ร้องเรียน',`<p class="form3-free-text">เลขบัตรประชาชน ${escapeHtml(w.citizenId||'-')} · โทรศัพท์ ${escapeHtml(w.phone||'-')} · อีเมล ${escapeHtml(w.email||'-')}${edited('citizenId')}${edited('phone')}${edited('email')}</p><p class="form3-free-text">ที่อยู่ ${escapeHtml(w.address||'-')}${edited('address')}</p>`)}
-        ${item('๒','agency','ผู้ถูกร้อง/หน่วยงาน')}
-        ${item('๓','subject','เรื่องร้องเรียน')}
-        ${item('๔','type','ประเภทเรื่อง')}
-        ${item('๕','detail','รายละเอียดพฤติการณ์',`<p class="form3-writing-text compact">${escapeHtml(w.detail||'')}</p>`)}
-        ${item('๖','place','สถานที่เกิดเหตุ')}
-        ${item('๗','province','จังหวัด/เขตพื้นที่')}
-        ${item('๘','damage','ความเสียหายหรือความเดือดร้อน')}
-        ${item('๙','request','ความประสงค์ของผู้ร้อง')}
-      </section>
-      <footer class="form3-footer-block">
-        <p>ลงชื่อ .................................................... <span>เจ้าหน้าที่รับเรื่อง</span></p>
-        <div class="form3-operator"><p class="form3-signature-name">(${escapeHtml(state.documentData.assignedOfficer||'............................................')})</p><p class="form3-signature-position">เจ้าหน้าที่รับเรื่อง</p></div>
+      <div class="official-form-header-divider"></div>
+
+      <table class="official-form-table">
+        <tbody>
+          <tr>
+            <td class="col-num">๑.</td>
+            <td class="col-label"><strong>ผู้ร้องเรียน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.complainant||'-')}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-sublabel">เลขบัตรประชาชน:</td>
+            <td>${escapeHtml(c.citizenId||'-')}</td>
+            <td><strong>เบอร์โทร:</strong> ${escapeHtml(c.phone||'-')} · <strong>อีเมล:</strong> ${escapeHtml(c.email||'-')}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-sublabel">ที่อยู่:</td>
+            <td colspan="2">${escapeHtml(c.address||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๒.</td>
+            <td class="col-label"><strong>ผู้ถูกร้อง / หน่วยงาน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.agency||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๓.</td>
+            <td class="col-label"><strong>เรื่องร้องเรียน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.subject||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๔.</td>
+            <td class="col-label"><strong>ประเภทเรื่อง</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.type||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๕.</td>
+            <td class="col-label" colspan="3"><strong>รายละเอียดพฤติการณ์</strong></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan="3">
+              <div class="official-writing-box">${escapeHtml(c.detail||'-')}</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-num">๖.</td>
+            <td class="col-label"><strong>สถานที่เกิดเหตุ</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.place||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๗.</td>
+            <td class="col-label"><strong>จังหวัด / เขตพื้นที่</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.province||'-')} (${escapeHtml(c.region||'-')})</td>
+          </tr>
+          <tr>
+            <td class="col-num">๘.</td>
+            <td class="col-label"><strong>ความเสียหาย/ความเดือดร้อน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.damage||'-')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๙.</td>
+            <td class="col-label"><strong>ความประสงค์ของผู้ร้อง</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(c.request||'-')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer class="official-form-footer">
+        <p style="margin:0 0 .25rem 0; font-size:11.5px;">ลงชื่อ ................................................................</p>
+        <p class="form3-signature-name" style="margin:0; font-size:11.5px; font-weight:600;">(${escapeHtml(state.documentData.assignedOfficer||'คุณสุพจน์')})</p>
+        <p class="form3-signature-position" style="margin:.1rem 0 0 0; font-size:11px; color:#333;">เจ้าหน้าที่ผู้รับเรื่องร้องเรียน</p>
       </footer>
-      <p class="doc-note">หมายเหตุ: เอกสารฉบับนี้เป็นสำเนาสำหรับการทำงานของเจ้าหน้าที่รับเรื่อง จัดทำจากข้อมูลที่ผู้ร้องให้ไว้ — การแก้ไขข้อมูลในฉบับนี้ไม่กระทบต้นฉบับของผู้ร้อง เลขรับ ${escapeHtml(num)}</p>
-    </article>`}
+      <p class="doc-official-note">* หมายเหตุ: เอกสารฉบับนี้เป็นข้อมูลที่ผู้ร้องเรียนยื่นผ่านระบบโดยตรง (ฉบับต้นฉบับ)</p>
+      <p class="document-confidential confidential-bottom">ลับ</p>
+    </article>`;
+  }
+
+  function workingCopyPaper(state){
+    const c=state.caseData;
+    const w=ensureWorkingCopy(state);
+    const num=registryReceiptNumber(c)||'....................';
+    const edited=key=>workingCopyChanged(state,key)?` <small class="official-edited-tag">(แก้ไขในสำเนา)</small>`:'';
+
+    return `<article class="a4-paper template-official-form template-working-copy" id="activePaper">
+      <p class="document-confidential confidential-top">ลับ</p>
+      <header class="form3-header">
+        <img src="${PACC_LOGO}" alt="ตราสำนักงาน ป.ป.ท." class="form3-pacc-logo">
+        <div class="form3-header-right">
+          <p class="form3-system-name">ระบบบริหารจัดการเรื่องร้องเรียน สำนักงาน ป.ป.ท.</p>
+          <h2 class="official-form-title">แบบบันทึกสำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)</h2>
+          <div class="form3-number">
+            <strong>เลขรับเรื่องที่</strong> ${escapeHtml(num)}<br>
+            <strong>วันที่รับเรื่อง</strong> ${escapeHtml(c.received||'-')}<br>
+            <strong>ช่องทางยื่นเรื่อง</strong> ${escapeHtml(c.channel||'-')}
+          </div>
+        </div>
+      </header>
+      <div class="official-form-header-divider"></div>
+
+      <table class="official-form-table">
+        <tbody>
+          <tr>
+            <td class="col-num">๑.</td>
+            <td class="col-label"><strong>ผู้ร้องเรียน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.complainant||'-')}${edited('complainant')}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-sublabel">เลขบัตรประชาชน:</td>
+            <td>${escapeHtml(w.citizenId||'-')}${edited('citizenId')}</td>
+            <td><strong>เบอร์โทร:</strong> ${escapeHtml(w.phone||'-')}${edited('phone')} · <strong>อีเมล:</strong> ${escapeHtml(w.email||'-')}${edited('email')}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="col-sublabel">ที่อยู่:</td>
+            <td colspan="2">${escapeHtml(w.address||'-')}${edited('address')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๒.</td>
+            <td class="col-label"><strong>ผู้ถูกร้อง / หน่วยงาน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.agency||'-')}${edited('agency')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๓.</td>
+            <td class="col-label"><strong>เรื่องร้องเรียน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.subject||'-')}${edited('subject')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๔.</td>
+            <td class="col-label"><strong>ประเภทเรื่อง</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.type||'-')}${edited('type')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๕.</td>
+            <td class="col-label" colspan="3"><strong>รายละเอียดพฤติการณ์</strong>${edited('detail')}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan="3">
+              <div class="official-writing-box">${escapeHtml(w.detail||'-')}</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-num">๖.</td>
+            <td class="col-label"><strong>สถานที่เกิดเหตุ</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.place||'-')}${edited('place')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๗.</td>
+            <td class="col-label"><strong>จังหวัด / เขตพื้นที่</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.province||'-')} (${escapeHtml(w.region||'-')})${edited('province')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๘.</td>
+            <td class="col-label"><strong>ความเสียหาย/ความเดือดร้อน</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.damage||'-')}${edited('damage')}</td>
+          </tr>
+          <tr>
+            <td class="col-num">๙.</td>
+            <td class="col-label"><strong>ความประสงค์ของผู้ร้อง</strong></td>
+            <td class="col-content" colspan="2">${escapeHtml(w.request||'-')}${edited('request')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer class="official-form-footer">
+        <p style="margin:0 0 .25rem 0; font-size:11.5px;">ลงชื่อ ................................................................</p>
+        <p class="form3-signature-name" style="margin:0; font-size:11.5px; font-weight:600;">(${escapeHtml(state.documentData.assignedOfficer||'คุณสุพจน์')})</p>
+        <p class="form3-signature-position" style="margin:.1rem 0 0 0; font-size:11px; color:#333;">เจ้าหน้าที่ผู้ตรวจทาน/รับเรื่องร้องเรียน</p>
+      </footer>
+      <p class="doc-official-note">* หมายเหตุ: เอกสารฉบับนี้เป็นสำเนาสำหรับการทำงานของเจ้าหน้าที่รับเรื่อง การแก้ไขข้อมูลไม่กระทบฉบับต้นฉบับ</p>
+      <p class="document-confidential confidential-bottom">ลับ</p>
+    </article>`;
+  }
   function adminCaseSummary(c){return `<div class="ws-readonly ws-admin-summary"><dl><div><dt>ผู้ร้องเรียน</dt><dd>${escapeHtml(c.complainant)}</dd></div><div><dt>เลขบัตรประชาชน 4 หลักท้าย</dt><dd>${escapeHtml(c.id4)}</dd></div><div><dt>โทรศัพท์</dt><dd>${escapeHtml(c.phone||'-')}</dd></div><div><dt>อีเมล</dt><dd>${escapeHtml(c.email||'-')}</dd></div><div class="ws-field-full"><dt>ที่อยู่</dt><dd>${escapeHtml(c.address||'-')}</dd></div><div class="ws-field-full"><dt>ชื่อเรื่องร้องเรียน</dt><dd>${escapeHtml(c.subject)}</dd></div><div><dt>ผู้ถูกร้อง/หน่วยงาน</dt><dd>${escapeHtml(c.agency)}</dd></div><div><dt>ประเภทเรื่อง</dt><dd>${escapeHtml(c.type)}</dd></div><div class="ws-field-full"><dt>รายละเอียดพฤติการณ์</dt><dd>${escapeHtml(c.detail)}</dd></div><div><dt>สถานที่เกิดเหตุ</dt><dd>${escapeHtml(c.place)}</dd></div><div><dt>จังหวัด/เขตพื้นที่</dt><dd>${escapeHtml(c.province)} · ${escapeHtml(c.region)}</dd></div><div class="ws-field-full"><dt>ความเสียหายหรือความเดือดร้อน</dt><dd>${escapeHtml(c.damage)}</dd></div><div class="ws-field-full"><dt>ความประสงค์ของผู้ร้อง</dt><dd>${escapeHtml(c.request)}</dd></div></dl></div>${attachmentList(c)}`}
   const PACC_LOGO = 'https://www.pacc.go.th/images/pacc_logo.png';
   const GARUDA_IMAGE = 'data:image/png;base64,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';
@@ -584,24 +814,13 @@
           ${writingArea(selected('not-accept'),d.notAcceptReason,true)}
         </section>
         <section class="form3-decision-column form3-accept-column">
-          <h3>${checkMark(selected('18/1ก'))} รับไว้ตรวจสอบ กรณี มาตรา 18/1(ก)</h3>
-          <p>${checkMark(selected('18/1ก')&&!zoneProposal)} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ก')&&!zoneProposal?'กองบริหารคดี':''}</p>
-          <p>${checkMark(selected('18/1ก')&&zoneProposal)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${zoneProposal?escapeHtml(d.proposedRegion):''}</p>
-          <h3>${checkMark(selected('18/1ข'))} รับไว้ตรวจสอบ กรณี มาตรา 18/1(ข)</h3>
-          <p>${checkMark(selected('18/1ข')&&!zoneProposal)} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/1ข')&&!zoneProposal?'กองบริหารคดี':''}</p>
-          <p>${checkMark(selected('18/1ข')&&zoneProposal)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${zoneProposal?escapeHtml(d.proposedRegion):''}</p>
-          <h3>${checkMark(selected('18/4'))} รับไว้ตรวจสอบ กรณี มาตรา 18/4</h3>
-          <p>${checkMark(selected('18/4')&&!zoneProposal)} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('18/4')&&!zoneProposal?'กองบริหารคดี':''}</p>
-          <p>${checkMark(selected('18/4')&&zoneProposal)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${zoneProposal?escapeHtml(d.proposedRegion):''}</p>
-          <h3>${checkMark(selected('58/2'))} รับไว้ตรวจสอบ กรณี มาตรา 58/2</h3>
-          <p>${checkMark(selected('58/2')&&!zoneProposal)} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected('58/2')&&!zoneProposal?'กองบริหารคดี':''}</p>
-          <p>${checkMark(selected('58/2')&&zoneProposal)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${zoneProposal?escapeHtml(d.proposedRegion):''}</p>
+          ${[['18/1ก','รับไว้ตรวจสอบ กรณี มาตรา 18/1(ก)'],['18/1ข','รับไว้ตรวจสอบ กรณี มาตรา 18/1(ข)'],['18/4','รับไว้ตรวจสอบ กรณี มาตรา 18/4'],['58/2','รับไว้ตรวจสอบ กรณี มาตรา 58/2']].map(([key,label])=>`<h3>${checkMark(selected(key))} ${label}</h3><p>${checkMark(selected(key)&&!zoneProposal)} มอบหมาย สำนัก/กอง (สำหรับ ศรร. กบค.)</p><p class="form3-line">${selected(key)&&!zoneProposal?'กองบริหารคดี':''}</p><p>${checkMark(selected(key)&&zoneProposal)} มอบหมาย ผู้รับผิดชอบ (สำหรับ สำนัก/กอง)</p><p class="form3-line">${zoneProposal?escapeHtml(d.proposedRegion):''}</p>`).join('')}
         </section>
       </div>
       <div class="form3-footer-block">
         <p class="form3-note"><strong>หมายเหตุ</strong> ให้สแกนเอกสารที่สำคัญและจำเป็นลงในระบบฯ<br><span>ทั้งนี้ กรณี ส่งเรื่องไปยังระบบไต่สวนให้นำเข้าเอกสารที่สแกนลงในระบบไต่สวนด้วย</span></p>
         <p class="form3-submit">จึงเรียนมาเพื่อโปรดพิจารณา</p>
-        <div class="form3-operator">${d.officerSignature?.signed?`<div class="form3-signed-block">${signatureImage('officer','document')}</div>`:'<div class="form3-operator-dots"></div>'}<p class="form3-signature-name">${d.officerSignature?.signed?`(${escapeHtml(assignedOfficerName(d))})`:'ชื่อผู้ดำเนินการ'}</p><p class="form3-signature-position">${d.officerSignature?.signed?'เจ้าหน้าที่รับเรื่อง':'ตำแหน่งผู้ดำเนินการ'}</p></div>
+        <div class="form3-operator">${d.officerSignature?.signed?`<div class="form3-signed-block">${signatureImage('officer','document')}</div>`:'<div class="form3-operator-dots"></div>'}<p class="form3-signature-name" data-editable="assignedOfficer" contenteditable="true" spellcheck="false">${d.officerSignature?.signed?`(${escapeHtml(assignedOfficerName(d))})`:'ชื่อผู้ดำเนินการ'}</p><p class="form3-signature-position">${d.officerSignature?.signed?'เจ้าหน้าที่รับเรื่อง':'ตำแหน่งผู้ดำเนินการ'}</p></div>
       </div>
       <div class="form3-opinion-grid">
         <section data-flow-section data-opinion-section="center">
@@ -649,7 +868,7 @@
     const officialIds=officialDocumentIds(state);
     const cover=officialIds.includes('1-01')?[['1-01',`ปปท. 1-01 ${OFFICIAL_DOCUMENTS['1-01'].name}`]]:[];
     const remaining=officialIds.filter(id=>id!=='1-01').map(id=>[id,`ปปท. ${id} ${OFFICIAL_DOCUMENTS[id].name}`]);
-    const docs=[['back-cover','ปกลับ (ปกหลัง)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
+    const docs=[['back-cover','ปกหน้า (แบบ 1-01)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
     const pages=[];
     docs.forEach(([id,name])=>{
       const source=document.createElement('div');
@@ -676,20 +895,20 @@
   function docTabs(state,role){
     if(role==='admin')return '';
     const officialIds=officialDocumentIds(state),cover=officialIds.includes('1-01')?[['1-01',`1-01 ${OFFICIAL_DOCUMENTS['1-01'].name}`]]:[],remaining=officialIds.filter(id=>id!=='1-01').map(id=>[id,`${id} ${OFFICIAL_DOCUMENTS[id].name}`]);
-    const docs=[['back-cover','ปกลับ (ปกหลัง)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),...(role==='officer'?[[ALL_DOCUMENTS_ID,'ดูชุดเอกสารทั้งหมด']]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
+    const docs=[['back-cover','ปกหน้า (แบบ 1-01)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),...(role==='officer'?[[ALL_DOCUMENTS_ID,'ดูชุดเอกสารทั้งหมด']]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
     const activeId=firstDocumentId(state,role);return docs.map(([id,name])=>`<button class="ws-doc-tab ${id===activeId?'active':''}" data-doc="${id}" aria-selected="${id===activeId?'true':'false'}">${name}</button>`).join('');
   }
   function docSelect(state,role){
     if(role==='admin')return '';
     const officialIds=officialDocumentIds(state),cover=officialIds.includes('1-01')?[['1-01',`1-01 ${OFFICIAL_DOCUMENTS['1-01'].name}`]]:[],remaining=officialIds.filter(id=>id!=='1-01').map(id=>[id,`${id} ${OFFICIAL_DOCUMENTS[id].name}`]);
-    const docs=[['back-cover','ปกลับ (ปกหลัง)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),...(role==='officer'?[[ALL_DOCUMENTS_ID,'ดูชุดเอกสารทั้งหมด']]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
+    const docs=[['back-cover','ปกหน้า (แบบ 1-01)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),...(role==='officer'?[[ALL_DOCUMENTS_ID,'ดูชุดเอกสารทั้งหมด']]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
     return docs.map(([id,name])=>`<option value="${id}">${name}</option>`).join('');
   }
   function combinedDocumentPaper(state,role){
     const officialIds=officialDocumentIds(state);
     const cover=officialIds.includes('1-01')?[['1-01',`ปปท. 1-01 ${OFFICIAL_DOCUMENTS['1-01'].name}`]]:[];
     const remaining=officialIds.filter(id=>id!=='1-01').map(id=>[id,`ปปท. ${id} ${OFFICIAL_DOCUMENTS[id].name}`]);
-    const docs=[['back-cover','ปกลับ (ปกหลัง)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
+    const docs=[['back-cover','ปกหน้า (แบบ 1-01)'],...cover,...remaining,...(usesReviewRecord(state)?[[REVIEW_RECORD_ID,REVIEW_RECORD_NAME]]:[]),['complainant-original','ข้อมูลเรื่องร้องเรียน (ต้นฉบับ)'],['working-copy','สำเนาเรื่องร้องเรียน (ฉบับเจ้าหน้าที่)']];
     return `<div class="document-bundle-preview" id="activePaper"><header class="document-bundle-title"><span>ชุดเอกสารสำหรับตรวจสอบก่อนเสนอพิจารณา</span><strong>${docs.length} รายการ</strong></header>${docs.map(([id,name],index)=>`<section class="document-bundle-item"><div class="document-bundle-item-head"><b>${index+1}</b><h3>${escapeHtml(name)}</h3></div><div class="document-bundle-paper">${documentPaper(state,id,role).replace(/\sid="activePaper"/g,'')}</div></section>`).join('')}</div>`;
   }
   function f102Paper(state){
@@ -746,11 +965,11 @@
     if(id===ALL_DOCUMENTS_ID)return combinedDocumentPaper(state,role);
     if([REVIEW_RECORD_ID,'form3','pcms'].includes(id))return form3Paper(state,role);
     if(id==='working-copy')return workingCopyPaper(state);
-    if(id==='complainant-original')return workingCopyOriginalView(state.caseData);
+    if(id==='complainant-original')return complainantOriginalPaper(state);
     if(id==='1-02')return f102Paper(state);
     const legacy={'pakfa':'1-01','n103':'1-03','f104':'1-04','f105':'1-05','f106':'1-06','f107':'1-07','paklap':'back-cover'};
     id=legacy[id]||id;
-    if(id==='back-cover')return `<div class="document-placeholder" id="activePaper"><strong>ปกลับ (ปกหลัง)</strong><p>แบบพิมพ์จริงไม่มีปกหลัง — ชุดเอกสารมีเพียงปกหน้า (แบบ 1-01) เท่านั้น</p></div>`;
+    if(id==='back-cover')return `<div class="document-placeholder" id="activePaper"><strong>ปกหน้า (แบบ 1-01)</strong><p>เอกสารนี้เป็นปกหน้าของชุดสำนวน — แบบพิมพ์จริงใช้แบบ 1-01 (ปกสำนวนการไต่สวน) ไม่มีปกหลังแยกต่างหาก</p></div>`;
     if(id==='1-01')return packDocumentPaper(state,'pakfa');
     if(id==='1-03')return packDocumentPaper(state,'n103');
     if(id==='1-04')return officialOutgoingDocument(state,'1-04');
@@ -1041,7 +1260,7 @@
       <p class="official-form-code official-form-code-107">ปปท. 1-07</p>
     </article>`;
     if(id==='pcms')return form3Paper(state);
-    if(id==='paklap')return `<div class="document-placeholder" id="activePaper"><strong>ปกลับ (ปกหลัง)</strong><p>แบบพิมพ์จริงไม่มีปกหลัง — ชุดเอกสารมีเพียงปกหน้า (แบบ 1-01) เท่านั้น</p></div>`;
+    if(id==='paklap')return `<div class="document-placeholder" id="activePaper"><strong>ปกหน้า (แบบ 1-01)</strong><p>เอกสารนี้เป็นปกหน้าของชุดสำนวน — แบบพิมพ์จริงใช้แบบ 1-01 (ปกสำนวนการไต่สวน) ไม่มีปกหลังแยกต่างหาก</p></div>`;
     return '<div class="document-placeholder">ยังไม่มีเอกสารนี้ในชุดของกรณีนี้</div>';
   }
   function renderWalkin(){
@@ -1483,6 +1702,40 @@
       updateIntakeLink();
     };
     $('#wsRole').value=selectedRole;updateRoleControls();$('#wsRole').onchange=e=>{selectedRole=e.target.value;activeRole=selectedRole==='regional-officer'?'officer':selectedRole;sessionStorage.setItem('ecmis-a4-role',selectedRole);updateRoleControls();delete $('#caseListView').dataset.anonymousReady;if(selectedId&&!canRegionalAccess(getState(selectedId).caseData))selectedId=null;syncUrl();if(selectedId)renderDetail();else{$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden')}renderList()};
+
+    const searchInput=$('#wsSearchInput'),searchResults=$('#wsSearchResults');
+    if(searchInput){
+      let searchTimer=null;
+      const norm=s=>String(s||'').toLowerCase();
+      const closeSearch=()=>{searchResults.classList.add('ws-hidden');searchResults.innerHTML=''};
+      searchInput.addEventListener('input',()=>{
+        clearTimeout(searchTimer);
+        searchTimer=setTimeout(()=>{
+          const q=searchInput.value.trim().toLowerCase();
+          if(!q){closeSearch();return}
+          const storeCases=Object.values(readStore());const seedCases=(typeof CASES!=='undefined'?CASES:[]).filter(sc=>!storeCases.some(cc=>cc.caseData?.id===sc.id));const caseHits=[...storeCases,...seedCases].filter(st=>{const c=st.caseData||st,d=st.documentData||{},w=st.workflow||{};const hay=[c.id,c.trackingYear,c.trackingCode,c.subject,c.complainant,c.agency,c.channel,w.status,d.caseNumber,(c.registry||{}).srr,(c.registry||{}).kbk,d.documentSubject].map(norm).join(' ');return hay.includes(q)});
+          const docHits=Object.entries(OFFICIAL_DOCUMENTS).filter(([id,doc])=>norm(id+' '+doc.name).includes(q));
+          const actionHits=SEARCH_ACTIONS.filter(a=>norm(a.label+' '+a.kw).includes(q));
+          let html='';
+          if(caseHits.length){html+=`<div class="ws-search-group">คดี (${caseHits.length})</div>`+caseHits.slice(0,6).map(st=>{const c=st.caseData||st;return`<button type="button" class="ws-search-item" data-search-case="${c.id}"><span>${escapeHtml(c.subject||c.id)}</span><small>${escapeHtml(c.id)} · ${escapeHtml(c.trackingYear)}/${escapeHtml(c.trackingCode)} · ${escapeHtml(c.channel)}</small></button>`}).join('')}
+          if(docHits.length){html+=`<div class="ws-search-group">เอกสาร (${docHits.length})</div>`+docHits.slice(0,6).map(([id,doc])=>`<button type="button" class="ws-search-item" data-search-doc="${id}"><span>ปปท. ${id} ${escapeHtml(doc.name)}</span></button>`).join('')}
+          if(actionHits.length){html+=`<div class="ws-search-group">ฟังก์ชัน (${actionHits.length})</div>`+actionHits.slice(0,6).map(a=>`<button type="button" class="ws-search-item" data-search-action="${a.action}"><span>${a.label}</span></button>`).join('')}
+          if(!html)html='<div class="ws-search-empty">ไม่พบสิ่งที่ค้นหา</div>';
+          searchResults.innerHTML=html;
+          searchResults.classList.remove('ws-hidden');
+        },180);
+      });
+      searchResults.addEventListener('click',e=>{
+        const caseBtn=e.target.closest('[data-search-case]');
+        if(caseBtn){selectedId=caseBtn.dataset.searchCase;syncUrl();renderDetail();closeSearch();searchInput.blur();return}
+        const docBtn=e.target.closest('[data-search-doc]');
+        if(docBtn){if(!selectedId){selectedId=Object.values(readStore())[0]?.caseData?.id||(typeof CASES!=='undefined'&&CASES[0]?CASES[0].id:'ECMIS-2569-000184');syncUrl();renderDetail()}const tab=document.querySelector(`[data-doc="${docBtn.dataset.searchDoc}"]`);if(tab)tab.click();closeSearch();searchInput.blur();return}
+        const actBtn=e.target.closest('[data-search-action]');
+        if(actBtn){const button=[...document.querySelectorAll('button')].find(b=>b.dataset.action===actBtn.dataset.searchAction&&!b.disabled);if(button)button.click();closeSearch();searchInput.blur()}
+      });
+      document.addEventListener('click',e=>{if(!e.target.closest('.ws-search'))closeSearch()});
+    }
+
     if(regionalRegionSelect)regionalRegionSelect.onchange=e=>{activeRegion=e.target.value;sessionStorage.setItem('ecmis-a4-regional-region',activeRegion);updateRoleControls();selectedId=null;syncUrl();$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');renderList()};
     const duplicateObserver=new MutationObserver(()=>{
       enhanceActivity5Dispatch();
@@ -1707,7 +1960,7 @@
       const body=$('.ws-editor-body');if(!body||body.dataset.activity5Dispatch)return;
       body.dataset.activity5Dispatch='true';
       const autoLetterNo=outgoingAt(state,'1-03')||Object.values(d.outgoingNumbers||{})[0]||'';
-      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผู้อำนวยการกองบริหารคดี ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section>${caseIssuanceCard(state)}<section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label>${ThaiDatePicker.html('dispatchLetterDate',{value:d.dispatchLetterDate||'',placeholder:'เลือกวันที่หนังสือ'})}</div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><div class="incident-datetime">${ThaiDatePicker.html('dispatchSentDate',{value:d.dispatchSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}${ThaiTimePicker.html('dispatchSentTime',{value:d.dispatchSentTime||'',placeholder:'เลือกเวลา',title:'เลือกเวลาที่จัดส่ง'})}</div></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผู้อำนวยการกองบริหารคดี ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section>${caseIssuanceCard(state)}${caseAgeCard(state)}<section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||outgoingAt(state,'1-03')||'')}" placeholder="เช่น ปป 0004.2/0102"><small>ระบบออกเลขสารบรรณ ศรร. ขาออกให้อัตโนมัติ — แก้ไขได้ถ้าจำเป็น</small></div><div class="ws-field"><label>วันที่หนังสือ *</label>${ThaiDatePicker.html('dispatchLetterDate',{value:d.dispatchLetterDate||'',placeholder:'เลือกวันที่หนังสือ'})}</div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><div class="incident-datetime">${ThaiDatePicker.html('dispatchSentDate',{value:d.dispatchSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}${ThaiTimePicker.html('dispatchSentTime',{value:d.dispatchSentTime||'',placeholder:'เลือกเวลา',title:'เลือกเวลาที่จัดส่ง'})}</div></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
       ThaiDatePicker.wireAll(body);
       ThaiTimePicker.wireAll(body);
       if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
@@ -1719,7 +1972,7 @@
       if(state.workflow.stage!=='nacc-dispatch')return;
       const body=$('.ws-editor-body');if(!body||body.dataset.naccDispatch)return;
       body.dataset.naccDispatch='true';
-      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนสุดท้าย · ส่งต่อสำนักงาน ป.ป.ช.</p><h2>บันทึกการจัดส่งและแจ้งผลผู้ร้อง</h2><span>ผู้อำนวยการกองบริหารคดี อนุมัติแล้ว เจ้าหน้าที่รับเรื่องเป็นผู้บันทึกหลักฐานการส่ง</span></section><section class="ws-section"><h3>ข้อมูลหนังสือนำส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือส่ง ป.ป.ช. *</label><input id="naccLetterNo" value="${escapeHtml(d.naccLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่ออกหนังสือ *</label>${ThaiDatePicker.html('naccLetterDate',{value:d.naccLetterDate||'',placeholder:'เลือกวันที่ออกหนังสือ'})}</div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="naccSendMethod"><option ${d.naccSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.naccSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.naccSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label>${ThaiDatePicker.html('naccSentDate',{value:d.naccSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}</div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="naccEms" value="${escapeHtml(d.naccEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="naccProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.naccProofName||'ยังไม่ได้แนบไฟล์')}</small></div></div></section><section class="ws-section"><h3>ข้อมูลมติบอร์ด</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ/ครั้งที่ประชุม *</label><input id="naccBoardNo" value="${escapeHtml(d.naccBoardNo||'')}" placeholder="เช่น มติครั้งที่ 18/2569"></div><div class="ws-field"><label>วันที่มีมติ *</label>${ThaiDatePicker.html('naccBoardDate',{value:d.naccBoardDate||'',placeholder:'เลือกวันที่มีมติ'})}</div><div class="ws-field ws-field-full"><label>ข้อความแจ้งมติบอร์ดแก่ผู้ร้อง</label><textarea id="naccBoardNote">${escapeHtml(d.naccBoardNote||'สำนักงานได้ส่งเรื่องของท่านไปยังสำนักงาน ป.ป.ช. เพื่อดำเนินการตามอำนาจหน้าที่แล้ว')}</textarea></div></div><label class="ws-choice nacc-notify-choice"><input type="checkbox" id="naccNotifyComplainant" ${d.naccNotified===false?'':'checked'}><span><strong>แจ้งผู้ร้องหลังยืนยันการจัดส่ง</strong><small>ผู้ร้องจะเห็นเลขหนังสือ วันที่ส่ง และเลข EMS ในหน้าติดตาม</small></span></label></section><section class="public-result-preview"><span>ข้อมูลที่ผู้ร้องจะเห็น</span><div><p><small>สถานะ</small><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong></p><p><small>เลขหนังสือ</small><strong>${escapeHtml(d.naccLetterNo||'รอบันทึก')}</strong></p><p><small>เลข EMS</small><strong>${escapeHtml(d.naccEms||'รอบันทึก')}</strong></p></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนสุดท้าย · ส่งต่อสำนักงาน ป.ป.ช.</p><h2>บันทึกการจัดส่งและแจ้งผลผู้ร้อง</h2><span>ผู้อำนวยการกองบริหารคดี อนุมัติแล้ว เจ้าหน้าที่รับเรื่องเป็นผู้บันทึกหลักฐานการส่ง</span></section><section class="ws-section"><h3>ข้อมูลหนังสือนำส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือส่ง ป.ป.ช. *</label><input id="naccLetterNo" value="${escapeHtml(d.naccLetterNo||outgoingAt(state,'1-04')||'')}" placeholder="เช่น ปป 0004/0102"><small>ระบบออกเลขหนังสือ กบค. ให้อัตโนมัติ — แก้ไขได้ถ้าจำเป็น</small></div><div class="ws-field"><label>วันที่ออกหนังสือ *</label>${ThaiDatePicker.html('naccLetterDate',{value:d.naccLetterDate||'',placeholder:'เลือกวันที่ออกหนังสือ'})}</div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="naccSendMethod"><option ${d.naccSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.naccSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.naccSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label>${ThaiDatePicker.html('naccSentDate',{value:d.naccSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}</div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="naccEms" value="${escapeHtml(d.naccEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="naccProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.naccProofName||'ยังไม่ได้แนบไฟล์')}</small></div></div></section><section class="ws-section"><h3>ข้อมูลมติบอร์ด</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ/ครั้งที่ประชุม *</label><input id="naccBoardNo" value="${escapeHtml(d.naccBoardNo||'')}" placeholder="เช่น มติครั้งที่ 18/2569"></div><div class="ws-field"><label>วันที่มีมติ *</label>${ThaiDatePicker.html('naccBoardDate',{value:d.naccBoardDate||'',placeholder:'เลือกวันที่มีมติ'})}</div><div class="ws-field ws-field-full"><label>ข้อความแจ้งมติบอร์ดแก่ผู้ร้อง</label><textarea id="naccBoardNote">${escapeHtml(d.naccBoardNote||'สำนักงานได้ส่งเรื่องของท่านไปยังสำนักงาน ป.ป.ช. เพื่อดำเนินการตามอำนาจหน้าที่แล้ว')}</textarea></div></div><label class="ws-choice nacc-notify-choice"><input type="checkbox" id="naccNotifyComplainant" ${d.naccNotified===false?'':'checked'}><span><strong>แจ้งผู้ร้องหลังยืนยันการจัดส่ง</strong><small>ผู้ร้องจะเห็นเลขหนังสือ วันที่ส่ง และเลข EMS ในหน้าติดตาม</small></span></label></section><section class="public-result-preview"><span>ข้อมูลที่ผู้ร้องจะเห็น</span><div><p><small>สถานะ</small><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong></p><p><small>เลขหนังสือ</small><strong>${escapeHtml(d.naccLetterNo||'รอบันทึก')}</strong></p><p><small>เลข EMS</small><strong>${escapeHtml(d.naccEms||'รอบันทึก')}</strong></p></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
       ThaiDatePicker.wireAll(body);
       const refreshDispatchPreview=()=>{const working=captureNaccDispatch(getState(selectedId));const previewValues=$$('.public-result-preview strong');if(previewValues[1])previewValues[1].textContent=working.documentData.naccLetterNo||'รอบันทึก';if(previewValues[2])previewValues[2].textContent=working.documentData.naccEms||'รอบันทึก';renderDocumentInto($('#paperStage'),documentPaper(working,'1-11',activeRole))};
       $$('input,select,textarea',body).forEach(field=>field.addEventListener('input',refreshDispatchPreview));
@@ -1874,15 +2127,22 @@
       if(state.assignmentHistory.length>0)return `<div class="ws-section"><h3>1. ข้อมูลเรื่องร้องเรียน</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. การมอบหมายงาน</h3><div class="ws-callout">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'รอมอบหมายใหม่')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>ความเห็นธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}</div>${assignmentFields}${assignmentHistory}</div>`;
       return `<div class="ws-section"><h3>1. ข้อมูลเรื่องร้องเรียน</h3>${adminCaseSummary(c)}</div><div class="ws-section"><h3>2. ผลตรวจเรื่องซ้ำและความเห็นธุรการ</h3>${duplicateCard}<p class="duplicate-policy-note">ผลวิเคราะห์เป็นข้อมูลประกอบการพิจารณา ธุรการมีหน้าที่บันทึกความเห็นและมอบหมายต่อ โดยไม่มีสิทธิปฏิเสธหรือยุติเรื่องจากผลตรวจอัตโนมัติเพียงอย่างเดียว</p><div class="ws-field screening-admin-opinion"><label>ความเห็นธุรการเกี่ยวกับผลตรวจเรื่องซ้ำ</label><textarea id="adminNote" placeholder="บันทึกว่าเรื่องนี้น่าจะเป็นเรื่องเดียวกัน เกี่ยวข้องกัน หรือยังไม่สามารถสรุปได้">${escapeHtml(d.adminNote)}</textarea></div></div><div class="ws-section"><h3>3. ลงรับและมอบหมายเจ้าหน้าที่</h3>${assignmentFields}${assignmentHistory}</div>`;
     }
-      if(activeRole==='officer'){if(isOfficerRole(activeRole)&&!['officer','admin'].includes(w.owner)&&!w.complete)return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}</div><div class="ws-callout" style="margin:.4rem 0 .9rem">ส่งให้ ${escapeHtml(ROLE_LABELS[w.owner]||w.owner)} พิจารณาแล้ว — ข้อมูลถูกล็อค รอผลการพิจารณา</div><div class="ws-section"><h3>ผลการพิจารณาที่ส่งไปแล้ว</h3><div class="ws-readonly"><dl><div><dt>ผลการพิจารณา</dt><dd>${({'18/1ก':'รับไว้ดำเนินการ 18/1 (ก)','18/1ข':'รับไว้ดำเนินการ 18/1 (ข)','18/4':'รับไว้ดำเนินการ 18/4','62':'ดำเนินการตามมาตรา 62','58/2':'ดำเนินการตาม 58/2','send-nacc':'ส่งสำนักงาน ป.ป.ช.','not-accept':'ไม่รับไว้ดำเนินการ'})[d.decision]||d.decision}</dd></div><div><dt>ชื่อเรื่องสำหรับเอกสาร</dt><dd><span class="doc-editable" data-editable="documentSubject" contenteditable="true" spellcheck="false">${escapeHtml(d.documentSubject||c.subject)}</span></dd></div><div><dt>เขตที่เสนอให้มอบหมาย</dt><dd>${escapeHtml(d.proposedRegion||c.region||'ไม่ระบุ')}</dd></div><div><dt>ความเห็นเจ้าหน้าที่</dt><dd>${escapeHtml(d.officerOpinion||'ไม่ระบุ')}</dd></div>${d.reasons.length?`<div><dt>เหตุผลส่ง ป.ป.ช.</dt><dd>${d.reasons.map(escapeHtml).join(', ')}</dd></div>`:''}${d.naccOtherChecked&&d.naccOtherReason?`<div><dt>อื่น ๆ (ส่ง ป.ป.ช.)</dt><dd>${escapeHtml(d.naccOtherReason)}</dd></div>`:''}${d.notAcceptReason?`<div><dt>เหตุผลไม่รับไว้ดำเนินการ</dt><dd>${escapeHtml(d.notAcceptReason)}</dd></div>`:''}${d.anonymous?`<div><dt>บัตรสนเท่ห์</dt><dd>ใช่</dd></div>`:''}</dl></div></div>`;return `<div class="ws-section"><h3>ข้อมูลเรื่องร้องเรียน</h3>${officerSubjectFields(state)}${workingCopySection(state)}<div class="ws-callout" style="margin-top:.7rem">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'ยังไม่ระบุ')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>หมายเหตุธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}</div></div><div class="ws-section"><h3>${REVIEW_RECORD_NAME}</h3><div class="ws-choice-grid">${[['18/1ก','รับไว้ดำเนินการ 18/1 (ก)'],['18/1ข','รับไว้ดำเนินการ 18/1 (ข)'],['18/4','รับไว้ดำเนินการ 18/4'],['62','ดำเนินการตามมาตรา 62'],['58/2','ดำเนินการตาม 58/2'],['send-nacc','ส่งสำนักงาน ป.ป.ช.'],['not-accept','ไม่รับไว้ดำเนินการ']].map(([v,l])=>`<label class="ws-choice"><input type="radio" name="decision" value="${v}" ${d.decision===v?'checked':''}><span><strong>${l}</strong></span></label>`).join('')}</div><div class="ws-field" style="margin-top:.8rem"><label>เขตที่เสนอให้มอบหมาย *</label><select id="proposedRegion"><option value="">เลือกเขตที่เสนอ</option>${REGIONS.map(region=>`<option value="${region}" ${(d.proposedRegion||c.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div id="naccReasonBox" class="${d.decision==='send-nacc'?'':'ws-hidden'}" style="margin-top:.8rem"><h3>เหตุผลส่งต่อ เลือกได้หลายข้อ</h3><div class="ws-choice-grid">${NACC_TRANSFER_REASONS.map(x=>`<label class="ws-choice"><input type="checkbox" name="naccReason" value="${escapeHtml(x)}" ${d.reasons.includes(x)?'checked':''}><span><strong>${escapeHtml(x)}</strong></span></label>`).join('')}</div></div><div id="notAcceptBox" class="${d.decision==='not-accept'?'':'ws-hidden'}" style="margin-top:.8rem"><div class="ws-field"><label>เหตุผลที่ไม่รับไว้ดำเนินการ</label><textarea id="notAcceptReason">${escapeHtml(d.notAcceptReason)}</textarea></div><label class="ws-choice" style="margin-top:.6rem"><input type="checkbox" id="anonymous" ${d.anonymous?'checked':''}><span><strong>เป็นบัตรสนเท่ห์</strong></span></label></div><div class="ws-field" style="margin-top:.8rem"><label>ความเห็นเจ้าหน้าที่รับเรื่อง</label><textarea id="officerOpinion">${escapeHtml(d.officerOpinion)}</textarea></div>${signatureCard(state,'officer',activeRole)}${documentPackPanel(state)}</div>`}
+      if(activeRole==='officer'){if(isOfficerRole(activeRole)&&!['officer','admin'].includes(w.owner)&&!w.complete)return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}</div><div class="ws-callout" style="margin:.4rem 0 .9rem">ส่งให้ ${escapeHtml(ROLE_LABELS[w.owner]||w.owner)} พิจารณาแล้ว — ข้อมูลถูกล็อค รอผลการพิจารณา</div><div class="ws-section"><h3>ผลการพิจารณาที่ส่งไปแล้ว</h3><div class="ws-readonly"><dl><div><dt>ผลการพิจารณา</dt><dd>${({'18/1ก':'รับไว้ดำเนินการ 18/1 (ก)','18/1ข':'รับไว้ดำเนินการ 18/1 (ข)','18/4':'รับไว้ดำเนินการ 18/4','62':'ดำเนินการตามมาตรา 62','58/2':'ดำเนินการตาม 58/2','send-nacc':'ส่งสำนักงาน ป.ป.ช.','not-accept':'ไม่รับไว้ดำเนินการ'})[d.decision]||d.decision}</dd></div><div><dt>ชื่อเรื่องสำหรับเอกสาร</dt><dd><span class="doc-editable" data-editable="documentSubject" contenteditable="true" spellcheck="false">${escapeHtml(d.documentSubject||c.subject)}</span></dd></div><div><dt>เขตที่เสนอให้มอบหมาย</dt><dd>${escapeHtml(d.proposedRegion||c.region||'ไม่ระบุ')}</dd></div><div><dt>ความเห็นเจ้าหน้าที่</dt><dd>${escapeHtml(d.officerOpinion||'ไม่ระบุ')}</dd></div>${d.reasons.length?`<div><dt>เหตุผลส่ง ป.ป.ช.</dt><dd>${d.reasons.map(escapeHtml).join(', ')}</dd></div>`:''}${d.naccOtherChecked&&d.naccOtherReason?`<div><dt>อื่น ๆ (ส่ง ป.ป.ช.)</dt><dd>${escapeHtml(d.naccOtherReason)}</dd></div>`:''}${d.notAcceptReason?`<div><dt>เหตุผลไม่รับไว้ดำเนินการ</dt><dd>${escapeHtml(d.notAcceptReason)}</dd></div>`:''}${d.anonymous?`<div><dt>บัตรสนเท่ห์</dt><dd>ใช่</dd></div>`:''}</dl></div></div>`;return `<div class="ws-section"><h3>ข้อมูลเรื่องร้องเรียน</h3>${officerSubjectFields(state)}${workingCopySection(state)}<div class="ws-callout" style="margin-top:.7rem">ผู้รับผิดชอบหลัก: ${escapeHtml(d.assignedOfficer||'ยังไม่ระบุ')}<br>ผู้ปฏิบัติงานแทน: ${escapeHtml(d.backupOfficer||'ไม่ได้กำหนด')}<br>หมายเหตุธุรการ: ${escapeHtml(d.adminNote||'ไม่มี')}</div></div><div class="ws-section"><h3>${REVIEW_RECORD_NAME}</h3><div class="ws-choice-grid">${[['18/1ก','รับไว้ดำเนินการ 18/1 (ก)'],['18/1ข','รับไว้ดำเนินการ 18/1 (ข)'],['18/4','รับไว้ดำเนินการ 18/4'],['62','ดำเนินการตามมาตรา 62'],['58/2','ดำเนินการตาม 58/2'],['send-nacc','ส่งสำนักงาน ป.ป.ช.'],['not-accept','ไม่รับไว้ดำเนินการ']].map(([v,l])=>`<label class="ws-choice"><input type="radio" name="decision" value="${v}" ${d.decision===v?'checked':''}><span><strong>${l}</strong></span></label>`).join('')}</div><div class="ws-field" style="margin-top:.8rem"><label>เขตที่เสนอให้มอบหมาย *</label><select id="proposedRegion"><option value="">เลือกเขตที่เสนอ</option>${REGIONS.map(region=>`<option value="${region}" ${(d.proposedRegion||c.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div id="naccReasonBox" class="${d.decision==='send-nacc'?'':'ws-hidden'}" style="margin-top:.8rem"><h3>เหตุผลส่งต่อ เลือกได้หลายข้อ</h3><div class="ws-choice-grid">${NACC_TRANSFER_REASONS.map(x=>`<label class="ws-choice"><input type="checkbox" name="naccReason" value="${escapeHtml(x)}" ${d.reasons.includes(x)?'checked':''}><span><strong>${escapeHtml(x)}</strong></span></label>`).join('')}</div></div><div id="notAcceptBox" class="${d.decision==='not-accept'?'':'ws-hidden'}" style="margin-top:.8rem"><div class="ws-field"><label>เหตุผลที่ไม่รับไว้ดำเนินการ</label><textarea id="notAcceptReason">${escapeHtml(d.notAcceptReason)}</textarea></div><label class="ws-choice" style="margin-top:.6rem"><input type="checkbox" id="anonymous" ${d.anonymous?'checked':''}><span><strong>เป็นบัตรสนเท่ห์</strong></span></label></div><div class="ws-field" style="margin-top:.8rem"><label>ความเห็นเจ้าหน้าที่รับเรื่อง</label><textarea id="officerOpinion">${escapeHtml(d.officerOpinion)}</textarea></div><section class="route-planner"><header><div><span>เส้นทางการพิจารณา</span><h3>กำหนดผู้รับพิจารณาลำดับถัดไป</h3></div><small>ใช้ลำดับปกติเป็นค่าเริ่มต้น</small></header><div class="route-options"><label class="route-option standard"><input type="radio" name="route" value="center" ${d.reviewRoute!=='division'?'checked':''}><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span>ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>ดำเนินการตามลำดับปกติ</strong><small>ส่งให้ ผอ.ศรร. พิจารณาก่อนเสนอ ผอ.กบค.</small></label><label class="route-option exceptional"><input type="radio" name="route" value="division" ${d.reviewRoute==='division'?'checked':''}><div class="route-flow"><span>เจ้าหน้าที่รับเรื่อง</span><i>→</i><span class="route-skipped">ผอ.ศรร.</span><i>→</i><span>ผอ.กบค.</span></div><strong>เสนอข้ามขั้นตอนเป็นกรณีพิเศษ</strong><small>ใช้เมื่อ ผอ.ศรร. ไม่สามารถปฏิบัติหน้าที่ และต้องบันทึกเหตุผล</small></label></div><div class="route-exception-panel ${d.reviewRoute==='division'?'':'ws-hidden'}" id="absenceBox"><div class="route-exception-head"><span>กรณีพิเศษ</span><strong>บันทึกเหตุผลประกอบการส่งตรงถึง ผอ.กบค.</strong></div><div class="ws-grid-2"><div class="ws-field"><label>ประเภทเหตุผล *</label><select id="absenceReasonType"><option value="">เลือกประเภทเหตุผล</option>${['ลาราชการ','ติดภารกิจราชการ','ไม่สามารถปฏิบัติหน้าที่','มีคำสั่งให้เสนอโดยตรง','อื่น ๆ'].map(reason=>`<option value="${reason}" ${d.absenceReasonType===reason?'selected':''}>${reason}</option>`).join('')}</select></div><div class="ws-field ws-field-full"><label>รายละเอียดและช่วงเวลาที่ไม่อยู่ *</label><textarea id="absenceNote" placeholder="ระบุเหตุผล วันที่หรือช่วงเวลา และข้อมูลอ้างอิงที่เกี่ยวข้อง">${escapeHtml(d.absenceNote)}</textarea></div></div><div class="route-impact"><strong>ผลของเส้นทางนี้</strong><span>เรื่องจะส่งตรงถึง ผอ.กบค. พร้อมบันทึก Log โดย ผอ.กบค. สามารถอนุมัติให้ ผอ.ศรร. กลับมาให้ความเห็นเพิ่มเติมภายหลังได้</span></div></div></section>${signatureCard(state,'officer',activeRole)}${documentPackPanel(state)}</div>`}
       if(activeRole==='center')return `<div class="ws-section"><h3>ข้อมูลจากเจ้าหน้าที่รับเรื่อง</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem"><strong>เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}</strong><br>ผลเสนอ: ${d.decision}<br>ความเห็น: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}</div></div><div class="ws-section"><h3>ความเห็น ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</h3><div class="ws-choice-grid"><label class="ws-choice"><input type="radio" name="centerDecision" value="agree" ${d.centerDecision!=='disagree'?'checked':''}><span><strong>เห็นชอบให้มอบหมาย ${escapeHtml(d.proposedRegion||c.region||'เขตที่เสนอ')}</strong></span></label><label class="ws-choice"><input type="radio" name="centerDecision" value="disagree" ${d.centerDecision==='disagree'?'checked':''}><span><strong>ไม่เห็นชอบ/ส่งกลับแก้ไข</strong></span></label></div><div class="ws-field" style="margin-top:.7rem"><label>ความเห็นและข้อเสนอแนะ</label><textarea id="centerOpinion">${escapeHtml(d.centerOpinion)}</textarea><small>บันทึกความเห็นและข้อเท็จจริงเพิ่มเติมได้ในช่องเดียว โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${signatureCard(state,'center',activeRole)}`;
       const centerText=d.centerOpinion|| (d.absenceNote?`ข้ามขั้นตอนตามหมายเหตุ: ${d.absenceNote}`:'ยังไม่ระบุ');
-      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผู้อำนวยการศูนย์รับเรื่องร้องเรียน: ${escapeHtml(centerText)}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทน':'คำสั่ง ผู้อำนวยการกองบริหารคดี'}</h3><div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea><small>บันทึกคำสั่งและข้อเท็จจริงเพิ่มเติมได้ในช่องเดียว โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${signatureCard(state,'division',activeRole)}${caseIssuanceCard(state)}`}
+      return `<div class="ws-section"><h3>ข้อมูลจากขั้นตอนก่อนหน้า</h3>${caseReadonly(c)}<div class="ws-callout" style="margin-top:.7rem">เขตที่เสนอให้มอบหมาย: ${escapeHtml(d.proposedRegion||c.region||'ยังไม่ระบุ')}<br>ความเห็นเจ้าหน้าที่: ${escapeHtml(d.officerOpinion||'ยังไม่ระบุ')}<br>ความเห็น ผู้อำนวยการศูนย์รับเรื่องร้องเรียน: ${escapeHtml(centerText)}</div></div><div class="ws-section"><h3>${activeRole==='acting'?'คำสั่งผู้รักษาราชการแทน':'คำสั่ง ผู้อำนวยการกองบริหารคดี'}</h3><div class="ws-field"><label>ความเห็นและคำสั่ง</label><textarea id="divisionOpinion">${escapeHtml(d.divisionOpinion)}</textarea><small>บันทึกคำสั่งและข้อเท็จจริงเพิ่มเติมได้ในช่องเดียว โดยไม่แก้ไขคำร้องเดิมหรือเปลี่ยนผลเสนอของเจ้าหน้าที่อัตโนมัติ</small></div></div>${signatureCard(state,'division',activeRole)}${caseIssuanceCard(state)}${caseAgeCard(state)}`}
     function actionsFor(state){const reset='<button class="ws-button ghost" data-action="reset">ล้างข้อมูลและเริ่มใหม่</button>';if(activeRole==='admin'){const hasAssignedWork=Boolean(state.documentData.assignedOfficer)&&state.assignmentHistory.some(entry=>['assign','reassign'].includes(entry.action)||/\[(มอบหมาย|มอบหมายใหม่)\]|มอบหมายให้/.test(entry.text||''));const canRecall=hasAssignedWork&&!state.workflow.complete&&!['nacc-dispatch','anonymous-box'].includes(state.workflow.stage);return `${reset}${canRecall?'<button class="ws-button danger" data-action="recall-assignment">ดึงงานกลับ</button>':''}<button class="ws-button secondary" data-action="draft">บันทึกร่าง</button><button class="ws-button primary" data-action="assign">${state.workflow.status==='รอมอบหมายใหม่'?'มอบหมายใหม่':'ลงรับและมอบหมาย'}</button>`}if(activeRole==='officer'){const officerLocked=!['officer','admin'].includes(state.workflow.owner)&&!state.workflow.complete;return officerLocked?`<button class="ws-button secondary" data-action="print">พิมพ์แบบบันทึก</button>`:`${reset}<button class="ws-button secondary" data-action="draft">บันทึกแบบบันทึก</button><button class="ws-button secondary" data-action="print">พิมพ์แบบบันทึก</button><button class="ws-button primary" data-action="officer-send">บันทึกและส่งพิจารณา</button>`}if(activeRole==='center')return `${reset}<button class="ws-button danger" data-action="center-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="center-send">บันทึกและส่ง ผู้อำนวยการกองบริหารคดี</button>`;return `${reset}${activity5Link(state)}<button class="ws-button secondary" data-action="division-center">ขอความเห็น ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</button><button class="ws-button danger" data-action="division-return">ส่งกลับเจ้าหน้าที่แก้ไข</button><button class="ws-button primary" data-action="approve">อนุมัติและดำเนินการต่อ</button>`}
-    function operationalWorkspace(state){const w=state.workflow;const editor=`<section class="ws-card ws-editor ${activeRole==='admin'?'ws-admin-workspace':''}"><header class="ws-editor-head"><div><p class="ws-kicker">งานของ ${ROLE_LABELS[activeRole]}</p><h2>${w.complete?'ตรวจสอบข้อมูลที่ดำเนินการแล้ว':'ดำเนินการเรื่องร้องเรียน'}</h2></div><span class="ws-status">${w.status}</span></header><div class="ws-editor-body">${editorFor(state)}${activeRole==='admin'?'':`<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการตัดสินใจ</li>'}</ul></div>`}</div></section>`;if(activeRole==='admin')return `<div class="ws-admin-layout">${editor}</div>`;return `<div class="document-workspace">${editor}<aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabs(state,activeRole)}</div><label class="ws-doc-jump" title="ข้ามไปยังเอกสาร"><span aria-hidden="true">ไปที่</span><select id="docJump" aria-label="เลือกเอกสาร"><option value="">เอกสาร…</option>${docSelect(state,activeRole)}</select></label><button class="ws-button secondary" data-action="print">พิมพ์/PDF</button><button type="button" class="ws-button secondary ws-doc-pane-toggle" title="ย่อแผงเอกสาร" aria-label="ย่อแผงเอกสาร" aria-expanded="true" style="padding:.42rem .62rem;line-height:1">»</button></div><button type="button" class="ws-doc-pane-rail" title="ขยายแผงเอกสาร" aria-label="ขยายแผงเอกสาร">«<span>เอกสาร</span></button><div class="doc-edit-bar" aria-label="แถบจัดรูปแบบ"><button type="button" data-format="bold" title="ตัวหนา"><b>B</b></button><button type="button" data-format="italic" title="ตัวเอียง"><i>I</i></button><button type="button" data-format="underline" title="ขีดเส้นใต้"><u>U</u></button><span class="doc-edit-bar-sep"></span><span class="doc-edit-bar-tip">เลือกข้อความแล้วกดจัดรูปแบบ · หน้าไหลอัตโนมัติ</span></div><button type="button" class="doc-edit-fab" data-action="toggle-edit" title="เปิด/ปิดโหมดแก้ไขเอกสาร"><span class="doc-edit-fab-icon" aria-hidden="true">✏️</span><span class="doc-edit-fab-label">แก้ไขเอกสาร</span></button><div class="ws-paper-stage" id="paperStage">${documentPaper(state,firstDocumentId(state,activeRole),activeRole)}</div></aside></div>`}
+    function operationalWorkspace(state){const w=state.workflow;const editor=`<section class="ws-card ws-editor ${activeRole==='admin'?'ws-admin-workspace':''}"><header class="ws-editor-head"><div><p class="ws-kicker">งานของ ${ROLE_LABELS[activeRole]}</p><h2>${w.complete?'ตรวจสอบข้อมูลที่ดำเนินการแล้ว':'ดำเนินการเรื่องร้องเรียน'}</h2></div><span class="ws-status">${w.status}</span></header><div class="ws-editor-body">${editorFor(state)}${activeRole==='admin'?'':`<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(x=>`<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติการตัดสินใจ</li>'}</ul></div>`}</div></section>`;if(activeRole==='admin')return `<div class="ws-admin-layout">${editor}</div>`;return `<div class="document-workspace">${editor}<aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabs(state,activeRole)}</div><label class="ws-doc-jump" title="ข้ามไปยังเอกสาร"><span aria-hidden="true">ไปที่</span><select id="docJump" aria-label="เลือกเอกสาร"><option value="">เอกสาร…</option>${docSelect(state,activeRole)}</select></label><button class="ws-button secondary" data-action="print">พิมพ์/PDF</button><button type="button" class="ws-button secondary ws-doc-pane-toggle" title="ย่อแผงเอกสาร" aria-label="ย่อแผงเอกสาร" aria-expanded="true" style="padding:.42rem .62rem;line-height:1">»</button></div><button type="button" class="ws-doc-pane-rail" title="ขยายแผงเอกสาร" aria-label="ขยายแผงเอกสาร">«<span>เอกสาร</span></button><div class="doc-edit-bar" aria-label="แถบจัดรูปแบบ"><select class="doc-edit-font" data-format="fontName" title="ฟอนต์"><option value="">ฟอนต์</option><option>Sarabun</option><option>TH Sarabun New</option><option>Tahoma</option><option>Times New Roman</option><option>Angsana New</option></select><select class="doc-edit-size" data-format="fontSize" title="ขนาดตัวอักษร"><option value="">ขนาด</option><option value="3">16</option><option value="4">18</option><option value="5">20</option><option value="6">24</option><option value="7">32</option></select><span class="doc-edit-bar-sep"></span><button type="button" data-format="bold" title="ตัวหนา"><b>B</b></button><button type="button" data-format="italic" title="ตัวเอียง"><i>I</i></button><button type="button" data-format="underline" title="ขีดเส้นใต้"><u>U</u></button><span class="doc-edit-bar-sep"></span><label class="doc-edit-color" title="สีตัวอักษร"><input type="color" data-format="foreColor" value="#17232e"></label><span class="doc-edit-bar-sep"></span><button type="button" data-format="justifyLeft" title="ชิดซ้าย">ซ้าย</button><button type="button" data-format="justifyCenter" title="กึ่งกลาง">กลาง</button><button type="button" data-format="justifyRight" title="ชิดขวา">ขวา</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="insertUnorderedList" title="รายการหัวข้อ">•≡</button><button type="button" data-format="insertOrderedList" title="รายการลำดับเลข">1≡</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="outdent" title="ลดย่อหน้า">⤺</button><button type="button" data-format="indent" title="เพิ่มย่อหน้า">⤻</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="undo" title="เลิกทำ">↶</button><button type="button" data-format="redo" title="ทำซ้ำ">↷</button><span class="doc-edit-bar-sep"></span><span class="doc-edit-bar-tip">หน้าไหลอัตโนมัติ</span></div><button type="button" class="doc-edit-fab" data-action="toggle-edit" title="เปิด/ปิดโหมดแก้ไขเอกสาร"><span class="doc-edit-fab-icon" aria-hidden="true">✏️</span><span class="doc-edit-fab-label">แก้ไขเอกสาร</span></button><div class="ws-paper-stage" id="paperStage">${documentPaper(state,firstDocumentId(state,activeRole),activeRole)}</div></aside></div>`}
     function renderDetail(){const state=getState(selectedId),c=state.caseData,w=state.workflow;$('#caseListView').classList.add('ws-hidden');const view=$('#caseDetailView');view.classList.remove('ws-hidden');view.innerHTML=`<button class="ws-button ghost" id="backList" style="margin-bottom:.8rem">กลับรายการเรื่องร้องเรียน</button><section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel)} · ${escapeHtml(c.region)}</p><h1>${c.id}</h1><div class="ws-case-meta"><span>${escapeHtml(c.subject)}</span><span>รับเรื่อง ${c.received}</span><span>เลขรับบริการ ${c.trackingYear} / PIN ${c.trackingCode}</span></div></div><div><span class="ws-status ${w.complete?'success':''}">${w.status}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">ผู้รับผิดชอบ: ${ROLE_LABELS[w.owner]}</p></div></section><nav class="ws-card ws-stagebar" aria-label="สถานะและลำดับการดำเนินงาน">${stagebar(state)}</nav>${operationalWorkspace(state)}<div class="ws-actions">${actionsFor(state)}</div>`;$('#backList').onclick=()=>{view.classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');selectedId=null;syncUrl();renderList()};wireDetail(state);enhanceSmartInputs();scheduleDocumentPagination($('#paperStage'))}
     function capture(state){const d=state.documentData;const value=id=>$('#'+id)?.value?.trim()||'';if(activeRole==='admin'){d.assignedOfficer=value('adminAssignee');d.backupOfficer=value('adminBackup');if($('#adminNote'))d.adminNote=value('adminNote')}if(activeRole==='officer'){d.documentSubject=value('documentSubject')||state.caseData.subject||'';d.decision=$('input[name="decision"]:checked')?.value||d.decision;d.reasons=$$('input[name="naccReason"]:checked').map(x=>x.value);d.notAcceptReason=value('notAcceptReason');d.anonymous=$('#anonymous')?.checked||false;d.proposedRegion=value('proposedRegion')||d.proposedRegion;d.officerOpinion=value('officerOpinion');d.reviewRoute=$('input[name="route"]:checked')?.value||'center';d.absenceReasonType=value('absenceReasonType');d.absenceNote=value('absenceNote');d.actingOfficer=value('actingOfficer')||d.actingOfficer;d.actingOrder=value('actingOrder')||d.actingOrder;const wc=ensureWorkingCopy(state);WORKING_COPY_FIELDS.forEach(([key])=>{const el=$('#wc'+key[0].toUpperCase()+key.slice(1));if(el)wc[key]=el.value.trim()})}if(activeRole==='center'){d.centerDecision=$('input[name="centerDecision"]:checked')?.value||'';d.centerOpinion=value('centerOpinion')}if(activeRole==='division'||activeRole==='acting'){d.divisionOpinion=value('divisionOpinion');d.actingOrder=value('actingOrder')||d.actingOrder}return state}
-    function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||firstDocumentId(state,activeRole);paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};const applyDecision=()=>{const updated=capture(state);updated.documentData.documentPack={...(updated.documentData.documentPack||{}),caseType:packCaseTypeOf(updated)};saveState(selectedId,updated);renderDetail()};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>{if(x.id==='proposedRegion')return;x.addEventListener('input',refreshPaper)});
+  
+  function applyEditableAll(paper,on){
+    if(!paper)return;
+    if(on){paper.setAttribute('contenteditable','true');paper.style.outline='1px dashed #4a90d9'}else{paper.removeAttribute('contenteditable');paper.style.outline=''}
+    paper.querySelectorAll('.form3-approval-signature,.signature-proof,.form3-signed-block,.doc-edit-fab,.doc-edit-bar').forEach(el=>{if(on)el.setAttribute('contenteditable','false');else el.removeAttribute('contenteditable')});
+  }
+
+  function wireDetail(state){const refreshPaper=()=>{const paper=$('#paperStage');if(!paper)return;const activeDoc=$('[data-doc].active')?.dataset.doc||firstDocumentId(state,activeRole);paper.innerHTML=documentPaper(capture(state),activeDoc,activeRole)};const applyDecision=()=>{const updated=capture(state);updated.documentData.documentPack={...(updated.documentData.documentPack||{}),caseType:packCaseTypeOf(updated)};saveState(selectedId,updated);renderDetail()};$$('input,textarea,select',$('#caseDetailView')).forEach(x=>{if(x.id==='proposedRegion')return;x.addEventListener('input',refreshPaper)});
       const proposedRegionEl=$('#proposedRegion');if(proposedRegionEl&&!proposedRegionEl.dataset.regionBound){proposedRegionEl.dataset.regionBound='true';proposedRegionEl.addEventListener('change',()=>{const scrollY=window.scrollY;refreshPaper();requestAnimationFrame(()=>window.scrollTo(0,scrollY))})}$$('input[name="decision"]').forEach(x=>x.onchange=applyDecision);$$('.wc-tab').forEach(button=>button.addEventListener('click',()=>{const target=button.dataset.wcTab;$$('.wc-tab').forEach(b=>{const on=b.dataset.wcTab===target;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false')});$$('.wc-panel').forEach(p=>p.classList.toggle('ws-hidden',p.dataset.wcPanel!==target))}));$('#anonymous')?.addEventListener('change',applyDecision);$$('input[name="route"]').forEach(x=>x.onchange=()=>$('#absenceBox').classList.toggle('ws-hidden',x.value!=='division'));$$('[data-doc]').forEach(b=>b.onclick=()=>{$$('[data-doc]').forEach(x=>{const selected=x===b;x.classList.toggle('active',selected);x.setAttribute('aria-selected',String(selected))});$('#paperStage').innerHTML=documentPaper(capture(state),b.dataset.doc,activeRole)});$$('[data-action]').forEach(b=>b.onclick=()=>handleAction(b.dataset.action,state));$$('.pack-open').forEach(b=>b.onclick=()=>{const tab=$$('[data-doc]').find(t=>t.dataset.doc===b.dataset.docOpen);if(tab)tab.onclick()});
       const docJump=$('#docJump');if(docJump&&!docJump.dataset.bound){docJump.dataset.bound='true';docJump.addEventListener('change',()=>{const tab=$$('[data-doc]').find(t=>t.dataset.doc===docJump.value);if(tab)tab.onclick();docJump.value=''})}
       const opinionPaper=$('#paperStage');
@@ -1893,22 +2153,31 @@
           const target=event.target.closest('[data-editable]');
           if(!target)return;
           const key=target.dataset.editable;
-          if(!/^(documentSubject|centerOpinion|divisionOpinion)$/.test(key))return;
+          if(!/^(documentSubject|centerOpinion|divisionOpinion|assignedOfficer)$/.test(key))return;
           const state=getState(selectedId);
           const text=editableCollect(key);
-          if(state.documentData[key]===text)return;
-          state.documentData[key]=text;
+          const clean=key==='assignedOfficer'?text.replace(/^\(|\)$/g,''):text;
+          if(state.documentData[key]===clean)return;
+          state.documentData[key]=clean;
           const field=$('#'+key);
           if(field&&document.activeElement!==field)field.value=text;
           clearTimeout(opinionPaper._opinionTimer);
           opinionPaper._opinionTimer=setTimeout(()=>saveState(selectedId,state),500);
         });
-        const editBar=document.querySelector('.doc-edit-bar');if(editBar&&!editBar.dataset.bound){editBar.dataset.bound='true';editBar.addEventListener('click',event=>{const btn=event.target.closest('[data-format]');if(!btn)return;const f=btn.dataset.format;if(f==='bold')document.execCommand('bold');else if(f==='italic')document.execCommand('italic');else if(f==='underline')document.execCommand('underline');});}
+        const editBar=document.querySelector('.doc-edit-bar');if(editBar&&!editBar.dataset.bound){editBar.dataset.bound='true';editBar.addEventListener('click',event=>{const btn=event.target.closest('[data-format]');if(!btn)return;const f=btn.dataset.format;if(f==='bold')document.execCommand('bold');else if(f==='italic')document.execCommand('italic');else if(f==='underline')document.execCommand('underline');else if(f)document.execCommand(f);});editBar.addEventListener('change',event=>{const sel=event.target.closest('select[data-format],input[data-format]');if(!sel)return;const f=sel.dataset.format;const v=sel.value;document.execCommand(f,false,v);sel.value=sel.type==='color'?sel.value:'';});
+        let dragState=null;editBar.addEventListener('mousedown',e=>{if(e.target.closest('button,select,input,label'))return;if(e.target.closest('.doc-edit-bar-tip'))return;e.preventDefault();const r=editBar.getBoundingClientRect();dragState={dx:e.clientX-r.left,dy:e.clientY-r.top};editBar.style.transform='none';editBar.style.left=r.left+'px';editBar.style.top=r.top+'px';editBar.style.position='fixed';e.preventDefault()});document.addEventListener('mousemove',e=>{if(!dragState)return;editBar.style.left=Math.max(4,e.clientX-dragState.dx)+'px';editBar.style.top=Math.max(4,e.clientY-dragState.dy)+'px'});document.addEventListener('mouseup',()=>{dragState=null});}
 opinionPaper.addEventListener('blur',event=>{
           const target=event.target.closest('[data-editable]');
           if(!target)return;
           scheduleDocumentPagination(opinionPaper);
         },true);
+        opinionPaper.addEventListener('click',event=>{
+          if(!opinionPaper.classList.contains('doc-edit-mode'))return;
+          const box=event.target.closest('.doc-checkbox');
+          if(!box)return;
+          if(box.closest('.form3-decision-column'))return;
+          box.textContent=box.textContent.trim()==='✓'?'':'✓';
+        });
       }
       const docWorkspace=$('.document-workspace');
       if(docWorkspace&&!docWorkspace.dataset.paneBound){
@@ -1930,7 +2199,7 @@ opinionPaper.addEventListener('blur',event=>{
       return captured;
     };
     async function handleAction(action,state){
-      if(action==='toggle-edit'){const paper=$('#paperStage');if(!paper)return;const isOn=paper.classList.toggle('doc-edit-mode');const pane=paper.closest('.ws-doc-pane');pane?.querySelector('.doc-edit-fab')?.classList.toggle('active',isOn);pane?.querySelector('.doc-edit-bar')?.classList.toggle('show',isOn);return}if(action==='print'){await scheduleDocumentPagination($('#paperStage'));window.print();return}
+      if(action==='toggle-edit'){const paper=$('#paperStage');if(!paper)return;const isOn=paper.classList.toggle('doc-edit-mode');const pane=paper.closest('.ws-doc-pane');pane?.querySelector('.doc-edit-fab')?.classList.toggle('active',isOn);pane?.querySelector('.doc-edit-bar')?.classList.toggle('show',isOn);applyEditableAll(paper,isOn);return}if(action==='print'){await scheduleDocumentPagination($('#paperStage'));window.print();return}
       if(action==='reset'){
         const ok=await confirmDo('ล้างข้อมูลและเริ่มใหม่','ข้อมูลกระบวนงานและประวัติของเรื่องนี้จะถูกล้าง โดยไม่กระทบเรื่องอื่น','ล้างข้อมูล');
         if(!ok.isConfirmed)return;

@@ -11,6 +11,14 @@
     acting: 'ผู้รักษาราชการแทนตามคำสั่ง',
     anonymous: 'กล่องบัตรสนเท่ห์'
   };
+  const A5_ROLE_LABELS = {
+    clerk: 'ธุรการคดี',
+    investigator: 'ผู้รับผิดชอบสำนวน (นักสืบ)',
+    'group-director': 'ผอ.กลุ่มงาน (สายตรวจ)',
+    director: 'ผอ.เขต/กอง/สำนัก (หัวหน้าพนักงาน ป.ป.ท.)',
+    secretary: 'ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท.',
+    committee: 'คณะกรรมการ ป.ป.ท.'
+  };
   const ICONS = {
     dashboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
     inbox: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 14h4l2 3h4l2-3h4"/></svg>',
@@ -24,6 +32,19 @@
   function currentRole() {
     const role = new URLSearchParams(location.search).get('role') || sessionStorage.getItem(ROLE_KEY) || 'admin';
     return ROLE_LABELS[role] ? role : 'admin';
+  }
+
+  function effectiveRole() {
+    const base = currentRole();
+    if (base !== 'anonymous' && isA5View()) {
+      const a5 = sessionStorage.getItem('ecmis-a5-role');
+      if (a5 && A5_ROLE_LABELS[a5]) return a5;
+    }
+    return base;
+  }
+
+  function roleLabel(role) {
+    return A5_ROLE_LABELS[role] || ROLE_LABELS[role] || role;
   }
 
   function roleUrl(path, role, extra = {}) {
@@ -54,10 +75,41 @@
     } else {
       list.push({ label: 'เรื่องรอพิจารณา', icon: 'review', href: roleUrl('staff-workflow.html', role) });
     }
-    if (role !== 'anonymous') {
-      list.push({ label: 'สำนวนคดี (กิจกรรมที่ 5)', icon: 'review', href: roleUrl('staff-workflow.html', role, { view: 'a5' }) });
+    return list;
+  }
+
+  function menuForA5(role) {
+    if (role === 'anonymous') return [];
+    const base = (q, label, icon = 'review') => ({ label, icon, href: roleUrl('staff-workflow.html', role, { view: 'a5', a5q: q }) });
+    const list = [
+      base('all', 'รายการสำนวนคดี', 'dashboard'),
+      base('prelim', 'ไต่สวนเบื้องต้น (213)'),
+      base('inquiry', 'ไต่สวนชี้มูล (644)'),
+      base('due', 'ใกล้ครบกำหนด', 'assigned')
+    ];
+    if (['clerk', 'investigator', 'director', 'secretary', 'group-director', 'committee'].includes(role)) {
+      list.push(base('ext', 'รออนุมัติขยายเวลา', 'inbox'));
+    }
+    if (['clerk', 'investigator'].includes(role)) {
+      list.push(base('fast', 'ใบด่วน/เร่งด่วน'));
+    }
+    if (['group-director', 'director', 'secretary'].includes(role)) {
+      list.push(base('review', 'รอความเห็นตามลำดับชั้น'));
+    }
+    if (['clerk', 'director', 'secretary'].includes(role)) {
+      list.push(base('m62', 'คดีรับจาก ป.ป.ช.', 'inbox'));
+    }
+    if (['clerk', 'investigator'].includes(role)) {
+      list.push(base('582', 'ตรวจสอบข้อเท็จจริง 58/2', 'form'));
+    }
+    if (['committee', 'clerk'].includes(role)) {
+      list.push(base('committee', 'เรื่องเสนอ คกก.'));
     }
     return list;
+  }
+
+  function isA5View() {
+    return new URLSearchParams(location.search).get('view') === 'a5';
   }
 
   function isActive(item) {
@@ -65,14 +117,15 @@
     const current = new URL(location.href);
     const target = new URL(item.href, location.href);
     if (current.pathname.split('/').pop() !== target.pathname.split('/').pop()) return false;
+    if (target.searchParams.has('a5q')) return current.searchParams.get('view') === 'a5' && current.searchParams.get('a5q') === target.searchParams.get('a5q');
     if (target.searchParams.has('view')) return current.searchParams.get('view') === target.searchParams.get('view');
     if (current.searchParams.has('view')) return false;
     if (target.searchParams.has('queue')) return current.searchParams.get('queue') === target.searchParams.get('queue');
     return !current.searchParams.has('queue');
   }
 
-  function menuMarkup(role) {
-    return menuFor(role).map(item => {
+  function menuMarkup(items) {
+    return items.map(item => {
       const body = `<span class="ecmis-sidebar-icon">${ICONS[item.icon]}</span><span class="ecmis-sidebar-label">${item.label}</span>`;
       if (item.command) return `<button type="button" class="ecmis-sidebar-command" data-sidebar-command="${item.command}" title="${item.label}">${body}</button>`;
       return `<a class="ecmis-sidebar-link${isActive(item) ? ' active' : ''}" href="${item.href}" title="${item.label}"${isActive(item) ? ' aria-current="page"' : ''}>${body}</a>`;
@@ -82,7 +135,8 @@
   function render() {
     const host = document.querySelector('.a4-workspace, .a4-walkin-shell');
     if (!host) return;
-    const role = currentRole();
+    const baseRole = currentRole();
+    const role = effectiveRole();
     let sidebar = document.getElementById('ecmisSidebar');
     if (!sidebar) {
       document.body.classList.add('ecmis-sidebar-enabled');
@@ -99,7 +153,13 @@
       host.prepend(overlay);
       overlay.addEventListener('click', () => document.body.classList.remove('ecmis-sidebar-mobile-open'));
     }
-    sidebar.innerHTML = `<div class="ecmis-sidebar-brand"><span class="ecmis-sidebar-logo">ป.ป.ท.</span><span class="ecmis-sidebar-brand-text"><strong>E-CMIS</strong><small>COMPLAINT MANAGEMENT</small></span></div><nav class="ecmis-sidebar-nav"><div class="ecmis-sidebar-section">เมนูตามสิทธิ์</div>${menuMarkup(role)}</nav><footer class="ecmis-sidebar-footer"><div class="ecmis-sidebar-user"><span class="ecmis-sidebar-avatar">${ROLE_LABELS[role].slice(0, 2)}</span><span class="ecmis-sidebar-user-copy"><strong>${ROLE_LABELS[role]}</strong><small>สิทธิ์การทำงานปัจจุบัน</small></span></div><button type="button" class="ecmis-sidebar-toggle" aria-label="ย่อหรือขยายเมนู" title="ย่อหรือขยายเมนู"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button type="button" class="ecmis-sidebar-logout" aria-label="ออกจากระบบ" title="ออกจากระบบ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="ecmis-sidebar-label">ออกจากระบบ</span></button></footer>`;
+    const canA5 = baseRole !== 'anonymous';
+    const isA5 = canA5 && isA5View();
+    const switchHtml = canA5 ? `<div class="ecmis-sidebar-switch" role="tablist" aria-label="สลับระบบงาน"><a class="ecmis-sidebar-switch-btn ${isA5 ? '' : 'active'}" href="${roleUrl('staff-workflow.html', baseRole)}" role="tab" aria-selected="${isA5 ? 'false' : 'true'}">รับเรื่องร้องเรียน</a><a class="ecmis-sidebar-switch-btn ${isA5 ? 'active' : ''}" href="${roleUrl('staff-workflow.html', baseRole, { view: 'a5' })}" role="tab" aria-selected="${isA5 ? 'true' : 'false'}">กระบวนการไต่สวน</a></div>` : '';
+    const menuHtml = isA5 ? `<div class="ecmis-sidebar-section">เมนูกระบวนการไต่สวน</div>${menuMarkup(menuForA5(role))}` : `<div class="ecmis-sidebar-section">เมนูตามสิทธิ์</div>${menuMarkup(menuFor(role))}`;
+    sidebar.innerHTML = `<div class="ecmis-sidebar-brand"><span class="ecmis-sidebar-logo">ป.ป.ท.</span><span class="ecmis-sidebar-brand-text"><strong>E-CMIS</strong><small>${isA5 ? 'ระบบกระบวนการไต่สวน' : 'ระบบรับเรื่องร้องเรียน'}</small></span></div>
+    ${switchHtml}
+    <nav class="ecmis-sidebar-nav">${menuHtml}</nav><footer class="ecmis-sidebar-footer"><div class="ecmis-sidebar-user"><span class="ecmis-sidebar-avatar">${roleLabel(role).slice(0, 2)}</span><span class="ecmis-sidebar-user-copy"><strong>${roleLabel(role)}</strong><small>สิทธิ์การทำงานปัจจุบัน</small></span></div><button type="button" class="ecmis-sidebar-toggle" aria-label="ย่อหรือขยายเมนู" title="ย่อหรือขยายเมนู"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button type="button" class="ecmis-sidebar-logout" aria-label="ออกจากระบบ" title="ออกจากระบบ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="ecmis-sidebar-label">ออกจากระบบ</span></button></footer>`;
     sidebar.querySelector('.ecmis-sidebar-logout').addEventListener('click', () => {
       sessionStorage.removeItem(ROLE_KEY);
       sessionStorage.removeItem(REGION_KEY);

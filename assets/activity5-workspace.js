@@ -5,9 +5,9 @@
  * ครอบคลุม 17 กระบวนงานตามกระบวนการไต่สวน.xlsx (sheet6):
  *  1 รับเรื่อง/ตรวจ/มอบหมาย (+โอนก่อนมอบหมาย สถานะรอปลายทางรับโอน)  2 ไต่สวนเบื้องต้น 213
  *  3 กิจกรรมแทรก (คุ้มครองพยาน A6 / หมายค้น A9)                     4 ขยายเวลา 213 (ยื่น/อนุมัติ/ปฏิเสธ)
- *  5 213 ไม่เสร็จ 180 วัน → คกก. (ครั้งที่ 3)                         6 ตรวจ/เสนอ 213 ตามลำดับชั้น 4 ชั้น
+ *  5 213 ไม่เสร็จ 180 วัน → คกก. (ครั้งที่ 4)                         6 ตรวจ/เสนอ 213 ตามลำดับชั้น 4 ชั้น
  *  7 ผลมติ 213 (+ตั้งชุดไต่สวน 24ว.1/24ว.3, หนังสือส่งมอบ 213→644)    8 ไต่สวนชี้มูล 644
- *  9 ขยายเวลา 644 (+ครั้งที่ 5, 2 ปี/3 ปี/5 ปี)                      10 ตรวจ/เสนอ 644 ตามลำดับชั้น
+ *  9 ขยายเวลา 644 (+ครั้งที่ 5-6, 2 ปี/3 ปี/5 ปี)                      10 ตรวจ/เสนอ 644 ตามลำดับชั้น
  * 11 ผลมติ 644 (7 ทาง, ไต่เพิ่ม 30+30)                               12 อัยการสั่งการ/ตีกลับ
  * 13 โอน/รวม/แยก/เปลี่ยนผู้รับผิดชอบ/ปรับองค์คณะ                     14 คดี ม.62 (ป.ป.ช. มอบหมาย + ม.65)
  * 15 ตรวจสอบข้อเท็จจริง 58/2                                        16 ตรวจสอบข้อเท็จจริง 58/3
@@ -35,20 +35,54 @@
     'กปท.1', 'กปท.2', 'กปท.3', 'กปท.4', 'กปท.5', 'กอท.'];
   const INVESTIGATORS = ['พนักงาน ป.ป.ท. สมชาย', 'พนักงาน ป.ป.ท. วิภา', 'พนักงาน ป.ป.ท. ธเนศ', 'พนักงาน ป.ป.ท. จินตนา', 'พนักงาน ป.ป.ท. อนุชา'];
   const EXTENSION_RULES = Object.freeze({
-    '213': { baseDays: 60, rounds: ['director', 'secretary', 'committee'], label: 'ไต่สวนเบื้องต้น (213)' },
-    '644': { baseDays: 270, rounds: ['director', 'director', 'secretary', 'secretary', 'committee'], label: 'ไต่สวนชี้มูล (644)' }
+    '213': { baseDays: 60, rounds: ['director', 'secretary', 'committee', 'committee'], label: 'ไต่สวนเบื้องต้น (213)' },
+    '644': { baseDays: 270, rounds: ['director', 'director', 'secretary', 'secretary', 'committee', 'committee'], label: 'ไต่สวนชี้มูล (644)' }
   });
   const EXTENSION_DAYS = 60;
+  const A5_FORMS = Object.freeze({
+    plan: { code: 'แบบ ปปท. 1', name: 'แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน)' },
+    '213': { code: 'แบบ ปปท. 4', name: 'รายงานผลการไต่สวนเบื้องต้น' },
+    ext213: { code: 'แบบ ปปท. 2', name: 'บันทึกขอขยายระยะเวลาไต่สวนเบื้องต้น' },
+    '644': { code: 'แบบ ปปท. 7', name: 'รายงานการไต่สวน' },
+    ext644: { code: 'แบบ ปปท. 3', name: 'บันทึกขอขยายระยะเวลาไต่สวน' },
+    notice: { code: 'แบบ ปปท. 5', name: 'หนังสือแจ้งให้รับทราบข้อกล่าวหาและสิทธิคัดค้าน' },
+    record: { code: 'แบบ ปปท. 6', name: 'บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้าน' },
+    mti: { code: 'แบบมติ คกก.', name: 'มติคณะกรรมการ ป.ป.ท.' },
+    letter: { code: 'หนังสือส่ง', name: 'หนังสือส่งสำนวนคดี' },
+    p8: { code: 'แบบ ปปท. 8', name: 'หนังสือแจ้งผู้ถูกกล่าวหาไปพบพนักงานอัยการ' },
+    p9: { code: 'แบบ ปปท. 9', name: 'หนังสือแจ้งผู้บังคับบัญชา (ยังไม่พบอัยการ)' },
+    p10: { code: 'แบบ ปปท. 10', name: 'หนังสือแจ้งพนักงานอัยการ' },
+    p11: { code: 'แบบ ปปท. 11', name: 'คำร้องขอหมายจับ' },
+    p12: { code: 'แบบ ปปท. 12', name: 'บันทึกคำเบิกความ' },
+    p13: { code: 'แบบ ปปท. 13', name: 'รายงานกระบวนการพิจารณา' },
+    p14: { code: 'แบบ ปปท. 14', name: 'หมายจับ (อายุความไม่สะดุดหยุดลง)' },
+    p15: { code: 'แบบ ปปท. 15', name: 'หมายจับ (อายุความสะดุดหยุดลง)' },
+    p16: { code: 'แบบ ปปท. 16', name: 'ตำหนิรูปพรรณผู้กระทำความผิด' },
+    p17: { code: 'แบบ ปปท. 17', name: 'หนังสือแจ้งผลการดำเนินการว่าออกหมายแล้ว' },
+    p18: { code: 'แบบ ปปท. 18', name: 'หนังสือแจ้งผู้บัญชาการตำรวจแห่งชาติ' },
+    p19: { code: 'แบบ ปปท. 19', name: 'บันทึกข้อความส่งหมายจับให้ กอท.' },
+    p20: { code: 'แบบ ปปท. 20', name: 'ผนึกซองขอหมายจับ' }
+  });
+  const A5_LETTER_HEAD = (state, topic) => {
+    const c = state.caseData || {}, q = state.inquiry?.inquiry644 || {};
+    return `<p class="a5-letter-ref"><strong>ที่ ปป ..........</strong></p><p class="a5-letter-addr">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ<br>อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ<br>อำเภอปากเกร็ด จังหวัดนนทบุรี ๑๑๑๒๐</p><p class="a5-letter-date">${a5Date(todayISO())}</p><p class="a5-letter-topic"><strong>เรื่อง</strong> ${topic}</p><p class="a5-letter-to"><strong>เรียน</strong> ${a5Fill('')}</p>`;
+  };
+  const a5AccusedLine = (state) => {
+    const q = state.inquiry?.inquiry644 || {};
+    return (q.accused && q.accused.length) ? q.accused.join(', ') : '...............................';
+  };
   const REVIEW_CHAIN = Object.freeze({
     '213': [
       { level: 1, role: 'group-director', label: 'ผอ.กลุ่มงาน (เฉพาะสายจริง)', optional: true },
       { level: 2, role: 'director', label: 'ผอ.เขต/กอง/สำนัก (หัวหน้าพนักงาน)' },
-      { level: 3, role: 'secretary', label: 'ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท.' }
+      { level: 3, role: 'secretary', label: 'ผู้ช่วย/รองเลขาธิการ ป.ป.ท.' },
+      { level: 4, role: 'secretary', label: 'เลขาธิการ ป.ป.ท.' }
     ],
     '644': [
       { level: 1, role: 'group-director', label: 'ผอ.กลุ่มงาน (เฉพาะสายจริง)', optional: true },
       { level: 2, role: 'director', label: 'ผอ.เขต/กอง/สำนัก (หัวหน้าพนักงาน)' },
-      { level: 3, role: 'secretary', label: 'ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท.' }
+      { level: 3, role: 'secretary', label: 'ผู้ช่วย/รองเลขาธิการ ป.ป.ท.' },
+      { level: 4, role: 'secretary', label: 'เลขาธิการ ป.ป.ท.' }
     ]
   });
   const MTI_213_RESULTS = ['รับไว้ไต่สวน', 'ไม่รับไว้ไต่สวน', 'ให้ไต่สวนเบื้องต้นเพิ่มเติม', 'ส่งสำนักงาน ป.ป.ช.'];
@@ -84,7 +118,7 @@
   }
   function notify(icon, title, text) { if (window.Swal) return Swal.fire({ icon, title, text, confirmButtonText: 'ปิด', confirmButtonColor: '#082b50' }); alert(`${title}\n${text}`); }
   function confirmDo(title, text, confirmButtonText = 'ยืนยัน') { if (!window.Swal) return Promise.resolve({ isConfirmed: confirm(`${title}\n${text}`) }); return Swal.fire({ icon: 'question', title, text, showCancelButton: true, confirmButtonText, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#082b50', cancelButtonColor: '#687789' }); }
-  function swalForm(title, html, confirmText = 'ยืนยัน') { if (!window.Swal) return Promise.resolve({ isConfirmed: true, value: {} }); return Swal.fire({ title, html, showCancelButton: true, confirmButtonText: confirmText, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#082b50', cancelButtonColor: '#687789', preConfirm: () => { const out = {}; $$('#swalForm [data-sf]').forEach(el => out[el.dataset.sf] = el.value.trim()); return out; } }); }
+  function swalForm(title, html, confirmText = 'ยืนยัน') { if (!window.Swal) return Promise.resolve({ isConfirmed: true, value: {} }); return Swal.fire({ title, html, showCancelButton: true, confirmButtonText: confirmText, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#082b50', cancelButtonColor: '#687789', preConfirm: () => { const out = {}; $$('#swalForm [data-sf]').forEach(el => out[el.dataset.sf] = el.type === 'checkbox' ? el.checked : el.value.trim()); return out; } }); }
 
   /* ---------- โครงสร้างข้อมูลเฟสไต่สวน ---------- */
   function defaultInquiry(state) {
@@ -237,7 +271,7 @@
     if (cs.complete && !cs.current) return { ok: false, message: 'ตรวจครบทุกชั้นแล้ว' };
     if (!cs.current || cs.current.role !== role) return { ok: false, message: `ชั้นนี้ ${ROLE_LABELS[cs.current ? cs.current.role : 'group-director']} เป็นผู้ตรวจ` };
     const step = cs.current;
-    cs.rep.reviewChain.push({ level: step.level, role, label: step.label, opinion, by: ROLE_LABELS[role], at: now() });
+    cs.rep.reviewChain.push({ level: step.level, role, label: step.label, opinion, by: step.label, at: now() });
     const after = chainState(reportType, inquiry);
     state.decisionHistory.push({ text: `${ROLE_LABELS[role]} ตรวจรายงาน ${reportType} (ชั้น ${step.label}): ${opinion}`, time: now() });
     return { ok: true, complete: after.complete, current: after.current };
@@ -313,6 +347,7 @@
   const A5_THAI_DIGITS = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
   const a5Num = (n) => String(n).split('').map(ch => A5_THAI_DIGITS[ch] ?? ch).join('');
   const A5_THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+  const A5_THAI_MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
   const a5Date = (iso) => { const m = String(iso || '').slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/); if (!m) return ''; const mi = Number(m[2]) - 1; if (mi < 0 || mi > 11) return ''; return `${Number(m[3])} ${A5_THAI_MONTHS[mi]} พ.ศ. ${Number(m[1]) + 543}`; };
   const a5Fill = (value, hint = '.......................................') => { const v = String(value ?? '').trim(); return v ? `<span class="a5-fill">${escapeHtml(v)}</span>` : `<span class="a5-fill a5-blank">${escapeHtml(hint)}</span>`; };
   const a5DateFill = (iso) => a5Fill(a5Date(iso));
@@ -330,70 +365,447 @@
     return `<section class="ws-paper"><header class="ws-paper-head">${crest()}<div><h2>${escapeHtml(title)}</h2><p>สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.)</p></div></header><dl class="ws-paper-meta">${meta.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v || '')}</dd></div>`).join('')}</dl><div class="ws-paper-body">${body}</div><footer class="ws-paper-sign">${signers.map(s => `<div><p>${escapeHtml(s.role || '')}</p><strong>${escapeHtml(s.name || '')}</strong><p>${escapeHtml(s.date || '')}</p></div>`).join('')}</footer></section>`;
   }
 
-  function paper213(state) {
-    const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, m62 = intake.m62 || {}, m = i.committee213 || {};
-    const deadline213 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
-    const header = `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><h2 class="a5-memo-title">บันทึกข้อความ</h2><div class="a5-memo-meta"><p><strong>ส่วนราชการ</strong> ${a5Fill(intake.unit, 'สำนัก/กอง/เขต .......................')} <strong>โทร.</strong> ${a5Fill('')}</p><p><strong>ที่</strong> ${a5Fill('', 'ปป ๐๐ ....../........')} <strong>วันที่</strong> ${p.submittedAt ? `<span class="a5-fill">${escapeHtml(p.submittedAt)}</span>` : a5Fill(a5Date(todayISO()))}</p><p><strong>เรื่อง</strong> รายงานการไต่สวนเบื้องต้น เรื่องที่ ${a5Fill(c.id)}</p><p><strong>เรียน</strong> เลขาธิการคณะกรรมการ ป.ป.ท.</p></div>`;
-    const intakeBranch = m62.flag
-      ? `รับเรื่องจากสำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตแห่งชาติ (ป.ป.ช.) มอบหมายตามมาตรา ๖๒ แห่งพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑ หนังสือ/มติที่ ${a5Fill(m62.sourceLetter)} ลงวันที่ ${a5DateFill(m62.sourceMtiDate)}`
-      : `รับเรื่องกล่าวหาร้องเรียนกรณีประพฤติมิชอบ ตามมาตรา ๑๘/๔ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม`;
-    const body = `<div class="a5-section"><h3>๑. การรับเรื่อง</h3><p>${intakeBranch}</p><p>รับเรื่องครั้งแรกเมื่อวันที่ ${a5DateFill(intake.receivedFirstAt)} ครบกำหนดไต่สวนเบื้องต้นภายใน ๖๐ วัน คือวันที่ ${a5DateFill(deadline213)}</p><p>คำสั่งมอบหมายเลขที่ ${a5Fill(intake.orderNo)} ลงวันที่ ${a5DateFill(intake.orderDate)} มอบหมายให้ ${a5Fill(intake.investigator, 'ผู้รับผิดชอบสำนวน .......................')} เป็นผู้รับผิดชอบสำนวน${intake.acceptedAt ? ` รับมอบสำนวนเมื่อ ${escapeHtml(intake.acceptedAt)}` : ''}</p></div>
-    <div class="a5-section"><h3>๒. ผู้ร้องเรียน</h3><p>${c.complainant ? `ชื่อ ${escapeHtml(c.complainant)}` : 'ผู้ร้องเรียนปกปิดตามพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑'}</p></div>
-    <div class="a5-section"><h3>๓. ผู้ถูกร้องเรียน</h3><p>หน่วยงาน/สังกัด ${a5Fill(c.agency)}</p><p>ชื่อ-สกุล ${a5Fill('')} เลขประจำตัวประชาชน ${a5Fill('', '- - - - - - - - - - - -')} ตำแหน่ง ${a5Fill('')} สังกัด/ระดับ ${a5Fill('')} สถานะปัจจุบัน ${a5Fill('')}</p></div>
-    <div class="a5-section"><h3>๔. ข้อกล่าวหาและพฤติการณ์แห่งการกล่าวหา</h3>${a5Sub('๔.๑', 'ข้อกล่าวหา', a5Block(state.documentData?.documentSubject || c.subject))}${a5Sub('๔.๒', 'พฤติการณ์', a5Block(''))}</div>
-    <div class="a5-section"><h3>๕. การตรวจสอบข้อเท็จจริง</h3>${a5Sub('๕.๑', 'คำให้การ', a5Block(''))}${a5Sub('๕.๒', 'ข้อเท็จจริงจากหน่วยงาน', a5Block(''))}${a5Sub('๕.๓', 'ผลการดำเนินการสอบข้อเท็จจริง/ทางวินัย/ทางละเมิด', a5Block(p.workLog))}${a5Sub('๕.๔', 'อื่น ๆ', a5Block(''))}</div>
-    <div class="a5-section"><h3>๖. วัน เวลา และสถานที่เกิดเหตุ</h3>${a5Block('')}</div>
-    <div class="a5-section"><h3>๗. ความเสียหาย</h3>${a5Block(p.issues?.damage)}</div>
-    <div class="a5-section"><h3>๘. พยานหลักฐานประกอบ</h3>${a5Sub('๘.๑', 'พยานบุคคล', a5Block(''))}${a5Sub('๘.๒', 'พยานเอกสาร', a5Block(''))}${a5Sub('๘.๓', 'พยานวัตถุ', a5Block(''))}${a5Sub('๘.๔', 'อื่น ๆ', a5Block(''))}</div>
-    <div class="a5-section"><h3>๙. กฎหมายและระเบียบที่เกี่ยวข้อง</h3><p class="a5-note">อ้างพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เป็นหลัก</p>${a5Block('', 'ระบุกฎหมาย/ระเบียบเฉพาะคดีเพิ่มเติม (ถ้ามี)')}</div>
-    <div class="a5-section"><h3>๑๐. อายุความ</h3>${a5Block('', 'ระบุกำหนดอายุความและวันครบกำหนด')}</div>
-    <div class="a5-section"><h3>๑๑. มาตรการคุ้มครองเบื้องต้นตามมาตรา ๕๓</h3>${a5Block(p.evidence, 'ยังไม่มีคำขอคุ้มครองพยานในชั้นนี้')}</div>
-    <div class="a5-section"><h3>๑๒. ข้อพิจารณา</h3>${[['status', '๑๒.๑', 'สถานะของผู้ถูกร้องเรียน'], ['authority', '๑๒.๒', 'ขอบเขตอำนาจหน้าที่'], ['action', '๑๒.๓', 'ความถูกต้องของการกระทำตามอำนาจหน้าที่'], ['damage', '๑๒.๔', 'ความเสียหาย']].map(([k, num, label]) => a5Sub(num, label, a5Block(p.issues?.[k]))).join('')}</div>
-    <div class="a5-section"><h3>๑๓. ความเห็น</h3>${a5Block(p.report)}<p>เห็นควรแต่งตั้ง${m.orderType === '24v3' ? 'คณะอนุกรรมการไต่สวน (มาตรา ๒๔ วรรคสาม)' : 'คณะพนักงานไต่สวน (มาตรา ๒๔ วรรคหนึ่ง)'} เลขที่คำสั่ง ${a5Fill(m.orderNo)} ประกอบด้วยเจ้าของสำนวน ${a5Fill(m.investigator644 || intake.investigator)}${(intake.team || []).length ? ` และเจ้าหน้าที่ ${escapeHtml((intake.team || []).join(', '))}` : ''}</p></div>
-    <div class="a5-section"><h3>๑๔. ข้อเสนอ</h3><div class="a5-checklist">${a5Check(m.result === 'รับไว้ไต่สวน', 'รับไว้ไต่สวน')}${a5Check(m.result === 'ไม่รับไว้ไต่สวน', 'ไม่รับไว้พิจารณา (ตามนัยมาตรา ๒๕/๒๖ แห่งพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑)')}${a5Check(m.result === 'ให้ไต่สวนเบื้องต้นเพิ่มเติม', 'ให้ไต่สวนเบื้องต้นเพิ่มเติม')}${a5Check(m.result === 'ส่งสำนักงาน ป.ป.ช.', 'ส่งสำนักงาน ป.ป.ช./หน่วยงานที่มีอำนาจหน้าที่')}</div><p>จึงเรียนมาเพื่อโปรดพิจารณา</p>${a5SignBlock('ผู้รับผิดชอบสำนวน', intake.investigator)}</div>`;
-    const chain213 = REVIEW_CHAIN['213'];
-    const done213 = p.reviewChain || [];
-    const chainLabels = ['๑๕. ความเห็นผู้บังคับบัญชาชั้นต้น', '๑๖. ความเห็นผู้อำนวยการสำนัก/เขต', '๑๗. ความเห็นรองเลขาธิการ/ผู้ช่วยเลขาธิการ ป.ป.ท.'];
-    const chainSections = chain213.map((step, idx) => {
-      const d = done213.find(x => x.level === step.level);
-      return `<div class="a5-section"><h3>${chainLabels[idx] || step.label}</h3>${d ? `${a5Block(d.skip ? `(ข้าม — ${d.opinion || 'ไม่อยู่ในสายงานของสำนวนนี้'})` : d.opinion)}${a5SignBlock(step.label, d.by, d.at || '')}` : `${a5Block('')}${a5SignBlock(step.label, '')}`}</div>`;
-    }).join('');
-    const finalSection = `<div class="a5-section"><h3>๑๘. ความเห็นเลขาธิการคณะกรรมการ ป.ป.ท.</h3>${a5Block('')}${a5SignBlock('เลขาธิการคณะกรรมการ ป.ป.ท.', '')}</div>`;
-    return paperShell({ formCode: 'แบบ ปปท. 213', headerHtml: header, bodyHtml: body + chainSections + finalSection });
-  }
-
-  function paper644(state) {
-    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, mc = i.committee644 || {}, p = i.prelim || {}, intake = i.intake || {};
-    const header = `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><p class="a5-agency-name">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p><h2 class="a5-report-title">รายงานการไต่สวน</h2><div class="a5-report-fields"><p><strong>ปปท.</strong> ${a5Fill('', '00/.......')}</p><p><strong>เรื่องที่</strong> ${a5Fill(c.id)}</p><p><strong>สำนัก/กองเจ้าของเรื่อง</strong> ${a5Fill(intake.unit)}</p><p><strong>วันที่</strong> ${q.submittedAt ? `<span class="a5-fill">${escapeHtml(q.submittedAt)}</span>` : a5Fill(a5Date(todayISO()))}</p><p class="a5-field-full"><strong>เรียน</strong> ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p></div>`;
-    const body = `<div class="a5-section"><h3>๑. การรับเรื่อง</h3><p>รับสำนวนไต่สวนเบื้องต้น (213) ต่อเนื่องจากรายงานเลขที่สำนวน ${a5Fill(c.id)} คณะกรรมการ ป.ป.ท. มีมติให้ไต่สวน ตามคำสั่ง${m.orderType === '24v3' ? 'แต่งตั้งคณะอนุกรรมการไต่สวน (มาตรา ๒๔ วรรคสาม)' : 'แต่งตั้งคณะพนักงานไต่สวน (มาตรา ๒๔ วรรคหนึ่ง)'} เลขที่ ${a5Fill(m.orderNo)} ลงวันที่ ${a5DateFill(m.orderDate)}</p><p>เริ่มนับระยะเวลาไต่สวนชี้มูล (๒๗๐ วัน) ตั้งแต่วันที่ ${a5DateFill(q.startedAt)} ครบกำหนดวันที่ ${a5DateFill(q.deadlineAt)}</p></div>
-    <div class="a5-section"><h3>๒. ผู้กล่าวหา</h3><p>${c.complainant ? `ชื่อ ${escapeHtml(c.complainant)}` : 'ผู้กล่าวหาปกปิดชื่อตามกฎหมาย'}</p></div>
-    <div class="a5-section"><h3>๓. ผู้ถูกกล่าวหา</h3>${(q.accused && q.accused.length) ? `<ol class="a5-numlist">${q.accused.map(a => `<li>${escapeHtml(a)} — เลขประจำตัวประชาชน ${a5Fill('')} ตำแหน่ง/สังกัด ${a5Fill('')} ที่อยู่ตามทะเบียนราษฎร ${a5Fill('')}</li>`).join('')}</ol>` : `<p class="a5-fill-block">ยังไม่มีข้อมูล — โปรดกรอกรายชื่อผู้ถูกกล่าวหา</p>`}</div>
-    <div class="a5-section"><h3>๔. ข้อกล่าวหา พฤติการณ์ที่กล่าวหา</h3>${a5Block(q.allegations)}</div>
-    <div class="a5-section"><h3>๕. การรวบรวมพยานหลักฐาน</h3>${a5Sub('๕.๑', 'พยานบุคคล', (q.witnesses && q.witnesses.length) ? `<p>${escapeHtml(q.witnesses.join(', '))}</p>` : a5Block(''))}${a5Sub('๕.๒', 'พยานเอกสาร', a5Block(''))}${a5Sub('๕.๓', 'พยานวัตถุและอื่น ๆ', a5Block(q.searchWarrant))}${a5Sub('๕.๔', 'ผลการดำเนินการสอบข้อเท็จจริง/ทางวินัย/ทางละเมิดของหน่วยงานต้นสังกัด', a5Block(''))}</div>
-    <div class="a5-section"><h3>๖. การดำเนินการอื่น ๆ</h3>${a5Sub('๖.๑', 'การคุ้มครองพยาน', a5Block(q.witnessProtection))}${a5Sub('๖.๒', 'การกันบุคคลไว้เป็นพยาน', (q.witnesses && q.witnesses.length) ? `<p>${escapeHtml(q.witnesses.join(', '))}</p>` : a5Block(''))}${a5Sub('๖.๓', 'อื่น ๆ', a5Block(q.searchWarrant))}</div>
-    <div class="a5-section"><h3>๗. วันเวลาและสถานที่เกิดเหตุ</h3>${a5Block('')}</div>
-    <div class="a5-section"><h3>๘. ความเสียหาย</h3>${a5Block('')}</div>
-    <div class="a5-section"><h3>๙. อายุความ</h3>${a5Block('')}</div>
-    <div class="a5-section"><h3>๑๐. กฎหมายและระเบียบที่เกี่ยวข้อง</h3><p class="a5-note">อ้างพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เป็นหลัก</p>${a5Block('', 'ระบุกฎหมาย/ระเบียบเฉพาะคดีเพิ่มเติม (ถ้ามี)')}</div>
-    <div class="a5-section"><h3>๑๑. การแจ้งคำสั่ง/การคัดค้านผู้ไต่สวน/การแจ้งข้อกล่าวหา/การชี้แจงแก้ข้อกล่าวหา</h3>${a5Sub('๑๑.๑', 'คำสั่งแต่งตั้งและการคัดค้าน', a5Block(m.orderNo ? `คำสั่งเลขที่ ${m.orderNo} ลงวันที่ ${a5Date(m.orderDate) || ''} — ไม่มีการคัดค้านผู้ไต่สวน` : ''))}${a5Sub('๑๑.๒', 'การแจ้งข้อกล่าวหา', a5Block(q.noticeSentAt ? `แจ้งข้อกล่าวหาแล้วเมื่อวันที่ ${a5Date(q.noticeSentAt)}` : ''))}${a5Sub('๑๑.๓', 'การชี้แจงแก้ข้อกล่าวหา', a5Block(q.statements))}</div>
-    <div class="a5-section"><h3>๑๒. เหตุผลในการพิจารณาวินิจฉัย</h3><p class="a5-note">คดีมีประเด็นที่ต้องวินิจฉัยตามข้อพิจารณา ๔ ประเด็น (สถานะผู้ถูกกล่าวหา / ขอบเขตอำนาจหน้าที่ / ความถูกต้องของการกระทำตามอำนาจหน้าที่ / ความเสียหาย) — หากองค์คณะมีความเห็นแย้ง ให้บันทึกความเห็นข้างมากและข้างน้อยไว้ด้วย</p>${a5Sub('๑๒.๑', 'สถานะของผู้ถูกกล่าวหา', a5Block(''))}${a5Sub('๑๒.๒', 'ขอบเขตอำนาจหน้าที่', a5Block(''))}${a5Sub('๑๒.๓', 'ความถูกต้องของการกระทำตามอำนาจหน้าที่', a5Block(''))}${a5Sub('๑๒.๔', 'ความเสียหาย', a5Block(''))}<p>ข้อเท็จจริงจากการไต่สวนได้ความว่า ${q.report ? escapeHtml(q.report) : a5Fill('')}</p><p>พิเคราะห์แล้วเห็นว่า ${a5Fill('')}</p></div>
-    <div class="a5-section"><h3>๑๓. สรุปบทความผิดผู้ถูกกล่าวหาแต่ละราย</h3><div class="a5-checklist">${a5Check(mc.result === 'ข้อกล่าวหาไม่มีมูล/สิทธิฟ้องระงับ', 'ข้อกล่าวหาตกไป (ไม่มีมูล/สิทธินำคดีอาญามาฟ้องระงับ)')}${a5Check(mc.result === 'ชี้มูลความผิดอาญาและวินัย', 'มีมูลความผิด — ทางอาญาและทางวินัย')}${a5Check(mc.result === 'ส่งสำนักงาน ป.ป.ช.', 'อื่น ๆ — ส่งสำนักงาน ป.ป.ช.')}${a5Check(mc.result === 'ส่งพนักงานสอบสวน', 'อื่น ๆ — ส่งพนักงานสอบสวน')}</div>${a5Block(mc.note)}</div>
-    <div class="a5-section"><h3>๑๔. ข้อเสนอ</h3><p>เห็นควรเสนอเรื่องให้คณะกรรมการ ป.ป.ท. พิจารณาวินิจฉัยชี้มูลตามความเห็นในข้อ ๑๓</p></div>`;
-    const teamSecond = (intake.team || [])[0] || '';
-    const teamThird = (intake.team || [])[1] || '';
-    const signHtml = `<div class="a5-sign-grid">${a5SignBlock(m.orderType === '24v3' ? 'ประธานอนุกรรมการ' : 'พนักงาน ป.ป.ท. เจ้าของสำนวน', m.investigator644 || q.investigator || intake.investigator)}${a5SignBlock(m.orderType === '24v3' ? 'อนุกรรมการ' : 'เจ้าหน้าที่ ป.ป.ท.', teamSecond)}${a5SignBlock(m.orderType === '24v3' ? 'อนุกรรมการและเลขานุการ' : 'พนักงาน ป.ป.ท. เจ้าของสำนวน', teamThird || (m.investigator644 || q.investigator || intake.investigator))}</div>`;
-    return paperShell({ formCode: 'แบบ ปปท. 644', headerHtml: header, bodyHtml: body, signHtml });
-  }
   function paperMti(state, which) {
     const c = state.caseData, i = state.inquiry, m = which === '213' ? i?.committee213 : i?.committee644;
-    return paperShell(`มติคณะกรรมการ ป.ป.ท. (${which === '213' ? 'ไต่สวนเบื้องต้น' : 'วินิจฉัยชี้มูล'})`, [
-      ['เลขที่สำนวน', c.id], ['เรื่อง', state.documentData?.documentSubject || c.subject], ['มติที่', m?.mtiNo || ''], ['วันที่', m?.mtiDate || '']
-    ],
-      `<p class="ws-paper-text"><strong>ผลมติ: ${escapeHtml(m?.result || 'ยังไม่มีมติ')}</strong></p><p class="ws-paper-text">${escapeHtml(m?.note || '')}</p>`,
-      [{ role: 'ประธานกรรมการ ป.ป.ท.', name: '' }]);
+    const result = m?.result || 'ยังไม่มีมติ';
+    const is213 = which === '213';
+    const options213 = ['รับไว้ไต่สวน', 'ไม่รับไว้ไต่สวน', 'ให้ไต่สวนเบื้องต้นเพิ่มเติม', 'ส่งสำนักงาน ป.ป.ช.'];
+    const options644 = ['ชี้มูลความผิดอาญาและวินัย', 'ชี้มูลความผิดวินัย', 'ชี้มูลคดีประพฤติมิชอบ ม.18/4', 'ข้อกล่าวหาไม่มีมูล/สิทธิฟ้องระงับ', 'ส่งสำนักงาน ป.ป.ช.', 'ส่งพนักงานสอบสวน', 'ให้ไต่สวนชี้มูลเพิ่มเติม'];
+    const checks = (is213 ? options213 : options644).map(o => a5Check(result === o, o)).join('');
+    return paperShell({
+      formCode: A5_FORMS.mti.code,
+      headerHtml: `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><h2 class="a5-memo-title">มติคณะกรรมการ ป.ป.ท.${is213 ? ' (ไต่สวนเบื้องต้น)' : ' (วินิจฉัยชี้มูล)'}</h2><div class="a5-memo-meta"><p><strong>เรื่องที่</strong> ${a5Fill(c?.id)} <strong>มติที่</strong> ${a5Fill(m?.mtiNo)} <strong>วันที่</strong> ${a5DateFill(m?.mtiDate)}</p></div>`,
+      bodyHtml: `<div class="a5-section"><h3>ผลมติ</h3><div class="a5-checklist">${checks}</div>${m?.note ? `<p>${escapeHtml(m.note)}</p>` : ''}</div>${is213 && m?.result === 'รับไว้ไต่สวน' ? `<div class="a5-section"><p><strong>การดำเนินการ</strong> แต่งตั้ง${m?.orderType === '24v3' ? 'คณะอนุกรรมการไต่สวน (มาตรา ๒๔ วรรคสาม)' : 'คณะพนักงานไต่สวน (มาตรา ๒๔ วรรคหนึ่ง)'} ${a5Fill(m?.orderNo)} ลงวันที่ ${a5DateFill(m?.orderDate)} ผู้รับผิดชอบชั้น 644: ${a5Fill(m?.investigator644)}${m?.handoverDoc?.letterNo ? ` · หนังสือส่งมอบ ${a5Fill(m?.handoverDoc?.letterNo)}` : ''}</p></div>` : ''}`,
+      signHtml: `<div class="a5-sign-grid">${a5SignBlock('ประธานกรรมการ ป.ป.ท.', '')}${a5SignBlock('กรรมการ', '')}</div>`
+    });
+  }
+
+  /* ---------- เอกสารตามแบบพิมพ์จริง (แบบ ปปท. 1-20) ---------- */
+  const A5_REAL_IMAGES = Object.freeze({
+    plan: ['assets/a5-forms/plan-1.png', 'assets/a5-forms/plan-2.png'],
+    ext213: ['assets/a5-forms/ext213-1.png', 'assets/a5-forms/ext213-2.png', 'assets/a5-forms/ext213-3.png'],
+    ext644: ['assets/a5-forms/ext644-1.png', 'assets/a5-forms/ext644-2.png', 'assets/a5-forms/ext644-3.png'],
+    rep213: ['assets/a5-forms/rep213-1.png', 'assets/a5-forms/rep213-2.png', 'assets/a5-forms/rep213-3.png', 'assets/a5-forms/rep213-4.png', 'assets/a5-forms/rep213-5.png', 'assets/a5-forms/rep213-6.png'],
+    rep644: ['assets/a5-forms/rep644-1.png', 'assets/a5-forms/rep644-2.png', 'assets/a5-forms/rep644-3.png'],
+    notice: ['assets/a5-forms/notice-1.png', 'assets/a5-forms/notice-2.png'],
+    record: ['assets/a5-forms/record-1.png', 'assets/a5-forms/record-2.png', 'assets/a5-forms/record-3.png'],
+    p8: ['assets/a5-forms/p8-1.png'], p9: ['assets/a5-forms/p9-1.png'], p10: ['assets/a5-forms/p10-1.png'],
+    p11: ['assets/a5-forms/p11-1.png', 'assets/a5-forms/p11-2.png', 'assets/a5-forms/p11-3.png'],
+    p12: ['assets/a5-forms/p12-1.png'], p13: ['assets/a5-forms/p13-1.png', 'assets/a5-forms/p13-2.png'],
+    p14: ['assets/a5-forms/p14-1.png', 'assets/a5-forms/p14-2.png'], p15: ['assets/a5-forms/p15-1.png', 'assets/a5-forms/p15-2.png'],
+    p16: ['assets/a5-forms/p16-1.png', 'assets/a5-forms/p16-2.png'], p17: ['assets/a5-forms/p17-1.png'],
+    p18: ['assets/a5-forms/p18-1.png'], p19: ['assets/a5-forms/p19-1.png'], p20: ['assets/a5-forms/p20-1.png']
+  });
+  const A5R_SCALE = 794 / 595.32;
+  function a5DateShort(iso) {
+    const m = String(iso || '').slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return '';
+    const mi = Number(m[2]) - 1;
+    if (mi < 0 || mi > 11) return '';
+    return `${Number(m[3])} ${A5_THAI_MONTHS_SHORT[mi]} ${Number(m[1]) + 543}`;
+  }
+  function paperReal(pages, slotsByPage, formCode, formKey, docEdits) {
+    const S = A5R_SCALE;
+    const edits = docEdits || {};
+    const body = pages.map((img, pi) => {
+      const slots = (slotsByPage[pi] || []).map((s, si) => {
+        const key = `${formKey}-p${pi}-${si}`;
+        const html = edits[key] ?? s.html;
+        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 11) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
+      }).join('');
+      return `<div class="a5r-page" style="background-image:url('${img}')">${slots}</div>`;
+    }).join('');
+    return `<section class="a5-paper a5r-paper">${body}${formCode ? `<p class="a5-form-code">${escapeHtml(formCode)}</p>` : ''}</section>`;
+  }
+  const EXT_REAL = {
+    '213': {
+      imgs: A5_REAL_IMAGES.ext213,
+      p1: (d) => [
+        { x: 303, y: 126.3, w: 60, html: escapeHtml(d.id) },
+        { x: 392, y: 126.3, w: 70, html: escapeHtml(String(d.round || '')) },
+        { x: 180, y: 265.5, w: 100, html: a5DateShort(d.received) },
+        { x: 305, y: 337.7, w: 110, html: a5DateShort(d.deadline) },
+        { x: 132, y: 355.8, w: 60, html: escapeHtml(String(d.round || '')) },
+        { x: 418, y: 428.2, w: 110, html: escapeHtml(d.investigator || '') },
+        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10 },
+        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10 },
+      ],
+      p2: (d) => [
+        { x: 133, y: 110.4, w: 25, html: escapeHtml(String(d.round || '')) },
+        { x: 181, y: 110.4, w: 35, html: escapeHtml(String(d.days || '')) },
+        { x: 230, y: 110.4, w: 70, html: a5DateShort(d.deadline) },
+        { x: 407, y: 110.4, w: 70, html: a5DateShort(d.deadline) },
+        { x: 124, y: 128.5, w: 70, html: a5DateShort(d.deadline) },
+        { x: 340, y: 188.8, w: 125, html: escapeHtml(d.investigator || '') },
+        { x: 376, y: 295.4, w: 150, html: escapeHtml(d.opinions[0] || '') },
+        { x: 340, y: 355.6, w: 125, html: escapeHtml(d.signs[0] || '') },
+        { x: 376, y: 478.5, w: 150, html: escapeHtml(d.opinions[1] || '') },
+        { x: 340, y: 538.7, w: 125, html: escapeHtml(d.signs[1] || '') },
+        { x: 376, y: 645.3, w: 150, html: escapeHtml(d.opinions[2] || '') },
+        { x: 340, y: 711.6, w: 125, html: escapeHtml(d.signs[2] || '') },
+      ],
+      p3: (d) => [
+        { x: 376, y: 122.8, w: 150, html: escapeHtml(d.opinions[3] || '') },
+        { x: 340, y: 183, w: 125, html: escapeHtml(d.signs[3] || '') },
+        { x: 340, y: 381.9, w: 125, html: escapeHtml(d.signs[4] || '') },
+      ],
+    },
+    '644': {
+      imgs: A5_REAL_IMAGES.ext644,
+      p1: (d) => [
+        { x: 262, y: 126.3, w: 60, html: escapeHtml(d.id) },
+        { x: 356, y: 126.3, w: 60, html: escapeHtml(String(d.round || '')) },
+        { x: 183, y: 265.5, w: 45, html: a5DateShort(d.received) },
+        { x: 350, y: 265.5, w: 185, html: escapeHtml(d.complainant || '') },
+        { x: 90, y: 283.5, w: 150, html: escapeHtml(d.accused || '') },
+        { x: 246.6, y: 283.5, w: 90, html: '' },
+        { x: 346, y: 283.5, w: 90, html: escapeHtml(d.agency || '') },
+        { x: 127, y: 301.6, w: 408, html: escapeHtml(d.subject || '') },
+        { x: 113, y: 343.7, w: 100, html: escapeHtml(d.orderNo || '') },
+        { x: 250, y: 343.7, w: 175, html: a5DateShort(d.orderDate) },
+        { x: 394, y: 416.1, w: 72, html: a5DateShort(d.deadline) },
+        { x: 216, y: 434.2, w: 50, html: escapeHtml(String(d.round || '')) },
+        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10 },
+        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10 },
+      ],
+      p2: (d) => [
+        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 10 },
+        { x: 133, y: 193.9, w: 25, html: escapeHtml(String(d.round || '')) },
+        { x: 181, y: 193.9, w: 35, html: escapeHtml(String(d.days || '')) },
+        { x: 230, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
+        { x: 407, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
+        { x: 124, y: 211.7, w: 70, html: a5DateShort(d.deadline) },
+        { x: 340, y: 272, w: 125, html: escapeHtml(d.investigator || '') },
+        { x: 376, y: 378.5, w: 150, html: escapeHtml(d.opinions[0] || '') },
+        { x: 340, y: 438.8, w: 125, html: escapeHtml(d.signs[0] || '') },
+        { x: 376, y: 561.7, w: 150, html: escapeHtml(d.opinions[1] || '') },
+        { x: 340, y: 621.9, w: 125, html: escapeHtml(d.signs[1] || '') },
+      ],
+      p3: (d) => [
+        { x: 376, y: 121, w: 150, html: escapeHtml(d.opinions[2] || '') },
+        { x: 340, y: 187.2, w: 125, html: escapeHtml(d.signs[2] || '') },
+        { x: 376, y: 271.6, w: 150, html: escapeHtml(d.opinions[3] || '') },
+        { x: 340, y: 331.8, w: 125, html: escapeHtml(d.signs[3] || '') },
+        { x: 340, y: 530.6, w: 125, html: escapeHtml(d.signs[4] || '') },
+      ],
+    },
+  };  function paperExt(state, reportType) {
+    const c = state.caseData || {}, i = state.inquiry || {}, rep = reportOf(reportType, i) || {}, intake = i.intake || {}, m62 = intake.m62 || {};
+    const is213 = reportType === '213';
+    const cfg = EXT_REAL[reportType];
+    const history = rep.extensionHistory || [];
+    const approved = history.filter(h => h.status === 'APPROVED');
+    const pending = history.find(h => h.status === 'PENDING');
+    const roundNo = approved.length + 1;
+    const deadline = rep.deadlineAt || addDays(intake.receivedFirstAt, is213 ? 60 : 270);
+    const dirs = approved.filter(h => h.role === 'director');
+    const secs = approved.filter(h => h.role === 'secretary');
+    const pendDir = pending?.role === 'director' ? pending : null;
+    const pendSec = pending?.role === 'secretary' ? pending : null;
+    const opText = e => e ? (e.status === 'APPROVED' ? `${e.reason || 'ตามเสนอ'}` : e.status === 'DENIED' ? `ไม่อนุมัติ — ${e.denyNote || ''}` : 'รอพิจารณา') : '';
+    const opinions = [opText(dirs[0] || pendDir), opText(dirs[1] || (dirs.length >= 1 && pendDir ? pendDir : null)), opText(secs[0] || pendSec), opText(secs[1] || (secs.length >= 1 && pendSec ? pendSec : null))];
+    const signs = [(dirs[0] || pendDir)?.approvedBy || '', (dirs[1] || (dirs.length >= 1 && pendDir ? pendDir : null))?.approvedBy || '', (secs[0] || pendSec)?.approvedBy || '', (secs[1] || (secs.length >= 1 && pendSec ? pendSec : null))?.approvedBy || '', rep.lateReport ? 'เลขาธิการคณะกรรมการ ป.ป.ท.' : ''];
+    const data = {
+      id: c.id, round: roundNo, days: pending?.requestedDays || '', received: intake.receivedFirstAt,
+      deadline, investigator: intake.investigator, accused: a5AccusedLine(state),
+      complainant: c.complainant, agency: c.agency, subject: state.documentData?.documentSubject || c.subject,
+      orderNo: i.committee213?.orderNo || '', orderDate: i.committee213?.orderDate || '',
+      done: i.prelim?.workLog || '', reason: pending?.reason || approved.at(-1)?.reason || rep.lateReport || '', problem: rep.lateReport || '',
+      opinions, signs
+    };
+    return paperReal(cfg.imgs, [cfg.p1(data), cfg.p2(data), cfg.p3(data)], A5_FORMS[is213 ? 'ext213' : 'ext644'].code, is213 ? 'ext213' : 'ext644', i.docEdits);
+  }
+
+  function paper213(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, m62 = intake.m62 || {}, m = i.committee213 || {}, q = i.inquiry644 || {};
+    const deadline213 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
+    const accused = (q.accused && q.accused.length) ? q.accused.join(', ') : '';
+    const chain = p.reviewChain || [];
+    const chainNames = ['', chain.find(x => x.level === 2)?.by || '', chain.find(x => x.level === 3)?.by || '', chain.find(x => x.level === 4)?.by || ''];
+    const p1 = [
+      { x: 338, y: 112.7, w: 110, html: a5DateShort(p.submittedAt || todayISO()) },
+      { x: 260, y: 137.4, w: 110, html: escapeHtml(c.id || '') },
+      { x: 202, y: 242.7, w: 40, html: a5DateShort(m62.sourceMtiDate) },
+      { x: 318, y: 242.7, w: 150, html: escapeHtml(m62.sourceLetter || '') },
+      { x: 436, y: 369.2, w: 85, html: a5DateShort(deadline213) },
+      { x: 202, y: 387.3, w: 70, html: a5DateShort(intake.receivedFirstAt) },
+      { x: 202, y: 405.4, w: 160, html: escapeHtml(intake.unit || '') },
+      { x: 282, y: 423.4, w: 85, html: escapeHtml(intake.investigator || '') },
+      { x: 158, y: 664.5, w: 380, html: escapeHtml(c.complainant || '') },
+      { x: 158, y: 706.7, w: 380, html: escapeHtml(accused) },
+    ];
+    const p5 = [
+      { x: 330, y: 212.3, w: 135, html: escapeHtml(intake.investigator || '') },
+      { x: 322, y: 340.4, w: 135, html: escapeHtml(chainNames[1] || '') },
+      { x: 325, y: 443.9, w: 135, html: '' },
+      { x: 322, y: 547.6, w: 135, html: escapeHtml(chainNames[2] || '') },
+      { x: 207, y: 609.1, w: 300, html: escapeHtml(m.result || ''), bold: true },
+    ];
+    const p6 = [
+      { x: 325, y: 239.4, w: 135, html: escapeHtml(chainNames[3] || m.decidedBy || '') },
+      { x: 260, y: 278.1, w: 135, html: escapeHtml(c.id || '') },
+      { x: 325, y: 493.5, w: 135, html: escapeHtml('') },
+    ];
+    return paperReal(A5_REAL_IMAGES.rep213, [p1, [], [], [], p5, p6], A5_FORMS['213'].code, '213', i.docEdits);
+  }
+  function paper644(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, mc = i.committee644 || {}, intake = i.intake || {};
+    const accused = (q.accused && q.accused.length) ? q.accused.join(' · ') : '';
+    const witnesses = (q.witnesses && q.witnesses.length) ? q.witnesses.join(', ') : '';
+    const p1 = [
+      { x: 118, y: 141.4, w: 400, html: escapeHtml(state.documentData?.documentSubject || c.subject || '') },
+      { x: 327, y: 177.5, w: 150, html: a5DateShort(q.submittedAt || todayISO()) },
+      { x: 224, y: 257.9, w: 60, html: a5DateShort(intake.receivedFirstAt) },
+      { x: 324, y: 257.9, w: 140, html: escapeHtml(intake.m62?.sourceLetter || '') },
+      { x: 405, y: 366.4, w: 60, html: a5DateShort(intake.receivedFirstAt) },
+      { x: 137, y: 402.5, w: 90, html: escapeHtml(m.orderNo || '') },
+      { x: 88, y: 531, w: 450, html: escapeHtml(c.complainant || ''), multi: true },
+      { x: 88, y: 555, w: 450, html: escapeHtml(accused), multi: true },
+      { x: 88, y: 651, w: 450, html: escapeHtml(q.allegations || ''), multi: true },
+      { x: 145, y: 694, w: 400, html: escapeHtml(witnesses), multi: true },
+      { x: 145, y: 748, w: 400, html: escapeHtml(q.statements || ''), multi: true },
+    ];
+    const p3 = [
+      { x: 178, y: 276.8, w: 345, html: escapeHtml(mc.result || ''), bold: true },
+      { x: 200, y: 460, w: 150, html: escapeHtml(m.orderType === '24v3' ? (intake.team || [])[0] || '' : q.investigator || intake.investigator || '') },
+      { x: 200, y: 532, w: 150, html: escapeHtml((intake.team || [])[1] || '') },
+      { x: 200, y: 604, w: 150, html: escapeHtml(q.investigator || intake.investigator || '') },
+    ];
+    return paperReal(A5_REAL_IMAGES.rep644, [p1, [], p3], A5_FORMS['644'].code, '644', i.docEdits);
+  }
+  function paperNoticeAccusation(state) {
+    const i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, intake = i.intake || {};
+    const c = state.caseData || {};
+    const slots = [
+      { x: 438, y: 187, w: 85, html: escapeHtml(c.id || '') },
+      { x: 122, y: 211, w: 300, html: escapeHtml(a5AccusedLine(state)) },
+      { x: 296, y: 235.1, w: 42, html: escapeHtml(m.orderNo || '') },
+      { x: 340, y: 235.1, w: 45, html: a5DateShort(m.orderDate) },
+      { x: 417, y: 295.4, w: 120, html: escapeHtml(a5AccusedLine(state)) },
+      { x: 87, y: 313.5, w: 145, html: escapeHtml(c.agency || '') },
+      { x: 345, y: 586, w: 190, html: escapeHtml(intake.director || '') },
+    ];
+    return paperReal(A5_REAL_IMAGES.notice, [slots], A5_FORMS.notice.code, 'notice', i.docEdits);
+  }
+  function paperProsecutorLetters(state) {
+    const i = state.inquiry || {}, o = i.outcome || {}, q = i.inquiry644 || {};
+    const c = state.caseData || {};
+    const accused = a5AccusedLine(state);
+    const p9slots = [
+      { x: 304, y: 181.2, w: 195, html: a5DateShort(todayISO()) },
+      { x: 120, y: 232.2, w: 300, html: escapeHtml(c.agency || '') },
+      { x: 222, y: 283.2, w: 115, html: escapeHtml(o.prosecutor || '') },
+      { x: 160, y: 302.8, w: 80, html: a5DateShort(todayISO()) },
+      { x: 239, y: 347.8, w: 110, html: escapeHtml(accused) },
+      { x: 88, y: 431.9, w: 140, html: escapeHtml(q.allegations || '') },
+      { x: 210, y: 451.4, w: 82, html: a5DateShort(todayISO()) },
+      { x: 322, y: 451.4, w: 55, html: '10.00' },
+      { x: 298, y: 631.5, w: 122, html: 'เลขาธิการ ป.ป.ท.' },
+    ];
+    const p8slots = [
+      { x: 310, y: 180.3, w: 170, html: a5DateShort(todayISO()) },
+      { x: 122, y: 229, w: 250, html: escapeHtml(accused) },
+      { x: 166, y: 319.1, w: 165, html: escapeHtml(q.allegations || '') },
+      { x: 356, y: 364.1, w: 150, html: escapeHtml(o.prosecutor || '') },
+      { x: 88, y: 383.7, w: 95, html: a5DateShort(todayISO()) },
+      { x: 216, y: 383.7, w: 55, html: '10.00' },
+      { x: 295, y: 575.7, w: 122, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+    ];
+    const p10slots = [
+      { x: 304, y: 180.1, w: 190, html: a5DateShort(todayISO()) },
+      { x: 122, y: 231.3, w: 140, html: escapeHtml(o.prosecutor || '') },
+      { x: 343, y: 256.7, w: 60, html: a5DateShort(todayISO()) },
+      { x: 127, y: 346.8, w: 110, html: escapeHtml(accused) },
+      { x: 253, y: 346.8, w: 110, html: escapeHtml(q.allegations || '') },
+      { x: 398, y: 430.9, w: 70, html: a5DateShort(todayISO()) },
+      { x: 88, y: 450.4, w: 70, html: '10.00' },
+      { x: 295, y: 578, w: 122, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+    ];
+    return `${paperReal(A5_REAL_IMAGES.p8, [p8slots], A5_FORMS.p8.code, 'p8', i.docEdits)}
+            ${paperReal(A5_REAL_IMAGES.p9, [p9slots], A5_FORMS.p9.code, 'p9', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p10, [p10slots], A5_FORMS.p10.code, 'p10', i.docEdits)}`;
+  }
+  function paperWarrants(state) {
+    const i = state.inquiry || {}, q = i.inquiry644 || {};
+    const c = state.caseData || {}, o = i.outcome || {};
+    const accused = a5AccusedLine(state);
+    const p14slots = [
+      { x: 274, y: 199.1, w: 70, html: a5DateShort(todayISO()) },
+      { x: 210, y: 376.1, w: 280, html: escapeHtml(accused) },
+      { x: 200, y: 396, w: 300, html: escapeHtml(q.allegations || '') },
+    ];
+    const p20slots = [
+      { x: 155, y: 229.3, w: 32, html: escapeHtml(c.id || '') },
+      { x: 273, y: 229.3, w: 32, html: '' },
+      { x: 106, y: 251.3, w: 650, html: escapeHtml(q.allegations || ''), multi: true },
+      { x: 145, y: 339, w: 30, html: '' },
+      { x: 279, y: 339, w: 150, html: '' },
+      { x: 74, y: 382.9, w: 315, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+    ];
+    const p11slots = [
+      { x: 334, y: 146.2, w: 145, html: escapeHtml('ศาลอาญาคดีทุจริตและประพฤติมิชอบ') },
+      { x: 263, y: 164.8, w: 70, html: a5DateShort(todayISO()) },
+      { x: 266, y: 213.4, w: 120, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+      { x: 150, y: 231.5, w: 110, html: escapeHtml('พนักงาน ป.ป.ท.') },
+      { x: 212, y: 443.7, w: 155, html: escapeHtml(accused) },
+      { x: 371, y: 443.7, w: 130, html: '' },
+      { x: 230, y: 647.7, w: 165, html: escapeHtml(q.allegations || '') },
+    ];
+    const p15slots = [
+      { x: 274, y: 191.2, w: 70, html: a5DateShort(todayISO()) },
+      { x: 214, y: 325.2, w: 300, html: escapeHtml(accused) },
+      { x: 215, y: 372, w: 300, html: escapeHtml(q.allegations || '') },
+    ];
+    const p16slots = [
+      { x: 264, y: 155.1, w: 60, html: escapeHtml(c.id || '') },
+      { x: 82, y: 358.3, w: 60, html: escapeHtml(c.id || '') },
+      { x: 81, y: 449.8, w: 60, html: '' },
+    ];
+    const p17slots = [
+      { x: 318, y: 163.7, w: 85, html: a5DateShort(todayISO()) },
+      { x: 115, y: 214.7, w: 250, html: escapeHtml(o.prosecutor || '') },
+      { x: 158, y: 240.3, w: 295, html: escapeHtml(o.prosecutor || '') },
+      { x: 168, y: 265.8, w: 330, html: '' },
+      { x: 160, y: 285.3, w: 100, html: '' },
+      { x: 265, y: 285.3, w: 60, html: a5DateShort(todayISO()) },
+      { x: 192, y: 479, w: 150, html: '' },
+      { x: 340, y: 479, w: 80, html: a5DateShort(todayISO()) },
+      { x: 272, y: 633.6, w: 130, html: 'เลขาธิการ ป.ป.ท.' },
+    ];
+    const p18slots = [
+      { x: 318, y: 202.5, w: 85, html: a5DateShort(todayISO()) },
+      { x: 88, y: 247.5, w: 300, html: 'ผู้บัญชาการตำรวจแห่งชาติ' },
+      { x: 160, y: 292.5, w: 260, html: '' },
+      { x: 130, y: 312, w: 400, html: '' },
+      { x: 164, y: 331.5, w: 140, html: escapeHtml(q.allegations || '') },
+      { x: 286, y: 526.6, w: 92, html: 'เลขาธิการ ป.ป.ท.' },
+    ];
+    const p19slots = [
+      { x: 126, y: 163.9, w: 405, html: escapeHtml(accused) },
+      { x: 388, y: 211, w: 100, html: escapeHtml(c.id || '') },
+      { x: 88, y: 230.6, w: 80, html: escapeHtml(c.id || '') },
+      { x: 185, y: 373.1, w: 225, html: '' },
+      { x: 428, y: 373.1, w: 30, html: '' },
+      { x: 464, y: 373.1, w: 70, html: a5DateShort(todayISO()) },
+      { x: 323, y: 554.7, w: 95, html: 'ผอ.กอท.' },
+    ];
+    const p12slots = [
+      { x: 248, y: 157.7, w: 80, html: a5DateShort(todayISO()) },
+      { x: 314, y: 132.3, w: 150, html: 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ' },
+      { x: 242, y: 226.2, w: 85, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+      { x: 430, y: 437.9, w: 80, html: escapeHtml(q.allegations || '') },
+      { x: 270, y: 663, w: 100, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
+    ];
+    const p13slots = [
+      { x: 350, y: 171.9, w: 155, html: 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ' },
+      { x: 262, y: 190.5, w: 70, html: a5DateShort(todayISO()) },
+    ];
+    const p13bSlots = [
+      { x: 268, y: 207.4, w: 90, html: escapeHtml(accused) },
+      { x: 259, y: 232.8, w: 150, html: '48 ชั่วโมง' },
+    ];
+    return `${paperReal(A5_REAL_IMAGES.p14, [p14slots], A5_FORMS.p14.code, 'p14', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p15, [p15slots, []], A5_FORMS.p15.code, 'p15', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p11, [p11slots, [], []], A5_FORMS.p11.code, 'p11', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p16, [p16slots, []], A5_FORMS.p16.code, 'p16', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p17, [p17slots], A5_FORMS.p17.code, 'p17', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p18, [p18slots], A5_FORMS.p18.code, 'p18', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p19, [p19slots], A5_FORMS.p19.code, 'p19', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p20, [p20slots], A5_FORMS.p20.code, 'p20', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p12, [p12slots], A5_FORMS.p12.code, 'p12', i.docEdits)}
+      ${paperReal(A5_REAL_IMAGES.p13, [p13slots, p13bSlots], A5_FORMS.p13.code, 'p13', i.docEdits)}`;
+  }
+  function paperPlan(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, q = i.inquiry644 || {}, m62 = intake.m62 || {};
+    const fromNacc = m62.flag || c.decision === '62' || String(c.decision || '').includes('62');
+    const deadline60 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
+    const accused = (q.accused && q.accused.length) ? q.accused : [];
+    const subject = state.documentData?.documentSubject || c.subject || '';
+    const issues = p.issues || {};
+    const planLines = String(p.plan || '').split('\n').filter(Boolean);
+    const slot = (x, y, w, html, fs) => ({ x, y, w, html, fs });
+    const p1 = [
+      slot(156, 81.5, 134, escapeHtml(c.id || '')),
+      slot(265, 117.7, 75, a5DateShort(intake.receivedFirstAt)),
+      slot(432, 117.7, 85, a5DateShort(deadline60)),
+      slot(210, 135.7, 115, a5DateShort(addDays(intake.receivedFirstAt, 730))),
+      slot(131, 153.9, 405, escapeHtml(c.complainant || '')),
+      slot(131, 172, 408, escapeHtml(accused[0] || '')),
+      slot(128, 190, 410, escapeHtml(accused[1] || '')),
+      slot(186, 208.1, 350, escapeHtml(subject)),
+      slot(163, 226.2, 375, ''),
+      slot(65, 380.9, 60, escapeHtml(issues.status || '')),
+      slot(65, 526, 63, escapeHtml(issues.authority || '')),
+      slot(65, 635, 55, escapeHtml(issues.action || '')),
+      slot(65, 726, 66, escapeHtml(issues.damage || '')),
+    ];
+    const p2 = [
+      slot(168, 104.3, 360, ''),
+      slot(152.2, 128.4, 380, ''),
+      slot(152.2, 152.4, 380, ''),
+      slot(123.9, 224.7, 405, ''),
+      slot(123.9, 248.8, 320, ''),
+      slot(123.9, 272.9, 320, ''),
+      slot(123.9, 321, 405, ''),
+      slot(123.9, 345.2, 405, ''),
+      slot(123.9, 369.2, 405, ''),
+      ...planLines.slice(0, 6).map((l, idx) => slot(268, 441 + idx * 24, 460, escapeHtml(l))),
+      slot(268, 601.7, 145, escapeHtml(intake.investigator || '')),
+      slot(268, 655.9, 145, escapeHtml((intake.team || [])[0] || '')),
+      slot(268, 710.1, 145, escapeHtml(intake.director || '')),
+    ];
+    return paperReal(A5_REAL_IMAGES.plan, [p1, p2], A5_FORMS.plan.code, 'plan', i.docEdits);
+  }
+    function paperRecordAccusation(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, intake = i.intake || {};
+    const slots = [
+      { x: 386, y: 263.1, w: 36, html: escapeHtml(c.id || '') },
+      { x: 460, y: 263.1, w: 62, html: a5DateShort(i.committee213?.orderDate || todayISO()) },
+      { x: 88, y: 281.5, w: 300, html: escapeHtml(a5AccusedLine(state)) },
+      { x: 158, y: 606.7, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
+      { x: 144, y: 678.9, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
+    ];
+    return paperReal(A5_REAL_IMAGES.record, [slots, [], []], A5_FORMS.record.code, 'record', i.docEdits);
+  }
+
+  function paperSpecial58(state) {
+    const s = state.inquiry?.special || {};
+    return paperShell({ formCode: '58/2-58/3', headerHtml: `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><h2 class="a5-memo-title">บันทึกการตรวจสอบข้อเท็จจริง</h2>`, bodyHtml: `<div class="a5-section"><p><strong>เรื่อง</strong> ${escapeHtml(state.caseData?.subject || '')}</p><p><strong>ผู้ตรวจสอบ</strong> ${a5Fill(s.assignee)} <strong>หน่วยงานที่แจ้ง</strong> ${a5Fill(s.agency)} <strong>วันที่</strong> ${a5DateFill(s.reportedAt)}</p><p><strong>ผลการตรวจสอบ</strong> ${a5Block(s.result)}</p>${s.type === '582' ? `<p><strong>การแจ้งหน่วยงานแก้ไข</strong> ${a5Block('')}</p><p><strong>การประกาศสาธารณะ</strong> ${s.publicNotice ? `<span class="a5-fill">ประกาศแล้ว (${escapeHtml(s.publicNotice)})</span>` : a5Block('', 'ยังไม่ได้ประกาศสาธารณะ')}</p>` : ''}</div>` });
   }
 
   /* ---------- รายการสำนวน ---------- */
+  const A5_MENU = Object.freeze({
+    all: 'รายการสำนวนคดี',
+    prelim: 'ไต่สวนเบื้องต้น (213)',
+    inquiry: 'ไต่สวนชี้มูล (644)',
+    review: 'รอความเห็นตามลำดับชั้น',
+    committee: 'เรื่องเสนอ คกก.',
+    ext: 'รออนุมัติขยายเวลา',
+    due: 'ใกล้ครบกำหนด',
+    fast: 'ใบด่วน/เร่งด่วน',
+    m62: 'คดีรับจาก ป.ป.ช.',
+    '582': 'ตรวจสอบข้อเท็จจริง 58/2'
+  });
+  function a5qFilter(c, a5q) {
+    const i = c.inquiry || {}, w = c.workflow || {}, st = w.stage || '';
+    const dl = currentDeadline(c), tone = dl ? deadlineTone(dl) : null;
+    switch (a5q) {
+      case 'prelim': return ['a5-prelim', 'a5-prelim-review', 'a7-213'].includes(st);
+      case 'inquiry': return ['a5-inquiry', 'a5-inquiry-review', 'a7-644'].includes(st);
+      case 'review': return ['a5-prelim-review', 'a5-inquiry-review'].includes(st);
+      case 'committee': return ['a7-213', 'a7-644'].includes(st);
+      case 'ext': {
+        const p = i.prelim || {}, q = i.inquiry644 || {};
+        return (p.extensionHistory || []).some(h => h.status === 'PENDING') || (q.extensionHistory || []).some(h => h.status === 'PENDING') || !!p.additionalExtensionPending || !!q.additionalExtensionPending;
+      }
+      case 'due': return !!tone && tone.tone !== 'ok';
+      case 'fast': return !!(i.prelim?.fastTrack || i.inquiry644?.fastTrack);
+      case 'm62': return !!(i.intake?.m62?.flag);
+      case '582': return c.caseData?.decision === '58/2';
+      case 'all':
+      default: return true;
+    }
+  }
   function allA5Cases() {
     const store = readStore();
     let changed = false;
@@ -434,12 +846,13 @@
     const root = $('#a5App');
     if (!root) return;
     const cases = allA5Cases();
-    const q = (filters?.q || '').toLowerCase(), region = filters?.region || '', phase = filters?.phase || '', investigator = filters?.investigator || '';
+    const q = (filters?.q || '').toLowerCase(), region = filters?.region || '', phase = filters?.phase || '', investigator = filters?.investigator || '', a5q = filters?.a5q || '';
     const rows = cases.filter(c => {
       const i = c.inquiry || {};
       const searchable = [c.caseData?.id, c.caseData?.subject, c.caseData?.agency, c.caseData?.complainant, i?.intake?.investigator, i?.inquiry644?.investigator].join(' ').toLowerCase();
       return (!q || searchable.includes(q)) && (!region || (i?.intake?.unit || c.caseData?.region) === region) &&
-        (!phase || phaseLabel(c) === phase) && (!investigator || (i?.intake?.investigator || i?.inquiry644?.investigator || '') === investigator);
+        (!phase || phaseLabel(c) === phase) && (!investigator || (i?.intake?.investigator || i?.inquiry644?.investigator || '') === investigator) &&
+        (!a5q || a5qFilter(c, a5q));
     });
     const total = cases.length, pending = cases.filter(c => ['a5-intake'].includes(c.workflow?.stage)).length,
       working = cases.filter(c => ['a5-prelim', 'a5-prelim-review', 'a5-inquiry', 'a5-inquiry-review', 'a7-213', 'a7-644'].includes(c.workflow?.stage)).length,
@@ -462,11 +875,12 @@
   }
   function transferPanelHtml(i, role) {
     let out = '';
-    if (i.intake.transfer.status === 'PENDING') {
-      out += `<div class="ws-callout">สถานะ: รอปลายทางรับโอน (${escapeHtml(i.intake.transfer.target)}) — ส่งโดย ${escapeHtml(i.intake.transfer.by)} ${escapeHtml(i.intake.transfer.at)}${i.intake.transfer.note ? ` · ${escapeHtml(i.intake.transfer.note)}` : ''}</div><div class="ws-grid-2"><div class="ws-field"><label>หมายเหตุ (รับ/ปฏิเสธ)</label><input id="a5TransferNote" placeholder="ระบุหมายเหตุ"></div></div><div class="ws-actions"><button class="ws-button primary" data-a5-action="transfer-accept">รับโอน (รับเป็นเจ้าของเรื่อง)</button><button class="ws-button danger" data-a5-action="transfer-reject">ปฏิเสธ — เรื่องคงอยู่ที่สำนักงานเดิม</button></div>`;
+    const tr = i.intake.transfer || {}, trp = i.intake.transferPost || {};
+    if (tr.status === 'PENDING') {
+      out += `<div class="ws-callout">สถานะ: รอปลายทางรับโอน (${escapeHtml(tr.target)}) — ส่งโดย ${escapeHtml(tr.by)} ${escapeHtml(tr.at)}${tr.note ? ` · ${escapeHtml(tr.note)}` : ''}</div><div class="ws-grid-2"><div class="ws-field"><label>หมายเหตุ (รับ/ปฏิเสธ)</label><input id="a5TransferNote" placeholder="ระบุหมายเหตุ"></div></div><div class="ws-actions"><button class="ws-button primary" data-a5-action="transfer-accept">รับโอน (รับเป็นเจ้าของเรื่อง)</button><button class="ws-button danger" data-a5-action="transfer-reject">ปฏิเสธ — เรื่องคงอยู่ที่สำนักงานเดิม</button></div>`;
     }
-    if (i.intake.transferPost.status === 'PENDING') {
-      out += `<div class="ws-callout">โอนหลังมอบหมาย: เสนอโอนไป ${escapeHtml(i.intake.transferPost.target)} — รอเลขาธิการอนุมัติ (โดย ${escapeHtml(i.intake.transferPost.by)})</div>${role === 'secretary' ? `<div class="ws-actions"><button class="ws-button primary" data-a5-action="transfer-post-approve">เลขาธิการอนุมัติโอน</button><button class="ws-button danger" data-a5-action="transfer-post-reject">ไม่อนุมัติ</button></div>` : '<p class="ws-policy-note">รอเลขาธิการพิจารณาอนุมัติ</p>'}`;
+    if (trp.status === 'PENDING') {
+      out += `<div class="ws-callout">โอนหลังมอบหมาย: เสนอโอนไป ${escapeHtml(trp.target)} — รอเลขาธิการอนุมัติ (โดย ${escapeHtml(trp.by || '')})${trp.note ? ` · ${escapeHtml(trp.note)}` : ''}</div>${role === 'secretary' ? `<div class="ws-actions"><button class="ws-button primary" data-a5-action="transfer-post-approve">เลขาธิการอนุมัติโอน</button><button class="ws-button danger" data-a5-action="transfer-post-reject">ไม่อนุมัติ</button></div>` : '<p class="ws-policy-note">รอเลขาธิการพิจารณาอนุมัติ</p>'}`;
     }
     return out;
   }
@@ -502,10 +916,12 @@
       actionHtml += pending.role === role
         ? `<div class="ws-actions"><button class="ws-button primary" data-a5-action="approve-extension">อนุมัติขยาย</button><button class="ws-button danger" data-a5-action="deny-extension">ไม่อนุมัติ</button></div>`
         : '<p class="ws-policy-note">รอผู้อนุมัติพิจารณา</p>';
+    } else if (next && next.role === 'committee') {
+      actionHtml = `<button type="button" class="ws-button danger" data-a5-action="extension-late">เสนอ คกก. ขอขยายครั้งที่ ${next.round} (รายงานเหตุล่าช้า)</button>`;
     } else if (next) {
       actionHtml = `<button type="button" class="ws-button secondary" data-a5-action="request-extension">ยื่นคำขอขยาย (รอบ ${next.round}: ${ROLE_LABELS[next.role]})</button>`;
     } else {
-      actionHtml = `<button type="button" class="ws-button danger" data-a5-action="extension-late">ขยายครบแล้ว — เสนอ คกก. (รายงานเหตุล่าช้า)</button>`;
+      actionHtml = `<p class="ws-policy-note">ขยายครบทุกครั้งแล้ว — ดำเนินการตามคำสั่ง/มติคณะกรรมการ (คำสั่งตามมติบอร์ด)</p>`;
     }
     const history = rep.extensionHistory.length
       ? rep.extensionHistory.map(h => {
@@ -514,6 +930,12 @@
         }).join('')
       : '<li>ยังไม่มีการขยายเวลา</li>';
     return `<div class="a5-ext-list"><div class="a5-ext-track"><span class="a5-ext-label">รอบขยาย ${reportType}:</span>${rounds}</div>${tone ? `<p class="ws-deadline ${tone.tone}">${escapeHtml(tone.label)}</p>` : ''}${age ? `<p class="ws-deadline ${age.tone}">${escapeHtml(age.label)}</p>` : ''}${actionHtml}<ul class="ws-history">${history}</ul></div>`;
+  }
+  function progressSectionHtml(reportType, inquiry, role) {
+    const rep = reportOf(reportType, inquiry);
+    const reports = rep.progressReports || [];
+    const list = reports.length ? `<ul class="ws-history">${reports.map(r => `<li>${escapeHtml(r.text)}<time>${escapeHtml(r.at || '')} · ${escapeHtml(r.by || '')}</time></li>`).join('')}</ul>` : '<p class="ws-policy-note">ยังไม่มีรายงานความคืบหน้า — ระหว่างการขยายเวลาต้องรายงานความคืบหน้าทุก 15 วัน (ระเบียบฯ ข้อ 38/64)</p>';
+    return `<section class="ws-section"><h3>รายงานความคืบหน้า (ทุก 15 วัน ระหว่างขยายเวลา)</h3>${list}${role === 'investigator' ? `<div class="ws-field"><label>บันทึกรายงานความคืบหน้าครั้งล่าสุด</label><textarea id="a5ProgressText" placeholder="ระบุความคืบหน้า เอกสารที่ได้ กำหนดการถัดไป"></textarea></div><button type="button" class="ws-button secondary" data-a5-action="progress-report">บันทึกรายงานความคืบหน้า</button>` : ''}</section>`;
   }
   function additionalDeadlineHtml(reportType, inquiry, role) {
     const rep = reportOf(reportType, inquiry);
@@ -534,16 +956,16 @@
   }
   function chainHtml(reportType, inquiry, role) {
     const cs = chainState(reportType, inquiry);
-    return `<div class="a5-ext-list"><strong>ลำดับชั้นตรวจรายงาน ${reportType}:</strong><ol class="ws-list">${cs.steps.map(s => { const d = cs.done.find(x => x.level === s.level); const isCurrent = cs.current && cs.current.level === s.level; return `<li>${d ? `✅ ${escapeHtml(d.label)} — ${escapeHtml(d.by)}${d.skip ? ' (ข้าม)' : ''}: ${escapeHtml(d.opinion || '')}` : `<b>${escapeHtml(s.label)}</b>${isCurrent ? ' ← รอตรวจ' : s.optional ? ' (ไม่บังคับ)' : ''}`}</li>`; }).join('')}</ol>${cs.complete ? '<p class="ws-policy-note">ตรวจครบทุกชั้นแล้ว — พร้อมเสนอคณะกรรมการ</p>' : `<div class="ws-field"><label>ความเห็น (${ROLE_LABELS[role]})</label><textarea id="a5ChainOpinion" placeholder="บันทึกความเห็น..."></textarea></div>${cs.current?.role === role ? '<button type="button" class="ws-button primary" data-a5-action="chain-approve">เห็นชอบ — ส่งชั้นถัดไป</button>' : cs.current?.role === 'director' && role === 'director' ? '' : ''}${role === 'secretary' && cs.current?.role === 'secretary' ? '<label class="ws-choice"><input type="checkbox" id="a5SupportFlag"><span><strong>ส่งคณะอนุกรรมการสนับสนุนเลขาธิการฯ (กรณียุ่งยากซับซ้อน)</strong></span></label>' : ''}${['director', 'secretary', 'group-director'].includes(role) ? '<button type="button" class="ws-button danger" data-a5-action="chain-return">ส่งกลับแก้ไข (ไต่สวนเพิ่มเติม 30 วัน)</button>' : ''}${role === 'group-director' && !cs.done.some(d => d.level === 1) ? '<button type="button" class="ws-button ghost" data-a5-action="chain-skip-group">ไม่อยู่ในสายงาน — ข้ามชั้น</button>' : ''}`}</div>`;
+    return `<div class="a5-ext-list"><strong>ลำดับชั้นตรวจรายงาน ${reportType}:</strong><ol class="ws-list">${cs.steps.map(s => { const d = cs.done.find(x => x.level === s.level); const isCurrent = cs.current && cs.current.level === s.level; return `<li>${d ? `✅ ${escapeHtml(d.label)} — ${escapeHtml(d.by)}${d.skip ? ' (ข้าม)' : ''}: ${escapeHtml(d.opinion || '')}` : `<b>${escapeHtml(s.label)}</b>${isCurrent ? ' ← รอตรวจ' : s.optional ? ' (ไม่บังคับ)' : ''}`}</li>`; }).join('')}</ol>${cs.complete ? '<p class="ws-policy-note">ตรวจครบทุกชั้นแล้ว — พร้อมเสนอคณะกรรมการ</p>' : `<div class="ws-field"><label>ความเห็น (${ROLE_LABELS[role]})</label><textarea id="a5ChainOpinion" placeholder="บันทึกความเห็น..."></textarea></div>${cs.current?.role === role ? '<button type="button" class="ws-button primary" data-a5-action="chain-approve">เห็นชอบ — ส่งชั้นถัดไป</button>' : cs.current?.role === 'director' && role === 'director' ? '' : ''}${role === 'secretary' && cs.current?.level === 4 ? '<label class="ws-choice"><input type="checkbox" id="a5SupportFlag"><span><strong>ส่งคณะอนุกรรมการสนับสนุนเลขาธิการฯ (กรณียุ่งยากซับซ้อน)</strong></span></label>' : ''}${['director', 'secretary', 'group-director'].includes(role) ? '<button type="button" class="ws-button danger" data-a5-action="chain-return">ส่งกลับแก้ไข (ไต่สวนเพิ่มเติม 30 วัน)</button>' : ''}${role === 'group-director' && !cs.done.some(d => d.level === 1) ? '<button type="button" class="ws-button ghost" data-a5-action="chain-skip-group">ไม่อยู่ในสายงาน — ข้ามชั้น</button>' : ''}`}</div>`;
   }
   function prelimEditor(state, role) {
     const i = state.inquiry, p = i.prelim, c = state.caseData;
     const isInvestigator = role === 'investigator';
     return `<section class="ws-section"><h3>กรอบเวลาไต่สวนเบื้องต้น (60 วัน นับจากวันรับเรื่องครั้งแรก ${escapeHtml(i.intake.receivedFirstAt || '')})</h3>${extSectionHtml('213', i, role)}
     <div class="ws-grid-2"><div class="ws-field"><label>วันที่เริ่มนับ (วันรับเรื่องครั้งแรก)</label><input type="date" value="${escapeHtml(p.startedAt || i.intake.receivedFirstAt || '')}" disabled></div><div class="ws-field"><label>วันครบกำหนด</label><input type="date" value="${escapeHtml(p.deadlineAt || '')}" disabled></div></div></section>
-    <section class="ws-section"><h3>1. แผนงานคดีและบันทึกการปฏิบัติงาน</h3><div class="ws-field"><label>แผนงานคดี (Case Plan)</label><textarea id="a5Plan" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.plan || '')}</textarea></div><div class="ws-grid-2"><div class="ws-field"><label>สถานะแผนคดี</label><input value="${escapeHtml(p.planStatus || '')}" disabled><small>หัวหน้าพนักงาน ป.ป.ท. ต้องอนุมัติแผนก่อนใช้มาตรา 18</small></div>${p.planStatus === 'รออนุมัติจากหัวหน้าพนักงาน' && role === 'director' ? '<div class="ws-field"><button type="button" class="ws-button primary" data-a5-action="plan-approve-213">อนุมัติแผนคดี</button></div>' : ''}</div><div class="ws-field"><label>บันทึกการปฏิบัติงาน/ความคืบหน้า</label><textarea id="a5WorkLog" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.workLog || '')}</textarea></div></section>
+    ${progressSectionHtml('213', i, role)}<section class="ws-section"><h3>1. แผนงานคดีและบันทึกการปฏิบัติงาน</h3><div class="ws-field"><label>แผนงานคดี (Case Plan)</label><textarea id="a5Plan" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.plan || '')}</textarea></div><div class="ws-grid-2"><div class="ws-field"><label>สถานะแผนคดี</label><input value="${escapeHtml(p.planStatus || '')}" disabled><small>หัวหน้าพนักงาน ป.ป.ท. ต้องอนุมัติแผนก่อนใช้มาตรา 18</small></div>${p.planStatus === 'รออนุมัติจากหัวหน้าพนักงาน' && role === 'director' ? '<div class="ws-field"><button type="button" class="ws-button primary" data-a5-action="plan-approve-213">อนุมัติแผนคดี</button></div>' : ''}</div><div class="ws-field"><label>บันทึกการปฏิบัติงาน/ความคืบหน้า</label><textarea id="a5WorkLog" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.workLog || '')}</textarea></div></section>
     <section class="ws-section"><h3>2. วิเคราะห์ประเด็นแห่งคดี 4 ประเด็น</h3><div class="ws-grid-2">${[['status', 'สถานะผู้ถูกร้อง'], ['authority', 'ขอบเขตอำนาจหน้าที่'], ['action', 'การกระทำถูกต้องตามอำนาจหน้าที่หรือไม่'], ['damage', 'ความเสียหาย']].map(([k, l]) => `<div class="ws-field"><label>${l}</label><textarea id="a5Issue_${k}" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.issues?.[k] || '')}</textarea></div>`).join('')}</div>
-    <div class="ws-callout">กิจกรรมแทรก: ขอคุ้มครองพยาน → กิจกรรมที่ 6 · ขอหมายค้น → กิจกรรมที่ 9 (ไม่หยุดนับเวลา 213) — บันทึกคำขอ/ผลในฟิลด์ด้านล่าง</div><div class="ws-grid-2"><div class="ws-field"><label>คำขอคุ้มครองพยาน (A6)</label><input id="a5A6" value="${escapeHtml(p.evidence || '')}" placeholder="ระบุผู้ขอ/ผู้ถูกคุ้มครอง/ผล" ${isInvestigator ? '' : 'disabled'}></div><div class="ws-field"><label>คำร้องขอหมายค้น (A9)</label><input id="a5A9" value="${escapeHtml(p.searchWarrant || '')}" placeholder="เลขคำร้อง/ผลศาล" ${isInvestigator ? '' : 'disabled'}></div></div>
+    <div class="ws-callout">กิจกรรมแทรก: คุ้มครองพยาน (ก6) · หมายค้น (ก9) — จัดทำคำขอ → ส่ง ก6/ก9 → บันทึกผล (ไม่หยุดนับเวลา 213)</div><div class="ws-grid-2"><div class="ws-field"><label>คุ้มครองพยาน (ก6)${p.witnessProtectionReq ? ` — <span class="ws-status">${p.witnessProtectionReq.status === 'result' ? 'รับผลแล้ว' : 'ส่ง ก6 แล้ว'}</span>` : ''}</label><input id="a5A6" value="${escapeHtml(p.witnessProtection || p.evidence || '')}" placeholder="ผลการคุ้มครองจาก ก6" ${isInvestigator ? '' : 'disabled'}><div class="ws-actions" style="margin-top:.45rem;position:static">${isInvestigator ? `<button type="button" class="ws-button secondary" data-a5-action="witness-request">${p.witnessProtectionReq && p.witnessProtectionReq.status !== 'result' ? 'ส่ง ก6 แล้ว — แก้คำขอ' : 'จัดทำคำขอคุ้มครอง → ก6'}</button><button type="button" class="ws-button ghost" data-a5-action="witness-result" ${p.witnessProtectionReq ? '' : 'disabled'}>บันทึกผลจาก ก6</button>` : ''}</div></div><div class="ws-field"><label>หมายค้น (ก9)${p.searchWarrantReq ? ` — <span class="ws-status">${p.searchWarrantReq.status === 'result' ? 'รับผลแล้ว' : 'ส่ง ก9 แล้ว'}</span>` : ''}</label><input id="a5A9" value="${escapeHtml(p.searchWarrantResult || p.searchWarrant || '')}" placeholder="เลขคำร้อง/ผลศาล" ${isInvestigator ? '' : 'disabled'}><div class="ws-actions" style="margin-top:.45rem;position:static">${isInvestigator ? `<button type="button" class="ws-button secondary" data-a5-action="search-request">${p.searchWarrantReq && p.searchWarrantReq.status !== 'result' ? 'ส่ง ก9 แล้ว — แก้คำขอ' : 'จัดทำคำร้องหมายค้น → ก9'}</button><button type="button" class="ws-button ghost" data-a5-action="search-result" ${p.searchWarrantReq ? '' : 'disabled'}>บันทึกผล ก9</button>` : ''}</div></div></div>
     ${(p.issues?.status && !p.issues.authority) ? '' : ''}<p class="ws-policy-note">ถ้าตรวจพบว่าอยู่ในอำนาจ ป.ป.ช. → เตรียมส่ง ป.ป.ช. (ระบุในสรุปรายงาน)</p></section>
     ${additionalDeadlineHtml('213', i, role)}
     <section class="ws-section"><h3>3. สรุปรายงานไต่สวนเบื้องต้น (รายงาน 213)</h3><div class="ws-field"><label>สรุปผล + ความเห็นเสนอ (รับไว้ไต่สวน/ไม่รับ/ส่ง ป.ป.ช.)</label><textarea id="a5PrelimReport" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(p.report || '')}</textarea></div></section>`;
@@ -556,7 +978,15 @@
     return `<section class="ws-section"><h3>รายงาน 213 — ตรวจตามลำดับชั้น</h3>${paper213(state)}${chainHtml('213', i, role)}${i.prelim.fastTrack ? '<p class="ws-policy-note">ใช้ใบด่วน (ขอบรรจุวาระเร่งด่วน) — เสนอตรงคณะกรรมการ</p>' : ''}</section>`;
   }
   function committee213Editor(state, role) {
-    const i = state.inquiry, m = i.committee213;
+    const i = state.inquiry, m = i.committee213, p = i.prelim || {};
+    const cRound = EXTENSION_RULES['213'].rounds.filter(r => r === 'committee').length;
+    const cDone = (p.extensionHistory || []).filter(h => h.role === 'committee').length;
+    const late = p.lateReport && cDone < cRound;
+    if (late) {
+      const lr = p.lateRound || cDone + 3;
+      const isFinal = lr >= EXTENSION_RULES['213'].rounds.length;
+      return `<section class="ws-section"><h3>ขยายไต่สวนเบื้องต้น — คณะกรรมการพิจารณาครั้งที่ ${lr}${isFinal ? ' (ครั้งสุดท้าย — แจงเรื่อง ต่อมติบอร์ด)' : ' (ขอเวลาเพิ่มเติม)'}</h3><div class="ws-callout">เลขาธิการคณะกรรมการ ป.ป.ท. พิจารณาเอง — มอบหมายมิได้ (คำสั่ง คกก. ป.ป.ท. ที่ 218/2568 ข้อ 14 วรรค 3)</div><div class="ws-field"><label>รายงานเหตุผลความจำเป็นและหลักฐาน (จากผู้รับผิดชอบสำนวน)</label><textarea disabled>${escapeHtml(p.lateReport)}</textarea></div><div class="ws-field"><label>ความเห็นเลขาธิการ / คณะกรรมการ</label><textarea id="a5CommitteeExtOpinion" placeholder="บันทึกความเห็นและแนวทางแก้ไข"></textarea></div><p class="ws-policy-note">อนุมัติขยายได้ครั้งละไม่เกิน 60 วัน — ไม่อนุมัติต้องเร่งรัดให้ดำเนินการแล้วเสร็จ</p></section>`;
+    }
     return `<section class="ws-section"><h3>รายงาน 213 — คณะกรรมการ ป.ป.ท. พิจารณา</h3>${paper213(state)}<div class="ws-choice-grid">${MTI_213_RESULTS.map(r => `<label class="ws-choice"><input type="radio" name="a5Mti213" value="${r}" ${m.result === r ? 'checked' : ''}><span><strong>${r}</strong></span></label>`).join('')}</div><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ</label><input id="a5Mti213No" value="${escapeHtml(m.mtiNo || '')}"></div><div class="ws-field"><label>วันที่มีมติ</label>${ThaiDatePicker.html('a5Mti213Date', { value: m.mtiDate || '', placeholder: 'เลือกวันที่มีมติ' })}</div><div class="ws-field ws-field-full"><label>ข้อความในมติ/หมายเหตุ</label><textarea id="a5Mti213Note">${escapeHtml(m.note || '')}</textarea></div></div>
     <aside class="ws-callout">รับไว้ไต่สวน → เลือกชุดไต่สวน (ม.24 ว.3 คณะอนุกรรมการ — ประธานกรรมการลงนาม, นับ 270 วันจากวันมติ / ม.24 ว.1 คณะพนักงาน — เลขาธิการลงนาม, นับจากวันลงนาม) + ระบุผู้รับผิดชอบชั้น 644</aside>
     <div class="ws-grid-2"><div class="ws-field"><label>ประเภทชุดไต่สวน</label><select id="a5OrderType"><option value="24v3" ${m.orderType === '24v3' || role === 'committee' ? 'selected' : ''}>คณะอนุกรรมการไต่สวน (ม.24 ว.3)</option><option value="24v1" ${m.orderType === '24v1' ? 'selected' : ''}>คณะพนักงานไต่สวน (ม.24 ว.1)</option></select></div><div class="ws-field"><label>เลขที่คำสั่งแต่งตั้ง</label><input id="a5OrderNo644" value="${escapeHtml(m.orderNo || '')}" placeholder="ระบบออกให้อัตโนมัติเมื่อบันทึกมติ"></div><div class="ws-field"><label>ผู้รับผิดชอบชั้น 644</label><select id="a5Investigator644">${INVESTIGATORS.map(x => `<option ${(m.investigator644 || i.intake.investigator) === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="ws-field"><label>หนังสือส่งมอบสำนวน (ถ้าคนละคนกับชั้น 213)</label><input id="a5Handover" value="${escapeHtml(m.handoverDoc?.letterNo || '')}" placeholder="เลขหนังสือส่งมอบสำนวน"></div></div>${state.workflow?.status?.includes('ปรับองค์คณะ') ? '<button type="button" class="ws-button primary" data-a5-action="org-approve">อนุมัติปรับองค์คณะ</button>' : ''}</section>`;
@@ -566,8 +996,8 @@
     const isInvestigator = role === 'investigator';
     return `<section class="ws-section"><h3>คำสั่งแต่งตั้งและกรอบเวลาไต่สวนชี้มูล (270 วัน + ขยาย 5 รอบ)</h3><div class="ws-grid-2"><div class="ws-field"><label>ชุดไต่สวน</label><input value="${m.orderType === '24v3' ? 'คณะอนุกรรมการไต่สวน (ม.24 ว.3)' : 'คณะพนักงานไต่สวน (ม.24 ว.1)'} ${m.orderNo || ''}" disabled></div><div class="ws-field"><label>ผู้รับผิดชอบชั้น 644</label><input value="${escapeHtml(q.investigator || i.intake.investigator || '')}" disabled>${m.handoverDoc?.letterNo ? `<small>หนังสือส่งมอบสำนวน: ${escapeHtml(m.handoverDoc.letterNo)}</small>` : ''}</div><div class="ws-field"><label>เริ่มนับ 270 วัน</label><input type="date" value="${escapeHtml(q.startedAt || '')}" disabled><small>ว.3 = วันบอร์ดมีมติ / ว.1 = วันเลขาธิการลงนาม</small></div><div class="ws-field"><label>วันครบกำหนด</label><input type="date" value="${escapeHtml(q.deadlineAt || '')}" disabled></div></div>${extSectionHtml('644', i, role)}
     <div class="ws-field"><label>แผนงานคดี (ชั้น 644)</label><textarea id="a5Plan644" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.plan || '')}</textarea></div>${q.planStatus === 'รออนุมัติจากหัวหน้าพนักงาน' && role === 'director' ? '<button type="button" class="ws-button primary" data-a5-action="plan-approve-644">อนุมัติแผนคดี 644</button>' : `<small>สถานะแผน: ${escapeHtml(q.planStatus || '')}</small>`}</section>
-    <section class="ws-section"><h3>1. การไต่สวน</h3><div class="ws-field"><label>ผู้ถูกกล่าวหา (ทีละบรรทัด)</label><textarea id="a5Accused" ${isInvestigator ? '' : 'disabled'}>${escapeHtml((q.accused || []).join('\n'))}</textarea></div><div class="ws-field"><label>ข้อกล่าวหา</label><textarea id="a5Allegations" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.allegations || '')}</textarea></div><div class="ws-grid-2"><div class="ws-field"><label>วันที่แจ้งข้อกล่าวหา</label>${ThaiDatePicker.html('a5NoticeDate', { value: q.noticeSentAt || '', placeholder: 'เลือกวันที่แจ้งข้อกล่าวหา', disabled: !isInvestigator })}<small>แจ้งเมื่อหลักฐานเพียงพอ — เปิดโอกาสชี้แจงก่อนสรุป 644</small></div><div class="ws-field"><label>กันบุคคลเป็นพยาน (ม.58)</label><input id="a5Witnesses" value="${escapeHtml((q.witnesses || []).join(', '))}" ${isInvestigator ? '' : 'disabled'}></div></div><div class="ws-field"><label>บันทึกถ้อยคำ/คำชี้แจง</label><textarea id="a5Statements" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.statements || '')}</textarea></div>
-    <div class="ws-callout">กิจกรรมแทรก: คุ้มครองพยาน (A6) / หมายค้น (A9) — บันทึกคำขอ/ผลด้านล่าง</div><div class="ws-grid-2"><div class="ws-field"><label>คุ้มครองพยาน (A6)</label><input id="a5InqA6" value="${escapeHtml(q.witnessProtection || '')}" placeholder="ผู้ขอ/ผล" ${isInvestigator ? '' : 'disabled'}></div><div class="ws-field"><label>หมายค้น (A9)</label><input id="a5InqA9" value="${escapeHtml(q.searchWarrant || '')}" placeholder="เลขคำร้อง/ผล" ${isInvestigator ? '' : 'disabled'}></div></div></section>
+    ${progressSectionHtml('644', i, role)}<section class="ws-section"><h3>1. การไต่สวน</h3><div class="ws-field"><label>ผู้ถูกกล่าวหา (ทีละบรรทัด)</label><textarea id="a5Accused" ${isInvestigator ? '' : 'disabled'}>${escapeHtml((q.accused || []).join('\n'))}</textarea></div><div class="ws-field"><label>ข้อกล่าวหา</label><textarea id="a5Allegations" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.allegations || '')}</textarea></div><div class="ws-grid-2"><div class="ws-field"><label>วันที่แจ้งข้อกล่าวหา</label>${ThaiDatePicker.html('a5NoticeDate', { value: q.noticeSentAt || '', placeholder: 'เลือกวันที่แจ้งข้อกล่าวหา', disabled: !isInvestigator })}<small>แจ้งเมื่อหลักฐานเพียงพอ — เปิดโอกาสชี้แจงก่อนสรุป 644</small></div><div class="ws-field"><label>กันบุคคลเป็นพยาน (ม.58)</label><input id="a5Witnesses" value="${escapeHtml((q.witnesses || []).join(', '))}" ${isInvestigator ? '' : 'disabled'}></div></div><div class="ws-field"><label>บันทึกถ้อยคำ/คำชี้แจง</label><textarea id="a5Statements" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.statements || '')}</textarea></div>
+    <div class="ws-callout">กิจกรรมแทรก: คุ้มครองพยาน (ก6) · หมายค้น (ก9) — จัดทำคำขอ → ส่ง ก6/ก9 → บันทึกผล</div><div class="ws-grid-2"><div class="ws-field"><label>คุ้มครองพยาน (ก6)${q.witnessProtectionReq ? ` — <span class="ws-status">${q.witnessProtectionReq.status === 'result' ? 'รับผลแล้ว' : 'ส่ง ก6 แล้ว'}</span>` : ''}</label><input id="a5InqA6" value="${escapeHtml(q.witnessProtection || '')}" placeholder="ผลการคุ้มครองจาก ก6" ${isInvestigator ? '' : 'disabled'}><div class="ws-actions" style="margin-top:.45rem;position:static">${isInvestigator ? `<button type="button" class="ws-button secondary" data-a5-action="witness-request">${q.witnessProtectionReq && q.witnessProtectionReq.status !== 'result' ? 'ส่ง ก6 แล้ว — แก้คำขอ' : 'จัดทำคำขอคุ้มครอง → ก6'}</button><button type="button" class="ws-button ghost" data-a5-action="witness-result" ${q.witnessProtectionReq ? '' : 'disabled'}>บันทึกผลจาก ก6</button>` : ''}</div></div><div class="ws-field"><label>หมายค้น (ก9)${q.searchWarrantReq ? ` — <span class="ws-status">${q.searchWarrantReq.status === 'result' ? 'รับผลแล้ว' : 'ส่ง ก9 แล้ว'}</span>` : ''}</label><input id="a5InqA9" value="${escapeHtml(q.searchWarrantResult || q.searchWarrant || '')}" placeholder="เลขคำร้อง/ผลศาล" ${isInvestigator ? '' : 'disabled'}><div class="ws-actions" style="margin-top:.45rem;position:static">${isInvestigator ? `<button type="button" class="ws-button secondary" data-a5-action="search-request">${q.searchWarrantReq && q.searchWarrantReq.status !== 'result' ? 'ส่ง ก9 แล้ว — แก้คำขอ' : 'จัดทำคำร้องหมายค้น → ก9'}</button><button type="button" class="ws-button ghost" data-a5-action="search-result" ${q.searchWarrantReq ? '' : 'disabled'}>บันทึกผล ก9</button>` : ''}</div></div></div></section>
     ${additionalDeadlineHtml('644', i, role)}
     <section class="ws-section"><h3>2. สรุปรายงานการไต่สวนชี้มูล (รายงาน 644)</h3><div class="ws-field"><label>สรุปผล + ความเห็นชี้มูล</label><textarea id="a5InqReport" ${isInvestigator ? '' : 'disabled'}>${escapeHtml(q.report || '')}</textarea></div></section>`;
   }
@@ -579,14 +1009,29 @@
     return `<section class="ws-section"><h3>รายงาน 644 — ตรวจตามลำดับชั้น</h3>${paper644(state)}${chainHtml('644', i, role)}${i.inquiry644.fastTrack ? '<p class="ws-policy-note">ใช้ใบด่วน — เสนอตรงคณะกรรมการ</p>' : ''}</section>`;
   }
   function committee644Editor(state, role) {
-    const i = state.inquiry, m = i.committee644;
+    const i = state.inquiry, m = i.committee644, q = i.inquiry644 || {};
+    const cRound = EXTENSION_RULES['644'].rounds.filter(r => r === 'committee').length;
+    const cDone = (q.extensionHistory || []).filter(h => h.role === 'committee').length;
+    const late = q.lateReport && cDone < cRound;
+    if (late) {
+      const lr = q.lateRound || cDone + 5;
+      const isFinal = lr >= EXTENSION_RULES['644'].rounds.length;
+      return `<section class="ws-section"><h3>ขยายไต่สวนชี้มูล — คณะกรรมการพิจารณาครั้งที่ ${lr}${isFinal ? ' (ครั้งสุดท้าย — แจงบอร์ด รอผลมติ)' : ' (เสนอ คกก. แจงเหตุผล)'}</h3><div class="ws-callout">เลขาธิการคณะกรรมการ ป.ป.ท. พิจารณาเอง — มอบหมายมิได้ (คำสั่ง คกก. ป.ป.ท. ที่ 218/2568 ข้อ 14 วรรค 3)</div><div class="ws-field"><label>รายงานเหตุผลความจำเป็นและหลักฐาน (จากผู้รับผิดชอบสำนวน)</label><textarea disabled>${escapeHtml(q.lateReport)}</textarea></div><div class="ws-field"><label>ความเห็นเลขาธิการ / คณะกรรมการ</label><textarea id="a5CommitteeExtOpinion" placeholder="บันทึกความเห็นและแนวทางแก้ไข"></textarea></div><p class="ws-policy-note">อนุมัติขยายได้ครั้งละไม่เกิน 60 วัน — ไม่อนุมัติต้องเร่งรัดให้ดำเนินการแล้วเสร็จ</p></section>`;
+    }
     return `<section class="ws-section"><h3>รายงาน 644 — คณะกรรมการ ป.ป.ท. วินิจฉัยชี้มูล</h3>${paper644(state)}<div class="ws-choice-grid">${MTI_644_RESULTS.map(r => `<label class="ws-choice"><input type="radio" name="a5Mti644" value="${r}" ${m.result === r ? 'checked' : ''}><span><strong>${r}</strong></span></label>`).join('')}</div><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ</label><input id="a5Mti644No" value="${escapeHtml(m.mtiNo || '')}"></div><div class="ws-field"><label>วันที่มีมติ</label>${ThaiDatePicker.html('a5Mti644Date', { value: m.mtiDate || '', placeholder: 'เลือกวันที่มีมติ' })}</div><div class="ws-field ws-field-full"><label>ข้อความในมติ/หมายเหตุ</label><textarea id="a5Mti644Note">${escapeHtml(m.note || '')}</textarea></div></div><aside class="ws-callout">ชี้มูลอาญา+วินัย → ส่งอัยการ (A10) + แจ้งต้นสังกัดวินัย 60 วัน (A8) · ม.18/4 แยก ร้ายแรง/ไม่ร้ายแรง · ไม่มีมูล → แจ้ง 15 วัน · ส่ง ป.ป.ช./พนักงานสอบสวน → หนังสือส่งมอบ</aside>${state.workflow?.status?.includes('ปรับองค์คณะ') ? '<button type="button" class="ws-button primary" data-a5-action="org-approve">อนุมัติปรับองค์คณะ</button>' : ''}</section>`;
+  }
+  function warrantSection(i, role) {
+    const o = i.outcome || {}, w = o.warrant || {};
+    const steps = [['none', 'ยังไม่ได้ยื่นคำร้อง'], ['filed', 'ยื่นคำร้องต่อศาลแล้ว'], ['issued', 'ศาลออกหมายจับแล้ว'], ['denied', 'ศาลไม่ออกหมายจับ'], ['arrested', 'ดำเนินการตามหมาย'], ['notified', 'แจ้งหน่วยงานแล้ว']];
+    const st = steps.find(s => s[0] === (w.status || 'none')) || steps[0];
+    const can = ['clerk', 'investigator'].includes(role);
+    return `<section class="ws-section"><h3>การขอหมายจับ / ส่งศาล <span class="ws-status">${st[1]}</span></h3><div class="ws-grid-2"><div class="ws-field"><label>ศาล</label><input id="a5WarrantCourt" value="${escapeHtml(w.court || '')}" placeholder="ศาลอาญาคดีทุจริตและประพฤติมิชอบ" ${can ? '' : 'disabled'}></div><div class="ws-field"><label>หมายจับที่ / ลงวันที่</label><input id="a5WarrantNo" value="${escapeHtml(w.warrantNo || '')}" placeholder="หมายจับที่ ... ลงวันที่ ..." ${can ? '' : 'disabled'}></div></div><div class="ws-actions" style="position:static;flex-wrap:wrap">${can ? `<button type="button" class="ws-button secondary" data-a5-action="warrant-file">ยื่นคำร้องขอหมายจับต่อศาล</button><button type="button" class="ws-button secondary" data-a5-action="warrant-court" ${w.status === 'filed' ? '' : 'disabled'}>บันทึกผลศาล</button><button type="button" class="ws-button secondary" data-a5-action="warrant-arrest" ${w.status === 'issued' ? '' : 'disabled'}>บันทึกการจับกุม</button><button type="button" class="ws-button primary" data-a5-action="warrant-notify" ${w.status === 'arrested' ? '' : 'disabled'}>แจ้งหน่วยงาน (อัยการ/ผบ.ตร./กอท.)</button>` : ''}</div>${w.note ? `<p class="ws-policy-note">${escapeHtml(w.note)}</p>` : ''}<p class="ws-policy-note">เอกสาร: คำร้องขอหมายจับ (แบบ ปปท. 11) → บันทึกคำเบิกความ (12) → รายงานกระบวนการพิจารณา (13) → หมายจับ (14/15) → ตำหนิรูปพรรณ (16) → แจ้งผลการออกหมาย (17) → แจ้ง ผบ.ตร. (18) → บันทึกส่งหมายจับ กอท. (19) → ผนึกซอง (20)</p></section>`;
   }
   function outcomeEditor(state, role) {
     const i = state.inquiry, o = i.outcome, m = i.committee644, m62 = i.intake.m62 || {};
     const result = m.result || '';
     const isClerk = ['clerk', 'investigator'].includes(role);
-    return `<section class="ws-section"><h3>ผลมติคณะกรรมการ: ${escapeHtml(result || 'ยังไม่มีมติ')}</h3><div class="ws-grid-2"><div class="ws-field"><label>แนวทางดำเนินการ</label><input value="${escapeHtml(result)}" disabled></div><div class="ws-field"><label>เลขหนังสือ/เอกสารส่ง</label><input id="a5OutLetters" value="${escapeHtml(o.letters || '')}" ${isClerk ? '' : 'disabled'}></div>${result.includes('อาญา') ? `<div class="ws-field"><label>พนักงานอัยการ (เขตอำนาจ)</label><input id="a5OutProsecutor" value="${escapeHtml(o.prosecutor || '')}" placeholder="อัยการคดีทุจริต / อัยการทหาร" ${isClerk ? '' : 'disabled'}></div>` : ''}${result.includes('วินัย') ? `<div class="ws-field"><label>หน่วยงานต้นสังกัด (วินัย 60 วัน)</label><input id="a5OutDiscipline" value="${escapeHtml(o.disciplineAgency || '')}" ${isClerk ? '' : 'disabled'}></div>` : ''}<div class="ws-field ws-field-full"><label>การติดตามผล (กบต.)</label><textarea id="a5OutFollowup" ${isClerk ? '' : 'disabled'}>${escapeHtml(o.followup || '')}</textarea></div></div>${result.includes('ไม่มีมูล') ? '<p class="ws-policy-note">ต้องแจ้งผู้ถูกกล่าวหา/ต้นสังกัดภายใน 15 วันนับแต่วันที่มีมติ (ระบุในเลขหนังสือ)</p>' : ''}${m62.flag ? `<section class="ws-section"><h3>รายงานผลกลับ ป.ป.ช. (มาตรา 65)</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือรายงานผล</label><input id="a5M62Report" value="${escapeHtml(m62.report65Letter || '')}" placeholder="เช่น หนังสือที่ สปท 0012/2569"></div><div class="ws-field"><label>วันที่</label>${ThaiDatePicker.html('a5M62ReportDate', { value: m62.report65Date || '', placeholder: 'เลือกวันที่' })}</div></div></section>` : ''}</section>`;
+    return `<section class="ws-section"><h3>ผลมติคณะกรรมการ: ${escapeHtml(result || 'ยังไม่มีมติ')}</h3><div class="ws-grid-2"><div class="ws-field"><label>แนวทางดำเนินการ</label><input value="${escapeHtml(result)}" disabled></div><div class="ws-field"><label>เลขหนังสือ/เอกสารส่ง</label><input id="a5OutLetters" value="${escapeHtml(o.letters || '')}" ${isClerk ? '' : 'disabled'}></div>${result.includes('อาญา') ? `<div class="ws-field"><label>พนักงานอัยการ (เขตอำนาจ)</label><input id="a5OutProsecutor" value="${escapeHtml(o.prosecutor || '')}" placeholder="อัยการคดีทุจริต / อัยการทหาร" ${isClerk ? '' : 'disabled'}></div>` : ''}${result.includes('วินัย') ? `<div class="ws-field"><label>หน่วยงานต้นสังกัด (วินัย 60 วัน)</label><input id="a5OutDiscipline" value="${escapeHtml(o.disciplineAgency || '')}" ${isClerk ? '' : 'disabled'}></div>` : ''}<div class="ws-field ws-field-full"><label>การติดตามผล (กบต.)</label><textarea id="a5OutFollowup" ${isClerk ? '' : 'disabled'}>${escapeHtml(o.followup || '')}</textarea></div></div>${result.includes('ไม่มีมูล') ? '<p class="ws-policy-note">ต้องแจ้งผู้ถูกกล่าวหา/ต้นสังกัดภายใน 15 วันนับแต่วันที่มีมติ (ระบุในเลขหนังสือ)</p>' : ''}${result.includes('อาญา') ? warrantSection(i, role) : ''}${m62.flag ? `<section class="ws-section"><h3>รายงานผลกลับ ป.ป.ช. (มาตรา 65)</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือรายงานผล</label><input id="a5M62Report" value="${escapeHtml(m62.report65Letter || '')}" placeholder="เช่น หนังสือที่ สปท 0012/2569"></div><div class="ws-field"><label>วันที่</label>${ThaiDatePicker.html('a5M62ReportDate', { value: m62.report65Date || '', placeholder: 'เลือกวันที่' })}</div></div></section>` : ''}</section>`;
   }
   function prosecutorEditor(state, role) {
     const i = state.inquiry, p = i.prosecutor;
@@ -673,10 +1118,20 @@
       case 'a5-intake': return `${reset}<button class="ws-button primary" data-a5-action="accept-case">รับสำนวนและมอบหมายนักสืบ</button>`;
       case 'a5-prelim': return `${reset}<button class="ws-button secondary" data-a5-action="prelim-save">บันทึกร่าง</button>${role === 'investigator' ? '<button class="ws-button secondary" data-a5-action="prelim-plan">ส่งแผนคดีขออนุมัติ</button><button class="ws-button primary" data-a5-action="prelim-submit">เสนอรายงาน 213 ตามลำดับชั้น</button>' : ''}`;
       case 'a5-prelim-review': return `${reset}<button class="ws-button secondary" data-a5-action="chain-return">ส่งกลับแก้ไข</button>${state.inquiry?.prelim?.supportPending ? '<button class="ws-button primary" data-a5-action="support-record">รับทราบความเห็นอนุฯ — เสนอ คกก.</button>' : ''}`;
-      case 'a7-213': return `${reset}<button class="ws-button primary" data-a5-action="mti213-decide">บันทึกมติ คกก.</button>`;
+      case 'a7-213': {
+        const cDone213 = (state.inquiry?.prelim?.extensionHistory || []).filter(h => h.role === 'committee').length;
+        const late = state.inquiry?.prelim?.lateReport && cDone213 < 2;
+        const cRound213 = state.inquiry?.prelim?.lateRound || cDone213 + 3;
+        return late ? `${reset}<button class="ws-button primary" data-a5-action="ext-committee-approve">อนุมัติขยาย (ครั้งที่ ${cRound213})</button><button class="ws-button danger" data-a5-action="ext-committee-deny">ไม่อนุมัติขยาย</button>` : `${reset}<button class="ws-button primary" data-a5-action="mti213-decide">บันทึกมติ คกก.</button>`;
+      }
       case 'a5-inquiry': return `${reset}<button class="ws-button secondary" data-a5-action="inquiry-save">บันทึกร่าง</button>${role === 'investigator' ? '<button class="ws-button primary" data-a5-action="inquiry-submit">เสนอรายงาน 644 ตามลำดับชั้น</button>' : ''}`;
       case 'a5-inquiry-review': return `${reset}<button class="ws-button secondary" data-a5-action="chain-return">ส่งกลับแก้ไข</button>${state.inquiry?.inquiry644?.supportPending ? '<button class="ws-button primary" data-a5-action="support-record">รับทราบความเห็นอนุฯ — เสนอ คกก.</button>' : ''}`;
-      case 'a7-644': return `${reset}<button class="ws-button primary" data-a5-action="mti644-decide">บันทึกมติชี้มูล คกก.</button>`;
+      case 'a7-644': {
+        const cDone644 = (state.inquiry?.inquiry644?.extensionHistory || []).filter(h => h.role === 'committee').length;
+        const late = state.inquiry?.inquiry644?.lateReport && cDone644 < 2;
+        const cRound644 = state.inquiry?.inquiry644?.lateRound || cDone644 + 5;
+        return late ? `${reset}<button class="ws-button primary" data-a5-action="ext-committee-approve">อนุมัติขยาย (ครั้งที่ ${cRound644})</button><button class="ws-button danger" data-a5-action="ext-committee-deny">ไม่อนุมัติขยาย</button>` : `${reset}<button class="ws-button primary" data-a5-action="mti644-decide">บันทึกมติชี้มูล คกก.</button>`;
+      }
       case 'a5-outcome': return `${reset}<button class="ws-button secondary" data-a5-action="outcome-save">บันทึกการดำเนินการ</button>${state.inquiry?.outcome?.type?.includes('อาญา') ? '<button class="ws-button primary" data-a5-action="send-prosecutor">ส่งอัยการ (กิจกรรมที่ 10)</button>' : ''}${state.inquiry?.intake?.m62?.flag ? '<button class="ws-button secondary" data-a5-action="m62-report">รายงานผลกลับ ป.ป.ช. (ม.65)</button>' : ''}${state.inquiry?.intake?.m62?.report65Letter ? '<button class="ws-button danger" data-a5-action="m62-recall">ป.ป.ช. เรียกสำนวนกลับ</button>' : ''}<button class="ws-button primary" data-a5-action="close-case">ปิดสำนวน</button>`;
       case 'a5-prosecutor': return `${reset}<button class="ws-button secondary" data-a5-action="prosecutor-order">บันทึกคำสั่งอัยการ</button><button class="ws-button primary" data-a5-action="prosecutor-return">ส่งผลกลับอัยการ + รายงาน คกก.</button>`;
       case 'closed': return `${reset}<button class="ws-button secondary" data-a5-action="reopen">เปิดสำนวนใหม่ (ทบทวนมติ)</button>`;
@@ -696,25 +1151,233 @@
     <section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel || '')} · ${escapeHtml(state.inquiry.intake.unit || c.region || '')}</p><h1>${escapeHtml(c.id)}</h1><div class="ws-case-meta"><span>${escapeHtml(state.documentData?.documentSubject || c.subject)}</span><span>เลขรับบริการ ${c.trackingYear || ''} / PIN ${c.trackingCode || ''}</span><span>ผู้รับผิดชอบ: ${escapeHtml(state.inquiry.inquiry644?.investigator || state.inquiry.intake.investigator || 'ยังไม่มอบหมาย')}</span></div></div><div><span class="ws-status ${w.stage === 'closed' ? 'success' : ''}">${escapeHtml(phaseLabel(state))}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">${escapeHtml(w.status || '')}</p></div></section>
     ${isSpecial ? '' : stagebarA5(state)}
     <div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">${ROLE_LABELS[role] || role}</p><h2>${isSpecial ? 'ตรวจสอบข้อเท็จจริง' : 'ดำเนินการสำนวนคดี'}</h2></div><span class="ws-status">${escapeHtml(phaseLabel(state))}</span></header><div class="ws-editor-body">${editorForA5(state, role)}${adminCaseTools(state, role)}<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${(state.decisionHistory || []).map(x => `<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join('') || '<li>ยังไม่มีประวัติ</li>'}</ul></div>${state.inquiry.publicUpdates.length ? `<div class="ws-section"><h3>สถานะที่ผู้ร้องเห็น</h3><ul class="ws-history">${state.inquiry.publicUpdates.map(x => `<li>${escapeHtml(x.text)}<time>${x.at}</time></li>`).join('')}</ul></div>` : ''}</div></section>
-    <aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabsA5(state)}</div><button class="ws-button secondary" data-a5-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="a5PaperStage">${paperForTab(state, '213')}</div></aside></div>
+    <aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabsA5(state)}</div><button class="ws-button secondary" data-a5-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="a5PaperStage">${paperForTab(state, 'plan')}</div><div class="doc-edit-bar" id="a5DocEditBar" aria-label="จัดรูปแบบข้อความ"><button type="button" data-format="bold" title="ตัวหนา"><strong>B</strong></button><button type="button" data-format="italic" title="ตัวเอียง"><em>I</em></button><button type="button" data-format="underline" title="ขีดเส้นใต้"><u>U</u></button><span class="doc-edit-bar-sep"></span><span>แก้ไขข้อความในเอกสารได้โดยตรง</span></div><button type="button" class="doc-edit-fab" id="a5DocEditFab" title="แก้ไขเอกสารเหมือน Word"><span class="doc-edit-fab-icon">✏️</span><span class="doc-edit-fab-label">แก้ไขเอกสาร</span></button></aside></div>
     <div class="ws-actions">${actionsForA5(state, role)}</div></main>`;
     $('#a5BackList').onclick = () => { view = 'list'; renderA5(role); };
     wireA5(state, role);
   }
   function docTabsA5(state) {
-    const tabs = [['213', 'รายงาน 213'], ['644', 'รายงาน 644'], ['mti', 'มติ คกก.'], ['letter', 'หนังสือส่ง']];
-    return tabs.map(([k, l]) => `<button type="button" class="ws-doc-tab ${k === '213' ? 'active' : ''}" data-a5-doc="${k}">${l}</button>`).join('');
+    const w = state.workflow || {}, stage = w.stage || '';
+    const i = state.inquiry || {};
+    const hasExt213 = (i.prelim?.extensionHistory || []).length > 0 || ['a5-prelim', 'a5-prelim-review', 'a7-213'].includes(stage);
+    const hasExt644 = (i.inquiry644?.extensionHistory || []).length > 0;
+    const inPrelim = ['a5-prelim', 'a5-prelim-review', 'a7-213'].includes(stage);
+    const inInquiry = ['a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(stage);
+    const tabs = [['plan', 'แผนงานคดี'], ['213', 'รายงาน 213']];
+    if (hasExt213) tabs.push(['ext213', 'ขอขยาย 213']);
+    if (inInquiry) {
+      tabs.push(['644', 'รายงาน 644']);
+      if (hasExt644) tabs.push(['ext644', 'ขอขยาย 644']);
+      tabs.push(['notice', 'แจ้งข้อกล่าวหา'], ['record', 'บันทึกแจ้งข้อกล่าวหา']);
+    }
+    if (inPrelim || inInquiry) tabs.push(['mti', 'มติ คกก.']);
+    if (['a5-outcome', 'a5-prosecutor', 'closed'].includes(stage)) tabs.push(['letters', 'หนังสืออัยการ'], ['warrants', 'หมายจับ']);
+    return tabs.map(([k, l]) => `<button type="button" class="ws-doc-tab ${k === 'plan' ? 'active' : ''}" data-a5-doc="${k}">${l}</button>`).join('');
   }
   function paperForTab(state, tab) {
-    if (state.caseData?.decision === '58/2') return paperShell('บันทึกการตรวจสอบข้อเท็จจริง (58/2-58/3)', [['เรื่อง', state.caseData.subject], ['ผู้ตรวจ', state.inquiry.special.assignee], ['หน่วยงานที่แจ้ง', state.inquiry.special.agency], ['วันที่', state.inquiry.special.reportedAt]], `<p class="ws-paper-text">${escapeHtml(state.inquiry.special.result || '')}</p>`);
-    if (tab === '644') return paper644(state);
-    if (tab === 'mti') return paperMti(state, state.workflow?.stage === 'a7-644' || state.workflow?.stage === 'a5-outcome' || state.workflow?.stage === 'a5-prosecutor' || state.workflow?.stage === 'closed' ? '644' : '213');
-    if (tab === 'letter') return paperShell('หนังสือส่งสำนวนคดี', [['เลขที่', state.documentData?.dispatchLetterNo || ''], ['ถึง', state.inquiry.intake.unit || ''], ['วิธีจัดส่ง', state.documentData?.dispatchSendMethod || ''], ['เลข EMS', state.documentData?.dispatchEms || '']], `<p class="ws-paper-text">ส่งสำนวนคดี ${escapeHtml(state.caseData.id)} ไปยัง ${escapeHtml(state.inquiry.intake.unit || '')} เพื่อดำเนินการตามอำนาจหน้าที่ ตามมติ/คำสั่งที่เกี่ยวข้อง</p>`, [{ role: 'หัวหน้าพนักงาน ป.ป.ท.', name: state.inquiry.intake.director || '' }]);
-    return paper213(state);
+    if (state.caseData?.decision === '58/2') return paperSpecial58(state);
+    switch (tab) {
+      case 'plan': return paperPlan(state);
+      case '213': return paper213(state);
+      case 'ext213': return paperExt(state, '213');
+      case '644': return paper644(state);
+      case 'ext644': return paperExt(state, '644');
+      case 'notice': return paperNoticeAccusation(state);
+      case 'record': return paperRecordAccusation(state);
+      case 'letters': return paperProsecutorLetters(state);
+      case 'warrants': return paperWarrants(state);
+      case 'mti': return paperMti(state, state.workflow?.stage === 'a7-644' || state.workflow?.stage === 'a5-outcome' || state.workflow?.stage === 'a5-prosecutor' || state.workflow?.stage === 'closed' ? '644' : '213');
+      case 'letter': return paperShell('หนังสือส่งสำนวนคดี', [['เลขที่', state.documentData?.dispatchLetterNo || ''], ['ถึง', state.inquiry.intake.unit || ''], ['วิธีจัดส่ง', state.documentData?.dispatchSendMethod || ''], ['เลข EMS', state.documentData?.dispatchEms || '']], `<p class="ws-paper-text">ส่งสำนวนคดี ${escapeHtml(state.caseData.id)} ไปยัง ${escapeHtml(state.inquiry.intake.unit || '')} เพื่อดำเนินการตามอำนาจหน้าที่ ตามมติ/คำสั่งที่เกี่ยวข้อง</p>`, [{ role: 'หัวหน้าพนักงาน ป.ป.ท.', name: state.inquiry.intake.director || '' }]);
+      default: return paper213(state);
+    }
   }
 
+  /* ---------- Intelligent Suggest (port จาก A4 — ระบบรับเรื่องร้องเรียน) ---------- */
+  function correctThaiWriting(value) {
+    const replacements = [
+      [/\s{2,}/g, ' '], [/เจา้หน้าที่/g, 'เจ้าหน้าที่'], [/จังหวะด/g, 'จังหวัด'], [/อัติโนมัติ/g, 'อัตโนมัติ'],
+      [/ผอ\.?\s*ศรร\.?/g, 'ผู้อำนวยการศูนย์รับเรื่องร้องเรียน'], [/ผอ\.?\s*กบค\.?/g, 'ผู้อำนวยการกองบริหารคดี'], [/ป\.?ป\.?ช\.?/g, 'ป.ป.ช.'], [/ป\.?ป\.?ท\.?/g, 'ป.ป.ท.'],
+      [/ส่งกลับไปแก้/g, 'ส่งกลับเพื่อแก้ไข'], [/เช็ค/g, 'ตรวจสอบ'], [/เบิกจ่ายเท็จ/g, 'เบิกจ่ายอันเป็นเท็จ'], [/ชี้มูลผิด/g, 'ชี้มูลความผิด']
+    ];
+    return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), String(value || '')).trim();
+  }
+  function formalizeWriting(value) {
+    return correctThaiWriting(value)
+      .replace(/อยากให้/g, 'เห็นควรให้')
+      .replace(/โอเค/g, 'เห็นชอบ')
+      .replace(/ทำต่อ/g, 'ดำเนินการต่อ')
+      .replace(/ส่งต่อไป/g, 'ส่งต่อเพื่อดำเนินการ')
+      .replace(/ไม่จบ/g, 'ไม่แล้วเสร็จ')
+      .replace(/ไปดู/g, 'ไปตรวจสอบ');
+  }
+  const A5_SUGGESTION_STORAGE_KEY = 'ecmis-a5-suggestions-v1';
+  const A5_DEFAULT_SUGGESTIONS = {
+    keywords: ['โปรดตรวจสอบข้อเท็จจริงเพิ่มเติม', 'เอกสารประกอบยังไม่ครบถ้วน', 'รอเอกสารหลักฐานจากหน่วยงานที่เกี่ยวข้อง', 'เสนอให้สอบปากคำพยานเพิ่มเติม'],
+    notAcceptReasons: ['ข้อเท็จจริงไม่เพียงพอต่อการดำเนินการ', 'ไม่อยู่ในอำนาจหน้าที่ของสำนักงาน ป.ป.ท.', 'ไม่ปรากฏพฤติการณ์หรือบุคคลที่เกี่ยวข้องชัดเจน', 'เรื่องอยู่ระหว่างการพิจารณาของหน่วยงานอื่น'],
+    contexts: {
+      a5Plan: ['รวบรวมพยานหลักฐานจากหน่วยงานต้นสังกัด', 'สอบปากคำผู้กล่าวหาและพยานบุคคลที่เกี่ยวข้อง', 'ตรวจสอบสถานที่เกิดเหตุและจัดทำแผนที่', 'ขอเอกสารการจัดซื้อจัดจ้างและหลักฐานการเงิน', 'รอผลการตรวจสอบจากหน่วยงานภายนอก'],
+      a5WorkLog: ['ได้รวบรวมพยานหลักฐานและเอกสารที่เกี่ยวข้องแล้ว', 'สอบปากคำผู้ที่เกี่ยวข้องจำนวน 3 ปาก', 'ขอข้อมูลเพิ่มเติมจากหน่วยงานต้นสังกัดแล้ว', 'ตรวจสอบข้อเท็จจริงและประเด็นแห่งคดีครบถ้วน'],
+      a5Allegations: ['ร้องเรียนการจัดซื้อจัดจ้างไม่เป็นไปตามระเบียบ', 'การใช้อำนาจโดยมิชอบของเจ้าหน้าที่รัฐ', 'การเรียกรับผลประโยชน์เพื่อแลกกับการอนุมัติ', 'การเบิกจ่ายงบประมาณอันเป็นเท็จ'],
+      a5Accused: ['นาย', 'นาง', 'นางสาว'],
+      a5ChainOpinion: ['เห็นชอบตามความเห็นและข้อเสนอของผู้รับผิดชอบสำนวน', 'ตรวจสอบข้อเท็จจริงและรวบรวมเอกสารเพิ่มเติมก่อนเสนอ', 'เห็นควรเสนอคณะกรรมการพิจารณา', 'ส่งกลับให้แก้ไขรายงานให้ครบถ้วน'],
+      a5CommitteeExtOpinion: ['อนุมัติให้ขยายระยะเวลาออกไปอีก', 'ไม่อนุมัติให้ขยายระยะเวลา — ให้เร่งรัดดำเนินการ', 'ให้รายงานความคืบหน้าทุก 15 วัน', 'ครั้งสุดท้ายแล้ว หากยังไม่แล้วเสร็จให้เสนอคณะกรรมการพิจารณา'],
+      a5Mti213Note: ['มติรับไว้ไต่สวน — ตั้งคณะอนุกรรมการไต่สวนตาม ม.24 ว.3', 'มติรับไว้ไต่สวน — ตั้งคณะพนักงานไต่สวนตาม ม.24 ว.1', 'ไม่รับไว้ไต่สวน — สิทธิฟ้องระงับตาม ม.25-26', 'ส่งสำนักงาน ป.ป.ช. ตาม ม.18/1(ข)(3)'],
+      a5Mti644Note: ['ชี้มูลความผิดอาญาและวินัย — ส่งอัยการและต้นสังกัด', 'ชี้มูลวินัยอย่างเดียว — ส่งต้นสังกัดดำเนินการ', 'ยุติเรื่อง — ข้อกล่าวหาไม่มีมูล', 'ส่งพนักงานสอบสวนดำเนินคดีอาญา'],
+      a5SpecialResult: ['ตรวจสอบข้อเท็จจริงแล้วไม่พบพฤติการณ์ทุจริต', 'พบความเดือดร้อนของประชาชน — แจ้งหน่วยงานแก้ไข', 'พบพฤติการณ์ทุจริต — เปลี่ยนเส้นทางเข้าคดี', 'แจ้งสำนักงานการตรวจเงินแผ่นดิน (สตง.) ตาม ม.58/3'],
+      a5SupportOpinion: ['เห็นสอดคล้องกับคณะพนักงานไต่สวน — เสนอคณะกรรมการพิจารณา', 'มีความเห็นเพิ่มเติมให้ตรวจสอบประเด็น', 'เห็นควรให้รวบรวมพยานหลักฐานเพิ่มเติม']
+    },
+    usage: {}
+  };
+  function a5ReadSuggestions() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(A5_SUGGESTION_STORAGE_KEY) || 'null');
+      if (!stored) return structuredClone(A5_DEFAULT_SUGGESTIONS);
+      return { ...structuredClone(A5_DEFAULT_SUGGESTIONS), ...stored, contexts: { ...structuredClone(A5_DEFAULT_SUGGESTIONS.contexts), ...(stored.contexts || {}) }, usage: stored.usage || {} };
+    } catch { return structuredClone(A5_DEFAULT_SUGGESTIONS); }
+  }
+  function a5WriteSuggestions(settings) { localStorage.setItem(A5_SUGGESTION_STORAGE_KEY, JSON.stringify(settings)); }
+  function a5LearnContextSuggestion(context, value) {
+    const text = String(value || '').trim().replace(/\s+/g, ' ');
+    if (text.length < 8 || text.length > 160) return;
+    const settings = a5ReadSuggestions();
+    const usageKey = `${context}:${text}`;
+    settings.usage[usageKey] = (settings.usage[usageKey] || 0) + 1;
+    settings.contexts[context] = settings.contexts[context] || [];
+    if (settings.usage[usageKey] >= 2 && !settings.contexts[context].includes(text)) settings.contexts[context].unshift(text);
+    a5WriteSuggestions(settings);
+  }
+  function a5ContextualSuggestions(context, value) {
+    const settings = a5ReadSuggestions();
+    const unique = [...(settings.contexts[context] || []), ...settings.keywords].filter((text, index, array) => array.indexOf(text) === index && !value.includes(text));
+    const terms = value.toLowerCase().split(/\s+/).filter(term => term.length > 1);
+    return unique.map((text, index) => ({ text, index, score: terms.reduce((score, term) => score + (text.toLowerCase().includes(term) ? 2 : 0), 0) + (settings.usage[`${context}:${text}`] || 0) })).sort((a, b) => b.score - a.score || a.index - b.index).slice(0, 3).map(item => item.text);
+  }
+  function attachIntelligentSuggestion(id, label, context = id) {
+    const input = $(`#${id}`);
+    if (!input || input.parentElement?.querySelector(`.smart-inline[data-context="${context}"]`)) return;
+    input.closest('.ws-field')?.classList.add('smart-field');
+    const panel = document.createElement('div');
+    panel.className = 'smart-inline';
+    panel.dataset.context = context;
+    const popoverId = `smart-inline-${id}`;
+    panel.innerHTML = `<button type="button" class="smart-inline-trigger" aria-expanded="false" aria-controls="${popoverId}"><span class="smart-inline-dot"></span><span>คำแนะนำการเขียน</span><small>พร้อมตรวจ</small></button><div class="smart-inline-popover ws-hidden" id="${popoverId}" role="listbox"></div>`;
+    input.insertAdjacentElement('afterend', panel);
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', popoverId);
+    input.setAttribute('aria-expanded', 'false');
+    const trigger = $('.smart-inline-trigger', panel), popover = $('.smart-inline-popover', panel);
+    let closeTimer = 0, renderTimer = 0, activeIndex = -1;
+    const open = () => { clearTimeout(closeTimer); panel.classList.add('open'); popover.classList.remove('ws-hidden'); trigger.setAttribute('aria-expanded', 'true'); input.setAttribute('aria-expanded', 'true'); };
+    const close = () => { panel.classList.remove('open'); popover.classList.add('ws-hidden'); trigger.setAttribute('aria-expanded', 'false'); input.setAttribute('aria-expanded', 'false'); activeIndex = -1; };
+    const applyValue = value => { input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); input.focus(); panel.classList.add('suggestion-selected'); setTimeout(() => panel.classList.remove('suggestion-selected'), 420); };
+    const render = () => {
+      const value = input.value.trim(), corrected = correctThaiWriting(value), formal = formalizeWriting(value), suggestions = a5ContextualSuggestions(context, value);
+      const actions = [];
+      if (value && corrected !== value) actions.push(`<button type="button" role="option" class="smart-inline-action" data-smart-value="${escapeHtml(corrected)}"><span>แก้คำและช่องว่าง</span><small>${escapeHtml(corrected)}</small></button>`);
+      if (value && formal !== value && formal !== corrected) actions.push(`<button type="button" role="option" class="smart-inline-action" data-smart-value="${escapeHtml(formal)}"><span>ปรับเป็นภาษาราชการ</span><small>${escapeHtml(formal)}</small></button>`);
+      const suggestionHtml = suggestions.map(text => `<button type="button" role="option" class="smart-inline-suggestion" data-smart-suggestion="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join('');
+      popover.innerHTML = `${actions.join('')}${suggestionHtml ? `<div class="smart-inline-suggestions"><span>${value ? 'ข้อความที่เกี่ยวข้อง' : 'เริ่มต้นด้วยข้อความแนะนำ'}</span>${suggestionHtml}</div>` : ''}${!actions.length && !suggestions.length ? '<p class="smart-inline-clear">ข้อความชัดเจนแล้ว</p>' : ''}`;
+      $('small', trigger).textContent = actions.length ? `พบ ${actions.length} จุดที่ปรับได้` : suggestions.length ? `${suggestions.length} ข้อเสนอ` : 'ตรวจแล้ว';
+      $$('[data-smart-value]', popover).forEach(button => button.onclick = () => applyValue(button.dataset.smartValue));
+      $$('[data-smart-suggestion]', popover).forEach(button => button.onclick = () => { const text = button.dataset.smartSuggestion; if (input.tagName === 'INPUT') applyValue(text); else if (!input.value.includes(text)) applyValue([input.value.trim(), text].filter(Boolean).join('\n')); });
+      activeIndex = -1;
+    };
+    trigger.onclick = () => { render(); panel.classList.contains('open') ? close() : open(); };
+    input.addEventListener('focus', () => { render(); open(); });
+    input.addEventListener('input', () => { clearTimeout(renderTimer); renderTimer = setTimeout(() => { render(); open(); }, 180); });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Escape' || event.key === 'Tab') { close(); return; }
+      if (event.ctrlKey && event.code === 'Space') { event.preventDefault(); render(); open(); return; }
+      if (!['ArrowDown', 'ArrowUp', 'Enter'].includes(event.key)) return;
+      const options = $$('[role="option"]', popover);
+      if (!options.length) return;
+      if (event.key === 'Enter') { if (activeIndex < 0) return; event.preventDefault(); options[activeIndex].click(); return; }
+      event.preventDefault();
+      open();
+      activeIndex = event.key === 'ArrowDown' ? (activeIndex + 1) % options.length : (activeIndex - 1 + options.length) % options.length;
+      options.forEach((option, index) => option.classList.toggle('is-active', index === activeIndex));
+      options[activeIndex].scrollIntoView({ block: 'nearest' });
+    });
+    input.addEventListener('blur', () => { closeTimer = setTimeout(close, 180); });
+    panel.addEventListener('mousedown', event => event.preventDefault());
+    input.addEventListener('change', () => a5LearnContextSuggestion(context, input.value));
+    render();
+  }
+  function wireA5Suggestions() {
+    ['a5Plan', 'a5Plan644', 'a5WorkLog', 'a5Allegations', 'a5ChainOpinion', 'a5CommitteeExtOpinion', 'a5Mti213Note', 'a5Mti644Note', 'a5SpecialResult', 'a5SupportOpinion', 'a5SupportOpinion644'].forEach(id => attachIntelligentSuggestion(id, 'คำแนะนำการเขียน', id));
+  }
   function wireA5(state, role) {
     ThaiDatePicker.wireAll($('#a5App'));
+    wireA5Suggestions();
+    /* ---------- Word Engine A5: แก้ไขเอกสารบนฟอร์มจริง (เหมือน Word) ---------- */
+    const docStage = $('#a5PaperStage'), docFab = $('#a5DocEditFab'), docBar = $('#a5DocEditBar');
+    const applyHtmlOverrides = () => {
+      if (!state.inquiry?.docEdits) return;
+      $$('#a5PaperStage .a5-fill[data-htmlslot]').forEach(el => {
+        const ov = state.inquiry.docEdits[el.dataset.htmlslot];
+        if (ov !== undefined) el.textContent = ov;
+      });
+    };
+    const a5SetEditMode = on => {
+      if (on) {
+        $$('#a5PaperStage [data-slot]').forEach(s => s.setAttribute('contenteditable', 'true'));
+        $$('#a5PaperStage .a5-fill').forEach((el, i) => {
+          if (!el.dataset.htmlslot) el.dataset.htmlslot = 'html-' + ($('.ws-doc-tab.active')?.dataset?.a5Doc || 'paper') + '-' + i;
+          el.setAttribute('contenteditable', 'true');
+        });
+      } else {
+        $$('#a5PaperStage [data-slot], #a5PaperStage .a5-fill').forEach(s => s.removeAttribute('contenteditable'));
+      }
+      docStage?.classList.toggle('doc-edit-mode', on);
+      docFab?.classList.toggle('active', on);
+      docBar?.classList.toggle('show', on);
+      if (on) applyHtmlOverrides();
+    };
+    if (docStage && !docStage.dataset.wordBound) {
+      docStage.dataset.wordBound = '1';
+      let docEditTimer = 0;
+      const flushDocEdits = () => { if (state.inquiry?.docEdits) saveState(state.caseData.id, state); };
+      docStage.addEventListener('input', e => {
+        const slot = e.target.closest('[data-slot], [data-htmlslot]');
+        if (!slot) return;
+        state.inquiry = state.inquiry || {};
+        state.inquiry.docEdits = state.inquiry.docEdits || {};
+        state.inquiry.docEdits[slot.dataset.slot || slot.dataset.htmlslot] = slot.textContent;
+        clearTimeout(docEditTimer);
+        docEditTimer = setTimeout(flushDocEdits, 400);
+      });
+      // blur: บันทึกเท่านั้น ไม่ re-render (ฟอร์มรูปจริง layout คงที่ — re-render ทำลาย selection/scroll)
+      docStage.addEventListener('blur', e => {
+        const slot = e.target.closest('[data-slot], [data-htmlslot]');
+        if (!slot) return;
+        if (state.inquiry?.docEdits) { clearTimeout(docEditTimer); flushDocEdits(); }
+      }, true);
+      // delegation ระดับ document: ปุ่ม FAB/format bar ทนต่อทุก re-render (re-resolve องค์ประกอบทุกคลิก)
+      if (!document.__a5WordBound) {
+        document.__a5WordBound = '1';
+        const toggleEditMode = () => {
+          const stage = $('#a5PaperStage');
+          const on = !stage?.classList.contains('doc-edit-mode');
+          $$('#a5PaperStage [data-slot]').forEach(s => on ? s.setAttribute('contenteditable', 'true') : s.removeAttribute('contenteditable'));
+          stage?.classList.toggle('doc-edit-mode', on);
+          $('#a5DocEditFab')?.classList.toggle('active', on);
+          $('#a5DocEditBar')?.classList.toggle('show', on);
+        };
+        document.addEventListener('click', e => {
+          if (e.target.closest('#a5DocEditFab')) { toggleEditMode(); return; }
+          const fmt = e.target.closest('[data-format]');
+          if (fmt) document.execCommand(fmt.dataset.format);
+        });
+        document.addEventListener('mousedown', e => {
+          if (e.target.closest('.doc-edit-bar, .doc-edit-fab')) e.preventDefault();
+        }, true);
+      }
+      // MutationObserver: ทุกครั้งที่ stage ถูก re-render (สลับแท็บ/action) ให้คง edit mode ไว้
+      const docEditObserver = new MutationObserver(() => {
+        if (docStage?.classList.contains('doc-edit-mode')) a5SetEditMode(true);
+      });
+      docEditObserver.observe(docStage, { childList: true });
+    }
     $$('#a5App [data-a5-doc]').forEach(b => b.onclick = () => {
       $$('#a5App [data-a5-doc]').forEach(x => { const on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
       $('#a5PaperStage').innerHTML = paperForTab(captureDetail(state, role), b.dataset.a5Doc);
@@ -731,7 +1394,7 @@
       const add = text => { st.decisionHistory = st.decisionHistory || []; st.decisionHistory.push({ text, time: now() }); };
       const v = id => $('#' + id)?.value?.trim() || '';
       const cb = id => Boolean($('#' + id)?.checked);
-      const popup = (title, fields, confirmText) => swalForm(title, `<div id="swalForm">${fields.map(([id, label, type = 'text', ph = '']) => `<div class="ws-field" style="text-align:left"><label>${label}</label><input data-sf="${id}" type="${type}" placeholder="${ph}" style="width:100%;padding:.55rem;border:1px solid #c9d2dc;border-radius:.5rem"></div>`).join('')}</div>`, confirmText);
+      const popup = (title, fields, confirmText) => swalForm(title, `<div id="swalForm">${fields.map(([id, label, type = 'text', ph = '']) => type === 'checkbox' ? `<label class="ws-choice" style="text-align:left;margin-bottom:.5rem"><input data-sf="${id}" type="checkbox" ${ph ? 'checked' : ''}><span><strong>${label}</strong></span></label>` : type === 'select' ? `<div class="ws-field" style="text-align:left"><label>${label}</label><select data-sf="${id}" style="width:100%;padding:.55rem;border:1px solid #c9d2dc;border-radius:.5rem;background:#fff">${String(ph).split('|').map(o => `<option>${o}</option>`).join('')}</select></div>` : `<div class="ws-field" style="text-align:left"><label>${label}</label><input data-sf="${id}" type="${type}" placeholder="${ph}" style="width:100%;padding:.55rem;border:1px solid #c9d2dc;border-radius:.5rem"></div>`).join('')}</div>`, confirmText);
 
       if (action === 'accept-case') {
         if (i.intake.m62?.flag && !i.intake.m62.ageCheck) return notify('warning', 'คดี ม.62 ต้องตรวจอำนาจก่อน', 'กรอกผลตรวจอำนาจ/อายุความ (ถ้าเหลือ <6 เดือน ต้องส่งคืน ป.ป.ช.)');
@@ -768,10 +1431,10 @@
       if (action === 'prelim-submit') {
         if (!i.prelim.plan || i.prelim.planStatus !== 'approved') return notify('warning', 'แผนคดีไม่ครบ', 'จัดทำแผนคดีและรออนุมัติจากหัวหน้าพนักงานก่อนเสนอ 213');
         if (!i.prelim.report) return notify('warning', 'ยังไม่มีสรุปรายงาน 213', 'สรุปผลและความเห็นก่อนเสนอตามลำดับชั้น');
-        const fast = await popup('เสนอรายงาน 213', [['a5FastTrack', 'เร่งด่วน (ใบด่วน — ใกล้ขาดอายุความ)?', 'text', 'ไม่ / ใช่']], 'เสนอ');
-        i.prelim.fastTrack = fast.value?.a5FastTrack ? /ใช่|ด่วน/i.test(fast.value.a5FastTrack) : false;
+        const fast = await popup('เสนอรายงาน 213', [['a5FastTrack', 'เร่งด่วน (ใบด่วน — ใกล้ขาดอายุความ)?', 'checkbox']], 'เสนอ');
+        i.prelim.fastTrack = Boolean(fast.value?.a5FastTrack);
         if (i.prelim.fastTrack) { w.stage = 'a7-213'; w.owner = 'committee'; w.status = 'ใบด่วน — คกก. พิจารณา 213 (ขอบรรจุวาระเร่งด่วน)'; i.committee213.note = `${i.committee213.note || ''}\n[ใบด่วน] ขอบรรจุวาระการประชุมเร่งด่วนพร้อมเหตุผลอันสมควร`; add('เสนอรายงาน 213 แบบใบด่วน (เร่งด่วน) — ตรงเข้าคณะกรรมการ'); }
-        else { w.stage = 'a5-prelim-review'; w.owner = 'group-director'; w.status = 'รอตรวจตามลำดับชั้น (ผอ.กลุ่ม → ผอ.เขต/กอง → ผู้ช่วย/รอง/เลขาธิการ)'; i.prelim.submittedAt = now(); add('นักสืบเสนอรายงาน 213 ตามลำดับชั้น'); }
+        else { w.stage = 'a5-prelim-review'; w.owner = 'group-director'; w.status = 'รอตรวจตามลำดับชั้น (ผอ.กลุ่ม → ผอ.เขต/กอง → ผู้ช่วย/รองเลขาธิการ → เลขาธิการ)'; i.prelim.submittedAt = now(); add('นักสืบเสนอรายงาน 213 ตามลำดับชั้น'); }
       }
       if (action === 'chain-approve') {
         const reportType = reportTypeForStage(w.stage);
@@ -838,10 +1501,10 @@
       if (action === 'inquiry-submit') {
         if (!i.inquiry644.plan || i.inquiry644.planStatus !== 'approved') return notify('warning', 'แผนคดี 644 ไม่ครบ', 'จัดทำแผนคดีและรออนุมัติก่อนเสนอ 644');
         if (!i.inquiry644.report) return notify('warning', 'ยังไม่มีสรุปรายงาน 644', 'สรุปผลและความเห็นชี้มูลก่อนเสนอ');
-        const fast = await popup('เสนอรายงาน 644', [['a5FastTrack644', 'เร่งด่วน (ใบด่วน)?', 'text', 'ไม่ / ใช่']], 'เสนอ');
-        i.inquiry644.fastTrack = fast.value?.a5FastTrack644 ? /ใช่|ด่วน/i.test(fast.value.a5FastTrack644) : false;
+        const fast = await popup('เสนอรายงาน 644', [['a5FastTrack644', 'เร่งด่วน (ใบด่วน)?', 'checkbox']], 'เสนอ');
+        i.inquiry644.fastTrack = Boolean(fast.value?.a5FastTrack644);
         if (i.inquiry644.fastTrack) { w.stage = 'a7-644'; w.owner = 'committee'; w.status = 'ใบด่วน — คกก. วินิจฉัย 644'; add('เสนอรายงาน 644 แบบใบด่วน'); }
-        else { w.stage = 'a5-inquiry-review'; w.owner = 'group-director'; w.status = 'รอตรวจตามลำดับชั้น (644)'; i.inquiry644.submittedAt = now(); add('คณะผู้ไต่สวนเสนอรายงาน 644 ตามลำดับชั้น'); }
+        else { w.stage = 'a5-inquiry-review'; w.owner = 'group-director'; w.status = 'รอตรวจตามลำดับชั้น (ผอ.กลุ่ม → ผอ.เขต/กอง → ผู้ช่วย/รองเลขาธิการ → เลขาธิการ)'; i.inquiry644.submittedAt = now(); add('คณะผู้ไต่สวนเสนอรายงาน 644 ตามลำดับชั้น'); }
       }
       if (action === 'mti644-decide') {
         const result = $('input[name="a5Mti644"]:checked')?.value;
@@ -878,6 +1541,69 @@
       if (action === 'm62-recall') {
         i.intake.m62.recalled = true; w.stage = 'closed'; w.status = 'ป.ป.ช. เรียกสำนวนกลับไปดำเนินการเอง'; w.complete = true;
         add('ป.ป.ช. ไม่เห็นด้วยกับมติ — เรียกสำนวนกลับไปดำเนินการเอง'); publish(st, 'สำนักงาน ป.ป.ช. เรียกสำนวนกลับไปดำเนินการเอง');
+      }
+      if (action === 'witness-request' || action === 'search-request') {
+        const rep = reportTypeForStage(w.stage) === '644' ? i.inquiry644 : i.prelim;
+        const isWitness = action === 'witness-request';
+        const pop = await popup(isWitness ? 'จัดทำคำขอคุ้มครองพยาน (ส่ง กิจกรรมที่ 6)' : 'จัดทำคำร้องขอหมายค้น (ส่ง กิจกรรมที่ 9)', isWitness ? [['a5WpPerson', 'ผู้ถูกคุ้มครอง (ผู้ร้อง/พยาน) *', 'text', 'ระบุชื่อ'], ['a5WpRisk', 'เหตุผลความเสี่ยง *', 'text', 'เช่น ถูกข่มขู่/เกรงอันตราย']] : [['a5SqTarget', 'สถานที่ที่จะตรวจค้น *', 'text', 'ระบุสถานที่'], ['a5SqReason', 'เหตุผลและความจำเป็น *', 'text', 'ระบุพฤติการณ์']], isWitness ? 'ส่ง ก6' : 'ส่ง ก9');
+        if (pop.dismiss) return;
+        if (isWitness) {
+          if (!pop.value?.a5WpPerson || !pop.value?.a5WpRisk) return notify('warning', 'กรอกข้อมูลครบ', 'ผู้ถูกคุ้มครอง + เหตุผลความเสี่ยง');
+          rep.witnessProtectionReq = { person: pop.value.a5WpPerson, risk: pop.value.a5WpRisk, by: ROLE_LABELS[role], at: now(), status: 'sent' };
+          w.status = `ส่งคำขอคุ้มครองพยาน (${pop.value.a5WpPerson}) ไป กิจกรรมที่ 6`;
+          add(`${ROLE_LABELS[role]} จัดทำคำขอคุ้มครองพยาน (${pop.value.a5WpPerson}) — ${pop.value.a5WpRisk} → ส่ง ก6`);
+        } else {
+          if (!pop.value?.a5SqTarget || !pop.value?.a5SqReason) return notify('warning', 'กรอกข้อมูลครบ', 'สถานที่ + เหตุผลความจำเป็น');
+          rep.searchWarrantReq = { target: pop.value.a5SqTarget, reason: pop.value.a5SqReason, by: ROLE_LABELS[role], at: now(), status: 'sent' };
+          w.status = `ส่งคำร้องขอหมายค้น (${pop.value.a5SqTarget}) ไป กิจกรรมที่ 9`;
+          add(`${ROLE_LABELS[role]} จัดทำคำร้องขอหมายค้น (${pop.value.a5SqTarget}) — ${pop.value.a5SqReason} → ส่ง ก9`);
+        }
+      }
+      if (action === 'witness-result' || action === 'search-result') {
+        const rep = reportTypeForStage(w.stage) === '644' ? i.inquiry644 : i.prelim;
+        const isWitness = action === 'witness-result';
+        const req = isWitness ? rep.witnessProtectionReq : rep.searchWarrantReq;
+        if (!req) return notify('warning', 'ยังไม่มีคำขอ', 'จัดทำคำขอก่อนส่ง ก6/ก9');
+        const pop = await popup(isWitness ? 'บันทึกผลจาก กิจกรรมที่ 6' : 'บันทึกผลจาก กิจกรรมที่ 9', [[isWitness ? 'a5WpResult' : 'a5SqResult', isWitness ? 'ผลการคุ้มครอง/คำสั่ง *' : 'ผลคำสั่งศาล *', 'text', isWitness ? 'เช่น ศาลมีคำสั่งคุ้มครอง 6 เดือน' : 'เช่น ศาลอนุญาตให้ออกหมายค้น']], 'บันทึกผล');
+        if (!pop.value?.[isWitness ? 'a5WpResult' : 'a5SqResult']) return notify('warning', 'กรอกผล', '');
+        req.status = 'result';
+        if (isWitness) { rep.witnessProtection = pop.value.a5WpResult; } else { rep.searchWarrantResult = pop.value.a5SqResult; }
+        w.status = isWitness ? 'ได้รับผลการคุ้มครองพยานจาก ก6' : 'ได้รับผลหมายค้นจาก ก9';
+        add(`${isWitness ? 'รับผลคุ้มครองพยาน' : 'รับผลหมายค้น'} จาก ก${isWitness ? '6' : '9'}: ${pop.value[isWitness ? 'a5WpResult' : 'a5SqResult']}`);
+      }
+      if (action === 'warrant-file') {
+        const pop = await popup('ยื่นคำร้องขอหมายจับต่อศาล', [['a5WcCourt', 'ศาล *', 'text', 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ'], ['a5WcDate', 'วันที่ยื่นคำร้อง', 'text', '']], 'ยื่นคำร้อง');
+        if (!pop.value?.a5WcCourt) return notify('warning', 'ระบุศาล', '');
+        i.outcome.warrant = { status: 'filed', court: pop.value.a5WcCourt, filedAt: pop.value.a5WcDate || now() };
+        w.status = 'ยื่นคำร้องขอหมายจับต่อศาลแล้ว — รอศาลพิจารณา';
+        add(`ยื่นคำร้องขอหมายจับต่อ ${pop.value.a5WcCourt} (แบบ ปปท. 11) — ${pop.value.a5WcDate || ''}`);
+      }
+      if (action === 'warrant-court') {
+        if (!i.outcome.warrant || i.outcome.warrant.status !== 'filed') return notify('warning', 'ต้องยื่นคำร้องก่อน', '');
+        const pop = await popup('บันทึกผลศาล', [['a5WcIssue', 'ผลคำสั่งศาล', 'select', 'ออกหมายจับ|ไม่ออกหมายจับ'], ['a5WcNo', 'หมายจับที่ / ลงวันที่', 'text', 'หมายจับที่ ... ลงวันที่ ...']], 'บันทึกผล');
+        if (pop.dismiss) return;
+        const issued = pop.value?.a5WcIssue !== 'ไม่ออกหมายจับ';
+        i.outcome.warrant.status = issued ? 'issued' : 'denied';
+        i.outcome.warrant.warrantNo = pop.value?.a5WcNo || '';
+        w.status = issued ? `ศาลออกหมายจับแล้ว${pop.value?.a5WcNo ? ` (${pop.value.a5WcNo})` : ''} — ดำเนินการจับกุม` : 'ศาลไม่ออกหมายจับ — ดำเนินการตามคำสั่งศาล';
+        add(`ศาล${issued ? 'ออก' : 'ไม่ออก'}หมายจับ${pop.value?.a5WcNo ? ` (${pop.value.a5WcNo})` : ''} — ${issued ? 'แบบ ปปท. 14/15 + ตำหนิรูปพรรณ 16' : 'แจ้งผู้รับผิดชอบ'}`);
+      }
+      if (action === 'warrant-arrest') {
+        if (!i.outcome.warrant || i.outcome.warrant.status !== 'issued') return notify('warning', 'ต้องมีหมายจับก่อน', '');
+        const pop = await popup('บันทึกการจับกุม', [['a5WaResult', 'ผลการจับกุม', 'select', 'จับกุมได้|ยังจับกุมไม่ได้'], ['a5WaNote', 'หมายเหตุ', 'text', '']], 'บันทึก');
+        if (pop.dismiss) return;
+        i.outcome.warrant.status = 'arrested';
+        i.outcome.warrant.arrest = pop.value?.a5WaResult || '';
+        i.outcome.warrant.note = pop.value?.a5WaNote || '';
+        w.status = pop.value?.a5WaResult === 'จับกุมได้' ? 'จับกุมผู้ถูกกล่าวหาได้ — ส่งบันทึกการจับกุมต่อศาลภายใน 48 ชั่วโมง' : 'ยังจับกุมไม่ได้ — ติดตามตามหมายจับ';
+        add(`การจับกุม: ${pop.value?.a5WaResult || ''}${pop.value?.a5WaNote ? ` — ${pop.value.a5WaNote}` : ''}`);
+      }
+      if (action === 'warrant-notify') {
+        if (!i.outcome.warrant || i.outcome.warrant.status !== 'arrested') return notify('warning', 'ต้องจับกุม/ดำเนินการตามหมายก่อน', '');
+        i.outcome.warrant.status = 'notified';
+        i.outcome.warrant.notifiedAt = now();
+        w.status = 'แจ้งหน่วยงานแล้ว (อัยการ/ผบ.ตร./กอท.) — หนังสือแจ้งผลการออกหมายจับ';
+        add('แจ้งผลการออกหมายจับ: อัยการ (แบบ ปปท. 17) · ผบ.ตร. (แบบ ปปท. 18) · กอท. (แบบ ปปท. 19) · ผนึกซอง (แบบ ปปท. 20)');
       }
       if (action === 'close-case') {
         const confirmed = await confirmDo('ปิดสำนวน', 'ยืนยันปิดสำนวนคดีนี้?', 'ปิดสำนวน');
@@ -918,9 +1644,51 @@
         const reportType = reportTypeForStage(w.stage);
         const pop = await popup('ขยายครบแล้วยังไม่แล้วเสร็จ', [['a5LateReport', 'รายงานเหตุผลและความจำเป็น *', 'text', 'ระบุเหตุผลล่าช้า...'], ['a5LateEvidence', 'หลักฐานงานที่ผ่านมา', 'text', 'รายการหลักฐาน']], 'เสนอ คกก.');
         if (!pop.value?.a5LateReport) return notify('warning', 'ต้องกรอกรายงานเหตุล่าช้า', '');
+        const extNext = extensionRound(reportType, i);
         reportOf(reportType, i).lateReport = `${pop.value.a5LateReport}${pop.value.a5LateEvidence ? `\n[หลักฐาน] ${pop.value.a5LateEvidence}` : ''}`;
-        w.stage = reportType === '213' ? 'a7-213' : 'a7-644'; w.owner = 'committee'; w.status = `คกก. พิจารณาขยาย${reportType} (เลขาธิการพิจารณาเอง — มอบหมายมิได้ 218/2568 ข้อ 14)`;
+        reportOf(reportType, i).lateRound = extNext?.round || EXTENSION_RULES[reportType].rounds.length;
+        w.stage = reportType === '213' ? 'a7-213' : 'a7-644'; w.owner = 'committee'; w.status = `คกก. พิจารณาขยาย${reportType}ครั้งที่ ${reportOf(reportType, i).lateRound} (เลขาธิการพิจารณาเอง — มอบหมายมิได้ 218/2568 ข้อ 14)`;
         add(`ขยายครบแล้วยังไม่เสร็จ — เสนอรายงานเหตุล่าช้าต่อคณะกรรมการ${i.intake ? ` (ครบ 2 ปี: ${caseAgeTone(i)?.label || '-'})` : ''}`);
+      }
+      if (action === 'progress-report') {
+        const reportType = reportTypeForStage(w.stage);
+        const rep = reportOf(reportType, i);
+        const text = v('a5ProgressText');
+        if (!text) return notify('warning', 'กรอกเนื้อหารายงานความคืบหน้าก่อน', '');
+        rep.progressReports = rep.progressReports || [];
+        rep.progressReports.push({ text, at: now(), by: ROLE_LABELS[role] });
+        add(`บันทึกรายงานความคืบหน้า${reportType === '213' ? ' (ไต่สวนเบื้องต้น)' : ' (ไต่สวนชี้มูล)'}: ${text.slice(0, 60)}${text.length > 60 ? '…' : ''}`);
+        notify('success', 'บันทึกรายงานความคืบหน้าแล้ว', 'รายงานครบถ้วนตามข้อกำหนดทุก 15 วันระหว่างขยายเวลา');
+      }
+      if (action === 'ext-committee-approve') {
+        const reportType = reportTypeForStage(w.stage);
+        const rules = EXTENSION_RULES[reportType];
+        const rep = reportOf(reportType, i);
+        const cRound = rep.lateRound || extensionRound(reportType, i)?.round || rules.rounds.length;
+        const isFinal = cRound >= rules.rounds.length;
+        const pop = await popup(`คกก. อนุมัติขยาย ${reportType} (ครั้งที่ ${cRound})`, [['a5ExtDays', 'จำนวนวัน (20-60)', 'number', '60'], ['a5ExtReason', 'เหตุผล/เงื่อนไข', 'text', '']], 'อนุมัติขยาย');
+        if (pop.dismiss) return;
+        const days = Math.min(Math.max(20, Number(pop.value?.a5ExtDays) || 60), 60);
+        rep.extensionHistory.push({ round: cRound, role: 'committee', requestedDays: days, reason: pop.value?.a5ExtReason || rep.lateReport || '', requestedBy: 'คณะกรรมการ ป.ป.ท.', requestedAt: now(), status: 'APPROVED', approvedBy: 'คณะกรรมการ ป.ป.ท.', approvedAt: now() });
+        rep.deadlineAt = addDays(rep.deadlineAt, days);
+        rep.lateReport = ''; rep.lateRound = '';
+        w.stage = reportType === '213' ? 'a5-prelim' : 'a5-inquiry';
+        w.owner = 'investigator';
+        w.status = `คกก. อนุมัติขยายครั้งที่ ${cRound} แล้ว (${days} วัน) — ครบ ${rep.deadlineAt}${isFinal ? ' (ครั้งสุดท้าย — คำสั่งตามมติบอร์ด)' : ''}`;
+        add(`คณะกรรมการ ป.ป.ท. อนุมัติขยาย${reportType}ครั้งที่ ${cRound} (${days} วัน)${pop.value?.a5ExtReason ? ` — ${pop.value.a5ExtReason}` : ''}${isFinal ? ' — ครั้งสุดท้ายแล้ว' : ''}`);
+        publish(st, `ขยายระยะเวลาครั้งที่ ${cRound} (${reportType}) — ครบ ${rep.deadlineAt}${isFinal ? ' · คำสั่งตามมติบอร์ด' : ''}`);
+      }
+      if (action === 'ext-committee-deny') {
+        const reportType = reportTypeForStage(w.stage);
+        const rep = reportOf(reportType, i);
+        const pop = await popup(`คกก. ไม่อนุมัติขยาย ${reportType}`, [['a5ExtDenyNote', 'เหตุผล/คำสั่ง', 'text', '']], 'ไม่อนุมัติ');
+        if (pop.dismiss) return;
+        rep.extensionHistory.push({ round: rep.lateRound || EXTENSION_RULES[reportType].rounds.length, role: 'committee', requestedDays: 0, reason: rep.lateReport || '', requestedBy: 'คณะกรรมการ ป.ป.ท.', requestedAt: now(), status: 'DENIED', deniedBy: 'คณะกรรมการ ป.ป.ท.', deniedAt: now(), denyNote: pop.value?.a5ExtDenyNote || '' });
+        rep.lateReport = ''; rep.lateRound = '';
+        w.stage = reportType === '213' ? 'a5-prelim' : 'a5-inquiry';
+        w.owner = 'investigator';
+        w.status = 'คกก. ไม่อนุมัติขยาย — เร่งดำเนินการให้แล้วเสร็จโดยเร็ว';
+        add(`คณะกรรมการ ป.ป.ท. ไม่อนุมัติขยาย${reportType}${pop.value?.a5ExtDenyNote ? ` — ${pop.value.a5ExtDenyNote}` : ''}`);
       }
       if (action === 'request-additional-extension') {
         const reportType = reportTypeForStage(w.stage);
@@ -1025,8 +1793,11 @@
   function renderA5(role = activeRole()) {
     const root = $('#a5App');
     if (!root) return;
-    const filters = { q: $('#a5FilterSearch')?.value, region: $('#a5FilterRegion')?.value, phase: $('#a5FilterPhase')?.value, investigator: $('#a5FilterInvestigator')?.value };
-    root.innerHTML = `${headerA5(role)}<main class="ws-container"><section id="a5ListView"><div class="ws-page-head"><div><p class="ws-kicker">ระบบกระบวนการดำเนินงานเรื่องร้องเรียนกล่าวหา</p><h1>รายการสำนวนคดี</h1><p>สำนวนที่ส่งต่อจากสำนักงาน ป.ป.ท. — ไต่สวนเบื้องต้น → คณะกรรมการ → ไต่สวนชี้มูล → อัยการ/ติดตาม → ปิดสำนวน</p></div></div>
+    const a5q = new URLSearchParams(location.search).get('a5q') || '';
+    const filters = { q: $('#a5FilterSearch')?.value, region: $('#a5FilterRegion')?.value, phase: $('#a5FilterPhase')?.value, investigator: $('#a5FilterInvestigator')?.value, a5q };
+    const menuLabel = A5_MENU[a5q];
+    const banner = menuLabel ? `<div class="ws-callout a5q-banner">กำลังแสดง: <strong>${escapeHtml(menuLabel)}</strong> <a class="a5q-clear" href="?view=a5&role=${encodeURIComponent(role)}" title="แสดงสำนวนทั้งหมด">ล้างตัวกรอง</a></div>` : '';
+    root.innerHTML = `${headerA5(role)}<main class="ws-container"><section id="a5ListView"><div class="ws-page-head"><div><p class="ws-kicker">ระบบกระบวนการดำเนินงานเรื่องร้องเรียนกล่าวหา</p><h1>${escapeHtml(menuLabel || 'รายการสำนวนคดี')}</h1><p>สำนวนที่ส่งต่อจากสำนักงาน ป.ป.ท. — ไต่สวนเบื้องต้น → คณะกรรมการ → ไต่สวนชี้มูล → อัยการ/ติดตาม → ปิดสำนวน</p></div></div>${banner}
     <section class="ws-dashboard" aria-label="ภาพรวมสำนวน"><article class="ws-dashboard-card overview"><span>สำนวนทั้งหมด</span><strong id="a5DashboardTotal">0</strong><p>ทุกเฟส</p></article><article class="ws-dashboard-card pending"><span>รอรับสำนวน</span><strong id="a5DashboardPending">0</strong><p>รอธุรการคดีมอบหมาย</p></article><article class="ws-dashboard-card reviewing"><span>อยู่ระหว่างไต่สวน</span><strong id="a5DashboardWorking">0</strong><p>213 / 644 / คกก.</p></article><article class="ws-dashboard-card completed"><span>เสร็จสิ้น</span><strong id="a5DashboardDone">0</strong><p>ปิดสำนวน / 58/2</p></article></section>
     <section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="a5FilterSearch" placeholder="เลขสำนวน เรื่อง หน่วยงาน นักสืบ"></div><div class="ws-field"><label>หน่วยงาน/เขต</label><select id="a5FilterRegion"><option value="">ทุกหน่วยงาน</option>${UNITS.map(u => `<option>${u}</option>`).join('')}</select></div><div class="ws-field"><label>เฟส/สถานะ</label><select id="a5FilterPhase"><option value="">ทุกเฟส</option></select></div><div class="ws-field"><label>ผู้รับผิดชอบ</label><select id="a5FilterInvestigator"><option value="">ทั้งหมด</option>${INVESTIGATORS.map(x => `<option>${x}</option>`).join('')}</select></div></div></section>
     <section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขสำนวน/เลขรับบริการ</th><th>เรื่อง/หน่วยงาน</th><th>ผู้ร้อง/ปลายทาง</th><th>ผู้รับผิดชอบ</th><th>เฟส/สถานะ</th><th>กรอบเวลา</th></tr></thead><tbody id="a5CaseRows"></tbody></table></div></section></section></main>`;
@@ -1087,6 +1858,10 @@
     extensionRound, canApproveExtension, requestExtension, applyExtension, denyExtension, pendingExtension, deadlineTone, daysLeft, addDays,
     chainState, chainApprove, chainSkipGroup, caseAgeTone, parseThaiDate,
     journeyStages, phaseLabel, currentDeadline, ensureInquiry,
+    paperForTab, docTabsA5, paperPlan, paperExt, paper213, paper644, paperMti, paperNoticeAccusation, paperRecordAccusation, paperProsecutorLetters, paperWarrants, paperSpecial58,
+    editorForA5, actionsForA5, extSectionHtml, progressSectionHtml, reportOf, reportTypeForStage,
+    a5qFilter, A5_MENU, renderA5List, allA5Cases,
+    attachIntelligentSuggestion, wireA5Suggestions, correctThaiWriting, formalizeWriting, a5ContextualSuggestions, a5LearnContextSuggestion,
     migrateLegacy, STORAGE_KEY
   });
 
