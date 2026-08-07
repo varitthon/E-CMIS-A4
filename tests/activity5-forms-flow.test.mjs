@@ -65,30 +65,28 @@ for (const tab of papers) {
 }
 
 // 2) เนื้อหาตรงแบบพิมพ์จริง — ฟอร์มหลักเป็นหน้าจริงจาก PDF (a5r-page + ภาพ + overlay ข้อมูล)
+const htmlDoc = (tab, kw) => { const h = EX.paperForTab(mk(), tab); return h.includes('class="a5-paper"') && !h.includes('a5r-page') && h.includes('a5-hdr') && h.includes(kw) && (h.match(/a5-fill/g) || []).length >= 5; };
 const ext213 = EX.paperForTab(mk(), "ext213");
-assert.ok(ext213.includes("a5r-page") && ext213.includes("ext213-1.png"), "แบบ 2 ต้องเป็นหน้ารูปจริง (ext213-1..3.png)");
-assert.ok(ext213.includes("1 ส.ค. 2569"), "แบบ 2 ต้องมี overlay วันที่รับเรื่องลงบนฟอร์ม");
+assert.ok(htmlDoc('ext213', 'บันทึกขอขยายระยะเวลาไต่สวนเบื้องต้น'), "แบบ 2 ต้องเป็น HTML");
+assert.ok(ext213.includes("1 ส.ค. 2569"), "แบบ 2 ต้องมีวันที่รับเรื่องในเอกสาร");
 const ext644 = EX.paperForTab(mk(), "ext644");
-assert.ok(ext644.includes("a5r-page") && ext644.includes("ext644-1.png"), "แบบ 3 ต้องเป็นหน้ารูปจริง (ext644-1..3.png)");
+assert.ok(htmlDoc('ext644', 'บันทึกขอขยายระยะเวลาไต่สวน'), "แบบ 3 ต้องเป็น HTML");
 const plan = EX.paperForTab(mk(), "plan");
-assert.ok(plan.includes("a5r-page") && plan.includes("plan-1.png"), "แบบ 1 ต้องเป็นหน้ารูปจริง (a5r-page + ภาพ PDF ต้นฉบับ)");
-assert.ok(plan.includes("a5r-slot"), "แบบ 1 ต้องมีช่อง overlay ข้อมูลบนฟอร์มจริง");
-assert.ok(plan.includes("690001"), "แบบ 1 ต้องมีข้อมูลคดี (เลขเรื่อง) ลงบนฟอร์ม");
+assert.ok(htmlDoc('plan', 'แผนงานคดี'), "แบบ 1 ต้องเป็น HTML (แผนงานคดี)");
+assert.ok(plan.includes("690001"), "แบบ 1 ต้องมีข้อมูลคดี (เลขเรื่อง)");
+assert.ok(plan.includes("ผู้กล่าวหา") && plan.includes("ผู้ถูกกล่าวหา"), "แบบ 1 ต้องมีหัวข้อตามฟอร์มจริง");
 const notice = EX.paperForTab(mk(), "notice");
-assert.ok(notice.includes("a5r-page") && notice.includes("notice-1.png"), "แบบ 5 ต้องเป็นหน้ารูปจริง (notice-1..2.png)");
+assert.ok(htmlDoc('notice', 'หนังสือแจ้งให้รับทราบข้อกล่าวหา'), "แบบ 5 ต้องเป็น HTML");
 const warrants = EX.paperForTab(mk(), "warrants");
-assert.ok(warrants.includes("p14-1.png") && warrants.includes("p20-1.png"), "แบบ 14/20 ต้องเป็นหน้ารูปจริง");
-assert.ok(warrants.includes("p15-1.png") && warrants.includes("p11-1.png") && warrants.includes("p16-1.png"), "แบบ 11/15/16 ต้องเป็นหน้ารูปจริง");
-assert.ok(warrants.includes("p17-1.png") && warrants.includes("p18-1.png") && warrants.includes("p19-1.png"), "แบบ 17/18/19 ต้องเป็นหน้ารูปจริง");
-assert.ok(warrants.includes("p12-1.png") && warrants.includes("p13-1.png"), "แบบ 12/13 ต้องเป็นหน้ารูปจริง");
-const paper213 = EX.paperForTab(mk(), "213");
-assert.ok(paper213.includes("rep213-1.png") && paper213.includes("a5r-page"), "แบบ 4 (รายงาน 213) ต้องเป็นหน้ารูปจริง 6 หน้า");
-const paper644 = EX.paperForTab(mk(), "644");
-assert.ok(paper644.includes("rep644-1.png") && paper644.includes("a5r-page"), "แบบ 7 (รายงาน 644) ต้องเป็นหน้ารูปจริง 3 หน้า");
-const record = EX.paperForTab(mk(), "record");
-assert.ok(record.includes("record-1.png") && record.includes("a5r-page"), "แบบ 6 ต้องเป็นหน้ารูปจริง 3 หน้า");
-const letters = EX.paperForTab(mk(), "letters");
-assert.ok(letters.includes("p8-1.png") && letters.includes("p10-1.png") && letters.includes("p9-1.png"), "แบบ 8/9/10 ต้องเป็นหน้ารูปจริง");
+assert.ok(warrants.includes('class="a5-paper"') && !warrants.includes('a5r-page'), "ชุดหมายจับต้องเป็น HTML");
+assert.ok(warrants.includes("คำร้องขอหมายจับ") && warrants.includes("หมายจับ") && warrants.includes("ตำหนิรูปพรรณ"), "แบบ 11/14/16 ครบ");
+assert.ok(warrants.includes("แจ้งผลการออกหมายจับ") && warrants.includes("แจ้งหมายจับผู้ถูกกล่าวหา") && warrants.includes("กอท."), "แบบ 17/18/19 ครบ");
+assert.ok(warrants.includes("ผนึกซอง") && warrants.includes("บันทึกคำเบิกความ") && warrants.includes("รายงานกระบวนการพิจารณา"), "แบบ 20/12/13 ครบ");
+assert.ok(warrants.includes("อายุความเหลือน้อย"), "แบบ 15 ครบ");
+assert.ok(htmlDoc('213', 'รายงานผลการไต่สวนเบื้องต้น'), "แบบ 4 (รายงาน 213) ต้องเป็น HTML");
+assert.ok(htmlDoc('644', 'รายงานการไต่สวน'), "แบบ 7 (รายงาน 644) ต้องเป็น HTML");
+assert.ok(htmlDoc('record', 'บันทึกการแจ้งข้อกล่าวหา'), "แบบ 6 ต้องเป็น HTML");
+assert.ok(htmlDoc('letters', 'หนังสือแจ้งผู้ถูกกล่าวหาไปพบพนักงานอัยการ'), "แบบ 8/9/10 ต้องเป็น HTML");
 
 // 3) docTabsA5 เป็นไปตาม stage
 const prelimTabs = EX.docTabsA5(mk("a5-prelim"));

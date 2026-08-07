@@ -307,13 +307,10 @@
     // "กลั่นกรอง/มอบหมาย" here is Activity 4's own initial-complaint screening step
     // (w.stage values admin/officer), not the investigation-report review gate below —
     // the two share a Thai name but are different steps in different activities.
+    // เฉพาะขั้นของระบบไต่สวน (ขั้น 6-15 ตามเส้นทางรวม 15 ขั้น — ขั้น 1-5 อยู่ในระบบรับเรื่อง)
+    const LATER = ['a5-prelim', 'a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'];
     const stages = [
-      { key: 'intake', label: 'รับเรื่อง', state: true },
-      { key: 'screening', label: 'กลั่นกรอง/มอบหมาย', state: ['admin', 'officer'].includes(w.stage) || isA5 },
-      { key: 'review', label: 'พิจารณา Form 3', state: ['center', 'division', 'acting'].includes(w.stage) || isA5 },
-      { key: 'approve', label: 'อนุมัติ/เลขสำนวน', state: ['division', 'acting'].includes(w.stage) || isA5 },
-      { key: 'dispatch', label: 'จัดส่งเขต/สำนัก', state: ['officer-dispatch', 'activity5-dispatch'].includes(w.stage) || isA5 },
-      { key: 'a5-intake', label: 'รับสำนวน/มอบหมาย', state: ['a5-intake'].includes(w.stage) || ['a5-prelim', 'a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
+      { key: 'a5-intake', label: 'รับสำนวน/มอบหมาย', state: ['a5-intake'].includes(w.stage) || LATER.includes(w.stage) },
       { key: 'prelim', label: 'ไต่สวนเบื้องต้น 213', state: ['a5-prelim'].includes(w.stage) || ['a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
       { key: 'prelim-review', label: 'กลั่นกรองรายงาน 213', state: ['a5-prelim-review'].includes(w.stage) || ['a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
       { key: 'mti213', label: 'คกก. มติรับไต่สวน', state: ['a7-213'].includes(w.stage) || ['a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
@@ -411,7 +408,7 @@
       const slots = (slotsByPage[pi] || []).map((s, si) => {
         const key = `${formKey}-p${pi}-${si}`;
         const html = edits[key] ?? s.html;
-        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 15) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
+        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 11.5) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
       }).join('');
       return `<div class="a5r-page" style="background-image:url('${img}')">${slots}</div>`;
     }).join('');
@@ -427,8 +424,8 @@
         { x: 305, y: 337.7, w: 110, html: a5DateShort(d.deadline) },
         { x: 132, y: 355.8, w: 60, html: escapeHtml(String(d.round || '')) },
         { x: 418, y: 428.2, w: 110, html: escapeHtml(d.investigator || '') },
-        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 13 },
-        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 13 },
+        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10.5 },
+        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10.5 },
       ],
       p2: (d) => [
         { x: 133, y: 110.4, w: 25, html: escapeHtml(String(d.round || '')) },
@@ -465,11 +462,11 @@
         { x: 250, y: 343.7, w: 175, html: a5DateShort(d.orderDate) },
         { x: 394, y: 416.1, w: 72, html: a5DateShort(d.deadline) },
         { x: 216, y: 434.2, w: 50, html: escapeHtml(String(d.round || '')) },
-        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 13 },
-        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 13 },
+        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10.5 },
+        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10.5 },
       ],
       p2: (d) => [
-        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 13 },
+        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 10.5 },
         { x: 133, y: 193.9, w: 25, html: escapeHtml(String(d.round || '')) },
         { x: 181, y: 193.9, w: 35, html: escapeHtml(String(d.days || '')) },
         { x: 230, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
@@ -513,7 +510,21 @@
       done: i.prelim?.workLog || '', reason: pending?.reason || approved.at(-1)?.reason || rep.lateReport || '', problem: rep.lateReport || '',
       opinions, signs
     };
-    return paperReal(cfg.imgs, [cfg.p1(data), cfg.p2(data), cfg.p3(data)], A5_FORMS[is213 ? 'ext213' : 'ext644'].code, is213 ? 'ext213' : 'ext644', i.docEdits);
+    return `<section class="a5-paper">${a5Hdr(is213 ? 'บันทึกขอขยายระยะเวลาไต่สวนเบื้องต้น' : 'บันทึกขอขยายระยะเวลาไต่สวน', A5_FORMS[is213 ? 'ext213' : 'ext644'].code)}
+      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 150)}<span>ครั้งที่</span>${a5F(String(roundNo), 40)}</div>
+      <div class="a5-line"><b>เรียน</b> เลขาธิการคณะกรรมการ ป.ป.ท.</div>
+      <p><span class="a5-num">๑.</span> ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่${a5F(data.orderNo, 90)} ลงวันที่${a5F(a5DateShort(data.orderDate), 90)} ให้ไต่สวน${is213 ? 'เบื้องต้น' : ''}กรณี${a5F(data.subject, 340)} นั้น</p>
+      <p><span class="a5-num">๒.</span> ในการไต่สวนข้อเท็จจริง ผู้ถูกกล่าวหา${a5F(data.accused, 280)} ผู้กล่าวหา${a5F(data.complainant, 200)} เหตุเกิดที่${a5F(data.agency, 200)} โดย${a5F(data.investigator, 140)} เป็นผู้รับผิดชอบการไต่สวน ได้รับเรื่องเมื่อวันที่${a5F(a5DateShort(data.received), 90)} ครบกำหนด${is213 ? '๖๐ วัน' : 'สองปี'} วันที่${a5F(a5DateShort(data.deadline), 90)}</p>
+      <p><span class="a5-num">๓.</span> การดำเนินการที่ได้กระทำไปแล้ว ${a5F(data.done, 420)}</p>
+      <p><span class="a5-num">๔.</span> เหตุที่ไม่แล้วเสร็จภายในกำหนด ${a5F(data.reason, 420)} จึงขอขยายระยะเวลา${is213 ? 'ไต่สวนเบื้องต้น' : 'ไต่สวน'}ออกไปอีก ๖๐ วัน ตามระเบียบคณะกรรมการ ป.ป.ท. ว่าด้วยการไต่สวน พ.ศ. ๒๕๖๘ ข้อ ๓๘ วรรคสอง</p>
+      <table class="a5-tbl"><thead><tr><th style="width:20%">ลำดับชั้นความเห็น</th><th>ความเห็น</th><th style="width:22%">ลายมือชื่อผู้เห็นชอบ</th></tr></thead><tbody>
+        <tr><th>ผู้อำนวยการเขต/กอง (ครั้งที่ ๑)</th><td>${a5F(opinions[0], 190)}</td><td>${a5F(signs[0], 80)}</td></tr>
+        <tr><th>ผู้อำนวยการเขต/กอง (ครั้งที่ ๒)</th><td>${a5F(opinions[1], 190)}</td><td>${a5F(signs[1], 80)}</td></tr>
+        <tr><th>ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท. (ครั้งที่ ๑)</th><td>${a5F(opinions[2], 190)}</td><td>${a5F(signs[2], 80)}</td></tr>
+        <tr><th>ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท. (ครั้งที่ ๒)</th><td>${a5F(opinions[3], 190)}</td><td>${a5F(signs[3], 80)}</td></tr>
+      </tbody></table>
+      <div class="a5-sign">${a5Sign(data.investigator, 'ผู้รับผิดชอบการไต่สวน')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS[is213 ? 'ext213' : 'ext644'].code)}</p></section>`;
   }
 
   function paper213(state) {
@@ -546,7 +557,29 @@
       { x: 260, y: 278.1, w: 135, html: escapeHtml(c.id || '') },
       { x: 325, y: 493.5, w: 135, html: escapeHtml('') },
     ];
-    return paperReal(A5_REAL_IMAGES.rep213, [p1, [], [], [], p5, p6], A5_FORMS['213'].code, '213', i.docEdits);
+    return `<section class="a5-paper">${a5Hdr('รายงานผลการไต่สวนเบื้องต้น', A5_FORMS['213'].code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(a5DateShort(p.submittedAt || todayISO()), 90)}</div>
+      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 160)}</div>
+      <div class="a5-line"><b>เรียน</b> ประธานคณะกรรมการ ป.ป.ท.</div>
+      <p><span class="a5-num">๑.</span> ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่${a5F(m62.sourceLetter || intake.orderNo || '', 150)} ลงวันที่${a5F(a5DateShort(m62.sourceMtiDate || intake.orderDate), 90)} ให้ไต่สวนเบื้องต้นกรณี${a5F(state.documentData?.documentSubject || c.subject, 340)} นั้น บัดนี้ การไต่สวนเบื้องต้นเสร็จสิ้นแล้ว จึงขอรายงานผลการไต่สวนเบื้องต้น ดังนี้</p>
+      <p><span class="a5-num">๒.</span> ข้อเท็จจริงและพยานหลักฐานที่ได้จากการไต่สวนเบื้องต้น</p>
+      <p class="a5-indent">๒.๑ ผู้กล่าวหา ${a5F(c.complainant || '', 300)}</p>
+      <p class="a5-indent">๒.๒ ผู้ถูกกล่าวหา ${a5F(accused, 300)}</p>
+      <p class="a5-indent">๒.๓ ข้อกล่าวหา (ประเด็นแห่งคดี) ${a5F(q.allegations || '', 320)}</p>
+      <p class="a5-indent">๒.๔ หน่วยงานเจ้าของสำนวน ${a5F(intake.unit || '', 200)} ผู้รับผิดชอบการไต่สวน ${a5F(intake.investigator || '', 140)} ครบกำหนดวันที่ ${a5F(a5DateShort(deadline213), 90)}</p>
+      <p><span class="a5-num">๓.</span> สรุปข้อเท็จจริงและความเห็นของพนักงานไต่สวน ${a5F(p.report || '', 420)}</p>
+      <p><span class="a5-num">๔.</span> จึงขอรายงานมาเพื่อโปรดพิจารณา หากคณะกรรมการเห็นควรประการใด โปรดมีมติตามแบบท้ายรายงานนี้</p>
+      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้รับผิดชอบการไต่สวน')}</div>
+      <h3>ความเห็นตามลำดับชั้น</h3>
+      <table class="a5-tbl"><thead><tr><th style="width:26%">ลำดับชั้น</th><th>ความเห็น</th><th style="width:20%">ลายมือชื่อ</th></tr></thead><tbody>
+        <tr><th>ผู้ช่วย/รองเลขาธิการ ป.ป.ท.</th><td>${a5F(chain.find(x => x.level === 3)?.opinion || '', 160)}</td><td>${a5F(chainNames[2] || '', 70)}</td></tr>
+        <tr><th>เลขาธิการ ป.ป.ท.</th><td>${a5F(chain.find(x => x.level === 4)?.opinion || '', 160)}</td><td>${a5F(chainNames[3] || '', 70)}</td></tr>
+      </tbody></table>
+      <h3>มติคณะกรรมการ ป.ป.ท.</h3>
+      <div class="a5-box">${MTI_213_RESULTS.map(r => `<label style="margin-right:1rem">${m.result === r ? '☑' : '☐'} ${escapeHtml(r)}</label>`).join('')}</div>
+      <div class="a5-line"><span>เลขที่มติ</span>${a5F(m.mtiNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(m.mtiDate), 90)}</div>
+      <div class="a5-sign">${a5Sign(m.decidedBy || chainNames[3] || '', 'ประธานคณะกรรมการ ป.ป.ท.')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS['213'].code)}</p></section>`;
   }
   function paper644(state) {
     const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, mc = i.committee644 || {}, intake = i.intake || {};
@@ -571,7 +604,24 @@
       { x: 200, y: 532, w: 150, html: escapeHtml((intake.team || [])[1] || '') },
       { x: 200, y: 604, w: 150, html: escapeHtml(q.investigator || intake.investigator || '') },
     ];
-    return paperReal(A5_REAL_IMAGES.rep644, [p1, [], p3], A5_FORMS['644'].code, '644', i.docEdits);
+    return `<section class="a5-paper">${a5Hdr('รายงานการไต่สวน', A5_FORMS['644'].code)}
+      <div class="a5-line"><b>เรื่อง</b>${a5F(state.documentData?.documentSubject || c.subject || '', 380)}</div>
+      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(a5DateShort(q.submittedAt || todayISO()), 90)}</div>
+      <div class="a5-line"><b>เรียน</b> ประธานคณะกรรมการ ป.ป.ท.</div>
+      <p><span class="a5-num">๑.</span> คดีที่คณะกรรมการ ป.ป.ท. มีมติให้ไต่สวน เมื่อวันที่${a5F(a5DateShort(intake.receivedFirstAt), 90)} ตามคำสั่งคณะกรรมการ ป.ป.ท. ที่${a5F(m.orderNo || '', 90)} ลงวันที่${a5F(a5DateShort(m.orderDate), 90)} เรื่อง${a5F(state.documentData?.documentSubject || c.subject || '', 260)} นั้น บัดนี้การไต่สวนเสร็จสิ้นแล้ว จึงขอรายงานผลการไต่สวน ดังนี้</p>
+      <p><span class="a5-num">๒.</span> ผู้กล่าวหา ${a5F(c.complainant || '', 340)}</p>
+      <p><span class="a5-num">๓.</span> ผู้ถูกกล่าวหา ${a5F(accused, 340)}</p>
+      <p><span class="a5-num">๔.</span> ข้อกล่าวหา ${a5F(q.allegations || '', 360)}</p>
+      <p><span class="a5-num">๕.</span> พยานบุคคล ${a5F(witnesses, 360)}</p>
+      <p><span class="a5-num">๖.</span> พยานเอกสารและบันทึกถ้อยคำ ${a5F(q.statements || '', 360)}</p>
+      <p><span class="a5-num">๗.</span> ข้อเท็จจริงและความเห็นของพนักงานไต่สวน ${a5F(q.summary || '', 380)}</p>
+      <p><span class="a5-num">๘.</span> จึงเสนอคณะกรรมการ ป.ป.ท. เพื่อโปรดพิจารณาวินิจฉัยชี้มูลต่อไป</p>
+      <div class="a5-sign">${a5Sign(q.investigator || intake.investigator || '', 'ผู้ไต่สวน')}</div>
+      <h3>มติคณะกรรมการ ป.ป.ท. (วินิจฉัยชี้มูล)</h3>
+      <div class="a5-box">${MTI_644_RESULTS.map(r => `<label style="margin-right:1rem">${mc.result === r ? '☑' : '☐'} ${escapeHtml(r)}</label>`).join('')}</div>
+      <div class="a5-line"><span>เลขที่มติ</span>${a5F(mc.mtiNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(mc.mtiDate), 90)}</div>
+      <div class="a5-sign">${a5Sign(mc.decidedBy || '', 'ประธานคณะกรรมการ ป.ป.ท.')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS['644'].code)}</p></section>`;
   }
   function paperNoticeAccusation(state) {
     const i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, intake = i.intake || {};
@@ -585,7 +635,15 @@
       { x: 87, y: 313.5, w: 145, html: escapeHtml(c.agency || '') },
       { x: 345, y: 586, w: 190, html: escapeHtml(intake.director || '') },
     ];
-    return paperReal(A5_REAL_IMAGES.notice, [slots], A5_FORMS.notice.code, 'notice', i.docEdits);
+    return `<section class="a5-paper">${a5Hdr('หนังสือแจ้งให้รับทราบข้อกล่าวหาและสิทธิคัดค้าน', A5_FORMS.notice.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>เรื่องที่</span>${a5F(c.id || '', 100)}</div>
+      <div class="a5-line"><b>เรียน</b>${a5F(a5AccusedLine(state), 360)}</div>
+      <div class="a5-line a5-indent"><span>ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่</span>${a5F(m.orderNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(m.orderDate), 90)}</div>
+      <p>ข้าพเจ้า${a5F(a5AccusedLine(state), 260)}<span>ได้รับมอบหมายให้ดำเนินการไต่สวนข้อเท็จจริง จึงขอแจ้งให้ทราบว่าคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ได้มีคำสั่งให้ไต่สวนข้อเท็จจริงกรณี</span>${a5F(q.allegations || '', 380)}</p>
+      <p>ในการนี้ ผู้ถูกกล่าวหามีสิทธิคัดค้านผู้รับผิดชอบการไต่สวน หรือมีสิทธิแต่งตั้งทนายความหรือบุคคลซึ่งไว้วางใจได้เข้าฟังการสอบสวนได้ ภายใน ๓๐ วันนับแต่วันที่ได้รับหนังสือฉบับนี้</p>
+      <div class="a5-line"><b>สังกัด</b>${a5F(c.agency || '', 200)}</div>
+      <div class="a5-sign">${a5Sign(intake.director, 'ผู้แจ้ง')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.notice.code)}</p></section>`;
   }
   function paperProsecutorLetters(state) {
     const i = state.inquiry || {}, o = i.outcome || {}, q = i.inquiry644 || {};
@@ -621,9 +679,31 @@
       { x: 88, y: 450.4, w: 70, html: '10.00' },
       { x: 295, y: 578, w: 122, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
     ];
-    return `${paperReal(A5_REAL_IMAGES.p8, [p8slots], A5_FORMS.p8.code, 'p8', i.docEdits)}
-            ${paperReal(A5_REAL_IMAGES.p9, [p9slots], A5_FORMS.p9.code, 'p9', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p10, [p10slots], A5_FORMS.p10.code, 'p10', i.docEdits)}`;
+    const today = a5DateShort(todayISO());
+    return `<section class="a5-paper">
+      ${a5Hdr('หนังสือแจ้งผู้ถูกกล่าวหาไปพบพนักงานอัยการ', A5_FORMS.p8.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ที่ สปท ... / ลงวันที่</span>${a5F(today, 100)}</div>
+      <div class="a5-line"><b>เรื่อง</b> แจ้งกำหนดนัดไปรายงานตัวต่อพนักงานอัยการ</div>
+      <div class="a5-line"><b>เรียน</b>${a5F(accused, 300)}</div>
+      <p>ด้วยคณะกรรมการ ป.ป.ท. ได้มีมติชี้มูลความผิด${a5F(q.allegations || '', 340)} ขอให้ท่านไปพบ${a5F(o.prosecutor || '', 160)} ในวันที่${a5F(today, 90)} เวลา${a5F('10.00', 60)} น. ณ สำนักงานอัยการสูงสุด เพื่อรับทราบและดำเนินการตามกฎหมายต่อไป</p>
+      <div class="a5-sign">${a5Sign(q.investigator || i.intake?.investigator, 'พนักงาน ป.ป.ท.')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p8.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('แจ้งคำสั่งฟ้องคดีของพนักงานอัยการ', A5_FORMS.p9.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 100)}</div>
+      <div class="a5-line"><b>เรียน</b>${a5F(c.agency || '', 300)}</div>
+      <p>ตามที่ได้แจ้งให้ท่านทราบว่าคณะกรรมการ ป.ป.ท. ได้มีคำสั่งให้ดำเนินคดีอาญาแก่${a5F(accused, 200)} ในความผิดฐาน${a5F(q.allegations || '', 200)} นั้น บัดนี้ พนักงานอัยการ (${a5F(o.prosecutor || '', 160)}) ได้มีคำสั่งฟ้องคดีดังกล่าวต่อศาลแล้ว</p>
+      <p>จึงเรียนมาเพื่อทราบ หากท่านประสงค์จะดำเนินการใดๆ โปรดติดต่อ${a5F(o.prosecutor || '', 160)} ภายใน${a5F('15', 40)} วันนับแต่วันที่ได้รับหนังสือฉบับนี้</p>
+      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p9.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('แจ้งผลการดำเนินคดี', A5_FORMS.p10.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ที่ สปท ... / ลงวันที่</span>${a5F(today, 100)}</div>
+      <div class="a5-line"><b>เรียน</b>${a5F(o.prosecutor || '', 200)}</div>
+      <p>อ้างถึงหนังสือที่ สปท ... ลงวันที่${a5F(today, 90)} เรื่อง ส่งสำนวนการไต่สวน เพื่อให้พนักงานอัยการดำเนินคดีแก่${a5F(accused, 200)} ในความผิดฐาน${a5F(q.allegations || '', 220)} นั้น</p>
+      <p>คณะกรรมการ ป.ป.ท. ขอเรียนว่า ในการนี้ได้มีผู้เสียหายอื่นยื่นคำร้องเพิ่มเติม จึงขอส่งข้อมูลเพิ่มเติมเพื่อประกอบการพิจารณาของพนักงานอัยการ ภายใน${a5F('15', 40)} วัน</p>
+      <div class="a5-sign">${a5Sign(q.investigator || i.intake?.investigator, 'พนักงาน ป.ป.ท.')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p10.code)}</p></section>`;
   }
   function paperWarrants(state) {
     const i = state.inquiry || {}, q = i.inquiry644 || {};
@@ -704,57 +784,124 @@
       { x: 268, y: 207.4, w: 90, html: escapeHtml(accused) },
       { x: 259, y: 232.8, w: 150, html: '48 ชั่วโมง' },
     ];
-    return `${paperReal(A5_REAL_IMAGES.p14, [p14slots], A5_FORMS.p14.code, 'p14', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p15, [p15slots, []], A5_FORMS.p15.code, 'p15', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p11, [p11slots, [], []], A5_FORMS.p11.code, 'p11', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p16, [p16slots, []], A5_FORMS.p16.code, 'p16', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p17, [p17slots], A5_FORMS.p17.code, 'p17', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p18, [p18slots], A5_FORMS.p18.code, 'p18', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p19, [p19slots], A5_FORMS.p19.code, 'p19', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p20, [p20slots], A5_FORMS.p20.code, 'p20', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p12, [p12slots], A5_FORMS.p12.code, 'p12', i.docEdits)}
-      ${paperReal(A5_REAL_IMAGES.p13, [p13slots, p13bSlots], A5_FORMS.p13.code, 'p13', i.docEdits)}`;
+    const inv = q.investigator || i.intake?.investigator || '';
+    const court = 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ';
+    const today = a5DateShort(todayISO());
+    return `<section class="a5-paper">
+      ${a5Hdr('คำร้องขอหมายจับ', A5_FORMS.p11.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(today, 90)}</div>
+      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}</div>
+      <p>ข้าพเจ้า${a5F(inv, 150)} ตำแหน่งพนักงาน ป.ป.ท. ผู้ร้อง ขอศาลได้โปรดออกหมายจับ${a5F(accused, 220)} เลขประจำตัวประชาชน${a5F('', 130)} อยู่บ้านเลขที่${a5F('', 200)} ตามรายงานการไต่สวนและวินิจฉัยชี้มูลของคณะกรรมการ ป.ป.ท. ปรากฏว่าบุคคลดังกล่าวได้กระทำความผิดอาญาร้ายแรงฐาน${a5F(q.allegations || '', 220)} อันเป็นความผิดอาญาร้ายแรงตามกฎหมาย จึงขอศาลออกหมายจับเพื่อดำเนินคดี</p>
+      <div class="a5-sign">${a5Sign(inv, 'ผู้ร้อง (พนักงาน ป.ป.ท.)')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p11.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('บันทึกคำเบิกความ (การไต่สวนคำร้องขอหมายจับ)', A5_FORMS.p12.code)}
+      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}<span>วันที่</span>${a5F(today, 90)}</div>
+      <p>ผู้ร้อง ${a5F(inv, 150)} พนักงาน ป.ป.ท. เบิกความว่า คดีนี้คณะกรรมการ ป.ป.ท. ได้มีมติชี้มูลความผิด${a5F(q.allegations || '', 220)} ผู้ถูกกล่าวหา${a5F(accused, 220)} จึงขอศาลออกหมายจับ</p>
+      <div class="a5-sign">${a5Sign(inv, 'ผู้ร้อง')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p12.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('รายงานกระบวนการพิจารณาออกหมายจับ', A5_FORMS.p13.code)}
+      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}<span>วันที่</span>${a5F(today, 90)}</div>
+      <p>พนักงาน ป.ป.ท. (${a5F(inv, 150)}) ได้ยื่นคำร้องขอให้ศาลออกหมายจับ${a5F(accused, 220)} ในความผิดฐาน${a5F(q.allegations || '', 220)} ศาลได้พิจารณาแล้วอนุญาตให้ออกหมายจับได้ และให้ส่งบันทึกการจับกุมต่อศาลภายใน${a5F('48 ชั่วโมง', 100)} นับแต่เวลาจับกุม</p>
+      <div class="a5-sign">${a5Sign('', 'เจ้าหน้าที่ศาล')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p13.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('หมายจับ', A5_FORMS.p14.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
+      <p class="a5-center a5-num">คำสั่งศาล</p>
+      <p>ด้วย${a5F(accused, 300)} ต้องหาว่ากระทำความผิดฐาน${a5F(q.allegations || '', 300)} จึงให้พนักงานฝ่ายปกครองหรือตำรวจ จับตัวผู้นั้นมาดำเนินคดี</p>
+      <div class="a5-sign">${a5Sign('', 'ผู้พิพากษา')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p14.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('หมายจับ (กรณีอายุความเหลือน้อย)', A5_FORMS.p15.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
+      <p>ด้วย${a5F(accused, 300)} ต้องหาว่ากระทำความผิดฐาน${a5F(q.allegations || '', 300)} ซึ่งเป็นกรณีจำเป็นเร่งด่วนเนื่องจากอายุความใกล้ครบกำหนด จึงให้จับตัวผู้นั้นมาดำเนินคดี</p>
+      <div class="a5-sign">${a5Sign('', 'ผู้พิพากษา')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p15.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('ตำหนิรูปพรรณบุคคลที่ต้องจับกุม', A5_FORMS.p16.code)}
+      <div class="a5-line"><b>หมายจับ ป.ป.ท. ที่</b>${a5F(c.id || '', 100)}<span>คดี</span>${a5F(c.id || '', 100)}</div>
+      <table class="a5-tbl"><thead><tr><th style="width:30%">รายการ</th><th>รายละเอียด</th></tr></thead><tbody>
+        <tr><th>ชื่อ-สกุล</th><td>${a5F(accused, 220)}</td></tr>
+        <tr><th>ความผิดฐาน</th><td>${a5F(q.allegations || '', 220)}</td></tr>
+        <tr><th>ตำหนิรูปพรรณ</th><td>${a5F('', 220)}</td></tr>
+      </tbody></table>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p16.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('แจ้งผลการออกหมายจับ', A5_FORMS.p17.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
+      <div class="a5-line"><b>เรียน</b>${a5F(o.prosecutor || 'พนักงานอัยการฝ่ายคดีปราบปรามการทุจริต', 280)}</div>
+      <p>ตามที่ได้ส่งสำนวนการไต่สวนให้พนักงานอัยการพิจารณาแล้ว นั้น บัดนี้ศาลได้ออกหมายจับ${a5F(accused, 240)} ในความผิดฐาน${a5F(q.allegations || '', 240)} ลงวันที่${a5F(today, 90)} แล้ว จึงแจ้งผลการออกหมายจับมาเพื่อทราบ และจะได้ดำเนินการตามกฎหมายต่อไป</p>
+      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p17.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('แจ้งหมายจับผู้ถูกกล่าวหา', A5_FORMS.p18.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
+      <div class="a5-line"><b>เรียน</b>${a5F('ผู้บัญชาการตำรวจแห่งชาติ', 260)}</div>
+      <p>ด้วยศาลได้ออกหมายจับ${a5F(accused, 260)} ในความผิดฐาน${a5F(q.allegations || '', 240)} หมายจับที่${a5F(c.id || '', 90)} ลงวันที่${a5F(today, 90)} จึงขอความร่วมมือให้เจ้าหน้าที่ตำรวจดำเนินการจับกุมและแจ้งผลให้ทราบ</p>
+      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p18.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('บันทึกข้อความ (ส่งสำเนาหมายจับ กอท.)', A5_FORMS.p19.code)}
+      <div class="a5-line"><b>เรื่อง</b> ขอส่งสำเนาหมายจับผู้ถูกกล่าวหา${a5F(accused, 260)}</div>
+      <div class="a5-line"><b>เรียน</b> ผู้อำนวยการกองอำนวยการรักษาความมั่นคงภายใน (กอท.)</div>
+      <p>ด้วยคณะกรรมการ ป.ป.ท. ได้ชี้มูลความผิดคดีเรื่องที่${a5F(c.id || '', 100)} (รอง) เรื่องที่${a5F(c.id || '', 100)} ศาลได้ออกหมายจับผู้ถูกกล่าวหาแล้ว จึงขอส่งสำเนาหมายจับเพื่อให้กอท. ดำเนินการในส่วนที่เกี่ยวข้อง ต่อไป</p>
+      <div class="a5-sign">${a5Sign('ผอ.กอท.', 'ผู้รับ')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p19.code)}</p>
+      <div class="a5-pg"></div>
+      ${a5Hdr('ผนึกซองส่งสำนวน', A5_FORMS.p20.code)}
+      <div class="a5-line"><span>คดีเรื่องที่</span>${a5F(c.id || '', 100)}</div>
+      <div class="a5-line"><span>ข้อกล่าวหา</span>${a5F(q.allegations || '', 420)}</div>
+      <div class="a5-line"><span>ส่งโดย</span>${a5F(inv, 200)}</div>
+      <div class="a5-sign">${a5Sign(inv, 'ผู้ส่ง')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.p20.code)}</p></section>`;
   }
+  /* ---------- ฟอร์มราชการ A5 (HTML ล้วน — แก้ไขได้ทุกช่อง) ---------- */
+  const a5F = (v, w) => `<span class="a5-fill" style="${w ? `min-width:${w}px` : ''}">${escapeHtml(v ?? '')}</span>`;
+  const a5Hdr = (title, code) => `<header class="a5-hdr"><p class="a5-hdr-org">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p><p class="a5-hdr-sub">(สำนักงาน ป.ป.ท.)</p><h2 class="a5-hdr-title">${escapeHtml(title)}</h2><p class="a5-hdr-code">${escapeHtml(code)}</p></header>`;
+  const a5Sign = (name, role) => `<div><p class="a5-sign-name a5-lock">${escapeHtml(name || '')}</p><p class="a5-sign-note">${escapeHtml(role)}</p></div>`;
   function paperPlan(state) {
     const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, q = i.inquiry644 || {}, m62 = intake.m62 || {};
     const fromNacc = m62.flag || c.decision === '62' || String(c.decision || '').includes('62');
+    const fromM = String(c.decision || '').includes('18/1') || c.decision === '18/4';
     const deadline60 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
     const accused = (q.accused && q.accused.length) ? q.accused : [];
     const subject = state.documentData?.documentSubject || c.subject || '';
     const issues = p.issues || {};
     const planLines = String(p.plan || '').split('\n').filter(Boolean);
-    const slot = (x, y, w, html, fs) => ({ x, y, w, html, fs });
-    const p1 = [
-      slot(156, 81.5, 134, escapeHtml(c.id || '')),
-      slot(265, 117.7, 75, a5DateShort(intake.receivedFirstAt)),
-      slot(432, 117.7, 85, a5DateShort(deadline60)),
-      slot(210, 135.7, 115, a5DateShort(addDays(intake.receivedFirstAt, 730))),
-      slot(131, 153.9, 405, escapeHtml(c.complainant || '')),
-      slot(131, 172, 408, escapeHtml(accused[0] || '')),
-      slot(128, 190, 410, escapeHtml(accused[1] || '')),
-      slot(186, 208.1, 350, escapeHtml(subject)),
-      slot(163, 226.2, 375, ''),
-      slot(65, 380.9, 60, escapeHtml(issues.status || '')),
-      slot(65, 526, 63, escapeHtml(issues.authority || '')),
-      slot(65, 635, 55, escapeHtml(issues.action || '')),
-      slot(65, 726, 66, escapeHtml(issues.damage || '')),
-    ];
-    const p2 = [
-      slot(168, 104.3, 360, ''),
-      slot(152.2, 128.4, 380, ''),
-      slot(152.2, 152.4, 380, ''),
-      slot(123.9, 224.7, 405, ''),
-      slot(123.9, 248.8, 320, ''),
-      slot(123.9, 272.9, 320, ''),
-      slot(123.9, 321, 405, ''),
-      slot(123.9, 345.2, 405, ''),
-      slot(123.9, 369.2, 405, ''),
-      ...planLines.slice(0, 6).map((l, idx) => slot(268, 441 + idx * 24, 460, escapeHtml(l))),
-      slot(268, 601.7, 145, escapeHtml(intake.investigator || '')),
-      slot(268, 655.9, 145, escapeHtml((intake.team || [])[0] || '')),
-      slot(268, 710.1, 145, escapeHtml(intake.director || '')),
-    ];
-    return paperReal(A5_REAL_IMAGES.plan, [p1, p2], A5_FORMS.plan.code, 'plan', i.docEdits);
+    const workLog = String(p.workLog || '').split('\n').filter(Boolean);
+    const place = p.place || '';
+    const h = (b, c2 = '') => `<tr><th class="a5-thin">${b}</th><td>${c2 || a5F('')}</td></tr>`;
+    return `<section class="a5-paper">${a5Hdr('แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน)', A5_FORMS.plan.code)}
+      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 180)}<span style="margin-left:auto">${fromNacc ? '☑' : '☐'} คดีรับจาก ป.ป.ช. &nbsp; ${fromM ? '☑' : '☐'} คดีประพฤติมิชอบ</span></div>
+      <div class="a5-line"><span>สำนักงาน ป.ป.ท. รับเรื่องเมื่อวันที่</span>${a5F(a5DateShort(intake.receivedFirstAt), 90)}<span>ครบกำหนด ๖๐ วัน วันที่</span>${a5F(a5DateShort(deadline60), 90)}</div>
+      <div class="a5-line"><span>ครบกำหนด 2 ปี วันที่</span>${a5F(a5DateShort(addDays(intake.receivedFirstAt, 730)), 120)}</div>
+      <div class="a5-line"><b>ผู้กล่าวหา</b>${a5F(c.complainant || '', 460)}</div>
+      <div class="a5-line"><b>ผู้ถูกกล่าวหา ๑</b>${a5F(accused[0] || '', 460)}</div>
+      <div class="a5-line"><b>ผู้ถูกกล่าวหา ๒</b>${a5F(accused[1] || '', 460)}</div>
+      <div class="a5-line"><b>ข้อกล่าวหา (ประเด็นแห่งคดี)</b>${a5F(subject, 420)}</div>
+      <div class="a5-line"><b>วันเวลาสถานที่เกิดเหตุ</b>${a5F(place, 420)}</div>
+      <div class="a5-line"><b>อายุความสั้น/ยาวสุด</b><span>มาตรา</span>${a5F(p.limitation?.shortSection || '', 50)}<span>อายุความ</span>${a5F(p.limitation?.shortYears || '', 40)}<span>ปี ขาดอายุความวันที่</span>${a5F(p.limitation?.shortExpiry || '', 100)}</div>
+      <div class="a5-line a5-indent2"><span>มาตรา</span>${a5F(p.limitation?.longSection || '', 50)}<span>อายุความ</span>${a5F(p.limitation?.longYears || '', 40)}<span>ปี ขาดอายุความวันที่</span>${a5F(p.limitation?.longExpiry || '', 100)}</div>
+      <table class="a5-tbl"><thead><tr><th class="a5-thin">ผู้ถูกกล่าวหา</th><th>ประเด็น</th><th>ข้อมูลที่ต้องใช้ (แล้วแต่กรณี)</th><th>สิ่งที่ต้องดำเนินการ</th></tr></thead><tbody>
+        <tr><th>สถานะ</th><td>${a5F(issues.status || '', 90)}</td><td>${a5F(issues.statusDocs || '', 150)}</td><td>${a5F(issues.statusTodo || '', 150)}</td></tr>
+        <tr><th>อำนาจหน้าที่</th><td>${a5F(issues.authority || '', 90)}</td><td>${a5F(issues.authorityDocs || '', 150)}</td><td>${a5F(issues.authorityTodo || '', 150)}</td></tr>
+        <tr><th>การกระทำความผิด</th><td>${a5F(issues.action || '', 90)}</td><td>${a5F(issues.actionDocs || '', 150)}</td><td>${a5F(issues.actionTodo || '', 150)}</td></tr>
+        <tr><th>ความเสียหาย</th><td>${a5F(issues.damage || '', 90)}</td><td>${a5F(issues.damageDocs || '', 150)}</td><td>${a5F(issues.damageTodo || '', 150)}</td></tr>
+      </tbody></table>
+      <div class="a5-line"><b>ปปท.</b>${a5F(intake.orderNo || '', 140)}</div>
+      <div class="a5-pg"></div>
+      <h3>สรุปที่ต้องดำเนินการ</h3>
+      ${workLog.map(wl => `<div class="a5-line">${a5F(wl, 620)}</div>`).join('') || `<div class="a5-line">${a5F('', 620)}</div>`}
+      <h3>พยานบุคคลที่ต้องบันทึกถ้อยคำ / เกี่ยวข้องอย่างไร / สอบประเด็นใด</h3>
+      ${(p.witnesses || []).map(wl => `<div class="a5-line">${a5F(wl, 620)}</div>`).join('') || `<div class="a5-line">${a5F('', 620)}</div>`}
+      <h3>แผนการไต่สวน</h3>
+      <table class="a5-tbl"><thead><tr><th style="width:22%">วัน/เดือน/ปี</th><th>การดำเนินการ</th></tr></thead><tbody>
+        ${planLines.map((l, idx) => `<tr><td>${a5F('', 90)}</td><td>${a5F(l, 380)}</td></tr>`).join('') || '<tr><td></td><td></td></tr>'}
+      </tbody></table>
+      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้รับผิดชอบสำนวน (นักสืบ)')}${a5Sign((intake.team || [])[0], 'ผู้ร่วมปฏิบัติงาน')}${a5Sign(intake.director, 'ผอ. (หัวหน้าพนักงาน ป.ป.ท.)')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.plan.code)}</p></section>`;
   }
     function paperRecordAccusation(state) {
     const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, intake = i.intake || {};
@@ -765,7 +912,16 @@
       { x: 158, y: 606.7, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
       { x: 144, y: 678.9, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
     ];
-    return paperReal(A5_REAL_IMAGES.record, [slots, [], []], A5_FORMS.record.code, 'record', i.docEdits);
+    return `<section class="a5-paper">${a5Hdr('บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้าน', A5_FORMS.record.code)}
+      <div class="a5-line" style="justify-content:flex-end"><span>เรื่องที่</span>${a5F(c.id || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(i.committee213?.orderDate || todayISO()), 90)}</div>
+      <p><span class="a5-num">๑.</span> ข้าพเจ้า${a5F(intake.investigator || '', 150)} ตำแหน่งพนักงาน ป.ป.ท. ได้รับมอบหมายจากคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ให้แจ้งข้อกล่าวหาแก่${a5F(a5AccusedLine(state), 260)} (ตำแหน่งและสังกัด ${a5F(c.agency || '', 200)})</p>
+      <p><span class="a5-num">๒.</span> ได้แจ้งข้อกล่าวหาและสิทธิคัดค้านให้ผู้ถูกกล่าวหาทราบแล้ว เมื่อวันที่${a5F(a5DateShort(todayISO()), 90)} ณ ${a5F(intake.unit || '', 200)} โดยมีสาระสำคัญดังนี้</p>
+      <p class="a5-indent">ข้อกล่าวหาที่ ๑ ${a5F(q.allegations || '', 380)}</p>
+      <p class="a5-indent">ข้อกล่าวหาที่ ๒ ${a5F(q.allegations || '', 380)}</p>
+      <p><span class="a5-num">๓.</span> ผู้ถูกกล่าวหา${a5F('', 200)} (รับทราบ/ไม่รับทราบ) ข้อกล่าวหา และ${a5F('', 200)} (คัดค้าน/ไม่คัดค้าน) ผู้รับผิดชอบการไต่สวน</p>
+      <p><span class="a5-num">๔.</span> จึงบันทึกไว้เป็นหลักฐาน</p>
+      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้แจ้งข้อกล่าวหา')}${a5Sign('', 'ผู้ถูกกล่าวหา')}</div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.record.code)}</p></section>`;
   }
 
   function paperSpecial58(state) {
@@ -1156,6 +1312,7 @@
     $('#a5BackList').onclick = () => { view = 'list'; renderA5(role); };
     wireA5(state, role);
     wireA5Search(role);
+    wireA5FontControls();
   }
   function docTabsA5(state) {
     const w = state.workflow || {}, stage = w.stage || '';
@@ -1174,6 +1331,24 @@
     if (inPrelim || inInquiry) tabs.push(['mti', 'มติ คกก.']);
     if (['a5-outcome', 'a5-prosecutor', 'closed'].includes(stage)) tabs.push(['letters', 'หนังสืออัยการ'], ['warrants', 'หมายจับ']);
     return tabs.map(([k, l]) => `<button type="button" class="ws-doc-tab ${k === 'plan' ? 'active' : ''}" data-a5-doc="${k}">${l}</button>`).join('');
+  }
+  function fitA5Paper() {
+    const stage = $('#a5PaperStage');
+    if (!stage) return;
+    const paper = stage.querySelector('.a5r-paper');
+    if (!paper) return;
+    const avail = (stage.clientWidth || 794) - 8;
+    const s = Math.min(1, avail / 794);
+    const pages = paper.querySelectorAll('.a5r-page').length || 1;
+    if (s < 1) {
+      paper.style.transform = `scale(${s})`;
+      paper.style.width = `${Math.round(794 * s)}px`;
+      paper.style.height = `${Math.round(1123 * s * pages)}px`;
+    } else {
+      paper.style.transform = '';
+      paper.style.width = '';
+      paper.style.height = '';
+    }
   }
   function paperForTab(state, tab) {
     if (state.caseData?.decision === '58/2') return paperSpecial58(state);
@@ -1326,8 +1501,13 @@
           if (!el.dataset.htmlslot) el.dataset.htmlslot = 'html-' + ($('.ws-doc-tab.active')?.dataset?.a5Doc || 'paper') + '-' + i;
           el.setAttribute('contenteditable', 'true');
         });
+        // เอกสาร HTML (ไม่ใช่ภาพฟอร์ม) — แก้ได้ทั้งเอกสาร เหมือนระบบรับเรื่อง
+        $$('#a5PaperStage .a5-paper:not(.a5r-paper)').forEach(p => p.setAttribute('contenteditable', 'true'));
+        $$('#a5PaperStage .a5-lock').forEach(el => el.setAttribute('contenteditable', 'false'));
       } else {
         $$('#a5PaperStage [data-slot], #a5PaperStage .a5-fill').forEach(s => s.removeAttribute('contenteditable'));
+        $$('#a5PaperStage .a5-paper:not(.a5r-paper)').forEach(p => p.removeAttribute('contenteditable'));
+        $$('#a5PaperStage .a5-lock').forEach(el => el.removeAttribute('contenteditable'));
       }
       docStage?.classList.toggle('doc-edit-mode', on);
       docFab?.classList.toggle('active', on);
@@ -1376,12 +1556,15 @@
         document.addEventListener('mousedown', e => {
           if (e.target.closest('.doc-edit-bar, .doc-edit-fab') && !e.target.closest('select, input, label')) e.preventDefault();
         }, true);
+        window.addEventListener('resize', () => fitA5Paper());
       }
-      // MutationObserver: ทุกครั้งที่ stage ถูก re-render (สลับแท็บ/action) ให้คง edit mode ไว้
+      // MutationObserver: ทุกครั้งที่ stage ถูก re-render (สลับแท็บ/action) ให้คง edit mode + scale หน้ากระดาษ
       const docEditObserver = new MutationObserver(() => {
         if (docStage?.classList.contains('doc-edit-mode')) a5SetEditMode(true);
+        fitA5Paper();
       });
       docEditObserver.observe(docStage, { childList: true });
+      fitA5Paper();
     }
     // ปุ่มย่อ/ขยายแผงเอกสาร (เหมือนระบบรับเรื่อง)
     const a5DocWs = document.querySelector('#a5App .document-workspace');
@@ -1392,6 +1575,7 @@
         const toggle = $('.ws-doc-pane-toggle');
         if (toggle) toggle.setAttribute('aria-expanded', String(!collapsed));
         try { localStorage.setItem('ecmis-a5-docpane-collapsed', collapsed ? '1' : '0'); } catch {}
+        setTimeout(() => fitA5Paper(), 60);
       };
       try { if (localStorage.getItem('ecmis-a5-docpane-collapsed') === '1') setPaneCollapsed(true); } catch {}
       a5DocWs.addEventListener('click', e => {
@@ -1859,6 +2043,29 @@
     };
   }
 
+  const FONT_SIZE_STORAGE_KEY = 'ecmis-a4-font-size-v2';
+  const DEFAULT_FONT_SIZE_STEP = 1;
+  function fontSizeControlsA5() {
+    return `<div class="ws-font-controls" role="group" aria-label="ปรับขนาดตัวอักษร"><span>ขนาดตัวอักษร</span><button type="button" data-font-size="decrease" aria-label="ลดขนาดตัวอักษร">A−</button><button type="button" data-font-size="reset" aria-label="ใช้ขนาดตัวอักษรปกติ">A</button><button type="button" data-font-size="increase" aria-label="เพิ่มขนาดตัวอักษร">A+</button><output id="a5FontSizeValue" aria-live="polite">100%</output></div>`;
+  }
+  function applyFontSizeA5(step) {
+    const normalized = Math.max(-1, Math.min(3, Number(step) || 0));
+    const fontSize = 16 + normalized;
+    document.documentElement.style.fontSize = `${fontSize}px`;
+    try { localStorage.setItem(FONT_SIZE_STORAGE_KEY, String(normalized)); } catch {}
+    const output = $('#a5FontSizeValue') || $('#fontSizeValue');
+    if (output) output.textContent = `${Math.round((fontSize / 16) * 100)}%`;
+    $$('[data-font-size]').forEach(button => button.classList.toggle('active', button.dataset.fontSize === 'reset' && normalized === DEFAULT_FONT_SIZE_STEP));
+    return normalized;
+  }
+  function wireA5FontControls() {
+    let step = DEFAULT_FONT_SIZE_STEP;
+    try {
+      const stored = localStorage.getItem(FONT_SIZE_STORAGE_KEY);
+      if (stored !== null) step = Number(stored);
+    } catch {}
+    applyFontSizeA5(Number.isFinite(step) ? step : DEFAULT_FONT_SIZE_STEP);
+  }
   const A5_SEARCH_ACTIONS = [
     { label: 'รับสำนวนและมอบหมายนักสืบ', kw: 'รับสำนวน มอบหมาย accept intake', action: 'accept-case' },
     { label: 'จัดทำแผนคดีไต่สวน (213)', kw: 'แผนคดี แผน 213 plan', action: 'prelim-plan' },
@@ -1931,7 +2138,7 @@
     });
   }
   function headerA5(role) {
-    return `<header class="ws-topbar"><div class="ws-topbar-inner"><div class="ws-search"><input id="a5SearchInput" type="search" placeholder="ค้นหาคดี เอกสาร ฟังก์ชัน..." autocomplete="off" aria-label="ค้นหาทุกอย่าง"><div class="ws-search-results ws-hidden" id="a5SearchResults"></div></div><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a><div class="ws-profile"><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRoleA5">${ROLE_ORDER.map(r => `<option value="${r}" ${r === role ? 'selected' : ''}>${ROLE_LABELS[r]}</option>`).join('')}</select><button type="button" class="ws-button secondary" id="a5BackToA4">งานรับเรื่อง</button></div></div></header>`;
+    return `<header class="ws-topbar"><div class="ws-topbar-inner"><div class="ws-search"><input id="a5SearchInput" type="search" placeholder="ค้นหาคดี เอกสาร ฟังก์ชัน..." autocomplete="off" aria-label="ค้นหาทุกอย่าง"><div class="ws-search-results ws-hidden" id="a5SearchResults"></div></div><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a><div class="ws-profile">${fontSizeControlsA5()}<span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRoleA5">${ROLE_ORDER.map(r => `<option value="${r}" ${r === role ? 'selected' : ''}>${ROLE_LABELS[r]}</option>`).join('')}</select></div></div></header>`;
   }
 
   /* ---------- view + render ---------- */
@@ -1955,8 +2162,9 @@
     <section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="a5FilterSearch" placeholder="เลขสำนวน เรื่อง หน่วยงาน นักสืบ"></div><div class="ws-field"><label>หน่วยงาน/เขต</label><select id="a5FilterRegion"><option value="">ทุกหน่วยงาน</option>${UNITS.map(u => `<option>${u}</option>`).join('')}</select></div><div class="ws-field"><label>เฟส/สถานะ</label><select id="a5FilterPhase"><option value="">ทุกเฟส</option></select></div><div class="ws-field"><label>ผู้รับผิดชอบ</label><select id="a5FilterInvestigator"><option value="">ทั้งหมด</option>${INVESTIGATORS.map(x => `<option>${x}</option>`).join('')}</select></div></div></section>
     <section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขสำนวน/เลขรับบริการ</th><th>เรื่อง/หน่วยงาน</th><th>ผู้ร้อง/ปลายทาง</th><th>ผู้รับผิดชอบ</th><th>เฟส/สถานะ</th><th>กรอบเวลา</th></tr></thead><tbody id="a5CaseRows"></tbody></table></div></section></section></main>`;
     $('#wsRoleA5').onchange = e => { sessionStorage.setItem(A5_ROLE_KEY, e.target.value); renderA5(e.target.value); };
-    $('#a5BackToA4').onclick = () => window.EXMIS?.showA4();
+    
     wireA5Search(role);
+    wireA5FontControls();
     const phaseSelect = $('#a5FilterPhase');
     [...new Set(allA5Cases().map(phaseLabel))].forEach(p => { const o = document.createElement('option'); o.textContent = p; phaseSelect.appendChild(o); });
     ['Search', 'Region', 'Phase', 'Investigator'].forEach(x => { const el = $(`#a5Filter${x}`); if (el) el.addEventListener(x === 'Search' ? 'input' : 'change', () => renderA5(role)); });
@@ -2014,8 +2222,9 @@
     journeyStages, phaseLabel, currentDeadline, ensureInquiry,
     paperForTab, docTabsA5, paperPlan, paperExt, paper213, paper644, paperMti, paperNoticeAccusation, paperRecordAccusation, paperProsecutorLetters, paperWarrants, paperSpecial58,
     editorForA5, actionsForA5, extSectionHtml, progressSectionHtml, reportOf, reportTypeForStage,
-    a5qFilter, A5_MENU, renderA5List, allA5Cases,
+    a5qFilter, A5_MENU, renderA5List, allA5Cases, fitA5Paper,
     attachIntelligentSuggestion, wireA5Suggestions, correctThaiWriting, formalizeWriting, a5ContextualSuggestions, a5LearnContextSuggestion,
+    fontSizeControlsA5, applyFontSizeA5, wireA5FontControls,
     migrateLegacy, STORAGE_KEY
   });
 
