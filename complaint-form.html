@@ -226,6 +226,102 @@ body.high-contrast .form-control[readonly].postcode-field{ background:#252525 !i
 .privacy-choice input{flex:0 0 auto;margin-top:.25rem}
 .privacy-choice span{display:grid;gap:.12rem}.privacy-choice strong{color:var(--ecmis-navy);font-size:.88rem}.privacy-choice small{color:#6b7280;font-size:.76rem}
 
+/* ---------- Incident date/time (custom Thai Buddhist-Era calendar + inline 24-hour time boxes) ---------- */
+.incident-datetime{ display:flex; flex-wrap:wrap; align-items:stretch; gap:.6rem .75rem; }
+
+.thai-date-field{ position:relative; }
+.thai-date-display{
+  display:flex; align-items:center; gap:.55rem; height:100%; min-height:2.55rem;
+  border:1px solid #dfe3ea; border-radius:8px; padding:.5rem .85rem; font-size:.9rem; font-family:inherit;
+  background:#fff; color:var(--ecmis-ink); white-space:nowrap; cursor:pointer;
+}
+.thai-date-display i{ color:var(--ecmis-gold); }
+.thai-date-display:hover{ border-color:var(--ecmis-gold); }
+.thai-date-display:focus{ outline:none; box-shadow:0 0 0 .2rem rgba(201,162,39,.15); border-color:var(--ecmis-gold); }
+
+.thai-calendar-popover{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:1050; width:280px; background:#fff; border-radius:16px;
+  box-shadow:0 18px 40px -12px rgba(15,35,65,.35); padding:1rem 1.1rem 1.1rem;
+}
+.tc-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+.tc-nav{ width:2rem; height:2rem; border:none; border-radius:8px; background:#f0f2f6; color:var(--ecmis-navy); display:flex; align-items:center; justify-content:center; }
+.tc-nav:hover{ background:#e2e6ed; }
+.tc-title-selects{ display:flex; gap:.35rem; }
+.tc-select{
+  border:1px solid #dfe3ea; border-radius:8px; padding:.3rem 1.65rem .3rem .55rem; font-size:.84rem; font-weight:700;
+  color:var(--ecmis-navy); background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right .6rem center/10px 6px;
+  font-family:inherit; appearance:none; -webkit-appearance:none; -moz-appearance:none;
+}
+.tc-select:focus{ outline:none; border-color:var(--ecmis-gold); }
+.tc-weekdays{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:.74rem; color:#9aa4b5; margin-bottom:.35rem; }
+.tc-days{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.tc-day{
+  aspect-ratio:1; border:none; background:none; border-radius:8px; font-size:.85rem; color:var(--ecmis-ink);
+  display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums;
+}
+.tc-day:hover:not(.tc-day-empty){ background:#f0f2f6; }
+.tc-day.tc-day-today{ box-shadow:inset 0 0 0 1.5px var(--ecmis-gold); font-weight:700; }
+.tc-day.tc-day-selected{ background:var(--ecmis-navy); color:#fff; font-weight:700; }
+.tc-day-empty{ visibility:hidden; }
+.tc-footer{ display:flex; justify-content:center; margin-top:.65rem; padding-top:.65rem; border-top:1px solid #f0f2f6; }
+.tc-today-btn{ border:none; background:none; color:var(--ecmis-navy); font-size:.8rem; font-weight:600; text-decoration:underline; }
+
+.thai-time-field{ position:relative; }
+.thai-time-trigger{
+  display:flex; align-items:center; gap:.55rem; height:100%; min-height:2.55rem;
+  border:1px solid #dfe3ea; border-radius:8px; padding:.5rem .85rem; font-size:.9rem; font-family:inherit;
+  background:#fff; color:var(--ecmis-ink); white-space:nowrap; cursor:pointer; font-variant-numeric:tabular-nums;
+}
+.thai-time-trigger i{ color:var(--ecmis-gold); }
+.thai-time-trigger:hover{ border-color:var(--ecmis-gold); }
+.thai-time-trigger:focus{ outline:none; box-shadow:0 0 0 .2rem rgba(201,162,39,.15); border-color:var(--ecmis-gold); }
+.thai-time-trigger .thai-time-badge{ font-size:.72rem; color:#6b7280; background:#f0f2f6; border-radius:6px; padding:.1rem .4rem; margin-left:.1rem; }
+
+.time-picker-popover{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:1050; width:290px; background:#fff; border-radius:18px;
+  box-shadow:0 18px 40px -12px rgba(15,35,65,.35); padding:1.35rem 1.35rem 1.1rem; text-align:center;
+}
+.tp-title{ display:flex; align-items:center; justify-content:center; gap:.5rem; font-size:.86rem; font-weight:600; color:var(--ecmis-navy); margin-bottom:1rem; }
+.tp-24-badge{ font-size:.7rem; font-weight:500; color:#6b7280; background:#f0f2f6; border-radius:6px; padding:.15rem .4rem; }
+.tp-manual-entry{ display:flex; align-items:center; justify-content:center; gap:.4rem; margin-bottom:1.1rem; }
+.tp-manual-input{
+  width:3.4rem; text-align:center; border:1.5px solid #dfe3ea; border-radius:10px; padding:.45rem 0;
+  font-size:1.3rem; font-weight:700; color:var(--ecmis-navy); font-variant-numeric:tabular-nums; background:#f7f9fb;
+}
+.tp-manual-input:focus{ outline:none; border-color:var(--ecmis-gold); background:#fff; box-shadow:0 0 0 .2rem rgba(201,162,39,.15); }
+.tp-manual-colon{ font-size:1.3rem; font-weight:700; color:var(--ecmis-navy); }
+.tp-manual-unit{ font-size:.85rem; color:#6b7280; }
+.tp-wheels{ position:relative; display:flex; align-items:center; justify-content:center; gap:.3rem; margin-bottom:1.25rem; }
+.tp-wheel-wrap{ position:relative; width:64px; height:190px; }
+.tp-wheel-col{
+  position:absolute; inset:0; overflow-y:scroll; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch;
+  cursor:grab; scrollbar-width:none; touch-action:pan-y; overscroll-behavior:contain;
+}
+.tp-wheel-col::-webkit-scrollbar{ display:none; }
+.tp-wheel-col.dragging{ cursor:grabbing; scroll-snap-type:none; }
+.tp-wheel-track{ padding:76px 0; }
+.tp-wheel-item{
+  height:38px; display:flex; align-items:center; justify-content:center; font-size:1.05rem; color:#c3c9d4;
+  scroll-snap-align:center; font-variant-numeric:tabular-nums; user-select:none; transition:color .12s,font-size .12s,font-weight .12s;
+}
+.tp-wheel-item.active{ color:var(--ecmis-navy); font-size:1.55rem; font-weight:700; }
+.tp-wheel-fade{ position:absolute; left:0; right:0; height:52px; pointer-events:none; z-index:3; }
+.tp-wheel-fade-top{ top:0; background:linear-gradient(to bottom,#fff,rgba(255,255,255,0)); }
+.tp-wheel-fade-bottom{ bottom:0; background:linear-gradient(to top,#fff,rgba(255,255,255,0)); }
+.tp-wheel-highlight{
+  position:absolute; left:0; right:0; top:50%; height:38px; margin-top:-19px;
+  border-top:1.5px solid #e5ddc2; border-bottom:1.5px solid #e5ddc2; background:rgba(201,162,39,.08);
+  border-radius:8px; pointer-events:none; z-index:1;
+}
+.tp-wheel-colon{ font-size:1.5rem; font-weight:700; color:var(--ecmis-navy); z-index:2; }
+.tp-wheel-unit{ font-size:.85rem; color:#6b7280; margin-left:.25rem; z-index:2; }
+.tp-actions{ display:flex; justify-content:center; gap:.6rem; }
+.tp-btn{ border:none; border-radius:999px; padding:.55rem 1.15rem; font-size:.85rem; font-weight:600; transition:.2s; }
+.tp-btn-ghost{ background:#eef1f5; color:var(--ecmis-navy); }
+.tp-btn-ghost:hover{ background:#e2e6ed; }
+.tp-btn-primary{ background:linear-gradient(135deg,var(--ecmis-gold-light),var(--ecmis-gold)); color:#1a1a1a; }
+.tp-btn-primary:hover{ filter:brightness(1.05); }
+
 /* ---------- File dropzone ---------- */
 .file-dropzone{
   border:2px dashed #cdd3de; border-radius:12px; padding:2rem 1rem; text-align:center;
@@ -270,6 +366,12 @@ body.high-contrast .form-control[readonly].postcode-field{ background:#252525 !i
 
 /* ---------- Review (step 2) ---------- */
 .review-card{ background:#fff; border:1px solid #eef0f4; border-radius:16px; box-shadow:0 4px 16px rgba(15,35,65,.05); padding:2rem; }
+.review-section{ margin-bottom:1.75rem; }
+.review-section:last-child{ margin-bottom:0; }
+.review-empty{ color:#9aa4b5; font-size:.86rem; padding:.5rem 0; }
+.review-subcard{ border:1px solid #eef0f4; border-radius:10px; padding:1rem 1.25rem; margin-bottom:.75rem; background:#fafbfc; }
+.review-subcard:last-child{ margin-bottom:0; }
+.review-subcard-title{ font-weight:600; color:var(--ecmis-navy); margin-bottom:.4rem; font-size:.88rem; }
 .review-row{ display:flex; justify-content:space-between; gap:1rem; padding:.7rem 0; border-bottom:1px solid #f0f2f6; font-size:.88rem; }
 .review-row:last-child{ border-bottom:none; }
 .review-row .label{ color:#6b7280; flex:0 0 42%; }
@@ -581,30 +683,47 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
               <input type="email" class="form-control" id="email" placeholder="name@email.com">
             </div>
             <div class="col-12">
-              <label class="form-label">สถานะเครือข่าย ป.ป.ท.<span class="req">*</span></label>
-              <select class="form-select" id="networkStatus" required onchange="toggleNetworkVerifyCode()">
-                <option selected>เครือข่าย ป.ป.ท.</option>
-                <option>เครือข่ายภาคเอกชน</option>
-                <option>เครือข่ายประชาชน/ประชาสังคม</option>
-                <option>เครือข่ายขบวน/สภาองค์กรชุมชน</option>
+              <label class="form-label">สถานะเครือข่าย ป.ป.ท.</label>
+              <select class="form-select" id="networkStatus" onchange="toggleNetworkVerifyCode()">
+                <option value="" selected>เลือกสถานะเครือข่าย ป.ป.ท.</option>
+                <option value="เครือข่ายภาคเอกชน">เครือข่ายภาคเอกชน</option>
+                <option value="เครือข่ายประชาชน/ประชาสังคม">เครือข่ายประชาชน/ประชาสังคม</option>
+                <option value="เครือข่ายขบวน/สภาองค์กรชุมชน">เครือข่ายขบวน/สภาองค์กรชุมชน</option>
               </select>
+              <div class="small text-muted" style="margin-top:.25rem">หากท่านเป็นประชาชนทั่วไปไม่จำเป็นต้องเลือก ปล่อยว่างไว้ได้เลย</div>
             </div>
-            <div class="col-12" id="networkVerifyCodeWrap">
+            <div class="col-12 d-none" id="networkVerifyCodeWrap">
               <label class="form-label" for="networkVerifyCode">รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.<span class="req">*</span></label>
-              <input type="text" class="form-control" id="networkVerifyCode" maxlength="20" placeholder="กรอกรหัสยืนยันการเป็นเครือข่าย ป.ป.ท." required>
-              <div class="small text-muted" style="margin-top:.25rem">ใช้สำหรับยืนยันว่าท่านเป็นเครือข่าย ป.ป.ท. จริง กรุณากรอกรหัสที่ได้รับจากสำนักงาน</div>
+              <input type="text" class="form-control" id="networkVerifyCode" maxlength="15" placeholder="กรอกรหัสยืนยันการเป็นเครือข่าย ป.ป.ท." disabled>
+              <div class="small text-muted" style="margin-top:.25rem">ใช้สำหรับยืนยันว่าท่านเป็นเครือข่าย ป.ป.ท. จริง กรุณากรอกรหัสที่ได้รับจากสำนักงาน (ความยาวไม่เกิน 15 ตัวอักษร)</div>
             </div>
           </div>
         </div>
 
         <!-- ส่วนที่ 2 -->
         <div class="form-section-card">
-          <div class="form-section-title"><span class="step-badge">2</span>รายละเอียดการร้องเรียน</div>
+          <div class="form-section-title"><span class="step-badge">2</span>ข้อมูลผู้ถูกร้องเรียน</div>
+          <div id="accusedList"></div>
+          <div class="accused-empty" id="accusedEmpty"><i class="fa-solid fa-user-slash me-2"></i>ยังไม่มีข้อมูลผู้ถูกร้องเรียน (ไม่บังคับ)</div>
+          <button type="button" class="btn btn-add-accused mt-3" onclick="addAccused()"><i class="fa-solid fa-plus me-2"></i>เพิ่มผู้ถูกร้องเรียน</button>
+        </div>
+
+        <!-- ส่วนที่ 3 -->
+        <div class="form-section-card">
+          <div class="form-section-title"><span class="step-badge">3</span>รายละเอียดการร้องเรียน</div>
 
           <div class="row g-3">
             <div class="col-12">
-              <label class="form-label" for="complaintSubject">หัวข้อเรื่องร้องเรียน<span class="req">*</span></label>
-              <input type="text" class="form-control" id="complaintSubject" maxlength="200" required placeholder="สรุปเรื่องที่ต้องการร้องเรียน">
+              <label class="form-label" for="complaintSubjectTemplate">รูปแบบหัวข้อ (เลือกได้หากไม่ทราบจะเขียนหัวข้ออย่างไร)</label>
+              <select class="form-select" id="complaintSubjectTemplate" onchange="applyComplaintSubjectTemplate()">
+                <option value="">-- เลือกรูปแบบหัวข้อ --</option>
+                <option value="official">ร้องเรียนเจ้าหน้าที่ของรัฐ</option>
+              </select>
+              <div class="small text-muted" style="margin-top:.25rem">เลือกแล้วระบบจะสร้างหัวข้อให้อัตโนมัติจากข้อมูลผู้ถูกร้องเรียนที่ 1 (สังกัดหน่วยงาน + พฤติการณ์) ท่านสามารถแก้ไขข้อความด้านล่างเพิ่มเติมได้</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="complaintSubject">หัวข้อเรื่องร้องเรียน</label>
+              <input type="text" class="form-control" id="complaintSubject" maxlength="200" placeholder="สรุปเรื่องที่ต้องการร้องเรียน">
             </div>
             <div class="col-12">
               <div class="field-label-row">
@@ -624,25 +743,70 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
               <div class="voice-indicator" id="voiceIndicator-complaintDetail"><span class="voice-dot"></span>กำลังฟัง... พูดได้เลยครับ</div>
             </div>
             <div class="col-12">
-              <div class="field-label-row">
-                <label class="form-label mb-0">หน่วยงานที่ต้องการร้องเรียน</label>
-                <button type="button" class="voice-btn" id="voiceBtn-agencyName" data-target="agencyName" onclick="toggleVoice('agencyName')" title="พิมพ์ด้วยเสียง" aria-label="พิมพ์ชื่อหน่วยงานด้วยเสียง">
-                  <i class="fa-solid fa-microphone"></i>
-                </button>
-              </div>
-              <textarea class="form-control" id="agencyName" rows="2" maxlength="150"></textarea>
-              <div class="char-counter" id="agencyNameCounter">0/150</div>
-              <div class="voice-indicator" id="voiceIndicator-agencyName"><span class="voice-dot"></span>กำลังฟัง... พูดได้เลยครับ</div>
+              <label class="form-label" for="agencyName">หน่วยงานที่ต้องการร้องเรียน</label>
+              <select class="form-select" id="agencyName"></select>
             </div>
-            <div class="col-md-4">
+            <div class="col-12">
               <label class="form-label">วัน–เวลาเกิดเหตุ</label>
-              <div class="d-flex gap-2">
-                <input type="date" class="form-control" id="incidentDate">
-                <input type="time" class="form-control" id="incidentTime">
+              <div class="incident-datetime">
+                <div class="thai-date-field">
+                  <button type="button" class="thai-date-display" id="incidentDateTrigger" onclick="toggleDatePicker()">
+                    <i class="fa-regular fa-calendar"></i><span id="incidentDateDisplayText">เลือกวันที่เกิดเหตุ</span>
+                  </button>
+                  <input type="hidden" id="incidentDate">
+                  <div class="thai-calendar-popover d-none" id="thaiCalendarPopover" role="dialog" aria-label="เลือกวันที่เกิดเหตุ (ปฏิทินไทย)">
+                    <div class="tc-header">
+                      <button type="button" class="tc-nav" id="tcPrevMonth" aria-label="เดือนก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+                      <div class="tc-title-selects">
+                        <select class="tc-select" id="tcMonthSelect" aria-label="เลือกเดือน"></select>
+                        <select class="tc-select" id="tcYearSelect" aria-label="เลือกปี พ.ศ."></select>
+                      </div>
+                      <button type="button" class="tc-nav" id="tcNextMonth" aria-label="เดือนถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <div class="tc-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
+                    <div class="tc-days" id="tcDays"></div>
+                    <div class="tc-footer"><button type="button" class="tc-today-btn" id="tcToday">วันนี้</button></div>
+                  </div>
+                </div>
+                <div class="thai-time-field">
+                  <button type="button" class="thai-time-trigger" id="incidentTimeTrigger" onclick="toggleTimePicker()">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="incidentTimeDisplayText">เลือกเวลา</span>
+                    <span class="thai-time-badge">24 ชม.</span>
+                  </button>
+                  <div class="time-picker-popover d-none" id="timePickerPopover" role="dialog" aria-label="เลือกเวลา (24 ชั่วโมง)">
+                    <div class="tp-title">เลือกเวลาที่เกิดเหตุ <span class="tp-24-badge">24 ชม.</span></div>
+                    <div class="tp-manual-entry">
+                      <input type="text" inputmode="numeric" maxlength="2" class="tp-manual-input" id="tpHourInput" aria-label="พิมพ์ชั่วโมง">
+                      <span class="tp-manual-colon">:</span>
+                      <input type="text" inputmode="numeric" maxlength="2" class="tp-manual-input" id="tpMinuteInput" aria-label="พิมพ์นาที">
+                      <span class="tp-manual-unit">น.</span>
+                    </div>
+                    <div class="tp-wheels">
+                      <div class="tp-wheel-highlight"></div>
+                      <div class="tp-wheel-wrap">
+                        <div class="tp-wheel-col" id="tpHourWheel"><div class="tp-wheel-track" id="tpHourTrack"></div></div>
+                        <div class="tp-wheel-fade tp-wheel-fade-top"></div>
+                        <div class="tp-wheel-fade tp-wheel-fade-bottom"></div>
+                      </div>
+                      <div class="tp-wheel-colon">:</div>
+                      <div class="tp-wheel-wrap">
+                        <div class="tp-wheel-col" id="tpMinuteWheel"><div class="tp-wheel-track" id="tpMinuteTrack"></div></div>
+                        <div class="tp-wheel-fade tp-wheel-fade-top"></div>
+                        <div class="tp-wheel-fade tp-wheel-fade-bottom"></div>
+                      </div>
+                      <div class="tp-wheel-unit">น.</div>
+                    </div>
+                    <div class="tp-actions">
+                      <button type="button" class="tp-btn tp-btn-ghost" id="tpDismiss" onclick="dismissTimePicker()">ปิดตัวเลือก</button>
+                      <button type="button" class="tp-btn tp-btn-ghost" id="tpClear" onclick="clearTimePicker()">ล้างค่า</button>
+                      <button type="button" class="tp-btn tp-btn-primary" id="tpConfirm" onclick="confirmTimePicker()">ยืนยันการเลือก</button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <button type="button" class="btn btn-sm btn-link px-0 mt-1" style="font-size:.78rem;color:#9aa4b5" onclick="clearIncidentDateTime()"><i class="fa-solid fa-rotate-left me-1"></i>ล้างค่า</button>
             </div>
-            <div class="col-md-8"></div>
             <div class="col-12">
               <div class="field-label-row">
                 <label class="form-label mb-0">สถานที่เกิดเหตุ<span class="req">*</span></label>
@@ -710,14 +874,6 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
               <div class="file-list" id="fileList"></div>
             </div>
           </div>
-        </div>
-
-        <!-- ส่วนที่ 3 -->
-        <div class="form-section-card">
-          <div class="form-section-title"><span class="step-badge">3</span>ข้อมูลผู้ถูกร้องเรียน</div>
-          <div id="accusedList"></div>
-          <div class="accused-empty" id="accusedEmpty"><i class="fa-solid fa-user-slash me-2"></i>ยังไม่มีข้อมูลผู้ถูกร้องเรียน (ไม่บังคับ)</div>
-          <button type="button" class="btn btn-add-accused mt-3" onclick="addAccused()"><i class="fa-solid fa-plus me-2"></i>เพิ่มผู้ถูกร้องเรียน</button>
         </div>
 
         <div class="text-center mb-5">
@@ -913,12 +1069,39 @@ function wireCounter(inputId, counterId, max){
 }
 wireCounter('address', 'addressCounter', 250);
 wireCounter('complaintDetail', 'complaintDetailCounter', 3000);
-wireCounter('agencyName', 'agencyNameCounter', 150);
 wireCounter('incidentPlace', 'incidentPlaceCounter', 300);
 wireCounter('desiredAction', 'desiredActionCounter', 1500);
 
+// --- mock: government agencies (for dev/demo — final list to be provided by ป.ป.ท.) ---
+const GOV_AGENCIES = [
+  'กระทรวงมหาดไทย','กระทรวงศึกษาธิการ','กระทรวงสาธารณสุข','กระทรวงการคลัง','กระทรวงคมนาคม',
+  'กระทรวงเกษตรและสหกรณ์','กระทรวงยุติธรรม','กระทรวงแรงงาน','กระทรวงทรัพยากรธรรมชาติและสิ่งแวดล้อม',
+  'กระทรวงพาณิชย์','กระทรวงอุตสาหกรรม','กระทรวงการพัฒนาสังคมและความมั่นคงของมนุษย์',
+  'กระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม','กระทรวงพลังงาน','กระทรวงการต่างประเทศ',
+  'กระทรวงการท่องเที่ยวและกีฬา','กระทรวงวัฒนธรรม','กระทรวงกลาโหม','กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม',
+  'สำนักนายกรัฐมนตรี','สำนักงานตำรวจแห่งชาติ','กรมการปกครอง','กรมที่ดิน','กรมโยธาธิการและผังเมือง',
+  'กรมส่งเสริมการปกครองท้องถิ่น','กรมสรรพากร','กรมศุลกากร','กรมบัญชีกลาง','สำนักงานอัยการสูงสุด',
+  'สำนักงานคณะกรรมการการเลือกตั้ง (กกต.)','กรุงเทพมหานคร (กทม.)','องค์การบริหารส่วนจังหวัด (อบจ.)',
+  'องค์การบริหารส่วนตำบล (อบต.)','เทศบาลนคร/เทศบาลเมือง/เทศบาลตำบล','หน่วยงานรัฐวิสาหกิจ',
+  'สถานศึกษา/มหาวิทยาลัยของรัฐ','โรงพยาบาลของรัฐ','อื่นๆ (โปรดระบุในรายละเอียดการร้องเรียน)'
+];
+function buildAgencyOptions(placeholder){
+  const items = placeholder ? [{value:'',label:placeholder}] : [];
+  return items.concat(GOV_AGENCIES.map(name=>({value:name,label:name})))
+    .map(item=>`<option value="${item.value}">${item.label}</option>`).join('');
+}
+document.getElementById('agencyName').innerHTML = buildAgencyOptions('เลือกหน่วยงาน');
+
+// default "หน่วยงานที่ต้องการร้องเรียน" (section 3) from the first accused party's agency (section 2), if chosen
+document.getElementById('accusedList').addEventListener('change', evt => {
+  if(evt.target.dataset.field !== 'agency') return;
+  if(evt.target.closest('.accused-card') !== document.querySelector('.accused-card')) return;
+  if(!evt.target.value) return;
+  document.getElementById('agencyName').value = evt.target.value;
+});
+
 function toggleNetworkVerifyCode(){
-  const isNetworkMember = document.getElementById('networkStatus').value === 'เครือข่าย ป.ป.ท.';
+  const isNetworkMember = document.getElementById('networkStatus').value !== '';
   const wrap = document.getElementById('networkVerifyCodeWrap');
   const codeInput = document.getElementById('networkVerifyCode');
   wrap.classList.toggle('d-none', !isNetworkMember);
@@ -998,10 +1181,262 @@ function validateNationalId(digits, el){
   }
 }
 
-// --- clear incident date/time ---
+// --- incident date: custom Thai Buddhist-Era (พ.ศ.) calendar popover, no external dependencies ---
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function formatThaiBEDate(isoDate){
+  if(!isoDate) return '';
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return `${d} ${THAI_MONTHS[m - 1]} พ.ศ. ${y + 543}`;
+}
+function pad2v(n){ return String(n).padStart(2, '0'); }
+function isoOf(y, m, d){ return `${y}-${pad2v(m + 1)}-${pad2v(d)}`; }
+function todayISO(){ const t = new Date(); return isoOf(t.getFullYear(), t.getMonth(), t.getDate()); }
+function updateIncidentDateDisplay(){
+  const formatted = formatThaiBEDate(document.getElementById('incidentDate').value);
+  document.getElementById('incidentDateDisplayText').textContent = formatted || 'เลือกวันที่เกิดเหตุ';
+}
+const calView = { year: new Date().getFullYear(), month: new Date().getMonth() };
+function initCalendarSelects(){
+  const monthSel = document.getElementById('tcMonthSelect');
+  monthSel.replaceChildren(...THAI_MONTHS.map((name, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = name;
+    return opt;
+  }));
+  const yearSel = document.getElementById('tcYearSelect');
+  const currentBEYear = new Date().getFullYear() + 543;
+  const yearOptions = [];
+  for(let beYear = currentBEYear; beYear >= currentBEYear - 100; beYear--) yearOptions.push(beYear);
+  yearSel.replaceChildren(...yearOptions.map(beYear => {
+    const opt = document.createElement('option');
+    opt.value = String(beYear - 543);
+    opt.textContent = String(beYear);
+    return opt;
+  }));
+  monthSel.addEventListener('change', () => { calView.month = Number(monthSel.value); renderCalendar(); });
+  yearSel.addEventListener('change', () => { calView.year = Number(yearSel.value); renderCalendar(); });
+}
+initCalendarSelects();
+function renderCalendar(){
+  document.getElementById('tcMonthSelect').value = String(calView.month);
+  document.getElementById('tcYearSelect').value = String(calView.year);
+  const daysWrap = document.getElementById('tcDays');
+  daysWrap.replaceChildren();
+  const firstWeekday = new Date(calView.year, calView.month, 1).getDay();
+  const daysInMonth = new Date(calView.year, calView.month + 1, 0).getDate();
+  const selectedISO = document.getElementById('incidentDate').value;
+  const nowISO = todayISO();
+  for(let i = 0; i < firstWeekday; i++){
+    const empty = document.createElement('div');
+    empty.className = 'tc-day tc-day-empty';
+    daysWrap.appendChild(empty);
+  }
+  for(let d = 1; d <= daysInMonth; d++){
+    const iso = isoOf(calView.year, calView.month, d);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tc-day';
+    btn.textContent = String(d);
+    if(iso === nowISO) btn.classList.add('tc-day-today');
+    if(iso === selectedISO) btn.classList.add('tc-day-selected');
+    btn.addEventListener('click', () => selectDate(iso));
+    daysWrap.appendChild(btn);
+  }
+}
+function selectDate(iso){
+  document.getElementById('incidentDate').value = iso;
+  updateIncidentDateDisplay();
+  closeDatePicker();
+}
+function changeCalMonth(delta){
+  calView.month += delta;
+  if(calView.month < 0){ calView.month = 11; calView.year--; }
+  if(calView.month > 11){ calView.month = 0; calView.year++; }
+  renderCalendar();
+}
+document.getElementById('tcPrevMonth').addEventListener('click', () => changeCalMonth(-1));
+document.getElementById('tcNextMonth').addEventListener('click', () => changeCalMonth(1));
+document.getElementById('tcToday').addEventListener('click', () => {
+  const t = new Date();
+  calView.year = t.getFullYear();
+  calView.month = t.getMonth();
+  selectDate(todayISO());
+});
+function onDocClickCloseCalendar(evt){
+  if(!evt.target.closest('.thai-date-field')) closeDatePicker();
+}
+function openDatePicker(){
+  const existing = document.getElementById('incidentDate').value;
+  const base = existing ? new Date(existing) : new Date();
+  calView.year = base.getFullYear();
+  calView.month = base.getMonth();
+  renderCalendar();
+  document.getElementById('thaiCalendarPopover').classList.remove('d-none');
+  document.addEventListener('click', onDocClickCloseCalendar);
+}
+function closeDatePicker(){
+  document.getElementById('thaiCalendarPopover').classList.add('d-none');
+  document.removeEventListener('click', onDocClickCloseCalendar);
+}
+function toggleDatePicker(){
+  document.getElementById('thaiCalendarPopover').classList.contains('d-none') ? openDatePicker() : closeDatePicker();
+}
+updateIncidentDateDisplay();
+
+// --- incident time: 24-hour drag-to-scroll wheel picker (every minute, no AM/PM) ---
+const WHEEL_ITEM_HEIGHT = 38;
+const timePickerState = { hour:null, minute:null, confirmedHour:null, confirmedMinute:null };
+function updateIncidentTimeDisplay(){
+  const { confirmedHour:h, confirmedMinute:m } = timePickerState;
+  document.getElementById('incidentTimeDisplayText').textContent = (h !== null && m !== null) ? `${pad2v(h)} : ${pad2v(m)} น.` : 'เลือกเวลา';
+}
+function initWheel(colEl, trackEl, count, formatter, onChange){
+  trackEl.replaceChildren();
+  for(let i = 0; i < count; i++){
+    const item = document.createElement('div');
+    item.className = 'tp-wheel-item';
+    item.textContent = formatter(i);
+    item.dataset.value = String(i);
+    trackEl.appendChild(item);
+  }
+  const items = trackEl.children;
+  let dragging = false, moved = false, startY = 0, startScroll = 0, scrollEndTimer = null;
+  function nearestIndex(){ return Math.max(0, Math.min(count - 1, Math.round(colEl.scrollTop / WHEEL_ITEM_HEIGHT))); }
+  function highlightActive(){
+    const idx = nearestIndex();
+    for(let i = 0; i < items.length; i++) items[i].classList.toggle('active', i === idx);
+    return idx;
+  }
+  function snapTo(index, smooth){
+    colEl.scrollTo({ top: Math.max(0, Math.min(count - 1, index)) * WHEEL_ITEM_HEIGHT, behavior: smooth ? 'smooth' : 'auto' });
+  }
+  colEl.addEventListener('scroll', () => {
+    onChange(highlightActive(), false);
+    if(dragging) return;
+    clearTimeout(scrollEndTimer);
+    scrollEndTimer = setTimeout(() => {
+      const idx = nearestIndex();
+      snapTo(idx, true);
+      onChange(idx, true);
+    }, 120);
+  });
+  colEl.addEventListener('pointerdown', evt => {
+    dragging = true; moved = false; startY = evt.clientY; startScroll = colEl.scrollTop;
+    colEl.classList.add('dragging');
+    colEl.setPointerCapture(evt.pointerId);
+  });
+  colEl.addEventListener('pointermove', evt => {
+    if(!dragging) return;
+    const dy = evt.clientY - startY;
+    if(Math.abs(dy) > 2) moved = true;
+    colEl.scrollTop = startScroll - dy;
+  });
+  function endDrag(){
+    if(!dragging) return;
+    dragging = false;
+    colEl.classList.remove('dragging');
+    const idx = nearestIndex();
+    snapTo(idx, true);
+    onChange(idx, true);
+  }
+  colEl.addEventListener('pointerup', endDrag);
+  colEl.addEventListener('pointercancel', endDrag);
+  colEl.addEventListener('click', evt => {
+    if(moved) return;
+    const item = evt.target.closest('.tp-wheel-item');
+    if(!item) return;
+    const idx = Number(item.dataset.value);
+    snapTo(idx, true);
+    onChange(idx, true);
+  });
+  return { setValue(idx, smooth){ snapTo(idx, !!smooth); highlightActive(); } };
+}
+const tpHourInput = document.getElementById('tpHourInput');
+const tpMinuteInput = document.getElementById('tpMinuteInput');
+const hourWheelApi = initWheel(document.getElementById('tpHourWheel'), document.getElementById('tpHourTrack'), 24, pad2v, idx => {
+  timePickerState.hour = idx;
+  tpHourInput.value = pad2v(idx);
+});
+const minuteWheelApi = initWheel(document.getElementById('tpMinuteWheel'), document.getElementById('tpMinuteTrack'), 60, pad2v, idx => {
+  timePickerState.minute = idx;
+  tpMinuteInput.value = pad2v(idx);
+});
+function wireManualTimeInput(inputEl, max, wheelApi, setter){
+  inputEl.addEventListener('input', () => {
+    inputEl.value = inputEl.value.replace(/\D/g, '').slice(0, 2);
+  });
+  inputEl.addEventListener('change', () => {
+    const n = parseInt(inputEl.value, 10);
+    if(isNaN(n)){ inputEl.value = pad2v(setter(null) ?? 0); return; }
+    const clamped = Math.max(0, Math.min(max, n));
+    setter(clamped);
+    inputEl.value = pad2v(clamped);
+    wheelApi.setValue(clamped, true);
+  });
+  inputEl.addEventListener('keydown', evt => { if(evt.key === 'Enter') inputEl.blur(); });
+}
+wireManualTimeInput(tpHourInput, 23, hourWheelApi, v => { if(v !== null) timePickerState.hour = v; return timePickerState.hour; });
+wireManualTimeInput(tpMinuteInput, 59, minuteWheelApi, v => { if(v !== null) timePickerState.minute = v; return timePickerState.minute; });
+function onDocClickCloseTimePicker(evt){
+  if(!evt.target.closest('.thai-time-field')) closeTimePickerPopover();
+}
+function toggleTimePicker(){
+  document.getElementById('timePickerPopover').classList.contains('d-none') ? openTimePicker() : closeTimePickerPopover();
+}
+function openTimePicker(){
+  const now = new Date();
+  const h = timePickerState.confirmedHour !== null ? timePickerState.confirmedHour : now.getHours();
+  const m = timePickerState.confirmedMinute !== null ? timePickerState.confirmedMinute : now.getMinutes();
+  timePickerState.hour = h;
+  timePickerState.minute = m;
+  tpHourInput.value = pad2v(h);
+  tpMinuteInput.value = pad2v(m);
+  document.getElementById('timePickerPopover').classList.remove('d-none');
+  document.addEventListener('click', onDocClickCloseTimePicker);
+  requestAnimationFrame(() => {
+    hourWheelApi.setValue(h);
+    minuteWheelApi.setValue(m);
+  });
+}
+function closeTimePickerPopover(){
+  document.getElementById('timePickerPopover').classList.add('d-none');
+  document.removeEventListener('click', onDocClickCloseTimePicker);
+}
+function dismissTimePicker(){ closeTimePickerPopover(); }
+function confirmTimePicker(){
+  timePickerState.confirmedHour = timePickerState.hour;
+  timePickerState.confirmedMinute = timePickerState.minute;
+  updateIncidentTimeDisplay();
+  closeTimePickerPopover();
+}
+function clearTimePicker(){
+  timePickerState.hour = null;
+  timePickerState.minute = null;
+  timePickerState.confirmedHour = null;
+  timePickerState.confirmedMinute = null;
+  updateIncidentTimeDisplay();
+  closeTimePickerPopover();
+}
+updateIncidentTimeDisplay();
+
 function clearIncidentDateTime(){
   document.getElementById('incidentDate').value = '';
-  document.getElementById('incidentTime').value = '';
+  updateIncidentDateDisplay();
+  timePickerState.hour = null;
+  timePickerState.minute = null;
+  timePickerState.confirmedHour = null;
+  timePickerState.confirmedMinute = null;
+  updateIncidentTimeDisplay();
+  closeDatePicker();
+  closeTimePickerPopover();
+}
+function getIncidentDateTimeText(){
+  const dateText = formatThaiBEDate(document.getElementById('incidentDate').value);
+  const { confirmedHour:h, confirmedMinute:m } = timePickerState;
+  const timeText = (h !== null && m !== null) ? `${pad2v(h)}:${pad2v(m)} น.` : '';
+  if(!dateText && !timeText) return '-';
+  return [dateText, timeText].filter(Boolean).join(' เวลา ');
 }
 
 // --- file upload (mock, no real transfer) ---
@@ -1138,10 +1573,10 @@ function addAccused(){
     <button type="button" class="remove-accused" onclick="removeAccused(this)"><i class="fa-solid fa-circle-xmark"></i></button>
     <div class="fw-semibold mb-3" style="color:var(--ecmis-navy)"><i class="fa-solid fa-user-tag me-2"></i>ผู้ถูกร้องเรียนที่ ${accusedSeq}</div>
     <div class="row g-3">
-      <div class="col-md-6"><label class="form-label">ชื่อ-นามสกุล / หน่วยงาน</label><input type="text" class="form-control"></div>
-      <div class="col-md-6"><label class="form-label">ตำแหน่ง</label><input type="text" class="form-control"></div>
-      <div class="col-md-6"><label class="form-label">สังกัดหน่วยงาน</label><input type="text" class="form-control"></div>
-      <div class="col-md-6"><label class="form-label">ความเกี่ยวข้อง / พฤติการณ์โดยย่อ</label><input type="text" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">ชื่อ-นามสกุล / หน่วยงาน</label><input type="text" class="form-control" data-field="name"></div>
+      <div class="col-md-6"><label class="form-label">ตำแหน่ง</label><input type="text" class="form-control" data-field="position"></div>
+      <div class="col-md-6"><label class="form-label">สังกัดหน่วยงาน</label><select class="form-select" data-field="agency">${buildAgencyOptions('เลือกหน่วยงาน')}</select></div>
+      <div class="col-md-6"><label class="form-label">ความเกี่ยวข้อง / พฤติการณ์โดยย่อ</label><input type="text" class="form-control" data-field="relation"></div>
     </div>`;
   wrap.appendChild(card);
   document.getElementById('accusedEmpty').classList.add('d-none');
@@ -1151,6 +1586,66 @@ function removeAccused(btn){
   if(document.querySelectorAll('.accused-card').length === 0){
     document.getElementById('accusedEmpty').classList.remove('d-none');
   }
+}
+
+// --- complaint subject: auto-suggested live from the first accused party, plus a manual re-trigger dropdown ---
+function buildSuggestedSubject(firstAccused){
+  const name = accusedFieldValue(firstAccused, 'name');
+  const agency = accusedFieldValue(firstAccused, 'agency');
+  const conduct = accusedFieldValue(firstAccused, 'relation');
+  // if the accused's name is known, lead with it; otherwise fall back to the generic "เจ้าหน้าที่ของรัฐ" phrasing built from agency + พฤติการณ์
+  let subject = name !== '-' ? `ร้องเรียน${name}` : 'ร้องเรียนเจ้าหน้าที่ของรัฐ';
+  if(agency !== '-') subject += ` สังกัด${agency}`;
+  if(conduct !== '-') subject += ` กรณี${conduct}`;
+  return subject;
+}
+// fallback for when no accused party has been added yet: summarize straight from รายละเอียดการร้องเรียน / เบาะแส
+function buildSubjectFromComplaintDetail(){
+  const detail = document.getElementById('complaintDetail').value.trim();
+  if(!detail) return '';
+  const maxLen = 120;
+  const summary = detail.length > maxLen ? detail.slice(0, maxLen).trim() + '…' : detail;
+  return `ร้องเรียนกรณี${summary}`;
+}
+let complaintSubjectAutoFilled = false;
+document.getElementById('complaintSubject').addEventListener('input', () => { complaintSubjectAutoFilled = false; });
+function autoSuggestComplaintSubject(){
+  const subjectInput = document.getElementById('complaintSubject');
+  if(subjectInput.value !== '' && !complaintSubjectAutoFilled) return; // user already typed their own subject, don't override it
+  const firstAccused = document.querySelector('.accused-card');
+  let suggested = '';
+  if(firstAccused){
+    const built = buildSuggestedSubject(firstAccused);
+    if(built !== 'ร้องเรียนเจ้าหน้าที่ของรัฐ') suggested = built; // has at least name/agency/พฤติการณ์ to go on
+  }
+  if(!suggested) suggested = buildSubjectFromComplaintDetail();
+  if(!suggested) return;
+  subjectInput.value = suggested;
+  complaintSubjectAutoFilled = true;
+}
+function isSubjectRelevantAccusedField(evt){
+  const field = evt.target.dataset.field;
+  return (field === 'name' || field === 'agency' || field === 'relation')
+    && evt.target.closest('.accused-card') === document.querySelector('.accused-card');
+}
+document.getElementById('accusedList').addEventListener('input', evt => { if(isSubjectRelevantAccusedField(evt)) autoSuggestComplaintSubject(); });
+document.getElementById('accusedList').addEventListener('change', evt => { if(isSubjectRelevantAccusedField(evt)) autoSuggestComplaintSubject(); });
+document.getElementById('complaintDetail').addEventListener('input', autoSuggestComplaintSubject);
+function applyComplaintSubjectTemplate(){
+  const templateSelect = document.getElementById('complaintSubjectTemplate');
+  const template = templateSelect.value;
+  if(!template) return;
+  if(template === 'official'){
+    const firstAccused = document.querySelector('.accused-card');
+    if(!firstAccused){
+      Swal.fire({icon:'info', title:'ยังไม่มีข้อมูลผู้ถูกร้องเรียน', text:'กรุณาเพิ่มข้อมูลผู้ถูกร้องเรียนในส่วนที่ 2 ก่อน เพื่อให้ระบบสร้างหัวข้อให้อัตโนมัติ', confirmButtonColor:'#0b2e59'});
+      templateSelect.value = '';
+      return;
+    }
+    document.getElementById('complaintSubject').value = buildSuggestedSubject(firstAccused);
+    complaintSubjectAutoFilled = true;
+  }
+  templateSelect.value = '';
 }
 
 // --- voice-to-text (Web Speech API) ---
@@ -1306,32 +1801,176 @@ function appendReviewRow(container, labelText, valueText){
   row.append(label, value);
   container.appendChild(row);
 }
+function appendReviewSection(container, badgeNum, title){
+  const section = document.createElement('div');
+  section.className = 'review-section';
+  const heading = document.createElement('div');
+  heading.className = 'form-section-title';
+  heading.innerHTML = `<span class="step-badge">${badgeNum}</span>${title}`;
+  section.appendChild(heading);
+  container.appendChild(section);
+  return section;
+}
+function accusedFieldValue(card, fieldName){
+  const el = card.querySelector(`[data-field="${fieldName}"]`);
+  return el && el.value.trim() ? el.value.trim() : '-';
+}
 function buildReviewSummary(){
   const identity = getComplainantIdentityState();
-  const accusedCount = document.querySelectorAll('.accused-card').length;
+  const accusedCards = document.querySelectorAll('.accused-card');
   const provinceText = val('province');
-  const networkText = document.getElementById('networkStatus').selectedOptions[0]?.text || '-';
+  const networkText = document.getElementById('networkStatus').value || 'ไม่ใช่เจ้าหน้าที่รัฐ / ไม่ใช่เครือข่าย ป.ป.ท.';
   const reviewBody = document.getElementById('reviewBody');
   reviewBody.replaceChildren();
+
+  // ส่วนที่ 1: ข้อมูลผู้ร้อง
+  const s1 = appendReviewSection(reviewBody, 1, 'ข้อมูลผู้ร้อง');
   if(identity.isAnonymous){
-    appendReviewRow(reviewBody, 'ข้อมูลผู้ร้อง', 'ไม่ได้ระบุ');
+    appendReviewRow(s1, 'ข้อมูลผู้ร้อง', 'ไม่ได้ระบุ');
   } else {
-    appendReviewRow(reviewBody, 'การปกปิดข้อมูลผู้ร้อง', identity.confidentialityRequested?'ขอปกปิดข้อมูลผู้ร้อง':'ไม่ได้ขอปกปิดข้อมูลผู้ร้อง');
-    appendReviewRow(reviewBody, 'ชื่อ-นามสกุล', `${val('titlePrefix')} ${val('firstName')} ${val('lastName')}`);
-    appendReviewRow(reviewBody, 'โทรศัพท์ / อีเมล', `${val('phone')} / ${val('email')}`);
+    appendReviewRow(s1, 'การปกปิดข้อมูลผู้ร้อง', identity.confidentialityRequested?'ขอปกปิดข้อมูลผู้ร้อง':'ไม่ได้ขอปกปิดข้อมูลผู้ร้อง');
+    appendReviewRow(s1, 'ชื่อ-นามสกุล', `${val('titlePrefix')} ${val('firstName')} ${val('lastName')}`);
+    appendReviewRow(s1, 'ที่อยู่ปัจจุบัน', val('address'));
+    appendReviewRow(s1, 'โทรศัพท์ / อีเมล', `${val('phone')} / ${val('email')}`);
   }
-  appendReviewRow(reviewBody, 'หัวข้อเรื่องร้องเรียน', val('complaintSubject'));
-  appendReviewRow(reviewBody, 'สถานะเครือข่าย ป.ป.ท.', networkText);
-  if(document.getElementById('networkStatus').value === 'เครือข่าย ป.ป.ท.'){
-    appendReviewRow(reviewBody, 'รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.', val('networkVerifyCode'));
+  appendReviewRow(s1, 'สถานะเครือข่าย ป.ป.ท.', networkText);
+  if(document.getElementById('networkStatus').value !== ''){
+    appendReviewRow(s1, 'รหัสยืนยันการเป็นเครือข่าย ป.ป.ท.', val('networkVerifyCode'));
   }
-  appendReviewRow(reviewBody, 'รายละเอียดการร้องเรียน', val('complaintDetail'));
-  appendReviewRow(reviewBody, 'หน่วยงานที่ถูกร้องเรียน', val('agencyName'));
-  appendReviewRow(reviewBody, 'สถานที่เกิดเหตุ', val('incidentPlace'));
-  appendReviewRow(reviewBody, 'จังหวัด / อำเภอ / ตำบล', `${provinceText} / ${val('district')} / ${val('subdistrict')}`);
-  appendReviewRow(reviewBody, 'ความประสงค์ให้ดำเนินการ', val('desiredAction'));
-  appendReviewRow(reviewBody, 'เอกสารแนบ', `${uploadedFiles.length} ไฟล์`);
-  appendReviewRow(reviewBody, 'ผู้ถูกร้องเรียน', `${accusedCount} ราย`);
+
+  // ส่วนที่ 2: ข้อมูลผู้ถูกร้องเรียน
+  const s2 = appendReviewSection(reviewBody, 2, 'ข้อมูลผู้ถูกร้องเรียน');
+  if(accusedCards.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'review-empty';
+    empty.textContent = 'ยังไม่มีข้อมูลผู้ถูกร้องเรียน (ไม่บังคับ)';
+    s2.appendChild(empty);
+  } else {
+    accusedCards.forEach((card, idx) => {
+      const sub = document.createElement('div');
+      sub.className = 'review-subcard';
+      const subTitle = document.createElement('div');
+      subTitle.className = 'review-subcard-title';
+      subTitle.textContent = `ผู้ถูกร้องเรียนที่ ${idx + 1}`;
+      sub.appendChild(subTitle);
+      appendReviewRow(sub, 'ชื่อ-นามสกุล / หน่วยงาน', accusedFieldValue(card, 'name'));
+      appendReviewRow(sub, 'ตำแหน่ง', accusedFieldValue(card, 'position'));
+      appendReviewRow(sub, 'สังกัดหน่วยงาน', accusedFieldValue(card, 'agency'));
+      appendReviewRow(sub, 'ความเกี่ยวข้อง / พฤติการณ์โดยย่อ', accusedFieldValue(card, 'relation'));
+      s2.appendChild(sub);
+    });
+  }
+
+  // ส่วนที่ 3: รายละเอียดการร้องเรียน
+  const s3 = appendReviewSection(reviewBody, 3, 'รายละเอียดการร้องเรียน');
+  appendReviewRow(s3, 'หัวข้อเรื่องร้องเรียน', val('complaintSubject'));
+  appendReviewRow(s3, 'รายละเอียดการร้องเรียน', val('complaintDetail'));
+  appendReviewRow(s3, 'หน่วยงานที่ต้องการร้องเรียน', val('agencyName'));
+  appendReviewRow(s3, 'วัน–เวลาเกิดเหตุ', getIncidentDateTimeText());
+  appendReviewRow(s3, 'สถานที่เกิดเหตุ', val('incidentPlace'));
+  appendReviewRow(s3, 'จังหวัด / อำเภอ / ตำบล / รหัสไปรษณีย์', `${provinceText} / ${val('district')} / ${val('subdistrict')} / ${val('postcode')}`);
+  appendReviewRow(s3, 'คำอธิบายสถานที่เกิดเหตุเพิ่มเติม', val('placeDescription'));
+  appendReviewRow(s3, 'ความประสงค์ให้ดำเนินการ', val('desiredAction'));
+  appendReviewRow(s3, 'เอกสารแนบ', `${uploadedFiles.length} ไฟล์`);
+}
+
+// --- tracking QR: PACC-themed receipt card (navy/gold, no external images to avoid canvas-export tainting) ---
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function drawPaccQrReceipt(qr, serviceNo, pin){
+  const cellSize = 5, qrQuiet = 14;
+  const qrModules = qr.getModuleCount();
+  const qrPx = qrModules * cellSize + qrQuiet * 2;
+  const cardW = qrPx + 40;
+  const headerH = 50;
+  const qrTop = headerH + 20;
+  const numY = qrTop + qrPx + 20;
+  const numH = 36;
+  const cardH = numY + numH + 26;
+  const scale = 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = cardW * scale;
+  canvas.height = cardH * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+  const fontFace = '"Sarabun",-apple-system,"Segoe UI",sans-serif';
+
+  // card background with soft shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(10,38,71,.22)';
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 6;
+  ctx.fillStyle = '#ffffff';
+  roundRectPath(ctx, 0, 0, cardW, cardH, 18);
+  ctx.fill();
+  ctx.restore();
+
+  // navy header with gold accent line, clipped to the card's rounded shape
+  ctx.save();
+  roundRectPath(ctx, 0, 0, cardW, cardH, 18);
+  ctx.clip();
+  const headerGrad = ctx.createLinearGradient(0, 0, cardW, 0);
+  headerGrad.addColorStop(0, '#0a2647');
+  headerGrad.addColorStop(1, '#123b63');
+  ctx.fillStyle = headerGrad;
+  ctx.fillRect(0, 0, cardW, headerH);
+  ctx.fillStyle = '#c9a227';
+  ctx.fillRect(0, headerH - 3, cardW, 3);
+  ctx.restore();
+
+  // header text
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#e6c765';
+  ctx.font = `700 11px ${fontFace}`;
+  ctx.fillText('สำนักงาน ป.ป.ท.', cardW / 2, headerH / 2 - 9);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 15px ${fontFace}`;
+  ctx.fillText('ใบรับเรื่องร้องเรียน · E-CMIS', cardW / 2, headerH / 2 + 9);
+
+  // QR code framed with a rounded gold border
+  const qrX = (cardW - qrPx) / 2, qrY = qrTop;
+  ctx.strokeStyle = '#c9a227';
+  ctx.lineWidth = 1.5;
+  roundRectPath(ctx, qrX - 6, qrY - 6, qrPx + 12, qrPx + 12, 10);
+  ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(qrX, qrY, qrPx, qrPx);
+  ctx.fillStyle = '#0a2647';
+  for(let r = 0; r < qrModules; r++){
+    for(let c = 0; c < qrModules; c++){
+      if(qr.isDark(r, c)) ctx.fillRect(qrX + qrQuiet + c * cellSize, qrY + qrQuiet + r * cellSize, cellSize, cellSize);
+    }
+  }
+
+  // service number / tracking pin, in a soft gold pill
+  const numText = `${serviceNo}   ${pin}`;
+  ctx.font = `800 21px ${fontFace}`;
+  const numTextW = ctx.measureText(numText).width;
+  const pillW = numTextW + 44, pillX = (cardW - pillW) / 2;
+  ctx.fillStyle = 'rgba(201,162,39,.12)';
+  roundRectPath(ctx, pillX, numY, pillW, numH, numH / 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201,162,39,.45)';
+  ctx.lineWidth = 1;
+  roundRectPath(ctx, pillX, numY, pillW, numH, numH / 2);
+  ctx.stroke();
+  ctx.fillStyle = '#0a2647';
+  ctx.fillText(numText, cardW / 2, numY + numH / 2 + 1);
+
+  // caption
+  ctx.fillStyle = '#6b7280';
+  ctx.font = `600 10.5px ${fontFace}`;
+  ctx.fillText('เลขรับบริการ · รหัสติดตาม', cardW / 2, numY + numH + 15);
+
+  return canvas.toDataURL('image/png');
 }
 
 // --- step 2 -> submit ---
@@ -1436,18 +2075,7 @@ function submitComplaint(){
         const qr = qrcode(0, 'M');
         qr.addData(trackingUrl);
         qr.make();
-        const cellSize=5,margin=12,textH=44,qrPx=qr.getModuleCount()*cellSize+margin*2;
-        const canvas=document.createElement('canvas');
-        canvas.width=qrPx;canvas.height=qrPx+textH;
-        const ctx=canvas.getContext('2d');
-        ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle='#000000';
-        for(let r=0;r<qr.getModuleCount();r++)for(let c=0;c<qr.getModuleCount();c++)if(qr.isDark(r,c))ctx.fillRect(c*cellSize+margin,r*cellSize+margin,cellSize,cellSize);
-        ctx.fillStyle='#0b2e59';ctx.font='700 21px -apple-system,Segoe UI,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(`${trackingPair.yearSequence}  ${trackingPair.pin}`,canvas.width/2,qrPx+16);
-        ctx.fillStyle='#6b7280';ctx.font='12px -apple-system,Segoe UI,sans-serif';
-        ctx.fillText('เลขรับบริการ · รหัสติดตาม',canvas.width/2,qrPx+33);
-        qrImg.src=canvas.toDataURL('image/png');
+        qrImg.src = drawPaccQrReceipt(qr, trackingPair.yearSequence, trackingPair.pin);
         qrImg.classList.remove('d-none');
         document.getElementById('trackingLink').href = trackingUrl;
         document.getElementById('trackingSaveActions').classList.remove('d-none');

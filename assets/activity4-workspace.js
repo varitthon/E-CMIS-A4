@@ -1051,7 +1051,7 @@
     const regionalIntake=intakeRole==='regional-officer';
     const regionalRegion=REGIONAL_REGIONS.includes(requestedRegion)?requestedRegion:'เขต 1';
     document.body.classList.add('walkin-mode');
-    const shell=document.createElement('div');shell.className='a4-walkin-shell';shell.innerHTML=`${header(false)}<main class="ws-container"><div class="ws-page-head"><div><p class="ws-kicker">ช่องทางรับเรื่อง</p><h1>บันทึกข้อมูลเรื่องร้องเรียน</h1><p>กรอกข้อมูล ตรวจสอบเอกสาร และลงรับเรื่องเพื่อออกใบแจ้งเลขติดตาม</p></div></div><div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">1-02 / แบบแจ้งการร้องเรียน/เบาะแส</p><h2>ข้อมูลเรื่องร้องเรียน</h2></div><span class="ws-status">กำลังจัดทำ</span></header><div class="ws-editor-body"><div class="ws-section"><h3>ข้อมูลผู้ร้อง</h3><div class="ws-grid-2"><div class="ws-field"><label>ชื่อ-นามสกุลผู้ร้อง</label><input id="wiComplainant" value="นายสมชาย ใจดี"></div><div class="ws-field"><label>เลขบัตรประชาชน</label><input id="wiCitizen" value="1-1001-00123-45-6"></div><div class="ws-field"><label>โทรศัพท์</label><input id="wiPhone" value="0812345678"></div><div class="ws-field"><label>อีเมล</label><input id="wiEmail" value="somchai@example.com"></div></div></div><div class="ws-section"><h3>รายละเอียดคำร้อง</h3><div class="ws-grid-2"><div class="ws-field ws-field-full"><label>ชื่อเรื่องร้องเรียน</label><input id="wiSubject" value="ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ"></div><div class="ws-field"><label>ชื่อผู้ถูกร้อง/หน่วยงาน</label><input id="wiAccused" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>ตำแหน่ง/สังกัด</label><input id="wiPosition" value="เจ้าหน้าที่ผู้รับผิดชอบโครงการ"></div><div class="ws-field ws-field-full"><label>รายละเอียดพฤติการณ์</label><textarea id="wiDetail">ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง</textarea><small>ระบุบุคคล การกระทำ วันเวลา สถานที่ และความเกี่ยวข้องกับผู้ร้องให้ชัดเจน</small></div><div class="ws-field ws-field-full"><label>สถานที่เกิดเหตุ</label><input id="wiPlace" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>จังหวัด</label><input id="wiProvince" list="wiProvinceOptions" autocomplete="off" placeholder="ระบุจังหวัด"><datalist id="wiProvinceOptions"></datalist></div><div class="ws-field"><label>อำเภอ/เขต</label><input id="wiDistrict" list="wiDistrictOptions" autocomplete="off" placeholder="ระบุอำเภอ/เขต"><datalist id="wiDistrictOptions"></datalist></div><div class="ws-field"><label>ตำบล/แขวง</label><input id="wiSubdistrict" list="wiSubdistrictOptions" autocomplete="off" placeholder="ระบุตำบล/แขวง"><datalist id="wiSubdistrictOptions"></datalist></div><div class="ws-field"><label>รหัสไปรษณีย์</label><input id="wiPostcode" readonly placeholder="รหัสไปรษณีย์"></div><div class="ws-field"><label>ความเสียหาย/ความเดือดร้อน</label><textarea id="wiDamage">เกิดความเสียหายต่องบประมาณของหน่วยงาน</textarea></div><div class="ws-field"><label>ความประสงค์ของผู้ร้อง</label><textarea id="wiRequest">ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง</textarea></div></div></div><div class="ws-section"><h3>เอกสารและเจ้าหน้าที่ผู้รับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label>เอกสารแนบ</label><input id="wiFiles" type="file" multiple></div><div class="ws-field"><label>เจ้าหน้าที่ผู้รับเรื่อง</label><select id="wiOfficer">${OFFICERS.map(x=>`<option>${x}</option>`).join('')}</select></div></div></div></div></section><aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs"><button class="ws-doc-tab active" data-wi-tab="complaint">แบบคำร้องเรียน</button><button class="ws-doc-tab" data-wi-tab="receipt">58/2-02 ใบติดตาม</button></div><span class="ws-status" id="wiDocStatus">ยังไม่ลงรับ</span></div><div class="ws-paper-stage" id="wiPreview"></div></aside></div></main><div class="ws-actions"><button class="ws-button secondary" id="wiDraft">บันทึกร่าง</button><button class="ws-button secondary" id="wiPrint">พิมพ์เอกสาร</button><button class="ws-button primary" id="wiReceive">ลงรับและออกเอกสารติดตาม</button></div>`;document.body.appendChild(shell);
+    const shell=document.createElement('div');shell.className='a4-walkin-shell';shell.innerHTML=`${header(false)}<main class="ws-container"><div class="ws-page-head"><div><p class="ws-kicker">ช่องทางรับเรื่อง</p><h1>บันทึกข้อมูลเรื่องร้องเรียน</h1><p>กรอกข้อมูล ตรวจสอบเอกสาร และลงรับเรื่องเพื่อออกใบแจ้งเลขติดตาม</p></div></div><div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">1-02 / แบบแจ้งการร้องเรียน/เบาะแส</p><h2>ข้อมูลเรื่องร้องเรียน</h2></div><span class="ws-status">กำลังจัดทำ</span></header><div class="ws-editor-body"><div class="ws-section"><h3>ข้อมูลผู้ร้อง</h3><div class="ws-grid-2"><div class="ws-field"><label>ชื่อ-นามสกุลผู้ร้อง</label><input id="wiComplainant" value="นายสมชาย ใจดี"></div><div class="ws-field"><label>เลขบัตรประชาชน</label><input id="wiCitizen" value="1-1001-00123-45-6"></div><div class="ws-field"><label>โทรศัพท์</label><input id="wiPhone" value="0812345678"></div><div class="ws-field"><label>อีเมล</label><input id="wiEmail" value="somchai@example.com"></div></div></div><div class="ws-section"><h3>รายละเอียดคำร้อง</h3><div class="ws-grid-2"><div class="ws-field ws-field-full"><label>ชื่อเรื่องร้องเรียน</label><input id="wiSubject" value="ร้องเรียนการจัดซื้อวัสดุสำนักงานไม่เป็นไปตามระเบียบ"></div><div class="ws-field"><label>ชื่อผู้ถูกร้อง/หน่วยงาน</label><input id="wiAccused" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>ตำแหน่ง/สังกัด</label><input id="wiPosition" value="เจ้าหน้าที่ผู้รับผิดชอบโครงการ"></div><div class="ws-field ws-field-full"><label>รายละเอียดพฤติการณ์</label><textarea id="wiDetail">ผู้ถูกร้องมีพฤติการณ์จัดซื้อวัสดุสำนักงานโดยไม่ปฏิบัติตามระเบียบและอาจเอื้อประโยชน์แก่ผู้เสนอราคารายหนึ่ง</textarea><small>ระบุบุคคล การกระทำ วันเวลา สถานที่ และความเกี่ยวข้องกับผู้ร้องให้ชัดเจน</small></div><div class="ws-field ws-field-full"><label>วัน–เวลาเกิดเหตุ</label><div class="incident-datetime"><div class="thai-date-field"><button type="button" class="thai-date-display" id="wiIncidentDateTrigger"><span id="wiIncidentDateDisplayText">เลือกวันที่เกิดเหตุ</span></button><input type="hidden" id="wiIncidentDate"><div class="thai-calendar-popover ws-hidden" id="wiThaiCalendarPopover" role="dialog" aria-label="เลือกวันที่เกิดเหตุ (ปฏิทินไทย)"><div class="tc-header"><button type="button" class="tc-nav" id="wiTcPrevMonth" aria-label="เดือนก่อนหน้า">‹</button><div class="tc-title-selects"><select class="tc-select" id="wiTcMonthSelect" aria-label="เลือกเดือน"></select><select class="tc-select" id="wiTcYearSelect" aria-label="เลือกปี พ.ศ."></select></div><button type="button" class="tc-nav" id="wiTcNextMonth" aria-label="เดือนถัดไป">›</button></div><div class="tc-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div><div class="tc-days" id="wiTcDays"></div><div class="tc-footer"><button type="button" class="tc-today-btn" id="wiTcToday">วันนี้</button></div></div></div><div class="thai-time-field"><button type="button" class="thai-time-trigger" id="wiIncidentTimeTrigger"><span id="wiIncidentTimeDisplayText">เลือกเวลา</span><span class="thai-time-badge">24 ชม.</span></button><div class="time-picker-popover ws-hidden" id="wiTimePickerPopover" role="dialog" aria-label="เลือกเวลา (24 ชั่วโมง)"><div class="tp-title">เลือกเวลาที่เกิดเหตุ <span class="tp-24-badge">24 ชม.</span></div><div class="tp-manual-entry"><input type="text" inputmode="numeric" maxlength="2" class="tp-manual-input" id="wiTpHourInput" aria-label="พิมพ์ชั่วโมง"><span class="tp-manual-colon">:</span><input type="text" inputmode="numeric" maxlength="2" class="tp-manual-input" id="wiTpMinuteInput" aria-label="พิมพ์นาที"><span class="tp-manual-unit">น.</span></div><div class="tp-wheels"><div class="tp-wheel-highlight"></div><div class="tp-wheel-wrap"><div class="tp-wheel-col" id="wiTpHourWheel"><div class="tp-wheel-track" id="wiTpHourTrack"></div></div><div class="tp-wheel-fade tp-wheel-fade-top"></div><div class="tp-wheel-fade tp-wheel-fade-bottom"></div></div><div class="tp-wheel-colon">:</div><div class="tp-wheel-wrap"><div class="tp-wheel-col" id="wiTpMinuteWheel"><div class="tp-wheel-track" id="wiTpMinuteTrack"></div></div><div class="tp-wheel-fade tp-wheel-fade-top"></div><div class="tp-wheel-fade tp-wheel-fade-bottom"></div></div><div class="tp-wheel-unit">น.</div></div><div class="tp-actions"><button type="button" class="tp-btn tp-btn-ghost" id="wiTpDismiss">ปิดตัวเลือก</button><button type="button" class="tp-btn tp-btn-ghost" id="wiTpClear">ล้างค่า</button><button type="button" class="tp-btn tp-btn-primary" id="wiTpConfirm">ยืนยันการเลือก</button></div></div></div></div><button type="button" class="wi-clear-datetime" id="wiClearDateTime">ล้างค่า</button></div><div class="ws-field ws-field-full"><label>สถานที่เกิดเหตุ</label><input id="wiPlace" value="สำนักงานจัดการทรัพย์สินภาครัฐ"></div><div class="ws-field"><label>จังหวัด</label><input id="wiProvince" list="wiProvinceOptions" autocomplete="off" placeholder="ระบุจังหวัด"><datalist id="wiProvinceOptions"></datalist></div><div class="ws-field"><label>อำเภอ/เขต</label><input id="wiDistrict" list="wiDistrictOptions" autocomplete="off" placeholder="ระบุอำเภอ/เขต"><datalist id="wiDistrictOptions"></datalist></div><div class="ws-field"><label>ตำบล/แขวง</label><input id="wiSubdistrict" list="wiSubdistrictOptions" autocomplete="off" placeholder="ระบุตำบล/แขวง"><datalist id="wiSubdistrictOptions"></datalist></div><div class="ws-field"><label>รหัสไปรษณีย์</label><input id="wiPostcode" readonly placeholder="รหัสไปรษณีย์"></div><div class="ws-field"><label>ความเสียหาย/ความเดือดร้อน</label><textarea id="wiDamage">เกิดความเสียหายต่องบประมาณของหน่วยงาน</textarea></div><div class="ws-field"><label>ความประสงค์ของผู้ร้อง</label><textarea id="wiRequest">ขอให้ตรวจสอบกระบวนการจัดซื้อและผู้เกี่ยวข้อง</textarea></div></div></div><div class="ws-section"><h3>เอกสารและเจ้าหน้าที่ผู้รับเรื่อง</h3><div class="ws-grid-2"><div class="ws-field"><label>เอกสารแนบ</label><input id="wiFiles" type="file" multiple></div><div class="ws-field"><label>เจ้าหน้าที่ผู้รับเรื่อง</label><select id="wiOfficer">${OFFICERS.map(x=>`<option>${x}</option>`).join('')}</select></div></div></div></div></section><aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs"><button class="ws-doc-tab active" data-wi-tab="complaint">แบบคำร้องเรียน</button><button class="ws-doc-tab" data-wi-tab="receipt">58/2-02 ใบติดตาม</button></div><span class="ws-status" id="wiDocStatus">ยังไม่ลงรับ</span></div><div class="ws-paper-stage" id="wiPreview"></div></aside></div></main><div class="ws-actions"><button class="ws-button secondary" id="wiDraft">บันทึกร่าง</button><button class="ws-button secondary" id="wiPrint">พิมพ์เอกสาร</button><button class="ws-button primary" id="wiReceive">ลงรับและออกเอกสารติดตาม</button></div>`;document.body.appendChild(shell);
     [['wiSubject','ผู้ช่วยอัจฉริยะสำหรับหัวข้อเรื่อง'],['wiDetail','ผู้ช่วยอัจฉริยะสำหรับรายละเอียดพฤติการณ์'],['wiDamage','ผู้ช่วยอัจฉริยะสำหรับความเสียหาย'],['wiRequest','ผู้ช่วยอัจฉริยะสำหรับความประสงค์ของผู้ร้อง']].forEach(([id,label])=>attachIntelligentSuggestion(id,label));
     let tab='complaint',receipt=null;const val=id=>$(id.startsWith('#')?id:'#'+id)?.value||'';
     const intakeChannels=regionalIntake?REGIONAL_CHANNELS:['Walk-In','สายด่วน 1206','เบอร์โทร ปปท. เขต 1-9','Email','สปน. 1111','Traffy Fondue','ศปท. ป.ป.ท.','การข่าวภายใน ป.ป.ท.','ศนธ. / กนป.','เครือข่ายภาคประชาชน','ข้อสั่งการ','หนังสือจากหน่วยงานอื่น','จดหมาย','ม.62 (ป.ป.ช.)'];
@@ -1188,7 +1188,7 @@
           <p class="petition-inline-sign">ลงชื่อ...(ผู้ร้อง)....................................................</p>
         </section>
         <section class="petition-section petition-followup">
-          <p><strong>วันเวลาเกิดเหตุ</strong>&nbsp;&nbsp; วันที่ ................................................................... เวลาเกิดเหตุ ................................................</p>
+          <p><strong>วันเวลาเกิดเหตุ</strong>&nbsp;&nbsp; วันที่ ${field(formatThaiBEDateWi(val('wiIncidentDate')))} เวลาเกิดเหตุ ${field(wiIncidentTimeText())}</p>
           <p><strong>สถานที่เกิดเหตุ</strong>&nbsp;&nbsp; ตำบล ${field(val('wiSubdistrict'))} อำเภอ ${field(val('wiDistrict'))} จังหวัด ${field(val('wiProvince'))}</p>
           <p><strong>ความเดือดร้อนเสียหายที่ได้รับ</strong> ${field(val('wiDamage'))}</p>
           <p><strong>มีความประสงค์ให้สำนักงาน ป.ป.ท. ดำเนินการ</strong> ${field(val('wiRequest'))}</p>
@@ -1200,6 +1200,195 @@
       </article>`;
     };
     const render=()=>{$('#wiPreview').innerHTML=tab==='receipt'&&receipt?receiptPaper(receipt,receipt.qr):complaintPaper()};$$('input,textarea,select',shell).forEach(x=>x.addEventListener('input',render));$$('[data-wi-tab]',shell).forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.wiTab;$$('[data-wi-tab]',shell).forEach(x=>x.classList.toggle('active',x===b));render()}));
+
+    // --- incident date/time: Thai Buddhist-Era calendar + 24-hour wheel time picker (matches public complaint form) ---
+    const WI_THAI_MONTH_NAMES=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const wiPad2=n=>String(n).padStart(2,'0');
+    const wiIsoOf=(y,m,d)=>`${y}-${wiPad2(m+1)}-${wiPad2(d)}`;
+    const wiTodayISO=()=>{const t=new Date();return wiIsoOf(t.getFullYear(),t.getMonth(),t.getDate())};
+    function formatThaiBEDateWi(isoDate){
+      if(!isoDate)return '';
+      const [y,m,d]=isoDate.split('-').map(Number);
+      return `${d} ${WI_THAI_MONTH_NAMES[m-1]} พ.ศ. ${y+543}`;
+    }
+    const wiIncidentDateInput=$('#wiIncidentDate',shell);
+    function updateWiIncidentDateDisplay(){
+      const formatted=formatThaiBEDateWi(wiIncidentDateInput.value);
+      $('#wiIncidentDateDisplayText',shell).textContent=formatted||'เลือกวันที่เกิดเหตุ';
+    }
+    const wiCalView={year:new Date().getFullYear(),month:new Date().getMonth()};
+    function wiInitCalendarSelects(){
+      const monthSel=$('#wiTcMonthSelect',shell);
+      monthSel.replaceChildren(...WI_THAI_MONTH_NAMES.map((name,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=name;return opt}));
+      const yearSel=$('#wiTcYearSelect',shell);
+      const currentBEYear=new Date().getFullYear()+543;
+      const yearOptions=[];for(let beYear=currentBEYear;beYear>=currentBEYear-100;beYear--)yearOptions.push(beYear);
+      yearSel.replaceChildren(...yearOptions.map(beYear=>{const opt=document.createElement('option');opt.value=String(beYear-543);opt.textContent=String(beYear);return opt}));
+      monthSel.addEventListener('change',()=>{wiCalView.month=Number(monthSel.value);wiRenderCalendar()});
+      yearSel.addEventListener('change',()=>{wiCalView.year=Number(yearSel.value);wiRenderCalendar()});
+    }
+    function wiRenderCalendar(){
+      $('#wiTcMonthSelect',shell).value=String(wiCalView.month);
+      $('#wiTcYearSelect',shell).value=String(wiCalView.year);
+      const daysWrap=$('#wiTcDays',shell);
+      daysWrap.replaceChildren();
+      const firstWeekday=new Date(wiCalView.year,wiCalView.month,1).getDay();
+      const daysInMonth=new Date(wiCalView.year,wiCalView.month+1,0).getDate();
+      const selectedISO=wiIncidentDateInput.value;
+      const nowISO=wiTodayISO();
+      for(let i=0;i<firstWeekday;i++){const empty=document.createElement('div');empty.className='tc-day tc-day-empty';daysWrap.appendChild(empty)}
+      for(let d=1;d<=daysInMonth;d++){
+        const iso=wiIsoOf(wiCalView.year,wiCalView.month,d);
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='tc-day';btn.textContent=String(d);
+        if(iso===nowISO)btn.classList.add('tc-day-today');
+        if(iso===selectedISO)btn.classList.add('tc-day-selected');
+        btn.addEventListener('click',()=>wiSelectDate(iso));
+        daysWrap.appendChild(btn);
+      }
+    }
+    function wiSelectDate(iso){
+      wiIncidentDateInput.value=iso;
+      updateWiIncidentDateDisplay();
+      wiCloseDatePicker();
+      render();
+    }
+    function wiChangeCalMonth(delta){
+      wiCalView.month+=delta;
+      if(wiCalView.month<0){wiCalView.month=11;wiCalView.year--}
+      if(wiCalView.month>11){wiCalView.month=0;wiCalView.year++}
+      wiRenderCalendar();
+    }
+    $('#wiTcPrevMonth',shell).addEventListener('click',()=>wiChangeCalMonth(-1));
+    $('#wiTcNextMonth',shell).addEventListener('click',()=>wiChangeCalMonth(1));
+    $('#wiTcToday',shell).addEventListener('click',()=>{const t=new Date();wiCalView.year=t.getFullYear();wiCalView.month=t.getMonth();wiSelectDate(wiTodayISO())});
+    function wiOnDocClickCloseCalendar(evt){if(!evt.target.closest('.thai-date-field'))wiCloseDatePicker()}
+    function wiOpenDatePicker(){
+      const existing=wiIncidentDateInput.value;
+      const base=existing?new Date(existing):new Date();
+      wiCalView.year=base.getFullYear();wiCalView.month=base.getMonth();
+      wiRenderCalendar();
+      $('#wiThaiCalendarPopover',shell).classList.remove('ws-hidden');
+      document.addEventListener('click',wiOnDocClickCloseCalendar);
+    }
+    function wiCloseDatePicker(){
+      $('#wiThaiCalendarPopover',shell).classList.add('ws-hidden');
+      document.removeEventListener('click',wiOnDocClickCloseCalendar);
+    }
+    function wiToggleDatePicker(){$('#wiThaiCalendarPopover',shell).classList.contains('ws-hidden')?wiOpenDatePicker():wiCloseDatePicker()}
+    $('#wiIncidentDateTrigger',shell).addEventListener('click',evt=>{evt.stopPropagation();wiToggleDatePicker()});
+    wiInitCalendarSelects();
+    updateWiIncidentDateDisplay();
+
+    const WI_WHEEL_ITEM_HEIGHT=38;
+    const wiTimePickerState={hour:null,minute:null,confirmedHour:null,confirmedMinute:null};
+    function updateWiIncidentTimeDisplay(){
+      const {confirmedHour:h,confirmedMinute:m}=wiTimePickerState;
+      $('#wiIncidentTimeDisplayText',shell).textContent=(h!==null&&m!==null)?`${wiPad2(h)} : ${wiPad2(m)} น.`:'เลือกเวลา';
+    }
+    function wiIncidentTimeText(){
+      const {confirmedHour:h,confirmedMinute:m}=wiTimePickerState;
+      return (h!==null&&m!==null)?`${wiPad2(h)}:${wiPad2(m)} น.`:'';
+    }
+    function wiInitWheel(colEl,trackEl,count,formatter,onChange){
+      trackEl.replaceChildren();
+      for(let i=0;i<count;i++){
+        const item=document.createElement('div');
+        item.className='tp-wheel-item';item.textContent=formatter(i);item.dataset.value=String(i);
+        trackEl.appendChild(item);
+      }
+      const items=trackEl.children;
+      let dragging=false,moved=false,startY=0,startScroll=0,scrollEndTimer=null;
+      function nearestIndex(){return Math.max(0,Math.min(count-1,Math.round(colEl.scrollTop/WI_WHEEL_ITEM_HEIGHT)))}
+      function highlightActive(){const idx=nearestIndex();for(let i=0;i<items.length;i++)items[i].classList.toggle('active',i===idx);return idx}
+      function snapTo(index,smooth){colEl.scrollTo({top:Math.max(0,Math.min(count-1,index))*WI_WHEEL_ITEM_HEIGHT,behavior:smooth?'smooth':'auto'})}
+      colEl.addEventListener('scroll',()=>{
+        onChange(highlightActive(),false);
+        if(dragging)return;
+        clearTimeout(scrollEndTimer);
+        scrollEndTimer=setTimeout(()=>{const idx=nearestIndex();snapTo(idx,true);onChange(idx,true)},120);
+      });
+      colEl.addEventListener('pointerdown',evt=>{
+        dragging=true;moved=false;startY=evt.clientY;startScroll=colEl.scrollTop;
+        colEl.classList.add('dragging');colEl.setPointerCapture(evt.pointerId);
+      });
+      colEl.addEventListener('pointermove',evt=>{
+        if(!dragging)return;
+        const dy=evt.clientY-startY;if(Math.abs(dy)>2)moved=true;
+        colEl.scrollTop=startScroll-dy;
+      });
+      function endDrag(){
+        if(!dragging)return;dragging=false;colEl.classList.remove('dragging');
+        const idx=nearestIndex();snapTo(idx,true);onChange(idx,true);
+      }
+      colEl.addEventListener('pointerup',endDrag);
+      colEl.addEventListener('pointercancel',endDrag);
+      colEl.addEventListener('click',evt=>{
+        if(moved)return;
+        const item=evt.target.closest('.tp-wheel-item');if(!item)return;
+        const idx=Number(item.dataset.value);snapTo(idx,true);onChange(idx,true);
+      });
+      return {setValue(idx,smooth){snapTo(idx,!!smooth);highlightActive()}};
+    }
+    const wiTpHourInput=$('#wiTpHourInput',shell);
+    const wiTpMinuteInput=$('#wiTpMinuteInput',shell);
+    const wiHourWheelApi=wiInitWheel($('#wiTpHourWheel',shell),$('#wiTpHourTrack',shell),24,wiPad2,idx=>{wiTimePickerState.hour=idx;wiTpHourInput.value=wiPad2(idx)});
+    const wiMinuteWheelApi=wiInitWheel($('#wiTpMinuteWheel',shell),$('#wiTpMinuteTrack',shell),60,wiPad2,idx=>{wiTimePickerState.minute=idx;wiTpMinuteInput.value=wiPad2(idx)});
+    function wiWireManualTimeInput(inputEl,max,wheelApi,setter){
+      inputEl.addEventListener('input',()=>{inputEl.value=inputEl.value.replace(/\D/g,'').slice(0,2)});
+      inputEl.addEventListener('change',()=>{
+        const n=parseInt(inputEl.value,10);
+        if(isNaN(n)){inputEl.value=wiPad2(setter(null)??0);return}
+        const clamped=Math.max(0,Math.min(max,n));
+        setter(clamped);inputEl.value=wiPad2(clamped);wheelApi.setValue(clamped,true);
+      });
+      inputEl.addEventListener('keydown',evt=>{if(evt.key==='Enter')inputEl.blur()});
+    }
+    wiWireManualTimeInput(wiTpHourInput,23,wiHourWheelApi,v=>{if(v!==null)wiTimePickerState.hour=v;return wiTimePickerState.hour});
+    wiWireManualTimeInput(wiTpMinuteInput,59,wiMinuteWheelApi,v=>{if(v!==null)wiTimePickerState.minute=v;return wiTimePickerState.minute});
+    function wiOnDocClickCloseTimePicker(evt){if(!evt.target.closest('.thai-time-field'))wiCloseTimePickerPopover()}
+    function wiToggleTimePicker(){$('#wiTimePickerPopover',shell).classList.contains('ws-hidden')?wiOpenTimePicker():wiCloseTimePickerPopover()}
+    function wiOpenTimePicker(){
+      const now=new Date();
+      const h=wiTimePickerState.confirmedHour!==null?wiTimePickerState.confirmedHour:now.getHours();
+      const m=wiTimePickerState.confirmedMinute!==null?wiTimePickerState.confirmedMinute:now.getMinutes();
+      wiTimePickerState.hour=h;wiTimePickerState.minute=m;
+      wiTpHourInput.value=wiPad2(h);wiTpMinuteInput.value=wiPad2(m);
+      $('#wiTimePickerPopover',shell).classList.remove('ws-hidden');
+      document.addEventListener('click',wiOnDocClickCloseTimePicker);
+      requestAnimationFrame(()=>{wiHourWheelApi.setValue(h);wiMinuteWheelApi.setValue(m)});
+    }
+    function wiCloseTimePickerPopover(){
+      $('#wiTimePickerPopover',shell).classList.add('ws-hidden');
+      document.removeEventListener('click',wiOnDocClickCloseTimePicker);
+    }
+    $('#wiIncidentTimeTrigger',shell).addEventListener('click',evt=>{evt.stopPropagation();wiToggleTimePicker()});
+    $('#wiTpDismiss',shell).addEventListener('click',()=>wiCloseTimePickerPopover());
+    $('#wiTpClear',shell).addEventListener('click',()=>{
+      wiTimePickerState.hour=null;wiTimePickerState.minute=null;
+      wiTimePickerState.confirmedHour=null;wiTimePickerState.confirmedMinute=null;
+      updateWiIncidentTimeDisplay();
+      wiCloseTimePickerPopover();
+      render();
+    });
+    $('#wiTpConfirm',shell).addEventListener('click',()=>{
+      wiTimePickerState.confirmedHour=wiTimePickerState.hour;
+      wiTimePickerState.confirmedMinute=wiTimePickerState.minute;
+      updateWiIncidentTimeDisplay();
+      wiCloseTimePickerPopover();
+      render();
+    });
+    updateWiIncidentTimeDisplay();
+    $('#wiClearDateTime',shell).addEventListener('click',()=>{
+      wiIncidentDateInput.value='';
+      updateWiIncidentDateDisplay();
+      wiTimePickerState.hour=null;wiTimePickerState.minute=null;
+      wiTimePickerState.confirmedHour=null;wiTimePickerState.confirmedMinute=null;
+      updateWiIncidentTimeDisplay();
+      wiCloseDatePicker();wiCloseTimePickerPopover();
+      render();
+    });
+
     $('#wiDraft').onclick=()=>{localStorage.setItem('ecmis-walkin-draft',JSON.stringify({subject:val('wiSubject'),complainant:val('wiComplainant'),detail:val('wiDetail'),channel:val('wiChannel'),region:regionalIntake?regionalRegion:val('wiIntakeRegion')}));notify('success','บันทึกร่างแล้ว','ข้อมูลยังไม่ถูกลงรับและยังไม่ออกเลขติดตาม')};
     $('#wiPrint').onclick=()=>window.print();
     $('#wiReceive').onclick=async()=>{
@@ -1225,7 +1414,7 @@
         try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createDataURL(5,8)}catch{}
       }
       const caseId=pendingAllocation?`ECMIS-${pendingReference}`:`ECMIS-2569-${pair.yearSequence.replace(/\D/g,'').slice(-4).padStart(6,'0')}`;
-      receipt={id:caseId,trackingYear:pair.yearSequence,trackingCode:pair.pin,pendingReference,allocationStatus:pair.allocationStatus,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),citizenId:val('wiCitizen'),identityLast4,id4:isValidThaiCitizenId(citizenDigits)?citizenDigits.slice(-4):'',phone:phoneDigits,anonymousDetected,agency:val('wiAccused'),channel:selectedChannel,province:val('wiProvince'),region:selectedRegion||'ส่วนกลาง',place:val('wiPlace'),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};
+      receipt={id:caseId,trackingYear:pair.yearSequence,trackingCode:pair.pin,pendingReference,allocationStatus:pair.allocationStatus,received:now(),receivingOfficer:val('wiOfficer'),subject:val('wiSubject'),complainant:val('wiComplainant'),citizenId:val('wiCitizen'),identityLast4,id4:isValidThaiCitizenId(citizenDigits)?citizenDigits.slice(-4):'',phone:phoneDigits,anonymousDetected,agency:val('wiAccused'),channel:selectedChannel,province:val('wiProvince'),region:selectedRegion||'ส่วนกลาง',place:val('wiPlace'),incidentDate:val('wiIncidentDate'),incidentTime:wiIncidentTimeText(),detail:val('wiDetail'),damage:val('wiDamage'),request:val('wiRequest'),attachments:[],qr};
       receipt.registry=issueRegistry(selectedChannel,selectedRegion);
       const officeRegNo=val('wiOfficeRegNo');
       if(officeRegNo)receipt.registry.office=officeRegNo;
@@ -1267,7 +1456,7 @@
   }
   function renderStaff(){
     const root=$('#staffApp');if(!root)return;const params=new URLSearchParams(location.search);let selectedRole=params.get('role')||sessionStorage.getItem('ecmis-a4-role')||'admin';let activeRole=selectedRole==='regional-officer'?'officer':selectedRole;let activeRegion=REGIONAL_REGIONS.includes(params.get('region'))?params.get('region'):(sessionStorage.getItem('ecmis-a4-regional-region')||'เขต 1');if(!REGIONAL_REGIONS.includes(activeRegion))activeRegion='เขต 1';let selectedId=params.get('case')||null;let adminQueue=['unassigned','assigned'].includes(params.get('queue'))?params.get('queue'):'unassigned';let filters={};
-    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่องร้องเรียน</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขรับเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น','นนทบุรี'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</option><option>รอ ผู้อำนวยการกองบริหารคดี</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><input id="filterDate" type="date"></div></div></section><nav id="adminQueueTabs" class="admin-queue-tabs ws-hidden" aria-label="คิวมอบหมายงาน"><button type="button" class="admin-queue-tab" data-queue="unassigned">ยังไม่มอบหมาย (0)</button><button type="button" class="admin-queue-tab" data-queue="assigned">มอบหมายแล้ว (0)</button></nav><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับเรื่อง/วันที่</th><th>ผู้ร้องเรียน</th><th>ประเภทผู้ร้อง</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
+    root.innerHTML=`${header(true)}<main class="ws-container"><section id="caseListView"><div class="ws-page-head"><div><p class="ws-kicker">งานรับเรื่องร้องเรียน</p><h1>รายการเรื่องร้องเรียน</h1><p>ค้นหาจากทุกช่องทางและพื้นที่เกิดเหตุ ก่อนเปิดโต๊ะทำสำนวน</p></div><a class="ws-button primary" href="complaint-form.html?mode=walkin">เพิ่มเรื่องร้องเรียน</a></div><section class="ws-dashboard" aria-label="ภาพรวมเรื่องร้องเรียน"><article class="ws-dashboard-card overview"><span>ภาพรวมทั้งหมด</span><strong id="dashboardTotal">0</strong><p>เรื่องทั้งหมด</p><small>รวมทุกช่องทางรับเรื่อง</small></article><article class="ws-dashboard-card pending"><span>รอดำเนินการ</span><strong id="dashboardPending">0</strong><p>รอลงรับและมอบหมาย</p><small>อยู่ในความรับผิดชอบของธุรการ</small></article><article class="ws-dashboard-card reviewing"><span>กำลังพิจารณา</span><strong id="dashboardReview">0</strong><p>อยู่ระหว่างพิจารณา</p><small>เจ้าหน้าที่หรือผู้มีอำนาจกำลังดำเนินการ</small></article><article class="ws-dashboard-card completed"><span>ผลดำเนินการ</span><strong id="dashboardDone">0</strong><p>ดำเนินการเสร็จสิ้น</p><small>มีผลการพิจารณาเรียบร้อยแล้ว</small></article></section><section class="ws-card ws-filters"><div class="ws-filter-grid"><div class="ws-field"><label>คำค้น</label><input id="filterSearch" placeholder="เลขรับเรื่อง ผู้ร้อง ชื่อเรื่อง หรือหน่วยงาน"></div><div class="ws-field"><label>ช่องทาง</label><select id="filterChannel"><option value="">ทุกช่องทาง</option>${['Website','Walk-in','สายด่วน 1206','หนังสือราชการ'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>เขตพื้นที่</label><select id="filterRegion"><option value="">ทุกเขต</option>${['ส่วนกลาง','เขต 1','เขต 2','เขต 3','เขต 4','เขต 5','เขต 6','เขต 7','เขต 8','เขต 9'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>จังหวัดเกิดเหตุ</label><select id="filterProvince"><option value="">ทุกจังหวัด</option>${['กรุงเทพมหานคร','ชลบุรี','นครราชสีมา','ขอนแก่น','นนทบุรี'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>ประเภทเรื่อง</label><select id="filterType"><option value="">ทุกประเภท</option>${['การจัดซื้อจัดจ้าง','ใช้อำนาจโดยมิชอบ','เบิกจ่ายงบประมาณ','เรียกรับผลประโยชน์'].map(x=>`<option>${x}</option>`).join('')}</select></div><div class="ws-field"><label>สถานะ</label><select id="filterStatus"><option value="">ทุกสถานะ</option><option>รอลงรับและมอบหมาย</option><option>รอเจ้าหน้าที่พิจารณา</option><option>รอ ผู้อำนวยการศูนย์รับเรื่องร้องเรียน</option><option>รอ ผู้อำนวยการกองบริหารคดี</option><option>ดำเนินการเสร็จสิ้น</option></select></div><div class="ws-field"><label>ความเสี่ยงเรื่องซ้ำ</label><select id="filterDuplicate"><option value="">ทั้งหมด</option><option value="high">ควรตรวจสอบ</option><option value="low">ยังไม่พบสัญญาณ</option></select></div><div class="ws-field"><label>วันที่ลงรับ</label><div class="thai-date-field"><button type="button" class="thai-date-display" id="filterDateTrigger"><span id="filterDateDisplayText">ทุกวันที่</span></button><input type="hidden" id="filterDate"><div class="thai-calendar-popover ws-hidden" id="filterDateCalendarPopover" role="dialog" aria-label="เลือกวันที่ลงรับ (ปฏิทินไทย)"><div class="tc-header"><button type="button" class="tc-nav" id="filterDateTcPrev" aria-label="เดือนก่อนหน้า">‹</button><div class="tc-title-selects"><select class="tc-select" id="filterDateTcMonth" aria-label="เลือกเดือน"></select><select class="tc-select" id="filterDateTcYear" aria-label="เลือกปี พ.ศ."></select></div><button type="button" class="tc-nav" id="filterDateTcNext" aria-label="เดือนถัดไป">›</button></div><div class="tc-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div><div class="tc-days" id="filterDateTcDays"></div><div class="tc-footer"><button type="button" class="tc-today-btn" id="filterDateTcToday">วันนี้</button><button type="button" class="tc-today-btn" id="filterDateTcClear">ล้างค่า</button></div></div></div></div></div></section><nav id="adminQueueTabs" class="admin-queue-tabs ws-hidden" aria-label="คิวมอบหมายงาน"><button type="button" class="admin-queue-tab" data-queue="unassigned">ยังไม่มอบหมาย (0)</button><button type="button" class="admin-queue-tab" data-queue="assigned">มอบหมายแล้ว (0)</button></nav><section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขรับเรื่อง/วันที่</th><th>ผู้ร้องเรียน</th><th>ประเภทผู้ร้อง</th><th>ชื่อเรื่อง/หน่วยงาน</th><th>สถานที่เกิดเหตุ</th><th>ช่องทาง</th><th>สถานะ</th><th>เรื่องซ้ำ</th></tr></thead><tbody id="caseRows"></tbody></table></div></section></section><section id="caseDetailView" class="ws-hidden"></section></main>`;
     const updateIntakeLink=()=>root.querySelector('a[href^="staff-intake.html"],a[href="complaint-form.html?mode=walkin"]')?.setAttribute('href',selectedRole==='regional-officer'?`staff-intake.html?role=regional-officer&region=${encodeURIComponent(activeRegion)}`:'staff-intake.html');
     updateIntakeLink();
     const roleSelect=$('#wsRole');
@@ -1318,6 +1507,90 @@
     duplicateObserver.observe(root,{childList:true,subtree:true});
     $$('.admin-queue-tab').forEach(tab=>tab.onclick=()=>{adminQueue=tab.dataset.queue;selectedId=null;syncUrl();$('#caseDetailView').classList.add('ws-hidden');$('#caseListView').classList.remove('ws-hidden');renderList()});
     ['Search','Channel','Region','Province','Type','Status','Duplicate','Date'].forEach(x=>{$(`#filter${x}`).addEventListener(x==='Search'?'input':'change',renderList)});
+    // --- filter: วันที่ลงรับ — Thai Buddhist-Era calendar popover (matches complaint-form.html / staff-intake.html) ---
+    const FILTER_THAI_MONTH_NAMES=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const filterDatePad2=n=>String(n).padStart(2,'0');
+    const filterDateIsoOf=(y,m,d)=>`${y}-${filterDatePad2(m+1)}-${filterDatePad2(d)}`;
+    const filterDateTodayISO=()=>{const t=new Date();return filterDateIsoOf(t.getFullYear(),t.getMonth(),t.getDate())};
+    function formatThaiBEDateFilter(isoDate){
+      if(!isoDate)return '';
+      const [y,m,d]=isoDate.split('-').map(Number);
+      return `${d} ${FILTER_THAI_MONTH_NAMES[m-1]} พ.ศ. ${y+543}`;
+    }
+    const filterDateInput=$('#filterDate');
+    function updateFilterDateDisplay(){
+      const formatted=formatThaiBEDateFilter(filterDateInput.value);
+      $('#filterDateDisplayText').textContent=formatted||'ทุกวันที่';
+    }
+    const filterDateCalView={year:new Date().getFullYear(),month:new Date().getMonth()};
+    function filterDateInitSelects(){
+      const monthSel=$('#filterDateTcMonth');
+      monthSel.replaceChildren(...FILTER_THAI_MONTH_NAMES.map((name,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=name;return opt}));
+      const yearSel=$('#filterDateTcYear');
+      const currentBEYear=new Date().getFullYear()+543;
+      const yearOptions=[];for(let beYear=currentBEYear;beYear>=currentBEYear-100;beYear--)yearOptions.push(beYear);
+      yearSel.replaceChildren(...yearOptions.map(beYear=>{const opt=document.createElement('option');opt.value=String(beYear-543);opt.textContent=String(beYear);return opt}));
+      monthSel.addEventListener('change',()=>{filterDateCalView.month=Number(monthSel.value);filterDateRenderCalendar()});
+      yearSel.addEventListener('change',()=>{filterDateCalView.year=Number(yearSel.value);filterDateRenderCalendar()});
+    }
+    function filterDateRenderCalendar(){
+      $('#filterDateTcMonth').value=String(filterDateCalView.month);
+      $('#filterDateTcYear').value=String(filterDateCalView.year);
+      const daysWrap=$('#filterDateTcDays');
+      daysWrap.replaceChildren();
+      const firstWeekday=new Date(filterDateCalView.year,filterDateCalView.month,1).getDay();
+      const daysInMonth=new Date(filterDateCalView.year,filterDateCalView.month+1,0).getDate();
+      const selectedISO=filterDateInput.value;
+      const nowISO=filterDateTodayISO();
+      for(let i=0;i<firstWeekday;i++){const empty=document.createElement('div');empty.className='tc-day tc-day-empty';daysWrap.appendChild(empty)}
+      for(let d=1;d<=daysInMonth;d++){
+        const iso=filterDateIsoOf(filterDateCalView.year,filterDateCalView.month,d);
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='tc-day';btn.textContent=String(d);
+        if(iso===nowISO)btn.classList.add('tc-day-today');
+        if(iso===selectedISO)btn.classList.add('tc-day-selected');
+        btn.addEventListener('click',()=>filterDateSelect(iso));
+        daysWrap.appendChild(btn);
+      }
+    }
+    function filterDateSelect(iso){
+      filterDateInput.value=iso;
+      updateFilterDateDisplay();
+      filterDateClosePicker();
+      filterDateInput.dispatchEvent(new Event('change'));
+    }
+    function filterDateChangeMonth(delta){
+      filterDateCalView.month+=delta;
+      if(filterDateCalView.month<0){filterDateCalView.month=11;filterDateCalView.year--}
+      if(filterDateCalView.month>11){filterDateCalView.month=0;filterDateCalView.year++}
+      filterDateRenderCalendar();
+    }
+    $('#filterDateTcPrev').addEventListener('click',()=>filterDateChangeMonth(-1));
+    $('#filterDateTcNext').addEventListener('click',()=>filterDateChangeMonth(1));
+    $('#filterDateTcToday').addEventListener('click',()=>{const t=new Date();filterDateCalView.year=t.getFullYear();filterDateCalView.month=t.getMonth();filterDateSelect(filterDateTodayISO())});
+    $('#filterDateTcClear').addEventListener('click',()=>{
+      filterDateInput.value='';
+      updateFilterDateDisplay();
+      filterDateClosePicker();
+      filterDateInput.dispatchEvent(new Event('change'));
+    });
+    function filterDateOnDocClick(evt){if(!evt.target.closest('.thai-date-field'))filterDateClosePicker()}
+    function filterDateOpenPicker(){
+      const existing=filterDateInput.value;
+      const base=existing?new Date(existing):new Date();
+      filterDateCalView.year=base.getFullYear();filterDateCalView.month=base.getMonth();
+      filterDateRenderCalendar();
+      $('#filterDateCalendarPopover').classList.remove('ws-hidden');
+      document.addEventListener('click',filterDateOnDocClick);
+    }
+    function filterDateClosePicker(){
+      $('#filterDateCalendarPopover').classList.add('ws-hidden');
+      document.removeEventListener('click',filterDateOnDocClick);
+    }
+    function filterDateTogglePicker(){$('#filterDateCalendarPopover').classList.contains('ws-hidden')?filterDateOpenPicker():filterDateClosePicker()}
+    $('#filterDateTrigger').addEventListener('click',evt=>{evt.stopPropagation();filterDateTogglePicker()});
+    filterDateInitSelects();
+    updateFilterDateDisplay();
     function caseSortTime(caseData){
       const receivedAt=Date.parse(caseData?.receivedAt||"");
       if(Number.isFinite(receivedAt))return receivedAt;
@@ -1421,6 +1694,7 @@
       d.dispatchSendMethod=value('dispatchSendMethod')||d.dispatchSendMethod||'EMS';
       d.dispatchEms=value('dispatchEms')||d.dispatchEms;
       d.dispatchSentDate=value('dispatchSentDate')||d.dispatchSentDate;
+      d.dispatchSentTime=value('dispatchSentTime')||d.dispatchSentTime;
       d.dispatchDestinationUnit=value('dispatchDestinationUnit')||d.dispatchDestinationUnit;
       d.dispatchNote=value('dispatchNote')||d.dispatchNote;
       d.dispatchProofName=$('#dispatchProof')?.files?.[0]?.name||d.dispatchProofName;
@@ -1433,7 +1707,9 @@
       const body=$('.ws-editor-body');if(!body||body.dataset.activity5Dispatch)return;
       body.dataset.activity5Dispatch='true';
       const autoLetterNo=outgoingAt(state,'1-03')||Object.values(d.outgoingNumbers||{})[0]||'';
-      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผู้อำนวยการกองบริหารคดี ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section>${caseIssuanceCard(state)}<section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label><input id="dispatchLetterDate" type="date" value="${escapeHtml(d.dispatchLetterDate||'')}"></div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><input id="dispatchSentDate" type="date" value="${escapeHtml(d.dispatchSentDate||'')}"></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนหลัง ผู้อำนวยการกองบริหารคดี ลงนาม</p><h2>บันทึกข้อมูลจัดส่งไปยังเขตผู้รับผิดชอบ</h2><span>เจ้าหน้าที่รับเรื่อง ศรร. ตรวจสอบปลายทาง กรอกข้อมูลหนังสือและหลักฐานการจัดส่ง ก่อนยืนยันการจัดส่งไปยังเขต</span></section>${caseIssuanceCard(state)}<section class="ws-section"><h3>ข้อมูลหนังสือและการจัดส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือ *</label><input id="dispatchLetterNo" value="${escapeHtml(d.dispatchLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่หนังสือ *</label>${ThaiDatePicker.html('dispatchLetterDate',{value:d.dispatchLetterDate||'',placeholder:'เลือกวันที่หนังสือ'})}</div><div class="ws-field"><label>หน่วยงานหรือเขตปลายทาง *</label><select id="dispatchDestinationUnit"><option value="">เลือกปลายทาง</option>${REGIONS.map(region=>`<option value="${region}" ${(d.dispatchDestinationUnit||d.proposedRegion||state.caseData.region)===region?'selected':''}>${region}</option>`).join('')}</select></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="dispatchSendMethod"><option ${d.dispatchSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.dispatchSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.dispatchSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><div class="incident-datetime">${ThaiDatePicker.html('dispatchSentDate',{value:d.dispatchSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}${ThaiTimePicker.html('dispatchSentTime',{value:d.dispatchSentTime||'',placeholder:'เลือกเวลา',title:'เลือกเวลาที่จัดส่ง'})}</div></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="dispatchEms" value="${escapeHtml(d.dispatchEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="dispatchProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.dispatchProofName||'ยังไม่ได้แนบไฟล์')}</small></div><div class="ws-field ws-field-full"><label>หมายเหตุการจัดส่ง</label><textarea id="dispatchNote">${escapeHtml(d.dispatchNote||'')}</textarea></div></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      ThaiDatePicker.wireAll(body);
+      ThaiTimePicker.wireAll(body);
       if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
       const actions=$('.ws-actions');if(actions)actions.innerHTML=state.workflow.complete?activity5Link(state):'<button class="ws-button secondary" data-action="activity5-dispatch-draft">บันทึกร่างข้อมูลจัดส่ง</button><button class="ws-button primary" data-action="activity5-dispatch-confirm">ยืนยันจัดส่งไปยังเขต</button>';
     }
@@ -1443,7 +1719,8 @@
       if(state.workflow.stage!=='nacc-dispatch')return;
       const body=$('.ws-editor-body');if(!body||body.dataset.naccDispatch)return;
       body.dataset.naccDispatch='true';
-      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนสุดท้าย · ส่งต่อสำนักงาน ป.ป.ช.</p><h2>บันทึกการจัดส่งและแจ้งผลผู้ร้อง</h2><span>ผู้อำนวยการกองบริหารคดี อนุมัติแล้ว เจ้าหน้าที่รับเรื่องเป็นผู้บันทึกหลักฐานการส่ง</span></section><section class="ws-section"><h3>ข้อมูลหนังสือนำส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือส่ง ป.ป.ช. *</label><input id="naccLetterNo" value="${escapeHtml(d.naccLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่ออกหนังสือ *</label><input id="naccLetterDate" type="date" value="${escapeHtml(d.naccLetterDate||'')}"></div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="naccSendMethod"><option ${d.naccSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.naccSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.naccSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label><input id="naccSentDate" type="date" value="${escapeHtml(d.naccSentDate||'')}"></div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="naccEms" value="${escapeHtml(d.naccEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="naccProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.naccProofName||'ยังไม่ได้แนบไฟล์')}</small></div></div></section><section class="ws-section"><h3>ข้อมูลมติบอร์ด</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ/ครั้งที่ประชุม *</label><input id="naccBoardNo" value="${escapeHtml(d.naccBoardNo||'')}" placeholder="เช่น มติครั้งที่ 18/2569"></div><div class="ws-field"><label>วันที่มีมติ *</label><input id="naccBoardDate" type="date" value="${escapeHtml(d.naccBoardDate||'')}"></div><div class="ws-field ws-field-full"><label>ข้อความแจ้งมติบอร์ดแก่ผู้ร้อง</label><textarea id="naccBoardNote">${escapeHtml(d.naccBoardNote||'สำนักงานได้ส่งเรื่องของท่านไปยังสำนักงาน ป.ป.ช. เพื่อดำเนินการตามอำนาจหน้าที่แล้ว')}</textarea></div></div><label class="ws-choice nacc-notify-choice"><input type="checkbox" id="naccNotifyComplainant" ${d.naccNotified===false?'':'checked'}><span><strong>แจ้งผู้ร้องหลังยืนยันการจัดส่ง</strong><small>ผู้ร้องจะเห็นเลขหนังสือ วันที่ส่ง และเลข EMS ในหน้าติดตาม</small></span></label></section><section class="public-result-preview"><span>ข้อมูลที่ผู้ร้องจะเห็น</span><div><p><small>สถานะ</small><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong></p><p><small>เลขหนังสือ</small><strong>${escapeHtml(d.naccLetterNo||'รอบันทึก')}</strong></p><p><small>เลข EMS</small><strong>${escapeHtml(d.naccEms||'รอบันทึก')}</strong></p></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      body.innerHTML=`<section class="nacc-dispatch-hero"><p>ขั้นตอนสุดท้าย · ส่งต่อสำนักงาน ป.ป.ช.</p><h2>บันทึกการจัดส่งและแจ้งผลผู้ร้อง</h2><span>ผู้อำนวยการกองบริหารคดี อนุมัติแล้ว เจ้าหน้าที่รับเรื่องเป็นผู้บันทึกหลักฐานการส่ง</span></section><section class="ws-section"><h3>ข้อมูลหนังสือนำส่ง</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขหนังสือส่ง ป.ป.ช. *</label><input id="naccLetterNo" value="${escapeHtml(d.naccLetterNo||'')}" placeholder="เช่น ปป 0012/2569"></div><div class="ws-field"><label>วันที่ออกหนังสือ *</label>${ThaiDatePicker.html('naccLetterDate',{value:d.naccLetterDate||'',placeholder:'เลือกวันที่ออกหนังสือ'})}</div><div class="ws-field"><label>วิธีจัดส่ง *</label><select id="naccSendMethod"><option ${d.naccSendMethod==='EMS'?'selected':''}>EMS</option><option ${d.naccSendMethod==='ระบบสารบรรณอิเล็กทรอนิกส์'?'selected':''}>ระบบสารบรรณอิเล็กทรอนิกส์</option><option ${d.naccSendMethod==='เจ้าหน้าที่นำส่ง'?'selected':''}>เจ้าหน้าที่นำส่ง</option></select></div><div class="ws-field"><label>วันที่จัดส่ง *</label>${ThaiDatePicker.html('naccSentDate',{value:d.naccSentDate||'',placeholder:'เลือกวันที่จัดส่ง'})}</div><div class="ws-field"><label>เลข EMS / เลขติดตามการส่ง</label><input id="naccEms" value="${escapeHtml(d.naccEms||'')}" placeholder="เช่น ED123456789TH"></div><div class="ws-field"><label>หลักฐานการจัดส่ง</label><input id="naccProof" type="file" accept=".pdf,.jpg,.jpeg,.png"><small>${escapeHtml(d.naccProofName||'ยังไม่ได้แนบไฟล์')}</small></div></div></section><section class="ws-section"><h3>ข้อมูลมติบอร์ด</h3><div class="ws-grid-2"><div class="ws-field"><label>เลขที่มติ/ครั้งที่ประชุม *</label><input id="naccBoardNo" value="${escapeHtml(d.naccBoardNo||'')}" placeholder="เช่น มติครั้งที่ 18/2569"></div><div class="ws-field"><label>วันที่มีมติ *</label>${ThaiDatePicker.html('naccBoardDate',{value:d.naccBoardDate||'',placeholder:'เลือกวันที่มีมติ'})}</div><div class="ws-field ws-field-full"><label>ข้อความแจ้งมติบอร์ดแก่ผู้ร้อง</label><textarea id="naccBoardNote">${escapeHtml(d.naccBoardNote||'สำนักงานได้ส่งเรื่องของท่านไปยังสำนักงาน ป.ป.ช. เพื่อดำเนินการตามอำนาจหน้าที่แล้ว')}</textarea></div></div><label class="ws-choice nacc-notify-choice"><input type="checkbox" id="naccNotifyComplainant" ${d.naccNotified===false?'':'checked'}><span><strong>แจ้งผู้ร้องหลังยืนยันการจัดส่ง</strong><small>ผู้ร้องจะเห็นเลขหนังสือ วันที่ส่ง และเลข EMS ในหน้าติดตาม</small></span></label></section><section class="public-result-preview"><span>ข้อมูลที่ผู้ร้องจะเห็น</span><div><p><small>สถานะ</small><strong>ส่งสำนักงาน ป.ป.ช. แล้ว</strong></p><p><small>เลขหนังสือ</small><strong>${escapeHtml(d.naccLetterNo||'รอบันทึก')}</strong></p><p><small>เลข EMS</small><strong>${escapeHtml(d.naccEms||'รอบันทึก')}</strong></p></div></section><section class="ws-section"><h3>ประวัติการดำเนินการ</h3><ul class="ws-history">${state.decisionHistory.length?state.decisionHistory.map(entry=>`<li>${escapeHtml(entry.text)}<time>${entry.time}</time></li>`).join(''):'<li>ยังไม่มีประวัติ</li>'}</ul></section>`;
+      ThaiDatePicker.wireAll(body);
       const refreshDispatchPreview=()=>{const working=captureNaccDispatch(getState(selectedId));const previewValues=$$('.public-result-preview strong');if(previewValues[1])previewValues[1].textContent=working.documentData.naccLetterNo||'รอบันทึก';if(previewValues[2])previewValues[2].textContent=working.documentData.naccEms||'รอบันทึก';renderDocumentInto($('#paperStage'),documentPaper(working,'1-11',activeRole))};
       $$('input,select,textarea',body).forEach(field=>field.addEventListener('input',refreshDispatchPreview));
       if(state.workflow.complete)$$('input,select,textarea',body).forEach(field=>field.disabled=true);
@@ -1560,6 +1837,13 @@
       d.naccNotified=Boolean($('#naccNotifyComplainant')?.checked);
       return state;
     }
+    function receivedMatchesFilterDate(received,isoDate){
+      const ts=parseThaiReceived(received);
+      if(ts==null)return false;
+      const dt=new Date(ts);
+      const[fy,fm,fd]=isoDate.split('-').map(Number);
+      return dt.getFullYear()===fy&&dt.getMonth()===fm-1&&dt.getDate()===fd;
+    }
     function renderList(){
       const q=$('#filterSearch').value.trim().toLowerCase(),channel=$('#filterChannel').value,region=$('#filterRegion').value,province=$('#filterProvince').value,type=$('#filterType').value,status=$('#filterStatus').value,dup=$('#filterDuplicate').value,date=$('#filterDate').value;
       const cases=allCases(),states=cases.map(c=>getState(c.id));
@@ -1576,7 +1860,7 @@
         tab.setAttribute('aria-current',tab.dataset.queue===adminQueue?'page':'false');
       });
       const queueCases=selectedRole==='admin'?cases.filter(c=>(getState(c.id).assignmentHistory.length>0)===(adminQueue==='assigned')):cases;
-      const rows=queueCases.filter(c=>{const s=getState(c.id);const searchable=[c.id,registryReceiptNumber(c)||'....................',c.complainant,c.subject,c.agency].join(' ').toLowerCase();const risk=analyzeDuplicateCase(c).level==='low'?'low':'high';return(!q||searchable.includes(q))&&(!channel||c.channel===channel)&&(!region||c.region===region)&&(!province||c.province===province)&&(!type||c.type===type)&&(!status||s.workflow.status===status)&&(!dup||risk===dup)&&(!date||c.received.includes(new Date(date).getDate().toString()))});
+      const rows=queueCases.filter(c=>{const s=getState(c.id);const searchable=[c.id,registryReceiptNumber(c)||'....................',c.complainant,c.subject,c.agency].join(' ').toLowerCase();const risk=analyzeDuplicateCase(c).level==='low'?'low':'high';return(!q||searchable.includes(q))&&(!channel||c.channel===channel)&&(!region||c.region===region)&&(!province||c.province===province)&&(!type||c.type===type)&&(!status||s.workflow.status===status)&&(!dup||risk===dup)&&(!date||receivedMatchesFilterDate(c.received,date))});
       $('#caseRows').innerHTML=rows.map(c=>{const s=getState(c.id),analysis=analyzeDuplicateCase(c),risk=analysis.level!=='low',anonymous=s.documentData.anonymous;return `<tr data-case="${c.id}" class="${risk?'duplicate-risk-row':''}" tabindex="0"><td><strong>${registryReceiptNumber(c)||'....................'}</strong><small>${c.received}</small></td><td><strong>${escapeHtml(c.complainant)}</strong><small>${anonymous?'ไม่มีข้อมูลระบุตัวผู้ร้อง':`เลขบัตร •••••••••${c.id4||'ไม่ระบุ'}`}</small></td><td><span class="ws-status ${anonymous?'danger':'success'}">${anonymous?'บัตรสนเท่ห์':'ไม่ใช่บัตรสนเท่ห์'}</span>${c.confidentialityRequested?'<small>ขอปกปิดข้อมูลผู้ร้อง</small>':'<small>ไม่ได้ขอปกปิดข้อมูล</small>'}</td><td><strong>${escapeHtml(c.subject)}</strong><small>${escapeHtml(c.agency)}</small></td><td><strong>${escapeHtml(c.province)}</strong><small>${escapeHtml(c.region)}</small></td><td>${c.channel}</td><td><span class="ws-status ${s.workflow.complete?'success':''}">${s.workflow.status}</span><small>ผู้รับผิดชอบ: ${ROLE_LABELS[s.workflow.owner]||s.workflow.owner}</small></td><td><span class="ws-status ${risk?'danger':'success'}">${risk?`ควรตรวจสอบ ${analysis.score}%`:'ยังไม่พบสัญญาณ'}</span></td></tr>`}).join('')||'<tr><td colspan="8" class="ws-empty">ไม่พบรายการตามเงื่อนไข</td></tr>';
       $$('[data-case]').forEach(r=>{const open=()=>{selectedId=r.dataset.case;syncUrl();renderDetail()};r.onclick=open;r.onkeydown=e=>{if(e.key==='Enter')open()}});
     }
