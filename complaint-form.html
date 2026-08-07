@@ -14,14 +14,14 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <!-- SweetAlert2 -->
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-<link href="assets/ecmis-rich.css?v=20260806j" rel="stylesheet">
-<link href="assets/ecmis-workspace.css?v=20260806j" rel="stylesheet">
-<link href="assets/human-verification.css?v=20260806j" rel="stylesheet">
-<link href="assets/public-form-consistency.css?v=20260806j" rel="stylesheet">
-<script src="assets/ecmis.js?v=20260806j" defer></script>
-<script src="assets/human-verification.js?v=20260806j" defer></script>
-<script src="assets/qrcode-generator.js?v=20260806j" defer></script>
-<script src="assets/activity4-workspace.js?v=20260806j" defer></script>
+<link href="assets/ecmis-rich.css?v=20260806ag" rel="stylesheet">
+<link href="assets/ecmis-workspace.css?v=20260806ag" rel="stylesheet">
+<link href="assets/human-verification.css?v=20260806ag" rel="stylesheet">
+<link href="assets/public-form-consistency.css?v=20260806ag" rel="stylesheet">
+<script src="assets/ecmis.js?v=20260806ag" defer></script>
+<script src="assets/human-verification.js?v=20260806ag" defer></script>
+<script src="assets/qrcode-generator.js?v=20260806ag" defer></script>
+<script src="assets/activity4-workspace.js?v=20260806ag" defer></script>
 
 <style>
 :root{
@@ -1946,6 +1946,56 @@ function submitComplaint(){
     if(res.isConfirmed){
       const trackingPair = window.ECMIS.createTrackingNumber();
       const pendingAllocation = trackingPair.allocationStatus === 'pending';
+      const rawValue = id => document.getElementById(id)?.value.trim() || '';
+      const citizenIdDigits = rawValue('nationalId').replace(/\D/g,'');
+      const phoneDigits = rawValue('phone').replace(/\D/g,'');
+      const complainantName = [rawValue('titlePrefix'), rawValue('firstName'), rawValue('lastName')].filter(Boolean).join(' ');
+      const accused = [...document.querySelectorAll('.accused-card')].map(card => {
+        const values = [...card.querySelectorAll('input')].map(input => input.value.trim());
+        return { name: values[0] || '', position: values[1] || '', agency: values[2] || '', relation: values[3] || '' };
+      }).filter(item => Object.values(item).some(Boolean));
+      const receivedDate = new Date();
+      const received = `${receivedDate.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})} ${receivedDate.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',hour12:false})} น.`;
+      const buddhistYear = receivedDate.getFullYear() + 543;
+      const internalId = pendingAllocation
+        ? `ECMIS-${trackingPair.pendingReference}`
+        : `ECMIS-${buddhistYear}-${trackingPair.yearSequence.slice(-4).padStart(6,'0')}`;
+      const placeParts = [rawValue('incidentPlace'), rawValue('subdistrict'), rawValue('district'), rawValue('province'), rawValue('postcode')].filter(Boolean);
+      const caseData = {
+        id: internalId,
+        trackingYear: trackingPair.yearSequence || '',
+        trackingCode: trackingPair.pin || '',
+        pendingReference: trackingPair.pendingReference || '',
+        allocationStatus: trackingPair.allocationStatus,
+        anonymousDetected: identity.isAnonymous,
+        confidentialityRequested: identity.confidentialityRequested,
+        complainant: identity.isAnonymous ? 'ไม่ระบุข้อมูลผู้ร้อง' : complainantName,
+        citizenId: citizenIdDigits,
+        id4: isValidThaiNationalId(citizenIdDigits) ? citizenIdDigits.slice(-4) : '',
+        phone: phoneDigits,
+        email: rawValue('email'),
+        address: rawValue('address'),
+        subject: rawValue('complaintSubject'),
+        agency: rawValue('agencyName') || accused[0]?.agency || accused[0]?.name || '',
+        channel: 'Website',
+        province: rawValue('province'),
+        district: rawValue('district'),
+        subdistrict: rawValue('subdistrict'),
+        postcode: rawValue('postcode'),
+        region: 'ส่วนกลาง',
+        received,
+        receivedAt: receivedDate.toISOString(),
+        type: 'รอจำแนกประเภท',
+        incidentDate: rawValue('incidentDate'),
+        incidentTime: rawValue('incidentTime'),
+        place: placeParts.join(' '),
+        placeDescription: rawValue('placeDescription'),
+        detail: rawValue('complaintDetail'),
+        damage: '',
+        request: rawValue('desiredAction'),
+        attachments: uploadedFiles.map(file => file.name),
+        accused
+      };
       currentTrackingNo = pendingAllocation
         ? trackingPair.pendingReference
         : `${trackingPair.yearSequence} ${trackingPair.pin}`;
@@ -1957,9 +2007,10 @@ function submitComplaint(){
         confidentialityRequested:identity.confidentialityRequested,
         identityFieldsProvided:identity.providedFields.length,
         identityLast4:identity.isAnonymous?'':identityLast4,
-        id4:isValidThaiNationalId(document.getElementById('nationalId').value.replace(/\D/g,''))?document.getElementById('nationalId').value.replace(/\D/g,'').slice(-4):'',
-        phone:document.getElementById('phone').value.replace(/\D/g,'')
+        id4:caseData.id4,
+        phone:caseData.phone
       });
+      window.ECMIS.saveComplaintToWorkspace(caseData);
       document.getElementById('trackingServiceNo').textContent = trackingPair.yearSequence;
       document.getElementById('trackingGenNo').textContent = trackingPair.pin;
       const qrImg = document.getElementById('trackingQr');

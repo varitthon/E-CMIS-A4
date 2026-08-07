@@ -68,8 +68,20 @@
   function readStore() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
   function writeStore(store) { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
   function readLegacy(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; } }
-  function getState(id) { return readStore()[id] || null; }
+  function getState(id) {
+    const store = readStore();
+    const s = store[id] || null;
+    if (s && normalizeIncomingCase(s)) writeStore(store);
+    return s;
+  }
   function saveState(id, state) { const store = readStore(); store[id] = state; writeStore(store); }
+  function issueOrderNo213() {
+    const buddhistYear = new Date().getFullYear() + 543;
+    const key = `ecmis-a5-order213-sequence-${buddhistYear}`;
+    const next = Math.max(1, Number(localStorage.getItem(key) || 0) + 1);
+    localStorage.setItem(key, String(next));
+    return `คำสั่งที่ ${next}/${buddhistYear}`;
+  }
   function notify(icon, title, text) { if (window.Swal) return Swal.fire({ icon, title, text, confirmButtonText: 'ปิด', confirmButtonColor: '#082b50' }); alert(`${title}\n${text}`); }
   function confirmDo(title, text, confirmButtonText = 'ยืนยัน') { if (!window.Swal) return Promise.resolve({ isConfirmed: confirm(`${title}\n${text}`) }); return Swal.fire({ icon: 'question', title, text, showCancelButton: true, confirmButtonText, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#082b50', cancelButtonColor: '#687789' }); }
   function swalForm(title, html, confirmText = 'ยืนยัน') { if (!window.Swal) return Promise.resolve({ isConfirmed: true, value: {} }); return Swal.fire({ title, html, showCancelButton: true, confirmButtonText: confirmText, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#082b50', cancelButtonColor: '#687789', preConfirm: () => { const out = {}; $$('#swalForm [data-sf]').forEach(el => out[el.dataset.sf] = el.value.trim()); return out; } }); }
@@ -109,7 +121,25 @@
     };
   }
   function ensureInquiry(state) { if (!state.inquiry) state.inquiry = defaultInquiry(state); return state.inquiry; }
+  /* คดีที่ส่งมาจากกิจกรรมที่ 4 (activity5-dispatch, complete) ยังไม่ได้แปลงเป็นสำนวนกิจกรรมที่ 5 —
+   * normalize-on-read ทุกครั้งที่โหลด (ไม่ใช่ one-shot migration) เพื่อไม่ให้ค้างที่ debug fallback */
+  function normalizeIncomingCase(state) {
+    if (state?.workflow?.stage === 'activity5-dispatch' && state.workflow?.complete) {
+      ensureInquiry(state);
+      state.workflow.stage = 'a5-intake';
+      state.workflow.status = 'ส่งถึงเขตผู้รับผิดชอบแล้ว — รอธุรการคดีรับสำนวน';
+      state.workflow.owner = 'clerk';
+      state.workflow.complete = false;
+      return true;
+    }
+    return false;
+  }
   function reportOf(reportType, inquiry) { return reportType === '213' ? inquiry.prelim : inquiry.inquiry644; }
+  /* กลุ่มเฟส 213 (a5-prelim, a5-prelim-review, a7-213) เทียบกับกลุ่มเฟส 644 (a5-inquiry, a5-inquiry-review, a7-644)
+   * ตามการจัดกลุ่มเฟสใน editorForA5 — ใช้แทนที่ ternary ที่กระจายอยู่หลายจุด */
+  function reportTypeForStage(stage) {
+    return ['a5-prelim', 'a5-prelim-review', 'a7-213'].includes(stage) ? '213' : '644';
+  }
 
   /* ---------- กลไกขยายเวลา (218/2568) ---------- */
   function extensionRound(reportType, inquiry) {
@@ -240,6 +270,9 @@
     const w = state.workflow || {};
     const a5 = ['a5-intake', 'a5-prelim', 'a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'];
     const isA5 = a5.includes(w.stage);
+    // "กลั่นกรอง/มอบหมาย" here is Activity 4's own initial-complaint screening step
+    // (w.stage values admin/officer), not the investigation-report review gate below —
+    // the two share a Thai name but are different steps in different activities.
     const stages = [
       { key: 'intake', label: 'รับเรื่อง', state: true },
       { key: 'screening', label: 'กลั่นกรอง/มอบหมาย', state: ['admin', 'officer'].includes(w.stage) || isA5 },
@@ -247,16 +280,23 @@
       { key: 'approve', label: 'อนุมัติ/เลขสำนวน', state: ['division', 'acting'].includes(w.stage) || isA5 },
       { key: 'dispatch', label: 'จัดส่งเขต/สำนัก', state: ['officer-dispatch', 'activity5-dispatch'].includes(w.stage) || isA5 },
       { key: 'a5-intake', label: 'รับสำนวน/มอบหมาย', state: ['a5-intake'].includes(w.stage) || ['a5-prelim', 'a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
-      { key: 'prelim', label: 'ไต่สวนเบื้องต้น 213', state: ['a5-prelim', 'a5-prelim-review'].includes(w.stage) || ['a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
+      { key: 'prelim', label: 'ไต่สวนเบื้องต้น 213', state: ['a5-prelim'].includes(w.stage) || ['a5-prelim-review', 'a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
+      { key: 'prelim-review', label: 'กลั่นกรองรายงาน 213', state: ['a5-prelim-review'].includes(w.stage) || ['a7-213', 'a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
       { key: 'mti213', label: 'คกก. มติรับไต่สวน', state: ['a7-213'].includes(w.stage) || ['a5-inquiry', 'a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
-      { key: 'inquiry', label: 'ไต่สวนชี้มูล 644', state: ['a5-inquiry', 'a5-inquiry-review'].includes(w.stage) || ['a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
+      { key: 'inquiry', label: 'ไต่สวนชี้มูล 644', state: ['a5-inquiry'].includes(w.stage) || ['a5-inquiry-review', 'a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
+      { key: 'inquiry-review', label: 'กลั่นกรองรายงาน 644', state: ['a5-inquiry-review'].includes(w.stage) || ['a7-644', 'a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
       { key: 'mti644', label: 'คกก. ชี้มูล', state: ['a7-644'].includes(w.stage) || ['a5-outcome', 'a5-prosecutor', 'closed'].includes(w.stage) },
       { key: 'outcome', label: 'ดำเนินการตามมติ', state: ['a5-outcome'].includes(w.stage) || ['a5-prosecutor', 'closed'].includes(w.stage) },
-      { key: 'prosecutor', label: 'อัยการ/ติดตาม', state: ['a5-prosecutor'].includes(w.stage) },
+      { key: 'prosecutor', label: 'ส่งอัยการ/หน่วยงานต้นสังกัด', state: ['a5-prosecutor'].includes(w.stage) },
       { key: 'closed', label: 'ปิดสำนวน', state: w.stage === 'closed' }
     ];
-    const current = stages.findIndex(s => s.state);
-    return { stages, current: current === -1 ? 0 : current };
+    // current = the LAST stage whose condition matches, not the first — every stage's
+    // condition also matches every later real stage.stage (by design, so "done" stages
+    // stay lit once passed), so findIndex (first match) always returned 0 and the
+    // stepper never advanced past step 1 regardless of actual progress.
+    let current = 0;
+    stages.forEach((s, idx) => { if (s.state) current = idx; });
+    return { stages, current };
   }
   function stagebarA5(state) {
     const { stages, current } = journeyStages(state);
@@ -264,7 +304,7 @@
       const done = idx < current;
       const active = idx === current;
       return `<span class="ws-stage-node ${done ? 'done' : ''} ${active ? 'active' : ''}" title="${escapeHtml(s.label)}"><b>${idx + 1}</b><small>${escapeHtml(s.label)}</small></span>`;
-    }).join('')}</div><p class="ws-stage-caption">รับเรื่อง → อนุมัติ → จัดส่งเขต → รับสำนวน → ไต่สวน → มติ → อัยการ/ติดตาม → ปิด — หนึ่งสำนวนต่อเนื่อง</p></nav>`;
+    }).join('')}</div><p class="ws-stage-caption">รับเรื่อง → อนุมัติ → จัดส่งเขต → รับสำนวน → ไต่สวน 213 → กลั่นกรอง → มติรับไต่สวน → ไต่สวน 644 → กลั่นกรอง → มติชี้มูล → ดำเนินการตามมติ → ส่งอัยการ/ต้นสังกัด → ปิด — หนึ่งสำนวนต่อเนื่อง</p></nav>`;
   }
 
   /* ---------- เอกสาร ---------- */
@@ -304,6 +344,9 @@
   /* ---------- รายการสำนวน ---------- */
   function allA5Cases() {
     const store = readStore();
+    let changed = false;
+    Object.values(store).forEach(s => { if (normalizeIncomingCase(s)) changed = true; });
+    if (changed) writeStore(store);
     return Object.values(store).filter(s => {
       const stage = s.workflow?.stage || '';
       return stage.startsWith('a5-') || stage === 'closed' || (stage === 'activity5-dispatch' && s.workflow?.complete) || s.caseData?.decision === '58/2' || s.caseData?.decision === '62';
@@ -599,7 +642,7 @@
     const isSpecial = c.decision === '58/2';
     root.innerHTML = `${headerA5(role)}<main class="ws-container"><button class="ws-button ghost" id="a5BackList">กลับรายการสำนวน</button>
     <section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel || '')} · ${escapeHtml(state.inquiry.intake.unit || c.region || '')}</p><h1>${escapeHtml(c.id)}</h1><div class="ws-case-meta"><span>${escapeHtml(state.documentData?.documentSubject || c.subject)}</span><span>เลขรับบริการ ${c.trackingYear || ''} / PIN ${c.trackingCode || ''}</span><span>ผู้รับผิดชอบ: ${escapeHtml(state.inquiry.inquiry644?.investigator || state.inquiry.intake.investigator || 'ยังไม่มอบหมาย')}</span></div></div><div><span class="ws-status ${w.stage === 'closed' ? 'success' : ''}">${escapeHtml(phaseLabel(state))}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">${escapeHtml(w.status || '')}</p></div></section>
-    ${stagebarA5(state)}
+    ${isSpecial ? '' : stagebarA5(state)}
     <div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">${ROLE_LABELS[role] || role}</p><h2>${isSpecial ? 'ตรวจสอบข้อเท็จจริง' : 'ดำเนินการสำนวนคดี'}</h2></div><span class="ws-status">${escapeHtml(phaseLabel(state))}</span></header><div class="ws-editor-body">${editorForA5(state, role)}${adminCaseTools(state, role)}<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${(state.decisionHistory || []).map(x => `<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join('') || '<li>ยังไม่มีประวัติ</li>'}</ul></div>${state.inquiry.publicUpdates.length ? `<div class="ws-section"><h3>สถานะที่ผู้ร้องเห็น</h3><ul class="ws-history">${state.inquiry.publicUpdates.map(x => `<li>${escapeHtml(x.text)}<time>${x.at}</time></li>`).join('')}</ul></div>` : ''}</div></section>
     <aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabsA5(state)}</div><button class="ws-button secondary" data-a5-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="a5PaperStage">${paperForTab(state, '213')}</div></aside></div>
     <div class="ws-actions">${actionsForA5(state, role)}</div></main>`;
@@ -678,7 +721,7 @@
         else { w.stage = 'a5-prelim-review'; w.owner = 'group-director'; w.status = 'รอตรวจตามลำดับชั้น (ผอ.กลุ่ม → ผอ.เขต/กอง → ผู้ช่วย/รอง/เลขาธิการ)'; i.prelim.submittedAt = now(); add('นักสืบเสนอรายงาน 213 ตามลำดับชั้น'); }
       }
       if (action === 'chain-approve') {
-        const reportType = w.stage === 'a5-prelim-review' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const opinion = v('a5ChainOpinion') || '';
         if (!opinion) return notify('warning', 'ยังไม่มีความเห็น', 'บันทึกความเห็นก่อนเห็นชอบ');
         if (reportType === '213' && role === 'secretary' && cb('a5SupportFlag')) {
@@ -695,20 +738,20 @@
         }
       }
       if (action === 'chain-skip-group') {
-        const reportType = w.stage === 'a5-prelim-review' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const r = chainSkipGroup(st, reportType, role, v('a5ChainOpinion'));
         if (!r.ok) return notify('warning', 'ข้ามไม่ได้', r.message);
         add('ข้ามชั้น ผอ.กลุ่มงาน (ไม่อยู่ในสายงานของสำนวน)');
       }
       if (action === 'chain-return') {
-        const reportType = w.stage === 'a5-prelim-review' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const rep = reportOf(reportType, i);
         w.stage = reportType === '213' ? 'a5-prelim' : 'a5-inquiry'; w.owner = 'investigator'; w.status = `ส่งกลับ — ไต่สวน${reportType === '213' ? 'เบื้องต้น' : 'ชี้มูล'}เพิ่มเติม (30 วัน)`;
         rep.additionalDeadlineAt = addDays(todayISO(), 30); rep.additionalExtendedOnce = false;
         add(`${ROLE_LABELS[role]} ส่งกลับรายงาน ${reportType} — ไต่สวนเพิ่มเติมภายใน 30 วัน`);
       }
       if (action === 'support-record') {
-        const reportType = w.stage === 'a5-prelim-review' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const rep = reportOf(reportType, i);
         if (reportType === '213') i.prelim.supportOpinion = v('a5SupportOpinion'); else i.inquiry644.supportOpinion = v('a5SupportOpinion644');
         rep.supportPending = false;
@@ -723,7 +766,7 @@
         add(`คณะกรรมการ ป.ป.ท. มีมติ 213: ${result}${i.committee213.mtiNo ? ` (${i.committee213.mtiNo})` : ''}`);
         if (result === 'รับไว้ไต่สวน') {
           i.committee213.orderType = v('a5OrderType') || (role === 'secretary' ? '24v1' : '24v3');
-          i.committee213.orderNo = i.committee213.orderNo || `คำสั่งที่ ${Math.floor(50 + Math.random() * 900)}/2569`;
+          i.committee213.orderNo = i.committee213.orderNo || issueOrderNo213();
           i.committee213.orderDate = i.committee213.orderDate || todayISO();
           i.committee213.investigator644 = v('a5Investigator644') || i.intake.investigator;
           i.committee213.handoverDoc = { flag: i.committee213.investigator644 !== i.intake.investigator, letterNo: v('a5Handover'), date: todayISO() };
@@ -792,7 +835,7 @@
       }
       if (action === 'reopen') { w.stage = 'a5-outcome'; w.status = 'ทบทวนมติ — พยานหลักฐานใหม่'; w.complete = false; add('เปิดสำนวนใหม่เพื่อทบทวนมติ (พยานหลักฐานใหม่)'); }
       if (action === 'request-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const next = extensionRound(reportType, i);
         if (!next) return notify('warning', 'ขยายครบทุกครั้งแล้ว', 'ต้องเสนอคณะกรรมการ (รายงานเหตุล่าช้า)');
         const pop = await popup(`ยื่นขยาย${reportType === '213' ? 'ไต่สวนเบื้องต้น' : 'ไต่สวนชี้มูล'}ครั้งที่ ${next.round}`, [['a5ExtReason', 'เหตุผลและความจำเป็น *', 'text', 'ระบุเหตุผล...'], ['a5ExtDays', `จำนวนวัน (ไม่เกิน ${next.maxDays})`, 'number', '60']], 'ยื่นคำขอ');
@@ -802,7 +845,7 @@
         w.status = `รออนุมัติขยายครั้งที่ ${r.next.round}`;
       }
       if (action === 'approve-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const pending = pendingExtension(reportType, i);
         if (!pending) return notify('warning', 'ไม่มีคำขอรอพิจารณา', '');
         if (pending.role !== role) return notify('warning', 'ไม่มีสิทธิ์', `${ROLE_LABELS[pending.role]} เป็นผู้พิจารณา`);
@@ -812,14 +855,14 @@
         w.status = `ขยายครั้งที่ ${pending.round} แล้ว — ครบ ${r.deadline}`;
       }
       if (action === 'deny-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const pop = await popup('ไม่อนุมัติคำขอขยาย', [['a5DenyNote', 'เหตุผล', 'text', '']], 'ไม่อนุมัติ');
         const r = denyExtension(st, reportType, role, pop.value?.a5DenyNote || '');
         if (!r.ok) return notify('error', 'ปฏิเสธไม่ได้', r.message);
         w.status = `คำขอขยายไม่ผ่าน — ดำเนินการต่อภายในเวลาที่เหลือ (ครบ ${reportOf(reportType, i).deadlineAt})`;
       }
       if (action === 'extension-late') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const pop = await popup('ขยายครบแล้วยังไม่แล้วเสร็จ', [['a5LateReport', 'รายงานเหตุผลและความจำเป็น *', 'text', 'ระบุเหตุผลล่าช้า...'], ['a5LateEvidence', 'หลักฐานงานที่ผ่านมา', 'text', 'รายการหลักฐาน']], 'เสนอ คกก.');
         if (!pop.value?.a5LateReport) return notify('warning', 'ต้องกรอกรายงานเหตุล่าช้า', '');
         reportOf(reportType, i).lateReport = `${pop.value.a5LateReport}${pop.value.a5LateEvidence ? `\n[หลักฐาน] ${pop.value.a5LateEvidence}` : ''}`;
@@ -827,7 +870,7 @@
         add(`ขยายครบแล้วยังไม่เสร็จ — เสนอรายงานเหตุล่าช้าต่อคณะกรรมการ${i.intake ? ` (ครบ 2 ปี: ${caseAgeTone(i)?.label || '-'})` : ''}`);
       }
       if (action === 'request-additional-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const rep = reportOf(reportType, i);
         if (!rep.additionalDeadlineAt) return notify('warning', 'ไม่มีกำหนดไต่สวนเพิ่มเติมที่ต้องขยาย', '');
         if (rep.additionalExtendedOnce) return notify('warning', 'ขยายไต่สวนเพิ่มเติมได้เพียงครั้งเดียว', 'ครบกำหนดแล้วต้องเสนอคณะกรรมการ (รายงานเหตุล่าช้า)');
@@ -839,7 +882,7 @@
         add(`${ROLE_LABELS[role]} ยื่นคำขอขยายไต่สวนเพิ่มเติมอีก 30 วัน (${reportType}) — ${pop.value.a5AddExtReason}`);
       }
       if (action === 'approve-additional-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const rep = reportOf(reportType, i);
         if (!rep.additionalExtensionPending) return notify('warning', 'ไม่มีคำขอรอพิจารณา', '');
         rep.additionalDeadlineAt = addDays(rep.additionalDeadlineAt, 30);
@@ -849,7 +892,7 @@
         w.status = `ไต่สวน${reportType === '213' ? 'เบื้องต้น' : 'ชี้มูล'}เพิ่มเติม (ขยายแล้ว) — ครบ ${rep.additionalDeadlineAt}`;
       }
       if (action === 'deny-additional-extension') {
-        const reportType = w.stage === 'a5-prelim' ? '213' : '644';
+        const reportType = reportTypeForStage(w.stage);
         const rep = reportOf(reportType, i);
         if (!rep.additionalExtensionPending) return notify('warning', 'ไม่มีคำขอรอพิจารณา', '');
         add(`${ROLE_LABELS[role]} ไม่อนุมัติคำขอขยายไต่สวนเพิ่มเติม (${reportType})`);
@@ -959,13 +1002,9 @@
         const s = store[ref] || store[c.referenceNo];
         if (s) { ensureInquiry(s); if (c.report213?.startedAt) { s.inquiry.prelim.startedAt = c.report213.startedAt; s.inquiry.prelim.deadlineAt = c.report213.deadlineAt; } }
       }
-      for (const id of Object.keys(store)) {
-        const s = store[id];
-        if (s.workflow?.stage === 'activity5-dispatch' && s.workflow?.complete) {
-          ensureInquiry(s);
-          s.workflow.stage = 'a5-intake'; s.workflow.status = 'ส่งถึงเขตผู้รับผิดชอบแล้ว — รอธุรการคดีรับสำนวน'; s.workflow.owner = 'clerk'; s.workflow.complete = false;
-        }
-      }
+      // หมายเหตุ: การแปลงเฟส activity5-dispatch (complete) -> a5-intake ไม่ทำที่นี่อีกต่อไป
+      // (เดิมทำครั้งเดียวตาม MIGRATED_KEY ทำให้เคสที่มาถึงทีหลังค้างที่ debug fallback)
+      // ย้ายไปที่ normalizeIncomingCase() ซึ่งทำงานทุกครั้งที่อ่านสำนวน (allA5Cases/getState)
       writeStore(store);
       localStorage.setItem(MIGRATED_KEY, '1');
     } catch (err) { console.error('A5 migration failed', err); }

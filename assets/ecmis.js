@@ -231,6 +231,103 @@
     localStorage.setItem(key, JSON.stringify(records));
     return safeRecord;
   }
+  function saveComplaintToWorkspace(caseData) {
+    if (!caseData || !caseData.id) throw new Error("Complaint case id is required");
+    const key = "ecmis-a4-workspace-v3";
+    let workspace = {};
+    try {
+      workspace = JSON.parse(localStorage.getItem(key) || "{}");
+      if (!workspace || Array.isArray(workspace) || typeof workspace !== "object") workspace = {};
+    } catch {
+      workspace = {};
+    }
+    const existing = workspace[caseData.id];
+    if (existing?.workflow && (existing.workflow.stage !== "admin" || existing.workflow.owner !== "admin" || existing.workflow.complete)) {
+      return existing;
+    }
+    if (existing?.caseData) {
+      workspace[caseData.id] = {
+        ...existing,
+        caseData: { ...existing.caseData, ...caseData },
+        documentData: {
+          ...existing.documentData,
+          anonymous: Boolean(caseData.anonymousDetected),
+          documentSubject: existing.documentData?.documentSubject || caseData.subject || "",
+          proposedRegion: existing.documentData?.proposedRegion || caseData.region || "",
+        },
+      };
+    } else {
+      workspace[caseData.id] = {
+        caseData: { ...caseData },
+        documentData: {
+          decision: "18/1ก",
+          reasons: [],
+          naccOtherChecked: false,
+          naccOtherReason: "",
+          anonymous: Boolean(caseData.anonymousDetected),
+          documentSubject: caseData.subject || "",
+          officerOpinion: "",
+          proposedRegion: caseData.region || "",
+          reviewRoute: "center",
+          centerDecision: "",
+          centerOpinion: "",
+          centerAdditionalDetail: "",
+          documentPack: { caseType: "18/1ก", sourceVersion: "official-forms-1-01-to-1-07", pages: { complainant: 10, n103: 2 }, steps: {} },
+          officerSignature: { signed: false, signerName: "", signerRole: "เจ้าหน้าที่รับเรื่อง", signedAt: "", signatureId: "" },
+          centerSignature: { signed: false, signerName: "", signerRole: "ผอ.ศรร.", signedAt: "", signatureId: "" },
+          divisionOpinion: "",
+          divisionAdditionalDetail: "",
+          divisionSignature: { signed: false, signerName: "", signerRole: "ผอ.กบค.", signedAt: "", signatureId: "" },
+          internalLetterNo: "",
+          internalLetterDate: "",
+          caseNumber: "",
+          caseNumberIssuedAt: "",
+          caseNumberIssuedBy: "",
+          publicStatus: "",
+          approvedAt: "",
+          approvedBy: "",
+          actingOfficer: "",
+          actingOrder: "",
+          assignedOfficer: "",
+          backupOfficer: "",
+          previousOfficer: "",
+          previousBackupOfficer: "",
+          adminNote: "",
+          absenceReasonType: "",
+          absenceNote: "",
+          notAcceptReason: "",
+          notAcceptOtherChecked: false,
+          notAcceptOtherReason: "",
+          dispatchLetterNo: "",
+          dispatchLetterDate: "",
+          dispatchSendMethod: "EMS",
+          dispatchEms: "",
+          dispatchSentDate: "",
+          dispatchProofName: "",
+          dispatchDestinationUnit: caseData.region || "",
+          dispatchNote: "",
+          dispatchConfirmedAt: "",
+          naccLetterNo: "",
+          naccLetterDate: "",
+          naccSendMethod: "EMS",
+          naccEms: "",
+          naccSentDate: "",
+          naccBoardNo: "",
+          naccBoardDate: "",
+          naccBoardNote: "",
+          naccProofName: "",
+          naccNotified: true,
+        },
+        workflow: { owner: "admin", stage: "admin", status: "รอลงรับและมอบหมาย", complete: false },
+        assignmentHistory: [],
+        decisionHistory: [],
+        anonymousHistory: [],
+        documentVersions: [],
+      };
+    }
+    localStorage.setItem(key, JSON.stringify(workspace));
+    return workspace[caseData.id];
+  }
   function createDemoSession(authMethod) {
     const session = {
       authMethod,
@@ -251,6 +348,7 @@
     parseFourDigits,
     parseTrackingCredentials,
     saveCaseMetadata,
+    saveComplaintToWorkspace,
     createDemoSession,
   };
 })();
