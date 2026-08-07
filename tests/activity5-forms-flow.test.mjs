@@ -64,29 +64,47 @@ for (const tab of papers) {
   assert.ok(typeof html === "string" && html.includes("a5-paper"), `${tab} must render an a5-paper`);
 }
 
-// 2) เนื้อหาตรงแบบพิมพ์จริง — ฟอร์มหลักเป็นหน้าจริงจาก PDF (a5r-page + ภาพ + overlay ข้อมูล)
+// 2) เนื้อหาตรงแบบพิมพ์จริง — HTML ล้วน 1:1 ตาม PDF ต้นฉบับ (ไม่มีภาพหน้ากระดาษ/overlay)
 const htmlDoc = (tab, kw) => { const h = EX.paperForTab(mk(), tab); return h.includes('class="a5-paper"') && !h.includes('a5r-page') && h.includes('a5-hdr') && h.includes(kw) && (h.match(/a5-fill/g) || []).length >= 5; };
 const ext213 = EX.paperForTab(mk(), "ext213");
-assert.ok(htmlDoc('ext213', 'บันทึกขอขยายระยะเวลาไต่สวนเบื้องต้น'), "แบบ 2 ต้องเป็น HTML");
-assert.ok(ext213.includes("1 ส.ค. 2569"), "แบบ 2 ต้องมีวันที่รับเรื่องในเอกสาร");
+assert.ok(htmlDoc('ext213', 'การขอขยายระยะเวลาการไต่สวนเบื้องต้น'), "แบบ 2 ต้องเป็น HTML (บันทึกข้อความขอขยาย 213)");
+assert.ok(ext213.includes("บันทึกข้อความ") && ext213.includes("ส่วนราชการ"), "แบบ 2 ต้องเป็นรูปแบบบันทึกข้อความตามต้นฉบับ");
+assert.ok(ext213.includes(">1<") && ext213.includes("สิงหาคม") && ext213.includes("2569"), "แบบ 2 ต้องมีวันที่รับเรื่อง (วัน/เดือน/พ.ศ. แยกช่องตามต้นฉบับ)");
 const ext644 = EX.paperForTab(mk(), "ext644");
-assert.ok(htmlDoc('ext644', 'บันทึกขอขยายระยะเวลาไต่สวน'), "แบบ 3 ต้องเป็น HTML");
+assert.ok(htmlDoc('ext644', 'การขอขยายระยะเวลาการไต่สวน'), "แบบ 3 ต้องเป็น HTML");
+assert.ok(ext644.includes("ข้อ ๖๔"), "แบบ 3 ต้องอ้างระเบียบข้อ ๖๔ (ต่างจากแบบ 2 ที่ใช้ข้อ ๓๘)");
 const plan = EX.paperForTab(mk(), "plan");
-assert.ok(htmlDoc('plan', 'แผนงานคดี'), "แบบ 1 ต้องเป็น HTML (แผนงานคดี)");
+assert.ok(htmlDoc('plan', 'แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน)'), "แบบ 1 ต้องเป็น HTML (แผนงานคดี)");
 assert.ok(plan.includes("690001"), "แบบ 1 ต้องมีข้อมูลคดี (เลขเรื่อง)");
 assert.ok(plan.includes("ผู้กล่าวหา") && plan.includes("ผู้ถูกกล่าวหา"), "แบบ 1 ต้องมีหัวข้อตามฟอร์มจริง");
+assert.ok(plan.includes("ครบกำหนด ๖๐ วัน") && plan.includes("แผนการไต่สวน") && plan.includes("สิ่งที่ต้องดำเนินการ"), "แบบ 1 ต้องมีหัวข้อ/ตารางประเด็นตามต้นฉบับ");
 const notice = EX.paperForTab(mk(), "notice");
-assert.ok(htmlDoc('notice', 'หนังสือแจ้งให้รับทราบข้อกล่าวหา'), "แบบ 5 ต้องเป็น HTML");
-const warrants = EX.paperForTab(mk(), "warrants");
+assert.ok(htmlDoc('notice', 'แจ้งข้อกล่าวหาและสิทธิคัดค้านคณะพนักงานไต่สวน'), "แบบ 5 ต้องเป็น HTML");
+assert.ok(notice.includes("ขอแสดงความนับถือ") && notice.includes("อาคารซอฟต์แวร์ปาร์ค"), "แบบ 5 ต้องเป็นรูปแบบหนังสือออกตามต้นฉบับ");
+const warrants = EX.paperForTab(mk("a5-outcome"), "warrants");
 assert.ok(warrants.includes('class="a5-paper"') && !warrants.includes('a5r-page'), "ชุดหมายจับต้องเป็น HTML");
-assert.ok(warrants.includes("คำร้องขอหมายจับ") && warrants.includes("หมายจับ") && warrants.includes("ตำหนิรูปพรรณ"), "แบบ 11/14/16 ครบ");
-assert.ok(warrants.includes("แจ้งผลการออกหมายจับ") && warrants.includes("แจ้งหมายจับผู้ถูกกล่าวหา") && warrants.includes("กอท."), "แบบ 17/18/19 ครบ");
-assert.ok(warrants.includes("ผนึกซอง") && warrants.includes("บันทึกคำเบิกความ") && warrants.includes("รายงานกระบวนการพิจารณา"), "แบบ 20/12/13 ครบ");
-assert.ok(warrants.includes("อายุความเหลือน้อย"), "แบบ 15 ครบ");
-assert.ok(htmlDoc('213', 'รายงานผลการไต่สวนเบื้องต้น'), "แบบ 4 (รายงาน 213) ต้องเป็น HTML");
+assert.ok(warrants.includes("( คำร้อง )") && warrants.includes("ขอหมายจับ") && warrants.includes("ตำหนิรูปพรรณผู้กระทำความผิด"), "แบบ 11/16 ครบ");
+assert.ok(warrants.includes("ในพระปรมาภิไธยพระมหากษัตริย์") && warrants.includes("กรณีเหตุเกิดก่อน ๓๐ เม.ย. ๕๙"), "แบบ 14 (อายุความไม่สะดุดหยุดลง) ครบ");
+assert.ok(warrants.includes("เหตุเกิด ๓๐ เม.ย. ๕๙ เป็นต้นไป") && warrants.includes("มาตรา ๖๑/๑"), "แบบ 15 (อายุความสะดุดหยุดลง) ครบ");
+assert.ok(warrants.includes("แจ้งผลการดำเนินการเพื่อให้ได้ตัวผู้ถูกกล่าวหา") && warrants.includes("ขอให้ดำเนินการจับกุมผู้ถูกกล่าวหาตามหมายจับ") && warrants.includes("กอท."), "แบบ 17/18/19 ครบ");
+assert.ok(warrants.includes("อธิบดีผู้พิพากษาศาล") && warrants.includes("จำนวน ๑ หมาย"), "แบบ 20 (ผนึกซอง) ครบ");
+assert.ok(warrants.includes("บันทึกคำเบิกความ") && warrants.includes("กระบวนการ") && warrants.includes("ผู้พิพากษา"), "แบบ 12/13 ครบ");
+assert.ok(htmlDoc('213', 'รายงานการไต่สวนเบื้องต้น'), "แบบ 4 (รายงาน 213) ต้องเป็น HTML");
 assert.ok(htmlDoc('644', 'รายงานการไต่สวน'), "แบบ 7 (รายงาน 644) ต้องเป็น HTML");
-assert.ok(htmlDoc('record', 'บันทึกการแจ้งข้อกล่าวหา'), "แบบ 6 ต้องเป็น HTML");
-assert.ok(htmlDoc('letters', 'หนังสือแจ้งผู้ถูกกล่าวหาไปพบพนักงานอัยการ'), "แบบ 8/9/10 ต้องเป็น HTML");
+assert.ok(htmlDoc('record', 'บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้าน'), "แบบ 6 ต้องเป็น HTML");
+assert.ok(EX.paperForTab(mk(), "record").includes("ส่วนที่ ๓ การรับทราบข้อกล่าวหา"), "แบบ 6 ต้องครบ 3 ส่วนตามต้นฉบับ");
+assert.ok(htmlDoc('letters', 'หนังสือแจ้งให้ผู้ถูกกล่าวหาไปพบพนักงานอัยการ'), "แบบ 8/9/10 ต้องเป็น HTML");
+
+// 2ก) กติกาแบบพิมพ์: HTML ล้วน · ช่องกรอกเป็น a5-fill · ลายเซ็นเป็น a5-lock · ไม่มีคำว่า "กิจกรรม"
+for (const tab of ["plan", "213", "ext213", "644", "ext644", "notice", "record", "letters", "warrants"]) {
+  const h = EX.paperForTab(mk(tab === "letters" || tab === "warrants" ? "a5-outcome" : undefined), tab);
+  assert.ok(!/background-image|<canvas/i.test(h), `${tab} ต้องไม่ใช้ภาพพื้นหลัง/canvas`);
+  assert.ok(!h.includes("กิจกรรม"), `${tab} ต้องไม่มีคำว่า "กิจกรรม" ใน UI`);
+  assert.ok(h.includes("a5-lock"), `${tab} ลายเซ็นต้องมี a5-lock`);
+  assert.ok(!h.includes("undefined") && !h.includes("[object Object]"), `${tab} ต้องไม่มีค่าที่ render ผิด`);
+  assert.equal((h.match(/<section/g) || []).length, 1, `${tab} ต้องคืน section เดียว`);
+  assert.equal((h.match(/class="a5-form-code"/g) || []).length, 1, `${tab} ต้องมีรหัสแบบท้ายเอกสารครั้งเดียว (ไม่ซ้อนทับกัน)`);
+}
 
 // 3) docTabsA5 เป็นไปตาม stage
 const prelimTabs = EX.docTabsA5(mk("a5-prelim"));

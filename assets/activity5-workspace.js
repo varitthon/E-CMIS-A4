@@ -346,6 +346,7 @@
   const A5_THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
   const A5_THAI_MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
   const a5Date = (iso) => { const m = String(iso || '').slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/); if (!m) return ''; const mi = Number(m[2]) - 1; if (mi < 0 || mi > 11) return ''; return `${Number(m[3])} ${A5_THAI_MONTHS[mi]} พ.ศ. ${Number(m[1]) + 543}`; };
+  const a5DateShort = (iso) => { const m = String(iso || '').slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/); if (!m) return ''; const mi = Number(m[2]) - 1; if (mi < 0 || mi > 11) return ''; return `${Number(m[3])} ${A5_THAI_MONTHS_SHORT[mi]} ${Number(m[1]) + 543}`; };
   const a5Fill = (value, hint = '.......................................') => { const v = String(value ?? '').trim(); return v ? `<span class="a5-fill">${escapeHtml(v)}</span>` : `<span class="a5-fill a5-blank">${escapeHtml(hint)}</span>`; };
   const a5DateFill = (iso) => a5Fill(a5Date(iso));
   const a5Block = (value, hint = 'ยังไม่มีข้อมูล — โปรดกรอกเพิ่มเติม') => { const v = String(value ?? '').trim(); return v ? `<p>${escapeHtml(v)}</p>` : `<p class="a5-fill-block">${escapeHtml(hint)}</p>`; };
@@ -366,567 +367,1028 @@
     const c = state.caseData, i = state.inquiry, m = which === '213' ? i?.committee213 : i?.committee644;
     const result = m?.result || 'ยังไม่มีมติ';
     const is213 = which === '213';
-    const options213 = ['รับไว้ไต่สวน', 'ไม่รับไว้ไต่สวน', 'ให้ไต่สวนเบื้องต้นเพิ่มเติม', 'ส่งสำนักงาน ป.ป.ช.'];
-    const options644 = ['ชี้มูลความผิดอาญาและวินัย', 'ชี้มูลความผิดวินัย', 'ชี้มูลคดีประพฤติมิชอบ ม.18/4', 'ข้อกล่าวหาไม่มีมูล/สิทธิฟ้องระงับ', 'ส่งสำนักงาน ป.ป.ช.', 'ส่งพนักงานสอบสวน', 'ให้ไต่สวนชี้มูลเพิ่มเติม'];
+    const options213 = MTI_213_RESULTS;
+    const options644 = MTI_644_RESULTS;
     const checks = (is213 ? options213 : options644).map(o => a5Check(result === o, o)).join('');
     return paperShell({
       formCode: A5_FORMS.mti.code,
       headerHtml: `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><h2 class="a5-memo-title">มติคณะกรรมการ ป.ป.ท.${is213 ? ' (ไต่สวนเบื้องต้น)' : ' (วินิจฉัยชี้มูล)'}</h2><div class="a5-memo-meta"><p><strong>เรื่องที่</strong> ${a5Fill(c?.id)} <strong>มติที่</strong> ${a5Fill(m?.mtiNo)} <strong>วันที่</strong> ${a5DateFill(m?.mtiDate)}</p></div>`,
       bodyHtml: `<div class="a5-section"><h3>ผลมติ</h3><div class="a5-checklist">${checks}</div>${m?.note ? `<p>${escapeHtml(m.note)}</p>` : ''}</div>${is213 && m?.result === 'รับไว้ไต่สวน' ? `<div class="a5-section"><p><strong>การดำเนินการ</strong> แต่งตั้ง${m?.orderType === '24v3' ? 'คณะอนุกรรมการไต่สวน (มาตรา ๒๔ วรรคสาม)' : 'คณะพนักงานไต่สวน (มาตรา ๒๔ วรรคหนึ่ง)'} ${a5Fill(m?.orderNo)} ลงวันที่ ${a5DateFill(m?.orderDate)} ผู้รับผิดชอบชั้น 644: ${a5Fill(m?.investigator644)}${m?.handoverDoc?.letterNo ? ` · หนังสือส่งมอบ ${a5Fill(m?.handoverDoc?.letterNo)}` : ''}</p></div>` : ''}`,
-      signHtml: `<div class="a5-sign-grid">${a5SignBlock('ประธานกรรมการ ป.ป.ท.', '')}${a5SignBlock('กรรมการ', '')}</div>`
+      /* ลายเซ็นใช้ a5Sign (ผ่าน a5SignCol) เพื่อให้มี a5-lock — Word Engine กันแก้ไขลายเซ็น */
+      signHtml: `<div class="a5-sign a5-sign-center">${a5SignCol(m?.decidedBy || '', 'ประธานกรรมการ ป.ป.ท.')}${a5SignCol('', 'กรรมการ')}</div>`
     });
   }
 
-  /* ---------- เอกสารตามแบบพิมพ์จริง (แบบ ปปท. 1-20) ---------- */
-  const A5_REAL_IMAGES = Object.freeze({
-    plan: ['assets/a5-forms/plan-1.png', 'assets/a5-forms/plan-2.png'],
-    ext213: ['assets/a5-forms/ext213-1.png', 'assets/a5-forms/ext213-2.png', 'assets/a5-forms/ext213-3.png'],
-    ext644: ['assets/a5-forms/ext644-1.png', 'assets/a5-forms/ext644-2.png', 'assets/a5-forms/ext644-3.png'],
-    rep213: ['assets/a5-forms/rep213-1.png', 'assets/a5-forms/rep213-2.png', 'assets/a5-forms/rep213-3.png', 'assets/a5-forms/rep213-4.png', 'assets/a5-forms/rep213-5.png', 'assets/a5-forms/rep213-6.png'],
-    rep644: ['assets/a5-forms/rep644-1.png', 'assets/a5-forms/rep644-2.png', 'assets/a5-forms/rep644-3.png'],
-    notice: ['assets/a5-forms/notice-1.png', 'assets/a5-forms/notice-2.png'],
-    record: ['assets/a5-forms/record-1.png', 'assets/a5-forms/record-2.png', 'assets/a5-forms/record-3.png'],
-    p8: ['assets/a5-forms/p8-1.png'], p9: ['assets/a5-forms/p9-1.png'], p10: ['assets/a5-forms/p10-1.png'],
-    p11: ['assets/a5-forms/p11-1.png', 'assets/a5-forms/p11-2.png', 'assets/a5-forms/p11-3.png'],
-    p12: ['assets/a5-forms/p12-1.png'], p13: ['assets/a5-forms/p13-1.png', 'assets/a5-forms/p13-2.png'],
-    p14: ['assets/a5-forms/p14-1.png', 'assets/a5-forms/p14-2.png'], p15: ['assets/a5-forms/p15-1.png', 'assets/a5-forms/p15-2.png'],
-    p16: ['assets/a5-forms/p16-1.png', 'assets/a5-forms/p16-2.png'], p17: ['assets/a5-forms/p17-1.png'],
-    p18: ['assets/a5-forms/p18-1.png'], p19: ['assets/a5-forms/p19-1.png'], p20: ['assets/a5-forms/p20-1.png']
-  });
-  const A5R_SCALE = 794 / 595.32;
-  function a5DateShort(iso) {
+  /* ---------- ฟอร์มราชการ A5 (HTML ล้วน — แก้ไขได้ทุกช่อง) ----------
+   * แปลง 1:1 จากแบบพิมพ์ราชการ ป.ป.ท. ๒๐ ฉบับ (ลำดับหัวข้อ/ข้อความ/ตาราง/ช่องกรอก ตาม PDF ต้นฉบับ)
+   * a5F  = ช่องกรอก (แก้ไขได้ผ่าน Word Engine) · a5Sign = ลายเซ็น (a5-lock กันแก้ไข)
+   * a5Hdr คงไว้สำหรับแบบที่มีหัวกระดาษชื่อหน่วยงานจริง — แบบอื่นใช้หัวกระดาษตามชนิดเอกสาร
+   * (บันทึกข้อความ / หนังสือออก / แบบศาล) ตามข้อ ๖ "ตรา/ชื่อหน่วยงาน (ถ้าใน PDF มี)" */
+  const a5F = (v, w) => `<span class="a5-fill" style="${w ? `min-width:${w}px` : ''}">${escapeHtml(v ?? '')}</span>`;
+  const a5Hdr = (title, code) => `<header class="a5-hdr"><p class="a5-hdr-org">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p><p class="a5-hdr-sub">(สำนักงาน ป.ป.ท.)</p><h2 class="a5-hdr-title">${escapeHtml(title)}</h2><p class="a5-hdr-code">${escapeHtml(code)}</p></header>`;
+  const a5Sign = (name, role) => `<div><p class="a5-sign-name a5-lock">${escapeHtml(name || '')}</p><p class="a5-sign-note">${escapeHtml(role)}</p></div>`;
+
+  /* --- ตัวช่วยจัดหน้าแบบพิมพ์ (ประกอบจาก helper เดิม ไม่สร้าง a5F/a5Hdr/a5Sign ซ้ำ) --- */
+  const A5_PG = '<div class="a5-pg"></div>';
+  const A5_OFFICE_ADDR = 'สำนักงาน ป.ป.ท.<br>อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ<br>อำเภอปากเกร็ด จังหวัดนนทบุรี ๑๑๑๒๐';
+  const A5_COURT = 'อาญาคดีทุจริตและประพฤติมิชอบ';
+  /* ช่องติ๊ก ☐/☑ ตามต้นฉบับ (วาดด้วย CSS ไม่ใช่รูปภาพ) */
+  const a5Cb = (on, label = '') => `<span class="a5-cb${on ? ' on' : ''}"></span>${label ? `<span>${escapeHtml(label)}</span>` : ''}`;
+  /* ช่องกรอกเส้นทึบ — แบบพิมพ์ของศาล (แบบ ๑๑–๑๖) ใช้เส้นใต้ทึบแทนจุดไข่ปลา */
+  const a5Us = (v, w) => `<span class="a5-solid">${a5F(v, w)}</span>`;
+  const a5PgNo = (n) => `<p class="a5-pgno">-${a5Num(n)}-</p>`;
+  /* ตราประจำแบบพิมพ์มุมล่างซ้ายของทุกหน้า ("ปปท. ....." ในต้นฉบับ) */
+  const a5Foot = () => `<p class="a5-pgfoot">ปปท. ${a5F('', 70)}</p>`;
+  /* บล็อกลายเซ็น: (ลงชื่อ) ......... / (ชื่อ) / ตำแหน่ง — ตรงตามต้นฉบับทุกฉบับ */
+  const a5SignCol = (name, role, label = '(ลงชื่อ)', sub = '') =>
+    `<div class="a5-sign-col"><p class="a5-sign-rule">${label ? `${escapeHtml(label)} ` : ''}<span class="a5-sign-dots"></span></p>${a5Sign(name, role)}${sub ? `<p class="a5-sign-note">${escapeHtml(sub)}</p>` : ''}</div>`;
+  /* แยกวันที่เป็น วันที่ / เดือน / พ.ศ. ตามช่องกรอกในต้นฉบับ */
+  const a5DMY = (iso) => {
     const m = String(iso || '').slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!m) return '';
-    const mi = Number(m[2]) - 1;
-    if (mi < 0 || mi > 11) return '';
-    return `${Number(m[3])} ${A5_THAI_MONTHS_SHORT[mi]} ${Number(m[1]) + 543}`;
+    if (!m) return { d: '', mo: '', y: '' };
+    return { d: String(Number(m[3])), mo: A5_THAI_MONTHS[Number(m[2]) - 1] || '', y: String(Number(m[1]) + 543) };
+  };
+  const a5DateParts = (iso, wd = 55, wm = 120, wy = 65) => {
+    const p = a5DMY(iso);
+    return `วันที่ ${a5F(p.d, wd)} เดือน ${a5F(p.mo, wm)} พ.ศ. ${a5F(p.y, wy)}`;
+  };
+  /* หัวกระดาษ "บันทึกข้อความ" (แบบ ๒/๓/๔/๑๙) — ตราครุฑ + ชื่อแบบ ตามต้นฉบับ */
+  const a5MemoHdr = () => `<header class="a5-hdr a5-hdr-memo"><img class="a5-garuda" src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="50" height="54"><h2 class="a5-hdr-title">บันทึกข้อความ</h2></header>`;
+  const a5MemoMeta = (unit, refNo, dateISO) => `
+      <div class="a5-line a5-memo-row"><b>ส่วนราชการ</b>${a5F(unit || 'กอง/สำนัก', 300)}<b>โทร.</b>${a5F('', 130)}</div>
+      <div class="a5-line a5-memo-row"><b>ที่</b> ปป ๐๐../${a5F(refNo || '', 200)}<b>วันที่</b>${a5F(a5DateShort(dateISO), 170)}</div>`;
+  /* หัวกระดาษหนังสือออก (แบบ ๕/๘/๙/๑๐/๑๗/๑๘) — ที่ ปป ซ้าย, ที่อยู่สำนักงานขวา, วันที่กลาง */
+  const a5LetterHdr = (note, refNo, dateISO) => `<header class="a5-hdr a5-hdr-letter">
+      ${note ? `<p class="a5-letter-note">${escapeHtml(note)}</p>` : ''}
+      <div class="a5-letter-top">
+        <p class="a5-letter-ref">ที่ ปป ${a5F(refNo || '', 110)}/${a5F('', 70)}</p>
+        <p class="a5-letter-org">${A5_OFFICE_ADDR}</p>
+      </div>
+      <p class="a5-letter-date">${a5DateParts(dateISO)}</p>
+    </header>`;
+  /* ท้ายหนังสือออก — กอง/สำนัก โทร โทรสาร ผู้รับผิดชอบ */
+  /* who = คำเรียกผู้รับผิดชอบท้ายหนังสือ — แบบ ๕ ใช้ "เจ้าของสำนวน", แบบ ๘/๙/๑๐/๑๗/๑๘ ใช้ "ผู้รับผิดชอบ" */
+  const a5LetterFoot = (unit, owner, who = 'ผู้รับผิดชอบ') => `<div class="a5-letter-foot">
+      <p>กอง/สำนัก ${a5F(unit || '', 200)}</p>
+      <p>โทร. ${a5F('', 200)}</p>
+      <p>โทรสาร ${a5F('', 200)}</p>
+      ${who === 'ผู้รับผิดชอบ' ? `<p>(นาย/นาง/นางสาว ${a5F(owner || '', 200)} ผู้รับผิดชอบ)</p>` : ''}
+      <p class="a5-hint">(ระบุชื่อ${escapeHtml(who)}และหมายเลขโทรศัพท์ที่สามารถติดต่อได้สะดวก)</p>
+    </div>`;
+  /* ===== แบบ ปปท. ๑ — แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน) · ๒ หน้า ===== */
+  function paperPlan(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, q = i.inquiry644 || {}, m62 = intake.m62 || {};
+    if (c.decision === '58/2') return paperSpecial58(state);
+    const fromNacc = Boolean(m62.flag) || String(c.decision || '').includes('62');
+    const fromMisconduct = String(c.decision || '').includes('18/4');
+    const deadline60 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
+    const deadline2Y = addDays(intake.receivedFirstAt, 730);
+    const accused = (q.accused && q.accused.length) ? q.accused : [];
+    const subject = state.documentData?.documentSubject || c.subject || '';
+    const issues = p.issues || {}, lim = p.limitation || {};
+    const planLines = String(p.plan || '').split('\n').filter(Boolean);
+    const workLog = String(p.workLog || '').split('\n').filter(Boolean);
+    const witnesses = (p.witnesses || []).filter(Boolean);
+    return `<section class="a5-paper">
+      <header class="a5-hdr a5-hdr-bare"><h2 class="a5-hdr-title">แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน)</h2></header>
+      <div class="a5-line a5-plan-top"><b>เรื่องที่</b>${a5F(c.id || '', 220)}<label>${a5Cb(fromNacc, 'คดีรับจาก ป.ป.ช.')}</label><label>${a5Cb(fromMisconduct, 'คดีประพฤติมิชอบ')}</label></div>
+      <div class="a5-line">สำนักงาน ป.ป.ท. รับเรื่องเมื่อวันที่${a5F(a5DateShort(intake.receivedFirstAt), 190)}ครบกำหนด ๖๐ วัน วันที่${a5F(a5DateShort(deadline60), 170)}</div>
+      <div class="a5-line">ครบกำหนด ๒ ปี วันที่${a5F(a5DateShort(deadline2Y), 190)}</div>
+      <div class="a5-line"><b>ผู้กล่าวหา</b>${a5F(c.complainant || '', 560)}</div>
+      <div class="a5-line"><b>ผู้ถูกกล่าวหา</b> ๑.${a5F(accused[0] || '', 520)}</div>
+      <div class="a5-line a5-indent2">๒.${a5F(accused[1] || '', 520)}</div>
+      <div class="a5-line"><b>ข้อกล่าวหา (ประเด็นแห่งคดี)</b>${a5F(q.allegations || subject, 440)}</div>
+      <div class="a5-line"><b>วันเวลาสถานที่เกิดเหตุ</b>${a5F(p.place || '', 480)}</div>
+      <div class="a5-line"><b>อายุความสั้น/ยาวสุด</b> มาตรา${a5F(lim.shortSection || '', 70)} อายุความ${a5F(lim.shortYears || '', 60)} ปี ขาดอายุความวันที่${a5F(a5DateShort(lim.shortExpiry) || lim.shortExpiry || '', 190)}</div>
+      <div class="a5-line a5-indent2">มาตรา${a5F(lim.longSection || '', 70)} อายุความ${a5F(lim.longYears || '', 60)} ปี ขาดอายุความวันที่${a5F(a5DateShort(lim.longExpiry) || lim.longExpiry || '', 190)}</div>
+      <p class="a5-plan-accused">ผู้ถูกกล่าวหา ${a5F('', 90)}</p>
+      <table class="a5-tbl a5-plan-tbl"><thead><tr>
+        <th style="width:22%">ประเด็น</th><th style="width:38%">ข้อมูลที่ต้องใช้<br>(แล้วแต่กรณี)</th><th style="width:40%">สิ่งที่ต้องดำเนินการ</th>
+      </tr></thead><tbody>
+        <tr>
+          <td>สถานะ<br>${a5F(issues.status || '', 110)}</td>
+          <td class="a5-cbcell">
+            <div>${a5Cb(false, 'กพ.7/สัญญาจ้าง')}</div>
+            <div>${a5Cb(false, 'เลขบัตรประชาชน/ทะเบียนราษฎร์')}</div>
+            <div>${a5Cb(false, 'ระเบียบข้อบังคับ/ประกาศเกี่ยวกับวินัย')}</div>
+            <div>${a5Cb(false, 'คำสั่งไล่ออก/ให้ออก/ลาออก/เกษียณอายุราชการ/ใบมรณบัตร')}</div>
+          </td>
+          <td>${a5F(issues.statusTodo || '', 180)}</td>
+        </tr>
+        <tr>
+          <td>อำนาจหน้าที่<br>${a5F(issues.authority || '', 110)}</td>
+          <td class="a5-cbcell">
+            <div>${a5Cb(false, 'คำสั่งแต่งตั้ง/มอบหมาย')}</div>
+            <div>${a5Cb(false, 'หลักฐานการมอบหมายให้ทำหน้าที่จากผู้บังคับบัญชา')}</div>
+            <div>${a5Cb(false, 'มาตรฐานกำหนดตำแหน่ง (Job Description)')}</div>
+          </td>
+          <td>${a5F(issues.authorityTodo || '', 180)}</td>
+        </tr>
+        <tr>
+          <td>การกระทำความผิด<br>${a5F(issues.action || '', 110)}</td>
+          <td class="a5-cbcell">
+            <div>${a5Cb(false, 'พยานหลักฐานยืนยันการกระทำความผิด')}</div>
+            <div>${a5Cb(false, 'รายงาน คกก.สอบข้อเท็จจริง/วินัย/ละเมิดของต้นสังกัด')}</div>
+          </td>
+          <td>${a5F(issues.actionTodo || '', 180)}</td>
+        </tr>
+        <tr>
+          <td>ความเสียหาย<br>${a5F(issues.damage || '', 110)}</td>
+          <td class="a5-cbcell">${a5F(issues.damageDocs || '', 240)}</td>
+          <td>${a5F(issues.damageTodo || '', 180)}</td>
+        </tr>
+      </tbody></table>
+      ${a5Foot()}
+      ${A5_PG}
+      ${a5PgNo(2)}
+      <p class="a5-plan-h">สรุปที่ต้องดำเนินการ</p>
+      ${(workLog.length ? workLog : ['']).map(w => `<div class="a5-line">${a5F(w, 640)}</div>`).join('')}
+      <p class="a5-plan-h">พยานบุคคลที่ต้องบันทึกถ้อยคำ/เกี่ยวข้องอย่างไร/สอบประเด็นใด</p>
+      <div class="a5-line a5-indent">๑. ผู้กล่าวหา ${a5F(c.complainant || '', 500)}</div>
+      <div class="a5-line a5-indent">๒. พยาน ${a5F(witnesses[0] || '', 520)}</div>
+      <div class="a5-line a5-indent">๓. พยาน ${a5F(witnesses[1] || '', 520)}</div>
+      <p class="a5-plan-h">พยานเอกสารที่ต้องขอเพิ่มเติมมีอะไรบ้าง/ ขอจากหน่วยงานใด</p>
+      <div class="a5-line a5-indent">๑. ${a5F('', 580)}</div>
+      <div class="a5-line a5-indent">๒. ${a5F('', 580)}</div>
+      <div class="a5-line a5-indent">๓. ${a5F('', 580)}</div>
+      <p class="a5-plan-h">การดำเนินการอื่น ๆ</p>
+      <div class="a5-line a5-indent">๑. ตรวจสอบสถานที่เกิดเหตุ ${a5F('', 440)}</div>
+      <div class="a5-line a5-indent">๒. จัดทำแผนที่เกิดเหตุ ${a5F('', 460)}</div>
+      <div class="a5-line a5-indent">๓. ${a5F('', 580)}</div>
+      <p class="a5-plan-h">แผนการไต่สวน</p>
+      <table class="a5-tbl"><thead><tr><th style="width:28%">วัน/เดือน/ปี</th><th>การดำเนินการ</th></tr></thead><tbody>
+        ${(planLines.length ? planLines : ['', '', '']).map(l => `<tr><td>${a5F('', 120)}</td><td>${a5F(l, 400)}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="a5-sign a5-sign-stack">
+        ${a5SignCol(intake.investigator, 'พนักงาน ป.ป.ท. เจ้าของสำนวน', '')}
+        ${a5SignCol((intake.team || [])[0], 'เจ้าหน้าที่ ป.ป.ท. ผู้ช่วยเจ้าของสำนวน', '')}
+        ${a5SignCol(intake.director, 'หัวหน้าพนักงาน ป.ป.ท.', '')}
+      </div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.plan.code)}</p>
+    </section>`;
   }
-  function paperReal(pages, slotsByPage, formCode, formKey, docEdits) {
-    const S = A5R_SCALE;
-    const edits = docEdits || {};
-    const body = pages.map((img, pi) => {
-      const slots = (slotsByPage[pi] || []).map((s, si) => {
-        const key = `${formKey}-p${pi}-${si}`;
-        const html = edits[key] ?? s.html;
-        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 11.5) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
-      }).join('');
-      return `<div class="a5r-page" style="background-image:url('${img}')">${slots}</div>`;
-    }).join('');
-    return `<section class="a5-paper a5r-paper">${body}${formCode ? `<p class="a5-form-code">${escapeHtml(formCode)}</p>` : ''}</section>`;
-  }
-  const EXT_REAL = {
-    '213': {
-      imgs: A5_REAL_IMAGES.ext213,
-      p1: (d) => [
-        { x: 303, y: 126.3, w: 60, html: escapeHtml(d.id) },
-        { x: 392, y: 126.3, w: 70, html: escapeHtml(String(d.round || '')) },
-        { x: 180, y: 265.5, w: 100, html: a5DateShort(d.received) },
-        { x: 305, y: 337.7, w: 110, html: a5DateShort(d.deadline) },
-        { x: 132, y: 355.8, w: 60, html: escapeHtml(String(d.round || '')) },
-        { x: 418, y: 428.2, w: 110, html: escapeHtml(d.investigator || '') },
-        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10.5 },
-        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10.5 },
-      ],
-      p2: (d) => [
-        { x: 133, y: 110.4, w: 25, html: escapeHtml(String(d.round || '')) },
-        { x: 181, y: 110.4, w: 35, html: escapeHtml(String(d.days || '')) },
-        { x: 230, y: 110.4, w: 70, html: a5DateShort(d.deadline) },
-        { x: 407, y: 110.4, w: 70, html: a5DateShort(d.deadline) },
-        { x: 124, y: 128.5, w: 70, html: a5DateShort(d.deadline) },
-        { x: 340, y: 188.8, w: 125, html: escapeHtml(d.investigator || '') },
-        { x: 376, y: 295.4, w: 150, html: escapeHtml(d.opinions[0] || '') },
-        { x: 340, y: 355.6, w: 125, html: escapeHtml(d.signs[0] || '') },
-        { x: 376, y: 478.5, w: 150, html: escapeHtml(d.opinions[1] || '') },
-        { x: 340, y: 538.7, w: 125, html: escapeHtml(d.signs[1] || '') },
-        { x: 376, y: 645.3, w: 150, html: escapeHtml(d.opinions[2] || '') },
-        { x: 340, y: 711.6, w: 125, html: escapeHtml(d.signs[2] || '') },
-      ],
-      p3: (d) => [
-        { x: 376, y: 122.8, w: 150, html: escapeHtml(d.opinions[3] || '') },
-        { x: 340, y: 183, w: 125, html: escapeHtml(d.signs[3] || '') },
-        { x: 340, y: 381.9, w: 125, html: escapeHtml(d.signs[4] || '') },
-      ],
-    },
-    '644': {
-      imgs: A5_REAL_IMAGES.ext644,
-      p1: (d) => [
-        { x: 262, y: 126.3, w: 60, html: escapeHtml(d.id) },
-        { x: 356, y: 126.3, w: 60, html: escapeHtml(String(d.round || '')) },
-        { x: 183, y: 265.5, w: 45, html: a5DateShort(d.received) },
-        { x: 350, y: 265.5, w: 185, html: escapeHtml(d.complainant || '') },
-        { x: 90, y: 283.5, w: 150, html: escapeHtml(d.accused || '') },
-        { x: 246.6, y: 283.5, w: 90, html: '' },
-        { x: 346, y: 283.5, w: 90, html: escapeHtml(d.agency || '') },
-        { x: 127, y: 301.6, w: 408, html: escapeHtml(d.subject || '') },
-        { x: 113, y: 343.7, w: 100, html: escapeHtml(d.orderNo || '') },
-        { x: 250, y: 343.7, w: 175, html: a5DateShort(d.orderDate) },
-        { x: 394, y: 416.1, w: 72, html: a5DateShort(d.deadline) },
-        { x: 216, y: 434.2, w: 50, html: escapeHtml(String(d.round || '')) },
-        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10.5 },
-        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10.5 },
-      ],
-      p2: (d) => [
-        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 10.5 },
-        { x: 133, y: 193.9, w: 25, html: escapeHtml(String(d.round || '')) },
-        { x: 181, y: 193.9, w: 35, html: escapeHtml(String(d.days || '')) },
-        { x: 230, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
-        { x: 407, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
-        { x: 124, y: 211.7, w: 70, html: a5DateShort(d.deadline) },
-        { x: 340, y: 272, w: 125, html: escapeHtml(d.investigator || '') },
-        { x: 376, y: 378.5, w: 150, html: escapeHtml(d.opinions[0] || '') },
-        { x: 340, y: 438.8, w: 125, html: escapeHtml(d.signs[0] || '') },
-        { x: 376, y: 561.7, w: 150, html: escapeHtml(d.opinions[1] || '') },
-        { x: 340, y: 621.9, w: 125, html: escapeHtml(d.signs[1] || '') },
-      ],
-      p3: (d) => [
-        { x: 376, y: 121, w: 150, html: escapeHtml(d.opinions[2] || '') },
-        { x: 340, y: 187.2, w: 125, html: escapeHtml(d.signs[2] || '') },
-        { x: 376, y: 271.6, w: 150, html: escapeHtml(d.opinions[3] || '') },
-        { x: 340, y: 331.8, w: 125, html: escapeHtml(d.signs[3] || '') },
-        { x: 340, y: 530.6, w: 125, html: escapeHtml(d.signs[4] || '') },
-      ],
-    },
-  };  function paperExt(state, reportType) {
-    const c = state.caseData || {}, i = state.inquiry || {}, rep = reportOf(reportType, i) || {}, intake = i.intake || {}, m62 = intake.m62 || {};
+
+  /* ===== แบบ ปปท. ๒ (๒๑๓) / ๓ (๖๔๔) — บันทึกข้อความขอขยายระยะเวลาการไต่สวน · ๓ หน้า ===== */
+  function paperExt(state, reportType) {
+    const c = state.caseData || {}, i = state.inquiry || {}, rep = reportOf(reportType, i) || {}, intake = i.intake || {};
     const is213 = reportType === '213';
-    const cfg = EXT_REAL[reportType];
+    const formCode = A5_FORMS[is213 ? 'ext213' : 'ext644'].code;
     const history = rep.extensionHistory || [];
     const approved = history.filter(h => h.status === 'APPROVED');
     const pending = history.find(h => h.status === 'PENDING');
     const roundNo = approved.length + 1;
-    const deadline = rep.deadlineAt || addDays(intake.receivedFirstAt, is213 ? 60 : 270);
+    const priorDays = approved.reduce((sum, h) => sum + Number(h.days || h.requestedDays || 0), 0);
+    const days = pending?.requestedDays || EXTENSION_DAYS;
+    const deadline = rep.deadlineAt || addDays(intake.receivedFirstAt, is213 ? 60 : 730);
+    const nextDeadline = addDays(deadline, days);
+    const deadline2Y = addDays(intake.receivedFirstAt, 730);
     const dirs = approved.filter(h => h.role === 'director');
     const secs = approved.filter(h => h.role === 'secretary');
     const pendDir = pending?.role === 'director' ? pending : null;
     const pendSec = pending?.role === 'secretary' ? pending : null;
-    const opText = e => e ? (e.status === 'APPROVED' ? `${e.reason || 'ตามเสนอ'}` : e.status === 'DENIED' ? `ไม่อนุมัติ — ${e.denyNote || ''}` : 'รอพิจารณา') : '';
-    const opinions = [opText(dirs[0] || pendDir), opText(dirs[1] || (dirs.length >= 1 && pendDir ? pendDir : null)), opText(secs[0] || pendSec), opText(secs[1] || (secs.length >= 1 && pendSec ? pendSec : null))];
-    const signs = [(dirs[0] || pendDir)?.approvedBy || '', (dirs[1] || (dirs.length >= 1 && pendDir ? pendDir : null))?.approvedBy || '', (secs[0] || pendSec)?.approvedBy || '', (secs[1] || (secs.length >= 1 && pendSec ? pendSec : null))?.approvedBy || '', rep.lateReport ? 'เลขาธิการคณะกรรมการ ป.ป.ท.' : ''];
-    const data = {
-      id: c.id, round: roundNo, days: pending?.requestedDays || '', received: intake.receivedFirstAt,
-      deadline, investigator: intake.investigator, accused: a5AccusedLine(state),
-      complainant: c.complainant, agency: c.agency, subject: state.documentData?.documentSubject || c.subject,
-      orderNo: i.committee213?.orderNo || '', orderDate: i.committee213?.orderDate || '',
-      done: i.prelim?.workLog || '', reason: pending?.reason || approved.at(-1)?.reason || rep.lateReport || '', problem: rep.lateReport || '',
-      opinions, signs
-    };
-    return `<section class="a5-paper">${a5Hdr(is213 ? 'บันทึกขอขยายระยะเวลาไต่สวนเบื้องต้น' : 'บันทึกขอขยายระยะเวลาไต่สวน', A5_FORMS[is213 ? 'ext213' : 'ext644'].code)}
-      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 150)}<span>ครั้งที่</span>${a5F(String(roundNo), 40)}</div>
-      <div class="a5-line"><b>เรียน</b> เลขาธิการคณะกรรมการ ป.ป.ท.</div>
-      <p><span class="a5-num">๑.</span> ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่${a5F(data.orderNo, 90)} ลงวันที่${a5F(a5DateShort(data.orderDate), 90)} ให้ไต่สวน${is213 ? 'เบื้องต้น' : ''}กรณี${a5F(data.subject, 340)} นั้น</p>
-      <p><span class="a5-num">๒.</span> ในการไต่สวนข้อเท็จจริง ผู้ถูกกล่าวหา${a5F(data.accused, 280)} ผู้กล่าวหา${a5F(data.complainant, 200)} เหตุเกิดที่${a5F(data.agency, 200)} โดย${a5F(data.investigator, 140)} เป็นผู้รับผิดชอบการไต่สวน ได้รับเรื่องเมื่อวันที่${a5F(a5DateShort(data.received), 90)} ครบกำหนด${is213 ? '๖๐ วัน' : 'สองปี'} วันที่${a5F(a5DateShort(data.deadline), 90)}</p>
-      <p><span class="a5-num">๓.</span> การดำเนินการที่ได้กระทำไปแล้ว ${a5F(data.done, 420)}</p>
-      <p><span class="a5-num">๔.</span> เหตุที่ไม่แล้วเสร็จภายในกำหนด ${a5F(data.reason, 420)} จึงขอขยายระยะเวลา${is213 ? 'ไต่สวนเบื้องต้น' : 'ไต่สวน'}ออกไปอีก ๖๐ วัน ตามระเบียบคณะกรรมการ ป.ป.ท. ว่าด้วยการไต่สวน พ.ศ. ๒๕๖๘ ข้อ ๓๘ วรรคสอง</p>
-      <table class="a5-tbl"><thead><tr><th style="width:20%">ลำดับชั้นความเห็น</th><th>ความเห็น</th><th style="width:22%">ลายมือชื่อผู้เห็นชอบ</th></tr></thead><tbody>
-        <tr><th>ผู้อำนวยการเขต/กอง (ครั้งที่ ๑)</th><td>${a5F(opinions[0], 190)}</td><td>${a5F(signs[0], 80)}</td></tr>
-        <tr><th>ผู้อำนวยการเขต/กอง (ครั้งที่ ๒)</th><td>${a5F(opinions[1], 190)}</td><td>${a5F(signs[1], 80)}</td></tr>
-        <tr><th>ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท. (ครั้งที่ ๑)</th><td>${a5F(opinions[2], 190)}</td><td>${a5F(signs[2], 80)}</td></tr>
-        <tr><th>ผู้ช่วย/รอง/เลขาธิการ ป.ป.ท. (ครั้งที่ ๒)</th><td>${a5F(opinions[3], 190)}</td><td>${a5F(signs[3], 80)}</td></tr>
-      </tbody></table>
-      <div class="a5-sign">${a5Sign(data.investigator, 'ผู้รับผิดชอบการไต่สวน')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS[is213 ? 'ext213' : 'ext644'].code)}</p></section>`;
+    const opText = e => !e ? '' : e.status === 'APPROVED' ? (e.reason || 'ตามเสนอ') : e.status === 'DENIED' ? `ไม่อนุมัติ — ${e.denyNote || ''}` : 'รอพิจารณา';
+    const steps = [dirs[0] || pendDir, dirs[1] || (dirs.length ? pendDir : null), secs[0] || pendSec, secs[1] || (secs.length ? pendSec : null)];
+    const opinions = steps.map(opText);
+    const signs = steps.map(s => s?.approvedBy || '');
+    const chosen = steps.map(s => s?.status === 'APPROVED');
+    const subject = state.documentData?.documentSubject || c.subject || '';
+    const fromNacc = Boolean(intake.m62?.flag) || String(c.decision || '').includes('62');
+    const fromMisconduct = String(c.decision || '').includes('18/4');
+    const recv = a5DMY(intake.receivedFirstAt);
+    const nx = a5DMY(nextDeadline);
+    const st = a5DMY(deadline);
+    /* ข้อ ๕–๘ ความเห็นตามลำดับชั้น — โครงเดียวกันทั้งสี่ชั้น ตามต้นฉบับ */
+    const opinionBlock = (no, title, meta, idx, role) => `
+      <p class="a5-num-h"><b>${no}. ${title}</b>${meta}</p>
+      <div class="a5-indent">
+        <div class="a5-cbline">${a5Cb(chosen[idx], 'เห็นควรอนุมัติให้ขยายระยะเวลาตามเสนอ')}</div>
+        <div class="a5-cbline">${a5Cb(false, 'เห็นควรอนุมัติให้ขยายระยะเวลาจำนวน')}${a5F('', 60)} วัน เนื่องจาก ${a5F(opinions[idx], 300)}</div>
+        <div class="a5-cbline">${a5Cb(false, 'อื่น ๆ')} ${a5F('', 430)}</div>
+      </div>
+      <div class="a5-sign">${a5SignCol(signs[idx], role, '')}</div>`;
+    return `<section class="a5-paper">
+      ${a5MemoHdr()}
+      ${a5MemoMeta(intake.unit, c.id, todayISO())}
+      <div class="a5-line a5-memo-row"><b>เรื่อง</b> การขอขยายระยะเวลาการไต่สวน${is213 ? 'เบื้องต้น' : ''} เรื่องที่${a5F(c.id || '', 150)} ครั้งที่ ${a5F(String(roundNo), 60)}</div>
+      <div class="a5-line"><b>เรียน</b> ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</div>
+      <p class="a5-indent">(ผ่านเลขาธิการคณะกรรมการ/ผู้อำนวยการกอง/สำนัก ${a5F(intake.unit || '', 330)})</p>
+
+      <p class="a5-num-h a5-indent"><b>๑. เรื่องเดิม</b></p>
+      <p class="a5-indent2">๑.๑ สำนักงาน ป.ป.ท. ได้รับเรื่องกล่าวหา${is213 ? '' : 'จาก'}</p>
+      <div class="a5-indent3 a5-cbline">${a5Cb(fromNacc, 'ตามมาตรา ๑๘/๑ (รับมอบจากคณะกรรมการ ป.ป.ช.)')}</div>
+      <div class="a5-indent3 a5-cbline">${a5Cb(fromMisconduct, 'ตามมาตรา ๑๘/๔ (คดีประพฤติมิชอบ)')}</div>
+      <p>เมื่อวันที่ ${a5F(recv.d, 55)} เดือน ${a5F(recv.mo, 120)} พ.ศ. ${a5F(recv.y, 65)} คดีระหว่าง${a5F(c.complainant || '', 250)} (ผู้กล่าวหา)
+        กับ${a5F(a5AccusedLine(state), 230)} (ผู้ถูกกล่าวหา) ตำแหน่ง${a5F('', 160)} สังกัด${a5F(c.agency || '', 250)}
+        กรณี (ระบุพฤติการณ์การกระทำผิดพอสังเขป) ${a5F(subject, 330)}</p>
+      ${is213 ? `
+      <p class="a5-indent2">๑.๒ สำนวนคดีนี้</p>
+      <div class="a5-indent3 a5-cbline">${a5Cb(true, 'ครบระยะเวลา ๖๐ วัน ในวันที่')}${a5F(a5DateShort(deadline), 170)} และการขอขยายระยะเวลาในครั้งนี้เป็นครั้งที่ ${a5F(String(roundNo), 55)}</div>
+      <p class="a5-indent3">(กรณีเคยขอขยายระยะเวลามาแล้วให้ระบุเพิ่มเติมว่า “โดยที่ผ่านมาได้มีการขอขยายระยะเวลามาแล้วจำนวน ${a5F(String(approved.length), 50)} ครั้ง
+        รวมเป็นจำนวน ${a5F(String(priorDays), 55)} วัน และจะครบกำหนดระยะเวลาที่ขอขยายในวันที่ ${a5F(nx.d, 50)} เดือน ${a5F(nx.mo, 110)} พ.ศ. ${a5F(nx.y, 60)}”)</p>
+      <div class="a5-indent3 a5-cbline">${a5Cb(false, 'ครบระยะเวลา ๒ ปี ในวันที่')}${a5F(a5DateShort(deadline2Y), 260)}</div>
+      <p class="a5-indent2">๑.๓ ชื่อ-สกุล ${a5F(intake.investigator || '', 200)} ตำแหน่ง ${a5F('พนักงาน ป.ป.ท.', 150)} สังกัด ${a5F(intake.unit || '', 170)} ผู้รับผิดชอบสำนวน</p>` : `
+      <p class="a5-indent2">๑.๒ สำนวนคดีนี้เป็นการไต่สวนโดย (คณะอนุกรรมการไต่สวน/คณะพนักงานไต่สวน)
+        ตามคำสั่ง${a5F(i.committee213?.orderNo || '', 200)} ลับ ที่ ${a5F('', 90)}/${a5F('', 70)}
+        ลง${a5DateParts(i.committee213?.orderDate, 50, 110, 60)} โดยมีองค์ประกอบดังนี้</p>
+      <p class="a5-indent3">(๑) ${a5F(intake.director || '', 220)} เป็น (ประธานอนุกรรมการ/หัวหน้าพนักงาน ป.ป.ท.)</p>
+      <p class="a5-indent3">(๒) ${a5F((intake.team || [])[0] || '', 220)} เป็น (อนุกรรมการ/พนักงาน ป.ป.ท.)</p>
+      <p class="a5-indent3">(๓) ${a5F(i.inquiry644?.investigator || intake.investigator || '', 220)} เป็น (อนุกรรมการและเลขานุการ/พนักงาน ป.ป.ท. เจ้าของสำนวนคดี)</p>
+      <p class="a5-indent2">๑.๓ สำนวนการไต่สวนคดีนี้ ครบระยะเวลา ๒ ปี ในวันที่ ${a5F(a5DateShort(deadline), 180)} และการขอขยายระยะเวลาในครั้งนี้ เป็นครั้งที่ ${a5F(String(roundNo), 55)}</p>
+      <p class="a5-indent3">(กรณีเคยขอขยายระยะเวลามาแล้วให้ระบุเพิ่มเติมว่า “โดยที่ผ่านมาได้มีการขอขยายระยะเวลามาแล้วจำนวน ${a5F(String(approved.length), 50)} ครั้ง
+        รวมเป็นจำนวน ${a5F(String(priorDays), 55)} วัน และจะครบกำหนดระยะเวลาที่ขอขยายในวันที่ ${a5F(nx.d, 50)} เดือน ${a5F(nx.mo, 110)} พ.ศ. ${a5F(nx.y, 60)}”)</p>`}
+
+      <p class="a5-num-h a5-indent"><b>๒. ข้อกฎหมาย</b></p>
+      <p class="a5-indent2">๒.๑ พระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม (ฉบับที่ ๔) มาตรา ๒๓ ประกอบบทเฉพาะกาล มาตรา ๒๐ วรรคสอง</p>
+      <p class="a5-indent2">๒.๒ ระเบียบคณะกรรมการ ป.ป.ท. ว่าด้วยหลักเกณฑ์และวิธีการไต่สวน พ.ศ. ๒๕๖๘ ข้อ ${is213 ? '๓๘' : '๖๔'}</p>
+
+      <p class="a5-num-h a5-indent"><b>๓. ข้อเท็จจริง</b></p>
+      <p class="a5-indent2">${is213 ? 'พนักงาน ป.ป.ท. เจ้าของสำนวน/ผู้รับผิดชอบสำนวน' : 'อนุกรรมการและเลขานุการ/พนักงาน ป.ป.ท. เจ้าของสำนวน/ผู้รับผิดชอบสำนวน'} ขอชี้แจงข้อเท็จจริงการดำเนินการ ดังนี้</p>
+      <p class="a5-indent2">๓.๑ รายละเอียดการดำเนินการที่ผ่านมา (พอสังเขป)</p>
+      <div class="a5-line">${a5F(rep.workLog || '', 640)}</div>
+      <div class="a5-line">${a5F('', 640)}</div>
+      <p class="a5-indent2">๓.๒ การดำเนินการที่เหลืออยู่</p>
+      <div class="a5-line">${a5F('', 640)}</div>
+      <div class="a5-line">${a5F('', 640)}</div>
+      ${is213 ? `
+      <p class="a5-indent2">๓.๓ ปัญหาและอุปสรรคที่ไม่สามารถดำเนินการแล้วเสร็จภายในระยะเวลา</p>
+      <div class="a5-line">${a5F(pending?.reason || approved.at(-1)?.reason || rep.lateReport || '', 640)}</div>
+      <div class="a5-line">${a5F('', 640)}</div>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}` : `
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <p class="a5-indent2">๓.๓ ปัญหาและอุปสรรคที่ไม่สามารถดำเนินการแล้วเสร็จภายในระยะเวลา</p>
+      <div class="a5-line">${a5F(pending?.reason || approved.at(-1)?.reason || rep.lateReport || '', 640)}</div>
+      <div class="a5-line">${a5F('', 640)}</div>`}
+
+      <p class="a5-num-h a5-indent"><b>๔. ข้อพิจารณา</b></p>
+      <p class="a5-indent2">${is213 ? 'พนักงาน ป.ป.ท. เจ้าของสำนวน/ผู้รับผิดชอบสำนวน' : 'คณะอนุกรรมการไต่สวน/คณะพนักงานไต่สวน'} จึงขออนุมัติขยายระยะเวลาการไต่สวน
+        ครั้งที่ ${a5F(String(roundNo), 55)} จำนวน ${a5F(String(days), 60)} วัน นับตั้งแต่วันที่ ${a5F(st.d, 50)} เดือน ${a5F(st.mo, 110)} พ.ศ. ${a5F(st.y, 60)}
+        ทั้งนี้จะครบกำหนดระยะเวลาที่ขอขยายในวันที่ ${a5F(nx.d, 50)} เดือน ${a5F(nx.mo, 110)} พ.ศ. ${a5F(nx.y, 60)}</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบ ขอได้โปรดอนุมัติตามข้อ ๓</p>
+      <div class="a5-sign">${a5SignCol(intake.investigator, is213 ? 'พนักงาน ป.ป.ท. เจ้าของสำนวน / เจ้าหน้าที่ ป.ป.ท. ผู้ช่วย' : 'อนุกรรมการและเลขานุการ / พนักงาน ป.ป.ท. หรือเจ้าหน้าที่ ป.ป.ท. เจ้าของสำนวน', '')}</div>
+
+      ${opinionBlock('๕', 'ความเห็นผู้บังคับบัญชาชั้นต้น', ' (หัวหน้าพนักงาน ป.ป.ท.)', 0, 'หัวหน้าพนักงาน ป.ป.ท.')}
+      ${opinionBlock('๖', 'ความเห็นผู้อำนวยการกอง/สำนัก', ` (หัวหน้าพนักงาน ป.ป.ท.) (เรื่องที่ ${a5F(c.id || '', 120)} คำสั่งที่ ${a5F(intake.orderNo || '', 190)})`, 1, 'หัวหน้าพนักงาน ป.ป.ท.')}
+      ${a5Foot()}${A5_PG}${a5PgNo(3)}
+      ${opinionBlock('๗', 'ความเห็นผู้ช่วยเลขาธิการ / รองเลขาธิการฯ', ` (เรื่องที่ ${a5F(c.id || '', 120)} คำสั่งที่ ${a5F(intake.orderNo || '', 190)})`, 2, 'ผู้ช่วยเลขาธิการ / รองเลขาธิการ ป.ป.ท.')}
+      ${opinionBlock('๘', 'ความเห็นเลขาธิการฯ', ` (เรื่องที่ ${a5F(c.id || '', 120)} คำสั่งที่ ${a5F(intake.orderNo || '', 190)})`, 3, 'เลขาธิการคณะกรรมการ ป.ป.ท.')}
+
+      <p class="a5-num-h"><b>เรียน ประธานกรรมการ ป.ป.ท.</b> (เรื่องที่ ${a5F(c.id || '', 120)} คำสั่งที่ ${a5F(intake.orderNo || '', 210)})</p>
+      <p class="a5-indent2">เพื่อประโยชน์ในการพิจารณาขยายระยะเวลา${is213 ? 'การไต่สวน' : 'ดำเนินการไต่สวน'}ตามพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม และเรื่องดังกล่าวอยู่ระหว่างดำเนินการยังไม่แล้วเสร็จตามเงื่อนไขระยะเวลาที่กำหนดไว้ จึงเห็นควรบรรจุเข้าวาระประชุมคณะกรรมการ ป.ป.ท. เพื่อพิจารณา</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณา</p>
+      <div class="a5-sign">${a5SignCol(rep.lateReport ? 'เลขาธิการคณะกรรมการ ป.ป.ท.' : '', 'เลขาธิการ ป.ป.ท.', '')}</div>
+
+      <div class="a5-note">
+        <p><b>หมายเหตุ</b></p>
+        <p>๑. ผู้รับผิดชอบสามารถปรับเนื้อหาให้ตรงกับข้อเท็จจริงของคดีและหากข้อความใดไม่ใช้ให้ตัดทิ้ง</p>
+        <p>๒. ให้แนบเอกสาร ดังต่อไปนี้</p>
+        <p class="a5-indent">๒.๑ แผนงานคดี และบันทึกการปฏิบัติงาน</p>
+        <p class="a5-indent">๒.๒ เอกสารหลักฐานที่ระบุวันที่สำนักงาน ป.ป.ท. รับเรื่อง</p>
+        ${is213 ? '' : '<p class="a5-indent">๒.๓ คำสั่งแต่งตั้งไต่สวน</p>'}
+        <p>๓. การขอขยายระยะเวลาดังกล่าวต้องเสนอก่อนครบกำหนด ๑๕ วัน เป็นอย่างช้า</p>
+      </div>
+      <p class="a5-form-code">${escapeHtml(formCode)}</p>
+    </section>`;
   }
 
+  /* ===== แบบ ปปท. ๔ — บันทึกข้อความ รายงานการไต่สวนเบื้องต้น · ๖ หน้า ===== */
   function paper213(state) {
     const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, m62 = intake.m62 || {}, m = i.committee213 || {}, q = i.inquiry644 || {};
-    const deadline213 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
-    const accused = (q.accused && q.accused.length) ? q.accused.join(', ') : '';
-    const chain = p.reviewChain || [];
-    const chainNames = ['', chain.find(x => x.level === 2)?.by || '', chain.find(x => x.level === 3)?.by || '', chain.find(x => x.level === 4)?.by || ''];
-    const p1 = [
-      { x: 338, y: 112.7, w: 110, html: a5DateShort(p.submittedAt || todayISO()) },
-      { x: 260, y: 137.4, w: 110, html: escapeHtml(c.id || '') },
-      { x: 202, y: 242.7, w: 40, html: a5DateShort(m62.sourceMtiDate) },
-      { x: 318, y: 242.7, w: 150, html: escapeHtml(m62.sourceLetter || '') },
-      { x: 436, y: 369.2, w: 85, html: a5DateShort(deadline213) },
-      { x: 202, y: 387.3, w: 70, html: a5DateShort(intake.receivedFirstAt) },
-      { x: 202, y: 405.4, w: 160, html: escapeHtml(intake.unit || '') },
-      { x: 282, y: 423.4, w: 85, html: escapeHtml(intake.investigator || '') },
-      { x: 158, y: 664.5, w: 380, html: escapeHtml(c.complainant || '') },
-      { x: 158, y: 706.7, w: 380, html: escapeHtml(accused) },
-    ];
-    const p5 = [
-      { x: 330, y: 212.3, w: 135, html: escapeHtml(intake.investigator || '') },
-      { x: 322, y: 340.4, w: 135, html: escapeHtml(chainNames[1] || '') },
-      { x: 325, y: 443.9, w: 135, html: '' },
-      { x: 322, y: 547.6, w: 135, html: escapeHtml(chainNames[2] || '') },
-      { x: 207, y: 609.1, w: 300, html: escapeHtml(m.result || ''), bold: true },
-    ];
-    const p6 = [
-      { x: 325, y: 239.4, w: 135, html: escapeHtml(chainNames[3] || m.decidedBy || '') },
-      { x: 260, y: 278.1, w: 135, html: escapeHtml(c.id || '') },
-      { x: 325, y: 493.5, w: 135, html: escapeHtml('') },
-    ];
-    return `<section class="a5-paper">${a5Hdr('รายงานผลการไต่สวนเบื้องต้น', A5_FORMS['213'].code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(a5DateShort(p.submittedAt || todayISO()), 90)}</div>
-      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 160)}</div>
-      <div class="a5-line"><b>เรียน</b> ประธานคณะกรรมการ ป.ป.ท.</div>
-      <p><span class="a5-num">๑.</span> ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่${a5F(m62.sourceLetter || intake.orderNo || '', 150)} ลงวันที่${a5F(a5DateShort(m62.sourceMtiDate || intake.orderDate), 90)} ให้ไต่สวนเบื้องต้นกรณี${a5F(state.documentData?.documentSubject || c.subject, 340)} นั้น บัดนี้ การไต่สวนเบื้องต้นเสร็จสิ้นแล้ว จึงขอรายงานผลการไต่สวนเบื้องต้น ดังนี้</p>
-      <p><span class="a5-num">๒.</span> ข้อเท็จจริงและพยานหลักฐานที่ได้จากการไต่สวนเบื้องต้น</p>
-      <p class="a5-indent">๒.๑ ผู้กล่าวหา ${a5F(c.complainant || '', 300)}</p>
-      <p class="a5-indent">๒.๒ ผู้ถูกกล่าวหา ${a5F(accused, 300)}</p>
-      <p class="a5-indent">๒.๓ ข้อกล่าวหา (ประเด็นแห่งคดี) ${a5F(q.allegations || '', 320)}</p>
-      <p class="a5-indent">๒.๔ หน่วยงานเจ้าของสำนวน ${a5F(intake.unit || '', 200)} ผู้รับผิดชอบการไต่สวน ${a5F(intake.investigator || '', 140)} ครบกำหนดวันที่ ${a5F(a5DateShort(deadline213), 90)}</p>
-      <p><span class="a5-num">๓.</span> สรุปข้อเท็จจริงและความเห็นของพนักงานไต่สวน ${a5F(p.report || '', 420)}</p>
-      <p><span class="a5-num">๔.</span> จึงขอรายงานมาเพื่อโปรดพิจารณา หากคณะกรรมการเห็นควรประการใด โปรดมีมติตามแบบท้ายรายงานนี้</p>
-      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้รับผิดชอบการไต่สวน')}</div>
-      <h3>ความเห็นตามลำดับชั้น</h3>
-      <table class="a5-tbl"><thead><tr><th style="width:26%">ลำดับชั้น</th><th>ความเห็น</th><th style="width:20%">ลายมือชื่อ</th></tr></thead><tbody>
-        <tr><th>ผู้ช่วย/รองเลขาธิการ ป.ป.ท.</th><td>${a5F(chain.find(x => x.level === 3)?.opinion || '', 160)}</td><td>${a5F(chainNames[2] || '', 70)}</td></tr>
-        <tr><th>เลขาธิการ ป.ป.ท.</th><td>${a5F(chain.find(x => x.level === 4)?.opinion || '', 160)}</td><td>${a5F(chainNames[3] || '', 70)}</td></tr>
-      </tbody></table>
-      <h3>มติคณะกรรมการ ป.ป.ท.</h3>
-      <div class="a5-box">${MTI_213_RESULTS.map(r => `<label style="margin-right:1rem">${m.result === r ? '☑' : '☐'} ${escapeHtml(r)}</label>`).join('')}</div>
-      <div class="a5-line"><span>เลขที่มติ</span>${a5F(m.mtiNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(m.mtiDate), 90)}</div>
-      <div class="a5-sign">${a5Sign(m.decidedBy || chainNames[3] || '', 'ประธานคณะกรรมการ ป.ป.ท.')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS['213'].code)}</p></section>`;
-  }
-  function paper644(state) {
-    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, mc = i.committee644 || {}, intake = i.intake || {};
-    const accused = (q.accused && q.accused.length) ? q.accused.join(' · ') : '';
-    const witnesses = (q.witnesses && q.witnesses.length) ? q.witnesses.join(', ') : '';
-    const p1 = [
-      { x: 118, y: 141.4, w: 400, html: escapeHtml(state.documentData?.documentSubject || c.subject || '') },
-      { x: 327, y: 177.5, w: 150, html: a5DateShort(q.submittedAt || todayISO()) },
-      { x: 224, y: 257.9, w: 60, html: a5DateShort(intake.receivedFirstAt) },
-      { x: 324, y: 257.9, w: 140, html: escapeHtml(intake.m62?.sourceLetter || '') },
-      { x: 405, y: 366.4, w: 60, html: a5DateShort(intake.receivedFirstAt) },
-      { x: 137, y: 402.5, w: 90, html: escapeHtml(m.orderNo || '') },
-      { x: 88, y: 531, w: 450, html: escapeHtml(c.complainant || ''), multi: true },
-      { x: 88, y: 555, w: 450, html: escapeHtml(accused), multi: true },
-      { x: 88, y: 651, w: 450, html: escapeHtml(q.allegations || ''), multi: true },
-      { x: 145, y: 694, w: 400, html: escapeHtml(witnesses), multi: true },
-      { x: 145, y: 748, w: 400, html: escapeHtml(q.statements || ''), multi: true },
-    ];
-    const p3 = [
-      { x: 178, y: 276.8, w: 345, html: escapeHtml(mc.result || ''), bold: true },
-      { x: 200, y: 460, w: 150, html: escapeHtml(m.orderType === '24v3' ? (intake.team || [])[0] || '' : q.investigator || intake.investigator || '') },
-      { x: 200, y: 532, w: 150, html: escapeHtml((intake.team || [])[1] || '') },
-      { x: 200, y: 604, w: 150, html: escapeHtml(q.investigator || intake.investigator || '') },
-    ];
-    return `<section class="a5-paper">${a5Hdr('รายงานการไต่สวน', A5_FORMS['644'].code)}
-      <div class="a5-line"><b>เรื่อง</b>${a5F(state.documentData?.documentSubject || c.subject || '', 380)}</div>
-      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(a5DateShort(q.submittedAt || todayISO()), 90)}</div>
-      <div class="a5-line"><b>เรียน</b> ประธานคณะกรรมการ ป.ป.ท.</div>
-      <p><span class="a5-num">๑.</span> คดีที่คณะกรรมการ ป.ป.ท. มีมติให้ไต่สวน เมื่อวันที่${a5F(a5DateShort(intake.receivedFirstAt), 90)} ตามคำสั่งคณะกรรมการ ป.ป.ท. ที่${a5F(m.orderNo || '', 90)} ลงวันที่${a5F(a5DateShort(m.orderDate), 90)} เรื่อง${a5F(state.documentData?.documentSubject || c.subject || '', 260)} นั้น บัดนี้การไต่สวนเสร็จสิ้นแล้ว จึงขอรายงานผลการไต่สวน ดังนี้</p>
-      <p><span class="a5-num">๒.</span> ผู้กล่าวหา ${a5F(c.complainant || '', 340)}</p>
-      <p><span class="a5-num">๓.</span> ผู้ถูกกล่าวหา ${a5F(accused, 340)}</p>
-      <p><span class="a5-num">๔.</span> ข้อกล่าวหา ${a5F(q.allegations || '', 360)}</p>
-      <p><span class="a5-num">๕.</span> พยานบุคคล ${a5F(witnesses, 360)}</p>
-      <p><span class="a5-num">๖.</span> พยานเอกสารและบันทึกถ้อยคำ ${a5F(q.statements || '', 360)}</p>
-      <p><span class="a5-num">๗.</span> ข้อเท็จจริงและความเห็นของพนักงานไต่สวน ${a5F(q.summary || '', 380)}</p>
-      <p><span class="a5-num">๘.</span> จึงเสนอคณะกรรมการ ป.ป.ท. เพื่อโปรดพิจารณาวินิจฉัยชี้มูลต่อไป</p>
-      <div class="a5-sign">${a5Sign(q.investigator || intake.investigator || '', 'ผู้ไต่สวน')}</div>
-      <h3>มติคณะกรรมการ ป.ป.ท. (วินิจฉัยชี้มูล)</h3>
-      <div class="a5-box">${MTI_644_RESULTS.map(r => `<label style="margin-right:1rem">${mc.result === r ? '☑' : '☐'} ${escapeHtml(r)}</label>`).join('')}</div>
-      <div class="a5-line"><span>เลขที่มติ</span>${a5F(mc.mtiNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(mc.mtiDate), 90)}</div>
-      <div class="a5-sign">${a5Sign(mc.decidedBy || '', 'ประธานคณะกรรมการ ป.ป.ท.')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS['644'].code)}</p></section>`;
-  }
-  function paperNoticeAccusation(state) {
-    const i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, intake = i.intake || {};
-    const c = state.caseData || {};
-    const slots = [
-      { x: 438, y: 187, w: 85, html: escapeHtml(c.id || '') },
-      { x: 122, y: 211, w: 300, html: escapeHtml(a5AccusedLine(state)) },
-      { x: 296, y: 235.1, w: 42, html: escapeHtml(m.orderNo || '') },
-      { x: 340, y: 235.1, w: 45, html: a5DateShort(m.orderDate) },
-      { x: 417, y: 295.4, w: 120, html: escapeHtml(a5AccusedLine(state)) },
-      { x: 87, y: 313.5, w: 145, html: escapeHtml(c.agency || '') },
-      { x: 345, y: 586, w: 190, html: escapeHtml(intake.director || '') },
-    ];
-    return `<section class="a5-paper">${a5Hdr('หนังสือแจ้งให้รับทราบข้อกล่าวหาและสิทธิคัดค้าน', A5_FORMS.notice.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>เรื่องที่</span>${a5F(c.id || '', 100)}</div>
-      <div class="a5-line"><b>เรียน</b>${a5F(a5AccusedLine(state), 360)}</div>
-      <div class="a5-line a5-indent"><span>ตามคำสั่งคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ที่</span>${a5F(m.orderNo || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(m.orderDate), 90)}</div>
-      <p>ข้าพเจ้า${a5F(a5AccusedLine(state), 260)}<span>ได้รับมอบหมายให้ดำเนินการไต่สวนข้อเท็จจริง จึงขอแจ้งให้ทราบว่าคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ได้มีคำสั่งให้ไต่สวนข้อเท็จจริงกรณี</span>${a5F(q.allegations || '', 380)}</p>
-      <p>ในการนี้ ผู้ถูกกล่าวหามีสิทธิคัดค้านผู้รับผิดชอบการไต่สวน หรือมีสิทธิแต่งตั้งทนายความหรือบุคคลซึ่งไว้วางใจได้เข้าฟังการสอบสวนได้ ภายใน ๓๐ วันนับแต่วันที่ได้รับหนังสือฉบับนี้</p>
-      <div class="a5-line"><b>สังกัด</b>${a5F(c.agency || '', 200)}</div>
-      <div class="a5-sign">${a5Sign(intake.director, 'ผู้แจ้ง')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.notice.code)}</p></section>`;
-  }
-  function paperProsecutorLetters(state) {
-    const i = state.inquiry || {}, o = i.outcome || {}, q = i.inquiry644 || {};
-    const c = state.caseData || {};
-    const accused = a5AccusedLine(state);
-    const p9slots = [
-      { x: 304, y: 181.2, w: 195, html: a5DateShort(todayISO()) },
-      { x: 120, y: 232.2, w: 300, html: escapeHtml(c.agency || '') },
-      { x: 222, y: 283.2, w: 115, html: escapeHtml(o.prosecutor || '') },
-      { x: 160, y: 302.8, w: 80, html: a5DateShort(todayISO()) },
-      { x: 239, y: 347.8, w: 110, html: escapeHtml(accused) },
-      { x: 88, y: 431.9, w: 140, html: escapeHtml(q.allegations || '') },
-      { x: 210, y: 451.4, w: 82, html: a5DateShort(todayISO()) },
-      { x: 322, y: 451.4, w: 55, html: '10.00' },
-      { x: 298, y: 631.5, w: 122, html: 'เลขาธิการ ป.ป.ท.' },
-    ];
-    const p8slots = [
-      { x: 310, y: 180.3, w: 170, html: a5DateShort(todayISO()) },
-      { x: 122, y: 229, w: 250, html: escapeHtml(accused) },
-      { x: 166, y: 319.1, w: 165, html: escapeHtml(q.allegations || '') },
-      { x: 356, y: 364.1, w: 150, html: escapeHtml(o.prosecutor || '') },
-      { x: 88, y: 383.7, w: 95, html: a5DateShort(todayISO()) },
-      { x: 216, y: 383.7, w: 55, html: '10.00' },
-      { x: 295, y: 575.7, w: 122, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-    ];
-    const p10slots = [
-      { x: 304, y: 180.1, w: 190, html: a5DateShort(todayISO()) },
-      { x: 122, y: 231.3, w: 140, html: escapeHtml(o.prosecutor || '') },
-      { x: 343, y: 256.7, w: 60, html: a5DateShort(todayISO()) },
-      { x: 127, y: 346.8, w: 110, html: escapeHtml(accused) },
-      { x: 253, y: 346.8, w: 110, html: escapeHtml(q.allegations || '') },
-      { x: 398, y: 430.9, w: 70, html: a5DateShort(todayISO()) },
-      { x: 88, y: 450.4, w: 70, html: '10.00' },
-      { x: 295, y: 578, w: 122, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-    ];
-    const today = a5DateShort(todayISO());
-    return `<section class="a5-paper">
-      ${a5Hdr('หนังสือแจ้งผู้ถูกกล่าวหาไปพบพนักงานอัยการ', A5_FORMS.p8.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ที่ สปท ... / ลงวันที่</span>${a5F(today, 100)}</div>
-      <div class="a5-line"><b>เรื่อง</b> แจ้งกำหนดนัดไปรายงานตัวต่อพนักงานอัยการ</div>
-      <div class="a5-line"><b>เรียน</b>${a5F(accused, 300)}</div>
-      <p>ด้วยคณะกรรมการ ป.ป.ท. ได้มีมติชี้มูลความผิด${a5F(q.allegations || '', 340)} ขอให้ท่านไปพบ${a5F(o.prosecutor || '', 160)} ในวันที่${a5F(today, 90)} เวลา${a5F('10.00', 60)} น. ณ สำนักงานอัยการสูงสุด เพื่อรับทราบและดำเนินการตามกฎหมายต่อไป</p>
-      <div class="a5-sign">${a5Sign(q.investigator || i.intake?.investigator, 'พนักงาน ป.ป.ท.')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p8.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('แจ้งคำสั่งฟ้องคดีของพนักงานอัยการ', A5_FORMS.p9.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 100)}</div>
-      <div class="a5-line"><b>เรียน</b>${a5F(c.agency || '', 300)}</div>
-      <p>ตามที่ได้แจ้งให้ท่านทราบว่าคณะกรรมการ ป.ป.ท. ได้มีคำสั่งให้ดำเนินคดีอาญาแก่${a5F(accused, 200)} ในความผิดฐาน${a5F(q.allegations || '', 200)} นั้น บัดนี้ พนักงานอัยการ (${a5F(o.prosecutor || '', 160)}) ได้มีคำสั่งฟ้องคดีดังกล่าวต่อศาลแล้ว</p>
-      <p>จึงเรียนมาเพื่อทราบ หากท่านประสงค์จะดำเนินการใดๆ โปรดติดต่อ${a5F(o.prosecutor || '', 160)} ภายใน${a5F('15', 40)} วันนับแต่วันที่ได้รับหนังสือฉบับนี้</p>
-      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p9.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('แจ้งผลการดำเนินคดี', A5_FORMS.p10.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ที่ สปท ... / ลงวันที่</span>${a5F(today, 100)}</div>
-      <div class="a5-line"><b>เรียน</b>${a5F(o.prosecutor || '', 200)}</div>
-      <p>อ้างถึงหนังสือที่ สปท ... ลงวันที่${a5F(today, 90)} เรื่อง ส่งสำนวนการไต่สวน เพื่อให้พนักงานอัยการดำเนินคดีแก่${a5F(accused, 200)} ในความผิดฐาน${a5F(q.allegations || '', 220)} นั้น</p>
-      <p>คณะกรรมการ ป.ป.ท. ขอเรียนว่า ในการนี้ได้มีผู้เสียหายอื่นยื่นคำร้องเพิ่มเติม จึงขอส่งข้อมูลเพิ่มเติมเพื่อประกอบการพิจารณาของพนักงานอัยการ ภายใน${a5F('15', 40)} วัน</p>
-      <div class="a5-sign">${a5Sign(q.investigator || i.intake?.investigator, 'พนักงาน ป.ป.ท.')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p10.code)}</p></section>`;
-  }
-  function paperWarrants(state) {
-    const i = state.inquiry || {}, q = i.inquiry644 || {};
-    const c = state.caseData || {}, o = i.outcome || {};
-    const accused = a5AccusedLine(state);
-    const p14slots = [
-      { x: 274, y: 199.1, w: 70, html: a5DateShort(todayISO()) },
-      { x: 210, y: 376.1, w: 280, html: escapeHtml(accused) },
-      { x: 200, y: 396, w: 300, html: escapeHtml(q.allegations || '') },
-    ];
-    const p20slots = [
-      { x: 155, y: 229.3, w: 32, html: escapeHtml(c.id || '') },
-      { x: 273, y: 229.3, w: 32, html: '' },
-      { x: 106, y: 251.3, w: 650, html: escapeHtml(q.allegations || ''), multi: true },
-      { x: 145, y: 339, w: 30, html: '' },
-      { x: 279, y: 339, w: 150, html: '' },
-      { x: 74, y: 382.9, w: 315, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-    ];
-    const p11slots = [
-      { x: 334, y: 146.2, w: 145, html: escapeHtml('ศาลอาญาคดีทุจริตและประพฤติมิชอบ') },
-      { x: 263, y: 164.8, w: 70, html: a5DateShort(todayISO()) },
-      { x: 266, y: 213.4, w: 120, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-      { x: 150, y: 231.5, w: 110, html: escapeHtml('พนักงาน ป.ป.ท.') },
-      { x: 212, y: 443.7, w: 155, html: escapeHtml(accused) },
-      { x: 371, y: 443.7, w: 130, html: '' },
-      { x: 230, y: 647.7, w: 165, html: escapeHtml(q.allegations || '') },
-    ];
-    const p15slots = [
-      { x: 274, y: 191.2, w: 70, html: a5DateShort(todayISO()) },
-      { x: 214, y: 325.2, w: 300, html: escapeHtml(accused) },
-      { x: 215, y: 372, w: 300, html: escapeHtml(q.allegations || '') },
-    ];
-    const p16slots = [
-      { x: 264, y: 155.1, w: 60, html: escapeHtml(c.id || '') },
-      { x: 82, y: 358.3, w: 60, html: escapeHtml(c.id || '') },
-      { x: 81, y: 449.8, w: 60, html: '' },
-    ];
-    const p17slots = [
-      { x: 318, y: 163.7, w: 85, html: a5DateShort(todayISO()) },
-      { x: 115, y: 214.7, w: 250, html: escapeHtml(o.prosecutor || '') },
-      { x: 158, y: 240.3, w: 295, html: escapeHtml(o.prosecutor || '') },
-      { x: 168, y: 265.8, w: 330, html: '' },
-      { x: 160, y: 285.3, w: 100, html: '' },
-      { x: 265, y: 285.3, w: 60, html: a5DateShort(todayISO()) },
-      { x: 192, y: 479, w: 150, html: '' },
-      { x: 340, y: 479, w: 80, html: a5DateShort(todayISO()) },
-      { x: 272, y: 633.6, w: 130, html: 'เลขาธิการ ป.ป.ท.' },
-    ];
-    const p18slots = [
-      { x: 318, y: 202.5, w: 85, html: a5DateShort(todayISO()) },
-      { x: 88, y: 247.5, w: 300, html: 'ผู้บัญชาการตำรวจแห่งชาติ' },
-      { x: 160, y: 292.5, w: 260, html: '' },
-      { x: 130, y: 312, w: 400, html: '' },
-      { x: 164, y: 331.5, w: 140, html: escapeHtml(q.allegations || '') },
-      { x: 286, y: 526.6, w: 92, html: 'เลขาธิการ ป.ป.ท.' },
-    ];
-    const p19slots = [
-      { x: 126, y: 163.9, w: 405, html: escapeHtml(accused) },
-      { x: 388, y: 211, w: 100, html: escapeHtml(c.id || '') },
-      { x: 88, y: 230.6, w: 80, html: escapeHtml(c.id || '') },
-      { x: 185, y: 373.1, w: 225, html: '' },
-      { x: 428, y: 373.1, w: 30, html: '' },
-      { x: 464, y: 373.1, w: 70, html: a5DateShort(todayISO()) },
-      { x: 323, y: 554.7, w: 95, html: 'ผอ.กอท.' },
-    ];
-    const p12slots = [
-      { x: 248, y: 157.7, w: 80, html: a5DateShort(todayISO()) },
-      { x: 314, y: 132.3, w: 150, html: 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ' },
-      { x: 242, y: 226.2, w: 85, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-      { x: 430, y: 437.9, w: 80, html: escapeHtml(q.allegations || '') },
-      { x: 270, y: 663, w: 100, html: escapeHtml(q.investigator || i.intake?.investigator || '') },
-    ];
-    const p13slots = [
-      { x: 350, y: 171.9, w: 155, html: 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ' },
-      { x: 262, y: 190.5, w: 70, html: a5DateShort(todayISO()) },
-    ];
-    const p13bSlots = [
-      { x: 268, y: 207.4, w: 90, html: escapeHtml(accused) },
-      { x: 259, y: 232.8, w: 150, html: '48 ชั่วโมง' },
-    ];
-    const inv = q.investigator || i.intake?.investigator || '';
-    const court = 'ศาลอาญาคดีทุจริตและประพฤติมิชอบ';
-    const today = a5DateShort(todayISO());
-    return `<section class="a5-paper">
-      ${a5Hdr('คำร้องขอหมายจับ', A5_FORMS.p11.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>วันที่</span>${a5F(today, 90)}</div>
-      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}</div>
-      <p>ข้าพเจ้า${a5F(inv, 150)} ตำแหน่งพนักงาน ป.ป.ท. ผู้ร้อง ขอศาลได้โปรดออกหมายจับ${a5F(accused, 220)} เลขประจำตัวประชาชน${a5F('', 130)} อยู่บ้านเลขที่${a5F('', 200)} ตามรายงานการไต่สวนและวินิจฉัยชี้มูลของคณะกรรมการ ป.ป.ท. ปรากฏว่าบุคคลดังกล่าวได้กระทำความผิดอาญาร้ายแรงฐาน${a5F(q.allegations || '', 220)} อันเป็นความผิดอาญาร้ายแรงตามกฎหมาย จึงขอศาลออกหมายจับเพื่อดำเนินคดี</p>
-      <div class="a5-sign">${a5Sign(inv, 'ผู้ร้อง (พนักงาน ป.ป.ท.)')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p11.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('บันทึกคำเบิกความ (การไต่สวนคำร้องขอหมายจับ)', A5_FORMS.p12.code)}
-      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}<span>วันที่</span>${a5F(today, 90)}</div>
-      <p>ผู้ร้อง ${a5F(inv, 150)} พนักงาน ป.ป.ท. เบิกความว่า คดีนี้คณะกรรมการ ป.ป.ท. ได้มีมติชี้มูลความผิด${a5F(q.allegations || '', 220)} ผู้ถูกกล่าวหา${a5F(accused, 220)} จึงขอศาลออกหมายจับ</p>
-      <div class="a5-sign">${a5Sign(inv, 'ผู้ร้อง')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p12.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('รายงานกระบวนการพิจารณาออกหมายจับ', A5_FORMS.p13.code)}
-      <div class="a5-line"><b>ศาล</b>${a5F(court, 220)}<span>วันที่</span>${a5F(today, 90)}</div>
-      <p>พนักงาน ป.ป.ท. (${a5F(inv, 150)}) ได้ยื่นคำร้องขอให้ศาลออกหมายจับ${a5F(accused, 220)} ในความผิดฐาน${a5F(q.allegations || '', 220)} ศาลได้พิจารณาแล้วอนุญาตให้ออกหมายจับได้ และให้ส่งบันทึกการจับกุมต่อศาลภายใน${a5F('48 ชั่วโมง', 100)} นับแต่เวลาจับกุม</p>
-      <div class="a5-sign">${a5Sign('', 'เจ้าหน้าที่ศาล')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p13.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('หมายจับ', A5_FORMS.p14.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
-      <p class="a5-center a5-num">คำสั่งศาล</p>
-      <p>ด้วย${a5F(accused, 300)} ต้องหาว่ากระทำความผิดฐาน${a5F(q.allegations || '', 300)} จึงให้พนักงานฝ่ายปกครองหรือตำรวจ จับตัวผู้นั้นมาดำเนินคดี</p>
-      <div class="a5-sign">${a5Sign('', 'ผู้พิพากษา')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p14.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('หมายจับ (กรณีอายุความเหลือน้อย)', A5_FORMS.p15.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
-      <p>ด้วย${a5F(accused, 300)} ต้องหาว่ากระทำความผิดฐาน${a5F(q.allegations || '', 300)} ซึ่งเป็นกรณีจำเป็นเร่งด่วนเนื่องจากอายุความใกล้ครบกำหนด จึงให้จับตัวผู้นั้นมาดำเนินคดี</p>
-      <div class="a5-sign">${a5Sign('', 'ผู้พิพากษา')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p15.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('ตำหนิรูปพรรณบุคคลที่ต้องจับกุม', A5_FORMS.p16.code)}
-      <div class="a5-line"><b>หมายจับ ป.ป.ท. ที่</b>${a5F(c.id || '', 100)}<span>คดี</span>${a5F(c.id || '', 100)}</div>
-      <table class="a5-tbl"><thead><tr><th style="width:30%">รายการ</th><th>รายละเอียด</th></tr></thead><tbody>
-        <tr><th>ชื่อ-สกุล</th><td>${a5F(accused, 220)}</td></tr>
-        <tr><th>ความผิดฐาน</th><td>${a5F(q.allegations || '', 220)}</td></tr>
-        <tr><th>ตำหนิรูปพรรณ</th><td>${a5F('', 220)}</td></tr>
-      </tbody></table>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p16.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('แจ้งผลการออกหมายจับ', A5_FORMS.p17.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
-      <div class="a5-line"><b>เรียน</b>${a5F(o.prosecutor || 'พนักงานอัยการฝ่ายคดีปราบปรามการทุจริต', 280)}</div>
-      <p>ตามที่ได้ส่งสำนวนการไต่สวนให้พนักงานอัยการพิจารณาแล้ว นั้น บัดนี้ศาลได้ออกหมายจับ${a5F(accused, 240)} ในความผิดฐาน${a5F(q.allegations || '', 240)} ลงวันที่${a5F(today, 90)} แล้ว จึงแจ้งผลการออกหมายจับมาเพื่อทราบ และจะได้ดำเนินการตามกฎหมายต่อไป</p>
-      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p17.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('แจ้งหมายจับผู้ถูกกล่าวหา', A5_FORMS.p18.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>ลงวันที่</span>${a5F(today, 90)}</div>
-      <div class="a5-line"><b>เรียน</b>${a5F('ผู้บัญชาการตำรวจแห่งชาติ', 260)}</div>
-      <p>ด้วยศาลได้ออกหมายจับ${a5F(accused, 260)} ในความผิดฐาน${a5F(q.allegations || '', 240)} หมายจับที่${a5F(c.id || '', 90)} ลงวันที่${a5F(today, 90)} จึงขอความร่วมมือให้เจ้าหน้าที่ตำรวจดำเนินการจับกุมและแจ้งผลให้ทราบ</p>
-      <div class="a5-sign">${a5Sign('เลขาธิการ ป.ป.ท.', 'ผู้มีอำนาจลงนาม')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p18.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('บันทึกข้อความ (ส่งสำเนาหมายจับ กอท.)', A5_FORMS.p19.code)}
-      <div class="a5-line"><b>เรื่อง</b> ขอส่งสำเนาหมายจับผู้ถูกกล่าวหา${a5F(accused, 260)}</div>
-      <div class="a5-line"><b>เรียน</b> ผู้อำนวยการกองอำนวยการรักษาความมั่นคงภายใน (กอท.)</div>
-      <p>ด้วยคณะกรรมการ ป.ป.ท. ได้ชี้มูลความผิดคดีเรื่องที่${a5F(c.id || '', 100)} (รอง) เรื่องที่${a5F(c.id || '', 100)} ศาลได้ออกหมายจับผู้ถูกกล่าวหาแล้ว จึงขอส่งสำเนาหมายจับเพื่อให้กอท. ดำเนินการในส่วนที่เกี่ยวข้อง ต่อไป</p>
-      <div class="a5-sign">${a5Sign('ผอ.กอท.', 'ผู้รับ')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p19.code)}</p>
-      <div class="a5-pg"></div>
-      ${a5Hdr('ผนึกซองส่งสำนวน', A5_FORMS.p20.code)}
-      <div class="a5-line"><span>คดีเรื่องที่</span>${a5F(c.id || '', 100)}</div>
-      <div class="a5-line"><span>ข้อกล่าวหา</span>${a5F(q.allegations || '', 420)}</div>
-      <div class="a5-line"><span>ส่งโดย</span>${a5F(inv, 200)}</div>
-      <div class="a5-sign">${a5Sign(inv, 'ผู้ส่ง')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.p20.code)}</p></section>`;
-  }
-  /* ---------- ฟอร์มราชการ A5 (HTML ล้วน — แก้ไขได้ทุกช่อง) ---------- */
-  const a5F = (v, w) => `<span class="a5-fill" style="${w ? `min-width:${w}px` : ''}">${escapeHtml(v ?? '')}</span>`;
-  const a5Hdr = (title, code) => `<header class="a5-hdr"><p class="a5-hdr-org">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p><p class="a5-hdr-sub">(สำนักงาน ป.ป.ท.)</p><h2 class="a5-hdr-title">${escapeHtml(title)}</h2><p class="a5-hdr-code">${escapeHtml(code)}</p></header>`;
-  const a5Sign = (name, role) => `<div><p class="a5-sign-name a5-lock">${escapeHtml(name || '')}</p><p class="a5-sign-note">${escapeHtml(role)}</p></div>`;
-  function paperPlan(state) {
-    const c = state.caseData || {}, i = state.inquiry || {}, p = i.prelim || {}, intake = i.intake || {}, q = i.inquiry644 || {}, m62 = intake.m62 || {};
-    const fromNacc = m62.flag || c.decision === '62' || String(c.decision || '').includes('62');
-    const fromM = String(c.decision || '').includes('18/1') || c.decision === '18/4';
     const deadline60 = p.deadlineAt || addDays(intake.receivedFirstAt, 60);
-    const accused = (q.accused && q.accused.length) ? q.accused : [];
+    const accused = a5AccusedLine(state);
     const subject = state.documentData?.documentSubject || c.subject || '';
+    const chain = p.reviewChain || [];
+    const lvl = n => chain.find(x => x.level === n) || {};
+    const fromNacc = Boolean(m62.flag) || String(c.decision || '').includes('62');
     const issues = p.issues || {};
-    const planLines = String(p.plan || '').split('\n').filter(Boolean);
-    const workLog = String(p.workLog || '').split('\n').filter(Boolean);
-    const place = p.place || '';
-    const h = (b, c2 = '') => `<tr><th class="a5-thin">${b}</th><td>${c2 || a5F('')}</td></tr>`;
-    return `<section class="a5-paper">${a5Hdr('แผนงานคดี (ไต่สวนเบื้องต้น/ไต่สวน)', A5_FORMS.plan.code)}
-      <div class="a5-line"><b>เรื่องที่</b>${a5F(c.id || '', 180)}<span style="margin-left:auto">${fromNacc ? '☑' : '☐'} คดีรับจาก ป.ป.ช. &nbsp; ${fromM ? '☑' : '☐'} คดีประพฤติมิชอบ</span></div>
-      <div class="a5-line"><span>สำนักงาน ป.ป.ท. รับเรื่องเมื่อวันที่</span>${a5F(a5DateShort(intake.receivedFirstAt), 90)}<span>ครบกำหนด ๖๐ วัน วันที่</span>${a5F(a5DateShort(deadline60), 90)}</div>
-      <div class="a5-line"><span>ครบกำหนด 2 ปี วันที่</span>${a5F(a5DateShort(addDays(intake.receivedFirstAt, 730)), 120)}</div>
-      <div class="a5-line"><b>ผู้กล่าวหา</b>${a5F(c.complainant || '', 460)}</div>
-      <div class="a5-line"><b>ผู้ถูกกล่าวหา ๑</b>${a5F(accused[0] || '', 460)}</div>
-      <div class="a5-line"><b>ผู้ถูกกล่าวหา ๒</b>${a5F(accused[1] || '', 460)}</div>
-      <div class="a5-line"><b>ข้อกล่าวหา (ประเด็นแห่งคดี)</b>${a5F(subject, 420)}</div>
-      <div class="a5-line"><b>วันเวลาสถานที่เกิดเหตุ</b>${a5F(place, 420)}</div>
-      <div class="a5-line"><b>อายุความสั้น/ยาวสุด</b><span>มาตรา</span>${a5F(p.limitation?.shortSection || '', 50)}<span>อายุความ</span>${a5F(p.limitation?.shortYears || '', 40)}<span>ปี ขาดอายุความวันที่</span>${a5F(p.limitation?.shortExpiry || '', 100)}</div>
-      <div class="a5-line a5-indent2"><span>มาตรา</span>${a5F(p.limitation?.longSection || '', 50)}<span>อายุความ</span>${a5F(p.limitation?.longYears || '', 40)}<span>ปี ขาดอายุความวันที่</span>${a5F(p.limitation?.longExpiry || '', 100)}</div>
-      <table class="a5-tbl"><thead><tr><th class="a5-thin">ผู้ถูกกล่าวหา</th><th>ประเด็น</th><th>ข้อมูลที่ต้องใช้ (แล้วแต่กรณี)</th><th>สิ่งที่ต้องดำเนินการ</th></tr></thead><tbody>
-        <tr><th>สถานะ</th><td>${a5F(issues.status || '', 90)}</td><td>${a5F(issues.statusDocs || '', 150)}</td><td>${a5F(issues.statusTodo || '', 150)}</td></tr>
-        <tr><th>อำนาจหน้าที่</th><td>${a5F(issues.authority || '', 90)}</td><td>${a5F(issues.authorityDocs || '', 150)}</td><td>${a5F(issues.authorityTodo || '', 150)}</td></tr>
-        <tr><th>การกระทำความผิด</th><td>${a5F(issues.action || '', 90)}</td><td>${a5F(issues.actionDocs || '', 150)}</td><td>${a5F(issues.actionTodo || '', 150)}</td></tr>
-        <tr><th>ความเสียหาย</th><td>${a5F(issues.damage || '', 90)}</td><td>${a5F(issues.damageDocs || '', 150)}</td><td>${a5F(issues.damageTodo || '', 150)}</td></tr>
-      </tbody></table>
-      <div class="a5-line"><b>ปปท.</b>${a5F(intake.orderNo || '', 140)}</div>
-      <div class="a5-pg"></div>
-      <h3>สรุปที่ต้องดำเนินการ</h3>
-      ${workLog.map(wl => `<div class="a5-line">${a5F(wl, 620)}</div>`).join('') || `<div class="a5-line">${a5F('', 620)}</div>`}
-      <h3>พยานบุคคลที่ต้องบันทึกถ้อยคำ / เกี่ยวข้องอย่างไร / สอบประเด็นใด</h3>
-      ${(p.witnesses || []).map(wl => `<div class="a5-line">${a5F(wl, 620)}</div>`).join('') || `<div class="a5-line">${a5F('', 620)}</div>`}
-      <h3>แผนการไต่สวน</h3>
-      <table class="a5-tbl"><thead><tr><th style="width:22%">วัน/เดือน/ปี</th><th>การดำเนินการ</th></tr></thead><tbody>
-        ${planLines.map((l, idx) => `<tr><td>${a5F('', 90)}</td><td>${a5F(l, 380)}</td></tr>`).join('') || '<tr><td></td><td></td></tr>'}
-      </tbody></table>
-      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้รับผิดชอบสำนวน (นักสืบ)')}${a5Sign((intake.team || [])[0], 'ผู้ร่วมปฏิบัติงาน')}${a5Sign(intake.director, 'ผอ. (หัวหน้าพนักงาน ป.ป.ท.)')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.plan.code)}</p></section>`;
-  }
-    function paperRecordAccusation(state) {
-    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, intake = i.intake || {};
-    const slots = [
-      { x: 386, y: 263.1, w: 36, html: escapeHtml(c.id || '') },
-      { x: 460, y: 263.1, w: 62, html: a5DateShort(i.committee213?.orderDate || todayISO()) },
-      { x: 88, y: 281.5, w: 300, html: escapeHtml(a5AccusedLine(state)) },
-      { x: 158, y: 606.7, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
-      { x: 144, y: 678.9, w: 370, html: escapeHtml(q.allegations || ''), multi: true },
+    const team = intake.team || [];
+    const res = m.result || '';
+    const isSub = m.orderType === '24v3';
+    /* ตัวเลือกข้อ ๑๔.๑ (๑)–(๑๘) ตามต้นฉบับ — ติ๊กตามมติ/ข้อเสนอที่บันทึกไว้ */
+    const PROPOSALS = [
+      [res === 'รับไว้ไต่สวน', 'เห็นควรรับไว้ไต่สวน ตามนัยมาตรา ๒๔ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากปรากฏพฤติการณ์และพยานหลักฐานเพียงพอที่จะดำเนินการไต่สวนข้อเท็จจริง โดยเห็นควรมอบหมายคณะพนักงานไต่สวน หรือโดยเห็นควรตั้งคณะอนุกรรมการไต่สวน เนื่องจากเป็นเรื่องที่สำคัญหรือมีความซับซ้อน (ให้ระบุว่าสำคัญหรือซับซ้อนอย่างไร โดยพิจารณาจากหลักเกณฑ์และเงื่อนไขตามมติคณะกรรมการ ป.ป.ท. ครั้งที่ ๑๖/๒๕๖๘ ลงวันที่ ๕ มีนาคม ๒๕๖๘ แจ้งเวียนตามหนังสือกองกฎหมาย ด่วนที่สุด ที่ ปป ๐๐๐๒/ว ๕๕๙ ลงวันที่ ๖ มีนาคม ๒๕๖๘)'],
+      [res === 'ไม่รับไว้ไต่สวน', 'เห็นควรไม่รับไว้ไต่สวนข้อเท็จจริง เนื่องจากไม่ปรากฏพฤติการณ์และพยานหลักฐานเพียงพอจะดำเนินการไต่สวนข้อเท็จจริง'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา เนื่องจากผู้ถูกกล่าวหาไม่ใช่เจ้าหน้าที่รัฐ ตามนัยมาตรา ๓ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา เนื่องจากไม่ใช่การกล่าวหาว่ากระทำทุจริตในภาครัฐ ตามนัยมาตรา ๓ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม'],
+      [false, 'เห็นควรส่งเรื่องคืนคณะกรรมการ ป.ป.ช. ดำเนินการตามอำนาจหน้าที่ต่อไป ตามนัยมาตรา ๑๘/๑ (ข)(๓) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากขณะรับเรื่องจากคณะกรรมการ ป.ป.ช. ได้ล่วงพ้นเวลาที่จะดำเนินการทางวินัยและดำเนินคดีอาญาแก่ผู้ถูกร้องแล้ว'],
+      [false, 'เห็นควรส่งเรื่องคืนคณะกรรมการ ป.ป.ช. ดำเนินการตามอำนาจหน้าที่ต่อไป ตามนัยมาตรา ๑๘/๑ (ข)(๓) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากขณะรับเรื่องจากคณะกรรมการ ป.ป.ช. เหลือเวลาไม่ถึง ๖ เดือนและไม่อยู่ในวิสัยที่จะดำเนินการให้แล้วเสร็จก่อนล่วงพ้นเวลาดังกล่าวได้']
     ];
-    return `<section class="a5-paper">${a5Hdr('บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้าน', A5_FORMS.record.code)}
-      <div class="a5-line" style="justify-content:flex-end"><span>เรื่องที่</span>${a5F(c.id || '', 90)}<span>ลงวันที่</span>${a5F(a5DateShort(i.committee213?.orderDate || todayISO()), 90)}</div>
-      <p><span class="a5-num">๑.</span> ข้าพเจ้า${a5F(intake.investigator || '', 150)} ตำแหน่งพนักงาน ป.ป.ท. ได้รับมอบหมายจากคณะพนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ให้แจ้งข้อกล่าวหาแก่${a5F(a5AccusedLine(state), 260)} (ตำแหน่งและสังกัด ${a5F(c.agency || '', 200)})</p>
-      <p><span class="a5-num">๒.</span> ได้แจ้งข้อกล่าวหาและสิทธิคัดค้านให้ผู้ถูกกล่าวหาทราบแล้ว เมื่อวันที่${a5F(a5DateShort(todayISO()), 90)} ณ ${a5F(intake.unit || '', 200)} โดยมีสาระสำคัญดังนี้</p>
-      <p class="a5-indent">ข้อกล่าวหาที่ ๑ ${a5F(q.allegations || '', 380)}</p>
-      <p class="a5-indent">ข้อกล่าวหาที่ ๒ ${a5F(q.allegations || '', 380)}</p>
-      <p><span class="a5-num">๓.</span> ผู้ถูกกล่าวหา${a5F('', 200)} (รับทราบ/ไม่รับทราบ) ข้อกล่าวหา และ${a5F('', 200)} (คัดค้าน/ไม่คัดค้าน) ผู้รับผิดชอบการไต่สวน</p>
-      <p><span class="a5-num">๔.</span> จึงบันทึกไว้เป็นหลักฐาน</p>
-      <div class="a5-sign">${a5Sign(intake.investigator, 'ผู้แจ้งข้อกล่าวหา')}${a5Sign('', 'ผู้ถูกกล่าวหา')}</div>
-      <p class="a5-form-code">${escapeHtml(A5_FORMS.record.code)}</p></section>`;
+    const PROPOSALS2 = [
+      [false, 'เห็นควรส่งเรื่องคืนคณะกรรมการ ป.ป.ช. ดำเนินการตามอำนาจหน้าที่ต่อไป ตามนัยมาตรา ๑๘/๓ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นกรณีร้องเรียนว่าร่ำรวยผิดปกติ / เป็นกรณีร้องเรียนความผิดตามพระราชบัญญัติว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. ๒๕๔๒ / เป็นกรณีร้องเรียนผู้บริหารท้องถิ่นว่ามีส่วนร่วมในการกระทำความผิด / จึงเป็นเรื่องที่ไม่อยู่ในหน้าที่และอำนาจของคณะกรรมการ ป.ป.ท. หรือเป็นเรื่องที่ไม่อยู่ในหน้าที่และอำนาจของคณะกรรมการ ป.ป.ท. รวมอยู่ด้วย'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๕ (๑) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่คณะกรรมการ ป.ป.ช. รับไว้พิจารณาหรือได้วินิจฉัยเสร็จเด็ดขาดแล้ว'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๕ (๒) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่คณะกรรมการ ป.ป.ท. ได้วินิจฉัยเสร็จเด็ดขาดแล้ว และไม่มีพยานหลักฐานใหม่ซึ่งเป็นสาระสำคัญแห่งคดี'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๕ (๓) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่เป็นคดีอาญาในประเด็นเดียวกันและศาลประทับฟ้องหรือพิพากษาหรือมีคำสั่งเสร็จเด็ดขาดแล้วโดยไม่มีการถอนฟ้องหรือทิ้งฟ้อง หรือเป็นกรณีที่ศาลยังไม่ได้วินิจฉัยในเนื้อหาแห่งคดี'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๕ (๔) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากผู้ถูกร้องตาย'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๕) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่ผู้ถูกร้องพ้นจากการเป็นเจ้าหน้าที่ของรัฐก่อนถูกกล่าวหาเกินห้าปี'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๑) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่ไม่ระบุพยานหลักฐานหรือระบุพฤติการณ์แห่งการกระทำที่ชัดเจนเพียงพอที่จะดำเนินการไต่สวนได้'],
+      [false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๒) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่ล่วงเลยมาแล้วเกินห้าปีนับแต่วันเกิดเหตุจนถึงวันที่มีการกล่าวหาและเป็นเรื่องที่ไม่อาจหาพยานหลักฐานเพียงพอที่จะดำเนินการไต่สวนต่อไปได้']
+    ];
+    const cbRow = (on, text) => `<div class="a5-cbline a5-indent3">${a5Cb(on, text)}</div>`;
+    const numRow = (no, on, text) => `<div class="a5-cbline a5-indent3"><span class="a5-opt-no">(${no})</span>${a5Cb(on, text)}</div>`;
+    const opinionSign = (name, role) => `<div class="a5-sign">${a5SignCol(name, role)}</div>`;
+    return `<section class="a5-paper">
+      ${a5MemoHdr()}
+      ${a5MemoMeta(intake.unit || 'สำนัก/กอง', c.id, p.submittedAt || todayISO())}
+      <div class="a5-line a5-memo-row"><b>เรื่อง</b> รายงานการไต่สวนเบื้องต้น เรื่องที่ ${a5F(c.id || '', 150)} (คดีรับจากสำนักงาน ป.ป.ช. มาตรา ๖๒ / คดีประพฤติมิชอบ)</div>
+      <div class="a5-line"><b>เรียน</b> เลขาธิการคณะกรรมการ ป.ป.ท.</div>
+
+      <p class="a5-num-h a5-indent"><b>๑. การรับเรื่อง</b> (เลือกใส่เฉพาะกรณีตามข้อเท็จจริง)</p>
+      <p class="a5-indent2"><b>${a5Cb(fromNacc, '')}(คดีรับจากสำนักงาน ป.ป.ช. มาตรา ๖๒)</b></p>
+      <p class="a5-indent2">๑.๑ การรับเรื่องจากสำนักงาน ป.ป.ช.</p>
+      <p class="a5-indent3">(๑) เมื่อวันที่ ${a5F(a5DateShort(m62.sourceMtiDate), 150)} สำนักงาน ป.ป.ช. รับเรื่องที่ ${a5F(m62.sourceLetter || '', 180)} (ระบุเลขเรื่องของสำนักงาน ป.ป.ช.)
+        จาก ${a5F('', 200)} (ระบุช่องทางการรับเรื่อง เช่น บัตรสนเท่ห์ ผู้ร้อง พนักงานสอบสวน สถานีตำรวจ สำนักงานตรวจเงินแผ่นดิน หรือ ${a5F('', 180)})</p>
+      <p class="a5-indent3">(๒) สำนักงาน ป.ป.ช./สำนักงาน ป.ป.ช. จังหวัด ${a5F('', 180)} ส่งเรื่องมายังสำนักงาน ป.ป.ท.
+        ตามมติคณะกรรมการ ป.ป.ช. ครั้งที่ ${a5F('', 110)} เมื่อวันที่ ${a5F(a5DateShort(m62.sourceMtiDate), 180)}</p>
+      <p class="a5-indent2">๑.๒ การรับเรื่องของสำนักงาน ป.ป.ท.</p>
+      <p class="a5-indent3">(๑) เมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)} สำนักงาน ป.ป.ท./สำนักงาน ป.ป.ท. โดยสำนักงาน ปปท. เขต ${a5F(intake.unit || '', 130)}
+        รับเรื่องจากสำนักงาน ป.ป.ช. /สำนักงาน ป.ป.ช. จังหวัด ${a5F('', 160)} ครบกำหนด ๖๐ วัน วันที่ ${a5F(a5DateShort(deadline60), 160)}</p>
+      <p class="a5-indent3">(๒) เมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)} สำนัก/กอง รับสำนวนจากศูนย์รับเรื่องร้องเรียน กองบริหารคดี</p>
+      <p class="a5-indent3">(๓) เมื่อวันที่ ${a5F(a5DateShort(intake.assignedAt || intake.orderDate), 150)} นาย/นาง/นางสาว ${a5F(intake.investigator || '', 180)}
+        พนักงาน ป.ป.ท. สำนัก/กอง ${a5F(intake.unit || '', 160)} ได้รับมอบหมายให้เป็นผู้รับผิดชอบสำนวน โดยมี นาย/นาง/นางสาว ${a5F(team[0] || '', 180)} เจ้าหน้าที่ ป.ป.ท. เป็นผู้ช่วย</p>
+      <p class="a5-indent3">(๔) เมื่อวันที่ ${a5F('', 150)} นาย/นาง/นางสาว ${a5F('', 170)} พนักงาน ป.ป.ท. สำนัก/กอง ${a5F('', 150)}
+        ได้รับมอบหมายให้เป็นผู้รับผิดชอบสำนวนต่อจากนาย/นาง/นางสาว ${a5F('', 170)} พนักงาน ป.ป.ท. สำนัก/กอง ${a5F('', 150)}</p>
+      <p class="a5-indent2"><b>${a5Cb(!fromNacc, '')}(คดีประพฤติมิชอบ)</b></p>
+      <p class="a5-indent2">๑.๑ เมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)} สำนักงาน ป.ป.ท./สำนักงาน ป.ป.ท. โดยสำนักงาน ปปท. เขต ${a5F(intake.unit || '', 140)}
+        รับเรื่อง ${a5F('', 170)} ระบุช่องทางรับเรื่อง เช่น หนังสือร้องเรียน สายด่วน ๑๒๐๖ เว็บไซต์สำนักงาน ป.ป.ท. ${a5F('', 160)} ครบกำหนด ๖๐ วัน วันที่ ${a5F(a5DateShort(deadline60), 160)}</p>
+      <p class="a5-indent2">๑.๒ เมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)} สำนัก/กอง รับสำนวนจากศูนย์รับเรื่องร้องเรียน กองบริหารคดี</p>
+      <p class="a5-indent2">๑.๓ เมื่อวันที่ ${a5F(a5DateShort(intake.assignedAt || intake.orderDate), 150)} นาย/นาง/นางสาว ${a5F(intake.investigator || '', 180)}
+        พนักงาน ป.ป.ท. สำนัก/กอง ${a5F(intake.unit || '', 160)} ได้รับมอบหมายให้เป็นผู้รับผิดชอบสำนวน โดยมี นาย/นาง/นางสาว ${a5F(team[0] || '', 180)} เจ้าหน้าที่ ป.ป.ท. เป็นผู้ช่วย</p>
+      <p class="a5-indent2">๑.๔ เมื่อวันที่ ${a5F('', 150)} นาย/นาง/นางสาว ${a5F('', 170)} พนักงาน ป.ป.ท. สำนัก/กอง ${a5F('', 150)}
+        ได้รับมอบหมายให้เป็นผู้รับผิดชอบสำนวนต่อจากนาย/นาง/นางสาว ${a5F('', 170)} พนักงาน ป.ป.ท. สำนัก/กอง ${a5F('', 150)}</p>
+      <p class="a5-num-h a5-indent"><b>๒. ผู้ร้องเรียน</b> (ระบุชื่อและที่อยู่ หรือขอปกปิดชื่อ โดยกำหนดเป็นลำดับ) เช่น ผู้ร้องเรียนปกปิดตามพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑</p>
+      <div class="a5-line a5-indent2">${a5F(c.complainant || '', 600)}</div>
+      <p class="a5-num-h a5-indent"><b>๓. ผู้ถูกร้องเรียน</b> (ให้ระบุชื่อ นามสกุล หมายเลขบัตรประจำตัวประชาชน ตำแหน่ง ยศและสังกัด สถานะปัจจุบัน เป็นรายบุคคล โดยกำหนดเป็นผู้ถูกร้องเรียนเป็นลำดับ หากผู้ถูกกล่าวหามีจำนวนมากอาจทำเป็นบัญชีแนบท้ายที่ได้จากการตรวจสอบ)</p>
+      <div class="a5-line a5-indent2">${a5F(accused, 600)}</div>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+
+      <p class="a5-num-h a5-indent"><b>๔. ข้อกล่าวหา/ร้องเรียนและพฤติการณ์จากคำกล่าวหา/ร้องเรียน</b></p>
+      <p class="a5-indent2"><b>๔.๑ ข้อกล่าวหา/ร้องเรียน</b> (สรุปประเด็นข้อกล่าวหา/ร้องเรียน ตามคำกล่าวหา/ร้องเรียน)</p>
+      <div class="a5-line a5-indent2">${a5F(q.allegations || subject, 590)}</div>
+      <p class="a5-indent2"><b>๔.๒ พฤติการณ์</b> (สรุปข้อเท็จจริงจากคำกล่าวหา/ร้องเรียน)</p>
+      <div class="a5-line a5-indent2">${a5F(subject, 590)}</div>
+      <p class="a5-num-h a5-indent"><b>๕. การตรวจสอบข้อเท็จจริง</b> (สรุปข้อเท็จจริงที่ได้รับให้ครบ)</p>
+      <p class="a5-indent2">๕.๑ คำให้การของผู้กล่าวหา/ร้องเรียน/พยาน ${a5F('', 340)}</p>
+      <p class="a5-indent2">๕.๒ ข้อเท็จจริงที่ได้จากการขอทราบข้อเท็จจริงจากหน่วยงาน ${a5F('', 300)}</p>
+      <p class="a5-indent2">๕.๓ ผลการดำเนินการสอบข้อเท็จจริง/วินัย/ละเมิดของหน่วยงานต้นสังกัด ${a5F('', 280)}</p>
+      <p class="a5-indent2">๕.๔ อื่น ๆ เช่น การตรวจสอบในท้องที่เกิดเหตุหรือดำเนินการอื่น (ถ้ามี) ${a5F(p.workLog || '', 280)}</p>
+      <p class="a5-num-h a5-indent"><b>๖. วัน เวลา และสถานที่เกิดเหตุ</b> (หากยังไม่ชัดเจน ควรกำหนดโดยประมาณ) ${a5F(p.place || '', 300)}</p>
+      <p class="a5-num-h a5-indent"><b>๗. ความเสียหาย</b> (หากยังไม่ชัดเจน ควรกำหนดโดยประมาณ) ${a5F(issues.damage || '', 350)}</p>
+      <p class="a5-num-h a5-indent"><b>๘. พยานหลักฐานประกอบ</b> (พยานหลักฐานที่ผู้กล่าวหาอ้างประกอบคำกล่าวหา/ร้องเรียน หรือที่ได้มาจากการตรวจสอบข้อเท็จจริง ให้ระบุแยกเป็นข้อ ๆ โดยไม่ต้องใส่รายละเอียด ให้ระบุจำนวน)</p>
+      <p class="a5-indent2">๘.๑ พยานบุคคล/พยานผู้เชี่ยวชาญ ${a5F((p.witnesses || []).join(', '), 340)}</p>
+      <p class="a5-indent2">๘.๒ พยานเอกสาร ${a5F(p.evidence || '', 420)}</p>
+      <p class="a5-indent2">๘.๓ พยานวัตถุ ${a5F('', 440)}</p>
+      <p class="a5-indent2">๘.๔ พยานอื่น ๆ (ถ้ามี) ${a5F('', 400)}</p>
+      <p class="a5-num-h a5-indent"><b>๙. กฎหมายและระเบียบที่เกี่ยวข้องในช่วงระยะเวลากระทำความผิด</b> (กฎหมายหรือระเบียบที่เกี่ยวกับอำนาจหน้าที่ของผู้ถูกร้องเรียน บทความผิดทางอาญาและวินัย ระเบียบ ข้อบังคับ ประกาศ หรือกฎหมายที่เกี่ยวข้องกับการปฏิบัติงานที่ถูกร้องเรียน ให้ระบุชื่อกฎหมายพร้อมมาตรา หากเป็นระเบียบ ข้อบังคับ ประกาศ หรือกฎหมายเฉพาะให้พิมพ์เนื้อหาด้วย)</p>
+      <div class="a5-line a5-indent2">${a5F('', 590)}</div>
+      <p class="a5-num-h a5-indent"><b>๑๐. อายุความ</b> (หากกำหนดโดยชัดเจนไม่ได้ ให้กำหนดโดยประมาณ จากทุกฐานความผิดที่เกี่ยวข้อง โดยเฉพาะฐานความผิดที่มีอายุความน้อยที่สุด และกำหนดวันขาดอายุความ)</p>
+      <div class="a5-line a5-indent2">มาตรา ${a5F(p.limitation?.shortSection || '', 80)} อายุความ ${a5F(p.limitation?.shortYears || '', 60)} ปี ขาดอายุความวันที่ ${a5F(a5DateShort(p.limitation?.shortExpiry) || p.limitation?.shortExpiry || '', 180)}</div>
+      <p class="a5-num-h a5-indent"><b>๑๑. มาตรการคุ้มครองเบื้องต้นตามมาตรา ๕๓</b> (ให้ระบุว่า มีหรือไม่มีการใช้มาตรการคุ้มครองพยานเบื้องต้น ตามมาตรา ๕๓) ${a5F('', 300)}</p>
+      <p class="a5-num-h a5-indent"><b>๑๒. ข้อพิจารณา</b> (พิจารณาผลการตรวจสอบข้อเท็จจริง โดยต้องพิจารณาใน ๔ ประเด็น ดังนี้)</p>
+      <p class="a5-indent2">๑๒.๑ ประเด็นเกี่ยวกับสถานะของผู้ถูกร้องเรียน เริ่มต้นด้วยการวิเคราะห์ความเป็นหน่วยงานของรัฐที่ผู้ถูกร้องเรียนสังกัดว่าเป็นหน่วยงานประเภทส่วนราชการ รัฐวิสาหกิจ หรือหน่วยงานอื่นของรัฐ จากนั้นวิเคราะห์ว่า (ขณะเกิดเหตุผู้ถูกร้องเรียนเป็นเจ้าหน้าที่ของรัฐประเภท ${a5F(issues.status || '', 150)} ตำแหน่ง ${a5F('', 150)} ระดับ ${a5F('', 110)} สังกัด ${a5F(c.agency || '', 170)})</p>
+      <p class="a5-indent2">๑๒.๒ ประเด็นเกี่ยวกับขอบเขตอำนาจหน้าที่ของผู้ถูกร้องเรียน ${a5F(issues.authority || '', 300)}</p>
+      <p class="a5-indent2">๑๒.๓ ประเด็นเกี่ยวกับการกระทำของผู้ถูกร้องเรียนว่าถูกต้องตามอำนาจหน้าที่หรือไม่ อย่างไร ${a5F(issues.action || '', 260)}</p>
+      <p class="a5-indent2">๑๒.๔ ประเด็นเกี่ยวกับความเสียหาย ${a5F(issues.damage || '', 350)}</p>
+      <p class="a5-num-h a5-indent"><b>๑๓. ความเห็น</b> (โดยนำข้อ ๕ และ ข้อ ๑๒ มาประกอบการพิจารณา)</p>
+      <p class="a5-indent2">(ให้วินิจฉัยพฤติการณ์จากคำกล่าวหา/ร้องเรียนและข้อเท็จจริงจากการตรวจสอบปรับเข้ากับหลักกฎหมาย ระเบียบ คำสั่ง มติ ข้อบังคับต่าง ๆ ว่าเป็นคำกล่าวหา/ร้องเรียนที่ถูกต้องตามเงื่อนไขที่จะรับไว้</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(3)}
+      <p class="a5-indent2">ดำเนินการไต่สวนต่อไปหรือไม่ โดยแต่งตั้งคณะพนักงานไต่สวน หรือแต่งตั้งคณะอนุกรรมการไต่สวน เนื่องจากเป็นเรื่องสำคัญหรือมีความซับซ้อนแล้วแต่กรณี เพื่อประกอบการพิจารณา)</p>
+      <div class="a5-line a5-indent2">${a5F(p.report || '', 590)}</div>
+      ${cbRow(res === 'รับไว้ไต่สวน' && !isSub, 'เห็นควรรับพิจารณาดำเนินการไต่สวนโดยแต่งตั้งคณะพนักงานไต่สวน ประกอบด้วย')}
+      <p class="a5-indent4">(๑) ${a5F(intake.investigator || '', 260)} พนักงาน ป.ป.ท. เจ้าของสำนวน</p>
+      <p class="a5-indent4">(๒) ${a5F(team[0] || '', 260)} เจ้าหน้าที่ ป.ป.ท.</p>
+      <p class="a5-indent4">(๓) ${a5F(team[1] || '', 260)} เจ้าหน้าที่ ป.ป.ท.</p>
+      ${cbRow(res === 'รับไว้ไต่สวน' && isSub, 'เห็นควรรับพิจารณาดำเนินการไต่สวนข้อเท็จจริง โดยแต่งตั้งคณะอนุกรรมการไต่สวน ประกอบด้วย')}
+      <p class="a5-indent4">(๑) ${a5F('', 250)} ประธานอนุกรรมการ · ตำแหน่ง ${a5F('', 130)} สังกัด ${a5F('', 130)}</p>
+      <p class="a5-indent4">(๒) ${a5F('', 250)} อนุกรรมการ · ตำแหน่ง ${a5F('', 130)} สังกัด ${a5F('', 130)}</p>
+      <p class="a5-indent4">(๓) ${a5F('', 250)} อนุกรรมการและเลขานุการ · ตำแหน่ง ${a5F('', 130)} สังกัด ${a5F('', 130)}</p>
+
+      <p class="a5-num-h a5-indent"><b>๑๔. ข้อเสนอ</b></p>
+      <p class="a5-indent2">๑๔.๑ พิจารณาดำเนินการ (เลือกกรณีใดกรณีหนึ่งตามข้อเท็จจริง)</p>
+      ${PROPOSALS.map(([on, t], n) => numRow(a5Num(n + 1), on, t)).join('')}
+      ${a5Foot()}${A5_PG}${a5PgNo(4)}
+      ${PROPOSALS2.slice(0, 6).map(([on, t], n) => numRow(a5Num(n + 7), on, t)).join('')}
+      ${numRow('๑๓', false, PROPOSALS2[6][1])}
+      ${numRow('๑๔', false, PROPOSALS2[7][1])}
+      ${numRow('๑๕', false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๓) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่คณะกรรมการ ป.ป.ท. เห็นว่าไม่ใช่เป็นการกระทำผิดวินัยอย่างร้ายแรง')}
+      <div class="a5-cbline a5-indent4">${a5Cb(false, 'เห็นควรส่งให้ผู้บังคับบัญชาหรือผู้มีอำนาจแต่งตั้งถอดถอน หรือไม่ เนื่องจาก')} ${a5F('', 200)}</div>
+      <div class="a5-cbline a5-indent4">${a5Cb(false, 'ไม่ส่ง')} ${a5F('', 120)} เนื่องจาก ${a5F('', 220)}</div>
+      ${numRow('๑๖', false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๔) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องประพฤติมิชอบที่ไม่ใช่การกระทำความผิดวินัยและไม่ก่อให้เกิดความเสียหายแก่ราชการอย่างร้ายแรง')}
+      <div class="a5-cbline a5-indent4">${a5Cb(false, 'เห็นควรส่งให้ผู้บังคับบัญชาหรือผู้มีอำนาจแต่งตั้งถอดถอน หรือไม่ เนื่องจาก')} ${a5F('', 200)}</div>
+      <div class="a5-cbline a5-indent4">${a5Cb(false, 'ไม่ส่ง')} ${a5F('', 120)} เนื่องจาก ${a5F('', 220)}</div>
+      ${numRow('๑๗', false, 'ไม่รับเรื่องไว้พิจารณา ตามนัยมาตรา ๒๖ (๕) แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม เนื่องจากเป็นเรื่องที่')}
+      ${a5Foot()}${A5_PG}${a5PgNo(5)}
+      <p class="a5-indent3">องค์กรบริหารงานบุคคลหรือหน่วยงานของรัฐกำลังพิจารณาอยู่หรือได้พิจารณาเป็นที่ยุติแล้ว และไม่มีเหตุแสดงให้เห็นว่าการพิจารณานั้นไม่ชอบ</p>
+      <div class="a5-cbline a5-indent3"><span class="a5-opt-no">(๑๘)</span>${a5Cb(res === 'ให้ไต่สวนเบื้องต้นเพิ่มเติม', 'อื่น ๆ')} ${a5F(res === 'ให้ไต่สวนเบื้องต้นเพิ่มเติม' ? (m.note || res) : '', 330)}</div>
+      <p class="a5-indent2">๑๔.๒ นำเสนอคณะกรรมการ ป.ป.ท. เพื่อพิจารณา</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณา</p>
+      ${opinionSign(intake.investigator, 'พนักงาน ป.ป.ท. ผู้รับผิดชอบสำนวน')}
+
+      <p class="a5-num-h a5-indent"><b>๑๕. ความเห็นผู้บังคับบัญชาชั้นต้น</b> (หัวหน้าพนักงาน ป.ป.ท.) (เรื่องที่ ${a5F(c.id || '', 140)})</p>
+      <p class="a5-indent2">(ให้เสนอความเห็นพร้อมเหตุผล เช่น เห็นควรรับ / ไม่รับไว้พิจารณา เนื่องจาก) ${a5F(lvl(2).opinion || '', 280)}</p>
+      ${opinionSign(lvl(2).by || intake.director || '', 'หัวหน้าพนักงาน ป.ป.ท.')}
+      <p class="a5-num-h a5-indent"><b>๑๖. ความเห็นผู้อำนวยการสำนัก</b> (หัวหน้าพนักงาน ป.ป.ท.) (เรื่องที่ ${a5F(c.id || '', 140)})</p>
+      <p class="a5-indent2">(ให้เสนอความเห็นพร้อมเหตุผล เช่น เห็นควรรับ / ไม่รับไว้พิจารณา เนื่องจาก) ${a5F(lvl(3).opinion || '', 280)}</p>
+      ${opinionSign(lvl(3).by || '', 'ผู้อำนวยการสำนัก/กอง')}
+      <p class="a5-num-h a5-indent"><b>๑๗. ความเห็นรองเลขาธิการฯ</b> (เรื่องที่ ${a5F(c.id || '', 140)}) ${a5F(lvl(3).opinion || '', 260)}</p>
+      <div class="a5-line">${a5F('', 640)}</div>
+      ${opinionSign(lvl(3).by || '', 'รองเลขาธิการ ป.ป.ท.')}
+      <p class="a5-num-h a5-indent"><b>๑๘. ความเห็นเลขาธิการฯ</b></p>
+      ${cbRow(res === 'รับไว้ไต่สวน' && !isSub, 'รับไว้ไต่สวน เนื่องจากปรากฏพฤติการณ์ และพยานหลักฐานเพียงพอจะดำเนินการไต่สวน โดยมอบหมายคณะพนักงานไต่สวน')}
+      ${cbRow(res === 'รับไว้ไต่สวน' && isSub, 'รับไว้ไต่สวน เนื่องจากปรากฏพฤติการณ์ และพยานหลักฐานเพียงพอจะดำเนินการไต่สวนข้อเท็จจริง โดยเสนอคณะกรรมการ ป.ป.ท. ตั้งคณะอนุกรรมการไต่สวน เนื่องจากเป็นเรื่องที่สำคัญหรือซับซ้อน')}
+      <div class="a5-cbline a5-indent3">${a5Cb(false, 'ไม่รับไว้พิจารณา ตามนัยมาตรา')}</div>
+      <table class="a5-tbl a5-sec-grid"><tbody>
+        <tr><td>${a5Cb(false, '๒๕ (๑)')}</td><td>${a5Cb(false, '๒๖ (๑)')}</td></tr>
+        <tr><td>${a5Cb(false, '๒๕ (๒)')}</td><td>${a5Cb(false, '๒๖ (๒)')}</td></tr>
+        <tr><td>${a5Cb(false, '๒๕ (๓)')}</td><td>${a5Cb(false, '๒๖ (๓)')}</td></tr>
+        <tr><td>${a5Cb(false, '๒๕ (๔)')}</td><td>${a5Cb(false, '๒๖ (๔)')}</td></tr>
+        <tr><td>${a5Cb(false, '๒๕ (๕)')}</td><td>${a5Cb(false, '๒๖ (๕)')}</td></tr>
+      </tbody></table>
+      <p>แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(6)}
+      ${cbRow(false, 'ไม่รับเรื่องไว้พิจารณา เนื่องจากผู้ถูกกล่าวหาไม่ใช่เจ้าหน้าที่ของรัฐ')}
+      ${cbRow(false, 'ไม่รับเรื่องไว้พิจารณา เนื่องจากไม่ใช่การกล่าวหาว่าเจ้าหน้าที่ของรัฐกระทำทุจริตในภาครัฐ')}
+      ${cbRow(res === 'ส่งสำนักงาน ป.ป.ช.', 'เห็นควรส่งเรื่องคืนคณะกรรมการ ป.ป.ช.')}
+      ${cbRow(false, 'เห็นควรยุติการไต่สวนเนื่องจากผู้ถูกร้องตาย')}
+      ${cbRow(res === 'ไม่รับไว้ไต่สวน', 'ไม่รับไว้ไต่สวนข้อเท็จจริง เนื่องจากไม่ปรากฏพฤติการณ์หรือพยานหลักฐานว่าผู้ถูกกล่าวหาได้กระทำการทุจริตในภาครัฐ')}
+      <div class="a5-cbline a5-indent3">${a5Cb(false, 'อื่น ๆ')} ${a5F(lvl(4).opinion || '', 400)}</div>
+      ${opinionSign(lvl(4).by || '', 'เลขาธิการคณะกรรมการ ป.ป.ท.')}
+      <p class="a5-num-h"><b>เรียน ประธานกรรมการ ป.ป.ท.</b> (เรื่องที่ ${a5F(c.id || '', 180)})</p>
+      <p class="a5-indent2">ด้วย เลขาธิการคณะกรรมการ ป.ป.ท. ได้มอบหมายให้พนักงาน ป.ป.ท. ดำเนินการไต่สวนเบื้องต้น ตามนัยมาตรา ๒๔ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม พนักงาน ป.ป.ท. ได้ดำเนินการเสร็จเรียบร้อยแล้วตามรายงานการไต่สวนเบื้องต้นที่เสนอมาพร้อมนี้</p>
+      <p class="a5-indent2">เห็นควรบรรจุเข้าวาระการประชุมคณะกรรมการ ป.ป.ท.</p>
+      <div class="a5-cbline a5-indent3">${a5Cb(Boolean(m.mtiNo), 'เพื่อพิจารณา')}</div>
+      <div class="a5-cbline a5-indent3">${a5Cb(false, 'เพื่อทราบ')}</div>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณา</p>
+      ${opinionSign(m.decidedBy || '', 'เลขาธิการคณะกรรมการ ป.ป.ท.')}
+      <p class="a5-form-code">${escapeHtml(A5_FORMS['213'].code)}</p>
+    </section>`;
   }
 
+  /* ===== แบบ ปปท. ๕ — หนังสือส่งบันทึกแจ้งข้อกล่าวหาและสิทธิคัดค้าน · ๒ หน้า ===== */
+  function paperNoticeAccusation(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, intake = i.intake || {};
+    const accused = a5AccusedLine(state);
+    const orderNo = m.orderNo || intake.orderNo || '';
+    return `<section class="a5-paper">
+      ${a5LetterHdr('ตัวอย่างหนังสือส่งบันทึกแจ้งข้อกล่าวหาและสิทธิคัดค้าน “หากเป็นคณะอนุกรรมการไต่สวนให้เปลี่ยนจากคณะพนักงานไต่สวนเป็นคณะอนุกรรมการไต่สวน และคำสั่งเปลี่ยนเป็นคำสั่งคณะกรรมการ ป.ป.ท.”', c.id, q.noticeSentAt || todayISO())}
+      <div class="a5-line"><b>เรื่อง</b> แจ้งข้อกล่าวหาและสิทธิคัดค้านคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน (เรื่องที่ ${a5F(c.id || '', 150)})</div>
+      <div class="a5-line"><b>เรียน</b> ${a5F(accused, 400)} <span class="a5-hint">(ให้ระบุชื่อผู้ถูกกล่าวหา)</span></div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> ๑. สำเนาคำสั่งสำนักงาน ป.ป.ท. ลับที่ ${a5F(orderNo, 130)}/${a5F('', 70)} ลงวันที่ ${a5F(a5DateShort(m.orderDate || intake.orderDate), 150)} จำนวน ${a5F('', 60)} แผ่น</div>
+      <div class="a5-line a5-indent3">๒. บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้านคณะพนักงานไต่สวน จำนวน ๒ ฉบับ</div>
+      <p class="a5-indent2">ด้วย สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.) ได้มีคำสั่ง ลับที่ ${a5F(orderNo, 130)}/${a5F('', 70)} ลงวันที่ ${a5F(a5DateShort(m.orderDate || intake.orderDate), 140)} เรื่อง แต่งตั้งคณะพนักงานไต่สวน/ กรณีกล่าวหา ${a5F(accused, 200)} ตำแหน่ง ${a5F('', 150)} สังกัด ${a5F(c.agency || '', 200)} ผู้ถูกกล่าวหา ว่ากระทำการทุจริตในภาครัฐ รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย ๑</p>
+      <p class="a5-indent2">เพื่อดำเนินการตามมาตรา ๓๓ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม จึงขอส่งบันทึกแจ้งข้อกล่าวหาและสิทธิคัดค้านคณะพนักงานไต่สวน มายังท่าน จำนวน ๒ ฉบับ รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย ๒ โดยขอให้ท่านดำเนินการ ดังนี้</p>
+      <p class="a5-indent2">๑. ลงลายมือชื่อและวันเดือนปีที่รับทราบข้อกล่าวหาในบันทึกการแจ้งข้อกล่าวหาทั้ง ๒ ฉบับ ท่านเก็บไว้เอง จำนวน ๑ ฉบับ แล้วส่งอีก จำนวน ๑ ฉบับ กลับคืนไปยัง กอง/สำนัก ${a5F(intake.unit || '', 180)} สำนักงาน ป.ป.ท. อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี ๑๑๑๒๐ โดยจะถือว่าวันที่ระบุในใบตอบรับทางไปรษณีย์เป็นวันที่ท่านได้รับแจ้งข้อกล่าวหา</p>
+      <p class="a5-indent2">๒. ชี้แจงแก้ข้อกล่าวหาภายใน ๓๐ วัน นับแต่วันที่ได้รับแจ้ง โดยท่านจะชี้แจงเป็นหนังสือหรือด้วยวาจาก็ได้และมีสิทธิที่จะแสดงพยานหลักฐานหรือนำพยานบุคคลไปให้ถ้อยคำประกอบการชี้แจง หากชี้แจงด้วยวาจามีสิทธินำทนายความหรือบุคคลที่ท่านไว้วางใจไม่เกิน ๒ คน เข้าฟังการชี้แจงหรือให้ถ้อยคำ หากพ้นกำหนดเวลา ๓๐ วันแล้ว ท่านไม่ชี้แจงแก้ข้อกล่าวหาจะถือว่าผู้ถูกกล่าวหาได้รับทราบข้อกล่าวหาและไม่ประสงค์ที่จะแก้ข้อกล่าวหา</p>
+      <p class="a5-indent2">๓. การคัดค้านคณะพนักงานไต่สวน ให้ทำคำร้องเป็นหนังสือ ระบุชื่อและนามสกุลของผู้ถูกคัดค้าน พร้อมทั้งแสดงข้อเท็จจริงที่เป็นเหตุแห่งการคัดค้านไว้ในคำร้องคัดค้านด้วยว่าจะทำให้การไต่สวนข้อเท็จจริงไม่ได้ความจริงและความยุติธรรมอย่างใด โดยต้องยื่นคำร้องต่อสำนักงาน ป.ป.ท. ภายใน ๓๐ วัน นับแต่วันที่ผู้ถูกกล่าวหาทราบเหตุแห่งการคัดค้าน</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <p class="a5-indent2">อนึ่ง หากท่านประสงค์จะไปรับทราบข้อกล่าวหาด้วยตนเอง ขอให้ท่านไปพบคณะพนักงานไต่สวน ในวันที่ ${a5F('', 160)} เวลา ${a5F('', 90)} ณ กอง/สำนัก ${a5F(intake.unit || '', 170)} สำนักงาน ป.ป.ท. อาคารซอฟต์แวร์ปาร์ค ชั้น ${a5F('', 60)} ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี ทั้งนี้ หากท่านไม่มีทนายความและประสงค์จะให้สำนักงาน ป.ป.ท. จัดหาทนายความให้ ขอให้แจ้ง นาย/นาง/นางสาว ${a5F(intake.investigator || '', 200)} โทร. ${a5F('', 140)} พนักงาน ป.ป.ท. เจ้าของสำนวน ทราบล่วงหน้าก่อนวันนัด</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อทราบ</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol(intake.director || '', 'หัวหน้าพนักงาน ป.ป.ท. /ประธานอนุกรรมการไต่สวน', 'ขอแสดงความนับถือ')}</div>
+      ${a5LetterFoot(intake.unit, intake.investigator, 'เจ้าของสำนวน')}
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.notice.code)}</p>
+    </section>`;
+  }
+
+  /* ===== แบบ ปปท. ๖ — บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้าน · ๓ หน้า ===== */
+  function paperRecordAccusation(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, intake = i.intake || {}, m = i.committee213 || {};
+    const accused = a5AccusedLine(state);
+    const team = intake.team || [];
+    const OBJECTIONS = [
+      'ผู้ไต่สวนรู้เห็นเหตุการณ์หรือเคยสอบสวนหรือพิจารณาเกี่ยวกับเรื่องที่กล่าวหาในฐานะอื่นที่มิใช่ในฐานะพนักงาน ป.ป.ท. หรือเจ้าหน้าที่ ป.ป.ท. มาก่อน',
+      'ผู้ไต่สวนมีส่วนได้เสียในเรื่องที่กล่าวหา',
+      'ผู้ไต่สวนมีสาเหตุโกรธเคืองกับผู้กล่าวหาหรือผู้ถูกกล่าวหา',
+      'ผู้ไต่สวนเป็นผู้กล่าวหา หรือผู้ถูกกล่าวหา หรือเป็นคู่สมรส บุพการี ผู้สืบสันดาน หรือพี่น้องร่วมบิดามารดา หรือร่วมบิดาหรือมารดากับผู้กล่าวหาหรือผู้ถูกกล่าวหา',
+      'ผู้ไต่สวนมีความสัมพันธ์ใกล้ชิดในฐานะญาติ หรือเป็นหุ้นส่วน หรือมีผลประโยชน์ร่วมกัน หรือขัดแย้งกันทางธุรกิจกับผู้กล่าวหาหรือผู้ถูกกล่าวหา'
+    ];
+    return `<section class="a5-paper">
+      ${a5PgNo(1)}
+      <header class="a5-hdr a5-hdr-record">
+        <p class="a5-hdr-org">สำนักงาน ป.ป.ท.</p>
+        <h2 class="a5-hdr-title">บันทึกการแจ้งข้อกล่าวหาและสิทธิคัดค้านคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน</h2>
+        <p class="a5-letter-org a5-right">${A5_OFFICE_ADDR}</p>
+        <p class="a5-letter-date">${a5DateParts(q.noticeSentAt || todayISO())}</p>
+      </header>
+      <p class="a5-indent2"><b>ส่วนที่ ๑ การแจ้งข้อกล่าวหา</b></p>
+      <p class="a5-indent2">ด้วย สำนักงาน ป.ป.ท./คณะกรรมการ ป.ป.ท. ได้มีคำสั่งที่ ${a5F(m.orderNo || intake.orderNo || '', 160)} ลงวันที่ ${a5F(a5DateShort(m.orderDate || intake.orderDate), 160)} แต่งตั้งคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน เพื่อดำเนินการไต่สวน กรณีกล่าวหา ${a5F(accused, 230)} (ชื่อ – นามสกุล ตำแหน่งและสังกัดของผู้ถูกกล่าวหา) ว่ากระทำความผิดฐาน ${a5F(q.allegations || c.subject || '', 230)} (ทุจริตต่อหน้าที่ หรือกระทำความผิดต่อตำแหน่งหน้าที่ราชการ หรือกระทำความผิดต่อตำแหน่งหน้าที่ในการยุติธรรม หรือประพฤติมิชอบ ระบุข้อความตามคำสั่งแต่งตั้งพนักงาน ป.ป.ท./คณะอนุกรรมการ) ปรากฏตามเอกสารแนบท้ายบันทึกฉบับนี้</p>
+      <p class="a5-indent2">บัดนี้ คณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน ขอแจ้งให้ท่านทราบก่อนแจ้งข้อกล่าวหาว่าในการชี้แจงแก้ข้อกล่าวหา ผู้ถูกกล่าวหาอาจแก้ข้อกล่าวหาโดยทำเป็นหนังสือหรือมาชี้แจงด้วยวาจาก็ได้ และผู้ถูกกล่าวหามีสิทธิที่จะให้ถ้อยคำหรือไม่ก็ได้ ถ้าผู้ถูกกล่าวหาให้ถ้อยคำ ถ้อยคำของผู้ถูกกล่าวหานั้นอาจใช้เป็นพยานหลักฐานในการพิจารณาคดีได้</p>
+      <p class="a5-indent2">ในการชี้แจงแก้ข้อกล่าวหาด้วยวาจาผู้ถูกกล่าวหามีสิทธิที่จะนำทนายความหรือบุคคลซึ่งผู้ถูกกล่าวหาไว้วางใจไม่เกินสองคนเข้าฟังการให้ถ้อยคำของตนได้ ก่อนเริ่มถามคำให้การในคดีที่มีอัตราโทษจำคุกหรือประหารชีวิต หากผู้ถูกกล่าวหาไม่มีทนายความและต้องการทนายความสำนักงาน ป.ป.ท. จะจัดหาทนายความให้ คดีที่ผู้ถูกกล่าวหามีอายุไม่เกินสิบแปดปีในวันที่แจ้งข้อกล่าวหา หากผู้ถูกกล่าวหาไม่มีทนายความ สำนักงาน ป.ป.ท. จะจัดหาทนายความให้ และผู้ถูกกล่าวหาจะนำพยานหลักฐานมาเอง หรือจะอ้างพยานหลักฐานโดยขอให้คณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน พิจารณาเรียกพยานหลักฐานนั้นมาก็ได้ ทั้งนี้ มีสิทธิที่จะชี้แจงข้อกล่าวหาและนำพยานหลักฐานมาสืบแก้ข้อกล่าวหาภายในเวลาอันสมควร แต่อย่างช้าไม่เกิน ๓๐ วัน นับแต่วันที่ได้รับทราบข้อกล่าวหาหรือถือว่าได้รับทราบข้อกล่าวหา คณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน ได้รวบรวมพยานหลักฐานที่เกี่ยวข้องกับข้อกล่าวหาแล้ว จึงขอแจ้งข้อกล่าวหาให้ผู้ถูกกล่าวหาทราบ ดังนี้</p>
+      <p class="a5-indent2">๑. ประเด็นเกี่ยวกับเหตุการณ์หรือเรื่องราวที่เกิดขึ้น</p>
+      <p class="a5-indent3">ระบุข้อเท็จจริงและพฤติการณ์ในการกระทำผิดเท่าที่จะทำให้ผู้ถูกกล่าวหาเข้าใจข้อกล่าวหาได้ดี จัดลำดับเหตุการณ์ว่ามีความเป็นมาอย่างไร โดยมีรายละเอียดเกี่ยวกับบุคคล สิ่งของ เวลา และสถานที่ตามสมควรและผู้ถูกกล่าวหาเข้าไปเกี่ยวข้องกับเหตุการณ์นั้นอย่างไร ${a5F(q.statements || '', 260)}</p>
+      <p class="a5-indent2">๒. ประเด็นเกี่ยวกับองค์ประกอบความผิด</p>
+      <p class="a5-indent3">จากการไต่สวนข้อเท็จจริงฟังได้ว่า (พิจารณาองค์ประกอบความผิดตามกฎหมายที่จะแจ้งข้อกล่าวหาต่อผู้ถูกกล่าวหาแต่ละคนแล้วอ้างข้อเท็จจริงว่าผู้ถูกกล่าวหาทำอะไร อย่างไร ให้ครบทุกองค์ประกอบความผิด ตามลำดับประเด็น)</p>
+      <p class="a5-indent4">- ประเด็นเกี่ยวกับสถานะ ตำแหน่ง และความเป็นเจ้าหน้าที่ของรัฐ</p>
+      <p class="a5-indent4">- ประเด็นเกี่ยวกับอำนาจหน้าที่</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <p class="a5-indent4">- ประเด็นเกี่ยวกับการกระทำผิดต่อตำแหน่งหน้าที่</p>
+      <p class="a5-indent4">- ประเด็นเกี่ยวกับความเสียหาย</p>
+      <p class="a5-indent2">๓. ประเด็นผู้ถูกกล่าวหากระทำผิดกฎหมายในข้อหา</p>
+      <p class="a5-indent3">จึงขอแจ้งข้อกล่าวหาว่า ท่านกระทำความผิดทางอาญาในข้อหา ${a5F(q.allegations || '', 300)} (อ้างว่าผู้ถูกกล่าวหากระทำความผิดกฎหมายในฐานความผิดใด โดยระบุข้อความในกฎหมายลงไป แต่ไม่จำเป็นต้องระบุเลขมาตรา)</p>
+      <p class="a5-indent3">และมีความผิดทางวินัยฐาน ${a5F('', 380)}</p>
+      <p class="a5-indent3">เหตุเกิดวันที่ ${a5F(a5DateShort(i.prelim?.place ? '' : ''), 140)} (หรือระหว่างวันที่ ${a5F('', 120)} ถึงวันที่ ${a5F('', 120)}) สถานที่เกิดเหตุอยู่ในท้องที่ตำบล ${a5F('', 150)} อำเภอ ${a5F('', 150)} จังหวัด ${a5F('', 170)}</p>
+      <p class="a5-indent2"><b>ส่วนที่ ๒ การแจ้งสิทธิคัดค้านคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน</b></p>
+      <p class="a5-indent2">คณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน ประกอบด้วยบุคคลตามรายชื่อ ดังต่อไปนี้</p>
+      <p class="a5-indent3">๑. ${a5F(intake.director || '', 320)} พนักงาน ป.ป.ท./ประธานอนุกรรมการ</p>
+      <p class="a5-indent3">๒. ${a5F(team[0] || '', 320)} เจ้าหน้าที่ ป.ป.ท./อนุกรรมการ</p>
+      <p class="a5-indent3">๓. ${a5F(q.investigator || intake.investigator || '', 280)} พนักงาน ป.ป.ท. เจ้าของสำนวน/อนุกรรมการและเลขานุการ</p>
+      <p class="a5-indent2">ขอแจ้งให้ทราบว่าผู้ถูกกล่าวหามีสิทธิคัดค้านผู้ได้รับการแต่งตั้งเป็นคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน โดยผู้ถูกกล่าวหาจะต้องทำคำร้องเป็นหนังสือระบุชื่อและนามสกุลของผู้ถูกคัดค้าน พร้อมทั้งแสดงข้อเท็จจริงที่เป็นเหตุแห่งการคัดค้านไว้ในคำร้องคัดค้านด้วยว่าจะทำให้การไต่สวนข้อเท็จจริงไม่ได้ความจริงและความยุติธรรมอย่างใด และยื่นคำร้องคัดค้านเป็นหนังสือต่อสำนักงาน ป.ป.ท. ภายใน ๓๐ วัน นับแต่วันที่ผู้ถูกกล่าวหาทราบเหตุแห่งการคัดค้านอย่างหนึ่งอย่างใด ดังต่อไปนี้</p>
+      ${OBJECTIONS.map((t, n) => `<p class="a5-indent2">(${a5Num(n + 1)}) ${t}</p>`).join('')}
+      <p class="a5-indent2">ทั้งนี้ กรณีที่ผู้ถูกกล่าวหามิได้ดำเนินการให้ครบถ้วนตามเงื่อนไขข้างต้น ให้ถือว่าผู้ถูกกล่าวหาไม่ประสงค์ที่จะคัดค้านผู้ที่ได้รับการแต่งตั้งเป็นคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน ในกรณีดังกล่าว</p>
+      <div class="a5-sign a5-sign-stack a5-sign-left">
+        ${a5SignCol(intake.director || '', 'พนักงาน ป.ป.ท./ประธานอนุกรรมการ', 'ลงชื่อ')}
+        ${a5SignCol(team[0] || '', 'เจ้าหน้าที่ ป.ป.ท./อนุกรรมการ', 'ลงชื่อ')}
+        ${a5SignCol(q.investigator || intake.investigator || '', 'พนักงาน ป.ป.ท. เจ้าของสำนวน/อนุกรรมการและเลขานุการ', 'ลงชื่อ')}
+      </div>
+      ${a5Foot()}${A5_PG}${a5PgNo(3)}
+      <p class="a5-indent2"><b>ส่วนที่ ๓ การรับทราบข้อกล่าวหา</b></p>
+      <p class="a5-indent2">ข้าพเจ้า ${a5F(accused, 280)} (ระบุชื่อ-นามสกุลของผู้ถูกกล่าวหา) ได้รับทราบและเข้าใจข้อกล่าวหาโดยตลอดและได้รับทราบสิทธิการคัดค้านผู้ได้รับแต่งตั้งเป็นคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวนแล้ว โดยได้รับบันทึกนี้จำนวน ๑ ฉบับ และสำเนาคำสั่งคณะกรรมการ ป.ป.ท. ที่ ${a5F(m.orderNo || '', 160)} ลงวันที่ ${a5F(a5DateShort(m.orderDate), 160)} จำนวน ๑ ฉบับ ไว้แล้ว เมื่อวันที่ ${a5F('', 60)} เดือน ${a5F('', 120)} พ.ศ. ${a5F('', 70)} (คือวันที่ได้รับหนังสือแจ้งให้รับทราบข้อกล่าวหาตามที่ระบุในไปรษณีย์ตอบรับ) และประสงค์ที่จะชี้แจงแก้ข้อกล่าวหาภายในวันที่ ${a5F('', 60)} เดือน ${a5F('', 120)} พ.ศ. ${a5F('', 70)} (ต้องชี้แจงภายใน ๓๐ วันนับแต่วันที่ได้รับทราบข้อกล่าวหาหรือถือว่าได้รับทราบข้อกล่าวหา) หากพ้นกำหนดนี้แล้ว ให้ถือว่าข้าพเจ้าไม่ประสงค์ที่จะชี้แจงแก้ข้อกล่าวหา และในกรณีที่ข้าพเจ้าประสงค์จะคัดค้านคณะพนักงานไต่สวน/คณะอนุกรรมการไต่สวน ข้าพเจ้าจะต้องยื่นคำร้องเป็นหนังสือต่อสำนักงาน ป.ป.ท. ภายใน ๓๐ วัน นับแต่วันที่ทราบเหตุคัดค้าน เพื่อเป็นหลักฐานจึงลงลายมือชื่อไว้เป็นสำคัญ</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', 'ผู้ถูกกล่าวหา', 'ลงชื่อ')}</div>
+      <div class="a5-note">
+        <p><b>หมายเหตุ</b> บันทึกนี้ให้ทำเป็น ๓ ฉบับ เก็บไว้ในสำนวนการไต่สวนจำนวน ๑ ฉบับ</p>
+        <p class="a5-indent">ส่งให้ผู้ถูกกล่าวหาจำนวน ๒ ฉบับ เพื่อให้ผู้ถูกกล่าวหาลงลายมือชื่อและวันเดือนปีที่รับทราบข้อกล่าวหา ผู้ถูกกล่าวหาเก็บไว้ จำนวน ๑ ฉบับ และส่งกลับคืน จำนวน ๑ ฉบับ เก็บรวมไว้ในสำนวนการไต่สวน</p>
+      </div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS.record.code)}</p>
+    </section>`;
+  }
+
+  /* ===== แบบ ปปท. ๗ — รายงานการไต่สวน · ๓ หน้า ===== */
+  function paper644(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, m = i.committee213 || {}, mc = i.committee644 || {}, intake = i.intake || {}, m62 = intake.m62 || {};
+    const accused = a5AccusedLine(state);
+    const witnesses = (q.witnesses || []).filter(Boolean).join(', ');
+    const subject = state.documentData?.documentSubject || c.subject || '';
+    const fromNacc = Boolean(m62.flag) || String(c.decision || '').includes('62');
+    const team = intake.team || [];
+    return `<section class="a5-paper">
+      <header class="a5-hdr a5-hdr-report">
+        <p class="a5-hdr-org">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</p>
+        <h2 class="a5-hdr-title">รายงานการไต่สวน</h2>
+      </header>
+      <div class="a5-line"><b>เรื่องที่</b> ${a5F(c.id || '', 560)}</div>
+      <div class="a5-line"><b>สำนัก/กอง</b> ${a5F(intake.unit || '', 300)} <span class="a5-hint">ที่เป็นเจ้าของเรื่อง (ตามเลขเรื่อง)</span></div>
+      <p class="a5-right">${a5DateParts(q.submittedAt || todayISO())}</p>
+      <div class="a5-line"><b>เรียน</b> ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ</div>
+
+      <p class="a5-num-h"><b>๑. การรับเรื่อง</b> (เลือกใส่เฉพาะกรณีตามข้อเท็จจริง)</p>
+      <div class="a5-cbline a5-indent2"><b>${a5Cb(fromNacc, 'กรณีรับจากสำนักงาน ป.ป.ช. ตามมาตรา ๖๒')}</b></div>
+      <p class="a5-indent2">๑.๑ เมื่อวันที่ ${a5F(a5DateShort(m62.sourceMtiDate), 150)} สำนักงาน ป.ป.ช. รับเรื่องที่ ${a5F(m62.sourceLetter || '', 160)} (เลขอ้างอิง/เลขดำติดตามที่ ${a5F('', 110)}) จาก ${a5F('', 180)} (ระบุช่องทางการรับเรื่อง เช่น บัตรสนเท่ห์ ผู้ร้อง พนักงานสอบสวน สถานีตำรวจ สำนักงานตรวจเงินแผ่นดิน หรือ ${a5F('', 180)})</p>
+      <p class="a5-indent2">๑.๒ สำนักงาน ป.ป.ช./สำนักงาน ป.ป.ช. จังหวัด ${a5F('', 140)} ส่งเรื่องมายังสำนักงาน ป.ป.ท. /สำนักงาน ปปท. เขต ${a5F(intake.unit || '', 130)} ตามมติคณะกรรมการ ป.ป.ช. ครั้งที่ ${a5F('', 100)} เมื่อวันที่ ${a5F(a5DateShort(m62.sourceMtiDate), 150)} ตามหนังสือ ป.ป.ช. ที่ ${a5F(m62.sourceLetter || '', 170)}</p>
+      <p class="a5-indent2">๑.๓ สำนักงาน ป.ป.ท. /สำนักงาน ปปท. เขต ${a5F(intake.unit || '', 140)} รับเรื่องเมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 160)}</p>
+      <p class="a5-indent2">๑.๔ คณะกรรมการ ป.ป.ท. มีมติให้ไต่สวน ตามคำสั่งคณะกรรมการ ป.ป.ท. /สำนักงาน ป.ป.ท. ลับ ที่ ${a5F(m.orderNo || '', 200)} (ในกรณีที่มีคำสั่งให้แก้ไขเพิ่มเติม-ไต่สวนบุคคลใดเพิ่มเติม ให้ระบุไว้ด้วย)</p>
+      <div class="a5-cbline a5-indent2"><b>${a5Cb(!fromNacc, 'กรณีคดีประพฤติมิชอบ')}</b></div>
+      <p class="a5-indent2">๑.๑ เมื่อวันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)} สำนักงาน ป.ป.ท./สำนักงาน ป.ป.ท. โดยสำนักงาน ปปท. เขต ${a5F(intake.unit || '', 140)} รับเรื่อง ${a5F('', 160)} ระบุช่องทางรับเรื่อง เช่น หนังสือร้องเรียน สายด่วน ๑๒๐๖ เว็บไซต์สำนักงาน ป.ป.ท. ${a5F('', 130)} วันที่ ${a5F(a5DateShort(intake.receivedFirstAt), 150)}</p>
+      <p class="a5-indent2">๑.๒ คณะกรรมการ ป.ป.ท. มีมติให้ไต่สวน ตามคำสั่งคณะกรรมการ ป.ป.ท. /สำนักงาน ป.ป.ท. ลับ ที่ ${a5F(m.orderNo || '', 200)} (ในกรณีที่มีคำสั่งให้แก้ไขเพิ่มเติม-ไต่สวนบุคคลใดเพิ่มเติม ให้ระบุไว้ด้วย)</p>
+      <p class="a5-num-h"><b>๒. ผู้กล่าวหา</b> (ระบุชื่อ-สกุล ตำแหน่ง และที่อยู่ หรือขอปกปิดชื่อ) ${a5F(c.complainant || '', 330)}</p>
+      <p class="a5-num-h"><b>๓. ผู้ถูกกล่าวหา</b> (ให้ระบุชื่อ-สกุล หมายเลขบัตรประจำตัวประชาชน ตำแหน่ง ยศ สังกัด และที่อยู่ (ตามทะเบียนราษฎรขณะแจ้งข้อกล่าวหา) สถานะปัจจุบันเป็นรายบุคคล (หากถูกไล่ออกให้ระบุคำสั่งหรือเหตุที่ถูกไล่ออกด้วย) โดยกำหนดผู้ถูกกล่าวหาเป็นลำดับ หากผู้ถูกกล่าวหามีจำนวนมากอาจทำเป็นบัญชีแนบท้ายที่ได้จากการตรวจสอบ)</p>
+      <div class="a5-line a5-indent2">${a5F(accused, 600)}</div>
+      <p class="a5-num-h"><b>๔. ข้อกล่าวหา พฤติการณ์ที่กล่าวหา</b> (สรุปพฤติการณ์ตามคำกล่าวหาของผู้กล่าวหาหรือจากคำสั่งแต่งตั้ง)</p>
+      <div class="a5-line a5-indent2">${a5F(q.allegations || subject, 600)}</div>
+      <p class="a5-num-h"><b>๕. การรวบรวมพยานหลักฐาน</b> (สรุปคำให้การของผู้ให้ถ้อยคำให้ชัดเจนว่าบุคคลนั้นให้การในประเด็นใด มีสาระสำคัญว่าอย่างไร โดยเรียงลำดับตามความสำคัญ และสรุปประเด็นสำคัญของเอกสาร)</p>
+      <p class="a5-indent2">๕.๑ พยานบุคคล (สรุปคำให้การผู้กล่าวหา/พยาน) ${a5F(witnesses, 300)}</p>
+      <p class="a5-indent2">๕.๒ พยานเอกสาร (สรุปข้อเท็จจริงจากพยานเอกสารที่รวบรวม) ${a5F(q.statements || '', 280)}</p>
+      <p class="a5-indent2">๕.๓ พยานวัตถุ และพยานอื่น ๆ ${a5F('', 380)}</p>
+      <p class="a5-indent2">๕.๔ ผลการดำเนินการสอบข้อเท็จจริง/วินัย/ละเมิดของหน่วยงานต้นสังกัด ${a5F('', 260)}</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+
+      <p class="a5-num-h"><b>๖. การดำเนินการอื่น ๆ</b></p>
+      <p class="a5-indent2">๖.๑ การคุ้มครองพยาน ${a5F(q.witnessProtection || '', 400)}</p>
+      <p class="a5-indent2">๖.๒ การกันบุคคลหรือผู้ถูกกล่าวหาไว้เป็นพยาน ${a5F('', 350)}</p>
+      <p class="a5-indent2">๖.๓ การดำเนินการอื่น ๆ (ถ้ามี) เช่น การสืบพยานบุคคลไว้ล่วงหน้า ${a5F('', 280)}</p>
+      <p class="a5-num-h"><b>๗. วันเวลาและสถานที่เกิดเหตุ</b> ${a5F(i.prelim?.place || '', 400)}</p>
+      <p class="a5-num-h"><b>๘. ความเสียหาย</b> ${a5F(i.prelim?.issues?.damage || '', 440)}</p>
+      <p class="a5-num-h"><b>๙. อายุความ</b> (ให้ระบุอายุความและวันขาดอายุความของการกระทำความผิดที่ถูกกล่าวหาทุกข้อกล่าวหา)</p>
+      <div class="a5-line a5-indent2">มาตรา ${a5F(i.prelim?.limitation?.longSection || '', 80)} อายุความ ${a5F(i.prelim?.limitation?.longYears || '', 60)} ปี ขาดอายุความวันที่ ${a5F(a5DateShort(i.prelim?.limitation?.longExpiry) || i.prelim?.limitation?.longExpiry || '', 180)}</div>
+      <p class="a5-num-h"><b>๑๐. กฎหมายและระเบียบที่เกี่ยวข้อง</b> (กฎหมายหรือระเบียบที่เกี่ยวกับอำนาจหน้าที่ของผู้ถูกร้องเรียน บทความผิดทางอาญาและวินัย ระเบียบ ข้อบังคับ ประกาศ หรือกฎหมายที่เกี่ยวข้องกับการปฏิบัติงานที่ถูกร้องเรียน หากเป็นระเบียบ ข้อบังคับ ประกาศ หรือกฎหมายเฉพาะให้พิมพ์เนื้อหาด้วย ให้ระบุชื่อกฎหมายพร้อมมาตรา)</p>
+      <div class="a5-line a5-indent2">${a5F('', 600)}</div>
+      <p class="a5-num-h"><b>๑๑. การแจ้งคำสั่ง การคัดค้าน/ผลการคัดค้านผู้ไต่สวน การแจ้งข้อกล่าวหา การชี้แจงแก้ข้อกล่าวหา</b></p>
+      <p class="a5-indent2">๑๑.๑ การแจ้งคำสั่ง การคัดค้าน/ผลการคัดค้านผู้ไต่สวน</p>
+      <p class="a5-indent3">ได้แจ้งคำสั่งให้ผู้ถูกกล่าวหาทราบแล้ว ตามหนังสือ ${a5F(m.orderNo || '', 300)}</p>
+      <p class="a5-indent3">การคัดค้านผู้ไต่สวน/ผลการคัดค้าน ${a5F('', 350)}</p>
+      <p class="a5-indent2">๑๑.๒ การแจ้งข้อกล่าวหา</p>
+      <p class="a5-indent3">ได้แจ้งข้อกล่าวหาให้ผู้ถูกกล่าวหาทราบ ตามหนังสือ ${a5F('', 170)} เมื่อวันที่ ${a5F(a5DateShort(q.noticeSentAt), 150)} ทางไปรษณีย์ลงทะเบียนตอบรับ และผู้ถูกกล่าวหาได้รับทราบข้อกล่าวหา ทางไปรษณีย์/รับทราบด้วยตนเองแล้ว เมื่อวันที่ ${a5F(a5DateShort(q.noticeSentAt), 170)}</p>
+      <p class="a5-indent3">ข้อกล่าวหาที่แจ้ง (รายละเอียดตามบันทึกการแจ้งข้อกล่าวหา) ${a5F(q.allegations || '', 250)}</p>
+      <p class="a5-indent2">๑๑.๓ การชี้แจงแก้ข้อกล่าวหา</p>
+      <p class="a5-indent3">(๑) คำให้การผู้ถูกกล่าวหา/หนังสือชี้แจงแก้ข้อกล่าวหา ${a5F('', 280)}</p>
+      <p class="a5-indent3">(๒) พยานหลักฐานของผู้ถูกกล่าวหา</p>
+      <p class="a5-indent4">(๒.๑) พยานบุคคล ${a5F('', 350)}</p>
+      <p class="a5-indent4">(๒.๒) พยานเอกสาร ${a5F('', 350)}</p>
+      <p class="a5-indent4">(๒.๓) พยานวัตถุ/อื่น ๆ ${a5F('', 340)}</p>
+      <p class="a5-num-h"><b>๑๒. เหตุผลในการพิจารณาวินิจฉัย</b> (ให้สรุปพฤติการณ์และพยานหลักฐานโดยปรับให้เข้ากับองค์ประกอบข้อกฎหมาย โดยให้พิจารณาผู้ถูกกล่าวหาแต่ละรายตามลำดับ)</p>
+      <p class="a5-indent2">๑๒.๑ ประเด็นเกี่ยวกับสถานะของผู้ถูกกล่าวหา ${a5F(i.prelim?.issues?.status || '', 300)}</p>
+      <p class="a5-indent2">๑๒.๒ ประเด็นเกี่ยวกับอำนาจหน้าที่ของผู้ถูกกล่าวหา ${a5F(i.prelim?.issues?.authority || '', 290)}</p>
+      <p class="a5-indent2">๑๒.๓ ประเด็นเกี่ยวกับการกระทำของผู้ถูกกล่าวหา ${a5F(i.prelim?.issues?.action || '', 290)}</p>
+      <p class="a5-indent2">๑๒.๔ ประเด็นความเสียหาย ${a5F(i.prelim?.issues?.damage || '', 350)}</p>
+      <p class="a5-indent2">คดีมีประเด็นที่ต้องวินิจฉัยว่า ${a5F('', 380)}</p>
+      <p class="a5-indent2">ข้อเท็จจริงจากการไต่สวนได้ความว่า ${a5F(q.summary || '', 360)}</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(3)}
+
+      <p class="a5-indent2">พิเคราะห์แล้วเห็นว่า (ให้ปรับข้อเท็จจริงให้เข้ากับข้อกฎหมายตามองค์ประกอบความผิดในแต่ละฐาน) ${a5F(q.report || '', 300)}</p>
+      <p class="a5-indent2">ความเห็น/มติ (ในกรณีที่คณะอนุกรรมการไต่สวน/คณะพนักงานไต่สวน มีความเห็นแย้ง ให้ระบุเสียงข้างมากและข้างน้อย พร้อมทั้งเหตุผลในการวินิจฉัย หรือในกรณีที่คณะพนักงานไต่สวน ซึ่งไม่สามารถหาเสียงข้างมากได้ ให้ระบุเหตุผลในการวินิจฉัยของแต่ละคน) ${a5F(mc.result || '', 260)}</p>
+      <p class="a5-indent2">(ในกรณีที่แจ้งข้อกล่าวหาผู้ถูกกล่าวหาฐานความผิดใดแล้ว จะต้องมีความเห็นในทุกข้อกล่าวหา)</p>
+      <p class="a5-num-h"><b>๑๓. สรุปบทความผิดผู้ถูกกล่าวหาแต่ละรายตามลำดับ</b></p>
+      <p class="a5-indent2">- กรณีให้ข้อกล่าวหาตกไป (ให้สรุปความเห็นโดยย่อและให้มีความเห็นทางคดี ${a5F(mc.result === 'ข้อกล่าวหาไม่มีมูล/สิทธิฟ้องระงับ' ? (mc.note || mc.result) : '', 230)} จึงเห็นควรให้ข้อกล่าวหาตกไป)</p>
+      <p class="a5-indent2">- กรณีมีมูลความผิด</p>
+      <p class="a5-indent3">- ความผิดทางอาญา ให้ระบุฐานความผิดตามประมวลกฎหมายอาญา มาตรา ${a5F('', 140)} หรือตามกฎหมายอื่น มาตรา ${a5F('', 200)}</p>
+      <p class="a5-indent3">- ความผิดทางวินัย ให้ระบุฐานความผิดวินัย ${a5F('', 180)} ตามกฎหมายของหน่วยงาน ${a5F('', 180)}</p>
+      <p class="a5-indent2">- กรณีอื่น ๆ เช่น กรณีไม่มีความผิดทางอาญาแต่มีความผิดทางวินัย หรือกรณีเพิกถอนคำสั่งทางปกครองตามมาตรา ๔๖ แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม, ส่งเรื่องให้ต้นสังกัดดำเนินการในส่วนที่เกี่ยวข้อง, ส่งคณะกรรมการ ป.ป.ช. เป็นต้น</p>
+      <div class="a5-line a5-indent2">${a5F(mc.note || '', 600)}</div>
+      <p class="a5-num-h"><b>๑๔. ข้อเสนอ</b></p>
+      <p class="a5-indent2">เห็นควรเสนอเรื่องให้คณะกรรมการ ป.ป.ท. พิจารณาวินิจฉัยชี้มูลตามความเห็นในข้อ ๑๓</p>
+      <div class="a5-sign a5-sign-stack a5-sign-left">
+        ${a5SignCol(intake.director || '', 'ประธานอนุกรรมการ/พนักงาน ป.ป.ท.', 'ลงชื่อ')}
+        ${a5SignCol(team[0] || '', 'อนุกรรมการ/เจ้าหน้าที่ ป.ป.ท.', 'ลงชื่อ')}
+        ${a5SignCol(q.investigator || intake.investigator || '', 'อนุกรรมการและเลขานุการ/พนักงาน ป.ป.ท. เจ้าของสำนวน', 'ลงชื่อ')}
+      </div>
+      <p class="a5-form-code">${escapeHtml(A5_FORMS['644'].code)}</p>
+    </section>`;
+  }
+
+  /* ===== แบบ ปปท. ๘ + ๙ + ๑๐ — หนังสือเกี่ยวกับพนักงานอัยการ · ฉบับละ ๑ หน้า ===== */
+  function paperProsecutorLetters(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, o = i.outcome || {}, q = i.inquiry644 || {}, intake = i.intake || {};
+    const accused = a5AccusedLine(state);
+    const allegations = q.allegations || c.subject || '';
+    const prosecutor = o.prosecutor || '';
+    const inv = q.investigator || intake.investigator || '';
+    const today = todayISO();
+    const SEC_GEN = 'เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ';
+    return `<section class="a5-paper">
+      ${a5LetterHdr('ตัวอย่างหนังสือแจ้งให้ผู้ถูกกล่าวหาไปพบพนักงานอัยการเพื่อฟ้องคดีต่อศาล', c.id, today)}
+      <div class="a5-line"><b>เรื่อง</b> ขอให้ไปพบพนักงานอัยการ</div>
+      <div class="a5-line"><b>เรียน</b> ${a5F(accused, 380)} <span class="a5-hint">(ชื่อ – นามสกุล ผู้ถูกกล่าวหา)</span></div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> สำเนาหนังสือสำนักงานอัยการ ${a5F(prosecutor, 190)} (ผู้ฟ้องคดี) ที่ ${a5F('', 130)}</div>
+      <div class="a5-line a5-indent3">ลงวันที่ ${a5F('', 150)} <span class="a5-hint">(หนังสือที่แจ้งว่าเห็นชอบให้สั่งฟ้องผู้ถูกกล่าวหา)</span></div>
+      <p class="a5-indent2">ด้วยพนักงานอัยการได้มีคำสั่งฟ้องท่านต่อศาล ${a5F(`ศาล${A5_COURT}`, 250)} (ที่มีเขตอำนาจพิจารณาพิพากษา) ในความผิดฐาน ${a5F(allegations, 250)} (ฐานความผิดตามที่พนักงานอัยการแจ้ง) รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย</p>
+      <p class="a5-indent2">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.) จึงขอแจ้งให้ท่านทราบและขอให้ท่านไปพบพนักงานอัยการ ณ สำนักงานอัยการ ${a5F(prosecutor, 200)} (ผู้ฟ้องคดี) ในวันที่ ${a5F('', 180)} เวลา ${a5F('', 90)} น. ในกรณีที่ท่านประสงค์จะยื่นคำร้องขอปล่อยตัวชั่วคราวในชั้นพนักงานอัยการหรือชั้นศาลขอให้เตรียมหลักประกันไปพร้อมด้วย</p>
+      <p class="a5-indent2">อนึ่ง หากท่านไม่ไปพบพนักงานอัยการตามวันเวลาที่กำหนด อาจเป็นเหตุให้ถูกออกหมายจับเพื่อนำตัวส่งฟ้องศาลต่อไปได้</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อทราบ</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', SEC_GEN, 'ขอแสดงความนับถือ', 'หรือผู้ที่ได้รับมอบหมาย')}</div>
+      ${a5LetterFoot(intake.unit, inv)}
+      ${a5Foot()}
+
+      ${A5_PG}
+
+      ${a5LetterHdr('ตัวอย่างหนังสือแจ้งผู้บังคับบัญชา กรณีให้ผู้ถูกกล่าวหาไปพบพนักงานอัยการเพื่อฟ้องคดีต่อศาล', c.id, today)}
+      <div class="a5-line"><b>เรื่อง</b> แจ้งคำสั่งฟ้องคดีของพนักงานอัยการ</div>
+      <div class="a5-line"><b>เรียน</b> ${a5F(c.agency || '', 340)} <span class="a5-hint">(ผู้บังคับบัญชาหรือผู้มีอำนาจแต่งตั้งถอดถอนผู้ถูกกล่าวหา)</span></div>
+      <div class="a5-line"><b>อ้างถึง</b> หนังสือสำนักงาน ป.ป.ท. ${a5F(state.documentData?.dispatchLetterNo || '', 260)}</div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> สำเนาหนังสือสำนักงานอัยการ ${a5F(prosecutor, 190)} (ผู้ฟ้องคดี) ที่ ${a5F('', 130)}</div>
+      <div class="a5-line a5-indent3">ลงวันที่ ${a5F('', 150)} <span class="a5-hint">(หนังสือที่แจ้งว่าเห็นชอบให้สั่งฟ้องผู้ถูกกล่าวหา)</span></div>
+      <p class="a5-indent2">ตามที่ได้แจ้งให้ท่านทราบว่าคณะกรรมการ ป.ป.ท. ได้ชี้มูลความผิด ${a5F(accused, 230)} (ระบุชื่อ-สกุล ตำแหน่งของผู้ถูกกล่าวหา) ในฐานความผิด ${a5F(allegations, 230)} (ตามมติของคณะกรรมการ ป.ป.ท.) โดยในส่วนของความผิดทางอาญาได้ส่งเรื่องให้พนักงานอัยการดำเนินการ ความละเอียดแจ้งแล้ว นั้น</p>
+      <p class="a5-indent2">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.) ขอเรียนว่า พนักงานอัยการได้มีคำสั่งฟ้อง ${a5F(accused, 220)} (ระบุชื่อ-สกุล ตำแหน่งของผู้ถูกกล่าวหา) ในความผิดฐาน ${a5F(allegations, 220)} (ฐานความผิดตามที่พนักงานอัยการแจ้ง) โดยกำหนดให้ผู้ถูกกล่าวหาไปพบพนักงานอัยการ ณ สำนักงานอัยการ ${a5F(prosecutor, 190)} (ผู้ฟ้องคดี) ในวันที่ ${a5F('', 170)} เวลา ${a5F('', 90)} น. รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย ทั้งนี้ หากผู้ถูกกล่าวหาประสงค์จะยื่นคำร้องขอปล่อยตัวชั่วคราวในชั้นพนักงานอัยการหรือชั้นศาลขอให้เตรียมหลักประกันไปในวันดังกล่าว</p>
+      <p class="a5-indent2">อนึ่ง หากผู้ถูกกล่าวหาไม่ไปพบพนักงานอัยการตามวันเวลาที่กำหนด อาจเป็นเหตุให้ถูกออกหมายจับเพื่อนำตัวส่งฟ้องศาลต่อไปได้</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดทราบ และแจ้งให้ผู้ถูกกล่าวหาทราบด้วย จักขอบคุณมาก</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', SEC_GEN, 'ขอแสดงความนับถือ', 'หรือผู้ที่ได้รับมอบหมาย')}</div>
+      ${a5LetterFoot(intake.unit, inv)}
+      ${a5Foot()}
+
+      ${A5_PG}
+
+      ${a5LetterHdr('ตัวอย่างหนังสือแจ้งพนักงานอัยการ แจ้งกำหนดนัดไปรายงานตัวของผู้ถูกกล่าวหา', c.id, today)}
+      <div class="a5-line"><b>เรื่อง</b> การแจ้งให้ผู้ถูกกล่าวหามาพบพนักงานอัยการ</div>
+      <div class="a5-line"><b>เรียน</b> ${a5F(prosecutor, 340)} <span class="a5-hint">(อัยการผู้ฟ้องคดี)</span></div>
+      <div class="a5-line"><b>อ้างถึง</b> หนังสือสำนักงานอัยการ (ผู้ฟ้องคดี) ที่ ${a5F('', 150)} ลงวันที่ ${a5F('', 150)}</div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> สำเนาหนังสือสำนักงาน ป.ป.ท. ที่ ปป ๐๐../${a5F(c.id || '', 120)} ลงวันที่ ${a5F('', 140)}</div>
+      <div class="a5-line a5-indent3"><span class="a5-hint">(หนังสือที่แจ้งผู้ถูกกล่าวหามาพบพนักงานอัยการ)</span></div>
+      <p class="a5-indent2">ตามที่สำนักงานอัยการ (ผู้ฟ้องคดี) แจ้งให้ทราบว่า พนักงานอัยการได้มีคำสั่งฟ้อง ${a5F(accused, 230)} (ชื่อ – นามสกุล ผู้ถูกกล่าวหา) ในฐานความผิด ${a5F(allegations, 230)} และขอให้สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.) แจ้งให้ผู้ถูกกล่าวหามาพบพนักงานอัยการตามวันเวลาที่กำหนด ความละเอียดแจ้งแล้ว นั้น</p>
+      <p class="a5-indent2">สำนักงาน ป.ป.ท. ขอเรียนว่า ได้มีหนังสือแจ้งให้ ${a5F(accused, 230)} (ชื่อ – นามสกุล ผู้ถูกกล่าวหา) ผู้ถูกกล่าวหามาพบพนักงานอัยการ ณ สำนักงานอัยการ ${a5F(prosecutor, 200)} (ผู้ฟ้องคดี) ในวันที่ ${a5F('', 170)} เวลา ${a5F('', 90)} น. แล้ว รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดทราบ และหากถึงกำหนดวันนัด ผู้กล่าวหามาพบพนักงานอัยการหรือไม่ โปรดแจ้งให้ทราบด้วย จักขอบคุณมาก</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', SEC_GEN, 'ขอแสดงความนับถือ', 'หรือผู้ที่ได้รับมอบหมาย')}</div>
+      ${a5LetterFoot(intake.unit, inv)}
+      <p class="a5-form-code">${escapeHtml(`${A5_FORMS.p8.code} · ${A5_FORMS.p9.code} · ${A5_FORMS.p10.code}`)}</p>
+    </section>`;
+  }
+
+  /* ===== แบบ ปปท. ๑๑–๒๐ — ชุดเอกสารหมายจับ · รวม ๑๕ หน้า ===== */
+  function paperWarrants(state) {
+    const c = state.caseData || {}, i = state.inquiry || {}, q = i.inquiry644 || {}, o = i.outcome || {}, intake = i.intake || {}, m = i.committee213 || {}, mc = i.committee644 || {};
+    const w = o.warrant || {};
+    const accused = a5AccusedLine(state);
+    const inv = q.investigator || intake.investigator || '';
+    const allegations = q.allegations || c.subject || '';
+    const prosecutor = o.prosecutor || '';
+    const today = todayISO();
+    const court = w.court || `ศาล${A5_COURT}`;
+    const SEC_GEN = 'เลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ';
+    /* แถวหัวข้อ:ค่า แบบเส้นใต้ทึบ (แบบพิมพ์ศาล/ตำหนิรูปพรรณ) */
+    const row = (label, ...cells) => `<div class="a5-line a5-urow"><span class="a5-ulabel">${label}</span>${cells.join('')}</div>`;
+    /* ชุดช่องติ๊กลักษณะรูปพรรณ (แบบ ๑๖) */
+    const traits = (label, ...opts) => `<tr><th>${escapeHtml(label)}</th><td>${opts.map(t => `<span class="a5-cbopt">${a5Cb(false, t)}</span>`).join('')}</td></tr>`;
+    const warrantBody = (isAfter) => `
+      <div class="a5-warrant-top">
+        <span class="a5-circle"></span>
+        <span>(๔๗ ทวิ)</span>
+        <span class="a5-box-inline">${isAfter ? 'เหตุเกิด ๓๐ เม.ย. ๕๙ เป็นต้นไป' : 'กรณีเหตุเกิดก่อน ๓๐ เม.ย. ๕๙'}</span>
+        <span class="a5-right-note">สำหรับศาลใช้</span>
+      </div>
+      <p class="a5-warrant-title">หมายจับ</p>
+      <div class="a5-court-crest"><img class="a5-garuda" src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="54" height="58"></div>
+      <p class="a5-right">ที่ ${a5Us(w.warrantNo || '', 130)}/๒๕${a5Us('', 50)}</p>
+      <h3 class="a5-center a5-king">ในพระปรมาภิไธยพระมหากษัตริย์</h3>
+      <p class="a5-right"><b>ศาล</b> ${a5Us(court, 280)}</p>
+      <p class="a5-right">วันที่ ${a5Us('', 60)} เดือน ${a5Us('', 130)} พุทธศักราช ๒๕${a5Us('', 50)}</p>
+      <p class="a5-center"><b>ความอาญา</b></p>
+      <p class="a5-right">คณะกรรมการ ป.ป.ท. โดย นาย/นาง/นางสาว ${a5Us(inv, 200)} พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. <b>ผู้ร้อง</b></p>
+      ${row('หมายถึง', a5Us('ผู้บัญชาการตำรวจแห่งชาติ , คณะกรรมการ ป.ป.ท.', 420))}
+      ${row('ด้วย', a5Us(accused, 450))}
+      ${row('ซึ่งต้องหาว่ากระทำความผิดฐาน', a5Us(allegations, 380))}
+      <p>กรณีมีหลักฐานตามสมควรว่า* ชื่อ-สกุล ผู้ถูกกล่าวหา ${a5Us(accused, 330)}</p>
+      <div class="a5-cbline a5-indent">${a5Cb(true, '๑. ได้หรือน่าจะได้กระทำความผิดอาญาซึ่งมีอัตราโทษจำคุกอย่างสูงเกินสามปี')}</div>
+      <div class="a5-cbline a5-indent">${a5Cb(true, '๒. ได้หรือน่าจะได้กระทำความผิดอาญาและมีเหตุอันควรเชื่อว่า')}</div>
+      <div class="a5-cbline a5-indent2">${a5Cb(true, '๒.๑ จะหลบหนี')}</div>
+      <div class="a5-cbline a5-indent2">${a5Cb(false, '๒.๒ จะไปยุ่งเหยิงกับพยานหลักฐาน')}</div>
+      <div class="a5-cbline a5-indent2">${a5Cb(false, '๒.๓ ก่อเหตุอันตรายประการอื่น')}</div>
+      <div class="a5-cbline a5-indent">${a5Cb(false, '๓. อื่นๆ')} ${a5Us('', 380)}</div>
+      <p class="a5-indent">เพราะฉะนั้นให้ท่านจับตัว* ชื่อ-สกุล ผู้ถูกกล่าวหา ${a5Us(accused, 300)}</p>
+      ${row('เลขประจำตัวประชาชน', a5Us('', 200), '<span class="a5-ulabel">เชื้อชาติ</span>', a5Us('', 150))}
+      ${row('สัญชาติ', a5Us('', 130), '<span class="a5-ulabel">อาชีพ</span>', a5Us('', 130), '<span class="a5-ulabel">อยู่บ้านเลขที่</span>', a5Us('', 110), '<span class="a5-ulabel">หมู่ที่</span>', a5Us('', 70))}
+      ${row('ถนน', a5Us('', 140), '<span class="a5-ulabel">ตรอก/ซอย</span>', a5Us('', 140), '<span class="a5-ulabel">ใกล้เคียง</span>', a5Us('', 140))}
+      ${row('ตำบล/แขวง', a5Us('', 150), '<span class="a5-ulabel">อำเภอ/เขต</span>', a5Us('', 150), '<span class="a5-ulabel">จังหวัด</span>', a5Us('', 150))}
+      ${row('โทรศัพท์', a5Us('', 150), '<span class="a5-ulabel">ไปส่งที่</span>', a5Us(prosecutor || 'สำนักงานอัยการพิเศษฝ่าย', 280))}
+      <p>ภายในอายุความ ${a5Us(i.prelim?.limitation?.longYears || '', 70)} ปี นับแต่วันที่ ${a5Us('', 70)} เดือน ${a5Us('', 120)} พ.ศ. ๒๕${a5Us('', 50)} เพื่อจะได้ดำเนินการตามกฎหมาย แต่ไม่เกินวันที่ ${a5Us('', 70)} เดือน ${a5Us('', 120)} พ.ศ. ๒๕${a5Us('', 50)}</p>
+      <div class="a5-sign">${a5SignCol('', 'ผู้พิพากษา', '')}</div>
+      <p class="a5-right a5-hint">(พลิก)</p>
+      <div class="a5-note">
+        ${isAfter
+        ? `<p><b>หมายเหตุ :</b> * ผู้ถูกกล่าวหาได้หลบหนีไปเมื่อวันที่ ${a5F('', 180)} ในระหว่างถูกดำเนินคดี จึงมิให้นับระยะเวลาที่ผู้ต้องหาหลบหนีรวมเป็นส่วนหนึ่งของอายุความ ตามมาตรา ๖๑/๑ แห่ง พ.ร.บ. มาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม</p>`
+        : `<p><b>หมายเหตุ :</b> * ให้ระบุชื่อตัว ชื่อสกุล และแนบตำหนิรูปพรรณของบุคคลที่จะถูกจับ เท่าที่ทราบไปพร้อมกับหมายนี้ด้วย</p>
+           <p class="a5-indent">* เป็นการจับตัวเพื่อนำส่งพนักงานอัยการ เพื่อฟ้องคดีต่อศาล</p>`}
+      </div>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <p class="a5-center"><b>บันทึก</b></p>
+      <p class="a5-center">วันที่ ${a5F('', 110)} เดือน ${a5F('', 150)} พ.ศ. ๒๕${a5F('', 80)}</p>
+      <p>เจ้าพนักงานผู้จัดการตามหมายได้แจ้งข้อความในหมายให้แก่ผู้เกี่ยวข้องทราบและได้ส่งหมายให้ตรวจดูแล้ว</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', 'เจ้าพนักงานผู้จัดการตามหมาย', '')}</div>
+      <p class="a5-indent">ข้าพเจ้าผู้มีชื่อข้างท้ายนี้ได้รับทราบข้อความในหมาย และได้ตรวจดูหมายแล้ว</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', 'ผู้รับทราบ', '')}</div>
+      <p class="a5-center a5-warn-h"><b>คำเตือน</b></p>
+      <p class="a5-indent2">เจ้าพนักงานผู้จัดการตามหมายพึงปฏิบัติตามกฎหมาย และต้องแจ้งข้อกล่าวหาให้ผู้ถูกจับทราบ แสดงหมายจับต่อผู้ถูกจับ พร้อมทั้งแจ้งให้ผู้ถูกจับทราบถึงสิทธิตามประมวลกฎหมายวิธีพิจารณาความอาญา มาตรา ๘</p>`;
+
+    return `<section class="a5-paper">
+      ${/* ---- แบบ ปปท. ๑๑ คำร้องขอหมายจับ (๓ หน้า) ---- */ ''}
+      <div class="a5-court-crest"><img class="a5-garuda" src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="54" height="58"></div>
+      <div class="a5-court-caption"><p>( คำร้อง )</p><p>ขอหมายจับ</p></div>
+      <p class="a5-right">ที่ ${a5Us('', 130)}/${a5Us('', 90)}</p>
+      <p class="a5-req-mark">รับคำร้อง</p>
+      <p class="a5-req-mark">เรียกสอบ</p>
+      <div class="a5-line"><span>${a5Us('', 190)} ผู้พิพากษา</span><span class="a5-grow"></span><b>ศาล</b> ${a5Us(court, 260)}</div>
+      <p class="a5-right">วันที่ ${a5Us('', 60)} เดือน ${a5Us('', 130)} พุทธศักราช ๒๕${a5Us('', 50)}</p>
+      <p class="a5-center"><b>ความอาญา</b></p>
+      <p class="a5-right">คณะกรรมการ ป.ป.ท. โดย นาย/นาง/นางสาว ${a5Us(inv, 190)} พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. <b>ผู้ร้อง</b></p>
+      ${row('ข้าพเจ้า', a5Us(inv, 230), '<span class="a5-ulabel">ตำแหน่ง</span>', a5Us('พนักงาน ป.ป.ท.', 190))}
+      ${row('อายุ', a5Us('', 90), '<span class="a5-ulabel">ปี อาชีพ</span>', a5Us('รับราชการ', 120), '<span class="a5-ulabel">สถานที่ทำงาน</span>', a5Us('สำนักงาน ป.ป.ท.', 170))}
+      ${row('แขวง/ตำบล', a5Us('คลองเกลือ', 140), '<span class="a5-ulabel">เขต/อำเภอ</span>', a5Us('ปากเกร็ด', 140), '<span class="a5-ulabel">จังหวัด</span>', a5Us('นนทบุรี', 130))}
+      ${row('โทรศัพท์', a5Us('', 180))}
+      <p>ขอยื่นคำร้องขอออกหมายจับต่อศาล ดังมีข้อความที่จะกล่าวต่อไปนี้</p>
+      <p class="a5-indent"><b>ข้อ ๑.</b> ด้วย ${a5Cb(true, '')}พนักงานอัยการ สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5Us(prosecutor, 200)} ได้ขอให้ พนักงาน ป.ป.ท./อนุกรรมการและเลขานุการ ขอศาล${A5_COURT} ${a5Us('', 180)} ขออนุมัติหมายจับ ${a5Us(accused, 230)} เลขประจำตัวประชาชน ${a5Us('', 190)}</p>
+      <p class="a5-indent2">${a5Cb(true, '')}ปรากฏจากรายงานการไต่สวนและวินิจฉัยชี้มูลของ คณะกรรมการ ป.ป.ท. ว่า นาย/นาง/นางสาว ${a5Us(accused, 250)} ผู้ถูกกล่าวหา</p>
+      ${row('อายุ', a5Us('', 90), '<span class="a5-ulabel">ปี เชื้อชาติ</span>', a5Us('', 120), '<span class="a5-ulabel">สัญชาติ</span>', a5Us('', 120), '<span class="a5-ulabel">อาชีพ</span>', a5Us('', 110))}
+      ${row('อยู่บ้านเลขที่', a5Us('', 130), '<span class="a5-ulabel">หมู่ที่</span>', a5Us('', 90), '<span class="a5-ulabel">ถนน</span>', a5Us('', 130))}
+      ${row('ตรอก/ซอย', a5Us('', 130), '<span class="a5-ulabel">ใกล้เคียง</span>', a5Us('', 130), '<span class="a5-ulabel">ตำบล/แขวง</span>', a5Us('', 130))}
+      ${row('อำเภอ/เขต', a5Us('', 140), '<span class="a5-ulabel">จังหวัด</span>', a5Us('', 140), '<span class="a5-ulabel">โทรศัพท์</span>', a5Us('', 130))}
+      <p>ซึ่งมีตำหนิรูปพรรณตามที่แนบมาพร้อมนี้</p>
+      <div class="a5-cbline a5-indent">${a5Cb(true, 'ได้หรือน่าจะได้กระทำความผิดอาญาร้ายแรงซึ่งมีอัตราโทษจำคุกอย่างสูงเกิน ๓ ปี')}</div>
+      <div class="a5-cbline a5-indent">${a5Cb(true, 'ได้หรือน่าจะได้กระทำความผิดอาญา และน่าจะหลบหนีหรือจะไปยุ่งเหยิงกับพยานหลักฐานหรือก่ออันตรายประการอื่น')}</div>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      ${row('เหตุเกิดที่', a5Us(i.prelim?.place || '', 430))}
+      <p>เมื่อวันที่ ${a5Us('', 90)} เดือน ${a5Us('', 130)} พุทธศักราช ${a5Us('', 90)} เวลา ${a5Us('', 90)} น.</p>
+      <p>มีพฤติการณ์กระทำความผิดที่เกี่ยวกับเหตุออกหมายจับ กล่าวคือ</p>
+      <p class="a5-indent2">ตามวันเวลาเกิดเหตุ ชื่อ-สกุล สถานะ ตำแหน่ง อำนาจหน้าที่ผู้ถูกกล่าวหา ${a5F(accused, 280)}</p>
+      <p class="a5-indent2">พิจารณาพยานหลักฐานจากการไต่สวน ทั้งพยานบุคคลและพยานเอกสารรับฟังได้ความว่า เมื่อวันที่ ${a5F(q.summary || '', 330)}</p>
+      <div class="a5-line">${a5F('', 640)}</div>
+      <p class="a5-indent2">การกระทำดังกล่าวข้างต้นของผู้ถูกกล่าวหา เป็นเหตุทำให้ (ความเสียหาย) ${a5F(i.prelim?.issues?.damage || '', 300)}</p>
+      <p class="a5-indent2">ดังนั้น การกระทำของผู้ถูกกล่าวหา จึงเป็นการกระทำทุจริตในภาครัฐอันเป็นความผิดตามประมวลกฎหมายอาญา/กฎหมายอื่น ๆ ${a5F(allegations, 280)}</p>
+      <p class="a5-indent2">คณะอนุกรรมการไต่สวน/คณะพนักงานไต่สวน ได้แจ้งคำสั่งคณะกรรมการ ป.ป.ท. ที่ ${a5F(m.orderNo || '', 170)} ลงวันที่ ${a5F(a5DateShort(m.orderDate), 150)} เรื่องแต่งตั้งคณะอนุกรรมการไต่สวน/คณะพนักงานไต่สวน กรณีเจ้าหน้าที่ของรัฐกระทำทุจริตในภาครัฐ และสิทธิคัดค้านให้ผู้ถูกกล่าวหาทราบแล้วและได้รวบรวมพยานหลักฐานที่เกี่ยวข้องของผู้ถูกกล่าวหาแล้ว และได้แจ้งข้อกล่าวหาแก่ผู้ถูกกล่าวหา โดยวิธีส่งบันทึกแจ้งข้อกล่าวหาทางไปรษณีย์ ตามหนังสือสำนักงาน ป.ป.ท. ลับ ที่ ${a5F('', 140)} ลงวันที่ ${a5F(a5DateShort(q.noticeSentAt), 140)} พร้อมบันทึกการแจ้งข้อกล่าวหา ฉบับลงวันที่ ${a5F(a5DateShort(q.noticeSentAt), 140)} ส่งไปยัง ณ ภูมิลำเนาของผู้ถูกกล่าวหา ตามหลักฐานทางทะเบียนราษฎร ณ บ้านเลขที่ ${a5F('', 170)} ซึ่งผู้ถูกกล่าวหาได้รับทราบข้อกล่าวหาแล้ว ต่อมาได้มีหนังสือชี้แจงแก้ข้อกล่าวหา ฉบับลงวันที่ ${a5F('', 150)}</p>
+      <p class="a5-indent2">ต่อมา คณะกรรมการ ป.ป.ท. ได้มีมติการประชุม ครั้งที่ ${a5F(mc.mtiNo || '', 130)} ลงวันที่ ${a5F(a5DateShort(mc.mtiDate), 140)} ระเบียบวาระที่ ${a5F('', 110)} คณะกรรมการ ป.ป.ท. ได้มีมติวินิจฉัยชี้มูลความผิดทางอาญาและวินัยแก่ ${a5F(accused, 230)} (ชื่อ-สกุล ผู้ถูกกล่าวหา) ดังนี้</p>
+      <p class="a5-indent2">ประเด็นที่ ๑ ผู้ถูกกล่าวหา เป็นความผิดตามประมวลกฎหมายอาญา/กฎหมายอื่น ๆ ${a5F(allegations, 260)} (ให้แยกประเด็นละมาตรา)</p>
+      <p class="a5-indent2">เมื่อวันที่ ${a5F(a5DateShort(o.disciplineSentAt || mc.mtiDate), 150)} คณะกรรมการ ป.ป.ท. ได้ส่งรายงานการไต่สวน พร้อมด้วยเอกสารประกอบเรื่องกล่าวหา เรื่องที่ ${a5F(c.id || '', 140)} ไปยังอธิบดีอัยการ สำนักงานคดีปราบปรามการทุจริต ${a5F(prosecutor, 170)} โดยขอให้พิจารณาคดีอาญาแก่ ${a5F(accused, 210)} (ชื่อ-สกุล ผู้ถูกกล่าวหา) ตามหนังสือสำนักงาน ป.ป.ท. ลับ ที่ ปป ๐๐../${a5F('', 120)} ลงวันที่ ${a5F('', 140)}</p>
+      <p class="a5-indent2">เมื่อวันที่ ${a5F('', 140)} พนักงานอัยการ สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 170)} ได้มีหนังสือแจ้งว่าได้มีคำสั่งฟ้อง ${a5F(accused, 210)} ในความผิดตามประมวลกฎหมายอาญา/กฎหมายอื่น ๆ ${a5F(allegations, 220)} โดยให้ส่งตัวผู้ถูกกล่าวหาไปยังสำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 160)} เพื่อฟ้องต่อศาล${A5_COURT} ${a5F('', 140)} ในวันที่ ${a5F('', 140)} เวลา ${a5F('', 90)} นาฬิกา ตามหนังสือ สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F('', 150)} ที่ ${a5F('', 120)} ลงวันที่ ${a5F('', 140)}</p>
+      <p class="a5-indent2">สำนักงาน ป.ป.ท. มีหนังสือ ลับ ที่ ปป ๐๐../${a5F('', 120)} ลงวันที่ ${a5F('', 140)} ถึงผู้ถูกกล่าวหาแจ้งให้ไปพบพนักงานอัยการที่สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 160)} ในวันที่ ${a5F('', 140)} เวลา ${a5F('', 90)} นาฬิกา โดยได้ส่งหนังสือดังกล่าวไปยังภูมิลำเนาตามทะเบียนราษฎรของผู้ถูกกล่าวหา ณ บ้านเลขที่ ${a5F('', 170)} ด้วยวิธีการส่งไปรษณีย์ด่วนพิเศษในประเทศ (EMS) ซึ่งผู้ถูกกล่าวหาได้รับทราบแล้ว ปรากฏตามไปรษณีย์ตอบรับ ${a5F(state.documentData?.dispatchEms || '', 190)}</p>
+      <p class="a5-indent2">ต่อมาพนักงานอัยการ สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 160)} แจ้งว่า ผู้ถูกกล่าวหาไม่ได้ไปพบพนักงานอัยการเพื่อยื่นฟ้องต่อศาล${A5_COURT} ${a5F('', 140)} ในวันที่ ${a5F('', 140)} เวลา ${a5F('', 90)} นาฬิกา ตามกำหนดนัดข้างต้น และไม่แจ้งเหตุขัดข้องให้ทราบและ</p>
+      ${a5Foot()}${A5_PG}${a5PgNo(3)}
+      <p>ไม่สามารถติดต่อด้วยวิธีอื่นใดได้ กรณีมีพฤติการณ์หลบหนีและเพื่อมิให้เสียหายแก่คดี จึงขอให้พนักงาน ป.ป.ท./อนุกรรมการและเลขานุการคณะอนุกรรมการไต่สวนดำเนินการออกหมายจับ ${a5F(accused, 220)} ต่อศาล${A5_COURT} ${a5F('', 140)} โดยยื่นคำร้องต่อศาลเพื่อขอให้ออกหมายจับ ${a5F(accused, 220)} เนื่องจากผู้ถูกกล่าวหา ได้หรือน่าจะได้กระทำความผิดอาญาตามประมวลกฎหมายอาญา/กฎหมายอื่น ๆ ซึ่งมีอัตราโทษ ${a5F('', 170)} และมีพฤติการณ์หลบหนี จึงมีเหตุที่จะออกหมายจับได้ ตามประมวลกฎหมายวิธีพิจารณาความอาญา มาตรา ๖๖ (๒) ตามหนังสือสำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F('', 150)} ที่ ${a5F('', 120)} ลงวันที่ ${a5F('', 140)}</p>
+      <p class="a5-indent2">เป็นการกระทำความผิดฐาน ${a5F(allegations, 280)} ตามประมวลกฎหมายอาญา/กฎหมายอื่น ๆ มาตรา ${a5F('', 170)} รายละเอียดข้อมูลและพยานหลักฐาน ปรากฏตามเอกสารที่แนบมาพร้อมนี้</p>
+      <p class="a5-indent2">อนึ่ง คดีดังกล่าวเหตุเกิดขึ้นหลังวันที่ ๓๐ เมษายน ๒๕๕๙ โดยผู้ถูกกล่าวหาได้หลบหนีไป เมื่อวันที่ ${a5F('', 180)} ในระหว่างถูกดำเนินคดี จึงมิให้นับระยะเวลาที่ผู้ต้องหาหลบหนีรวมเป็นส่วนหนึ่งของอายุความ ตามมาตรา ๖๑/๑ แห่ง พ.ร.บ. มาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม (ใช้ในกรณีเหตุเกิดขึ้นหลังวันที่ ๓๐ เมษายน ๒๕๕๙)</p>
+      <p class="a5-indent"><b>ข้อ ๒.</b> ผู้ร้องประสงค์จะทำการจับกุม ${a5F(accused, 300)}</p>
+      <p class="a5-indent2">จึงขอให้ศาลออกหมายจับ ${a5F(accused, 280)} มาดำเนินคดี</p>
+      <p class="a5-indent2">ผู้ร้อง ${a5Cb(false, 'เคย')} ${a5Cb(true, 'ไม่เคย')} ร้องขอให้ศาล ${a5F(A5_COURT, 220)} ออกหมายจับบุคคลดังกล่าว โดยอาศัยเหตุแห่งการร้องขอเดียวกันนี้ หรือเหตุอื่น (ระบุ) ${a5F('', 180)}</p>
+      <p class="a5-indent2">และศาลมีคำสั่ง ${a5F(w.note || '', 380)}</p>
+      <p class="a5-center">ควรมิควรแล้วแต่จะโปรด</p>
+      <div class="a5-sign a5-sign-stack">
+        ${a5SignCol(inv, 'พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. ผู้ร้อง', 'ลงชื่อ')}
+        ${a5SignCol(inv, 'พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. ผู้เรียง/พิมพ์', 'ลงชื่อ')}
+      </div>
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๒ บันทึกคำเบิกความ (๑ หน้า) ---- */ ''}
+      <p class="a5-court-title">บันทึกคำเบิกความ</p>
+      <p class="a5-right"><b>ศาล</b> ${a5Us(court, 280)}</p>
+      <p class="a5-right">วันที่ ${a5Us('', 60)} เดือน ${a5Us('', 130)} พุทธศักราช ๒๕${a5Us('', 50)}</p>
+      <p class="a5-center"><b>ความอาญา</b></p>
+      <p class="a5-right">คณะกรรมการ ป.ป.ท. โดย นาย/นาง ${a5Us(inv, 200)} พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. <b>ผู้ร้อง</b></p>
+      <p class="a5-indent2">พยานได้ปฏิญาณหรือสาบานตนแล้วเบิกความต่อศาล มีสาระสำคัญว่า</p>
+      ${row('พยานชื่อ', a5Us(inv, 220), '<span class="a5-ulabel">พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. อายุ</span>', a5Us('', 80), '<span class="a5-ulabel">ปี อาชีพ</span>', a5Us('รับราชการ', 120))}
+      ${row('ตั้งบ้านเรือนอยู่เลขที่', a5Us('', 380))}
+      <p>เกี่ยวพันกับคดีนี้โดยเป็นผู้ร้องและรู้เห็นในคดีนี้คือ</p>
+      <p class="a5-indent2">(เป็นอนุกรรมการและเลขานุการ คณะอนุกรรมการไต่สวน/เป็นพนักงาน ป.ป.ท. เจ้าของสำนวนคดี) โดยเป็นคดีที่คณะกรรมการ ป.ป.ช. ได้มอบหมายให้คณะกรรมการ ป.ป.ท. ดำเนินการแทน ตามมาตรา ๖๒ แห่งพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๖๑ โดยสำนักงาน ป.ป.ช. ได้ส่งเรื่องมายังสำนักงาน ป.ป.ท. เพื่อดำเนินการตามพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม ซึ่งมีพฤติการณ์แห่งคดี คือ ${a5F(q.summary || '', 280)} (ให้นำพฤติการณ์ที่ระบุในคำร้องขอออกหมายจับมาระบุให้ครบถ้วน)</p>
+      <div class="a5-line">${a5F('', 640)}</div>
+      <div class="a5-line">${a5F('', 640)}</div>
+      <p class="a5-indent2">ต่อมาคณะกรรมการ ป.ป.ท. มีมติชี้มูลความผิด และส่งสำนวนไปยังสำนักงานอัยการคดีพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 170)} พนักงานอัยการมีคำสั่งฟ้องคดี และแจ้งให้สำนักงาน ป.ป.ท. แจ้งให้ผู้ถูกกล่าวหาไปพบพนักงานอัยการ แต่ผู้ถูกกล่าวหาไม่ไปพบพนักงานอัยการตามแจ้ง และพฤติการณ์น่าเชื่อว่า ผู้ถูกกล่าวหาได้กระทำความผิดจริงและหลบหนี รายละเอียดข้อมูลพยานหลักฐานปรากฏตามเอกสารที่แนบมาพร้อมนี้</p>
+      <p class="a5-indent2">จึงขอประทานอนุญาตศาล โปรดออกหมายจับผู้ต้องหาตามคำร้อง</p>
+      <div class="a5-sign">${a5SignCol(inv, 'พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. พยานผู้ร้อง', 'ลงชื่อ')}</div>
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๓ รายงานกระบวนการพิจารณา (๒ หน้า) ---- */ ''}
+      <p class="a5-court-title a5-left">รายงาน<br>กระบวนการ<br>พิจารณา</p>
+      <p class="a5-right">คดีหมายเลขดำที่ ${a5Us('', 130)}/ ๒๕${a5Us('', 50)}</p>
+      <p class="a5-right">คดีหมายเลขแดงที่ ${a5Us('', 130)}/ ๒๕${a5Us('', 50)}</p>
+      <p class="a5-right"><b>ศาล</b> ${a5Us(court, 260)}</p>
+      <p class="a5-center">วันที่ ${a5Us('', 60)} เดือน ${a5Us('', 130)} พุทธศักราช ๒๕${a5Us('', 50)}</p>
+      <p class="a5-center"><b>ความอาญา</b></p>
+      <p class="a5-indent">คณะกรรมการ ป.ป.ท. โดย นาย/นาง/นางสาว ${a5Us(inv, 200)} พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. <b>ผู้ร้อง</b></p>
+      <p>ผู้พิพากษาออกนั่งพิจารณาคดีนี้เวลา ${a5Us('', 130)} นาฬิกา</p>
+      <p class="a5-indent2">วันนี้ ${a5Us(inv, 190)} พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. ตำแหน่ง ${a5Us('พนักงาน ป.ป.ท.', 170)}</p>
+      <p class="a5-right">ได้ยื่นคำร้องขอให้ศาลออกหมายจับ</p>
+      <p>สอบพยานผู้ร้องซึ่งเบิกความประกอบพยานหลักฐานที่แนบมาพร้อมคำร้อง ${a5Us('', 120)} ปาก จำนวน ${a5Us('', 120)}</p>
+      <p class="a5-indent2">คดีเสร็จสิ้นการไต่สวน ให้รอฟังคำสั่ง</p>
+      <p class="a5-right">/อ่านแล้ว</p>
+      <div class="a5-sign a5-sign-stack">
+        ${a5SignCol('', 'ผู้พิพากษา บันทึก/อ่าน', '')}
+        ${a5SignCol(inv, 'พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท. ผู้ร้อง', '')}
+      </div>
+      <p class="a5-center a5-order-h"><b>คำสั่ง</b></p>
+      <p class="a5-indent2">พิเคราะห์พยานหลักฐานของผู้ร้องแล้วเห็นว่า ${a5F(w.note || '', 320)}</p>
+      <div class="a5-line">${a5F('', 640)}</div>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <p class="a5-indent2">กรณีมีพยานหลักฐานตามควรว่า ชื่อ-สกุล ผู้ถูกกล่าวหา ${a5F(accused, 280)}</p>
+      <div class="a5-cbline a5-indent">${a5Cb(true, 'ได้หรือน่าจะได้กระทำความผิดอาญาร้ายแรงซึ่งมีอัตราโทษจำคุกอย่างสูงเกิน ๓ ปี')}</div>
+      <div class="a5-cbline a5-indent">${a5Cb(false, 'ได้หรือน่าจะได้กระทำความผิดอาญา และน่าจะหลบหนีหรือจะไปยุ่งเหยิงกับพยานหลักฐานหรือก่ออันตรายประการอื่น')}</div>
+      <p>จึงอนุญาตให้ออกหมายจับ ${a5F(accused, 280)} ตามขอ</p>
+      <p>และเมื่อจัดการตามหมายจับได้แล้ว ให้ส่งบันทึกการจับกุมต่อศาลภายใน ${a5F('', 110)} วัน</p>
+      <p class="a5-indent2">ให้ถ่ายสำเนา ${a5F('', 380)}</p>
+      <p>เพื่อเก็บไว้กับคำร้องและสำเนาหมาย</p>
+      <p class="a5-indent2">ได้อ่านคำสั่งให้ผู้ร้องฟังโดยชอบแล้ว</p>
+      <p class="a5-right">/อ่านแล้ว</p>
+      <div class="a5-sign">${a5SignCol('', 'ผู้พิพากษา', '')}</div>
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๔ หมายจับ (เหตุเกิดก่อน ๓๐ เม.ย. ๕๙ — อายุความไม่สะดุดหยุดลง) ---- */ ''}
+      ${warrantBody(false)}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๕ หมายจับ (เหตุเกิด ๓๐ เม.ย. ๕๙ เป็นต้นไป — อายุความสะดุดหยุดลง) ---- */ ''}
+      ${warrantBody(true)}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๖ ตำหนิรูปพรรณผู้กระทำความผิด (๒ หน้า) ---- */ ''}
+      <div class="a5-photo-box">ภาพถ่าย<br>ผู้ถูกกล่าวหา<br>จาก ทร.14</div>
+      <div class="a5-court-crest"><img class="a5-garuda" src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="46" height="50"></div>
+      <p class="a5-center"><b>สำนักงาน ป.ป.ท.</b></p>
+      <p class="a5-center a5-trait-title"><b>ตำหนิรูปพรรณผู้กระทำความผิด</b></p>
+      <p class="a5-hint">(เติมข้อความในช่องว่าง และกาเครื่องหมาย ✓ ใน ☐ หน้าข้อความที่ต้องการได้มากกว่าหนึ่งรายการ)</p>
+      ${row('ส่วนราชการ กลุ่ม/กอง/สำนัก', a5Us(intake.unit || '', 280), '<span class="a5-ulabel">สำนักงาน ป.ป.ท.</span>')}
+      ${row('หมายจับที่', a5Us(w.warrantNo || '', 200), '<span class="a5-ulabel">คดี ป.ป.ท. ที่</span>', a5Us(c.id || '', 190))}
+      ${row('วันเดือนปีที่ส่งรายงาน', a5Us(a5DateShort(today), 380))}
+      ${row('ความผิดฐาน', a5Us(allegations, 430))}
+      ${row('วันเดือนปี เวลา และสถานที่เกิดเหตุ', a5Us(i.prelim?.place || '', 330))}
+      ${row('วันขาดอายุความหรือกำหนดล่วงเลยในการลงอาญา', a5Us(a5DateShort(i.prelim?.limitation?.longExpiry) || '', 240))}
+      ${row('ชื่อนามสกุล (ภาษาไทย)', a5Us(accused, 250), `<span class="a5-ulabel">เพศ</span>${a5Cb(false, 'ชาย')}${a5Cb(false, 'หญิง')}`)}
+      ${row('ชื่อนามสกุล (ภาษาอังกฤษตามหนังสือเดินทาง)', a5Us('', 300))}
+      <p class="a5-hint">เลขบัตรประจำตัวประชาชน / บัตรประจำตัวเจ้าหน้าที่ของรัฐ – พนักงานองค์การของรัฐ / ใบสำคัญประจำตัวคนต่างด้าว / หนังสือเดินทาง</p>
+      ${row('เลขประจำตัว', a5Us('', 430))}
+      ${row('ชื่ออื่น', a5Us('', 230), '<span class="a5-ulabel">ชื่อสกุลอื่น</span>', a5Us('', 230))}
+      ${row('วันเดือนปีเกิด', a5Us('', 190), '<span class="a5-ulabel">เชื้อชาติ</span>', a5Us('', 150), '<span class="a5-ulabel">สัญชาติ</span>', a5Us('', 150))}
+      ${row('ประวัติ คดี', a5Us(c.id || '', 430))}
+      ${row('ชื่อนามสกุลบิดา', a5Us('', 230), '<span class="a5-ulabel">ที่พัก</span>', a5Us('', 230))}
+      ${row('ชื่อนามสกุลมารดา', a5Us('', 230), '<span class="a5-ulabel">ที่พัก</span>', a5Us('', 230))}
+      ${row('ชื่อนามสกุลสามี/ภรรยา', a5Us('', 220), '<span class="a5-ulabel">ที่พัก</span>', a5Us('', 220))}
+      ${row('ญาติ / เพื่อนสนิท', a5Us('', 230), '<span class="a5-ulabel">ที่พัก</span>', a5Us('', 230))}
+      ${row('อาชีพ อดีต', a5Us('', 430))}
+      ${row('สถานที่ทำงาน', a5Us(c.agency || '', 430))}
+      ${row('ที่อยู่ครั้งสุดท้าย', a5Us('', 430))}
+      ${row('ภูมิลำเนาเดิม', a5Us('', 430))}
+      ${row('แหล่งที่ไปเป็นประจำ', a5Us('', 430))}
+      ${row('กลุ่มหรือแกงค์ที่มั่วสุม', a5Us('', 430))}
+      ${row('รายชื่อบุคคลในกลุ่ม', a5Us('', 430))}
+      ${row('ตำหนิรูปพรรณ สูง', a5Us('', 110), '<span class="a5-ulabel">ซม. น้ำหนัก</span>', a5Us('', 110), '<span class="a5-ulabel">กก. หมู่โลหิต</span>', a5Us('', 110))}
+      <table class="a5-tbl a5-trait-tbl"><tbody>
+        ${traits('รูปร่าง', 'สูง', 'สันทัด', 'เตี้ย', 'ล่ำสัน', 'อ้วน', 'ผอม', 'อื่น ๆ')}
+        ${traits('ผิว', 'ขาว', 'ขาวเหลือง', 'ดำ', 'ดำแดง', 'ตกกระ', 'ละเอียด', 'หยาบ', 'อื่น ๆ')}
+        ${traits('รูปหน้า', 'กลม', 'รูปไข่', 'สามเหลี่ยม', 'สี่เหลี่ยม', 'แหลมหลิม', 'อื่น ๆ')}
+        ${traits('ผม', 'เป๋', 'แสกกลาง', 'เสย', 'เส้นผมตรง', 'เป็นคลื่น', 'หยิก', 'ผมฟู', 'หนา', 'บาง', 'ดำ', 'ขาว', 'หงอก', 'หงอกประปราย', 'แดง', 'ทอง', 'อื่น ๆ')}
+      </tbody></table>
+      ${a5Foot()}${A5_PG}${a5PgNo(2)}
+      <table class="a5-tbl a5-trait-tbl"><tbody>
+        ${traits('ศีรษะ', 'ล้านเถิก', 'ล้านเลี่ยน', 'ล้านครึ่งศีรษะ', 'ล้านง่ามถ่อ', 'อื่น ๆ')}
+        ${traits('หน้าผาก', 'กว้าง', 'แคบ', 'โหนก', 'ตรง', 'ลาด', 'สั้น', 'อื่น ๆ')}
+        ${traits('คิ้ว', 'หนา', 'บาง', 'ต่อ', 'ห่าง', 'สั้น', 'ชู', 'ดำ', 'ขาว', 'แดง', 'หงอกประปราย', 'อื่น ๆ')}
+        ${traits('ตา', 'โต', 'เล็ก', 'ชั้นเดียว', 'สองชั้น', 'โปน', 'ลึก', 'ปรือ', 'หยี', 'เหล่', 'เข', 'เอก', 'ถั่ว', 'อื่น ๆ')}
+        ${traits('หู', 'กาง', 'ลีบ', 'กลม', 'สามเหลี่ยม', 'สี่เหลี่ยม', 'กะหล่ำปลี', 'ติ่งหูเหลี่ยม', 'ติ่งหูราบ', 'ติ่งหูย้อย', 'อื่น ๆ')}
+        ${traits('จมูก', 'ดั้งจมูกราบ', 'ดั้งจมูกโด่ง', 'ดั้งจมูกลึก', 'สันจมูกตรง', 'สันจมูกโค้ง', 'สันจมูกเหลี่ยม', 'สันจมูกสั้น', 'จมูกกว้าง', 'จมูกแคบ', 'จมูกเชิด', 'จมูกงุ้ม', 'อื่น ๆ')}
+        ${traits('ปาก', 'หนา', 'บาง', 'กว้าง', 'แคบ', 'รูปกระจับ', 'บนยื่น', 'ล่างยื่น', 'ไม่มีร่องปาก', 'อื่น ๆ')}
+        ${traits('ฟัน', 'ใหญ่', 'เล็ก', 'เรียบ', 'เก', 'ห่าง', 'ยื่น', 'หลอ', 'ขาว', 'เหลือง', 'ดำ', 'เลี่ยม', 'อื่น ๆ')}
+        ${traits('คาง', 'ตรง', 'สั้น', 'ยื่น', 'ป้าน', 'บุ๋ม', 'เหลี่ยม', 'อื่น ๆ')}
+        ${traits('หนวดและเครา', 'หนา', 'บาง', 'เล็กเรียว', 'ยาว', 'สั้น', 'ปลายงอน', 'สีดำ', 'แดง', 'หงอกขาว', 'หงอกประปราย', 'อื่น ๆ')}
+        ${traits('สำเนียง', 'ภาคกลาง', 'ภาคเหนือ', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคตะวันออก', 'ภาคตะวันตก', 'ภาคใต้', 'จีน', 'อื่น ๆ')}
+        ${traits('เสียง', 'ดัง', 'ค่อย', 'แหบ', 'แหลม', 'ทุ้ม', 'อื่น ๆ')}
+        ${traits('ตำหนิ', 'ไฝ', 'ปาน', 'แผลเป็น', 'อื่น ๆ')}
+      </tbody></table>
+      ${row('สี ขนาด ตำแหน่ง', a5Us('', 430))}
+      ${row('ลายสัก', a5Us('', 450))}
+      ${row('รูป สี ตำแหน่ง', a5Us('', 440))}
+      ${row('ลักษณะพิการ', a5Us('', 450))}
+      ${row('ลักษณะอันน่าสังเกต', a5Us('', 440))}
+      <div class="a5-sign a5-sign-center">${a5SignCol(inv, 'พนักงาน ป.ป.ท./เจ้าหน้าที่ ป.ป.ท.', '(ลงชื่อ)', 'ตำแหน่ง')}</div>
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๗ หนังสือแจ้งผลการดำเนินการ กรณีออกหมายจับแล้ว ---- */ ''}
+      ${a5LetterHdr('ตัวอย่างหนังสือแจ้งผลดำเนินการ กรณีออกหมายจับแล้ว', c.id, today)}
+      <div class="a5-line"><b>เรื่อง</b> แจ้งผลการดำเนินการเพื่อให้ได้ตัวผู้ถูกกล่าวหา</div>
+      <div class="a5-line"><b>เรียน</b> อัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 260)}</div>
+      <div class="a5-line"><b>อ้างถึง</b> หนังสือสำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F('', 230)}</div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> ๑. สำเนาหมายจับศาล${A5_COURT} ${a5F('', 190)}</div>
+      <div class="a5-line a5-indent3">ที่ ${a5F(w.warrantNo || '', 150)} ลงวันที่ ${a5F('', 150)} จำนวน ${a5F('', 80)} แผ่น</div>
+      <div class="a5-line a5-indent3">๒. สำเนาตำหนิรูปพรรณผู้ถูกกล่าวหา จำนวน ${a5F('', 90)} แผ่น</div>
+      <div class="a5-line a5-indent3">๓. สำเนารายการข้อมูลทะเบียนราษฎรของผู้ถูกกล่าวหา จำนวน ${a5F('', 90)} แผ่น</div>
+      <p class="a5-indent2">ตามหนังสือที่อ้างถึง สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 170)} แจ้งว่า ${a5F(accused, 200)} (ชื่อ-สกุล ผู้ถูกกล่าวหา) มิได้ไปพบพนักงานอัยการตามกำหนดนัด โดยไม่ได้แจ้งเหตุผลให้ทราบ จึงไม่อาจยื่นฟ้องได้ และเห็นว่าผู้ถูกกล่าวหามีพฤติการณ์หลบหนี จึงขอให้สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.) ดำเนินการขอออกหมายจับผู้ถูกกล่าวหาดังกล่าวต่อศาลอาญาทุจริตและประพฤติมิชอบ ${a5F('', 150)} ความละเอียดแจ้งแล้ว นั้น</p>
+      <p class="a5-indent2">สำนักงาน ป.ป.ท. ขอเรียนว่า ศาล${A5_COURT} ${a5F('', 150)} ได้ออกหมายจับ ${a5F(accused, 200)} (ชื่อ-สกุล ผู้ถูกกล่าวหา) ตามหมายจับที่ ${a5F(w.warrantNo || '', 160)} ลงวันที่ ${a5F('', 150)} เป็นที่เรียบร้อยแล้ว รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย และจะได้เร่งรัดติดตามจับและควบคุมตัวผู้ถูกกล่าวหา เพื่อนำตัวส่งไปยังพนักงานอัยการเพื่อดำเนินคดีต่อไป ทั้งนี้หากผู้ถูกกล่าวหาไปพบพนักงานอัยการภายหลังศาลออกหมายจับขอโปรดแจ้งให้ทราบด้วย เพื่อจักได้ดำเนินการในส่วนที่เกี่ยวข้อง</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดทราบ</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', SEC_GEN, 'ขอแสดงความนับถือ', 'หรือผู้ที่ได้รับมอบหมาย')}</div>
+      ${a5LetterFoot(intake.unit, inv)}
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๘ หนังสือแจ้งผู้บัญชาการตำรวจแห่งชาติ ---- */ ''}
+      ${a5LetterHdr('ตัวอย่างหนังสือแจ้งผู้บัญชาการตำรวจแห่งชาติให้ดำเนินการจับกุมผู้ถูกกล่าวหาตามหมายศาล', c.id, today)}
+      <div class="a5-line"><b>เรื่อง</b> ขอให้ดำเนินการจับกุมผู้ถูกกล่าวหาตามหมายจับ</div>
+      <div class="a5-line"><b>เรียน</b> ผู้บัญชาการตำรวจแห่งชาติ</div>
+      <div class="a5-line"><b>สิ่งที่ส่งมาด้วย</b> สำเนาหมายจับและตำหนิรูปพรรณผู้กระทำผิด จำนวน ${a5F('', 90)} แผ่น</div>
+      <p class="a5-indent2">ด้วยศาล${A5_COURT} ${a5F('', 150)} ได้ออกหมายจับ ${a5F(accused, 210)} (ชื่อ-สกุล ผู้ถูกกล่าวหา) บัตรประจำตัวประชาชนเลขที่ ${a5F('', 180)} ตามหมายจับที่ ${a5F(w.warrantNo || '', 140)} ลงวันที่ ${a5F('', 150)} ซึ่งต้องหาว่ากระทำความผิดฐาน ${a5F(allegations, 200)} โดยในการดำเนินการจับกุมนั้น คณะกรรมการ ป.ป.ท. ได้มีมติมอบหมายให้เจ้าพนักงานตำรวจดำเนินการจับกุมผู้ถูกกล่าวหาตามหมายจับดังกล่าว เพื่อดำเนินการให้เป็นไปตามพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. ๒๕๕๑ และที่แก้ไขเพิ่มเติม รายละเอียดปรากฏตามสิ่งที่ส่งมาด้วย</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณาดำเนินการสืบจับตามหน้าที่และอำนาจต่อไป ผลเป็นประการใดโปรดแจ้งให้ทราบด้วย จักขอบคุณมาก</p>
+      <div class="a5-sign a5-sign-center">${a5SignCol('', SEC_GEN, 'ขอแสดงความนับถือ', 'ผู้ที่ได้รับมอบหมาย')}</div>
+      ${a5LetterFoot(intake.unit, inv)}
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๑๙ บันทึกข้อความส่งหมายจับให้ กอท. ---- */ ''}
+      ${a5MemoHdr()}
+      ${a5MemoMeta(intake.unit, c.id, today)}
+      <div class="a5-line a5-memo-row"><b>เรื่อง</b> ขอส่งสำเนาหมายจับผู้ถูกกล่าวหา ${a5F(accused, 400)}</div>
+      <div class="a5-line"><b>เรียน</b> ผอ. กอท.</div>
+      <p class="a5-indent2">ด้วยคณะกรรมการ ป.ป.ท. ได้ชี้มูลความผิดคดีเรื่องที่ ${a5F(c.id || '', 190)} และเรื่องที่ ${a5F('', 190)} กรณีกล่าวหา ${a5F(accused, 230)} ว่ากระทำทุจริตในภาครัฐ และสำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต ${a5F(prosecutor, 150)} มีความเห็นสั่งฟ้องคดีต่อศาล แต่เนื่องจากผู้ถูกกล่าวหาไม่ไปพบพนักงานอัยการตามกำหนดนัด และแจ้งให้สำนักงาน ป.ป.ท. เป็นผู้ดำเนินการร้องขอต่อศาลให้ออกหมายจับ</p>
+      <p class="a5-indent2">บัดนี้ ผู้รับผิดชอบ ได้ยื่นคำร้องขอหมายจับผู้ถูกกล่าวหาดังกล่าว และศาล${A5_COURT} ${a5F('', 140)} ได้อนุมัติหมายจับที่ ${a5F(w.warrantNo || '', 120)}/${a5F('', 80)} ลงวันที่ ${a5F('', 160)} จึงขอส่งสำเนาหมายจับและสำเนาเอกสารหลักฐานที่เกี่ยวข้อง พร้อมรับรองสำเนาถูกต้อง ดังนี้</p>
+      <p class="a5-indent2">๑. สำเนาหมายจับศาล${A5_COURT} ${a5F('', 140)} ที่ ${a5F(w.warrantNo || '', 110)}/${a5F('', 80)} ลงวันที่ ${a5F('', 150)}</p>
+      <p class="a5-indent2">๒. สำเนาตำหนิรูปพรรณผู้ถูกกล่าวหา</p>
+      <p class="a5-indent2">๓. สำเนารายการข้อมูลทะเบียนราษฎรของผู้ถูกกล่าวหา</p>
+      <p class="a5-indent2">๔. สำเนาหนังสือแจ้งสำนักงานตำรวจแห่งชาติ</p>
+      <p>มายังท่าน เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป รายละเอียดปรากฏตามเอกสารที่แนบมาพร้อมนี้</p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อพิจารณา</p>
+      <div class="a5-sign">${a5SignCol('', 'ผอ. กอท.', '')}</div>
+      ${a5Foot()}
+
+      ${A5_PG}
+      ${/* ---- แบบ ปปท. ๒๐ ผนึกซองขอหมายจับ (หน้าซอง) ---- */ ''}
+      <div class="a5-envelope">
+        <p><b>เรื่อง</b> ขอหมายจับ</p>
+        <p><b>เรียน</b> อธิบดีผู้พิพากษาศาล${A5_COURT} ${a5F('', 150)}</p>
+        <p class="a5-env-gap">สำนัก/กอง ${a5F(intake.unit || '', 200)}</p>
+        <p>สำนักงาน ป.ป.ท.</p>
+        <p>คดีอาญา เลขดำ ป.ป.ท. ที่ ${a5F(c.id || '', 150)}/${a5F('', 90)}</p>
+        <p>ข้อหา “ฐาน ${a5F(allegations, 480)}</p>
+        <div class="a5-line">${a5F('', 560)}</div>
+        <p>${a5F('', 300)}”</p>
+        <p>จำนวน ๑ หมาย</p>
+        <p>อายุความ ${a5F(i.prelim?.limitation?.longYears || '', 80)} ปี (วันขาดอายุความ วันที่ ${a5F(a5DateShort(i.prelim?.limitation?.longExpiry) || '', 190)})</p>
+        <p class="a5-env-gap">นาย/นาง/นางสาว ${a5F(inv, 280)} ผู้ร้อง</p>
+        <p>โทร. ${a5F('', 220)}</p>
+      </div>
+      <p class="a5-form-code">${escapeHtml(`${A5_FORMS.p11.code} – ${A5_FORMS.p20.code}`)}</p>
+    </section>`;
+  }
+
+  /* ===== แบบตรวจสอบข้อเท็จจริง ม.๕๘/๒ – ๕๘/๓ (คงโครงสร้างเดิม ปรับหัวกระดาษ/ช่องกรอกให้ตรงแนวแบบพิมพ์) ===== */
   function paperSpecial58(state) {
-    const s = state.inquiry?.special || {};
-    return paperShell({ formCode: '58/2-58/3', headerHtml: `<header class="a5-crest-head"><img src="${A5_GARUDA_IMG}" alt="ตราครุฑ" width="56" height="56"></header><h2 class="a5-memo-title">บันทึกการตรวจสอบข้อเท็จจริง</h2>`, bodyHtml: `<div class="a5-section"><p><strong>เรื่อง</strong> ${escapeHtml(state.caseData?.subject || '')}</p><p><strong>ผู้ตรวจสอบ</strong> ${a5Fill(s.assignee)} <strong>หน่วยงานที่แจ้ง</strong> ${a5Fill(s.agency)} <strong>วันที่</strong> ${a5DateFill(s.reportedAt)}</p><p><strong>ผลการตรวจสอบ</strong> ${a5Block(s.result)}</p>${s.type === '582' ? `<p><strong>การแจ้งหน่วยงานแก้ไข</strong> ${a5Block('')}</p><p><strong>การประกาศสาธารณะ</strong> ${s.publicNotice ? `<span class="a5-fill">ประกาศแล้ว (${escapeHtml(s.publicNotice)})</span>` : a5Block('', 'ยังไม่ได้ประกาศสาธารณะ')}</p>` : ''}</div>` });
+    const c = state.caseData || {}, s = state.inquiry?.special || {};
+    return `<section class="a5-paper">
+      ${a5MemoHdr()}
+      ${a5MemoMeta(s.agency || '', c.id, s.reportedAt || todayISO())}
+      <div class="a5-line a5-memo-row"><b>เรื่อง</b> รายงานผลการตรวจสอบข้อเท็จจริง (มาตรา ๕๘/๒ – ๕๘/๓) เรื่องที่ ${a5F(c.id || '', 160)}</div>
+      <div class="a5-line"><b>เรียน</b> เลขาธิการคณะกรรมการ ป.ป.ท.</div>
+      <div class="a5-line"><b>เรื่องที่ร้องเรียน</b> ${a5F(state.documentData?.documentSubject || c.subject || '', 440)}</div>
+      <div class="a5-line"><b>ผู้ตรวจสอบ</b> ${a5F(s.assignee || '', 220)} <b>หน่วยงานที่แจ้ง</b> ${a5F(s.agency || '', 220)}</div>
+      <p class="a5-num-h a5-indent"><b>๑. ผลการตรวจสอบข้อเท็จจริง</b></p>
+      <div class="a5-line a5-indent2">${a5F(s.result || '', 600)}</div>
+      <div class="a5-line a5-indent2">${a5F('', 600)}</div>
+      <p class="a5-num-h a5-indent"><b>๒. การแจ้งหน่วยงานแก้ไขและประกาศสาธารณะ</b></p>
+      <p class="a5-indent2">หน่วยงานที่เกี่ยวข้องรับไปดำเนินการแก้ไขตามข้อเสนอแนะ ${a5F(s.note || '', 320)}</p>
+      <div class="a5-cbline a5-indent2">${a5Cb(Boolean(s.publicNotice), 'ประกาศให้ประชาชนทราบแล้ว')} ${a5F(typeof s.publicNotice === 'string' ? s.publicNotice : '', 260)}</div>
+      <p class="a5-num-h a5-indent"><b>๓. ข้อเสนอ</b></p>
+      <p class="a5-indent2">จึงเรียนมาเพื่อโปรดพิจารณา</p>
+      <div class="a5-sign">${a5SignCol(s.assignee || '', 'ผู้ตรวจสอบข้อเท็จจริง')}</div>
+      <p class="a5-form-code">๕๘/๒-๕๘/๓</p>
+    </section>`;
   }
 
   /* ---------- รายการสำนวน ---------- */
@@ -1538,9 +2000,18 @@
         document.__a5WordBound = '1';
         const toggleEditMode = () => {
           const stage = $('#a5PaperStage');
-          const on = !stage?.classList.contains('doc-edit-mode');
-          $$('#a5PaperStage [data-slot]').forEach(s => on ? s.setAttribute('contenteditable', 'true') : s.removeAttribute('contenteditable'));
-          stage?.classList.toggle('doc-edit-mode', on);
+          if (!stage) return;
+          const on = !stage.classList.contains('doc-edit-mode');
+          const tab = $('.ws-doc-tab.active')?.dataset?.a5Doc || 'paper';
+          const fills = $$('#a5PaperStage .a5-fill');
+          $$('#a5PaperStage .a5-paper:not(.a5r-paper), #a5PaperStage [data-slot], #a5PaperStage .a5-fill').forEach(el => {
+            if (on) {
+              if (el.classList.contains('a5-fill') && !el.dataset.htmlslot) el.dataset.htmlslot = 'html-' + tab + '-' + fills.indexOf(el);
+              el.setAttribute('contenteditable', 'true');
+            } else el.removeAttribute('contenteditable');
+          });
+          $$('#a5PaperStage .a5-lock').forEach(el => on ? el.setAttribute('contenteditable', 'false') : el.removeAttribute('contenteditable'));
+          stage.classList.toggle('doc-edit-mode', on);
           $('#a5DocEditFab')?.classList.toggle('active', on);
           $('#a5DocEditBar')?.classList.toggle('show', on);
         };
@@ -1554,7 +2025,7 @@
           if (fmt && e.target.value) document.execCommand(fmt.dataset.format, false, e.target.value);
         });
         document.addEventListener('mousedown', e => {
-          if (e.target.closest('.doc-edit-bar, .doc-edit-fab') && !e.target.closest('select, input, label')) e.preventDefault();
+          if (e.target.closest('.doc-edit-bar') && !e.target.closest('select, input, label')) e.preventDefault();
         }, true);
         window.addEventListener('resize', () => fitA5Paper());
       }
@@ -1643,7 +2114,6 @@
       el.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved = false; } });
     };
     makeDraggable(docBar, 'ecmis-a5-docbar-pos');
-    makeDraggable(docFab, 'ecmis-a5-docfab-pos');
     $$('#a5App [data-a5-doc]').forEach(b => b.onclick = () => {
       $$('#a5App [data-a5-doc]').forEach(x => { const on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
       $('#a5PaperStage').innerHTML = paperForTab(captureDetail(state, role), b.dataset.a5Doc);

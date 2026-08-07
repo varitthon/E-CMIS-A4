@@ -711,7 +711,7 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 
 /* ===== เอกสาร Workspace — ปกฟ้า 1-01 / ปกลับ / PCMS ===== */
 .template-cover{display:flex;flex-direction:column}
-.official-blue-cover{padding:58px 64px 62px}
+.official-blue-cover{padding:58px 64px 62px;background:#cfe3f7;min-height:100%}
 .official-blue-cover .official-page-label{top:34px;right:48px}
 .official-blue-cover .cover-reference{position:absolute;top:34px;left:48px;margin:0;font-size:11px;line-height:1.45}
 .official-blue-cover .cover-head{display:flex;flex-direction:column;align-items:center;gap:10px;margin:54px 0 24px;padding:0;text-align:center}
@@ -926,7 +926,7 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 }
 
 /* ---------- Activity 5 — authentic official-form rendering (ปปท. 213 / 644) ---------- */
-.a5-paper{position:relative;width:min(100%,794px);min-height:1123px;margin:0 auto;padding:58px 58px 64px;background:#fff;color:#111;box-shadow:0 10px 30px rgba(15,33,50,.16);font-family:'Sarabun','Prompt',sans-serif;font-size:13px;line-height:1.6}
+.a5-paper{position:relative;box-sizing:border-box;width:min(100%,794px);min-height:1123px;margin:0 auto;padding:58px 58px 64px;background:#fff;color:#111;box-shadow:0 10px 30px rgba(15,33,50,.16);font-family:'Sarabun','Prompt',sans-serif;font-size:13px;line-height:1.6}
 /* ===== ฟอร์มราชการ A5 (HTML ล้วน — Word Engine แก้ไขได้ทุกช่อง) ===== */
 .a5-hdr{text-align:center;margin-bottom:.9rem}
 .a5-hdr-org{font-size:14px;font-weight:700;margin:0}
@@ -936,10 +936,11 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 .a5-line{display:flex;align-items:baseline;gap:.35rem;margin:.3rem 0;flex-wrap:wrap}
 .a5-line b{font-weight:600;flex:none}
 .a5-line .a5-grow{flex:1 1 auto}
-.a5-tbl{width:100%;border-collapse:collapse;margin:.55rem 0;font-size:12.5px}
-.a5-tbl th,.a5-tbl td{border:1px solid #555;padding:5px 8px;vertical-align:top;text-align:left;line-height:1.5}
-.a5-tbl th{background:#f1f4f7;font-weight:700;text-align:center}
+.a5-tbl{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;margin:.55rem 0;font-size:12.5px}
+.a5-tbl th,.a5-tbl td{border:1px solid #555;padding:5px 8px;vertical-align:top;text-align:left;line-height:1.5;overflow-wrap:anywhere;word-break:break-all}
+.a5-tbl th{background:transparent;font-weight:700;text-align:center}
 .a5-tbl .a5-thin{width:14%}
+.a5-tbl .a5-fill{min-width:0!important;max-width:100%;width:auto;box-sizing:border-box}
 .a5-num{font-weight:600}
 .a5-indent{margin-left:2.1rem}
 .a5-indent2{margin-left:3.4rem}
@@ -973,7 +974,8 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 .a5-sub>b{margin-right:.35rem}
 .a5-sub>p,.a5-fill-block{display:inline}
 .a5-note{padding:.5rem .65rem;margin:.35rem 0;border-left:3px solid #999;background:#f7f7f7;font-size:11.5px;color:#555}
-.a5-fill{display:inline-block;min-width:6rem;border-bottom:1px dotted #333;padding:0 .15rem}
+.a5-line .a5-fill{flex:1 1 auto;min-width:0!important;max-width:100%}
+.a5-fill{display:inline-block;min-width:6rem;border-bottom:1px dotted #333;padding:0 .15rem;max-width:100%}
 .a5-fill.a5-blank{color:#9aa2ab;font-style:italic}
 .a5-fill-block{color:#9aa2ab;font-style:italic;border-bottom:1px dotted #333;padding:0 .15rem}
 .a5-checklist{display:grid;gap:.3rem;margin:.45rem 0}
@@ -1000,7 +1002,7 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 .ws-paper-stage.doc-edit-mode{cursor:text}
 @media(max-width:900px){.a5r-page{width:100%}}
 .a5-plan-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.9rem;border-bottom:2px solid #0b3559;padding-bottom:.5rem}.a5-plan-head h3{margin:0;color:#0b3559;font-size:1.05rem}.a5-plan-head p{margin:0;font-size:11.5px}.a5-plan-tag{display:inline-block;margin-top:.3rem;font-weight:600;white-space:nowrap}
-.a5-plan-table{width:100%;border-collapse:collapse;font-size:11.5px;margin:.35rem 0}.a5-plan-table th,.a5-plan-table td{border:1px solid #9aa7b3;padding:.4rem .5rem;vertical-align:top;text-align:left}.a5-plan-table th{background:#eef3f7;color:#123f62;font-weight:700}.a5-plan-table-wrap{overflow-x:auto}.a5-plan-issue{min-width:120px}.a5-plan-issue-val{margin:.25rem 0 0;font-size:11px;color:#0b4369}
+.a5-plan-table{width:100%;border-collapse:collapse;font-size:11.5px;margin:.35rem 0}.a5-plan-table th,.a5-plan-table td{border:1px solid #9aa7b3;padding:.4rem .5rem;vertical-align:top;text-align:left}.a5-plan-table th{background:transparent;color:#123f62;font-weight:700}.a5-plan-table-wrap{overflow-x:auto}.a5-plan-issue{min-width:120px}.a5-plan-issue-val{margin:.25rem 0 0;font-size:11px;color:#0b4369}
 .a5-letter-ref{text-align:left;font-size:12px;margin-bottom:.2rem}.a5-letter-addr{text-align:right;font-size:11.5px;line-height:1.45;margin:.1rem 0}.a5-letter-date{text-align:right;font-size:11.5px;margin:.25rem 0}.a5-letter-topic{margin:.5rem 0 .2rem;font-size:12px}.a5-letter-to{margin:.15rem 0 .7rem;font-size:12px}
 .a5-record-title{text-align:center;font-weight:800;font-size:1rem;margin:.4rem 0 .8rem}
 .a5-warrant{text-align:center}.a5-warrant-royal{font-size:1.15rem;font-weight:700;margin:.2rem 0 .4rem}
@@ -1032,12 +1034,6 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 .doc-edit-fab.active{background:linear-gradient(135deg,#0b3a6f,#123f7a);color:#fff;border-color:#0b3a6f}
 .doc-edit-fab-icon{font-size:1rem;line-height:1}
 .doc-edit-fab:active{transform:scale(.97)}
-/* ปุ่มแก้ไขเอกสาร A5 — สี่เหลี่ยมมน ขนาด px คงที่ ไม่เป็นวงกลม ไม่พองตาม font-scale */
-#a5DocEditFab{position:absolute;right:1.1rem;bottom:1.1rem;z-index:30;display:inline-flex;align-items:center;gap:.4rem;padding:8px 12px;border:1px solid #c9d6e8;border-radius:10px;background:#fff;color:#0b3a6f;font-size:13px;font-weight:600;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(11,58,111,.16);transition:border-color .15s,box-shadow .15s,background .15s}
-#a5DocEditFab:hover{border-color:#0b3a6f;box-shadow:0 4px 12px rgba(11,58,111,.22)}
-#a5DocEditFab .doc-edit-fab-icon{font-size:14px;line-height:1}
-#a5DocEditFab.active{background:#eef4fb;border-color:#0b3a6f;box-shadow:inset 0 0 0 1px #0b3a6f,0 3px 10px rgba(11,58,111,.2)}
-#a5DocEditFab:active{transform:none}
 .doc-edit-bar{position:absolute;top:.7rem;left:50%;transform:translateX(-50%);z-index:30;display:none;align-items:center;gap:.2rem;padding:.32rem .55rem;border:1px solid #c9d6e8;border-radius:10px;background:rgba(255,255,255,.97);box-shadow:0 3px 14px rgba(11,58,111,.16);flex-wrap:wrap}
 .doc-edit-bar.show{display:inline-flex}
 .doc-edit-bar button{width:30px;height:28px;border:0;border-radius:6px;background:transparent;color:#0b3a6f;font-size:.9rem;cursor:pointer}
@@ -1053,3 +1049,92 @@ h1,h2,h3,h4,h5,h6{font-weight:700}
 .doc-edit-bar button:hover{background:#e8eff7}
 .doc-edit-bar-sep{width:1px;height:18px;background:#d5dde4;margin:0 .3rem}
 .doc-edit-bar-tip{font-size:.72rem;color:#5a6b7d;white-space:nowrap}
+
+/* ===== แบบพิมพ์ราชการ ป.ป.ท. ๒๐ ฉบับ (HTML 1:1) =====
+   ใช้ร่วมกับ .a5-paper เดิม — คลาสด้านล่างครอบเฉพาะหัวกระดาษ/ช่องติ๊ก/ลายเซ็น/ตารางเฉพาะแบบ */
+.a5-paper .a5-hdr-bare{margin-bottom:1.1rem}
+.a5-paper .a5-hdr-bare .a5-hdr-title{font-size:16px;margin:0}
+.a5-hdr-memo{position:relative;text-align:center;margin-bottom:.7rem;min-height:58px}
+.a5-hdr-memo .a5-hdr-title{font-size:22px;font-weight:700;letter-spacing:.02em;margin:.5rem 0 0}
+.a5-garuda{position:absolute;left:0;top:0}
+.a5-hdr-memo .a5-garuda{left:6px;top:-4px}
+.a5-memo-row{border-bottom:1px dotted #333;padding-bottom:2px;margin:.18rem 0}
+.a5-memo-row b{min-width:5.4rem}
+.a5-hdr-letter{text-align:left;margin-bottom:.5rem}
+.a5-letter-note{border:1px solid #555;display:inline-block;padding:3px 7px;font-size:11px;line-height:1.45;max-width:330px;margin:0 0 .5rem}
+.a5-letter-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1.5rem}
+.a5-letter-ref{margin:0;white-space:nowrap}
+.a5-letter-org{margin:0;line-height:1.55;text-align:left}
+.a5-letter-date{text-align:center;margin:.7rem 0 .55rem}
+.a5-letter-foot{margin-top:1.6rem;font-size:12px;line-height:1.5}
+.a5-letter-foot p{margin:.08rem 0}
+.a5-hdr-record{text-align:center;margin-bottom:.6rem}
+.a5-hdr-record .a5-hdr-title{font-size:15px;margin:.3rem 0 .7rem}
+.a5-hdr-record .a5-letter-org{text-align:right}
+.a5-hdr-report{text-align:center;margin-bottom:.8rem}
+.a5-hdr-report .a5-hdr-title{font-size:17px;margin:.3rem 0 0}
+.a5-hint{font-size:11px;color:#555}
+/* ช่องติ๊ก ☐/☑ วาดด้วย CSS (ไม่ใช้รูปภาพ) */
+.a5-cb{display:inline-block;width:11px;height:11px;border:1px solid #333;margin:0 .35rem -1px 0;position:relative;flex:none}
+.a5-cb.on::after{content:"✓";position:absolute;left:0;top:-6px;font-size:13px;line-height:1;font-weight:700;color:#111}
+.a5-cbline{display:flex;align-items:flex-start;gap:.15rem;margin:.22rem 0}
+.a5-cbline .a5-cb{margin-top:4px}
+.a5-cbopt{display:inline-flex;align-items:flex-start;min-width:8.4rem;margin:.1rem .5rem .1rem 0;font-size:11.5px}
+.a5-cbcell div{display:block;margin:.15rem 0;white-space:normal;min-width:0}
+.a5-opt-no{flex:none;margin-right:.3rem;font-weight:600}
+/* ช่องกรอกเส้นทึบ (แบบพิมพ์ศาล) */
+.a5-solid .a5-fill{border-bottom:1px solid #333}
+.a5-pgno{text-align:center;margin:0 0 .6rem;font-size:12px}
+.a5-pgfoot{margin:1.2rem 0 0;font-size:11.5px}
+.a5-indent3{margin-left:4.6rem}
+.a5-indent4{margin-left:5.9rem}
+.a5-num-h{margin:.55rem 0 .25rem}
+.a5-note{margin-top:1.4rem;font-size:11.5px;line-height:1.55}
+.a5-note p{margin:.16rem 0}
+/* ลายเซ็น: (ลงชื่อ) …… / (ชื่อ) / ตำแหน่ง — a5Sign คงเดิม, a5-lock กันแก้ไข */
+.a5-sign-col{text-align:center;min-width:15rem}
+.a5-sign-rule{margin:1.5rem 0 .1rem;white-space:nowrap}
+.a5-sign-dots{display:inline-block;min-width:11rem;border-bottom:1px dotted #333}
+.a5-paper .a5-sign-col .a5-sign-name{min-height:1.35rem;font-weight:400}
+.a5-paper .a5-sign-col .a5-sign-name:not(:empty)::before{content:"("}
+.a5-paper .a5-sign-col .a5-sign-name:not(:empty)::after{content:")"}
+.a5-paper .a5-sign-col .a5-sign-name:empty::before{content:"(...............................................)";color:#555}
+.a5-paper .a5-sign-col .a5-sign-note{font-size:12px;color:#111;margin:.1rem 0 0;line-height:1.45}
+.a5-sign.a5-sign-stack{flex-direction:column;align-items:flex-end;gap:.9rem}
+.a5-sign.a5-sign-stack.a5-sign-left{align-items:flex-start}
+.a5-sign.a5-sign-center{justify-content:center}
+/* แบบ ๑ แผนงานคดี */
+.a5-plan-top{justify-content:center;gap:1.1rem}
+.a5-plan-top label{display:inline-flex;align-items:center;white-space:nowrap}
+.a5-plan-accused{margin:1rem 0 .2rem 1.4rem}
+.a5-plan-h{font-weight:600;margin:.7rem 0 .25rem}
+.a5-plan-tbl td{vertical-align:top}
+/* แบบ ๔ ตาราง มาตรา ๒๕/๒๖ */
+.a5-sec-grid{width:calc(100% - 4.6rem);max-width:calc(100% - 4.6rem);margin-left:4.6rem}
+.a5-sec-grid td{border:none;padding:1px 2.4rem 1px 0}
+/* แบบพิมพ์ศาล (๑๑–๑๕) */
+.a5-court-crest{text-align:center}
+.a5-court-crest .a5-garuda{position:static}
+.a5-court-caption{margin:-3.2rem 0 .4rem;font-size:12.5px}
+.a5-court-caption p{margin:.08rem 0}
+.a5-court-title{text-align:center;font-size:16px;font-weight:700;margin:.2rem 0 .7rem}
+.a5-court-title.a5-left{text-align:left}
+.a5-req-mark{margin:.15rem 0;font-style:italic;font-size:12px}
+.a5-urow{border-bottom:none;align-items:baseline;gap:.3rem}
+.a5-ulabel{flex:none;white-space:nowrap}
+.a5-warrant-top{display:flex;align-items:center;gap:.5rem;font-size:12px}
+.a5-circle{display:inline-block;width:12px;height:12px;border:1px solid #333;border-radius:50%;flex:none}
+.a5-box-inline{border:1px solid #555;padding:2px 8px}
+.a5-right-note{margin-left:auto;text-decoration:underline}
+.a5-warrant-title{margin:.15rem 0 0 2.2rem;font-weight:700;font-size:15px}
+.a5-king{text-align:center;font-size:16px;font-weight:700;margin:.3rem 0 .5rem}
+.a5-warn-h,.a5-order-h{margin-top:1.5rem}
+/* แบบ ๑๖ ตำหนิรูปพรรณ */
+.a5-photo-box{float:right;width:118px;height:88px;border:2px solid #333;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;line-height:1.4;margin:0 0 .5rem .8rem}
+.a5-trait-title{font-size:15px;margin:.1rem 0 .5rem}
+.a5-trait-tbl th{width:6.6rem;text-align:left;font-weight:400;vertical-align:top}
+.a5-trait-tbl td{padding:3px 6px}
+/* แบบ ๒๐ ผนึกซอง (หน้าซอง) */
+.a5-envelope{border:1px solid #333;padding:34px 40px;min-height:430px;line-height:1.8}
+.a5-envelope p{margin:.1rem 0}
+.a5-env-gap{margin-top:1.5rem!important}

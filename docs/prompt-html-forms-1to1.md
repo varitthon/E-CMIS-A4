@@ -81,6 +81,27 @@ state.inquiry.outcome: { letters, prosecutor, disciplineAgency, followup, warran
 ```
 ตัวช่วย: `a5DateShort('2026-08-01')` → '1 ส.ค. 2569'; `a5AccusedLine(state)` → 'นางประภา ใจดี'; `addDays(date, 60)`
 
+## วิธีเปิดดูผลงาน (ต้องทำได้จริงก่อนส่งงาน)
+- รันเซิร์ฟเวอร์: `cd /Users/jetsadasomporn/Downloads/E-CMIS-A4-Production/E-CMIS-A4 && python3 -m http.server 8765` (รันพื้นหลัง)
+- เปิดในเบราว์เซอร์: `http://localhost:8765/staff-workflow.html?view=a5&role=investigator` — เลือกคดีในรายการ → หน้า detail → แถบเอกสารขวา (แผนงานคดี / รายงาน 213 / 644 / หมายจับ ฯลฯ) — เอกสารแต่ละแบบจะโผล่ในแท็บตาม stage ของคดี
+- **บังคับ**: หลังแก้ `assets/activity5-workspace.js` หรือ `assets/ecmis-workspace.css` ต้อง bump cache-buster ในไฟล์ HTML ทั้งหมด: แทนที่ `v=20260808g` → `v=20260808h` ใน `staff-workflow.html`, `staff-intake.html`, `complaint-form.html` (หา/แทนทุกจุด) — ไม่งั้นเบราว์เซอร์ cache ตัวเก่า ผู้ใช้จะไม่เห็นการแก้
+- ตรวจผลด้วยตา: เปิดคดี → สลับแท็บเอกสาร → เทียบกับ PDF ต้นฉบับ (เปิด PDF ข้างๆ)
+
+## เส้นทางการแสดงผล (ทำความเข้าใจก่อนแก้)
+`docTabsA5(state)` สร้างปุ่มแท็บ → คลิกแท็บ → `paperForTab(state, tab)` เลือกฟังก์ชันตาม tab:
+- tab `plan` → paperPlan (แบบ 1) · `ext213` → paperExt(state,'213') · `ext644` → paperExt(state,'644') · `213` → paper213 · `644` → paper644 · `notice` → paperNoticeAccusation · `record` → paperRecordAccusation · `letters` → paperProsecutorLetters (แบบ 8+9+10) · `warrants` → paperWarrants (แบบ 11-20) · `mti` → paperMti · `letter` → หนังสือส่งสำนวน · `special` (decision=58/2) → paperSpecial58
+ผลลัพธ์ไปใส่ที่ `#a5PaperStage` ในแผงเอกสารขวา — ห้ามแก้ `paperForTab`/`docTabsA5` เว้นจำเป็นจริง (แล้วบอกไว้ใน comment)
+
+## ข้อกำหนด Word Engine (เอกสารต้องแก้ไขได้)
+- ช่องข้อมูล = `a5F()` → class `a5-fill` — ระบบจะทำให้แก้ไขได้เองในโหมดแก้ไข (ปุ่ม ✏️) + บันทึกเข้าคดี — ห้ามเปลี่ยน class/โครงสร้างของ a5-fill
+- ลายเซ็น = `a5Sign()` → class `a5-lock` — ระบบกันแก้ไขอัตโนมัติ — ห้ามลบ a5-lock
+- format bar (ฟอนต์/ขนาด/สี/จัดตำแหน่ง) ทำงานอัตโนมัติบนเอกสาร HTML — ไม่ต้องเขียนโค้ดเพิ่ม
+
+## กติกา git และขอบเขต (ห้ามเกิน)
+- งานนี้อยู่ใน repo: `/Users/jetsadasomporn/Downloads/E-CMIS-A4-Production/E-CMIS-A4` (branch `Mock-up-2`)
+- **ห้าม commit** — ห้าม `git commit`/`git add`/`git merge`/`git checkout`/`git reset` ทุกกรณี — ทำแค่แก้ไฟล์แล้วทิ้งงานไว้ (uncommitted) ให้เจ้าของ repo เป็นคน commit เอง — งานของคนอื่นในโฟลเดอร์ก็ห้าม commit ด้วย
+- **ห้ามแตะ/แก้** (มีงานค้างของคนอื่น): ไฟล์ HTML 3 ตัวนอกจาก cache-buster, assets/activity4-workspace.js, assets/ecmis-sidebar.js, assets/ecmis-sidebar.css, โค้ดส่วน state engine/editors/actions/EXTENSION_RULES/journeyStages/A5_MENU/search/Word Engine binder ใน activity5-workspace.js, A5_REAL_IMAGES/paperReal (เก็บไว้เฉยๆ ไม่ใช้)
+
 ## ขั้นตอนการทำงาน
 1. อ่าน PDF ทุกฉบับ (pdftotext -layout) + ดูภาพเทียบสัดส่วน — จดโครงสร้างแต่ละฉบับ (หน้า/หัวข้อ/ตาราง/ช่อง)
 2. เปิดไฟล์ `assets/activity5-workspace.js` ดูฟังก์ชันเดิม + helpers ที่มี (a5F/a5Hdr/a5Sign) — เขียนตาม pattern เดิม
