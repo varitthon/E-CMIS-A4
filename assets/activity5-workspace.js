@@ -334,7 +334,7 @@
   }
   function stagebarA5(state) {
     const { stages, current } = journeyStages(state);
-    return `<nav class="ws-card ws-stagebar" aria-label="เส้นทางสำนวนคดี"><div class="ws-stage-track">${stages.map((s, idx) => {
+    return `<nav class="ws-card ws-stagebar a5" aria-label="เส้นทางสำนวนคดี"><div class="ws-stage-track">${stages.map((s, idx) => {
       const done = idx < current;
       const active = idx === current;
       return `<span class="ws-stage-node ${done ? 'done' : ''} ${active ? 'active' : ''}" title="${escapeHtml(s.label)}"><b>${idx + 1}</b><small>${escapeHtml(s.label)}</small></span>`;
@@ -411,7 +411,7 @@
       const slots = (slotsByPage[pi] || []).map((s, si) => {
         const key = `${formKey}-p${pi}-${si}`;
         const html = edits[key] ?? s.html;
-        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 11) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
+        return `<span class="a5r-slot${s.multi ? ' multi' : ''}" data-slot="${key}" style="left:${(s.x * S).toFixed(1)}px;top:${(s.y * S).toFixed(1)}px;width:${(s.w * S).toFixed(1)}px;font-size:${((s.fs || 15) * S).toFixed(1)}px${s.bold ? ';font-weight:700' : ''}">${html || ''}</span>`;
       }).join('');
       return `<div class="a5r-page" style="background-image:url('${img}')">${slots}</div>`;
     }).join('');
@@ -427,8 +427,8 @@
         { x: 305, y: 337.7, w: 110, html: a5DateShort(d.deadline) },
         { x: 132, y: 355.8, w: 60, html: escapeHtml(String(d.round || '')) },
         { x: 418, y: 428.2, w: 110, html: escapeHtml(d.investigator || '') },
-        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10 },
-        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10 },
+        { x: 90, y: 560, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 13 },
+        { x: 90, y: 716, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 13 },
       ],
       p2: (d) => [
         { x: 133, y: 110.4, w: 25, html: escapeHtml(String(d.round || '')) },
@@ -465,11 +465,11 @@
         { x: 250, y: 343.7, w: 175, html: a5DateShort(d.orderDate) },
         { x: 394, y: 416.1, w: 72, html: a5DateShort(d.deadline) },
         { x: 216, y: 434.2, w: 50, html: escapeHtml(String(d.round || '')) },
-        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 10 },
-        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 10 },
+        { x: 90, y: 648, w: 480, html: escapeHtml(d.done || ''), multi: true, fs: 13 },
+        { x: 90, y: 703, w: 480, html: escapeHtml(d.reason || ''), multi: true, fs: 13 },
       ],
       p2: (d) => [
-        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 10 },
+        { x: 90, y: 78, w: 480, html: escapeHtml(d.problem || ''), multi: true, fs: 13 },
         { x: 133, y: 193.9, w: 25, html: escapeHtml(String(d.round || '')) },
         { x: 181, y: 193.9, w: 35, html: escapeHtml(String(d.days || '')) },
         { x: 230, y: 193.9, w: 70, html: a5DateShort(d.deadline) },
@@ -1151,10 +1151,11 @@
     <section class="ws-card ws-case-head"><div><p class="ws-kicker">${escapeHtml(c.channel || '')} · ${escapeHtml(state.inquiry.intake.unit || c.region || '')}</p><h1>${escapeHtml(c.id)}</h1><div class="ws-case-meta"><span>${escapeHtml(state.documentData?.documentSubject || c.subject)}</span><span>เลขรับบริการ ${c.trackingYear || ''} / PIN ${c.trackingCode || ''}</span><span>ผู้รับผิดชอบ: ${escapeHtml(state.inquiry.inquiry644?.investigator || state.inquiry.intake.investigator || 'ยังไม่มอบหมาย')}</span></div></div><div><span class="ws-status ${w.stage === 'closed' ? 'success' : ''}">${escapeHtml(phaseLabel(state))}</span><p style="margin:.4rem 0 0;font-size:.8rem;color:#687789">${escapeHtml(w.status || '')}</p></div></section>
     ${isSpecial ? '' : stagebarA5(state)}
     <div class="document-workspace"><section class="ws-card ws-editor"><header class="ws-editor-head"><div><p class="ws-kicker">${ROLE_LABELS[role] || role}</p><h2>${isSpecial ? 'ตรวจสอบข้อเท็จจริง' : 'ดำเนินการสำนวนคดี'}</h2></div><span class="ws-status">${escapeHtml(phaseLabel(state))}</span></header><div class="ws-editor-body">${editorForA5(state, role)}${adminCaseTools(state, role)}<div class="ws-section"><h3>ประวัติการตัดสินใจ</h3><ul class="ws-history">${(state.decisionHistory || []).map(x => `<li>${escapeHtml(x.text)}<time>${x.time}</time></li>`).join('') || '<li>ยังไม่มีประวัติ</li>'}</ul></div>${state.inquiry.publicUpdates.length ? `<div class="ws-section"><h3>สถานะที่ผู้ร้องเห็น</h3><ul class="ws-history">${state.inquiry.publicUpdates.map(x => `<li>${escapeHtml(x.text)}<time>${x.at}</time></li>`).join('')}</ul></div>` : ''}</div></section>
-    <aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabsA5(state)}</div><button class="ws-button secondary" data-a5-action="print">พิมพ์/PDF</button></div><div class="ws-paper-stage" id="a5PaperStage">${paperForTab(state, 'plan')}</div><div class="doc-edit-bar" id="a5DocEditBar" aria-label="จัดรูปแบบข้อความ"><button type="button" data-format="bold" title="ตัวหนา"><strong>B</strong></button><button type="button" data-format="italic" title="ตัวเอียง"><em>I</em></button><button type="button" data-format="underline" title="ขีดเส้นใต้"><u>U</u></button><span class="doc-edit-bar-sep"></span><span>แก้ไขข้อความในเอกสารได้โดยตรง</span></div><button type="button" class="doc-edit-fab" id="a5DocEditFab" title="แก้ไขเอกสารเหมือน Word"><span class="doc-edit-fab-icon">✏️</span><span class="doc-edit-fab-label">แก้ไขเอกสาร</span></button></aside></div>
+    <aside class="ws-doc-pane"><div class="ws-doc-toolbar"><div class="ws-doc-tabs">${docTabsA5(state)}</div><button class="ws-button secondary" data-a5-action="print">พิมพ์/PDF</button><button type="button" class="ws-button secondary ws-doc-pane-toggle" title="ย่อแผงเอกสาร" aria-label="ย่อแผงเอกสาร" aria-expanded="true" style="padding:.42rem .62rem;line-height:1">»</button></div><button type="button" class="ws-doc-pane-rail" title="ขยายแผงเอกสาร" aria-label="ขยายแผงเอกสาร">«<span>เอกสาร</span></button><div class="ws-paper-stage" id="a5PaperStage">${paperForTab(state, 'plan')}</div><div class="doc-edit-bar" id="a5DocEditBar" aria-label="จัดรูปแบบข้อความ"><select class="doc-edit-font" data-format="fontName" title="ฟอนต์"><option value="">ฟอนต์</option><option>Sarabun</option><option>TH Sarabun New</option><option>Tahoma</option><option>Times New Roman</option><option>Angsana New</option></select><select class="doc-edit-size" data-format="fontSize" title="ขนาดตัวอักษร"><option value="">ขนาด</option><option value="3">16</option><option value="4">18</option><option value="5">20</option><option value="6">24</option><option value="7">32</option></select><span class="doc-edit-bar-sep"></span><button type="button" data-format="bold" title="ตัวหนา"><b>B</b></button><button type="button" data-format="italic" title="ตัวเอียง"><i>I</i></button><button type="button" data-format="underline" title="ขีดเส้นใต้"><u>U</u></button><span class="doc-edit-bar-sep"></span><label class="doc-edit-color" title="สีตัวอักษร"><input type="color" data-format="foreColor" value="#17232e"></label><span class="doc-edit-bar-sep"></span><button type="button" data-format="justifyLeft" title="ชิดซ้าย">ซ้าย</button><button type="button" data-format="justifyCenter" title="กึ่งกลาง">กลาง</button><button type="button" data-format="justifyRight" title="ชิดขวา">ขวา</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="insertUnorderedList" title="รายการหัวข้อ">•≡</button><button type="button" data-format="insertOrderedList" title="รายการลำดับเลข">1≡</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="outdent" title="ลดย่อหน้า">⤺</button><button type="button" data-format="indent" title="เพิ่มย่อหน้า">⤻</button><span class="doc-edit-bar-sep"></span><button type="button" data-format="undo" title="เลิกทำ">↶</button><button type="button" data-format="redo" title="ทำซ้ำ">↷</button><span class="doc-edit-bar-sep"></span><span class="doc-edit-bar-tip">แก้ไขได้ทุกช่องบนฟอร์มจริง — ลากเลือกข้อความแล้วจัดรูปแบบ</span></div><button type="button" class="doc-edit-fab" id="a5DocEditFab" title="แก้ไขเอกสารเหมือน Word"><span class="doc-edit-fab-icon">✏️</span><span class="doc-edit-fab-label">แก้ไขเอกสาร</span></button></aside></div>
     <div class="ws-actions">${actionsForA5(state, role)}</div></main>`;
     $('#a5BackList').onclick = () => { view = 'list'; renderA5(role); };
     wireA5(state, role);
+    wireA5Search(role);
   }
   function docTabsA5(state) {
     const w = state.workflow || {}, stage = w.stage || '';
@@ -1368,8 +1369,12 @@
           const fmt = e.target.closest('[data-format]');
           if (fmt) document.execCommand(fmt.dataset.format);
         });
+        document.addEventListener('change', e => {
+          const fmt = e.target.closest('[data-format]');
+          if (fmt && e.target.value) document.execCommand(fmt.dataset.format, false, e.target.value);
+        });
         document.addEventListener('mousedown', e => {
-          if (e.target.closest('.doc-edit-bar, .doc-edit-fab')) e.preventDefault();
+          if (e.target.closest('.doc-edit-bar, .doc-edit-fab') && !e.target.closest('select, input, label')) e.preventDefault();
         }, true);
       }
       // MutationObserver: ทุกครั้งที่ stage ถูก re-render (สลับแท็บ/action) ให้คง edit mode ไว้
@@ -1378,6 +1383,83 @@
       });
       docEditObserver.observe(docStage, { childList: true });
     }
+    // ปุ่มย่อ/ขยายแผงเอกสาร (เหมือนระบบรับเรื่อง)
+    const a5DocWs = document.querySelector('#a5App .document-workspace');
+    if (a5DocWs && !a5DocWs.dataset.paneBound) {
+      a5DocWs.dataset.paneBound = '1';
+      const setPaneCollapsed = collapsed => {
+        a5DocWs.classList.toggle('pane-collapsed', collapsed);
+        const toggle = $('.ws-doc-pane-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', String(!collapsed));
+        try { localStorage.setItem('ecmis-a5-docpane-collapsed', collapsed ? '1' : '0'); } catch {}
+      };
+      try { if (localStorage.getItem('ecmis-a5-docpane-collapsed') === '1') setPaneCollapsed(true); } catch {}
+      a5DocWs.addEventListener('click', e => {
+        const t = e.target.closest('.ws-doc-pane-toggle, .ws-doc-pane-rail');
+        if (!t) return;
+        if (t.classList.contains('ws-doc-pane-rail')) setPaneCollapsed(false);
+        else setPaneCollapsed(!a5DocWs.classList.contains('pane-collapsed'));
+      });
+    }
+    // ลากแถบจัดรูปแบบ + ปุ่มแก้ไขเอกสารไปมาได้อิสระ (จำตำแหน่งไว้)
+    const makeDraggable = (el, storageKey) => {
+      if (!el || el.dataset.dragBound) return;
+      el.dataset.dragBound = '1';
+      el.style.cursor = 'grab';
+      el.style.touchAction = 'none';
+      let sx = 0, sy = 0, ox = 0, oy = 0, moved = false, dragging = false;
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          const [lx, ly] = saved.split(',').map(Number);
+          if (Number.isFinite(lx) && Number.isFinite(ly)) {
+            el.style.position = 'fixed';
+            el.style.left = lx + 'px';
+            el.style.top = ly + 'px';
+            el.style.transform = 'none';
+            el.style.margin = '0';
+          }
+        }
+      } catch {}
+      el.addEventListener('pointerdown', e => {
+        if (el !== docFab && e.target.closest('button, select, input, a')) return;
+        e.preventDefault();
+        const r = el.getBoundingClientRect();
+        sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top;
+        moved = false; dragging = true;
+        el.style.position = 'fixed';
+        el.style.left = ox + 'px';
+        el.style.top = oy + 'px';
+        el.style.transform = 'none';
+        el.style.margin = '0';
+        el.style.transition = 'none';
+        el.style.cursor = 'grabbing';
+        try { el.setPointerCapture(e.pointerId); } catch {}
+      });
+      el.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!moved && Math.hypot(dx, dy) > 3) moved = true;
+        if (!moved) return;
+        const nx = ox + dx, ny = oy + dy;
+        el.style.left = Math.max(0, Math.min(nx, (window.innerWidth || 1200) - 40)) + 'px';
+        el.style.top = Math.max(0, Math.min(ny, (window.innerHeight || 800) - 40)) + 'px';
+      });
+      const endDrag = e => {
+        if (!dragging) return;
+        dragging = false;
+        el.style.cursor = 'grab';
+        el.style.transition = '';
+        if (moved) {
+          try { localStorage.setItem(storageKey, el.style.left + ',' + el.style.top); } catch {}
+        }
+      };
+      el.addEventListener('pointerup', endDrag);
+      el.addEventListener('pointercancel', endDrag);
+      el.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved = false; } });
+    };
+    makeDraggable(docBar, 'ecmis-a5-docbar-pos');
+    makeDraggable(docFab, 'ecmis-a5-docfab-pos');
     $$('#a5App [data-a5-doc]').forEach(b => b.onclick = () => {
       $$('#a5App [data-a5-doc]').forEach(x => { const on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
       $('#a5PaperStage').innerHTML = paperForTab(captureDetail(state, role), b.dataset.a5Doc);
@@ -1777,8 +1859,79 @@
     };
   }
 
+  const A5_SEARCH_ACTIONS = [
+    { label: 'รับสำนวนและมอบหมายนักสืบ', kw: 'รับสำนวน มอบหมาย accept intake', action: 'accept-case' },
+    { label: 'จัดทำแผนคดีไต่สวน (213)', kw: 'แผนคดี แผน 213 plan', action: 'prelim-plan' },
+    { label: 'เสนอรายงาน 213 ตามลำดับชั้น', kw: 'เสนอรายงาน 213 report', action: 'prelim-submit' },
+    { label: 'บันทึกมติ คกก. (รับไต่สวน)', kw: 'มติ คกก. mti 213 รับไต่สวน', action: 'mti213-decide' },
+    { label: 'เสนอรายงาน 644 ตามลำดับชั้น', kw: 'เสนอรายงาน 644 report', action: 'inquiry-submit' },
+    { label: 'บันทึกมติชี้มูล คกก.', kw: 'มติชี้มูล คกก. mti 644', action: 'mti644-decide' },
+    { label: 'ยื่นคำขอขยายเวลา', kw: 'ขยายเวลา extension 60 วัน', action: 'request-extension' },
+    { label: 'จัดทำคำขอคุ้มครองพยาน (ก6)', kw: 'คุ้มครองพยาน ก6 witness', action: 'witness-request' },
+    { label: 'จัดทำคำร้องขอหมายค้น (ก9)', kw: 'หมายค้น ก9 search warrant', action: 'search-request' },
+    { label: 'ยื่นคำร้องขอหมายจับต่อศาล', kw: 'หมายจับ ศาล warrant', action: 'warrant-file' },
+    { label: 'แจ้งหน่วยงาน (อัยการ/ผบ.ตร./กอท.)', kw: 'แจ้งหน่วยงาน notify หมายจับ', action: 'warrant-notify' },
+    { label: 'พิมพ์/PDF เอกสาร', kw: 'พิมพ์ pdf print เอกสาร', action: 'print' },
+    { label: 'ปิดสำนวน', kw: 'ปิดสำนวน close', action: 'close-case' }
+  ];
+  function wireA5Search(role) {
+    const searchInput = $('#a5SearchInput'), searchResults = $('#a5SearchResults');
+    if (!searchInput || searchInput.dataset.bound) return;
+    searchInput.dataset.bound = '1';
+    let searchTimer = null;
+    const norm = s => String(s || '').toLowerCase();
+    const closeSearch = () => { searchResults.classList.add('ws-hidden'); searchResults.innerHTML = ''; };
+    const openTarget = prefer => {
+      if (view === 'detail') {
+        const h1 = document.querySelector('#a5App .ws-case-head h1');
+        if (h1 && h1.textContent.trim()) return h1.textContent.trim();
+      }
+      const all = allA5Cases();
+      const hit = prefer ? all.find(prefer) : null;
+      return (hit || all[0])?.caseData?.id || '';
+    };
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) { closeSearch(); return; }
+        const caseHits = allA5Cases().filter(st => {
+          const c = st.caseData || {}, w = st.workflow || {}, i = st.inquiry || {};
+          const hay = [c.id, c.trackingYear, c.trackingCode, c.subject, c.complainant, c.agency, c.region, phaseLabel(st), w.status, w.stage, i.intake?.unit, i.intake?.investigator, (i.inquiry644?.accused || []).join(' '), i.inquiry644?.allegations, i.prelim?.plan].map(norm).join(' ');
+          return hay.includes(q);
+        });
+        const docHits = Object.entries(A5_FORMS).filter(([id, f]) => norm(id + ' ' + f.code + ' ' + f.name).includes(q));
+        const actionHits = A5_SEARCH_ACTIONS.filter(a => norm(a.label + ' ' + a.kw).includes(q));
+        let html = '';
+        if (caseHits.length) html += `<div class="ws-search-group">คดี (${caseHits.length})</div>` + caseHits.slice(0, 6).map(st => { const c = st.caseData; return `<button type="button" class="ws-search-item" data-a5-search-case="${escapeHtml(c.id)}"><span>${escapeHtml(c.subject || c.id)}</span><small>${escapeHtml(c.id)} · ${escapeHtml(phaseLabel(st))}</small></button>`; }).join('');
+        if (docHits.length) html += `<div class="ws-search-group">เอกสาร (${docHits.length})</div>` + docHits.slice(0, 6).map(([id, f]) => `<button type="button" class="ws-search-item" data-a5-search-doc="${id}"><span>${f.code} ${escapeHtml(f.name)}</span></button>`).join('');
+        if (actionHits.length) html += `<div class="ws-search-group">ฟังก์ชัน (${actionHits.length})</div>` + actionHits.slice(0, 6).map(a => `<button type="button" class="ws-search-item" data-a5-search-action="${a.action}"><span>${a.label}</span></button>`).join('');
+        if (!html) html = '<div class="ws-search-empty">ไม่พบสิ่งที่ค้นหา</div>';
+        searchResults.innerHTML = html;
+        searchResults.classList.remove('ws-hidden');
+      }, 180);
+    });
+    searchResults.addEventListener('click', e => {
+      const caseBtn = e.target.closest('[data-a5-search-case]');
+      if (caseBtn) { window.EXMIS?.showA5(caseBtn.dataset.a5SearchCase); closeSearch(); searchInput.blur(); return; }
+      const docBtn = e.target.closest('[data-a5-search-doc]');
+      if (docBtn) {
+        const target = openTarget();
+        window.EXMIS?.showA5(target);
+        setTimeout(() => { const tab = document.querySelector(`#a5App [data-a5-doc="${docBtn.dataset.a5SearchDoc}"]`); if (tab) tab.click(); }, 80);
+        closeSearch(); searchInput.blur(); return;
+      }
+      const actBtn = e.target.closest('[data-a5-search-action]');
+      if (actBtn) {
+        const target = openTarget();
+        window.EXMIS?.showA5(target);
+        setTimeout(() => { const btn = [...document.querySelectorAll('#a5App [data-a5-action]')].find(b => b.dataset.a5Action === actBtn.dataset.a5SearchAction && !b.disabled); if (btn) btn.click(); }, 80);
+        closeSearch(); searchInput.blur();
+      }
+    });
+  }
   function headerA5(role) {
-    return `<header class="ws-topbar"><div class="ws-topbar-inner"><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a><div class="ws-profile"><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRoleA5">${ROLE_ORDER.map(r => `<option value="${r}" ${r === role ? 'selected' : ''}>${ROLE_LABELS[r]}</option>`).join('')}</select><button type="button" class="ws-button secondary" id="a5BackToA4">งานรับเรื่อง</button></div></div></header>`;
+    return `<header class="ws-topbar"><div class="ws-topbar-inner"><div class="ws-search"><input id="a5SearchInput" type="search" placeholder="ค้นหาคดี เอกสาร ฟังก์ชัน..." autocomplete="off" aria-label="ค้นหาทุกอย่าง"><div class="ws-search-results ws-hidden" id="a5SearchResults"></div></div><a class="ws-brand" href="index.html"><span class="ws-brand-mark">ศร</span><span><strong>E-CMIS</strong><small>ระบบบริหารจัดการเรื่องร้องเรียน</small></span></a><div class="ws-profile"><span>สิทธิ์การทำงาน</span><select class="ws-role-select" id="wsRoleA5">${ROLE_ORDER.map(r => `<option value="${r}" ${r === role ? 'selected' : ''}>${ROLE_LABELS[r]}</option>`).join('')}</select><button type="button" class="ws-button secondary" id="a5BackToA4">งานรับเรื่อง</button></div></div></header>`;
   }
 
   /* ---------- view + render ---------- */
@@ -1803,6 +1956,7 @@
     <section class="ws-card"><div class="ws-table-wrap"><table class="ws-table"><thead><tr><th>เลขสำนวน/เลขรับบริการ</th><th>เรื่อง/หน่วยงาน</th><th>ผู้ร้อง/ปลายทาง</th><th>ผู้รับผิดชอบ</th><th>เฟส/สถานะ</th><th>กรอบเวลา</th></tr></thead><tbody id="a5CaseRows"></tbody></table></div></section></section></main>`;
     $('#wsRoleA5').onchange = e => { sessionStorage.setItem(A5_ROLE_KEY, e.target.value); renderA5(e.target.value); };
     $('#a5BackToA4').onclick = () => window.EXMIS?.showA4();
+    wireA5Search(role);
     const phaseSelect = $('#a5FilterPhase');
     [...new Set(allA5Cases().map(phaseLabel))].forEach(p => { const o = document.createElement('option'); o.textContent = p; phaseSelect.appendChild(o); });
     ['Search', 'Region', 'Phase', 'Investigator'].forEach(x => { const el = $(`#a5Filter${x}`); if (el) el.addEventListener(x === 'Search' ? 'input' : 'change', () => renderA5(role)); });
