@@ -799,6 +799,7 @@ body.high-contrast .btn-tracking-save{ background:#000 !important; color:#fff !i
                     </div>
                     <div class="tp-actions">
                       <button type="button" class="tp-btn tp-btn-ghost" id="tpDismiss" onclick="dismissTimePicker()">ปิดตัวเลือก</button>
+                      <button type="button" class="tp-btn tp-btn-ghost" id="tpClear" onclick="clearTimePicker()">ล้างค่า</button>
                       <button type="button" class="tp-btn tp-btn-primary" id="tpConfirm" onclick="confirmTimePicker()">ยืนยันการเลือก</button>
                     </div>
                   </div>
@@ -1406,6 +1407,14 @@ function dismissTimePicker(){ closeTimePickerPopover(); }
 function confirmTimePicker(){
   timePickerState.confirmedHour = timePickerState.hour;
   timePickerState.confirmedMinute = timePickerState.minute;
+  updateIncidentTimeDisplay();
+  closeTimePickerPopover();
+}
+function clearTimePicker(){
+  timePickerState.hour = null;
+  timePickerState.minute = null;
+  timePickerState.confirmedHour = null;
+  timePickerState.confirmedMinute = null;
   updateIncidentTimeDisplay();
   closeTimePickerPopover();
 }
