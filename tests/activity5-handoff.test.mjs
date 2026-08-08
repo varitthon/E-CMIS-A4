@@ -92,12 +92,12 @@ const activity5Html = readFileSync(new URL("../activity5/index.html", import.met
 assert.ok(staffHtml.indexOf("assets/activity5-handoff.js") < staffHtml.indexOf("assets/activity4-workspace.js"));
 assert.match(activity4Source, /ECMISActivity5Handoff\?\.create\(localStorage,state/);
 assert.doesNotMatch(activity4Source, /create\(localStorage,state,new Date\(\)\.toISOString\(\),activeRole/);
-assert.match(activity4Source, /w\.stage='officer-dispatch';w\.status='รอเจ้าหน้าที่รับเรื่องดำเนินการจัดส่ง';w\.complete=false/);
+assert.match(activity4Source, /w\.stage='officer-dispatch';w\.status='อนุมัติแล้ว รอเจ้าหน้าที่รับเรื่อง ศรร\. บันทึกข้อมูลการจัดส่ง';w\.complete=false/);
 assert.match(activity4Source, /state\.workflow\.stage!=='activity5-dispatch'\|\|!state\.workflow\.complete/);
 assert.match(activity4Source, /state\.workflow\.status=`จัดส่งเรื่องไปยัง \$\{d\.dispatchDestinationUnit\} แล้ว`/);
 assert.doesNotMatch(activity4Source, /workflow\.status='ส่งต่อกิจกรรมที่ 5 แล้ว'/);
 assert.match(activity4Source, /ยืนยันการจัดส่งเรียบร้อยแล้ว/);
-assert.match(activity4Source, /activity5\/index\.html#\/cases\//);
+assert.match(activity4Source, /window\.EXMIS&&window\.EXMIS\.showA5\('/);
 assert.match(activity5Html, /กลับ Activity 4/);
 assert.match(activity5Html, /localStorage ของเบราว์เซอร์ ไม่ใช่ production backend/);
 

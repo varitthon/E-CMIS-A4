@@ -180,6 +180,24 @@
           : "";
     return { yearSequence, pin, allocationStatus: "allocated", capacityLevel, capacityMessage };
   }
+  function createPendingReference() {
+    const buddhistYear = new Date().getFullYear() + 543;
+    const year = String(buddhistYear).slice(-2);
+    const pendingKey = `ecmis-public-pending-sequence-${year}`;
+    const pendingSequence = Number.parseInt(localStorage.getItem(pendingKey) || "0", 10) + 1;
+    localStorage.setItem(pendingKey, String(pendingSequence));
+    const randomPart = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()
+      : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`.slice(-8).toUpperCase();
+    return {
+      yearSequence: "",
+      pin: "",
+      pendingReference: `PENDING-${year}-${String(pendingSequence).padStart(6, "0")}-${randomPart}`,
+      allocationStatus: "pending",
+      capacityLevel: "pending-intake",
+      capacityMessage: "รอจัดสรรเลขรับบริการหลังการกลั่นกรองเรื่องซ้ำ — ระบบไม่ออกเลขใหม่จนกว่าเจ้าหน้าที่จะตัดสินใจกลั่นกรอง",
+    };
+  }
   function parseServiceNumber(value) {
     const digits = String(value || "").replace(/\s/g, "");
     return /^\d{6}$/.test(digits) ? digits : null;
@@ -344,6 +362,7 @@
     setTheme,
     openLab,
     createTrackingNumber,
+    createPendingReference,
     parseServiceNumber,
     parseFourDigits,
     parseTrackingCredentials,

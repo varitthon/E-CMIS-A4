@@ -469,6 +469,10 @@ function renderCaseCard(item) {
         <div><dt>ผู้รับผิดชอบ</dt><dd>${escapeHtml(item.assignment.investigator || "ยังไม่กำหนด")}</dd></div>
         <div><dt>กำหนดเวลา</dt><dd>${formatDate(deadline)}</dd></div>
       </dl>
+      <details class="case-mini-details">
+        <summary>ดูสถานะแบบย่อ</summary>
+        ${renderMiniPhaseStepper(item.phase)}
+      </details>
       <a class="button button-secondary" href="#/cases/${encodeURIComponent(item.id)}/overview">เปิดสำนวน</a>
     </article>
   `;
@@ -508,6 +512,14 @@ function renderCaseWorkspace(state, caseId, activeTab) {
 function renderPhaseStepper(activePhase) {
   const activeIndex = PHASE_ORDER.indexOf(activePhase);
   return `<ol class="phase-stepper" aria-label="ระยะดำเนินการ">${PHASE_ORDER.map((phase, index) => `<li class="${index < activeIndex ? "is-complete" : index === activeIndex ? "is-current" : ""}" ${index === activeIndex ? 'aria-current="step"' : ""}><span>${index + 1}</span><small>${escapeHtml(PHASES[phase])}</small></li>`).join("")}</ol>`;
+}
+
+function renderMiniPhaseStepper(activePhase) {
+  const activeIndex = PHASE_ORDER.indexOf(activePhase);
+  return `<div class="mini-stagebar">${PHASE_ORDER.map((phase, index) => {
+    const status = index < activeIndex ? "is-complete" : index === activeIndex ? "is-current" : "";
+    return `${index ? `<span class="mini-stage-line ${index <= activeIndex ? "done" : ""}"></span>` : ""}<span class="mini-stage-dot ${status === "is-complete" ? "done" : status === "is-current" ? "current" : ""}" title="${escapeHtml(PHASES[phase])}"></span>`;
+  }).join("")}<span class="mini-stage-label">${escapeHtml(PHASES[activePhase])}</span></div>`;
 }
 
 function renderCaseTab(item, tab) {
