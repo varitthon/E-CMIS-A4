@@ -10,6 +10,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-app.css" rel="stylesheet">
+<link href="assets/ecmis-activity10.css" rel="stylesheet">
 </head>
 <body>
 
@@ -116,8 +117,42 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('09-admin-court-notice.html');
+
+  document.addEventListener("DOMContentLoaded", function() {
+    renderAdminCourtCases();
+  });
+
+  function renderAdminCourtCases() {
+    const cases = Activity10.getCases().filter(c => c.category.startsWith("10.3"));
+    const tbody = document.querySelector(".tbl-ecmis tbody");
+    if (!tbody) return;
+
+    if (cases.length === 0) return;
+
+    let html = "";
+    cases.forEach(c => {
+      const slaClass = c.slaAlert === "sla-danger" ? "st-urgent" : "st-regular";
+      html += `
+        <tr>
+          <td><strong class="text-navy">${c.id}</strong><br><small class="text-muted">${c.docNo || 'อ.145/2569'}</small></td>
+          <td><span class="badge bg-info">${c.categoryName}</span></td>
+          <td>${c.title}</td>
+          <td>${c.officer || 'นิติกรเจ้าของสำนวน'}</td>
+          <td><span class="st ${c.statusBadge.includes('warning') ? 'st-screen' : 'st-approve'}">${c.status}</span></td>
+          <td><span class="st ${slaClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
+          <td class="text-end">
+            <a href="03-split-viewer.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-navy"><i class="fa-solid fa-columns me-1"></i>ยกร่าง (Split)</a>
+            <a href="10-legal-knowledge-base.html" class="btn btn-xs btn-outline-info" title="ค้นหา KM ตัวอย่างคดี"><i class="fa-solid fa-lightbulb"></i></a>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  }
 </script>
 </body>
 </html>

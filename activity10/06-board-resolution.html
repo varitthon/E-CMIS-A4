@@ -10,6 +10,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-app.css" rel="stylesheet">
+<link href="assets/ecmis-activity10.css" rel="stylesheet">
 </head>
 <body>
 
@@ -92,13 +93,80 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('06-board-resolution.html');
 
-  function viewPDF() {
+  document.addEventListener("DOMContentLoaded", function() {
+    renderResolutions();
+  });
+
+  function renderResolutions() {
+    const cases = Activity10.getCases();
+    const tbody = document.querySelector(".tbl-ecmis tbody");
+    if (!tbody) return;
+
+    let html = `
+      <tr>
+        <td><strong class="text-navy">คดี-10.1-2569/001</strong></td>
+        <td><span class="st st-urgent">10.1 ความเห็นแย้ง</span></td>
+        <td>พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคาร</td>
+        <td><span class="st st-approve">อัยการสูงสุดชี้ขาดให้ฟ้องคดี</span></td>
+        <td>อัยการสูงสุด (อสส.)</td>
+        <td>4 สิงหาคม 2569</td>
+        <td class="text-end">
+          <button class="btn btn-xs btn-outline-primary" onclick="viewPDF()"><i class="fa-solid fa-file-pdf me-1"></i>ดาวน์โหลดมติ PDF</button>
+        </td>
+      </tr>
+      <tr>
+        <td><strong class="text-navy">อุทธรณ์-10.2-2569/005</strong></td>
+        <td><span class="st st-urgent">10.2.2 อุทธรณ์ข้อมูล</span></td>
+        <td>คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบวินัยข้าราชการ</td>
+        <td><span class="st st-screen">คณะอนุกรรมการฯ มีมติยกคำอุทธรณ์</span></td>
+        <td>คณะกรรมการ ป.ป.ท.</td>
+        <td>1 สิงหาคม 2569</td>
+        <td class="text-end">
+          <button class="btn btn-xs btn-outline-primary" onclick="viewPDF()"><i class="fa-solid fa-file-pdf me-1"></i>ดาวน์โหลดมติ PDF</button>
+        </td>
+      </tr>
+      <tr>
+        <td><strong class="text-navy">คดีปกครอง-10.3-2569/002</strong></td>
+        <td><span class="st st-regular">10.3 คดีปกครอง</span></td>
+        <td>คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม</td>
+        <td><span class="st st-regular">ศาลปกครองสูงสุดพิพากษายกฟ้อง</span></td>
+        <td>ศาลปกครองสูงสุด</td>
+        <td>25 กรกฎาคม 2569</td>
+        <td class="text-end">
+          <button class="btn btn-xs btn-outline-primary" onclick="viewPDF()"><i class="fa-solid fa-file-pdf me-1"></i>ดาวน์โหลดมติ PDF</button>
+        </td>
+      </tr>
+    `;
+
+    cases.filter(c => c.signatureStamped).forEach(c => {
+      if (!["คดี-10.1-2569/001", "อุทธรณ์-10.2-2569/005", "คดีปกครอง-10.3-2569/002"].includes(c.id)) {
+        html += `
+          <tr>
+            <td><strong class="text-navy">${c.id}</strong></td>
+            <td><span class="st st-approve">${c.categoryName}</span></td>
+            <td>${c.title}</td>
+            <td><span class="st st-approve">${c.status}</span></td>
+            <td>${c.signedBy || 'คณะกรรมการ ป.ป.ท.'}</td>
+            <td>${c.signedDate || 'ล่าสุด'}</td>
+            <td class="text-end">
+              <button class="btn btn-xs btn-outline-primary" onclick="viewPDF('${c.id}')"><i class="fa-solid fa-file-pdf me-1"></i>ดาวน์โหลดมติ PDF</button>
+            </td>
+          </tr>
+        `;
+      }
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  function viewPDF(caseId) {
     Swal.fire({
       title: 'ดาวน์โหลดไฟล์มติ PDF',
-      text: 'ระบบกำลังดาวน์โหลดไฟล์มติคำวินิจฉัยอิเล็กทรอนิกส์ (PDF with Audit Trail)',
+      text: `ระบบกำลังดาวน์โหลดไฟล์มติคำวินิจฉัยอิเล็กทรอนิกส์ ${caseId ? '(' + caseId + ')' : ''} (PDF with Audit Trail)`,
       icon: 'success',
       timer: 1500,
       showConfirmButton: false
@@ -106,16 +174,24 @@
   }
 
   function recordNewResolution() {
+    const cases = Activity10.getCases();
+    const options = cases.map(c => `<option value="${c.id}">${c.id} - ${c.title.substring(0, 30)}...</option>`).join('');
+
     Swal.fire({
       title: 'บันทึกมติ / คำวินิจฉัยชี้ขาดใหม่',
       html: `
         <div class="text-start">
           <label class="form-label fw-bold">เลือกเลขที่สำนวน:</label>
-          <select class="form-select mb-2"><option>คดี-10.1-2569/001</option></select>
+          <select class="form-select mb-2" id="resCaseSelect">${options}</select>
           <label class="form-label fw-bold">มติ/ผลคำวินิจฉัย:</label>
-          <input class="form-control mb-2" placeholder="กรอกผลมติ...">
-          <label class="form-label fw-bold">แนบไฟล์มติ (PDF):</label>
-          <input type="file" class="form-control">
+          <input class="form-control mb-2" id="resText" placeholder="กรอกผลมติ...">
+          <label class="form-label fw-bold">ผู้มีอำนาจชี้ขาด:</label>
+          <select class="form-select mb-2" id="resAuthority">
+            <option>คณะกรรมการ ป.ป.ท.</option>
+            <option>อัยการสูงสุด (อสส.)</option>
+            <option>คณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ</option>
+            <option>ศาลปกครองสูงสุด</option>
+          </select>
         </div>
       `,
       showCancelButton: true,
@@ -123,6 +199,13 @@
       confirmButtonColor: '#0F2A62'
     }).then(res => {
       if(res.isConfirmed) {
+        const caseId = document.getElementById("resCaseSelect").value;
+        const text = document.getElementById("resText").value || "มีมติอนุมัติ";
+        const authority = document.getElementById("resAuthority").value;
+
+        Activity10.stampSignature(caseId, authority);
+        renderResolutions();
+
         Swal.fire({ icon:'success', title:'บันทึกมติเรียบร้อย', timer:1200, showConfirmButton:false });
       }
     });

@@ -10,6 +10,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-app.css" rel="stylesheet">
+<link href="assets/ecmis-activity10.css" rel="stylesheet">
 </head>
 <body>
 
@@ -111,24 +112,49 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('10-legal-knowledge-base.html');
 
   function searchKM() {
+    const keyword = (document.getElementById("kmSearchInput").value || "").trim().toLowerCase();
+    const items = document.querySelectorAll(".vstack > div");
+    let matchCount = 0;
+
+    items.forEach(item => {
+      const text = item.innerText.toLowerCase();
+      if (!keyword || text.includes(keyword)) {
+        item.style.display = "block";
+        matchCount++;
+      } else {
+        item.style.display = "none";
+      }
+    });
+
     Swal.fire({
       icon: 'success',
       title: 'ค้นหาข้อมูล KM สำเร็จ',
-      text: 'ระบบได้ค้นพบ 3 คดีตัวอย่างที่ตรงกับเงื่อนไข',
-      timer: 1000,
+      text: `ระบบได้ค้นพบ ${matchCount} คดีตัวอย่างที่ตรงกับเงื่อนไข`,
+      timer: 1200,
       showConfirmButton: false
     });
   }
 
   function copyTemplate(id) {
+    const templates = {
+      1: "(อ้างอิงบรรทัดฐาน ป.ป.ท. 1/2567: ตามมาตรา 172 แห่ง พ.ร.บ. ประกอบรัฐธรรมนูญฯ อสส. ชี้ขาดตามความเห็นแย้งของ ป.ป.ท.)",
+      2: "(อ้างอิงบรรทัดฐาน ป.ป.ท. 5/2568: เอกสารการสอบสวนวินัยข้าราชการเป็นข้อยกเว้นไม่เปิดเผยตามมาตรา 15 (2) แห่ง พ.ร.บ. ข้อมูลข่าวสารฯ)",
+      3: "(อ้างอิงบรรทัดฐาน ศาลปกครองสูงสุด 12/2568: การออกคำสั่งของเลขาธิการ ป.ป.ท. เป็นการใช้อำนาจโดยชอบด้วยกฎหมาย ศาลปกครองสูงสุดพิพากษายกฟ้อง)"
+    };
+
+    if (navigator.clipboard && templates[id]) {
+      navigator.clipboard.writeText(templates[id]);
+    }
+
     Swal.fire({
       icon: 'success',
       title: 'คัดลอกร่างข้อกฎหมายแล้ว!',
-      text: 'คุณสามารถนำข้อความบรรทัดฐานนี้ไปวางในหน้าจอ Split-Screen Viewer ได้ทันที',
+      text: 'ข้อความบรรทัดฐานถูกคัดลอกลง คลิปบอร์ด แล้ว สามารถนำไปวางใน Split-Screen Editor ได้ทันที',
       confirmButtonText: 'ไปที่หน้า Split-Screen',
       confirmButtonColor: '#0F2A62'
     }).then(() => {

@@ -10,6 +10,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <link href="assets/ecmis-app.css" rel="stylesheet">
+<link href="assets/ecmis-activity10.css" rel="stylesheet">
 </head>
 <body>
 
@@ -29,15 +30,15 @@
       <!-- Appeal Detail Card -->
       <div class="card card-ecmis mb-4">
         <div class="card-header bg-navy text-white d-flex align-items-center justify-content-between" style="background:#0F2A62; color:white;">
-          <span><i class="fa-solid fa-gavel me-2"></i>เรื่องอุทธรณ์หมายเลข: อุทธรณ์-10.2-2569/005</span>
-          <span class="st st-urgent"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 8 วัน</span>
+          <span><i class="fa-solid fa-gavel me-2"></i>เรื่องอุทธรณ์หมายเลข: <strong id="subCaseId">อุทธรณ์-10.2-2569/005</strong></span>
+          <span class="st st-urgent" id="subSlaBadge"><i class="fa-solid fa-clock me-1"></i>SLA เหลือ 8 วัน</span>
         </div>
         <div class="card-body">
-          <h5 class="fw-bold text-navy">คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบวินัยข้าราชการ</h5>
-          <p class="text-muted small">ผู้อุทธรณ์: <strong>นางสาววิไลวรรณ สุจริต</strong> | ยื่นเมื่อ: 20 มิถุนายน 2569 ผ่านระบบ Email</p>
+          <h5 class="fw-bold text-navy" id="subTitle">คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบวินัยข้าราชการ</h5>
+          <p class="text-muted small">ผู้อุทธรณ์: <strong id="subSource">นางสาววิไลวรรณ สุจริต</strong> | สถานะ: <span id="subStatus">รออนุกรรมการฯ พิจารณา</span></p>
           <div class="p-3 bg-light rounded border mb-3 small">
             <strong>สาระสำคัญในคำอุทธรณ์:</strong><br>
-            ผู้อุทธรณ์มีความประสงค์ขอตรวจดูและขอคัดสำเนารายงานการสอบข้อเท็จจริงวินัย แต่หน่วยงานต้นสังกัดมีคำสั่งปฏิเสธไม่เปิดเผยข้อมูลโดยอ้างว่าเป็นเอกสารลับทางราชการ ผู้อุทธรณ์จึงยื่นอุทธรณ์เนื่องจากเห็นว่าการสอบวินัยเสร็จสิ้นแล้ว ไม่มีเหตุอันควรปกปิดข้อมูล
+            <span id="subOpinion">ผู้อุทธรณ์มีความประสงค์ขอตรวจดูและขอคัดสำเนารายงานการสอบข้อเท็จจริงวินัย แต่หน่วยงานต้นสังกัดมีคำสั่งปฏิเสธไม่เปิดเผยข้อมูลโดยอ้างว่าเป็นเอกสารลับทางราชการ ผู้อุทธรณ์จึงยื่นอุทธรณ์เนื่องจากเห็นว่าการสอบวินัยเสร็จสิ้นแล้ว ไม่มีเหตุอันควรปกปิดข้อมูล</span>
           </div>
         </div>
       </div>
@@ -52,7 +53,7 @@
               <label class="form-label fw-bold">ผลการวินิจฉัยของคณะอนุกรรมการฯ <span class="text-danger">*</span></label>
               <div class="row g-2">
                 <div class="col-md-4">
-                  <input type="radio" class="btn-check" name="subVote" id="v1" checked>
+                  <input type="radio" class="btn-check" name="subVote" id="v1" value="REJECT_APPEAL" checked>
                   <label class="btn btn-outline-danger w-100 p-3" for="v1">
                     <i class="fa-solid fa-ban fs-4 d-block mb-1"></i>
                     <strong>ยกคำอุทธรณ์</strong><br>
@@ -60,7 +61,7 @@
                   </label>
                 </div>
                 <div class="col-md-4">
-                  <input type="radio" class="btn-check" name="subVote" id="v2">
+                  <input type="radio" class="btn-check" name="subVote" id="v2" value="PARTIAL_DISCLOSE">
                   <label class="btn btn-outline-warning text-dark w-100 p-3" for="v2">
                     <i class="fa-solid fa-envelope-open fs-4 d-block mb-1"></i>
                     <strong>เปิดเผยข้อมูลบางส่วน</strong><br>
@@ -68,7 +69,7 @@
                   </label>
                 </div>
                 <div class="col-md-4">
-                  <input type="radio" class="btn-check" name="subVote" id="v3">
+                  <input type="radio" class="btn-check" name="subVote" id="v3" value="FULL_DISCLOSE">
                   <label class="btn btn-outline-success w-100 p-3" for="v3">
                     <i class="fa-solid fa-lock-open fs-4 d-block mb-1"></i>
                     <strong>ให้เปิดเผยข้อมูลทั้งหมด</strong><br>
@@ -80,7 +81,7 @@
 
             <div class="mb-3">
               <label class="form-label fw-bold">เหตุผลและข้อพิจารณาในคำวินิจฉัย <span class="text-danger">*</span></label>
-              <textarea class="form-control" rows="4" required>คณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ ได้พิจารณาแล้ว เห็นว่าข้อมูลข่าวสารดังกล่าวเป็นรายงานผลการสอบสวนวินัยที่กระทบต่อสิทธิและบุคคลที่สาม อีกทั้งยังมีข้อมูลส่วนบุคคลของผู้ร้องเรียน จึงมีมติเห็นควรยกคำอุทธรณ์ ให้ยืนตามคำสั่งไม่เปิดเผยข้อมูลข่าวสารดังกล่าว</textarea>
+              <textarea class="form-control" id="voteReason" rows="4" required>คณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ ได้พิจารณาแล้ว เห็นว่าข้อมูลข่าวสารดังกล่าวเป็นรายงานผลการสอบสวนวินัยที่กระทบต่อสิทธิและบุคคลที่สาม อีกทั้งยังมีข้อมูลส่วนบุคคลของผู้ร้องเรียน จึงมีมติเห็นควรยกคำอุทธรณ์ ให้ยืนตามคำสั่งไม่เปิดเผยข้อมูลข่าวสารดังกล่าว</textarea>
             </div>
 
             <div class="d-flex justify-content-end gap-2 border-top pt-3">
@@ -101,15 +102,45 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
 <script>
   ECMIS.renderShell('08-subcommittee-appeal-review.html');
+  let currentCaseId = "";
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentCaseId = urlParams.get('caseId') || "อุทธรณ์-10.2-2569/005";
+    loadCaseData(currentCaseId);
+  });
+
+  function loadCaseData(id) {
+    const item = Activity10.getCaseById(id);
+    if (!item) return;
+
+    document.getElementById("subCaseId").innerText = item.id;
+    document.getElementById("subTitle").innerText = item.title;
+    document.getElementById("subSource").innerText = item.source || "ผู้อุทธรณ์";
+    document.getElementById("subStatus").innerText = item.status;
+    document.getElementById("subSlaBadge").innerHTML = `<i class="fa-solid fa-clock me-1"></i>SLA เหลือ ${item.slaDaysRemaining} วัน`;
+    if (item.legalOpinion) {
+      document.getElementById("subOpinion").innerText = item.legalOpinion;
+    }
+  }
 
   function handleSubcommitteeVote(e) {
     e.preventDefault();
+
+    const selectedVote = document.querySelector('input[name="subVote"]:checked').value;
+    const voteText = selectedVote === "REJECT_APPEAL" ? "อนุกรรมการฯ มติยกคำอุทธรณ์" : 
+                     selectedVote === "PARTIAL_DISCLOSE" ? "อนุกรรมการฯ มติเปิดเผยข้อมูลบางส่วน" : 
+                     "อนุกรรมการฯ มติให้เปิดเผยข้อมูลทั้งหมด";
+
+    Activity10.updateCaseStatus(currentCaseId, "SUBCOMMITTEE_RESOLVED", voteText, "bg-success text-white", "board");
+
     Swal.fire({
       icon: 'success',
       title: 'บันทึกมติอนุกรรมการฯ สำเร็จ!',
-      text: 'มติถูกส่งไปเสนอขอความเห็นชอบต่อคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว',
+      text: `มติ (${voteText}) สำหรับเรื่อง ${currentCaseId} ถูกส่งไปเสนอขอความเห็นชอบต่อคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว`,
       confirmButtonText: 'ตกลงไปยังหน้ามติบอร์ด',
       confirmButtonColor: '#0F2A62'
     }).then(() => {
