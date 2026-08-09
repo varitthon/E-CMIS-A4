@@ -3,78 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E-CMIS กิจกรรมที่ 10 | ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</title>
+<title>E-CMIS Portal | ระบบบริหารจัดการคดี สำนักงาน ป.ป.ท.</title>
+<link rel="icon" type="image/png" href="activity10/pacc_logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-<script>
-  // Redirect to Activity 10 Work Inbox automatically
-  window.location.href = "activity10/01-work-inbox.html";
-</script>
 <style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #0b132b 0%, #1c2541 50%, #0f172a 100%);
+    --act7-color: #3b82f6;
+    --act7-hover: #2563eb;
+    --act10-color: #f59e0b;
+    --act10-hover: #d97706;
+  }
+  
   body {
     font-family: 'Prompt', sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: var(--bg-gradient);
     min-height: 100vh;
-    color: #ffffff;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+    padding: 2.5rem 1rem;
+  }
+
+  /* Decorative Ambient Background Blobs */
+  .bg-blob-1 {
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(0,0,0,0) 70%);
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .bg-blob-2 {
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(0,0,0,0) 70%);
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .portal-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1050px;
+    width: 100%;
+  }
+
+  .header-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    margin-bottom: 2rem;
+  }
+
+  .brand-logo {
+    height: 80px;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+  }
+
+  .brand-logo:hover {
+    transform: scale(1.05);
+  }
+
+  .act-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .act-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+  }
+
+  .act-card-7::before {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  }
+
+  .act-card-10::before {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  }
+
+  .act-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .act-card-7:hover {
+    box-shadow: 0 20px 45px rgba(59, 130, 246, 0.25);
+  }
+
+  .act-card-10:hover {
+    box-shadow: 0 20px 45px rgba(245, 158, 11, 0.25);
+  }
+
+  .icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
   }
-  .portal-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 2.5rem;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    text-align: center;
+
+  .icon-7 {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
   }
-  .act-btn {
-    background: #ffffff;
-    color: #0f172a;
+
+  .icon-10 {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .feature-tag {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-enter-7 {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border: none;
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 0.85rem 1.5rem;
+    font-weight: 600;
     text-decoration: none;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     transition: all 0.3s ease;
-    border-left: 5px solid #d97706;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
   }
-  .act-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.3);
-    background: #ffffff;
-    color: #0f172a;
+
+  .btn-enter-7:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    transform: translateY(-2px);
   }
-  .brand-logo {
-    height: 72px;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+
+  .btn-enter-10 {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+  }
+
+  .btn-enter-10:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-sub {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 0.85rem 1.25rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-sub:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .footer-text {
+    color: #94a3b8;
+    font-size: 0.875rem;
   }
 </style>
 </head>
 <body>
 
-<div class="portal-card">
-  <img src="activity10/pacc_logo.png" alt="ตรา ป.ป.ท." class="brand-logo mb-3">
-  <h3 class="fw-bold text-warning mb-1">E-CMIS กิจกรรมที่ 10</h3>
-  <h5 class="fw-bold text-white mb-3">ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</h5>
-  <p class="text-light opacity-75 mb-4">กำลังนำท่านเข้าสู่ระบบ Work Inbox กิจกรรมที่ 10...</p>
+<div class="bg-blob-1"></div>
+<div class="bg-blob-2"></div>
 
-  <a href="activity10/01-work-inbox.html" class="act-btn text-start">
-    <div class="d-flex align-items-center justify-content-between mb-2">
-      <span class="badge bg-warning text-dark px-2 py-1 fs-6">เข้าสู่ระบบทันที</span>
-      <i class="fa-solid fa-arrow-right fs-5 text-secondary"></i>
+<div class="portal-container">
+  
+  <!-- Header Card -->
+  <div class="header-card text-center">
+    <img src="activity10/pacc_logo.png" alt="ตรา สำนักงาน ป.ป.ท." class="brand-logo mb-3">
+    <h2 class="fw-bold text-white mb-2">ระบบสารสนเทศเพื่อการบริหารจัดการคดี (E-CMIS)</h2>
+    <p class="text-light opacity-75 fs-5 mb-0">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.)</p>
+    <div class="d-inline-flex align-items-center gap-2 mt-3 px-3 py-1 bg-white bg-opacity-10 rounded-pill border border-white border-opacity-10 small text-warning">
+      <i class="fa-solid fa-circle-info"></i> กรุณาเลือกกิจกรรมและระบบงานที่ต้องการเข้าใช้งาน
     </div>
-    <h5 class="fw-bold text-dark m-0">10.1, 10.2, 10.3 งานกฎหมายในทางคดี</h5>
-    <p class="small text-muted m-0 mt-1">คดีชั้นอัยการ (ความเห็นแย้ง), คำร้อง/อุทธรณ์เปิดเผยข้อมูล, คดีปกครอง</p>
-  </a>
-
-  <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 small text-light opacity-50">
-    สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.)
   </div>
+
+  <!-- Cards Grid -->
+  <div class="row g-4">
+    
+    <!-- Activity 7 -->
+    <div class="col-lg-6">
+      <div class="act-card act-card-7">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="icon-wrapper icon-7">
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-30 fs-6 px-3 py-2 rounded-pill">
+              กิจกรรมที่ 7
+            </span>
+          </div>
+
+          <h4 class="fw-bold text-white mb-2">ระบบบริหารจัดการและติดตามสำนวนคดี</h4>
+          <p class="text-light opacity-75 mb-4">
+            ระบบงานรับเรื่องร้องเรียน สารบรรณสำนวนคดี การตรวจกลั่นกรองข้อเท็จจริง เสนอความเห็น และติดตามสถานะคดี ป.ป.ท.
+          </p>
+
+          <div class="d-flex flex-column gap-2 mb-4">
+            <div class="feature-tag">
+              <i class="fa-solid fa-inbox text-primary"></i>
+              <span>ระบบรับเรื่องร้องเรียน & สารบรรณสำนวนคดี</span>
+            </div>
+            <div class="feature-tag">
+              <i class="fa-solid fa-clipboard-check text-primary"></i>
+              <span>การกลั่นกรองสำนวน & การประชุม คณะกรรมการ ป.ป.ท.</span>
+            </div>
+            <div class="feature-tag">
+              <i class="fa-solid fa-file-contract text-primary"></i>
+              <span>รายงาน 213 & คำสั่ง ม.24</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-top border-white border-opacity-10 d-flex flex-column flex-sm-row gap-2">
+          <a href="activity7/index.html" class="btn-enter-7 flex-grow-1">
+            <span>เข้าสู่ระบบ กิจกรรมที่ 7</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <a href="activity7/01-work-inbox.html" class="btn-sub" title="เปิดหน้า Work Inbox โดยตรง">
+            <i class="fa-solid fa-tray"></i>
+            <span>Work Inbox</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 10 -->
+    <div class="col-lg-6">
+      <div class="act-card act-card-10">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="icon-wrapper icon-10">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30 fs-6 px-3 py-2 rounded-pill">
+              กิจกรรมที่ 10
+            </span>
+          </div>
+
+          <h4 class="fw-bold text-white mb-2">ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</h4>
+          <p class="text-light opacity-75 mb-4">
+            ระบบงานความเห็นแย้งคำสั่งไม่อุทธรณ์/ฎีกาชั้นอัยการ คำร้องอุทธรณ์เปิดเผยข้อมูลข่าวสาร และการดำเนินคดีปกครอง
+          </p>
+
+          <div class="d-flex flex-column gap-2 mb-4">
+            <div class="feature-tag">
+              <i class="fa-solid fa-gavel text-warning"></i>
+              <span>10.1 คดีชั้นอัยการ (พิจารณาความเห็นแย้ง)</span>
+            </div>
+            <div class="feature-tag">
+              <i class="fa-solid fa-shield-halved text-warning"></i>
+              <span>10.2 คำร้อง/อุทธรณ์การเปิดเผยข้อมูลข่าวสาร</span>
+            </div>
+            <div class="feature-tag">
+              <i class="fa-solid fa-building-columns text-warning"></i>
+              <span>10.3 คดีปกครอง & ฐานความรู้ทางกฎหมาย</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-top border-white border-opacity-10 d-flex flex-column flex-sm-row gap-2">
+          <a href="activity10/01-work-inbox.html" class="btn-enter-10 flex-grow-1">
+            <span>เข้าสู่ระบบ กิจกรรมที่ 10</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <a href="activity10/10-legal-knowledge-base.html" class="btn-sub" title="เปิดหน้า คลังความรู้กฎหมาย">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <span>คลังความรู้</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-5 text-center footer-text">
+    <p class="mb-1">© 2026 สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (สำนักงาน ป.ป.ท.)</p>
+    <p class="small opacity-50 mb-0">E-CMIS Web Application System | Platform Demonstration Portal</p>
+  </div>
+
 </div>
 
 </body>
