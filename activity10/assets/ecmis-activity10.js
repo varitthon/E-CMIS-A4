@@ -184,6 +184,35 @@
       return item;
     },
 
+    bulkUpdateStatus(ids, newStatusCode, newStatusText, newBadgeClass, nextRole) {
+      const cases = loadCases();
+      let updatedCount = 0;
+      cases.forEach(c => {
+        if (ids.includes(c.id)) {
+          c.statusCode = newStatusCode;
+          c.status = newStatusText;
+          c.statusBadge = newBadgeClass || c.statusBadge;
+          if (nextRole) c.assignedRole = nextRole;
+          updatedCount++;
+        }
+      });
+      saveCases(cases);
+      return updatedCount;
+    },
+
+    bulkAssignOfficer(ids, officerName) {
+      const cases = loadCases();
+      let updatedCount = 0;
+      cases.forEach(c => {
+        if (ids.includes(c.id)) {
+          c.officer = officerName;
+          updatedCount++;
+        }
+      });
+      saveCases(cases);
+      return updatedCount;
+    },
+
     saveLegalOpinion(id, opinionText) {
       const cases = loadCases();
       const item = cases.find(c => c.id === id);

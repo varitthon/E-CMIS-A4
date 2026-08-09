@@ -14,105 +14,87 @@
    จุดเริ่มต้นของกิจกรรมที่ 7 คือ "เลขาธิการคณะกรรมการ ป.ป.ท."            */
 /* ครบ 27 ตำแหน่ง / 11 กลุ่มงาน ตาม Google Sheet tab "กลุ่มผู้ใช้งานระบบ"
    perms = ชุดสิทธิ์ที่ระบบบังคับใช้จริง (ดูตาราง PERM_DEFS ด้านล่าง)          */
+/* ครบ 13 ตำแหน่งตาม Google Sheet จัดการ Role ของผู้ใช้งานระบบ (กิจกรรม 10.1, 10.2, 10.3)
+   perms = ชุดสิทธิ์ที่ระบบบังคับใช้จริง          */
 const ROLES = [
   /* ── 1. คณะกรรมการ ป.ป.ท. ─────────────────────────────────────────── */
   { id:'chairman', login:'Wichai.Y', row:1, group:'คณะกรรมการ ป.ป.ท.', title:'ประธานกรรมการ ป.ป.ท.',
-    name:'นายวิชัย ยุติธรรม', org:'คณะกรรมการ ป.ป.ท.', lane:'L5', flow:'G4 / S7', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','order.agenda','sign.agenda','sign.order24p3','sign.ruling','vote','bypass.approve','return'] },
+    name:'นายวิชัย ยุติธรรม', org:'คณะกรรมการ ป.ป.ท.', act:'10.1, 10.2, 10.3',
+    responsibilities:'รับทราบคำวินิจฉัยอัยการสูงสุด (ในกรณีเห็นแย้ง), ลงนามในมติการเปิดเผยข้อมูล, ลงนามในคำให้การ/คำชี้แจงต่อศาลปกครอง และหนังสือมอบอำนาจ',
+    note:'มีอำนาจตัดสินใจระดับบอร์ด หากบอร์ดมีมติเห็นแย้งกับอัยการ ต้องส่งเรื่องให้อัยการสูงสุดชี้ขาด',
+    perms:['view.all','download','sign.ruling','vote'] },
   { id:'board', login:'Somboon.T', row:2, group:'คณะกรรมการ ป.ป.ท.', title:'กรรมการ ป.ป.ท.',
-    name:'นายสมบูรณ์ ธรรมรัฐ', org:'คณะกรรมการ ป.ป.ท.', lane:'L8', flow:'S9 / G5', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','vote','read.agenda.advance'] },
-  { id:'board_ex', login:'BoardEx.Demo', row:3, group:'คณะกรรมการ ป.ป.ท.', title:'กรรมการ ป.ป.ท. โดยตำแหน่ง',
-    name:'เลขาธิการคณะกรรมการ ป.ป.ท.', org:'คณะกรรมการ ป.ป.ท.', lane:'L8', flow:'S9 / G5', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','vote','read.agenda.advance'] },
+    name:'นายสมบูรณ์ ธรรมรัฐ', org:'คณะกรรมการ ป.ป.ท.', act:'10.1, 10.2, 10.3',
+    responsibilities:'พิจารณาลงมติ "เห็นชอบ/เห็นแย้ง" กับความเห็นอัยการ, พิจารณาอนุมัติเปิดเผยข้อมูลข่าวสาร และตรวจความถูกต้องของคำให้การคดีปกครอง',
+    note:'เป็นผู้พิจารณาลงมติในที่ประชุมบอร์ดชุดใหญ่ (ไม่ใช่ผู้กลั่นกรองก่อนเข้าบอร์ด)',
+    perms:['view.all','download','vote'] },
 
-  /* ── 2. คณะอนุสนับสนุนเลขาธิการฯ (2 คณะ) ──────────────────────────── */
-  { id:'sup_chair', login:'Kitti.P', row:4, group:'คณะอนุสนับสนุนเลขาธิการฯ', title:'ประธานคณะอนุสนับสนุนฯ',
-    name:'นายกิตติ ปรีชาญาณ', org:'ส่วนกลาง (2 คณะ)', lane:'L2', flow:'S2 / G2', act:'7.1, 7.2',
-    perms:['view.assigned','download','support.opinion','support.certify'] },
-  { id:'support_sub', login:'Jiraporn.N', row:5, group:'คณะอนุสนับสนุนเลขาธิการฯ', title:'อนุกรรมการสนับสนุนเลขาธิการฯ',
-    name:'นางสาวจิราพร นิติกิจ', org:'ส่วนกลาง (2 คณะ)', lane:'L2', flow:'S2 / G2', act:'7.1, 7.2',
+  /* ── 2. คณะอนุกรรมการ ─────────────────────────────────────────────── */
+  { id:'subcommittee_screen', login:'Kitti.P', row:3, group:'คณะอนุกรรมการ', title:'คณะอนุกรรมการกลั่นกรองฯ',
+    name:'นายกิตติ ปรีชาญาณ', org:'ส่วนกลาง', act:'10.2',
+    responsibilities:'พิจารณาและให้ความเห็นเบื้องต้นเกี่ยวกับคำขอเปิดเผยข้อมูลข่าวสาร ก่อนเสนอเข้าที่ประชุมคณะกรรมการ ป.ป.ท.',
+    note:'กลั่นกรองเรื่องก่อนเสนอเข้าบอร์ดชุดใหญ่ (เฉพาะกิจกรรม 10.2 เท่านั้น)',
     perms:['view.assigned','download','support.opinion'] },
-  { id:'sup_sec', login:'Pongsakorn.T', row:6, group:'คณะอนุสนับสนุนเลขาธิการฯ', title:'อนุกรรมการและเลขานุการ (อนุสนับสนุนฯ)',
-    name:'นายพงศกร ธรรมสาร', org:'ส่วนกลาง (2 คณะ)', lane:'L2', flow:'S2', act:'7.1, 7.2',
-    perms:['view.assigned','download','support.opinion','support.minutes','doc.generate'] },
-  { id:'sup_asst', login:'Benjamas.J', row:7, group:'คณะอนุสนับสนุนเลขาธิการฯ', title:'อนุกรรมการและผู้ช่วยเลขานุการ (อนุสนับสนุนฯ)',
-    name:'นางสาวเบญจมาศ ใจดี', org:'ส่วนกลาง (2 คณะ)', lane:'L2', flow:'S2', act:'7.1, 7.2',
-    perms:['view.assigned','download','request.moreinfo'] },
-
-  /* ── 3. คณะอนุกลั่นกรองเรื่องไต่สวนข้อเท็จจริง (คณะ 1-8) ───────────── */
-  { id:'scr_chair', login:'Sumet.N', row:8, group:'คณะอนุกลั่นกรองฯ (คณะ 1-8)', title:'ประธานคณะอนุกลั่นกรองฯ',
-    name:'นายสุเมธ นิติธรรม', org:'ส่วนกลาง (คณะ 1-8)', lane:'L6', flow:'S6', act:'7.1, 7.2',
+  { id:'subcommittee_appeal', login:'Sumet.N', row:4, group:'คณะอนุกรรมการ', title:'คณะอนุกรรมการวินิจฉัยอุทธรณ์',
+    name:'นายสุเมธ นิติธรรม', org:'ส่วนกลาง', act:'10.2',
+    responsibilities:'พิจารณาวินิจฉัยคำอุทธรณ์ ในกรณีที่ ป.ป.ท. มีมติไม่อนุญาตให้เปิดเผยข้อมูล',
+    note:'กลั่นกรองและวินิจฉัยก่อนเสนอเข้าบอร์ดชุดใหญ่ (เฉพาะกิจกรรม 10.2 เท่านั้น)',
     perms:['view.assigned','download','screen.vote'] },
-  { id:'subcommittee', login:'Pranee.Y', row:9, group:'คณะอนุกลั่นกรองฯ (คณะ 1-8)', title:'อนุกรรมการกลั่นกรองฯ',
-    name:'นางปราณี ยุติธรรม', org:'ส่วนกลาง (คณะ 1-8)', lane:'L6', flow:'S6', act:'7.1, 7.2',
-    perms:['view.assigned','download','screen.vote'] },
-  { id:'scr_sec', login:'Worawut.N', row:10, group:'คณะอนุกลั่นกรองฯ (คณะ 1-8)', title:'อนุกรรมการและเลขานุการ (อนุกลั่นกรองฯ)',
-    name:'นายวรวุฒิ นิติกร', org:'นิติกร กบค.', lane:'L6', flow:'S6', act:'7.1, 7.2',
-    perms:['view.assigned','download','screen.minutes','doc.generate','present.board'] },
-  { id:'scr_asst', login:'Araya.S', row:11, group:'คณะอนุกลั่นกรองฯ (คณะ 1-8)', title:'อนุกรรมการและผู้ช่วยเลขานุการ (อนุกลั่นกรองฯ)',
-    name:'นางสาวอารยา สุจริต', org:'นิติกร กบค.', lane:'L6', flow:'S6', act:'7.1, 7.2',
-    perms:['view.assigned','download','doc.generate'] },
 
-  /* ── 4. คณะผู้บริหาร ───────────────────────────────────────────────── */
-  { id:'secgen', login:'Apichat.S', row:12, group:'คณะผู้บริหาร', title:'เลขาธิการคณะกรรมการ ป.ป.ท.',
-    name:'นายอภิชาติ สุจริตกุล', org:'สำนักงาน ป.ป.ท.', lane:'L1', flow:'S1 / G1 — จุดเริ่ม กจ.7', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','sign.report213','decide.complex','sign.order24p1','approve.general','return'] },
-  { id:'deputy_sg', login:'Surapong.W', row:13, group:'คณะผู้บริหาร', title:'รองเลขาธิการคณะกรรมการ ป.ป.ท.',
-    name:'นายสุรพงษ์ วัฒนา', org:'สำนักงาน ป.ป.ท.', lane:'—', flow:'ต้นทาง (กจ.5)', act:'7.1, 7.2, 7.3', scope:'UPSTREAM',
-    perms:['view.all','download','sign.report213','return'] },
-  { id:'deputy', login:'Pimjai.R', row:14, group:'คณะผู้บริหาร', title:'ผู้ช่วยเลขาธิการคณะกรรมการ ป.ป.ท.',
-    name:'นางสาวพิมพ์ใจ รัตนกุล', org:'สำนักงาน ป.ป.ท.', lane:'—', flow:'ต้นทาง (กจ.5)', act:'7.1, 7.2, 7.3', scope:'UPSTREAM',
-    perms:['view.all','download'] },
+  /* ── 3. คณะผู้บริหาร ───────────────────────────────────────────────── */
+  { id:'secgen', login:'Apichat.S', row:5, group:'คณะผู้บริหาร', title:'เลขาธิการ ป.ป.ท.',
+    name:'นายอภิชาติ สุจริตกุล', org:'สำนักงาน ป.ป.ท.', act:'10.1, 10.2, 10.3',
+    responsibilities:'พิจารณากลั่นกรองความเห็นของนิติกรก่อนเสนอบอร์ด และลงนามในหนังสือถึงอัยการ/ศาล',
+    note:'สามารถมอบอำนาจให้รองเลขาธิการ ป.ป.ท. "ปฏิบัติราชการแทน" ลงนามแทนในงานคดีอาญาหรือคดีปกครองได้',
+    perms:['view.all','download','approve.general','sign.general'] },
+  { id:'deputy_sg', login:'Surapong.W', row:6, group:'คณะผู้บริหาร', title:'รองเลขาธิการ ป.ป.ท.',
+    name:'นายสุรพงษ์ วัฒนา', org:'สำนักงาน ป.ป.ท.', act:'10.1, 10.2, 10.3',
+    responsibilities:'พิจารณากลั่นกรองงาน และลงนามปฏิบัติราชการแทนเลขาธิการในงานที่ได้รับมอบหมาย (เช่น กำกับดูแลกองกฎหมาย)',
+    note:'ได้รับมอบอำนาจเฉพาะกองงานที่ตนกำกับดูแลเท่านั้น',
+    perms:['view.all','download','approve.general'] },
 
-  /* ── 5. กองบริหารคดี (กบค.) ────────────────────────────────────────── */
-  { id:'affairs', login:'Siriporn.K', row:15, group:'กองบริหารคดี (กบค.)', title:'เจ้าหน้าที่กลุ่มงานกิจการคณะกรรมการ',
-    name:'นางสาวศิริพร กิจการ', org:'กองบริหารคดี', lane:'L7', flow:'S7 / S11', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','EDIT.MASTER','create.agenda','create.invite','doc.generate','order24.draft','secrecy.set'] },
-  { id:'board_sec', login:'Thanakrit.B', row:16, group:'กองบริหารคดี (กบค.)', title:'เจ้าหน้าที่กลุ่มงานคำวินิจฉัยและมติคณะกรรมการ',
-    name:'นายธนกฤต บุญมี', org:'กองบริหารคดี', lane:'L7', flow:'S8 / S10', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','record.minutes','lock.pdf','compile.minutes','doc.generate','dispatch.resolution'] },
-  { id:'dir_case', login:'Napat.S', row:20, group:'กองบริหารคดี (กบค.)', title:'ผู้อำนวยการกองบริหารคดี (ผอ.กบค.)',
-    name:'นางสาวณพัสตร์ ศรีสมเกียรติ', org:'กองบริหารคดี', lane:'L3', flow:'S3 / S5', act:'7.1, 7.2',
-    perms:['view.all','download','EDIT.MASTER','certify.urgent','assign.subcommittee','sign.general'] },
-  { id:'track', login:'Chaiwat.T', row:21, group:'กองบริหารคดี (กบค.)', title:'กลุ่มงานบริหารติดตามคดี (กบต.)',
-    name:'นายชัยวัฒน์ ติดตาม', org:'กองบริหารคดี', lane:'—', flow:'เชื่อม กจ.8', act:'7.2',
-    perms:['view.all','download','track.discipline'] },
-  { id:'admin_gen', login:'Wilai.T', row:22, group:'กองบริหารคดี (กบค.)', title:'กลุ่มงานบริหารคดีและบริหารทั่วไป',
-    name:'นางวิไล ธุรการ', org:'กองบริหารคดี', lane:'L3', flow:'S5', act:'7.1',
-    perms:['view.all','download','intake.route'] },
+  /* ── 4. กองบริหารคดี ───────────────────────────────────────────────── */
+  { id:'case_management', login:'Siriporn.K', row:7, group:'กองบริหารคดี', title:'เจ้าหน้าที่กองบริหารคดี',
+    name:'นางสาวศิริพร กิจการ', org:'กองบริหารคดี', act:'10.1, 10.2, 10.3',
+    responsibilities:'จัดทำรายงาน/แจ้งมติให้หน่วยงานเจ้าของสำนวนทราบ และสรุปสถิติ/บันทึกมติคณะกรรมการ ป.ป.ท. ในภาพรวม',
+    note:'กระจายหนังสือแจ้งมติไปยังหน่วยงานเจ้าของสำนวน',
+    perms:['view.all','download','dispatch.resolution'] },
 
-  /* ── 6. กอง / สำนักงาน ป.ป.ท. เขต (ต้นสังกัดสำนวน) ─────────────────── */
-  { id:'owner', login:'Somchai.J', row:17, group:'กอง / สนง. ป.ป.ท. เขต', title:'ผู้รับผิดชอบสำนวน / พนักงาน ป.ป.ท. (นักสืบ)',
-    name:'นายสมชาย ใจซื่อ', org:'สนง. ป.ป.ท. เขต 1', lane:'—', flow:'ต้นทาง (กจ.5)', act:'7.1, 7.2, 7.3', scope:'UPSTREAM',
-    perms:['view.own','download.own','ack.resolution','urgent.request','present.board.ruling','dispatch.nacc'] },
-  { id:'section_head', login:'Kanjana.W', row:18, group:'กอง / สนง. ป.ป.ท. เขต', title:'หัวหน้ากลุ่มงาน (นสส. / ชพ.)',
-    name:'นางกาญจนา วงศ์ธรรม', org:'สนง. ป.ป.ท. เขต 1', lane:'—', flow:'ต้นทาง (กจ.5)', act:'7.1, 7.2', scope:'UPSTREAM',
+  /* ── 5. กอง/สำนักเจ้าของเรื่อง ────────────────────────────────────────── */
+  { id:'original_officer', login:'Somchai.J', row:8, group:'กอง/สำนักเจ้าของเรื่อง', title:'นิติกร/นักสืบเจ้าของเรื่อง (เจ้าของสำนวนเดิม)',
+    name:'นายสมชาย ใจซื่อ', org:'สนง. ป.ป.ท. เขต 1', act:'10.1, 10.2, 10.3',
+    responsibilities:'ให้ข้อมูลข้อเท็จจริงประกอบการวิเคราะห์ความเห็นแย้ง, ให้ความเห็นประกอบการพิจารณาเปิดเผยข้อมูล และสนับสนุนข้อมูล/เอกสารในคดีปกครอง',
+    note:'เจ้าของสำนวนเดิมมีสิทธิ์เข้าถึงเฉพาะสำนวนที่ตนเองรับผิดชอบ เพื่อเตรียมข้อมูลให้กองกฎหมาย',
     perms:['view.own','download.own'] },
-  { id:'director', login:'Prasert.M', row:19, group:'กอง / สนง. ป.ป.ท. เขต', title:'ผอ.กอง / ผอ.สนง. ป.ป.ท. เขต',
-    name:'นายประเสริฐ มั่นคง', org:'สนง. ป.ป.ท. เขต 1', lane:'—', flow:'ต้นทาง (กจ.5)', act:'7.1, 7.2, 7.3', scope:'UPSTREAM',
-    perms:['view.own','download.own','urgent.endorse'] },
 
-  /* ── 7-9. สำนักงานเลขาธิการ / สารบรรณ / กองปราบ ────────────────────── */
-  { id:'chair_office', login:'Sunee.T', row:23, group:'สำนักงานเลขาธิการ', title:'หน้าห้องประธานกรรมการ ป.ป.ท.',
-    name:'นางสุนีย์ ธำรงชัย', org:'สำนักงานเลขาธิการ', lane:'L4', flow:'S4', act:'7.1, 7.2',
-    perms:['view.all','download','intake.screen','route.subcommittee'] },
-  { id:'registry', login:'Anucha.S', row:24, group:'สำนักเลขาธิการ', title:'สารบรรณกลางสำนักเลขาธิการ',
-    name:'นายอนุชา สารบรรณ', org:'สำนักเลขาธิการ', lane:'—', flow:'นอก E-CMIS', act:'7.1',
-    perms:['view.all','download','docnumber.issue'] },
-  { id:'suppress', login:'Panu.P', row:25, group:'กองปราบปรามการทุจริตฯ (กปท. 1-5)', title:'เจ้าหน้าที่กองปราบปรามการทุจริตในภาครัฐ',
-    name:'นายภาณุ ปราบทุจริต', org:'กปท. 1-5', lane:'—', flow:'ต้นทางเอกสาร', act:'7.1, 7.2',
-    perms:['view.own','download.own','memo.submit'] },
-
-  /* ── 10. กองกฎหมาย (กกม.) ──────────────────────────────────────────── */
-  { id:'legal', login:'Ekapong.W', row:26, group:'กองกฎหมาย (กกม.)', title:'นิติกร / ผอ.กองกฎหมาย',
-    name:'นายเอกพงศ์ วินิจฉัย', org:'กองกฎหมาย', lane:'—', flow:'เชื่อม กจ.10', act:'7.3',
+  /* ── 6. กองกฎหมาย ─────────────────────────────────────────────────── */
+  { id:'admin_legal', login:'Wilai.T', row:9, group:'กองกฎหมาย (กอท.)', title:'เจ้าหน้าที่ธุรการกองกฎหมาย',
+    name:'นางวิไล ธุรการ', org:'กองกฎหมาย (กอท.)', act:'10.1, 10.2, 10.3',
+    responsibilities:'รับสำนวน/คำร้อง/เอกสารความเห็นจากอัยการ ศาล หรือประชาชน, ลงทะเบียนออกเลขรับในระบบของกองกฎหมาย และมอบหมายงานต่อ',
+    note:'ต้องดูแลระบบทะเบียนคุมเอกสารของกองกฎหมาย',
+    perms:['view.all','download','intake.route','assign.work'] },
+  { id:'legal_officer', login:'Nattapol.B', row:10, group:'กองกฎหมาย', title:'นิติกร (ผู้รับผิดชอบสำนวน)',
+    name:'นายณัฐพล บัวทุม', org:'กองกฎหมาย', act:'10.1, 10.2, 10.3',
+    responsibilities:'วิเคราะห์ข้อกฎหมาย/ข้อเท็จจริง, จัดทำบันทึกความเห็น (เห็นชอบ/เห็นแย้ง), ร่างคำให้การ/คำแก้อุทธรณ์คดีปกครอง และติดตามสถานะ/ผลคำพิพากษา',
+    note:'หากงานล้นมือ นิติกรกลุ่มงานอื่นอาจถูกมอบหมายให้ช่วยดำเนินการในคดีที่ไม่ซับซ้อนได้',
     perms:['view.all','download','legal.opinion','doc.generate'] },
+  { id:'group_director', login:'Arnon.C', row:11, group:'กองกฎหมาย', title:'ผู้อำนวยการกลุ่มงาน',
+    name:'นายอานนท์ ชนประชา', org:'กองกฎหมาย', act:'10.1, 10.2, 10.3',
+    responsibilities:'กลั่นกรองงานในระดับกลุ่มงาน และให้ความเห็นชอบเบื้องต้นก่อนเสนอผู้อำนวยการกอง',
+    note:'กลั่นกรองในระดับกลุ่มงานก่อนเสนอผู้อำนวยการกอง',
+    perms:['view.all','download','approve.group'] },
+  { id:'dir_legal', login:'Napas.S', row:12, group:'กองกฎหมาย', title:'ผู้อำนวยการกองกฎหมาย',
+    name:'นางสาวณพัสตร์ ศรีสมเกียรติ', org:'กองกฎหมาย', act:'10.1, 10.2, 10.3',
+    responsibilities:'มอบหมายงานให้นิติกร, ตรวจสอบความถูกต้องของความเห็นทางกฎหมาย และลงนามเห็นชอบตามลำดับขั้น',
+    note:'กลั่นกรองในระดับกองก่อนเสนอผู้บริหารระดับสูง',
+    perms:['view.all','download','assign.officer','approve.general'] },
 
-  /* ── 11. ผู้ดูแลระบบ E-CMIS ────────────────────────────────────────── */
-  { id:'sysadmin', login:'Kritsana.A', row:27, group:'ผู้ดูแลระบบ E-CMIS', title:'ผู้ดูแลระบบ (System Admin)',
-    name:'นายกฤษณะ แอดมิน', org:'ศูนย์เทคโนโลยีสารสนเทศ', lane:'—', flow:'ทุกขั้น', act:'7.1, 7.2, 7.3',
-    perms:['view.all','download','admin.sla','admin.users','admin.reassign','audit.view'] }
+  /* ── 7. สำนักงานเลขาธิการ ───────────────────────────────────────────── */
+  { id:'registry', login:'Anucha.S', row:13, group:'สำนักงานเลขาธิการ', title:'สารบรรณกลาง',
+    name:'นายอนุชา สารบรรณ', org:'สำนักงานเลขาธิการ', act:'10.1, 10.2, 10.3',
+    responsibilities:'รับเอกสาร/คำร้อง/หมายเรียกจากภายนอก (อัยการ/ศาล/ประชาชน) ลงทะเบียนรับเรื่อง ออกเลขรับ-ส่ง และส่งต่อให้กองที่เกี่ยวข้อง',
+    note:'เป็นจุดรับเอกสารเข้า-ออกของสำนักงาน เพื่อส่งต่อเรื่องให้กองกฎหมายหรือกองบริหารคดี',
+    perms:['view.all','download','docnumber.issue'] }
 ];
 
 /* --------------------------------------------------- DOCUMENT TYPE + SLA
@@ -907,7 +889,7 @@ function roleIdForLogin(username){
 }
 
 /* current role — เก็บใน sessionStorage เพื่อให้สลับข้ามหน้าได้ */
-function currentRoleId(){ return sessionStorage.getItem('ecmis_role') || 'owner'; }
+function currentRoleId(){ return sessionStorage.getItem('ecmis_role') || 'legal_officer'; }
 function setRole(id){ sessionStorage.setItem('ecmis_role', id); location.reload(); }
 function currentRole(){ return getRole(currentRoleId()); }
 
@@ -916,57 +898,48 @@ function inboxFor(roleId){
   return CASES.filter(c => STATUS[c.status] && STATUS[c.status].owner === roleId);
 }
 
-/* สิทธิ์: บทบาทปัจจุบันเป็น "เจ้าของคิว" ของสำนวนนี้หรือไม่
-   — และสำนวนต้องเข้าขอบเขตกิจกรรมที่ 7 แล้วเท่านั้น                    */
+/* สิทธิ์: บทบาทปัจจุบันเป็น "เจ้าของคิว" ของสำนวนนี้หรือไม่ */
 function canAct(kase, roleId){
   const st = STATUS[kase.status];
-  if(!st || st.scope === 'UPSTREAM') return false;   /* ยังไม่เข้า กจ.7 */
+  if(!st) return false;
   return st.owner === roleId;
 }
 
-/* Recall: เจ้าของเรื่องดึงกลับได้เฉพาะขณะยังอยู่ในสายต้นทาง (กจ.5)
-   เมื่อเข้ากิจกรรมที่ 7 แล้ว การดึงกลับต้องทำผ่านการ "ส่งคืน" ของเลขาธิการฯ */
 function canRecall(kase, roleId){
-  if(roleId !== 'owner') return false;
-  return ['PENDING_SECTION','PENDING_DIRECTOR','PENDING_DEPUTY'].includes(kase.status);
+  if(roleId !== 'legal_officer') return false;
+  return ['PENDING_DIRECTOR','PENDING_SECGEN'].includes(kase.status);
 }
 
 /* -------------------------------------------------------- SHELL RENDER
-   เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท โดยใช้ระดับการมองเห็นสำนวน
-   เดียวกับ canViewCase() เป็นตัวตัดสิน (ไม่ผูกเมนูไว้ตายตัว):
-     view.all      → เห็นทุกหน้ารวมโต๊ะสั่งการเลขาธิการฯ (บทบาทกำกับ/บริหารคดี)
-     view.assigned → เห็นเฉพาะหน้าที่คณะของตนทำงานจริงตาม flow (อนุสนับสนุนฯ = S2,
-                     อนุกลั่นกรองฯ = S6) — ตรงกับที่ 04/07 เช็ค role.id ในหน้าจริง
-     view.own      → เห็นเฉพาะภาพรวม (Work Inbox + ทะเบียนสำนวน) ไม่เห็นหน้า
-                     กระบวนงานภายในกิจกรรมที่ 7 ซึ่งอยู่นอกขอบเขตงานของตน       */
+   เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท (13 บทบาท ตาม Google Sheet) */
 const NAV = [
   { section:'ภาพรวมระบบ' },
   { href:'01-work-inbox.html',            icon:'fa-inbox',            label:'Work Inbox (คิวงาน)', badge:true,
     visible: role => true },
-  { href:'02-case-register.html',         icon:'fa-folder-open',      label:'ทะเบียนสำนวน/คำร้อง',
-    visible: role => ['admin_legal','registry','admin_gen','legal_officer','owner','scr_sec','dir_legal','dir_case','secgen'].includes(role.id) },
+  { href:'02-case-register.html',         icon:'fa-folder-open',      label:'ลงทะเบียนรับหนังสือ/สำนวน',
+    visible: role => ['admin_legal','registry','legal_officer','original_officer','dir_legal','secgen','case_management'].includes(role.id) },
   
   { section:'10.1 คดีชั้นอัยการ/ศาล (ความเห็นแย้ง)' },
   { href:'03-split-viewer.html',          icon:'fa-columns',          label:'Split-Screen Viewer (ยกร่าง)', step:1,
-    visible: role => ['legal_officer','owner','scr_sec','admin_legal','dir_legal','dir_case'].includes(role.id) },
+    visible: role => ['legal_officer','original_officer','group_director','dir_legal','admin_legal'].includes(role.id) },
   { href:'04-approval-review.html',       icon:'fa-user-check',       label:'e-Approval (เสนอพิจารณา)', step:2,
-    visible: role => ['dir_legal','dir_case','director','section_head','secgen','deputy_sg','chairman'].includes(role.id) },
+    visible: role => ['group_director','dir_legal','deputy_sg','secgen','chairman','board'].includes(role.id) },
   { href:'05-digital-signature.html',     icon:'fa-file-signature',   label:'e-Signature (ลงนามดิจิทัล)', step:3,
-    visible: role => ['dir_legal','dir_case','secgen','deputy_sg','chairman'].includes(role.id) },
+    visible: role => ['dir_legal','deputy_sg','secgen','chairman'].includes(role.id) },
   { href:'06-board-resolution.html',      icon:'fa-scale-balanced',   label:'มติและผลคำวินิจฉัยชี้ขาด', step:4,
-    visible: role => ['chairman','board','board_ex','subcommittee','sup_chair','scr_chair','dir_legal','secgen','admin_legal','board_sec'].includes(role.id) },
+    visible: role => ['chairman','board','subcommittee_screen','subcommittee_appeal','secgen','case_management','dir_legal','legal_officer'].includes(role.id) },
   
   { section:'10.2 คำร้อง/คำอุทธรณ์เปิดเผยข้อมูล' },
   { href:'07-info-request-form.html',     icon:'fa-envelope-open-text',label:'คำร้อง/คำอุทธรณ์ข้อมูลข่าวสาร', step:5,
-    visible: role => ['admin_legal','registry','legal_officer','owner','subcommittee','sup_chair','dir_legal','secgen'].includes(role.id) },
+    visible: role => ['admin_legal','registry','legal_officer','subcommittee_screen','subcommittee_appeal','dir_legal','secgen'].includes(role.id) },
   { href:'08-subcommittee-appeal-review.html', icon:'fa-users-gear',  label:'คณะอนุกรรมการวินิจฉัยอุทธรณ์', step:6,
-    visible: role => ['subcommittee','sup_chair','support_sub','scr_chair','dir_legal','chairman','board','secgen'].includes(role.id) },
+    visible: role => ['subcommittee_screen','subcommittee_appeal','chairman','board','dir_legal','secgen'].includes(role.id) },
   
   { section:'10.3 ระบบการจัดการคดีปกครอง' },
   { href:'09-admin-court-notice.html',    icon:'fa-landmark-flag',    label:'คดีปกครอง (หมายเรียก/คำให้การ)', step:7,
-    visible: role => ['admin_legal','registry','legal_officer','owner','scr_sec','dir_legal','secgen'].includes(role.id) },
+    visible: role => ['admin_legal','registry','legal_officer','original_officer','group_director','dir_legal','secgen','chairman'].includes(role.id) },
   { href:'10-legal-knowledge-base.html',  icon:'fa-lightbulb',        label:'คลังความรู้คดีตัวอย่าง (KM)', step:8,
-    visible: role => ['legal_officer','owner','scr_sec','dir_legal','dir_case','secgen','chairman','board'].includes(role.id) }
+    visible: role => true }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ

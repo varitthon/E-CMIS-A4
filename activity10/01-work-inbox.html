@@ -87,7 +87,7 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th><input type="checkbox" class="form-check-input"></th>
+                  <th><input type="checkbox" id="chkSelectAll" class="form-check-input" onchange="toggleSelectAll(this)" title="เลือกทั้งหมด"></th>
                   <th>เลขที่สำนวน/คำร้อง</th>
                   <th>หมวดหมู่อื่น</th>
                   <th>เรื่อง / รายละเอียด</th>
@@ -100,6 +100,24 @@
                 <!-- Rendered dynamically -->
               </tbody>
             </table>
+          </div>
+          
+          <!-- Bulk actions footer -->
+          <div class="px-3 py-2 border-top bg-light d-flex align-items-center justify-content-between flex-wrap gap-2" id="bulkActionsBox">
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted" id="bulkSelectCount">เลือกแล้ว 0 รายการ</span>
+              <div id="bulkButtons" class="d-none d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-xs btn-navy py-1 px-2" style="font-size:0.78rem" onclick="executeBulkApprove()">
+                  <i class="fa-solid fa-check-double me-1"></i>เสนออนุมัติผู้บังคับบัญชาเป็นชุด (Bulk Approve)
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" style="font-size:0.78rem" onclick="executeBulkReassign()">
+                  <i class="fa-solid fa-user-gear me-1"></i>มอบหมายนิติกรใหม่ (Bulk Assign)
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" style="font-size:0.78rem" onclick="executeBulkExport()">
+                  <i class="fa-solid fa-file-excel me-1"></i>ส่งออกรายงานสรุป (Bulk Export)
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -199,6 +217,7 @@
 
     if (cases.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>ไม่พบรายการสำนวนตามเงื่อนไขที่เลือก</td></tr>`;
+      updateBulkUI();
       return;
     }
 
@@ -209,7 +228,7 @@
 
       html += `
         <tr>
-          <td><input type="checkbox" class="form-check-input"></td>
+          <td><input type="checkbox" class="form-check-input case-chk" value="${c.id}" onchange="updateBulkUI()"></td>
           <td><strong class="text-navy">${c.id}</strong><br><small class="text-muted">${c.docNo || ''}</small></td>
           <td><span class="st st-regular">${c.categoryName}</span></td>
           <td>
@@ -229,6 +248,123 @@
       `;
     });
     tbody.innerHTML = html;
+    updateBulkUI();
+  }
+
+  function toggleSelectAll(masterChk) {
+    const chks = document.querySelectorAll('.case-chk');
+    chks.forEach(c => c.checked = masterChk.checked);
+    updateBulkUI();
+  }
+
+  function getSelectedCaseIds() {
+    const chks = document.querySelectorAll('.case-chk:checked');
+    return Array.from(chks).map(c => c.value);
+  }
+
+  function updateBulkUI() {
+    const selectedIds = getSelectedCaseIds();
+    const countSpan = document.getElementById("bulkSelectCount");
+    const bulkBtns = document.getElementById("bulkButtons");
+    
+    countSpan.innerText = `เลือกแล้ว ${selectedIds.length} รายการ`;
+    if (selectedIds.length > 0) {
+      bulkBtns.classList.remove("d-none");
+    } else {
+      bulkBtns.classList.add("d-none");
+      const masterChk = document.getElementById("chkSelectAll");
+      if (masterChk) masterChk.checked = false;
+    }
+  }
+
+  function executeBulkApprove() {
+    const selectedIds = getSelectedCaseIds();
+    if (selectedIds.length === 0) return;
+
+    Swal.fire({
+      icon: 'question',
+      title: `อนุมัติเสนอผู้บังคับบัญชา (${selectedIds.length} รายการ)?`,
+      html: `<div class="text-start small">
+        <p class="mb-2">รายการสำนวนคดีที่จะส่งเสนออนุมัติเป็นชุด:</p>
+        <ul class="mb-3 text-navy fw-bold">${selectedIds.map(id => `<li>${id}</li>`).join('')}</ul>
+        <small class="text-muted">สถานะของทุกรายการจะถูกอัปเดตเป็น <strong>"เสนอ ผอ.กองกฎหมาย / เลขาธิการ ป.ป.ท."</strong> พร้อมกัน</small>
+      </div>`,
+      showCancelButton: true,
+      confirmButtonText: `ยืนยันอนุมัติ ${selectedIds.length} รายการ`,
+      confirmButtonColor: '#0F2A62',
+      cancelButtonText: 'ยกเลิก'
+    }).then(res => {
+      if (res.isConfirmed) {
+        Activity10.bulkUpdateStatus(selectedIds, "PENDING_DIRECTOR", "เสนอ ผอ.กองกฎหมาย", "bg-primary text-white", "dir_legal");
+        renderKPI();
+        renderTable();
+        Swal.fire({
+          icon: 'success',
+          title: 'อนุมัติและเสนอเรื่องเป็นชุดสำเร็จ!',
+          text: `อัปเดตสถานะทั้ง ${selectedIds.length} รายการเรียบร้อยแล้ว`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
+
+  function executeBulkReassign() {
+    const selectedIds = getSelectedCaseIds();
+    if (selectedIds.length === 0) return;
+
+    Swal.fire({
+      title: `มอบหมายนิติกรใหม่ (${selectedIds.length} รายการ)`,
+      input: 'select',
+      inputOptions: {
+        'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)': 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)',
+        'นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)': 'นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)',
+        'นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)': 'นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)',
+        'นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)': 'นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)'
+      },
+      inputPlaceholder: 'เลือกนิติกรเจ้าของสำนวน...',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันมอบหมาย',
+      confirmButtonColor: '#0F2A62'
+    }).then(res => {
+      if (res.isConfirmed && res.value) {
+        Activity10.bulkAssignOfficer(selectedIds, res.value);
+        renderTable();
+        Swal.fire({
+          icon: 'success',
+          title: 'มอบหมายงานสำเร็จ!',
+          text: `มอบหมาย ${selectedIds.length} รายการให้ ${res.value} เรียบร้อยแล้ว`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
+
+  function executeBulkExport() {
+    const selectedIds = getSelectedCaseIds();
+    const cases = Activity10.getCases().filter(c => selectedIds.includes(c.id));
+    
+    let summaryHtml = `
+      <div style="text-align:left; font-size:0.85rem;">
+        <p><strong>รายงานสรุปรายการคดีที่เลือก (${cases.length} รายการ):</strong></p>
+        <table class="table table-sm table-bordered">
+          <thead><tr><th>เลขที่สำนวน</th><th>เรื่อง</th><th>นิติกร</th><th>SLA</th></tr></thead>
+          <tbody>
+            ${cases.map(c => `<tr><td>${c.id}</td><td>${c.title.substring(0,30)}...</td><td>${c.officer.split(' ')[0]}</td><td>${c.slaDaysRemaining} วัน</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    Swal.fire({
+      title: '📊 สรุปข้อมูลส่งออก (Bulk Export)',
+      html: summaryHtml,
+      confirmButtonText: 'ดาวน์โหลดไฟล์สรุป (Excel/PDF Simulation)',
+      confirmButtonColor: '#0F2A62'
+    }).then(() => {
+      Swal.fire({ icon:'success', title:'ดาวน์โหลดไฟล์สำเร็จ!', timer:1000, showConfirmButton:false });
+    });
   }
 
   function resetDemoData() {
