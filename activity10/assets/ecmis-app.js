@@ -913,33 +913,10 @@ function canRecall(kase, roleId){
 /* -------------------------------------------------------- SHELL RENDER
    เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท (13 บทบาท ตาม Google Sheet) */
 const NAV = [
-  { section:'ภาพรวมระบบ' },
-  { href:'01-work-inbox.html',            icon:'fa-inbox',            label:'Work Inbox (คิวงาน)', badge:true,
-    visible: role => true },
-  { href:'02-case-register.html',         icon:'fa-folder-open',      label:'ลงทะเบียนรับหนังสือ/สำนวน',
-    visible: role => ['admin_legal','registry','legal_officer','original_officer','dir_legal','secgen','case_management'].includes(role.id) },
-  
-  { section:'10.1 คดีชั้นอัยการ/ศาล (ความเห็นแย้ง)' },
-  { href:'03-split-viewer.html',          icon:'fa-columns',          label:'Split-Screen Viewer (ยกร่าง)', step:1,
-    visible: role => ['legal_officer','original_officer','group_director','dir_legal','admin_legal'].includes(role.id) },
-  { href:'04-approval-review.html',       icon:'fa-user-check',       label:'e-Approval (เสนอพิจารณา)', step:2,
-    visible: role => ['group_director','dir_legal','deputy_sg','secgen','chairman','board'].includes(role.id) },
-  { href:'05-digital-signature.html',     icon:'fa-file-signature',   label:'e-Signature (ลงนามดิจิทัล)', step:3,
-    visible: role => ['dir_legal','deputy_sg','secgen','chairman'].includes(role.id) },
-  { href:'06-board-resolution.html',      icon:'fa-scale-balanced',   label:'มติและผลคำวินิจฉัยชี้ขาด', step:4,
-    visible: role => ['chairman','board','subcommittee_screen','subcommittee_appeal','secgen','case_management','dir_legal','legal_officer'].includes(role.id) },
-  
-  { section:'10.2 คำร้อง/คำอุทธรณ์เปิดเผยข้อมูล' },
-  { href:'07-info-request-form.html',     icon:'fa-envelope-open-text',label:'คำร้อง/คำอุทธรณ์ข้อมูลข่าวสาร', step:5,
-    visible: role => ['admin_legal','registry','legal_officer','subcommittee_screen','subcommittee_appeal','dir_legal','secgen'].includes(role.id) },
-  { href:'08-subcommittee-appeal-review.html', icon:'fa-users-gear',  label:'คณะอนุกรรมการวินิจฉัยอุทธรณ์', step:6,
-    visible: role => ['subcommittee_screen','subcommittee_appeal','chairman','board','dir_legal','secgen'].includes(role.id) },
-  
-  { section:'10.3 ระบบการจัดการคดีปกครอง' },
-  { href:'09-admin-court-notice.html',    icon:'fa-landmark-flag',    label:'คดีปกครอง (หมายเรียก/คำให้การ)', step:7,
-    visible: role => ['admin_legal','registry','legal_officer','original_officer','group_director','dir_legal','secgen','chairman'].includes(role.id) },
-  { href:'10-legal-knowledge-base.html',  icon:'fa-lightbulb',        label:'คลังความรู้คดีตัวอย่าง (KM)', step:8,
-    visible: role => true }
+  { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมาย (กิจกรรม 10)' },
+  { href:'01-work-inbox.html', icon:'fa-inbox', label:'Work Inbox (คิวงานหลัก)', badge:true, visible: role => true },
+  { href:'index.html', icon:'fa-house', label:'หน้าแรกประชาสัมพันธ์', visible: role => true },
+  { href:'login.html', icon:'fa-right-to-bracket', label:'เข้าสู่ระบบ (Login)', visible: role => true }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ

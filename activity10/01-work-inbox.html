@@ -23,7 +23,7 @@
     </div>
     <div class="d-flex align-items-center gap-2 ms-auto">
       <button class="btn btn-xs btn-outline-secondary" onclick="resetDemoData()"><i class="fa-solid fa-rotate me-1"></i>รีเซ็ตข้อมูลตัวอย่าง</button>
-      <a href="02-case-register.html" class="btn btn-navy btn-sm"><i class="fa-solid fa-plus me-1"></i>ลงทะเบียนเรื่องใหม่</a>
+      <button type="button" class="btn btn-navy btn-sm" onclick="openNewCaseModal()"><i class="fa-solid fa-plus me-1"></i>ลงทะเบียนเรื่องใหม่</button>
     </div>
   </div>
 
@@ -240,9 +240,9 @@
           <td><span class="st ${slaBadgeClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
           <td class="text-end">
             <div class="btn-group btn-group-sm">
-              <a href="03-split-viewer.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-navy" title="ยกร่างความเห็น (Split-Screen)"><i class="fa-solid fa-columns me-1"></i>ยกร่าง</a>
-              <a href="04-approval-review.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-outline-primary" title="เสนออนุมัติ"><i class="fa-solid fa-paper-plane"></i></a>
-              <a href="05-digital-signature.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-outline-success" title="ลงนาม e-Signature"><i class="fa-solid fa-file-signature"></i></a>
+              <button type="button" onclick="openDraftModal('${c.id}')" class="btn btn-xs btn-navy" title="ยกร่างความเห็น (Split-Screen)"><i class="fa-solid fa-columns me-1"></i>ยกร่าง</button>
+              <button type="button" onclick="openApprovalModal('${c.id}')" class="btn btn-xs btn-outline-primary" title="เสนออนุมัติ"><i class="fa-solid fa-paper-plane"></i></button>
+              <button type="button" onclick="openSignModal('${c.id}')" class="btn btn-xs btn-outline-success" title="ลงนาม e-Signature"><i class="fa-solid fa-file-signature"></i></button>
             </div>
           </td>
         </tr>
@@ -382,6 +382,156 @@
         renderKPI();
         renderTable();
         Swal.fire({ icon:'success', title:'รีเซ็ตสำเร็จ', timer:1000, showConfirmButton:false });
+      }
+    });
+  }
+
+  function openNewCaseModal(){
+    Swal.fire({
+      title: 'ลงทะเบียนรับหนังสือ/สำนวนใหม่',
+      html: `
+        <div class="text-start small">
+          <div class="mb-2">
+            <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย</label>
+            <select id="swalCat" class="form-select form-select-sm">
+              <option value="10.1">10.1 คดีชั้นอัยการ (ความเห็นแย้ง)</option>
+              <option value="10.2.1">10.2.1 ขอเปิดเผยข้อมูลข่าวสาร</option>
+              <option value="10.2.2">10.2.2 อุทธรณ์การไม่เปิดเผยข้อมูล</option>
+              <option value="10.3">10.3 คดีปกครอง (ศาลปกครอง)</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">ชื่อเรื่อง / รายละเอียดสำนวน</label>
+            <input type="text" id="swalTitle" class="form-control form-control-sm" placeholder="กรอกชื่อเรื่องคำร้องหรือสำนวนคดี">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">หน่วยงานต้นทาง / ที่มา</label>
+            <input type="text" id="swalSource" class="form-control form-control-sm" placeholder="เช่น สำนักงานอัยการพิเศษฯ หรือ ศาลปกครอง">
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'บันทึกการลงทะเบียน',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#0F2A62',
+      preConfirm: () => {
+        const title = document.getElementById('swalTitle').value.trim();
+        if (!title) {
+          Swal.showValidationMessage('กรุณากรอกชื่อเรื่องสำนวน');
+          return false;
+        }
+        return {
+          category: document.getElementById('swalCat').value,
+          title: title,
+          source: document.getElementById('swalSource').value || 'ศูนย์รับเรื่องร้องเรียน ป.ป.ท.'
+        };
+      }
+    }).then(res => {
+      if (res.isConfirmed && res.value) {
+        const newCase = Activity10.addCase(res.value);
+        renderKPI();
+        renderTable();
+        Swal.fire({
+          icon: 'success',
+          title: 'ลงทะเบียนสำเร็จ!',
+          text: `สร้างเลขสำนวน ${newCase.id} เรียบร้อยแล้ว`,
+          confirmButtonColor: '#0F2A62'
+        });
+      }
+    });
+  }
+
+  function openDraftModal(caseId){
+    const kase = Activity10.getCaseById(caseId);
+    Swal.fire({
+      title: `ยกร่างความเห็น — ${kase.id}`,
+      html: `
+        <div class="text-start small">
+          <p><b>เรื่อง:</b> ${kase.title}</p>
+          <p><b>สถานะปัจจุบัน:</b> <span class="badge bg-warning text-dark">${kase.status}</span></p>
+          <div class="mb-2">
+            <label class="form-label fw-bold">บันทึกความเห็นทางกฎหมาย (ยกร่าง)</label>
+            <textarea id="swalOpinion" class="form-control form-control-sm" rows="4">${kase.legalOpinion || ''}</textarea>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'บันทึกร่างความเห็น',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#0F2A62'
+    }).then(res => {
+      if (res.isConfirmed) {
+        const newOpinion = document.getElementById('swalOpinion').value.trim();
+        kase.legalOpinion = newOpinion;
+        Activity10.updateCaseStatus(kase.id, 'DRAFTING_OPINION', 'กำลังร่างความเห็นแย้ง', 'bg-warning text-dark');
+        renderTable();
+        Swal.fire({ icon:'success', title:'บันทึกร่างความเห็นสำเร็จ', timer:1200, showConfirmButton:false });
+      }
+    });
+  }
+
+  function openApprovalModal(caseId){
+    const kase = Activity10.getCaseById(caseId);
+    Swal.fire({
+      title: `เสนอพิจารณาอนุมัติ — ${kase.id}`,
+      html: `
+        <div class="text-start small">
+          <p><b>เรื่อง:</b> ${kase.title}</p>
+          <p><b>ความเห็นทางกฎหมาย:</b> ${kase.legalOpinion || 'อยู่ระหว่างตรวจพิจารณา'}</p>
+          <hr>
+          <p class="fw-bold">เลือกผลการพิจารณา:</p>
+        </div>
+      `,
+      showCancelButton: true,
+      showDenyButton: true,
+      confirmButtonText: 'อนุมัติ / เห็นชอบ',
+      denyButtonText: 'ส่งกลับแก้ไข',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#0F2A62',
+      denyButtonColor: '#a5322a'
+    }).then(res => {
+      if (res.isConfirmed) {
+        Activity10.updateCaseStatus(kase.id, 'PENDING_DIRECTOR', 'เสนอ ผอ.กองกฎหมาย', 'bg-primary text-white');
+        renderKPI();
+        renderTable();
+        Swal.fire({ icon:'success', title:'เสนอพิจารณาอนุมัติสำเร็จ!', timer:1200, showConfirmButton:false });
+      } else if (res.isDenied) {
+        Activity10.updateCaseStatus(kase.id, 'DRAFTING_OPINION', 'ส่งกลับแก้ไขร่างความเห็น', 'bg-secondary text-white');
+        renderKPI();
+        renderTable();
+        Swal.fire({ icon:'info', title:'ส่งเรื่องกลับแก้ไขแล้ว', timer:1200, showConfirmButton:false });
+      }
+    });
+  }
+
+  function openSignModal(caseId){
+    const kase = Activity10.getCaseById(caseId);
+    Swal.fire({
+      title: `ลงนาม e-Signature — ${kase.id}`,
+      html: `
+        <div class="text-start small">
+          <p><b>เรื่อง:</b> ${kase.title}</p>
+          <p><b>ผู้ลงนาม:</b> นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)</p>
+          <div class="p-3 bg-light border rounded text-center my-2">
+            <i class="fa-solid fa-signature fa-2x text-navy mb-2"></i>
+            <div><small class="font-monospace text-muted">DIGITAL SIGNATURE STAMP</small></div>
+            <b>[ลงนามกำกับด้วยใบรับรองอิเล็กทรอนิกส์ PKI]</b>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันลงนามดิจิทัล',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#198754'
+    }).then(res => {
+      if (res.isConfirmed) {
+        kase.signatureStamped = true;
+        kase.signedBy = 'นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)';
+        kase.signedDate = new Date().toLocaleString('th-TH');
+        Activity10.updateCaseStatus(kase.id, 'PENDING_SECGEN', 'ลงนามเรียบร้อยแล้ว', 'bg-success text-white');
+        renderKPI();
+        renderTable();
+        Swal.fire({ icon:'success', title:'ลงนามดิจิทัลสำเร็จ!', timer:1200, showConfirmButton:false });
       }
     });
   }
