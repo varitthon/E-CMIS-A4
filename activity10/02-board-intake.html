@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>นำเข้าเอกสารตัวจริง & สแกนเข้าระบบ (กองบริหารคดี) | E-CMIS กิจกรรมที่ 10</title>
+  <link rel="icon" type="image/png" href="pacc_logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link href="assets/ecmis-app.css" rel="stylesheet">
+  <link href="assets/ecmis-activity10.css" rel="stylesheet">
+</head>
+<body>
+
+<main class="app-main">
+  <!-- Page Head -->
+  <div class="page-head mb-3">
+    <div class="d-flex align-items-center gap-3">
+      <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+      <div>
+        <h1 class="m-0" style="font-size:1.35rem;"><i class="fa-solid fa-file-signature me-2 text-primary"></i>บันทึกรับเอกสารตัวจริง & สแกนเข้าระบบ (กองบริหารคดี)</h1>
+        <div class="small text-muted">สำหรับ เจ้าหน้าที่กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ) รับเอกสารตัวจริงจากสารบรรณกลาง และนำเข้าข้อมูลสู่ระบบ</div>
+      </div>
+    </div>
+    <div class="ms-auto text-end">
+      <span class="badge bg-primary text-white px-3 py-1 fs-6">กลุ่มงานกิจการคณะกรรมการ</span>
+      <div class="small text-muted mt-1">ผู้ลงรับ: นางสาวศิริพร ขวัญเมือง</div>
+    </div>
+  </div>
+
+  <!-- Stepper Workflow -->
+  <div class="card card-ecmis mb-3">
+    <div class="card-body py-2">
+      <div class="d-flex align-items-center justify-content-between text-center small flex-wrap gap-2">
+        <div class="fw-bold text-navy"><i class="fa-solid fa-1 me-1 rounded-circle bg-navy text-white p-1" style="width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;"></i>1. กองบริหารคดี บันทึกรับ & สแกนเอกสาร</div>
+        <i class="fa-solid fa-chevron-right text-muted"></i>
+        <div class="text-muted"><i class="fa-solid fa-2 me-1 rounded-circle bg-light text-muted p-1" style="width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;"></i>2. ธุรการกองกฎหมาย ออกเลขรับ กม.</div>
+        <i class="fa-solid fa-chevron-right text-muted"></i>
+        <div class="text-muted"><i class="fa-solid fa-3 me-1 rounded-circle bg-light text-muted p-1" style="width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;"></i>3. ผอ.กองกฎหมาย มอบหมายนิติกร</div>
+        <i class="fa-solid fa-chevron-right text-muted"></i>
+        <div class="text-muted"><i class="fa-solid fa-4 me-1 rounded-circle bg-light text-muted p-1" style="width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;"></i>4. นิติกรยกร่างความเห็น</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Left Column: Form input (กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ) -->
+    <div class="col-xl-6">
+      <div class="card card-ecmis mb-3">
+        <div class="card-header bg-navy text-white fw-bold">
+          <i class="fa-solid fa-edit me-1"></i> แบบฟอร์มนำเข้าข้อมูลเอกสารตัวจริง (จากสารบรรณกลาง)
+        </div>
+        <div class="card-body p-3 small">
+          <!-- Section 1: Central Saraban Metadata -->
+          <div class="p-3 bg-light rounded border mb-3">
+            <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-building-flag me-1"></i> ข้อมูลการลงรับจากฝ่ายสารบรรณกลาง</div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label fw-bold">เลขรับสารบรรณกลาง <span class="text-danger">*</span></label>
+                <input type="text" id="in_centralSarabanNo" class="form-control form-control-sm font-monospace fw-bold" value="รับ-สบร. 2569/4410">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold">วันที่รับเอกสารตัวจริง <span class="text-danger">*</span></label>
+                <input type="date" id="in_physicalDocDate" class="form-control form-control-sm">
+              </div>
+            </div>
+            <div>
+              <label class="form-label fw-bold">เจ้าหน้าที่ผู้รับเรื่อง (กองบริหารคดี)</label>
+              <input type="text" class="form-control form-control-sm bg-white" readonly value="นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)">
+            </div>
+          </div>
+
+          <!-- Section 2: Prosecutor Document Details -->
+          <div class="p-3 bg-light rounded border mb-3">
+            <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-gavel me-1"></i> รายละเอียดหนังสือความเห็นพนักงานอัยการ</div>
+            <div class="mb-2">
+              <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย <span class="text-danger">*</span></label>
+              <select id="in_category" class="form-select form-select-sm">
+                <option value="10.1">10.1 คดีชั้นอัยการ (ความเห็นแย้งคำสั่งไม่ฟ้อง)</option>
+                <option value="10.2.1">10.2.1 ขอเปิดเผยข้อมูลข่าวสาร</option>
+                <option value="10.2.2">10.2.2 อุทธรณ์การไม่เปิดเผยข้อมูล</option>
+                <option value="10.3">10.3 คดีปกครอง (ศาลปกครอง)</option>
+              </select>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label fw-bold">เลขที่หนังสืออัยการ <span class="text-danger">*</span></label>
+                <input type="text" id="in_docNo" class="form-control form-control-sm font-monospace" placeholder="เช่น อส 0014/2569" value="อส 0014/2569">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold">หน่วยงานอัยการต้นทาง <span class="text-danger">*</span></label>
+                <input type="text" id="in_source" class="form-control form-control-sm" placeholder="เช่น สำนักงานอัยการพิเศษฯ" value="สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1">
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label fw-bold">ชื่อเรื่องกล่าวหา / สำนวนคดี <span class="text-danger">*</span></label>
+              <textarea id="in_title" class="form-control form-control-sm" rows="2" placeholder="กรอกชื่อเรื่องคำร้องหรือสำนวนคดี">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</textarea>
+            </div>
+            <div class="mb-2">
+              <label class="form-label fw-bold">สรุปสาระสำคัญ / เหตุผลคำสั่งไม่ฟ้องของอัยการ</label>
+              <textarea id="in_legalOpinion" class="form-control form-control-sm" rows="3" placeholder="สรุปข้อเท็จจริงและความเห็นของอัยการ">จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด</textarea>
+            </div>
+          </div>
+
+          <!-- Section 3: Physical Document Scan & Upload -->
+          <div class="p-3 bg-warning-subtle border border-warning rounded mb-3">
+            <div class="fw-bold text-dark mb-2"><i class="fa-solid fa-scanner me-1 text-warning"></i> สแกนเอกสารตัวจริงเข้าระบบ (Scan PDF)</div>
+            <div class="input-group input-group-sm mb-2">
+              <input type="file" id="in_scannedFile" class="form-control" accept=".pdf">
+              <button class="btn btn-outline-primary" type="button" onclick="triggerScanSimulation()"><i class="fa-solid fa-print me-1"></i>จำลองการสแกน</button>
+            </div>
+            <div class="small text-muted mb-1" id="scanStatusText"><i class="fa-solid fa-check-circle text-success me-1"></i>ไฟล์พร้อมเชื่อมโยง: <strong>เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf</strong></div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="d-flex align-items-center gap-2 pt-2 border-top">
+            <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitBoardIntakeForm()">
+              <i class="fa-solid fa-paper-plane me-1"></i> บันทึกข้อมูล & ส่งต่อให้กองกฎหมาย
+            </button>
+            <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Scanned Document Preview Simulation -->
+    <div class="col-xl-6">
+      <div class="card card-ecmis border h-100">
+        <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
+          <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารสแกนตัวจริง (Document Preview)</span>
+          <span class="badge bg-primary" id="previewBadge">พร้อมเชื่อมโยง</span>
+        </div>
+        <div class="card-body p-3 bg-dark-subtle d-flex flex-column align-items-center justify-content-center" style="min-height:540px;">
+          
+          <!-- Central Saraban Official Stamp Card -->
+          <div class="w-100 p-2.5 rounded mb-2 text-center bg-white border border-primary shadow-sm" style="max-width:480px;">
+            <div class="d-flex align-items-center justify-content-between small">
+              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-stamp text-primary me-1"></i>ตราลงรับสารบรรณกลาง: <span id="pv_sarabanNo" class="text-primary">รับ-สบร. 2569/4410</span></span>
+              <span class="badge bg-success" style="font-size:0.7rem;">ลงรับแล้ว</span>
+            </div>
+            <div class="text-muted style-italic mt-0.5" style="font-size:0.75rem;">
+              กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ) รับเรื่องวันที่ <span id="pv_docDate">28 ก.ค. 2569</span>
+            </div>
+          </div>
+
+          <!-- Simulated Paper Document -->
+          <div class="bg-white p-4 shadow-sm rounded text-dark w-100" style="max-width:480px; font-family:'Prompt',sans-serif; font-size:0.83rem; border:1px solid #ddd; line-height:1.6;">
+            <div class="text-center mb-3">
+              <img src="pacc_logo.png" style="height:52px;" alt="ตรา ป.ป.ท.">
+              <div class="fw-bold mt-1" style="font-size:0.95rem;">บันทึกข้อความ / หนังสือแจ้งคำสั่งพนักงานอัยการ</div>
+              <div class="text-muted small" id="pv_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between mb-2">
+              <span><b>ที่:</b> <span id="pv_docNo">อส 0014/2569</span></span>
+              <span><b>วันที่:</b> <span id="pv_date">28 กรกฎาคม 2569</span></span>
+            </div>
+            <div class="mb-2"><b>เรื่อง:</b> <span id="pv_title">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</span></div>
+            <div class="mb-2"><b>เรียน:</b> เลขาธิการคณะกรรมการ ป.ป.ท. (ผ่านกองกฎหมาย)</div>
+            <div class="p-3 bg-light rounded text-muted mb-3" style="font-size:0.78rem; line-height:1.5;" id="pv_legalOpinion">
+              ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป
+            </div>
+            <div class="text-end mt-4">
+              <div class="fw-bold">พนักงานอัยการผู้แทน</div>
+              <div class="small text-muted">(ลงนามดิจิทัลผ่านระบบสารบรรณอัยการ)</div>
+            </div>
+          </div>
+
+          <!-- Attachment Link Preview -->
+          <div class="w-100 mt-3 p-2.5 bg-white rounded border d-flex align-items-center justify-content-between small shadow-sm" style="max-width:480px;">
+            <span id="pv_fileName"><i class="fa-solid fa-file-pdf text-danger me-1"></i>เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf (4.2 MB)</span>
+            <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" onclick="Swal.fire({icon:'info', title:'เปิดไฟล์สแกนฉบับจริง...', timer:1000, showConfirmButton:false})">
+              <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
+<script>
+  ECMIS.renderShell('02-board-intake.html');
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Set default today date
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('in_physicalDocDate').value = todayStr;
+    document.getElementById('pv_docDate').textContent = todayStr;
+
+    // Live update preview listeners
+    ['in_centralSarabanNo', 'in_docNo', 'in_source', 'in_title', 'in_legalOpinion'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateLivePreview);
+    });
+  });
+
+  function updateLivePreview() {
+    document.getElementById('pv_sarabanNo').textContent = document.getElementById('in_centralSarabanNo').value || 'รับ-สบร. 2569/4410';
+    document.getElementById('pv_docNo').textContent = document.getElementById('in_docNo').value || 'อส 0014/2569';
+    document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
+    document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
+    document.getElementById('pv_legalOpinion').textContent = document.getElementById('in_legalOpinion').value || 'รายละเอียดเหตุผลความเห็นอัยการ...';
+  }
+
+  function triggerScanSimulation() {
+    Swal.fire({
+      title: 'กำลังสแกนเอกสารตัวจริง...',
+      html: '<div class="text-center"><i class="fa-solid fa-scanner fa-spin fa-2x text-primary my-2"></i><br><small class="text-muted">กำลังทำความสะอาดภาพและปรับความคมชัด (High Precision OCR Scan)</small></div>',
+      timer: 1300,
+      showConfirmButton: false
+    }).then(() => {
+      const fileInput = document.getElementById('in_scannedFile');
+      const filename = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf';
+      document.getElementById('scanStatusText').innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>สแกนสำเร็จแล้ว: <strong>${filename}</strong>`;
+      document.getElementById('pv_fileName').innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${filename} (สแกนสมบูรณ์)`;
+      Swal.fire({ icon: 'success', title: 'สแกนเอกสารสมบูรณ์!', timer: 1000, showConfirmButton: false });
+    });
+  }
+
+  function submitBoardIntakeForm() {
+    const centralSarabanNo = document.getElementById('in_centralSarabanNo').value.trim();
+    const docNo = document.getElementById('in_docNo').value.trim();
+    const title = document.getElementById('in_title').value.trim();
+    const source = document.getElementById('in_source').value.trim();
+    const category = document.getElementById('in_category').value;
+    const legalOpinion = document.getElementById('in_legalOpinion').value.trim();
+    const physicalDocDate = document.getElementById('in_physicalDocDate').value;
+
+    if (!title || !docNo || !centralSarabanNo) {
+      Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลสำคัญให้ครบถ้วน', text: 'ต้องมี เลขรับสารบรรณกลาง, เลขหนังสืออัยการ และชื่อเรื่อง' });
+      return;
+    }
+
+    Swal.fire({
+      icon: 'question',
+      title: 'ยืนยันนำเข้าข้อมูลและส่งต่อกองกฎหมาย?',
+      html: `
+        <div class="text-start small">
+          <p><strong>เลขรับสารบรรณกลาง:</strong> <span class="badge bg-primary font-monospace">${centralSarabanNo}</span></p>
+          <p><strong>เรื่อง:</strong> ${title}</p>
+          <p><strong>ผู้ลงรับเรื่อง:</strong> นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี)</p>
+          <p class="text-muted">เมื่อยืนยันแล้ว ข้อมูลและเอกสารสแกนตัวจริงจะถูกส่งต่อไปยัง <strong>ธุรการกองกฎหมาย (นางวิไล)</strong> เพื่อออกเลขรับต่อไป</p>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันบันทึก & ส่งต่อกองกฎหมาย',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#0a2647'
+    }).then(res => {
+      if (res.isConfirmed) {
+        // Create or update case in Activity10 store
+        const newCase = Activity10.addCase({
+          category: category,
+          title: title,
+          source: source,
+          docNo: docNo,
+          legalOpinion: legalOpinion
+        });
+
+        Activity10.savePhysicalDocIntake(newCase.id, {
+          centralSarabanNo: centralSarabanNo,
+          physicalDocDate: physicalDocDate,
+          scannedDocFile: `เอกสารสแกนฉบับจริง_สารบรรณกลาง_${docNo}.pdf`,
+          boardAdminOfficer: 'นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)'
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกและส่งต่อข้อมูลสำเร็จ!',
+          text: `นำเข้าเอกสารตัวจริงเรียบร้อยแล้ว ส่งต่อธุรการกองกฎหมายสำหรับสำนวน ${newCase.id}`,
+          timer: 1600,
+          showConfirmButton: false
+        }).then(() => {
+          // Navigate to 03-prosecutor-doc.html for legal clerk role to view and issue legal receive number
+          window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(newCase.id)}`;
+        });
+      }
+    });
+  }
+</script>
+</body>
+</html>
