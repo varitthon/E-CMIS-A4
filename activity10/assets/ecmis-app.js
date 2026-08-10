@@ -1011,13 +1011,18 @@ function renderShell(activeHref){
         <button class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fa-regular fa-user me-1"></i>${role.name}
           <span class="d-none d-md-inline"> — ${role.title}</span>
-          <span class="role-badge-demo">DEMO</span>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><h6 class="dropdown-header">สลับบทบาทผู้ใช้ (จำลอง — กิจกรรมที่ 10)</h6></li>
-          ${roleItems}
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
+        <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width:250px;">
+          <li><h6 class="dropdown-header text-uppercase p-1 mb-1" style="font-size:.72rem;letter-spacing:.4px;">ข้อมูลผู้เข้าใช้ระบบ</h6></li>
+          <li class="px-2 py-2 bg-light rounded mb-2">
+            <strong class="d-block text-dark" style="font-size:.88rem;">${role.name}</strong>
+            <span class="text-navy d-block fw-semibold" style="font-size:.8rem;">${role.title}</span>
+            <small class="text-muted d-block" style="font-size:.74rem;">${role.org} (${role.group})</small>
+          </li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li class="px-2 py-1"><small class="text-muted d-block text-wrap" style="font-size:.72rem;"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</small></li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><a class="dropdown-item text-danger rounded fw-semibold py-2" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
         </ul>
       </div>
     </div>
@@ -1044,11 +1049,17 @@ function renderShell(activeHref){
         <small>${role.title}</small>
       </span>
     </button>
-    <ul class="dropdown-menu">
-      <li><h6 class="dropdown-header">สลับบทบาทผู้ใช้ (กิจกรรมที่ 10)</h6></li>
-      ${roleItems}
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item text-danger" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
+    <ul class="dropdown-menu p-2" style="min-width:240px;">
+      <li><h6 class="dropdown-header text-uppercase p-1 mb-1" style="font-size:.72rem;">ข้อมูลผู้ใช้</h6></li>
+      <li class="px-2 py-2 bg-light rounded mb-2">
+        <strong class="d-block text-dark" style="font-size:.88rem;">${role.name}</strong>
+        <span class="text-navy d-block fw-semibold" style="font-size:.8rem;">${role.title}</span>
+        <small class="text-muted d-block" style="font-size:.74rem;">${role.org}</small>
+      </li>
+      <li><hr class="dropdown-divider my-1"></li>
+      <li><small class="text-muted px-2 py-1 d-block text-wrap" style="font-size:.72rem;"><i class="fa-solid fa-circle-info me-1"></i>เปลี่ยนบทบาทได้ในหน้าเข้าสู่ระบบ</small></li>
+      <li><hr class="dropdown-divider my-1"></li>
+      <li><a class="dropdown-item text-danger rounded fw-semibold py-2" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
     </ul>
   </div>`;
 
