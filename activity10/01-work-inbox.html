@@ -39,7 +39,7 @@
         <div class="col-md-4">
           <div class="input-group">
             <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขที่สำนวน / ชื่อเรื่อง / นิติกร..." onkeyup="renderTable()">
+            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขที่สำนวน / ชื่อเรื่อง / นิติกร..." onkeyup="currentPage = 1; renderTable()">
           </div>
         </div>
         <div class="col-md-3">
@@ -107,8 +107,8 @@
             </table>
           </div>
           
-          <!-- Bulk actions footer -->
-          <div class="px-3 py-2 border-top bg-light d-flex align-items-center justify-content-between flex-wrap gap-2" id="bulkActionsBox">
+          <!-- Bulk actions & Pagination footer -->
+          <div class="px-3 py-2 border-top bg-light d-flex align-items-center justify-content-between flex-wrap gap-3" id="tableFooter">
             <div class="d-flex align-items-center gap-2">
               <span class="small text-muted" id="bulkSelectCount">เลือกแล้ว 0 รายการ</span>
               <div id="bulkButtons" class="d-none d-flex align-items-center gap-2">
@@ -122,6 +122,27 @@
                   <i class="fa-solid fa-file-excel me-1"></i>ส่งออกรายงานสรุป (Bulk Export)
                 </button>
               </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="d-flex align-items-center gap-3 ms-auto flex-wrap" id="paginationWrapper">
+              <div class="d-flex align-items-center gap-1 small text-muted">
+                <span>แสดงหน้าละ:</span>
+                <select class="form-select form-select-sm py-0 px-2" style="width: auto; font-size: 0.78rem;" id="pageSizeSelect" onchange="changePageSize(this.value)">
+                  <option value="5" selected>5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+
+              <span class="small text-muted fw-semibold" id="pageInfoText">แสดง 0-0 จากทั้งหมด 0 รายการ</span>
+
+              <nav aria-label="Table navigation">
+                <ul class="pagination pagination-sm mb-0" id="paginationControls">
+                  <!-- Rendered dynamically -->
+                </ul>
+              </nav>
             </div>
           </div>
         </div>
@@ -202,7 +223,73 @@
     updateKpiActiveState();
   }
 
+  let currentPage = 1;
+  let pageSize = 5;
+
+  function changePage(page) {
+    currentPage = page;
+    renderTable();
+  }
+
+  function changePageSize(size) {
+    pageSize = parseInt(size, 10);
+    currentPage = 1;
+    renderTable();
+  }
+
+  function renderPaginationControls(totalItems) {
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const endItem = Math.min(currentPage * pageSize, totalItems);
+
+    const infoEl = document.getElementById("pageInfoText");
+    if (infoEl) infoEl.innerText = `แสดง ${startItem}-${endItem} จากทั้งหมด ${totalItems} รายการ`;
+
+    const paginationUl = document.getElementById("paginationControls");
+    if (!paginationUl) return;
+
+    if (totalItems === 0 || totalPages <= 1) {
+      paginationUl.innerHTML = "";
+      return;
+    }
+
+    let html = "";
+
+    // Prev Button
+    html += `
+      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); ${currentPage > 1 ? `changePage(${currentPage - 1})` : ''}" aria-label="Previous">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+      </li>
+    `;
+
+    // Page Numbers
+    for (let i = 1; i <= totalPages; i++) {
+      html += `
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); changePage(${i});">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next Button
+    html += `
+      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); ${currentPage < totalPages ? `changePage(${currentPage + 1})` : ''}" aria-label="Next">
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+      </li>
+    `;
+
+    paginationUl.innerHTML = html;
+  }
+
   function filterByKpi(type) {
+    currentPage = 1;
     const catSelect = document.getElementById("categoryFilter");
     const slaSelect = document.getElementById("slaFilter");
 
@@ -250,6 +337,7 @@
   }
 
   function clearFilters() {
+    currentPage = 1;
     document.getElementById("searchInput").value = "";
     document.getElementById("categoryFilter").value = "all";
     document.getElementById("slaFilter").value = "all";
@@ -281,12 +369,21 @@
 
     if (cases.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>ไม่พบรายการสำนวนตามเงื่อนไขที่เลือก</td></tr>`;
+      renderPaginationControls(0);
       updateBulkUI();
       return;
     }
 
+    const totalPages = Math.ceil(cases.length / pageSize) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    renderPaginationControls(cases.length);
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
+
     let html = "";
-    cases.forEach(c => {
+    paginatedCases.forEach(c => {
       const isUrgent = c.slaDaysRemaining <= 5;
       const slaBadgeClass = isUrgent ? 'st-urgent' : (c.slaDaysRemaining <= 15 ? 'st-review' : 'st-regular');
 
