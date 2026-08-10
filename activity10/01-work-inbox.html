@@ -376,6 +376,11 @@
     const startIndex = (currentPage - 1) * pageSize;
     const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
 
+    const currentRole = ECMIS.currentRoleId();
+    const isDirLegal = (currentRole === 'dir_legal' || currentRole === 'Napas.S');
+    const btnActionLabel = isDirLegal ? 'พิจารณาและมอบหมาย' : 'ดูเอกสารอัยการ';
+    const btnActionIcon = isDirLegal ? 'fa-user-tie' : 'fa-file-import';
+
     let html = "";
     paginatedCases.forEach(c => {
       const isUrgent = c.slaDaysRemaining <= 5;
@@ -397,7 +402,7 @@
           <td><span class="st ${c.statusBadge}">${c.status}</span></td>
           <td><span class="st ${slaBadgeClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
           <td class="text-end">
-            <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-file-import me-1 text-primary"></i>ดูเอกสารอัยการ</button>
+            <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="${isDirLegal ? 'พิจารณาและมอบหมายเรื่อง' : 'ดูรายละเอียดสำนวน'}"><i class="fa-solid ${btnActionIcon} me-1 text-primary"></i>${btnActionLabel}</button>
           </td>
         </tr>
       `;
