@@ -157,48 +157,60 @@
 
   function renderKPI() {
     const cases = Activity10.getCases();
+    const countTotal = cases.length;
     const count101 = cases.filter(c => c.category === '10.1').length;
     const count102 = cases.filter(c => c.category.startsWith('10.2')).length;
     const count103 = cases.filter(c => c.category === '10.3').length;
     const countWarn = cases.filter(c => c.slaDaysRemaining <= 5).length;
 
     document.getElementById("kpiContainer").innerHTML = `
-      <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.1" onclick="filterByKpi('10.1')" title="คลิกเพื่อกรองคดีชั้นอัยการ/ศาล">
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
+      <div class="col-6 col-lg">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="all" onclick="filterByKpi('all')" title="คลิกเพื่อดูคิวงานทั้งหมด">
+          <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <div>
+            <h3 class="m-0 fw-bold text-dark">${countTotal}</h3>
+            <small class="text-muted fw-semibold">คิวงานทั้งหมด</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.1" onclick="filterByKpi('10.1')" title="คลิกเพื่อกรองคดีศาลอาญาทุจริตและประพฤติมิชอบ">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
             <i class="fa-solid fa-scale-balanced"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-primary">${count101}</h3>
-            <small class="text-muted fw-semibold">คดีชั้นอัยการ/ศาล</small>
+            <small class="text-muted fw-semibold">คดีศาลอาญาทุจริตและประพฤติมิชอบ</small>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.2" onclick="filterByKpi('10.2')" title="คลิกเพื่อกรองคำร้อง/อุทธรณ์ข้อมูล">
-          <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
+      <div class="col-6 col-lg">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.2" onclick="filterByKpi('10.2')" title="คลิกเพื่อกรองคำร้องขอเปิดเผยข้อมูล">
+          <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
             <i class="fa-solid fa-envelope-open-text"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-warning">${count102}</h3>
-            <small class="text-muted fw-semibold">คำร้อง/อุทธรณ์ข้อมูล</small>
+            <small class="text-muted fw-semibold">คำร้องขอเปิดเผยข้อมูล</small>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.3" onclick="filterByKpi('10.3')" title="คลิกเพื่อกรองคดีปกครอง">
-          <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
+      <div class="col-6 col-lg">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.3" onclick="filterByKpi('10.3')" title="คลิกเพื่อกรองคดีศาลปกครอง">
+          <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
             <i class="fa-solid fa-landmark"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-info">${count103}</h3>
-            <small class="text-muted fw-semibold">คดีปกครอง</small>
+            <small class="text-muted fw-semibold">คดีศาลปกครอง</small>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-6 col-lg">
         <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="danger" onclick="filterByKpi('danger')" title="คลิกเพื่อกรองเตือนเหลือ ≤ 5 วัน">
-          <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
+          <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
             <i class="fa-solid fa-clock"></i>
           </div>
           <div>
@@ -275,8 +287,8 @@
     const catSelect = document.getElementById("categoryFilter");
     const slaSelect = document.getElementById("slaFilter");
 
-    if (activeKpiFilter === type) {
-      activeKpiFilter = null;
+    if (type === 'all' || activeKpiFilter === type) {
+      activeKpiFilter = 'all';
       catSelect.value = 'all';
       slaSelect.value = 'all';
     } else {
@@ -302,7 +314,8 @@
     const sla = document.getElementById("slaFilter") ? document.getElementById("slaFilter").value : 'all';
 
     let currentActive = null;
-    if (cat === '10.1' && sla === 'all') currentActive = '10.1';
+    if (cat === 'all' && sla === 'all') currentActive = 'all';
+    else if (cat === '10.1' && sla === 'all') currentActive = '10.1';
     else if (cat === '10.2' && sla === 'all') currentActive = '10.2';
     else if (cat === '10.3' && sla === 'all') currentActive = '10.3';
     else if (cat === 'all' && sla === 'danger') currentActive = 'danger';
