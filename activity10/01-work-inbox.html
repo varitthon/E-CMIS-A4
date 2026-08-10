@@ -22,7 +22,7 @@
     </div>
     <div class="d-flex align-items-center gap-2 ms-auto">
       <button class="btn btn-xs btn-outline-secondary" onclick="resetDemoData()"><i class="fa-solid fa-rotate me-1"></i>รีเซ็ตข้อมูลตัวอย่าง</button>
-      <a href="02-board-intake.html" class="btn btn-navy btn-sm"><i class="fa-solid fa-file-signature me-1"></i>รับเรื่องเข้าระบบ</a>
+      <a href="02-board-intake.html" class="btn btn-navy btn-sm" id="btnBoardIntake"><i class="fa-solid fa-file-signature me-1"></i>รับเรื่องเข้าระบบ</a>
     </div>
   </div>
 
@@ -147,9 +147,22 @@
   ECMIS.renderShell('01-work-inbox.html');
 
   document.addEventListener("DOMContentLoaded", function() {
+    checkRolePermissions();
     renderKPI();
     renderTable();
   });
+
+  function checkRolePermissions() {
+    const roleId = ECMIS.currentRoleId();
+    const btnIntake = document.getElementById("btnBoardIntake");
+    if (btnIntake) {
+      if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+        btnIntake.style.display = 'none';
+      } else {
+        btnIntake.style.display = 'inline-flex';
+      }
+    }
+  }
 
   let activeKpiFilter = null;
 

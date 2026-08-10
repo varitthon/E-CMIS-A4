@@ -189,6 +189,20 @@
   ECMIS.renderShell('02-board-intake.html');
 
   document.addEventListener("DOMContentLoaded", function() {
+    const roleId = ECMIS.currentRoleId();
+    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่มีสิทธิ์เข้าถึง',
+        text: 'บทบาท ผอ.กองกฎหมาย ไม่มีสิทธิ์รับเรื่องเข้าระบบ',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#0F2A62'
+      }).then(() => {
+        window.location.href = '01-work-inbox.html';
+      });
+      return;
+    }
+
     // Set default today date
     const todayStr = new Date().toISOString().split('T')[0];
     document.getElementById('in_physicalDocDate').value = todayStr;

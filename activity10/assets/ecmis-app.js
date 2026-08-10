@@ -915,7 +915,7 @@ function canRecall(kase, roleId){
 const NAV = [
   { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
   { href:'01-work-inbox.html', icon:'fa-inbox', label:'งานกฎหมายในทางคดีที่รอดำเนินการ', badge:true, visible: role => true },
-  { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง (ผอ.กองกฎหมาย)', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' }
+  { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ
