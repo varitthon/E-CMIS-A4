@@ -19,7 +19,7 @@
   <div class="page-head">
     <div>
       <h1><i class="fa-solid fa-inbox me-2"></i>งานกฎหมายในทางคดีที่รอฉันดำเนินการ</h1>
-      <div class="sub">รายการสำนวนคดีชั้นอัยการ, คำร้อง/คำอุทธรณ์เปิดเผยข้อมูล และคดีปกครอง พร้อมระบบติดตาม SLA Real-time</div>
+      <div class="sub">รายการสำนวนคดีชั้นอัยการ, คำร้อง/คำอุทธรณ์เปิดเผยข้อมูล และคดีปกครอง พร้อมระบบติดตามกรอบเวลา Real-time</div>
     </div>
     <div class="d-flex align-items-center gap-2 ms-auto">
       <button class="btn btn-xs btn-outline-secondary" onclick="resetDemoData()"><i class="fa-solid fa-rotate me-1"></i>รีเซ็ตข้อมูลตัวอย่าง</button>
@@ -54,7 +54,7 @@
         </div>
         <div class="col-md-3">
           <select class="form-select form-select-sm" id="slaFilter" onchange="renderTable()">
-            <option value="all">ทุกสถานะ SLA</option>
+            <option value="all">ทุกสถานะกรอบเวลา</option>
             <option value="normal">ปกติ (ชิลล์ในกรอบเวลา)</option>
             <option value="warning">เตือนส้ม (เหลือ ≤ 15 วัน)</option>
             <option value="danger">เตือนแดง (เหลือ ≤ 5 วัน)</option>
@@ -97,7 +97,7 @@
                   <th>หมวดหมู่อื่น</th>
                   <th>เรื่อง / รายละเอียด</th>
                   <th>สถานะขั้นตอน</th>
-                  <th>กรอบเวลา SLA</th>
+                  <th>กรอบเวลา</th>
                   <th class="text-end">ดำเนินการ</th>
                 </tr>
               </thead>
@@ -188,13 +188,13 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="danger" onclick="filterByKpi('danger')" title="คลิกเพื่อกรองเตือน SLA เหลือ ≤ 5 วัน">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="danger" onclick="filterByKpi('danger')" title="คลิกเพื่อกรองเตือนเหลือ ≤ 5 วัน">
           <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
             <i class="fa-solid fa-clock"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-danger">${countWarn}</h3>
-            <small class="text-muted fw-semibold">เตือน SLA เหลือ ≤ 5 วัน</small>
+            <small class="text-muted fw-semibold">เตือนเหลือ ≤ 5 วัน</small>
           </div>
         </div>
       </div>
@@ -413,7 +413,7 @@
       <div style="text-align:left; font-size:0.85rem;">
         <p><strong>รายงานสรุปรายการคดีที่เลือก (${cases.length} รายการ):</strong></p>
         <table class="table table-sm table-bordered">
-          <thead><tr><th>เลขที่สำนวน</th><th>เรื่อง</th><th>นิติกร</th><th>SLA</th></tr></thead>
+          <thead><tr><th>เลขที่สำนวน</th><th>เรื่อง</th><th>นิติกร</th><th>กรอบเวลา</th></tr></thead>
           <tbody>
             ${cases.map(c => `<tr><td>${c.id}</td><td>${c.title.substring(0,30)}...</td><td>${c.officer.split(' ')[0]}</td><td>${c.slaDaysRemaining} วัน</td></tr>`).join('')}
           </tbody>

@@ -178,7 +178,7 @@ const PERM_DEFS = [
   { k:'memo.submit',   cat:'ปลายน้ำ',   label:'จัดทำบันทึกเสนอนำเรียนประธานฯ' },
   { k:'legal.opinion', cat:'ปลายน้ำ',   label:'จัดทำบันทึกความเห็นทางกฎหมาย' },
   { k:'docnumber.issue',cat:'ปลายน้ำ',  label:'ออกเลขหนังสือ / เลขคำสั่ง', note:'นอกขอบเขต E-CMIS' },
-  { k:'admin.sla',     cat:'ผู้ดูแลระบบ',label:'ตั้งค่าจำนวนวันแจ้งเตือน SLA' },
+  { k:'admin.sla',     cat:'ผู้ดูแลระบบ',label:'ตั้งค่าจำนวนวันแจ้งเตือนกรอบเวลา' },
   { k:'admin.users',   cat:'ผู้ดูแลระบบ',label:'บริหารผู้ใช้ ประเภทตำแหน่ง และสิทธิ์' },
   { k:'admin.reassign',cat:'ผู้ดูแลระบบ',label:'Re-assign ผู้พิจารณากรณีลา / ตำแหน่งว่าง' },
   { k:'audit.view',    cat:'ผู้ดูแลระบบ',label:'ดู Audit Log' }
@@ -936,7 +936,7 @@ function renderShell(activeHref){
   const notifications = [
     { title:'เสนอเรื่องใหม่', body:'สำนวน คดี-10.1-2569/001 รอลงนามความเห็นแย้ง', time:'10 นาทีที่แล้ว', icon:'fa-user-check', cls:'bg-primary text-white' },
     { title:'คำร้องขอเปิดเผยข้อมูล', body:'คำร้อง-10.2-2569/014 เข้าสู่ระบบแล้ว', time:'1 ชม. ที่แล้ว', icon:'fa-envelope-open-text', cls:'bg-success text-white' },
-    { title:'เตือน SLA คดีปกครอง', body:'คดีปกครอง-10.3-2569/002 เหลือเวลา 5 วัน', time:'2 ชม. ที่แล้ว', icon:'fa-clock', cls:'bg-warning text-dark' }
+    { title:'เตือนกรอบเวลาคดีปกครอง', body:'คดีปกครอง-10.3-2569/002 เหลือเวลา 5 วัน', time:'2 ชม. ที่แล้ว', icon:'fa-clock', cls:'bg-warning text-dark' }
   ];
   const notifItems = notifications.map(n => `
     <li class="p-2 border-bottom" style="font-size:0.78rem">
