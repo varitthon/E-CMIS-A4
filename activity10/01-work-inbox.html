@@ -46,6 +46,7 @@
           <select class="form-select form-select-sm" id="categoryFilter" onchange="renderTable()">
             <option value="all">ทุกหมวดหมู่งานกฎหมาย</option>
             <option value="10.1">คดีชั้นอัยการ (ความเห็นแย้ง)</option>
+            <option value="10.2">คำร้อง/อุทธรณ์ข้อมูลข่าวสาร (รวม)</option>
             <option value="10.2.1">ขอเปิดเผยข้อมูลข่าวสาร</option>
             <option value="10.2.2">อุทธรณ์การไม่เปิดเผยข้อมูล</option>
             <option value="10.3">คดีปกครอง (ศาลปกครอง)</option>
@@ -59,7 +60,10 @@
             <option value="danger">เตือนแดง (เหลือ ≤ 5 วัน)</option>
           </select>
         </div>
-        <div class="col-md-2 text-end">
+        <div class="col-md-2 text-end d-flex align-items-center justify-content-end gap-2">
+          <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" onclick="clearFilters()" title="ล้างตัวกรองทั้งหมด">
+            <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
+          </button>
           <span class="badge bg-navy px-3 py-2 fs-6 rounded-pill" id="caseCountBadge">0 เรื่อง</span>
         </div>
       </div>
@@ -140,6 +144,8 @@
     renderTable();
   });
 
+  let activeKpiFilter = null;
+
   function renderKPI() {
     const cases = Activity10.getCases();
     const count101 = cases.filter(c => c.category === '10.1').length;
@@ -149,50 +155,109 @@
 
     document.getElementById("kpiContainer").innerHTML = `
       <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3">
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.4rem;">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.1" onclick="filterByKpi('10.1')" title="คลิกเพื่อกรองคดีชั้นอัยการ/ศาล">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
             <i class="fa-solid fa-scale-balanced"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-primary">${count101}</h3>
-            <small class="text-muted">คดีชั้นอัยการ/ศาล</small>
+            <small class="text-muted fw-semibold">คดีชั้นอัยการ/ศาล</small>
+            <div class="text-xs text-primary mt-1" style="font-size:0.72rem;"><i class="fa-solid fa-filter me-1"></i>คลิกเพื่อกรอง</div>
           </div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3">
-          <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.4rem;">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.2" onclick="filterByKpi('10.2')" title="คลิกเพื่อกรองคำร้อง/อุทธรณ์ข้อมูล">
+          <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
             <i class="fa-solid fa-envelope-open-text"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-warning">${count102}</h3>
-            <small class="text-muted">คำร้อง/อุทธรณ์ข้อมูล</small>
+            <small class="text-muted fw-semibold">คำร้อง/อุทธรณ์ข้อมูล</small>
+            <div class="text-xs text-warning mt-1" style="font-size:0.72rem;"><i class="fa-solid fa-filter me-1"></i>คลิกเพื่อกรอง</div>
           </div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3">
-          <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.4rem;">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="10.3" onclick="filterByKpi('10.3')" title="คลิกเพื่อกรองคดีปกครอง">
+          <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
             <i class="fa-solid fa-landmark"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-info">${count103}</h3>
-            <small class="text-muted">คดีปกครอง</small>
+            <small class="text-muted fw-semibold">คดีปกครอง</small>
+            <div class="text-xs text-info mt-1" style="font-size:0.72rem;"><i class="fa-solid fa-filter me-1"></i>คลิกเพื่อกรอง</div>
           </div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3">
-          <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:1.4rem;">
+        <div class="card card-ecmis p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive" data-kpi="danger" onclick="filterByKpi('danger')" title="คลิกเพื่อกรองเตือน SLA เหลือ ≤ 5 วัน">
+          <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;font-size:1.4rem;">
             <i class="fa-solid fa-clock"></i>
           </div>
           <div>
             <h3 class="m-0 fw-bold text-danger">${countWarn}</h3>
-            <small class="text-muted">เตือน SLA เหลือ ≤ 5 วัน</small>
+            <small class="text-muted fw-semibold">เตือน SLA เหลือ ≤ 5 วัน</small>
+            <div class="text-xs text-danger mt-1" style="font-size:0.72rem;"><i class="fa-solid fa-filter me-1"></i>คลิกเพื่อกรอง</div>
           </div>
         </div>
       </div>
     `;
+    updateKpiActiveState();
+  }
+
+  function filterByKpi(type) {
+    const catSelect = document.getElementById("categoryFilter");
+    const slaSelect = document.getElementById("slaFilter");
+
+    if (activeKpiFilter === type) {
+      activeKpiFilter = null;
+      catSelect.value = 'all';
+      slaSelect.value = 'all';
+    } else {
+      if (type === '10.1') {
+        catSelect.value = '10.1';
+        slaSelect.value = 'all';
+      } else if (type === '10.2') {
+        catSelect.value = '10.2';
+        slaSelect.value = 'all';
+      } else if (type === '10.3') {
+        catSelect.value = '10.3';
+        slaSelect.value = 'all';
+      } else if (type === 'danger') {
+        catSelect.value = 'all';
+        slaSelect.value = 'danger';
+      }
+    }
+    renderTable();
+  }
+
+  function updateKpiActiveState() {
+    const cat = document.getElementById("categoryFilter") ? document.getElementById("categoryFilter").value : 'all';
+    const sla = document.getElementById("slaFilter") ? document.getElementById("slaFilter").value : 'all';
+
+    let currentActive = null;
+    if (cat === '10.1' && sla === 'all') currentActive = '10.1';
+    else if (cat === '10.2' && sla === 'all') currentActive = '10.2';
+    else if (cat === '10.3' && sla === 'all') currentActive = '10.3';
+    else if (cat === 'all' && sla === 'danger') currentActive = 'danger';
+
+    activeKpiFilter = currentActive;
+
+    document.querySelectorAll(".kpi-card-interactive").forEach(card => {
+      if (card.dataset.kpi === activeKpiFilter) {
+        card.classList.add("active-kpi-filter");
+      } else {
+        card.classList.remove("active-kpi-filter");
+      }
+    });
+  }
+
+  function clearFilters() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("categoryFilter").value = "all";
+    document.getElementById("slaFilter").value = "all";
+    renderTable();
   }
 
   function renderTable() {
@@ -200,11 +265,13 @@
     const cat = document.getElementById("categoryFilter").value;
     const sla = document.getElementById("slaFilter").value;
 
+    updateKpiActiveState();
+
     let cases = Activity10.getCases();
 
     cases = cases.filter(c => {
       const matchQ = !q || c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.officer.toLowerCase().includes(q);
-      const matchCat = (cat === 'all') || (c.category === cat);
+      const matchCat = (cat === 'all') || (c.category === cat) || (cat === '10.2' && c.category.startsWith('10.2'));
       let matchSla = true;
       if (sla === 'normal') matchSla = c.slaDaysRemaining > 15;
       if (sla === 'warning') matchSla = c.slaDaysRemaining <= 15 && c.slaDaysRemaining > 5;
