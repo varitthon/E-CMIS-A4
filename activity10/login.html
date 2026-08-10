@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ | E-CMIS กิจกรรมที่ 10</title>
+<link rel="icon" type="image/png" href="pacc_logo.png">
+<link rel="apple-touch-icon" href="pacc_logo.png">
+
+<!-- Google Font: Thai (body + serif display for headings) -->
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Bootstrap 5 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<!-- SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<!-- Activity 10 Custom CSS -->
+<link href="assets/ecmis-app.css" rel="stylesheet">
+<link href="assets/ecmis-activity10.css" rel="stylesheet">
+
+<style>
+:root{
+  --ecmis-navy:#0a2647;
+  --ecmis-navy-2:#123b63;
+  --ecmis-navy-dark:#051425;
+  --ecmis-gold:#c9a227;
+  --ecmis-gold-light:#e6c765;
+  --ecmis-red:#a5322a;
+  --ecmis-bg:#f7f6f2;
+  --ecmis-ink:#20262e;
+  --serif:'Noto Serif Thai','Prompt',serif;
+}
+body{
+  font-family:'Prompt',sans-serif;
+  background:var(--ecmis-bg);
+  color:var(--ecmis-ink);
+  letter-spacing:.1px;
+}
+h1,h2,h3,h4,h5,h6{ font-family:var(--serif); }
+
+/* ---------- High contrast ---------- */
+body.high-contrast{ background:#000 !important; color:#fff !important; }
+body.high-contrast .navbar,
+body.high-contrast .site-footer,
+body.high-contrast .login-card-wrap,
+body.high-contrast .auth-tabs,
+body.high-contrast .input-icon-group,
+body.high-contrast .thaid-qr-box{
+  background:#000 !important; color:#fff !important; border-color:#fff !important;
+}
+body.high-contrast a{ color:#ffd400 !important; }
+body.high-contrast .field-label,
+body.high-contrast .auth-tab,
+body.high-contrast .form-check-label,
+body.high-contrast .login-divider span,
+body.high-contrast .login-footnote,
+body.high-contrast .thaid-instructions,
+body.high-contrast .thaid-countdown,
+body.high-contrast .text-muted{
+  color:#fff !important;
+}
+body.high-contrast .form-control{
+  background:#111 !important; color:#fff !important; border-color:#fff !important;
+}
+body.high-contrast .form-control::placeholder{ color:#9aa4b5 !important; }
+body.high-contrast .input-icon-group i{ color:#fff !important; }
+body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !important; }
+
+/* ---------- Accessibility toolbar ---------- */
+.a11y-bar{
+  background:var(--ecmis-navy-dark);
+  color:#cfd8e6;
+  font-size:.78rem;
+  border-bottom:1px solid rgba(201,162,39,.25);
+}
+.a11y-bar a, .a11y-bar button{ color:#e8edf5; text-decoration:none; font-size:.78rem; }
+.a11y-bar button{
+  background:transparent; border:1px solid rgba(255,255,255,.25);
+  border-radius:20px; padding:2px 10px; margin-left:4px; transition:.2s;
+}
+.a11y-bar button:hover{ background:var(--ecmis-gold); color:#1a1a1a; border-color:var(--ecmis-gold); }
+.util-divider{ width:1px; height:14px; background:rgba(255,255,255,.2); display:inline-block; margin:0 12px; }
+.util-link{ background:transparent; border:none; color:#b9c4d6; font-size:.78rem; padding:0; transition:.2s; }
+.util-link:hover{ color:var(--ecmis-gold-light); }
+
+/* ---------- Navbar ---------- */
+.navbar-ecmis{
+  background:linear-gradient(180deg, var(--ecmis-navy) 0%, #0d2e54 100%);
+  padding-top:1rem; padding-bottom:1rem;
+  border-bottom:2px solid var(--ecmis-gold);
+  box-shadow:0 4px 18px rgba(0,0,0,.18);
+}
+.navbar-ecmis .navbar-nav{ align-items:center; }
+.brand-badge{
+  width:50px;height:50px; border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin-right:12px; flex:0 0 auto;
+}
+.brand-badge img{ width:100%;height:100%; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.45)); }
+.navbar-ecmis .navbar-brand{ color:#fff; font-weight:600; line-height:1.2; font-family:var(--serif); letter-spacing:.5px; }
+.navbar-ecmis .navbar-brand small{ display:block; font-size:.95rem; font-weight:400; opacity:.9; font-family:'Prompt',sans-serif; letter-spacing:.2px; line-height:1.3; }
+@media (max-width:991.98px){ .navbar-ecmis .navbar-brand small{ font-size:.8rem; } }
+.navbar-ecmis .nav-link{
+  color:#dbe3ef !important; font-weight:400; position:relative;
+  display:inline-flex; align-items:center;
+  margin:0 6px; padding-left:.85rem !important; padding-right:.85rem !important;
+  white-space:nowrap; font-size:.92rem; letter-spacing:.15px;
+}
+.navbar-ecmis .nav-link:hover{ color:var(--ecmis-gold-light) !important; }
+.navbar-ecmis .nav-link.active-login{ color:var(--ecmis-gold-light) !important; font-weight:600; }
+
+/* ---------- Page header band ---------- */
+.form-page-header{
+  background:
+    radial-gradient(circle at 88% 0%, rgba(201,162,39,.16), transparent 42%),
+    linear-gradient(140deg, var(--ecmis-navy-dark) 0%, var(--ecmis-navy) 45%, var(--ecmis-navy-2) 100%);
+  color:#fff;
+  padding:36px 0 76px;
+}
+.breadcrumb-form{ display:flex; align-items:center; gap:.5rem; list-style:none; padding:0; margin:0 0 1rem; font-size:.8rem; }
+.breadcrumb-form a{ color:rgba(255,255,255,.7); text-decoration:none; }
+.breadcrumb-form a:hover{ color:var(--ecmis-gold-light); }
+.breadcrumb-form li.active{ color:var(--ecmis-gold-light); }
+.breadcrumb-form i{ font-size:.6rem; color:rgba(255,255,255,.4); }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-size:.72rem; font-weight:600; letter-spacing:1.6px; text-transform:uppercase;
+  color:var(--ecmis-gold-light);
+}
+.eyebrow::before{ content:""; width:22px; height:2px; background:var(--ecmis-gold-light); display:inline-block; }
+.form-page-header h1{ font-size:1.7rem; font-weight:700; margin:.6rem 0 .75rem; }
+.form-page-header .subtitle{ font-size:.92rem; opacity:.82; max-width:680px; margin-bottom:0; line-height:1.7; }
+
+/* ---------- Login card ---------- */
+.login-card-wrap{
+  background:#fff; border-radius:18px; box-shadow:0 14px 34px -14px rgba(15,35,65,.22);
+  padding:2rem 2rem 1.75rem; max-width:540px; margin:-48px auto 3rem;
+}
+.auth-tabs{
+  display:flex; gap:4px; background:#f1f3f7; border-radius:12px; padding:5px; margin-bottom:1.75rem;
+}
+.auth-tab{
+  flex:1; border:none; background:transparent; color:#6b7280; font-size:.86rem; font-weight:600;
+  padding:.6rem .5rem; border-radius:9px; display:flex; align-items:center; justify-content:center; gap:.45rem;
+  transition:.2s; cursor:pointer;
+}
+.auth-tab.active{ background:#fff; color:var(--ecmis-navy); box-shadow:0 2px 8px rgba(15,35,65,.1); }
+.auth-tab i{ font-size:.8rem; }
+
+.field-label{ font-weight:500; color:var(--ecmis-ink); font-size:.86rem; margin-bottom:.4rem; display:block; }
+.input-icon-group{
+  display:flex; align-items:center; border:1px solid #dfe3ea; border-radius:10px;
+  background:#fff; padding:0 .9rem; transition:.2s;
+}
+.input-icon-group:focus-within{ border-color:var(--ecmis-gold); box-shadow:0 0 0 .2rem rgba(201,162,39,.15); }
+.input-icon-group i{ color:#9aa4b5; font-size:.9rem; flex:0 0 auto; }
+.input-icon-group input{
+  border:none; outline:none; box-shadow:none; background:transparent; font-size:.92rem;
+  padding:.68rem .6rem; width:100%;
+}
+.password-toggle{ background:none; border:none; color:#9aa4b5; padding:.3rem; flex:0 0 auto; }
+.password-toggle:hover{ color:var(--ecmis-navy); }
+
+.login-options{ display:flex; align-items:center; justify-content:space-between; margin:1rem 0 1.5rem; font-size:.85rem; flex-wrap:wrap; gap:.5rem; }
+.login-options a{ color:var(--ecmis-navy); text-decoration:none; font-weight:500; }
+.login-options a:hover{ color:var(--ecmis-gold); text-decoration:underline; }
+
+.btn-login-submit{
+  width:100%; background:linear-gradient(135deg, var(--ecmis-navy), var(--ecmis-navy-2));
+  color:#fff; border:none; border-radius:10px; padding:.85rem; font-weight:600; font-size:.96rem;
+  display:flex; align-items:center; justify-content:center; gap:.6rem; transition:.2s;
+}
+.btn-login-submit:hover{ filter:brightness(1.12); color:#fff; transform:translateY(-1px); }
+
+.login-divider{ display:flex; align-items:center; gap:.9rem; margin:1.5rem 0 1.25rem; }
+.login-divider::before, .login-divider::after{ content:""; flex:1; height:1px; background:#e5e8ee; }
+.login-divider span{ font-size:.78rem; color:#9aa4b5; }
+
+.login-footnote{ text-align:center; font-size:.84rem; color:#6b7280; margin-bottom:0; }
+.login-footnote a{ color:var(--ecmis-navy); font-weight:600; text-decoration:none; }
+.login-footnote a:hover{ color:var(--ecmis-gold); }
+
+/* Activity 10 Quick Role Selection Box */
+.role-quick-box{
+  background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1rem; margin-top:1.25rem;
+}
+.role-quick-title{
+  font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ecmis-navy); margin-bottom:.65rem; display:flex; align-items:center; justify-content:space-between;
+}
+.role-badge-btn{
+  font-size:.74rem; font-weight:500; padding:4px 9px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#334155;
+  transition:all .15s ease-in-out; text-align:left; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:4px;
+}
+.role-badge-btn:hover{
+  background:var(--ecmis-navy); color:#fff; border-color:var(--ecmis-navy); transform:translateY(-1px);
+}
+.role-badge-btn .badge-login-id{ font-weight:700; color:var(--ecmis-gold); font-size:.7rem; }
+
+/* ThaID panel */
+.thaid-panel{ text-align:center; }
+.thaid-badge{
+  display:inline-flex; align-items:center; gap:.5rem; background:rgba(10,38,71,.06); border:1px solid rgba(10,38,71,.15);
+  color:var(--ecmis-navy); font-size:.78rem; font-weight:600; padding:.35rem .9rem; border-radius:20px; margin-bottom:1.1rem;
+}
+.thaid-badge i{ color:var(--ecmis-gold); }
+.thaid-instructions{ font-size:.86rem; color:#6b7280; margin-bottom:1.25rem; line-height:1.7; }
+.thaid-qr-box{
+  width:180px; height:180px; margin:0 auto 1rem; padding:10px; background:#fff;
+  border:1px solid #e5e8ee; border-radius:14px; box-shadow:0 8px 22px rgba(15,35,65,.08);
+  display:flex; align-items:center; justify-content:center; position:relative;
+}
+.thaid-qr-box img{ width:100%; height:100%; object-fit:contain; border-radius:6px; }
+.thaid-qr-expired{
+  position:absolute; inset:10px; background:rgba(255,255,255,.94); border-radius:8px;
+  display:none; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; font-size:.78rem; color:var(--ecmis-red);
+}
+.thaid-qr-expired.show{ display:flex; }
+.thaid-countdown{ font-size:.8rem; color:#6b7280; margin-bottom:1.5rem; }
+.thaid-countdown b{ color:var(--ecmis-navy); }
+.btn-thaid-refresh{
+  background:#fff; border:1.5px solid var(--ecmis-navy); color:var(--ecmis-navy);
+  font-size:.78rem; padding:.35rem .9rem; border-radius:20px;
+}
+.btn-thaid-demo{
+  width:100%; background:linear-gradient(135deg,var(--ecmis-gold-light),var(--ecmis-gold));
+  color:#1a1a1a; border:none; border-radius:10px; padding:.75rem; font-weight:600; font-size:.88rem;
+  display:flex; align-items:center; justify-content:center; gap:.5rem; transition:.2s;
+}
+.btn-thaid-demo:hover{ filter:brightness(1.06); color:#1a1a1a; }
+
+/* ---------- Footer ---------- */
+.site-footer{ background:var(--ecmis-navy-dark); color:#aebada; padding-top:3.5rem; border-top:3px solid var(--ecmis-gold); }
+.site-footer h6{ color:#fff; font-weight:600; margin-bottom:1.1rem; font-family:var(--serif); letter-spacing:.4px; font-size:.95rem; text-transform:uppercase; }
+.site-footer a{ color:#aebada; text-decoration:none; font-size:.88rem; transition:.2s; }
+.site-footer a:hover{ color:var(--ecmis-gold-light); padding-left:2px; }
+.footer-bottom{ background:#03101f; font-size:.78rem; color:#7b879e; }
+.social-icon{
+  width:36px;height:36px;border-radius:50%; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  display:inline-flex;align-items:center;justify-content:center; margin-right:8px; color:#fff !important; transition:.2s;
+}
+.social-icon:hover{ background:var(--ecmis-gold); color:#1a1a1a !important; }
+
+/* ---------- Cookie consent banner ---------- */
+.cookie-banner{
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:1050;
+  background:var(--ecmis-navy-dark);
+  border-top:3px solid var(--ecmis-gold);
+  color:#dbe3ef;
+  padding:1rem 1.25rem;
+  transform:translateY(120%);
+  transition:transform .5s ease;
+  box-shadow:0 -10px 30px rgba(0,0,0,.35);
+}
+.cookie-banner.show{ transform:translateY(0); }
+.cookie-banner a{ color:var(--ecmis-gold-light); }
+.cookie-banner .btn-cookie-accept{
+  background:linear-gradient(135deg, var(--ecmis-gold-light), var(--ecmis-gold));
+  color:#1a1a1a; font-weight:600; border:none;
+}
+.cookie-banner .btn-cookie-accept:hover{ color:#1a1a1a; filter:brightness(1.05); }
+.cookie-banner .btn-cookie-settings{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.4);
+  color:#fff;
+}
+.cookie-banner .btn-cookie-settings:hover{ background:rgba(255,255,255,.1); color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- ============ Accessibility bar ============ -->
+<div class="a11y-bar py-1">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+      <i class="fa-solid fa-phone-volume me-1"></i> สายด่วน ป.ป.ท. 1206 &nbsp;|&nbsp;
+      <i class="fa-solid fa-envelope me-1"></i> pacc@pacc.go.th
+    </div>
+    <div class="d-flex align-items-center">
+      <span class="me-2">ขนาดตัวอักษร:</span>
+      <button type="button" onclick="changeFontSize(-1)">A-</button>
+      <button type="button" onclick="changeFontSize(0)">A</button>
+      <button type="button" onclick="changeFontSize(1)">A+</button>
+      <button type="button" class="ms-2" onclick="toggleContrast()"><i class="fa-solid fa-circle-half-stroke"></i> ปรับสี</button>
+      <span class="util-divider"></span>
+      <a href="01-work-inbox.html" class="util-link"><i class="fa-solid fa-house me-1"></i>กลับ Work Inbox</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Navbar ============ -->
+<nav class="navbar navbar-expand-xl navbar-ecmis sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="01-work-inbox.html">
+      <span class="brand-badge"><img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท."></span>
+      <span>
+        E-CMIS
+        <small>สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (ป.ป.ท.) — กิจกรรมที่ 10</small>
+      </span>
+    </a>
+    <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav mx-auto mt-3 mt-xl-0">
+        <li class="nav-item"><a class="nav-link" href="01-work-inbox.html">Work Inbox</a></li>
+        <li class="nav-item"><a class="nav-link" href="02-case-register.html">ลงทะเบียนสำนวน</a></li>
+        <li class="nav-item"><a class="nav-link" href="03-split-viewer.html">10.1 คดีชั้นอัยการ</a></li>
+        <li class="nav-item"><a class="nav-link" href="07-info-request-form.html">10.2 ข้อมูลข่าวสาร</a></li>
+        <li class="nav-item"><a class="nav-link" href="09-admin-court-notice.html">10.3 คดีปกครอง</a></li>
+        <li class="nav-item"><a class="nav-link" href="10-legal-knowledge-base.html">คลังความรู้ KM</a></li>
+        <li class="nav-item"><a class="nav-link active-login" href="login.html">เข้าสู่ระบบ</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ Page header ============ -->
+<section class="form-page-header">
+  <div class="container">
+    <ul class="breadcrumb-form">
+      <li><a href="01-work-inbox.html">หน้าแรก</a></li>
+      <li><i class="fa-solid fa-chevron-right"></i></li>
+      <li class="active">เข้าสู่ระบบ</li>
+    </ul>
+    <span class="eyebrow"><i class="fa-solid fa-scale-balanced me-1"></i> กิจกรรมที่ 10 ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</span>
+    <h1>เข้าสู่ระบบ E-CMIS</h1>
+    <p class="subtitle">ยินดีต้อนรับสู่ระบบบริหารจัดการงานกฎหมายและสำนวนคดี สำนักงาน ป.ป.ท. (กิจกรรมที่ 10.1, 10.2, 10.3) กรุณาเข้าสู่ระบบด้วยชื่อผู้ใช้งานตามบทบาท หรือยืนยันตัวตนผ่าน ThaID</p>
+  </div>
+</section>
+
+<!-- ============ Login card ============ -->
+<div class="container">
+  <div class="login-card-wrap">
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" id="tabBtn-credentials" onclick="switchAuthTab('credentials')">
+        <i class="fa-solid fa-user"></i>Username / Email
+      </button>
+      <button type="button" class="auth-tab" id="tabBtn-thaid" onclick="switchAuthTab('thaid')">
+        <i class="fa-solid fa-id-card"></i>ThaID (ดิจิทัล)
+      </button>
+    </div>
+
+    <!-- Username / Email panel -->
+    <div id="authPanel-credentials">
+      <form onsubmit="handleLogin(event)">
+        <div class="mb-3">
+          <label class="field-label">ชื่อผู้ใช้งานหรืออีเมล (เลือกบทบาทกิจกรรม 10)</label>
+          <div class="input-icon-group">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="loginUsername" placeholder="เช่น Nattapol.B (นิติกร) หรือเลือกจากรายการ" list="loginUsernameHints" required autocomplete="off">
+            <datalist id="loginUsernameHints"></datalist>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="field-label">รหัสผ่าน</label>
+          <div class="input-icon-group">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="loginPassword" placeholder="กรอกรหัสผ่าน (สาธิตกรอกอะไรก็ได้)" required value="123456">
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+              <i class="fa-solid fa-eye" id="passwordToggleIcon"></i>
+            </button>
+          </div>
+        </div>
+        <div class="login-options">
+          <div class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+            <label class="form-check-label" for="rememberMe">จดจำการเข้าสู่ระบบ</label>
+          </div>
+          <a href="#" onclick="openForgotPassword(); return false;">ลืมรหัสผ่าน?</a>
+        </div>
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-right-to-bracket"></i>เข้าสู่ระบบ (เข้าใช้งานระบบกฎหมาย)
+        </button>
+      </form>
+
+      <!-- Quick Role Selection Panel (Activity 10 - 13 Roles) -->
+      <div class="role-quick-box">
+        <div class="role-quick-title">
+          <span><i class="fa-solid fa-users-gear me-1"></i>เลือกบทบาทสาธิต (13 Roles กิจกรรม 10)</span>
+          <span class="badge bg-secondary font-monospace">13 บทบาท</span>
+        </div>
+        <div class="d-flex flex-wrap gap-1" id="roleQuickButtons">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ThaID panel -->
+    <div id="authPanel-thaid" class="d-none">
+      <div class="thaid-panel">
+        <div class="thaid-badge"><i class="fa-solid fa-id-card"></i>เข้าสู่ระบบด้วย ThaID</div>
+        <p class="thaid-instructions">เปิดแอปพลิเคชัน <b>ThaID</b> บนโทรศัพท์มือถือของท่าน แล้วสแกน QR โค้ดด้านล่างเพื่อยืนยันตัวตนเข้าสู่ระบบ E-CMIS กิจกรรมที่ 10</p>
+        <div class="thaid-qr-box">
+          <img id="thaidQrImg" alt="QR สำหรับเข้าสู่ระบบด้วย ThaID">
+          <div class="thaid-qr-expired" id="thaidQrExpired">
+            <i class="fa-solid fa-rotate-right fa-lg"></i>
+            <span>QR หมดอายุแล้ว</span>
+            <button type="button" class="btn-thaid-refresh" onclick="refreshThaidQr()">ขอ QR ใหม่</button>
+          </div>
+        </div>
+        <div class="thaid-countdown" id="thaidCountdown">QR จะหมดอายุใน <b id="thaidCountdownNum">120</b> วินาที</div>
+        <button type="button" class="btn-thaid-demo" onclick="simulateThaidScan()">
+          <i class="fa-solid fa-mobile-screen-button"></i>จำลองการสแกนสำเร็จ (สาธิต)
+        </button>
+      </div>
+    </div>
+
+    <div class="login-divider"><span>หรือ</span></div>
+    <p class="login-footnote">ยังไม่มีบัญชีผู้ใช้งานระบบกฎหมาย? <a href="#" onclick="contactAdmin(); return false;">ติดต่อผู้ดูแลระบบ ป.ป.ท.</a></p>
+  </div>
+</div>
+
+<!-- ============ Footer ============ -->
+<footer class="site-footer pb-4" id="footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h6><i class="fa-solid fa-shield-halved me-2" style="color:var(--ecmis-gold)"></i>E-CMIS กิจกรรมที่ 10</h6>
+        <p class="small">สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (ป.ป.ท.)<br>
+        99 หมู่ 4 อาคารซอฟต์แวร์พาร์ค ถ.แจ้งวัฒนะ ต.คลองเกลือ อ.ปากเกร็ด จ.นนทบุรี 11120</p>
+        <div class="mt-3">
+          <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#" class="social-icon"><i class="fa-brands fa-line"></i></a>
+          <a href="#" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h6>สำนักงาน ป.ป.ท. เขตพื้นที่</h6>
+        <div class="row row-cols-2 small">
+          <div class="col"><a href="#">เขต 1 (กรุงเทพฯ)</a></div>
+          <div class="col"><a href="#">เขต 2 (ชลบุรี)</a></div>
+          <div class="col"><a href="#">เขต 3 (นครราชสีมา)</a></div>
+          <div class="col"><a href="#">เขต 4 (ขอนแก่น)</a></div>
+          <div class="col"><a href="#">เขต 5 (เชียงใหม่)</a></div>
+          <div class="col"><a href="#">เขต 6 (พิษณุโลก)</a></div>
+          <div class="col"><a href="#">เขต 7 (ราชบุรี)</a></div>
+          <div class="col"><a href="#">เขต 8 (สุราษฎร์ธานี)</a></div>
+          <div class="col"><a href="#">เขต 9 (สงขลา)</a></div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h6>ระบบงานกิจกรรมที่ 10</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a href="01-work-inbox.html"><i class="fa-solid fa-angle-right me-1"></i>Work Inbox (คิวงานระบบกฎหมาย)</a></li>
+          <li class="mb-2"><a href="03-split-viewer.html"><i class="fa-solid fa-angle-right me-1"></i>10.1 คดีชั้นอัยการ (ยกร่างความเห็น)</a></li>
+          <li class="mb-2"><a href="07-info-request-form.html"><i class="fa-solid fa-angle-right me-1"></i>10.2 ข้อมูลข่าวสาร/อุทธรณ์</a></li>
+          <li class="mb-2"><a href="09-admin-court-notice.html"><i class="fa-solid fa-angle-right me-1"></i>10.3 คดีปกครอง</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom text-center py-3 mt-4">
+    &copy; 2569 สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (ป.ป.ท.) — E-CMIS กิจกรรมที่ 10 Mockup
+  </div>
+</footer>
+
+<!-- ============ Cookie consent banner ============ -->
+<div class="cookie-banner" id="cookieBanner">
+  <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-start gap-3">
+      <i class="fa-solid fa-cookie-bite fa-2x flex-shrink-0" style="color:var(--ecmis-gold-light)"></i>
+      <div class="small">
+        เว็บไซต์นี้ใช้คุกกี้เพื่อให้ท่านได้รับประสบการณ์ที่ดีในการใช้งานระบบ E-CMIS กิจกรรมที่ 10 และเพื่อการรักษาความปลอดภัย
+        <br>
+        <a href="https://www.pacc.go.th/home/view_content/54/8127" target="_blank" rel="noopener">อ่านนโยบายคุกกี้</a>
+      </div>
+    </div>
+    <div class="d-flex gap-2 flex-shrink-0">
+      <button type="button" class="btn btn-cookie-settings btn-sm px-3" onclick="openCookieSettings()">ตั้งค่าคุกกี้</button>
+      <button type="button" class="btn btn-cookie-accept btn-sm px-3" onclick="acceptCookies()">ยอมรับทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Scripts ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
+
+<script>
+// --- Populate Activity 10 Username Hints & Quick Role Selector Buttons ---
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
+    // 1. Populate Datalist options
+    const datalist = document.getElementById('loginUsernameHints');
+    if (datalist) {
+      datalist.innerHTML = ECMIS.ROLES.map(r => 
+        `<option value="${r.login}">${r.title} — ${r.name} (${r.group})</option>`
+      ).join('');
+    }
+
+    // 2. Populate Quick Role Buttons
+    const quickBox = document.getElementById('roleQuickButtons');
+    if (quickBox) {
+      quickBox.innerHTML = ECMIS.ROLES.map(r => `
+        <button type="button" class="role-badge-btn" onclick="selectQuickRole('${r.login}')" title="${r.responsibilities}">
+          <span class="badge-login-id">${r.login}</span>: ${r.title} (${r.name.split(' ')[0]})
+        </button>
+      `).join('');
+    }
+  }
+});
+
+function selectQuickRole(loginId) {
+  const usernameInput = document.getElementById('loginUsername');
+  const passwordInput = document.getElementById('loginPassword');
+  if (usernameInput) usernameInput.value = loginId;
+  if (passwordInput && !passwordInput.value) passwordInput.value = '123456';
+  
+  // Highlight input briefly
+  usernameInput.focus();
+  usernameInput.classList.add('is-valid');
+  setTimeout(() => usernameInput.classList.remove('is-valid'), 1000);
+}
+
+// --- Accessibility bar helpers ---
+let fontStep = 0;
+function changeFontSize(dir){
+  if(dir === 0){ fontStep = 0; }
+  else { fontStep = Math.max(-2, Math.min(3, fontStep + dir)); }
+  document.documentElement.style.fontSize = (16 + fontStep*2) + 'px';
+}
+function toggleContrast(){ document.body.classList.toggle('high-contrast'); }
+
+// --- Auth tab switching ---
+function switchAuthTab(tab){
+  const isCredentials = tab === 'credentials';
+  document.getElementById('tabBtn-credentials').classList.toggle('active', isCredentials);
+  document.getElementById('tabBtn-thaid').classList.toggle('active', !isCredentials);
+  document.getElementById('authPanel-credentials').classList.toggle('d-none', !isCredentials);
+  document.getElementById('authPanel-thaid').classList.toggle('d-none', isCredentials);
+  if(!isCredentials){ startThaidFlow(); }
+}
+
+// --- Password visibility toggle ---
+function togglePasswordVisibility(){
+  const input = document.getElementById('loginPassword');
+  const icon = document.getElementById('passwordToggleIcon');
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+}
+
+// --- Username/email login handler (Activity 10) ---
+function handleLogin(event){
+  event.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  
+  if(!username || !password){
+    Swal.fire({icon:'warning', title:'กรุณากรอกข้อมูลให้ครบถ้วน', confirmButtonColor:'#0a2647'});
+    return;
+  }
+  
+  Swal.fire({
+    title:'กำลังตรวจสอบสิทธิ์ในระบบกิจกรรมที่ 10...',
+    allowOutsideClick:false,
+    didOpen:() => Swal.showLoading()
+  });
+  
+  setTimeout(() => {
+    let roleId = ECMIS.roleIdForLogin(username);
+    
+    // Search fallback if full name or title typed
+    if(!roleId && typeof ECMIS !== 'undefined' && ECMIS.ROLES){
+      const found = ECMIS.ROLES.find(r => 
+        r.id.toLowerCase() === username.toLowerCase() ||
+        r.title.toLowerCase().includes(username.toLowerCase()) ||
+        r.name.toLowerCase().includes(username.toLowerCase())
+      );
+      if(found) roleId = found.id;
+    }
+    
+    // Default fallback to legal_officer if non-existent username
+    if(!roleId) roleId = 'legal_officer';
+    
+    sessionStorage.setItem('ecmis_role', roleId);
+    const role = ECMIS.getRole(roleId);
+    
+    Swal.fire({
+      icon:'success',
+      title:'เข้าสู่ระบบสำเร็จ',
+      text: `ยินดีต้อนรับ ${role.title} (${role.name}) เข้าสู่ระบบกิจกรรมที่ 10`,
+      confirmButtonColor:'#0a2647',
+      confirmButtonText:'ไปที่ Work Inbox (คิวงาน)'
+    }).then(() => { window.location.href = '01-work-inbox.html'; });
+  }, 1000);
+}
+
+function openForgotPassword(){
+  Swal.fire({
+    title:'ลืมรหัสผ่าน (กิจกรรม 10)',
+    input:'email',
+    inputPlaceholder:'กรอกอีเมลราชการ (@pacc.go.th)',
+    showCancelButton:true,
+    confirmButtonText:'ส่งลิงก์รีเซ็ตรหัสผ่าน',
+    cancelButtonText:'ยกเลิก',
+    confirmButtonColor:'#0a2647'
+  }).then(res => {
+    if(res.isConfirmed && res.value){
+      Swal.fire({icon:'success', title:'ส่งอีเมลสำเร็จ', text:'กรุณาตรวจสอบกล่องจดหมายอีเมลราชการของท่าน', confirmButtonColor:'#0a2647'});
+    }
+  });
+}
+
+function contactAdmin(){
+  Swal.fire({
+    icon:'info',
+    title:'ติดต่อผู้ดูแลระบบ กิจกรรมที่ 10',
+    html:'บัญชีผู้ใช้งานระบบกฎหมาย E-CMIS จัดสรรให้เฉพาะเจ้าหน้าที่ที่ได้รับมอบหมาย<br>กรุณาติดต่อ <b>กองกฎหมาย ป.ป.ท.</b> หรือโทร <b>1206</b>',
+    confirmButtonColor:'#0a2647'
+  });
+}
+
+// --- ThaID QR login flow (mock) ---
+let thaidTimer = null;
+let thaidSeconds = 120;
+let thaidStarted = false;
+
+function generateThaidToken(){
+  return 'THAID-ACT10-' + Math.random().toString(36).slice(2, 10).toUpperCase();
+}
+
+function renderThaidQr(){
+  const token = generateThaidToken();
+  document.getElementById('thaidQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(token);
+  document.getElementById('thaidQrExpired').classList.remove('show');
+}
+
+function startThaidFlow(){
+  if(thaidStarted) return;
+  thaidStarted = true;
+  renderThaidQr();
+  thaidSeconds = 120;
+  updateThaidCountdown();
+  thaidTimer = setInterval(() => {
+    thaidSeconds--;
+    updateThaidCountdown();
+    if(thaidSeconds <= 0){
+      clearInterval(thaidTimer);
+      document.getElementById('thaidQrExpired').classList.add('show');
+    }
+  }, 1000);
+}
+
+function updateThaidCountdown(){
+  document.getElementById('thaidCountdownNum').textContent = Math.max(thaidSeconds, 0);
+}
+
+function refreshThaidQr(){
+  clearInterval(thaidTimer);
+  renderThaidQr();
+  thaidSeconds = 120;
+  updateThaidCountdown();
+  thaidTimer = setInterval(() => {
+    thaidSeconds--;
+    updateThaidCountdown();
+    if(thaidSeconds <= 0){
+      clearInterval(thaidTimer);
+      document.getElementById('thaidQrExpired').classList.add('show');
+    }
+  }, 1000);
+}
+
+function simulateThaidScan(){
+  Swal.fire({
+    title:'กำลังยืนยันตัวตนผ่าน ThaID...',
+    allowOutsideClick:false,
+    didOpen:() => Swal.showLoading()
+  });
+  setTimeout(() => {
+    clearInterval(thaidTimer);
+    // Set legal_officer or secgen as default for ThaID demo login
+    sessionStorage.setItem('ecmis_role', 'legal_officer');
+    const role = ECMIS.getRole('legal_officer');
+    
+    Swal.fire({
+      icon:'success',
+      title:'ยืนยันตัวตนด้วย ThaID สำเร็จ',
+      text:`เข้าสู่ระบบในฐานะ ${role.title} (${role.name})`,
+      confirmButtonColor:'#0a2647',
+      confirmButtonText:'ไปที่ Work Inbox'
+    }).then(() => { window.location.href = '01-work-inbox.html'; });
+  }, 1200);
+}
+
+// --- Cookie consent banner ---
+function acceptCookies(){
+  const banner = document.getElementById('cookieBanner');
+  if(banner) banner.classList.remove('show');
+}
+
+function openCookieSettings(){
+  Swal.fire({
+    title: 'ตั้งค่าคุกกี้ระบบ E-CMIS',
+    html: `
+      <div class="text-start small">
+        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+          <div><b>คุกกี้ที่จำเป็น</b><br><span class="text-muted">จำเป็นต่อการทำงานและระบบความปลอดภัย</span></div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" checked disabled>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+          <div><b>คุกกี้เพื่อการวิเคราะห์</b><br><span class="text-muted">ช่วยปรับปรุงประสิทธิภาพการทำงานของระบบ</span></div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="ckAnalytics" checked>
+          </div>
+        </div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'บันทึกการตั้งค่า',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#0a2647'
+  }).then((result) => {
+    if(result.isConfirmed){ acceptCookies(); }
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const banner = document.getElementById('cookieBanner');
+    if(banner) banner.classList.add('show');
+  }, 700);
+});
+</script>
+</body>
+</html>

@@ -1039,6 +1039,8 @@ function renderShell(activeHref){
         <ul class="dropdown-menu dropdown-menu-end">
           <li><h6 class="dropdown-header">สลับบทบาทผู้ใช้ (จำลอง — กิจกรรมที่ 10)</h6></li>
           ${roleItems}
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
         </ul>
       </div>
     </div>
@@ -1068,6 +1070,8 @@ function renderShell(activeHref){
     <ul class="dropdown-menu">
       <li><h6 class="dropdown-header">สลับบทบาทผู้ใช้ (กิจกรรมที่ 10)</h6></li>
       ${roleItems}
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item text-danger" href="login.html"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</a></li>
     </ul>
   </div>`;
 
