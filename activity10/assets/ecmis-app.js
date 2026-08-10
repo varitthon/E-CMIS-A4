@@ -914,7 +914,7 @@ function canRecall(kase, roleId){
    เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท (13 บทบาท ตาม Google Sheet) */
 const NAV = [
   { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
-  { href:'01-work-inbox.html', icon:'fa-inbox', label:'คิวงานหลักที่รอดำเนินการ', badge:true, visible: role => true }
+  { href:'01-work-inbox.html', icon:'fa-inbox', label:'งานกฎหมายในทางคดีที่รอดำเนินการ', badge:true, visible: role => true }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ
