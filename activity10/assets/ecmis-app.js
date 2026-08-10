@@ -913,7 +913,7 @@ function canRecall(kase, roleId){
 /* -------------------------------------------------------- SHELL RENDER
    เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท (13 บทบาท ตาม Google Sheet) */
 const NAV = [
-  { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมาย (กิจกรรม 10)' },
+  { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
   { href:'01-work-inbox.html', icon:'fa-inbox', label:'Work Inbox (คิวงานหลัก)', badge:true, visible: role => true },
   { href:'index.html', icon:'fa-house', label:'หน้าแรกประชาสัมพันธ์', visible: role => true },
   { href:'login.html', icon:'fa-right-to-bracket', label:'เข้าสู่ระบบ (Login)', visible: role => true }
@@ -1068,7 +1068,7 @@ function renderShell(activeHref){
     <a class="brand text-decoration-none" href="01-work-inbox.html">
       <img src="pacc_logo.png" alt="ตราสำนักงาน ป.ป.ท.">
       <span>E-CMIS
-        <small>กิจกรรมที่ 10 ระบบกฎหมายในทางคดี</small>
+        <small>ระบบกฎหมายในทางคดี</small>
       </span>
     </a>
     <div class="sidebar-nav-scroll">${navHtml}</div>
