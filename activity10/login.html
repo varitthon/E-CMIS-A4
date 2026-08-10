@@ -371,17 +371,6 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
           <i class="fa-solid fa-right-to-bracket"></i>เข้าสู่ระบบ (เข้าใช้งานระบบกฎหมาย)
         </button>
       </form>
-
-      <!-- Quick Role Selection Panel -->
-      <div class="role-quick-box">
-        <div class="role-quick-title">
-          <span><i class="fa-solid fa-users-gear me-1"></i>เลือกบทบาทสาธิต (13 Roles)</span>
-          <span class="badge bg-secondary font-monospace">13 บทบาท</span>
-        </div>
-        <div class="d-flex flex-wrap gap-1" id="roleQuickButtons">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
     </div>
 
     <!-- ThaID panel -->
@@ -478,7 +467,7 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
 <script src="assets/ecmis-activity10.js"></script>
 
 <script>
-// --- Populate Activity 10 Username Hints & Quick Role Selector Buttons ---
+// --- Populate Activity 10 Username Hints ---
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
     // 1. Populate Datalist options
@@ -487,16 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
       datalist.innerHTML = ECMIS.ROLES.map(r => 
         `<option value="${r.login}">${r.title} — ${r.name} (${r.group})</option>`
       ).join('');
-    }
-
-    // 2. Populate Quick Role Buttons
-    const quickBox = document.getElementById('roleQuickButtons');
-    if (quickBox) {
-      quickBox.innerHTML = ECMIS.ROLES.map(r => `
-        <button type="button" class="role-badge-btn" onclick="selectQuickRole('${r.login}')" title="${r.responsibilities}">
-          <span class="badge-login-id">${r.login}</span>: ${r.title} (${r.name.split(' ')[0]})
-        </button>
-      `).join('');
     }
   }
 });
