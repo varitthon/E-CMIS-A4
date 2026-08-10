@@ -430,6 +430,21 @@
       return item;
     },
 
+    receiveAndForwardToDirector(id, lawReceiveNo) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.lawReceiveNo = lawReceiveNo || `รับ-กม. 2569/${Math.floor(1000 + Math.random() * 9000)}`;
+        item.statusCode = "PENDING_DIRECTOR";
+        item.status = "เสนอ ผอ.กองกฎหมาย";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "dir_legal";
+        item.workflowStep = 3;
+        saveCases(cases);
+      }
+      return item;
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;

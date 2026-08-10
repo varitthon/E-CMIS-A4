@@ -371,7 +371,11 @@
       html += `
         <tr>
           <td><input type="checkbox" class="form-check-input case-chk" value="${c.id}" onchange="updateBulkUI()"></td>
-          <td><strong class="text-navy">${c.id}</strong><br><small class="text-muted">${c.docNo || ''}</small></td>
+          <td>
+            <strong class="text-navy">${c.id}</strong><br>
+            <small class="text-muted">${c.docNo || ''}</small>
+            ${c.lawReceiveNo ? `<br><span class="badge bg-secondary font-monospace" style="font-size:0.68rem"><i class="fa-solid fa-stamp me-1"></i>${c.lawReceiveNo}</span>` : ''}
+          </td>
           <td><span class="st st-regular">${c.categoryName}</span></td>
           <td>
             <div class="fw-bold text-dark">${c.title}</div>
@@ -381,6 +385,7 @@
           <td><span class="st ${slaBadgeClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
           <td class="text-end">
             <div class="btn-group btn-group-sm">
+              <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="ดูเอกสารความเห็นอัยการ และ ออกเลขรับส่ง ผอ.กองกฎหมาย"><i class="fa-solid fa-file-import me-1 text-primary"></i>ดูเอกสารอัยการ</button>
               <button type="button" onclick="openDraftModal('${c.id}')" class="btn btn-xs btn-navy" title="ยกร่างความเห็น (Split-Screen)"><i class="fa-solid fa-columns me-1"></i>ยกร่าง</button>
               <button type="button" onclick="openApprovalModal('${c.id}')" class="btn btn-xs btn-outline-primary" title="เสนออนุมัติ"><i class="fa-solid fa-paper-plane"></i></button>
               <button type="button" onclick="openSignModal('${c.id}')" class="btn btn-xs btn-outline-success" title="ลงนาม e-Signature"><i class="fa-solid fa-file-signature"></i></button>
@@ -673,6 +678,145 @@
         renderKPI();
         renderTable();
         Swal.fire({ icon:'success', title:'ลงนามดิจิทัลสำเร็จ!', timer:1200, showConfirmButton:false });
+      }
+    });
+  }
+
+  function openProsecutorDocModal(caseId) {
+    const kase = Activity10.getCaseById(caseId);
+    const generatedLawReceiveNo = kase.lawReceiveNo || `รับ-กม. 2569/${String(Math.floor(Math.random() * 900 + 100)).padStart(4, '0')}`;
+
+    Swal.fire({
+      title: false,
+      width: '92%',
+      padding: '1.2rem',
+      html: `
+        <div class="text-start" style="font-family:'Prompt',sans-serif;">
+          <!-- Header Bar -->
+          <div class="d-flex align-items-center justify-content-between p-3 rounded mb-3" style="background:#0a2647; color:#fff;">
+            <div>
+              <div class="small text-warning font-monospace mb-1"><i class="fa-solid fa-building-columns me-1"></i> กองกฎหมาย สำนักงาน ป.ป.ท.</div>
+              <h5 class="m-0 fw-bold"><i class="fa-solid fa-file-pdf me-2"></i>หนังสือแจ้งความเห็นพนักงานอัยการ (คำสั่งไม่ฟ้อง)</h5>
+            </div>
+            <div class="text-end">
+              <span class="badge bg-warning text-dark px-2 py-1 fs-6">เลขสำนวน: ${kase.id}</span>
+              <div class="small text-white-50 mt-1">อ้างอิงเอกสาร: ${kase.docNo || 'อส 0014/2569'}</div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <!-- Left Column: Details & Auto Receive Number -->
+            <div class="col-lg-6">
+              <div class="card border mb-3">
+                <div class="card-header bg-light fw-bold text-navy">
+                  <i class="fa-solid fa-info-circle me-1"></i> ข้อมูลรายละเอียดคำสั่งไม่ฟ้องของพนักงานอัยการ
+                </div>
+                <div class="card-body p-3 small">
+                  <div class="mb-2">
+                    <label class="fw-bold text-muted d-block">ชื่อเรื่องกล่าวหา / สำนวน:</label>
+                    <div class="p-2 bg-light rounded text-dark fw-semibold">${kase.title}</div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block">หน่วยงานอัยการต้นทาง:</label>
+                      <div class="p-2 bg-light rounded">${kase.source}</div>
+                    </div>
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block">เลขที่หนังสืออัยการ:</label>
+                      <div class="p-2 bg-light rounded font-monospace text-primary fw-bold">${kase.docNo || 'อส 0014/2569'}</div>
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold text-muted d-block">สรุปสาระสำคัญ / เหตุผลความเห็นอัยการ:</label>
+                    <div class="p-2 bg-light rounded text-dark" style="max-height:100px; overflow-y:auto; font-size:0.82rem;">
+                      ${kase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย'}
+                    </div>
+                  </div>
+
+                  <!-- Section: Issue Legal Receive Number (ออกเลขรับกองกฎหมาย) -->
+                  <div class="p-3 border border-warning rounded bg-warning-subtle mt-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <span class="fw-bold text-dark"><i class="fa-solid fa-stamp me-1 text-warning"></i>ระบบออกเลขรับกองกฎหมาย (อัตโนมัติ)</span>
+                      <span class="badge ${kase.lawReceiveNo ? 'bg-secondary' : 'bg-success'}">${kase.lawReceiveNo ? 'ออกเลขรับแล้ว' : 'พร้อมออกเลขรับ'}</span>
+                    </div>
+                    <div class="input-group input-group-sm mb-2">
+                      <span class="input-group-text bg-navy text-white fw-bold">เลขรับ กม.</span>
+                      <input type="text" id="swalLawReceiveNo" class="form-control font-monospace fw-bold text-navy" value="${generatedLawReceiveNo}" readonly>
+                    </div>
+                    <div class="small text-muted mb-2">
+                      <i class="fa-solid fa-user-check me-1"></i>เจ้าหน้าที่ผู้ลงรับเรื่อง: <strong>นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)</strong>
+                    </div>
+                    <div>
+                      <label class="fw-bold text-dark mb-1">ส่งเสนอต่อผู้บังคับบัญชา:</label>
+                      <select id="swalNextAssignee" class="form-select form-select-sm">
+                        <option value="dir_legal">นางสาวณพัสตร์ ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Document Viewer (จำลองเอกสารหนังสืออัยการ แบบ 03-report-213) -->
+            <div class="col-lg-6">
+              <div class="card border h-100">
+                <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
+                  <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารความเห็นอัยการ (PDF Viewer)</span>
+                  <span class="badge bg-secondary">ฉบับจริง</span>
+                </div>
+                <div class="card-body p-3 bg-dark-subtle d-flex flex-column align-items-center justify-content-center" style="min-height:360px;">
+                  <!-- Simulated Paper Document -->
+                  <div class="bg-white p-4 shadow-sm rounded text-dark w-100" style="max-width:440px; font-family:'Prompt',sans-serif; font-size:0.8rem; border:1px solid #ddd;">
+                    <div class="text-center mb-3">
+                      <img src="pacc_logo.png" style="height:48px;" alt="ตรา ป.ป.ท.">
+                      <div class="fw-bold mt-1" style="font-size:0.9rem;">บันทึกข้อความ / หนังสือแจ้งคำสั่งพนักงานอัยการ</div>
+                      <div class="text-muted small">${kase.source}</div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span><b>ที่:</b> ${kase.docNo || 'อส 0014/2569'}</span>
+                      <span><b>วันที่:</b> ${kase.dateReceived}</span>
+                    </div>
+                    <div class="mb-2"><b>เรื่อง:</b> ${kase.title}</div>
+                    <div class="mb-2"><b>เรียน:</b> เลขาธิการคณะกรรมการ ป.ป.ท. (ผ่านกองกฎหมาย)</div>
+                    <div class="p-2 bg-light rounded text-muted mb-2" style="font-size:0.75rem; line-height:1.4;">
+                      ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป
+                    </div>
+                    <div class="text-end mt-3">
+                      <div class="fw-bold">พนักงานอัยการผู้แทน</div>
+                      <div class="small text-muted">(ลงนามดิจิทัลผ่านระบบสารบรรณอัยการ)</div>
+                    </div>
+                  </div>
+                  <!-- Attachment link -->
+                  <div class="w-100 mt-3 p-2 bg-white rounded border d-flex align-items-center justify-content-between small">
+                    <span><i class="fa-solid fa-paperclip text-primary me-1"></i>สำนวนไต่สวน_213_อส0014.pdf</span>
+                    <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" onclick="Swal.fire({icon:'info', title:'กำลังเปิดไฟล์เอกสารแนบ...', timer:1000, showConfirmButton:false})"><i class="fa-solid fa-download me-1"></i>ดาวน์โหลด</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-paper-plane me-1"></i> ลงรับเลขสารบรรณ & เสนอ ผอ.กองกฎหมาย',
+      cancelButtonText: 'ปิดหน้าต่าง',
+      confirmButtonColor: '#0a2647',
+      cancelButtonColor: '#6c757d'
+    }).then(res => {
+      if (res.isConfirmed) {
+        Activity10.receiveAndForwardToDirector(kase.id, generatedLawReceiveNo);
+        renderKPI();
+        renderTable();
+        Swal.fire({
+          icon: 'success',
+          title: 'ลงรับเรื่องและเสนอเรื่องสำเร็จ!',
+          html: `<div class="text-start small">
+            <p><strong>ออกเลขรับกองกฎหมาย:</strong> <span class="badge bg-secondary font-monospace fs-6">${generatedLawReceiveNo}</span></p>
+            <p><strong>สถานะสำนวน:</strong> เสนอ ผอ.กองกฎหมาย (นางสาวณพัสตร์ ศรีสมเกียรติ)</p>
+          </div>`,
+          confirmButtonColor: '#0a2647'
+        });
       }
     });
   }
