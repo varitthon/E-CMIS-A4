@@ -954,8 +954,10 @@ function renderShell(activeHref){
     </li>`).join('');
 
   /* ---- topbar ---- */
+  const activeRoleIds = ['case_management', 'admin_legal', 'legal_officer', 'dir_legal'];
+  const activeRoles = ROLES.filter(r => activeRoleIds.includes(r.id));
   const groups = [];
-  ROLES.forEach(r => {
+  activeRoles.forEach(r => {
     let g = groups.find(x => x.name === r.group);
     if(!g){ g = { name:r.group, items:[] }; groups.push(g); }
     g.items.push(r);
