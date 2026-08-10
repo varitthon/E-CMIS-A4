@@ -125,19 +125,7 @@
             </div>
 
             <!-- Pagination Controls -->
-            <div class="d-flex align-items-center gap-3 ms-auto flex-wrap" id="paginationWrapper">
-              <div class="d-flex align-items-center gap-1 small text-muted">
-                <span>แสดงหน้าละ:</span>
-                <select class="form-select form-select-sm py-0 px-2" style="width: auto; font-size: 0.78rem;" id="pageSizeSelect" onchange="changePageSize(this.value)">
-                  <option value="5" selected>5</option>
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                </select>
-              </div>
-
-              <span class="small text-muted fw-semibold" id="pageInfoText">แสดง 0-0 จากทั้งหมด 0 รายการ</span>
-
+            <div class="ms-auto" id="paginationWrapper">
               <nav aria-label="Table navigation">
                 <ul class="pagination pagination-sm mb-0" id="paginationControls">
                   <!-- Rendered dynamically -->
@@ -241,12 +229,6 @@
     const totalPages = Math.ceil(totalItems / pageSize) || 1;
     if (currentPage > totalPages) currentPage = totalPages;
     if (currentPage < 1) currentPage = 1;
-
-    const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-    const endItem = Math.min(currentPage * pageSize, totalItems);
-
-    const infoEl = document.getElementById("pageInfoText");
-    if (infoEl) infoEl.innerText = `แสดง ${startItem}-${endItem} จากทั้งหมด ${totalItems} รายการ`;
 
     const paginationUl = document.getElementById("paginationControls");
     if (!paginationUl) return;
