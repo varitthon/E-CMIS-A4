@@ -459,6 +459,21 @@
       return item;
     },
 
+    forwardToGroupDirector(id, targetDirectorName) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_GROUP_DIRECTOR";
+        item.status = "เสนอ ผอ.กลุ่มงานความเห็นแย้ง";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "group_director";
+        item.workflowStep = 3;
+        if (targetDirectorName) item.groupDirector = targetDirectorName;
+        saveCases(cases);
+      }
+      return item;
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;

@@ -678,7 +678,12 @@
   }
 
   function openProsecutorDocModal(caseId) {
-    window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
+    const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
+    if (roleId === 'Napas.S' || roleId === 'dir_legal') {
+      window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(caseId)}`;
+    } else {
+      window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
+    }
   }
 </script>
 </body>
