@@ -242,6 +242,25 @@
     }
     document.getElementById('f_lawReceiveNo').value = currentLawReceiveNo;
 
+    // Check if logged in user is Board Admin Officer (Siriporn.K)
+    const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
+    if (roleId === 'Siriporn.K') {
+      const receiveCard = document.getElementById('f_lawReceiveNo').closest('.card');
+      if (receiveCard) {
+        receiveCard.className = 'card card-ecmis border-info bg-info-subtle';
+        receiveCard.querySelector('.card-body').innerHTML = `
+          <div class="fw-bold text-dark fs-6 mb-2"><i class="fa-solid fa-shield-halved me-1 text-info"></i>สถานะนำเข้าเรื่อง (กองบริหารคดี - กลุ่มงานกิจการคณะกรรมการ)</div>
+          <div class="p-2 bg-white rounded border mb-2">
+            <span class="fw-bold text-navy d-block">เลขรับสารบรรณกลาง: <span class="font-monospace text-primary">${currentCase.centralSarabanNo || 'รับ-สบร. 2569/4410'}</span></span>
+            <small class="text-muted">บันทึกสแกนเอกสารตัวจริงและส่งเรื่องต่อให้กองกฎหมายเรียบร้อยแล้ว</small>
+          </div>
+          <div class="d-flex align-items-center gap-2 pt-2 border-top">
+            <a href="01-work-inbox.html" class="btn btn-outline-navy btn-sm px-3"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+          </div>
+        `;
+      }
+    }
+
     // Document Viewer Panel Texts
     document.getElementById('doc_source_header').textContent = currentCase.source;
     document.getElementById('doc_no_text').textContent = currentCase.docNo || 'อส 0014/2569';
