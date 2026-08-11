@@ -52,6 +52,27 @@
           </button>
         </div>
         <div class="card-body p-3 small">
+          <!-- Section 0: Search Case Database (ค้นหาสำนวนคดีเดิม) -->
+          <div class="p-3 bg-white rounded border border-primary-subtle shadow-sm mb-3">
+            <div class="fw-bold text-navy mb-1.5 small">
+              <i class="fa-solid fa-magnifying-glass me-1 text-primary"></i> ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)
+            </div>
+            <div class="input-group input-group-sm">
+              <input type="text" id="intakeSearchInput" class="form-control" placeholder="พิมพ์เลขสำนวน / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
+              <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
+              </button>
+            </div>
+            <div class="form-text text-muted" style="font-size:0.75rem;">
+              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น คดี-10.1-2569/001), <strong>ชื่อผู้กล่าวหา</strong>, หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong>
+            </div>
+
+            <!-- Search Results Display Panel -->
+            <div id="intakeSearchResults" class="mt-2.5 d-none">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
           <!-- Section 1: Central Saraban Metadata -->
           <div class="p-3 bg-light rounded border mb-3">
             <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-building-flag me-1"></i> ข้อมูลการลงรับจากฝ่ายสารบรรณกลาง</div>
@@ -104,6 +125,16 @@
               <div class="col-6">
                 <label class="form-label fw-bold">หน่วยงานอัยการต้นทาง <span class="text-danger">*</span></label>
                 <textarea id="in_source" class="form-control form-control-sm" rows="1" maxlength="2000" style="min-height:31px;" placeholder="เช่น สำนักงานอัยการพิเศษฯ" data-no-voice data-no-helper data-no-copy oninput="updateLivePreview();">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</textarea>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label fw-bold">ชื่อผู้กล่าวหา (Complainant) <span class="text-danger">*</span></label>
+                <input type="text" id="in_accuser" class="form-control form-control-sm" placeholder="เช่น คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท." value="คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold">ชื่อผู้ถูกกล่าวหา (Alleged Offender) <span class="text-danger">*</span></label>
+                <input type="text" id="in_accused" class="form-control form-control-sm text-danger fw-semibold" placeholder="เช่น นายสมชาย ทุจริตมั่น" value="นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)">
               </div>
             </div>
             <div class="mb-2">
@@ -331,6 +362,135 @@
     });
   }
 
+  function executeIntakeSearch() {
+    const q = (document.getElementById('intakeSearchInput') ? document.getElementById('intakeSearchInput').value.trim().toLowerCase() : '');
+    const resultsContainer = document.getElementById('intakeSearchResults');
+    if (!resultsContainer) return;
+
+    if (!q) {
+      Swal.fire({ icon: 'info', title: 'กรุณากรอกคำค้นหา', text: 'พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา', timer: 1500, showConfirmButton: false });
+      resultsContainer.classList.add('d-none');
+      return;
+    }
+
+    const cases = Activity10.getCases();
+    const matched = cases.filter(c => {
+      const tor = Activity10.getTorDetails(c);
+      return (
+        c.id.toLowerCase().includes(q) ||
+        (c.docNo && c.docNo.toLowerCase().includes(q)) ||
+        (tor && tor.accuser && tor.accuser.toLowerCase().includes(q)) ||
+        (tor && tor.accused && tor.accused.toLowerCase().includes(q)) ||
+        c.title.toLowerCase().includes(q)
+      );
+    });
+
+    resultsContainer.classList.remove('d-none');
+
+    if (matched.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="p-3 bg-light rounded text-center text-muted border">
+          <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
+        </div>
+      `;
+      return;
+    }
+
+    let html = `
+      <div class="p-2 bg-light rounded border">
+        <div class="fw-bold text-navy mb-2 small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover bg-white border mb-0 align-middle" style="font-size:0.8rem;">
+            <thead class="table-light">
+              <tr>
+                <th>เลขสำนวน ป.ป.ท.</th>
+                <th>ชื่อผู้กล่าวหา</th>
+                <th>ชื่อผู้ถูกกล่าวหา</th>
+                <th>เรื่องสำนวน</th>
+                <th class="text-end">ดำเนินการ</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    matched.forEach(c => {
+      const tor = Activity10.getTorDetails(c);
+      html += `
+        <tr>
+          <td><strong class="text-primary font-monospace">${c.id}</strong></td>
+          <td>${tor.accuser}</td>
+          <td class="text-danger fw-semibold">${tor.accused}</td>
+          <td>${c.title.substring(0, 35)}...</td>
+          <td class="text-end">
+            <button type="button" class="btn btn-xs btn-navy py-1 px-2.5" onclick="selectCaseFromSearch('${c.id}')">
+              <i class="fa-solid fa-arrow-right-to-bracket me-1"></i>เลือกดึงข้อมูล
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    resultsContainer.innerHTML = html;
+  }
+
+  function handleIntakeSearchKeyup(e) {
+    if (e.key === 'Enter') {
+      executeIntakeSearch();
+    }
+  }
+
+  function selectCaseFromSearch(caseId) {
+    const kase = Activity10.getCaseById(caseId);
+    if (!kase) return;
+    const tor = Activity10.getTorDetails(kase);
+
+    // Auto-fill form fields
+    if (document.getElementById('in_centralSarabanNo')) document.getElementById('in_centralSarabanNo').value = kase.centralSarabanNo || '2569/4410';
+    if (document.getElementById('in_docNo')) document.getElementById('in_docNo').value = kase.docNo || '2569/0014';
+    if (document.getElementById('in_source')) document.getElementById('in_source').value = kase.source || '';
+    if (document.getElementById('in_category')) {
+      document.getElementById('in_category').value = kase.category;
+      toggleProsecutorCaseTypeDiv();
+    }
+    if (document.getElementById('in_title')) {
+      document.getElementById('in_title').value = kase.title;
+      updateTitleCharCount(document.getElementById('in_title'));
+    }
+    if (document.getElementById('in_legalOpinion')) {
+      document.getElementById('in_legalOpinion').value = kase.legalOpinion || '';
+      updateOpinionCharCount(document.getElementById('in_legalOpinion'));
+    }
+    if (document.getElementById('in_accuser')) document.getElementById('in_accuser').value = tor.accuser;
+    if (document.getElementById('in_accused')) document.getElementById('in_accused').value = tor.accused;
+
+    updateLivePreview();
+
+    // Hide search results
+    const resultsContainer = document.getElementById('intakeSearchResults');
+    if (resultsContainer) resultsContainer.classList.add('d-none');
+
+    Swal.fire({
+      icon: 'success',
+      title: 'ดึงข้อมูลสำนวนคดีสำเร็จ!',
+      html: `
+        <div class="text-start small">
+          <p class="mb-1"><strong>เลขสำนวน:</strong> <span class="font-monospace text-primary">${kase.id}</span></p>
+          <p class="mb-1"><strong>ผู้กล่าวหา:</strong> ${tor.accuser}</p>
+          <p class="mb-0"><strong>ผู้ถูกกล่าวหา:</strong> <span class="text-danger fw-bold">${tor.accused}</span></p>
+        </div>
+      `,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+
   function submitBoardIntakeForm() {
     const centralSarabanNo = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '') || '2569/4410';
     const docNo = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '') || '2569/0014';
@@ -342,6 +502,8 @@
     const prosecutorCaseTypeName = (category === '10.1' && prosecutorCaseTypeSelect && prosecutorCaseTypeSelect.options) ? prosecutorCaseTypeSelect.options[prosecutorCaseTypeSelect.selectedIndex].text : '';
     const legalOpinion = document.getElementById('in_legalOpinion').value.trim();
     const physicalDocDate = document.getElementById('in_physicalDocDate').value;
+    const accuser = (document.getElementById('in_accuser') ? document.getElementById('in_accuser').value.trim() : '');
+    const accused = (document.getElementById('in_accused') ? document.getElementById('in_accused').value.trim() : '');
 
     if (!title || !docNo || !centralSarabanNo) {
       Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลสำคัญให้ครบถ้วน', text: 'ต้องมี เลขรับสารบรรณกลาง, เลขหนังสืออัยการ และชื่อเรื่อง' });
@@ -365,7 +527,9 @@
           docNo: docNo,
           prosecutorCaseTypeNo: prosecutorCaseTypeNo,
           prosecutorCaseTypeName: prosecutorCaseTypeName,
-          legalOpinion: legalOpinion
+          legalOpinion: legalOpinion,
+          accuser: accuser,
+          accused: accused
         });
 
         Activity10.savePhysicalDocIntake(newCase.id, {
