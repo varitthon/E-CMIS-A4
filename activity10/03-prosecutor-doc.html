@@ -43,12 +43,17 @@
 
   <div class="row g-3">
     <!-- Left Column: Case details, Info from Board Admin & Legal Division Receive Number -->
-    <div class="col-xl-6">
+    <div class="col-12" id="leftFormCol">
       <!-- Card 1: Details from Prosecutor & Board Admin -->
       <div class="card card-ecmis mb-3">
         <div class="card-header fw-bold text-navy d-flex align-items-center justify-content-between">
           <span><i class="fa-solid fa-info-circle me-1"></i> ข้อมูลนำเข้าส่งมาจากกองบริหารคดี</span>
-          <span class="badge bg-primary"><i class="fa-solid fa-link me-1"></i>เชื่อมโยงเอกสารสแกนแล้ว</span>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-xs btn-outline-navy" id="btnTogglePreview" onclick="togglePreviewPanel()">
+              <i class="fa-solid fa-eye me-1"></i>แสดงพื้นที่ตัวอย่างเอกสาร
+            </button>
+            <span class="badge bg-primary"><i class="fa-solid fa-link me-1"></i>เชื่อมโยงเอกสารสแกนแล้ว</span>
+          </div>
         </div>
         <div class="card-body p-3 small">
           <div class="p-2.5 bg-primary-subtle border border-primary rounded mb-3">
@@ -129,57 +134,22 @@
       </div>
     </div>
 
-    <!-- Right Column: Document Viewer & Physical Scan Preview -->
-    <div class="col-xl-6">
+    <!-- Right Column: Document Viewer & Physical Scan Preview (Hidden by default) -->
+    <div class="col-xl-6 d-none" id="rightPreviewCol">
       <div class="card card-ecmis border h-100">
         <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
           <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารสแกนตัวจริงที่สแกนเข้าระบบ (PDF Viewer)</span>
           <span class="badge bg-success" id="linkStatusBadge"><i class="fa-solid fa-check me-1"></i>สแกนสมบูรณ์</span>
         </div>
-        <div class="card-body p-3 bg-dark-subtle d-flex flex-column align-items-center justify-content-center" style="min-height:500px;">
-          
-          <!-- Central Saraban Stamp Badge -->
-          <div class="w-100 p-2.5 rounded mb-2 text-center bg-white border border-primary shadow-sm" style="max-width:480px;">
-            <div class="d-flex align-items-center justify-content-between small">
-              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-stamp text-primary me-1"></i>ตราลงรับสารบรรณกลาง: <span id="stamp_saraban_no" class="text-primary">2569/4410</span></span>
-              <span class="badge bg-primary">สแกนจากกองบริหารคดี</span>
-            </div>
-            <div class="text-muted style-italic mt-0.5" style="font-size:0.75rem;">
-              กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ) รับเรื่องวันที่ <span id="stamp_date">28 ก.ค. 2569</span>
-            </div>
-          </div>
-
-          <!-- Simulated Paper Document -->
-          <div class="bg-white p-4 shadow-sm rounded text-dark w-100" style="max-width:480px; font-family:'Prompt',sans-serif; font-size:0.83rem; border:1px solid #ddd; line-height:1.6;">
-            <div class="text-center mb-3">
-              <img src="pacc_logo.png" style="height:52px;" alt="ตรา ป.ป.ท.">
-              <div class="fw-bold mt-1" style="font-size:0.95rem;">บันทึกข้อความ / หนังสือแจ้งคำสั่งพนักงานอัยการ</div>
-              <div class="text-muted small" id="doc_source_header">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต</div>
-            </div>
-            <hr class="my-2">
-            <div class="d-flex justify-content-between mb-2">
-              <span><b>ที่:</b> <span id="doc_no_text">2569/0014</span></span>
-              <span><b>วันที่:</b> <span id="doc_date_text">28 กรกฎาคม 2569</span></span>
-            </div>
-            <div class="mb-2"><b>เรื่อง:</b> <span id="doc_subject_text">พิจารณาคำสั่งไม่ฟ้องพนักงานอัยการ</span></div>
-            <div class="mb-2"><b>เรียน:</b> เลขาธิการคณะกรรมการ ป.ป.ท. (ผ่านกองกฎหมาย)</div>
-            <div class="p-3 bg-light rounded text-muted mb-3" style="font-size:0.78rem; line-height:1.5;" id="doc_body_text">
-              ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงเรื่องดังกล่าวแล้ว ปรากฏพยานหลักฐานไม่เพียงพอที่จะดำเนินคดี จึงมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป
-            </div>
-            <div class="text-end mt-4">
-              <div class="fw-bold">พนักงานอัยการผู้แทน</div>
-              <div class="small text-muted">(ลงนามดิจิทัลผ่านระบบสารบรรณอัยการ)</div>
-            </div>
-          </div>
-
-          <!-- Attachment Link Preview -->
-          <div class="w-100 mt-3 p-2.5 bg-white rounded border d-flex align-items-center justify-content-between small shadow-sm" style="max-width:480px;">
-            <span id="scanned_filename_display"><i class="fa-solid fa-file-pdf text-danger me-1"></i>เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf (4.2 MB)</span>
-            <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" onclick="Swal.fire({icon:'info', title:'กำลังเปิดไฟล์เอกสารสแกนฉบับจริง...', timer:1000, showConfirmButton:false})">
-              <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
-            </button>
+        <div class="card-body p-3 bg-light d-flex flex-column align-items-center justify-content-center" style="min-height:500px;">
+          <!-- Empty Blank Area -->
+          <div class="text-center text-muted">
+            <i class="fa-solid fa-file-lines fa-3x mb-2 text-secondary opacity-25"></i>
+            <div class="small text-secondary fw-semibold">พื้นที่แสดงตัวอย่างเอกสาร</div>
           </div>
         </div>
+      </div>
+    </div>
       </div>
     </div>
   </div>
@@ -312,6 +282,23 @@
         });
       }
     });
+  }
+
+  function togglePreviewPanel() {
+    const leftCol = document.getElementById('leftFormCol');
+    const rightCol = document.getElementById('rightPreviewCol');
+    const btn = document.getElementById('btnTogglePreview');
+    if (!leftCol || !rightCol) return;
+
+    if (rightCol.classList.contains('d-none')) {
+      rightCol.classList.remove('d-none');
+      leftCol.className = 'col-xl-6';
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash me-1"></i>ซ่อนพื้นที่ตัวอย่างเอกสาร';
+    } else {
+      rightCol.classList.add('d-none');
+      leftCol.className = 'col-12';
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-eye me-1"></i>แสดงพื้นที่ตัวอย่างเอกสาร';
+    }
   }
 </script>
 </body>
