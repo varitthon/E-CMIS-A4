@@ -390,14 +390,27 @@
     }
   }
 
-  function handleIntakeSearchInput(input) {
-    const q = input.value.trim().toLowerCase();
+  function showSearchDropdown(html) {
     const dropdown = document.getElementById('intakeSearchDropdown');
     if (!dropdown) return;
+    dropdown.innerHTML = html;
+    dropdown.classList.remove('d-none');
+    dropdown.classList.add('show');
+    dropdown.style.display = 'block';
+  }
 
+  function hideSearchDropdown() {
+    const dropdown = document.getElementById('intakeSearchDropdown');
+    if (!dropdown) return;
+    dropdown.classList.add('d-none');
+    dropdown.classList.remove('show');
+    dropdown.style.display = 'none';
+  }
+
+  function handleIntakeSearchInput(input) {
+    const q = input.value.trim().toLowerCase();
     if (!q) {
-      dropdown.classList.add('d-none');
-      dropdown.innerHTML = '';
+      hideSearchDropdown();
       return;
     }
 
@@ -414,12 +427,11 @@
     });
 
     if (matched.length === 0) {
-      dropdown.innerHTML = `
+      showSearchDropdown(`
         <div class="dropdown-item disabled text-muted small py-2">
           <i class="fa-solid fa-circle-exclamation me-1 text-warning"></i>ไม่พบผลลัพธ์ที่ตรงกับคำว่า "${q}"
         </div>
-      `;
-      dropdown.classList.remove('d-none');
+      `);
       return;
     }
 
@@ -441,15 +453,13 @@
       `;
     });
 
-    dropdown.innerHTML = html;
-    dropdown.classList.remove('d-none');
+    showSearchDropdown(html);
   }
 
   function chooseSearchSuggestion(caseId) {
     const input = document.getElementById('intakeSearchInput');
     if (input) input.value = caseId;
-    const dropdown = document.getElementById('intakeSearchDropdown');
-    if (dropdown) dropdown.classList.add('d-none');
+    hideSearchDropdown();
     executeIntakeSearch();
   }
 
@@ -457,7 +467,7 @@
     const dropdown = document.getElementById('intakeSearchDropdown');
     const input = document.getElementById('intakeSearchInput');
     if (dropdown && input && !dropdown.contains(e.target) && !input.contains(e.target)) {
-      dropdown.classList.add('d-none');
+      hideSearchDropdown();
     }
   });
 
