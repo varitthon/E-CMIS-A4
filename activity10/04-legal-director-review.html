@@ -212,25 +212,30 @@
   function renderCaseDetails() {
     if (!currentCase) return;
 
-    document.getElementById('f_centralSarabanNo').textContent = currentCase.centralSarabanNo || '2569/4410';
-    document.getElementById('f_lawReceiveNo').textContent = currentCase.lawReceiveNo || 'รับ-กม. 2569/0142';
+    const setElText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
 
-    document.getElementById('f_title').textContent = currentCase.title;
-    document.getElementById('f_source').textContent = currentCase.source;
-    document.getElementById('f_docNo').textContent = currentCase.docNo || '2569/0014';
-    document.getElementById('f_categoryName').textContent = currentCase.categoryName || 'คดีชั้นอัยการ (ความเห็นแย้ง)';
-    document.getElementById('f_dateReceived').textContent = currentCase.dateReceived || '2026-07-28';
-    document.getElementById('f_opinion').textContent = currentCase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย';
+    setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
+    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || 'รับ-กม. 2569/0142');
 
-    document.getElementById('stamp_saraban_no').textContent = currentCase.centralSarabanNo || '2569/4410';
-    document.getElementById('stamp_law_no').textContent = currentCase.lawReceiveNo || 'รับ-กม. 2569/0142';
+    setElText('f_title', currentCase.title);
+    setElText('f_source', currentCase.source);
+    setElText('f_docNo', currentCase.docNo || '2569/0014');
+    setElText('f_categoryName', currentCase.categoryName || 'คดีชั้นอัยการ (ความเห็นแย้ง)');
+    setElText('f_dateReceived', currentCase.dateReceived || '2026-07-28');
+    setElText('f_opinion', currentCase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย');
+
+    setElText('stamp_saraban_no', currentCase.centralSarabanNo || '2569/4410');
+    setElText('stamp_law_no', currentCase.lawReceiveNo || 'รับ-กม. 2569/0142');
 
     // Document Viewer Panel Texts
-    document.getElementById('doc_source_header').textContent = currentCase.source;
-    document.getElementById('doc_no_text').textContent = currentCase.docNo || '2569/0014';
-    document.getElementById('doc_date_text').textContent = currentCase.dateReceived || '28 กรกฎาคม 2569';
-    document.getElementById('doc_subject_text').textContent = currentCase.title;
-    document.getElementById('doc_body_text').textContent = currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป';
+    setElText('doc_source_header', currentCase.source);
+    setElText('doc_no_text', currentCase.docNo || '2569/0014');
+    setElText('doc_date_text', currentCase.dateReceived || '28 กรกฎาคม 2569');
+    setElText('doc_subject_text', currentCase.title);
+    setElText('doc_body_text', currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป');
   }
 
   function submitForwardToGroupDirector() {

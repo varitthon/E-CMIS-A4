@@ -279,8 +279,10 @@
     }
 
     const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-    document.getElementById('scanStatusText').innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>ไฟล์พร้อมแนบ: <strong>${file.name}</strong> (${fileSizeMb} MB)`;
-    document.getElementById('pv_fileName').innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${file.name} (${fileSizeMb} MB)`;
+    const statusEl = document.getElementById('scanStatusText');
+    if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>ไฟล์พร้อมแนบ: <strong>${file.name}</strong> (${fileSizeMb} MB)`;
+    const pvFileEl = document.getElementById('pv_fileName');
+    if (pvFileEl) pvFileEl.innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${file.name} (${fileSizeMb} MB)`;
     return true;
   }
 
@@ -292,9 +294,11 @@
       showConfirmButton: false
     }).then(() => {
       const fileInput = document.getElementById('in_scannedFile');
-      const filename = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf';
-      document.getElementById('scanStatusText').innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>สแกนสำเร็จแล้ว: <strong>${filename}</strong>`;
-      document.getElementById('pv_fileName').innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${filename} (สแกนสมบูรณ์)`;
+      const filename = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'เอกสารสแกน_สารบรรณกลาง_อส0014.pdf';
+      const statusEl = document.getElementById('scanStatusText');
+      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>สแกนสำเร็จแล้ว: <strong>${filename}</strong>`;
+      const pvFileEl = document.getElementById('pv_fileName');
+      if (pvFileEl) pvFileEl.innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${filename} (สแกนสมบูรณ์)`;
       Swal.fire({ icon: 'success', title: 'สแกนเอกสารสมบูรณ์!', timer: 1000, showConfirmButton: false });
     });
   }

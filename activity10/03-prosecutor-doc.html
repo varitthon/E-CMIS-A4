@@ -214,36 +214,51 @@
   function renderCaseDetails() {
     if (!currentCase) return;
 
-    document.getElementById('caseIdBadge').textContent = `เลขสำนวน: ${currentCase.id}`;
-    document.getElementById('stBadge').innerHTML = `<span class="st ${currentCase.statusBadge}">${currentCase.status}</span>`;
-    
-    document.getElementById('f_centralSarabanNo').textContent = currentCase.centralSarabanNo || '2569/4410';
-    document.getElementById('f_physicalDocDate').textContent = currentCase.physicalDocDate || currentCase.dateReceived || '28 กรกฎาคม 2569';
+    const setElText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
 
-    document.getElementById('f_title').textContent = currentCase.title;
-    document.getElementById('f_source').textContent = currentCase.source;
-    document.getElementById('f_docNo').textContent = currentCase.docNo || '2569/0014';
-    document.getElementById('f_categoryName').textContent = currentCase.categoryName || 'คดีชั้นอัยการ (ความเห็นแย้ง)';
-    if (document.getElementById('f_prosecutorCaseTypeName')) {
-      document.getElementById('f_prosecutorCaseTypeName').textContent = currentCase.prosecutorCaseTypeName || (currentCase.category === '10.1' ? '1. อัยการมีความเห็นไม่ส่งฟ้อง' : '-');
-    }
-    document.getElementById('f_dateReceived').textContent = currentCase.dateReceived || '2026-07-28';
-    document.getElementById('f_opinion').textContent = currentCase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย';
+    const setElHtml = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
 
-    document.getElementById('stamp_saraban_no').textContent = currentCase.centralSarabanNo || '2569/4410';
-    document.getElementById('stamp_date').textContent = currentCase.physicalDocDate || currentCase.dateReceived || '28 ก.ค. 2569';
+    setElText('caseIdBadge', `เลขสำนวน: ${currentCase.id}`);
+    setElHtml('stBadge', `<span class="st ${currentCase.statusBadge}">${currentCase.status}</span>`);
+
+    setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
+    setElText('f_physicalDocDate', currentCase.physicalDocDate || currentCase.dateReceived || '28 กรกฎาคม 2569');
+
+    setElText('f_title', currentCase.title);
+    setElText('f_source', currentCase.source);
+    setElText('f_docNo', currentCase.docNo || '2569/0014');
+    setElText('f_categoryName', currentCase.categoryName || 'คดีชั้นอัยการ (ความเห็นแย้ง)');
+    setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || (currentCase.category === '10.1' ? '1. อัยการมีความเห็นไม่ส่งฟ้อง' : '-'));
+    setElText('f_opinion', currentCase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย');
+
+    setElText('stamp_saraban_no', currentCase.centralSarabanNo || '2569/4410');
+    setElText('stamp_date', currentCase.physicalDocDate || currentCase.dateReceived || '28 ก.ค. 2569');
 
     // Law Receive Number logic
     if (currentCase.lawReceiveNo) {
       currentLawReceiveNo = currentCase.lawReceiveNo;
-      document.getElementById('receiveStatusBadge').className = 'badge bg-secondary';
-      document.getElementById('receiveStatusBadge').textContent = 'ออกเลขรับแล้ว';
+      const statusBadge = document.getElementById('receiveStatusBadge');
+      if (statusBadge) {
+        statusBadge.className = 'badge bg-secondary';
+        statusBadge.textContent = 'ออกเลขรับแล้ว';
+      }
     } else {
       currentLawReceiveNo = `รับ-กม. 2569/${String(Math.floor(Math.random() * 900 + 100)).padStart(4, '0')}`;
-      document.getElementById('receiveStatusBadge').className = 'badge bg-success';
-      document.getElementById('receiveStatusBadge').textContent = 'พร้อมออกเลขรับ';
+      const statusBadge = document.getElementById('receiveStatusBadge');
+      if (statusBadge) {
+        statusBadge.className = 'badge bg-success';
+        statusBadge.textContent = 'พร้อมออกเลขรับ';
+      }
     }
-    document.getElementById('f_lawReceiveNo').value = currentLawReceiveNo;
+
+    const lawReceiveInput = document.getElementById('f_lawReceiveNo');
+    if (lawReceiveInput) lawReceiveInput.value = currentLawReceiveNo;
 
     // Check if logged in user is Board Admin Officer (Siriporn.K / case_management)
     const currentRole = ECMIS.currentRoleId();
@@ -269,11 +284,11 @@
     }
 
     // Document Viewer Panel Texts
-    document.getElementById('doc_source_header').textContent = currentCase.source;
-    document.getElementById('doc_no_text').textContent = currentCase.docNo || '2569/0014';
-    document.getElementById('doc_date_text').textContent = currentCase.dateReceived || '28 กรกฎาคม 2569';
-    document.getElementById('doc_subject_text').textContent = currentCase.title;
-    document.getElementById('doc_body_text').textContent = currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป';
+    setElText('doc_source_header', currentCase.source);
+    setElText('doc_no_text', currentCase.docNo || '2569/0014');
+    setElText('doc_date_text', currentCase.dateReceived || '28 กรกฎาคม 2569');
+    setElText('doc_subject_text', currentCase.title);
+    setElText('doc_body_text', currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป');
   }
 
   function submitReceiveAndForward() {
