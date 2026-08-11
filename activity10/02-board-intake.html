@@ -47,7 +47,7 @@
               <div class="col-6">
                 <label class="form-label fw-bold">เลขรับสารบรรณกลาง <span class="text-danger">*</span></label>
                 <div class="input-group input-group-sm">
-                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">รับ-สบร. 2569/</span>
+                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">2569/</span>
                   <input type="text" id="in_centralSarabanNo" class="form-control font-monospace fw-bold" placeholder="กรอกเฉพาะตัวเลข เช่น 4410" value="4410" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
                 </div>
               </div>
@@ -143,7 +143,7 @@
           <!-- Central Saraban Official Stamp Card -->
           <div class="w-100 p-2.5 rounded mb-2 text-center bg-white border border-primary shadow-sm" style="max-width:480px;">
             <div class="d-flex align-items-center justify-content-between small">
-              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-stamp text-primary me-1"></i>ตราลงรับสารบรรณกลาง: <span id="pv_sarabanNo" class="text-primary">รับ-สบร. 2569/4410</span></span>
+              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-stamp text-primary me-1"></i>ตราลงรับสารบรรณกลาง: <span id="pv_sarabanNo" class="text-primary">2569/4410</span></span>
               <span class="badge bg-success" style="font-size:0.7rem;">ลงรับแล้ว</span>
             </div>
             <div class="text-muted style-italic mt-0.5" style="font-size:0.75rem;">
@@ -236,7 +236,7 @@
 
   function updateLivePreview() {
     const rawVal = document.getElementById('in_centralSarabanNo').value.trim() || '4410';
-    const fullSarabanNo = rawVal.startsWith('รับ-สบร.') ? rawVal : `รับ-สบร. 2569/${rawVal}`;
+    const fullSarabanNo = rawVal.includes('/') ? rawVal : `2569/${rawVal}`;
     document.getElementById('pv_sarabanNo').textContent = fullSarabanNo;
     document.getElementById('pv_docNo').textContent = document.getElementById('in_docNo').value || 'อส 0014/2569';
     document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
@@ -296,7 +296,7 @@
 
   function submitBoardIntakeForm() {
     const rawSarabanNo = document.getElementById('in_centralSarabanNo').value.trim();
-    const centralSarabanNo = rawSarabanNo ? (rawSarabanNo.startsWith('รับ-สบร.') ? rawSarabanNo : `รับ-สบร. 2569/${rawSarabanNo}`) : 'รับ-สบร. 2569/4410';
+    const centralSarabanNo = rawSarabanNo ? (rawSarabanNo.includes('/') ? rawSarabanNo : `2569/${rawSarabanNo}`) : '2569/4410';
     const docNo = document.getElementById('in_docNo').value.trim();
     const title = document.getElementById('in_title').value.trim();
     const source = document.getElementById('in_source').value.trim();

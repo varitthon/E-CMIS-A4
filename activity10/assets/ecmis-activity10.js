@@ -451,7 +451,7 @@
       const cases = loadCases();
       const item = cases.find(c => c.id === id);
       if (item) {
-        item.centralSarabanNo = data.centralSarabanNo || item.centralSarabanNo || `รับ-สบร. 2569/${Math.floor(1000 + Math.random() * 9000)}`;
+        item.centralSarabanNo = data.centralSarabanNo || item.centralSarabanNo || `2569/${Math.floor(1000 + Math.random() * 9000)}`;
         item.physicalDocDate = data.physicalDocDate || new Date().toISOString().split('T')[0];
         item.scannedDocFile = data.scannedDocFile || "เอกสารสแกนฉบับจริง_สารบรรณกลาง.pdf";
         item.boardAdminOfficer = data.boardAdminOfficer || "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)";
