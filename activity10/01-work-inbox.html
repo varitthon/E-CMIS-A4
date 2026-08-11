@@ -81,12 +81,12 @@
             <table class="table table-hover tbl-ecmis mb-0">
               <colgroup>
                 <col style="width:40px">
-                <col style="width:160px">
-                <col style="width:150px">
-                <col>
-                <col style="width:150px">
+                <col style="width:170px">
                 <col style="width:140px">
-                <col style="width:160px">
+                <col>
+                <col style="width:140px">
+                <col style="width:120px">
+                <col style="width:230px">
               </colgroup>
               <thead>
                 <tr>
@@ -131,6 +131,146 @@
               </nav>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: TOR 10.1.1.2 Detailed Case Inspection -->
+  <div class="modal fade" id="torDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-navy text-white py-2.5">
+          <h6 class="modal-title font-monospace fw-bold text-white"><i class="fa-solid fa-folder-tree me-2 text-warning"></i>รายละเอียดเกี่ยวกับสำนวนคดี (ตาม TOR ข้อ 10.1.1.2)</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-3.5 bg-light">
+          <!-- Header Case Badge -->
+          <div class="p-3 bg-white rounded border mb-3 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+              <span class="badge bg-navy font-monospace me-2" style="font-size:0.85rem;" id="tor_caseIdBadge">คดี-10.1-2569/001</span>
+              <span class="badge bg-primary" id="tor_categoryBadge">คดีชั้นอัยการ (ความเห็นแย้ง)</span>
+            </div>
+            <div id="tor_statusBadge"><span class="st bg-warning text-dark">กำลังร่างความเห็น</span></div>
+          </div>
+
+          <!-- 7 TOR Elements Grid -->
+          <div class="row g-3">
+            <!-- (1) ข้อมูลของผู้กล่าวหา และผู้ถูกกล่าวหา -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-users me-1 text-primary"></i>(๑) ข้อมูลผู้กล่าวหา และ ผู้ถูกกล่าวหา
+                </div>
+                <div class="card-body p-3 small">
+                  <div class="mb-2">
+                    <label class="fw-bold text-muted d-block mb-0.5">ผู้กล่าวหา (Complainant):</label>
+                    <span class="fw-semibold text-dark d-block p-2 bg-light rounded" id="tor_accuser">-</span>
+                  </div>
+                  <div>
+                    <label class="fw-bold text-muted d-block mb-0.5">ผู้ถูกกล่าวหา (Alleged Offender):</label>
+                    <span class="fw-semibold text-dark d-block p-2 bg-light rounded text-danger" id="tor_accused">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- (2) ข้อมูลของโจทก์ และจำเลย -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-scale-balanced me-1 text-warning"></i>(๒) ข้อมูลโจทก์ และ จำเลย
+                </div>
+                <div class="card-body p-3 small">
+                  <div class="mb-2">
+                    <label class="fw-bold text-muted d-block mb-0.5">โจทก์ (Plaintiff):</label>
+                    <span class="fw-semibold text-dark d-block p-2 bg-light rounded" id="tor_plaintiff">-</span>
+                  </div>
+                  <div>
+                    <label class="fw-bold text-muted d-block mb-0.5">จำเลย (Defendant):</label>
+                    <span class="fw-semibold text-dark d-block p-2 bg-light rounded" id="tor_defendant">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- (3) & (4) เลขสำนวน ป.ป.ท. & หมายเลขคดีดำ / หมายเลขคดีแดง ของศาล -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-stamp me-1 text-info"></i>(๓)-(๔) เลขสำนวน ป.ป.ท. & คดีดำ / คดีแดง
+                </div>
+                <div class="card-body p-3 small">
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block mb-0.5">หมายเลขสำนวน ป.ป.ท.:</label>
+                      <span class="font-monospace fw-bold text-primary d-block p-2 bg-light rounded" id="tor_paccCaseNo">-</span>
+                    </div>
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block mb-0.5">เลขรับสารบรรณกลาง:</label>
+                      <span class="font-monospace fw-bold text-navy d-block p-2 bg-light rounded" id="tor_centralSarabanNo">-</span>
+                    </div>
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block mb-0.5">หมายเลขคดีดำ ศาล:</label>
+                      <span class="font-monospace fw-bold text-dark d-block p-2 bg-light rounded" id="tor_courtBlackNo">-</span>
+                    </div>
+                    <div class="col-6">
+                      <label class="fw-bold text-muted d-block mb-0.5">หมายเลขคดีแดง ศาล:</label>
+                      <span class="font-monospace fw-bold text-danger d-block p-2 bg-light rounded" id="tor_courtRedNo">-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- (5) สำนักงานอัยการและศาล ที่มีคำสั่งหรือคำพิพากษา -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-landmark me-1 text-success"></i>(๕) สำนักงานอัยการและศาล ที่มีคำสั่ง/คำพิพากษา
+                </div>
+                <div class="card-body p-3 small">
+                  <label class="fw-bold text-muted d-block mb-0.5">สำนักงานอัยการ / ศาลเจ้าของคำสั่ง:</label>
+                  <span class="fw-semibold text-dark d-block p-2 bg-light rounded mb-2" id="tor_prosecutorAndCourt">-</span>
+                  <label class="fw-bold text-muted d-block mb-0.5">ประเภทหนังสือ/คำสั่ง:</label>
+                  <span class="fw-semibold text-navy d-block p-2 bg-light rounded" id="tor_docType">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- (6) หน่วยงานภายในสำนักงาน ป.ป.ท. ที่ดูแลรับผิดชอบสำนวนคดี -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-building-user me-1 text-primary"></i>(๖) หน่วยงานภายใน ป.ป.ท. ที่รับผิดชอบสำนวนคดี
+                </div>
+                <div class="card-body p-3 small">
+                  <label class="fw-bold text-muted d-block mb-0.5">หน่วยงานเจ้าของสำนวน:</label>
+                  <span class="fw-semibold text-dark d-block p-2 bg-light rounded mb-2" id="tor_paccResponsibleDept">-</span>
+                  <label class="fw-bold text-muted d-block mb-0.5">เจ้าหน้าที่ผู้รับผิดชอบปัจจุบัน:</label>
+                  <span class="fw-semibold text-navy d-block p-2 bg-light rounded" id="tor_officer">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- (7) ระยะเวลาในการดำเนินการ / อายุความ -->
+            <div class="col-12 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-navy small py-2">
+                  <i class="fa-solid fa-hourglass-half me-1 text-danger"></i>(๗) ระยะเวลาในการดำเนินการ / อายุความ
+                </div>
+                <div class="card-body p-3 small">
+                  <label class="fw-bold text-muted d-block mb-0.5">สถานะกรอบเวลา & อายุความทางกฎหมาย:</label>
+                  <div class="p-2.5 bg-warning-subtle text-dark rounded border border-warning font-monospace fw-semibold" id="tor_statuteOfLimitations">
+                    -
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-white py-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
         </div>
       </div>
     </div>
@@ -338,6 +478,37 @@
     renderTable();
   }
 
+  function openTorDetailModal(caseId) {
+    const kase = Activity10.getCaseById(caseId);
+    if (!kase) return;
+    const tor = Activity10.getTorDetails(kase);
+
+    document.getElementById('tor_caseIdBadge').textContent = kase.id;
+    document.getElementById('tor_categoryBadge').textContent = kase.categoryName || kase.category;
+    document.getElementById('tor_statusBadge').innerHTML = `<span class="st ${kase.statusBadge}">${kase.status}</span>`;
+
+    document.getElementById('tor_accuser').textContent = tor.accuser;
+    document.getElementById('tor_accused').textContent = tor.accused;
+    document.getElementById('tor_plaintiff').textContent = tor.plaintiff;
+    document.getElementById('tor_defendant').textContent = tor.defendant;
+
+    document.getElementById('tor_paccCaseNo').textContent = tor.paccCaseNo;
+    document.getElementById('tor_centralSarabanNo').textContent = tor.centralSarabanNo;
+    document.getElementById('tor_courtBlackNo').textContent = tor.courtBlackNo;
+    document.getElementById('tor_courtRedNo').textContent = tor.courtRedNo;
+
+    document.getElementById('tor_prosecutorAndCourt').textContent = tor.prosecutorAndCourt;
+    document.getElementById('tor_docType').textContent = kase.docType || 'หนังสือแจ้งความเห็น';
+
+    document.getElementById('tor_paccResponsibleDept').textContent = tor.paccResponsibleDept;
+    document.getElementById('tor_officer').textContent = kase.officer;
+
+    document.getElementById('tor_statuteOfLimitations').innerHTML = `<i class="fa-solid fa-clock me-1 text-danger"></i>${tor.statuteOfLimitations}`;
+
+    const modal = new bootstrap.Modal(document.getElementById('torDetailModal'));
+    modal.show();
+  }
+
   function renderTable() {
     const q = document.getElementById("searchInput").value.toLowerCase().trim();
     const cat = document.getElementById("categoryFilter").value;
@@ -348,7 +519,18 @@
     let cases = Activity10.getCases();
 
     cases = cases.filter(c => {
-      const matchQ = !q || c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.officer.toLowerCase().includes(q);
+      const tor = Activity10.getTorDetails(c);
+      const matchQ = !q || 
+        c.id.toLowerCase().includes(q) || 
+        c.title.toLowerCase().includes(q) || 
+        c.officer.toLowerCase().includes(q) ||
+        (tor && (
+          tor.accuser.toLowerCase().includes(q) ||
+          tor.accused.toLowerCase().includes(q) ||
+          tor.courtBlackNo.toLowerCase().includes(q) ||
+          tor.courtRedNo.toLowerCase().includes(q) ||
+          tor.paccResponsibleDept.toLowerCase().includes(q)
+        ));
       const matchCat = (cat === 'all') || (c.category === cat) || (cat === '10.2' && c.category.startsWith('10.2'));
       let matchSla = true;
       if (sla === 'normal') matchSla = c.slaDaysRemaining > 15;
@@ -385,24 +567,33 @@
     paginatedCases.forEach(c => {
       const isUrgent = c.slaDaysRemaining <= 5;
       const slaBadgeClass = isUrgent ? 'st-urgent' : (c.slaDaysRemaining <= 15 ? 'st-review' : 'st-regular');
+      const tor = Activity10.getTorDetails(c);
 
       html += `
         <tr>
           <td><input type="checkbox" class="form-check-input case-chk" value="${c.id}" onchange="updateBulkUI()"></td>
           <td>
             <strong class="text-navy">${c.id}</strong><br>
-            <small class="text-muted">${c.docNo || ''}</small>
+            <small class="text-muted">หนังสือ: ${c.docNo || ''}</small>
             ${c.lawReceiveNo ? `<br><span class="badge bg-secondary font-monospace" style="font-size:0.68rem"><i class="fa-solid fa-stamp me-1"></i>${c.lawReceiveNo}</span>` : ''}
+            ${tor.courtBlackNo && tor.courtBlackNo !== '-' ? `<br><small class="text-primary font-monospace" style="font-size:0.72rem"><i class="fa-solid fa-scale-balanced me-1"></i>ดำ: ${tor.courtBlackNo}</small>` : ''}
           </td>
           <td><span class="st st-regular">${c.categoryName}</span></td>
           <td>
-            <div class="fw-bold text-dark">${c.title}</div>
-            <small class="text-muted"><i class="fa-solid fa-user me-1"></i>${c.officer}</small>
+            <div class="fw-bold text-dark mb-1">${c.title}</div>
+            <div class="small text-muted mb-1" style="font-size:0.75rem;">
+              <span class="me-2"><i class="fa-solid fa-user me-1 text-primary"></i><b>ผู้กล่าวหา:</b> ${tor.accuser}</span>
+              <span><i class="fa-solid fa-user-xmark me-1 text-danger"></i><b>ผู้ถูกกล่าวหา:</b> ${tor.accused}</span>
+            </div>
+            <small class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-building me-1"></i>${tor.paccResponsibleDept}</small>
           </td>
           <td><span class="st ${c.statusBadge}">${c.status}</span></td>
           <td><span class="st ${slaBadgeClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
           <td class="text-end">
-            <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="${isDirLegal ? 'พิจารณาและมอบหมายเรื่อง' : 'ดูรายละเอียดสำนวน'}"><i class="fa-solid ${btnActionIcon} me-1 text-primary"></i>${btnActionLabel}</button>
+            <div class="d-flex align-items-center justify-content-end gap-1">
+              <button type="button" onclick="openTorDetailModal('${c.id}')" class="btn btn-xs btn-outline-info" title="ดูรายละเอียดตาม TOR (ข้อ 10.1.1.2)"><i class="fa-solid fa-folder-tree me-1"></i>ข้อมูล TOR</button>
+              <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="${isDirLegal ? 'พิจารณาและมอบหมายเรื่อง' : 'ดูรายละเอียดสำนวน'}"><i class="fa-solid ${btnActionIcon} me-1 text-primary"></i>${btnActionLabel}</button>
+            </div>
           </td>
         </tr>
       `;

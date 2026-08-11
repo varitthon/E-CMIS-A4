@@ -476,6 +476,24 @@
       return item;
     },
 
+    getTorDetails(idOrCase) {
+      const kase = (typeof idOrCase === 'string') ? this.getCaseById(idOrCase) : idOrCase;
+      if (!kase) return null;
+      return {
+        accuser: kase.accuser || (kase.category === '10.1' ? "สำนักงาน ป.ป.ท. / คณะกรรมการ ป.ป.ท." : (kase.category.startsWith('10.2') ? "ผู้ขอเปิดเผยข้อมูลข่าวสาร" : "นายสมศักดิ์ ยุติธรรม (ผู้ฟ้องคดีปกครอง)")),
+        accused: kase.accused || (kase.category === '10.1' ? "นายสมชาย ทุจริตมั่น (อดีตเจ้าหน้าที่รัฐ)" : (kase.category.startsWith('10.2') ? "สำนักงาน ป.ป.ท. (ผู้ถูกร้องเรียน)" : "เลขาธิการ ป.ป.ท. และ คณะกรรมการ ป.ป.ท.")),
+        plaintiff: kase.plaintiff || (kase.category === '10.1' ? "พนักงานอัยการ สำนักงานอัยการสูงสุด" : (kase.category === '10.3' ? "นายสมศักดิ์ ยุติธรรม" : "-")),
+        defendant: kase.defendant || (kase.category === '10.1' ? "นายสมชาย ทุจริตมั่น กับพวก" : (kase.category === '10.3' ? "สำนักงาน ป.ป.ท. และ คณะกรรมการ ป.ป.ท." : "-")),
+        paccCaseNo: kase.id,
+        centralSarabanNo: kase.centralSarabanNo || '2569/4410',
+        courtBlackNo: kase.courtBlackNo || (kase.category === '10.1' ? "อท. 45/2568" : (kase.category === '10.3' ? "อ. 145/2569" : "-")),
+        courtRedNo: kase.courtRedNo || (kase.category === '10.1' ? "อท. 112/2568" : (kase.category === '10.3' ? "อ. 210/2569" : "-")),
+        prosecutorAndCourt: kase.prosecutorAndCourt || (kase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1 / ศาลอาญาคดีทุจริตและประพฤติมิชอบกลาง"),
+        paccResponsibleDept: kase.paccResponsibleDept || (kase.officer && kase.officer.includes('กองบริหารคดี') ? 'กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ)' : 'กองกฎหมาย (กอท.)'),
+        statuteOfLimitations: kase.statuteOfLimitations || `อายุความ 20 ปี (นับแต่วันกระทำผิด) / กรอบเวลา SLA คงเหลือ ${kase.slaDaysRemaining} วัน (ครบกำหนด ${kase.dueDate || '2026-08-15'})`
+      };
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;
