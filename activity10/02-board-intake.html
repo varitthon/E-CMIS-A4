@@ -57,11 +57,15 @@
             <div class="fw-bold text-navy small mb-1.5">
               <i class="fa-solid fa-magnifying-glass text-primary me-1"></i> ค้นหาสำนวนคดีเดิมของ ป.ป.ท. (ที่เคยส่งเรื่องให้อัยการ)
             </div>
-            <div class="input-group input-group-sm">
-              <input type="text" id="intakeSearchInput" class="form-control font-monospace" placeholder="พิมพ์เลขสำนวน ป.ป.ท. (เช่น คดี-10.1-2569/001) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
-              <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
-                <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
-              </button>
+            <div class="position-relative">
+              <div class="input-group input-group-sm">
+                <input type="text" id="intakeSearchInput" class="form-control font-monospace" placeholder="พิมพ์เลขสำนวน ป.ป.ท. (เช่น คดี-10.1-2569/001) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." oninput="handleIntakeSearchInput(this)" onkeyup="handleIntakeSearchKeyup(event)" autocomplete="off">
+                <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
+                  <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
+                </button>
+              </div>
+              <!-- Live Auto-complete Dropdown -->
+              <div id="intakeSearchDropdown" class="dropdown-menu shadow w-100 position-absolute border mt-1 d-none" style="z-index: 1050; max-height: 280px; overflow-y: auto;"></div>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-1.5 flex-wrap gap-1" style="font-size:0.75rem;">
               <span class="text-muted">* ค้นหาได้ด้วย: <strong>เลขสำนวน ป.ป.ท.</strong>, <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong></span>
@@ -375,6 +379,77 @@
       executeIntakeSearch();
     }
   }
+
+  function handleIntakeSearchInput(input) {
+    const q = input.value.trim().toLowerCase();
+    const dropdown = document.getElementById('intakeSearchDropdown');
+    if (!dropdown) return;
+
+    if (!q) {
+      dropdown.classList.add('d-none');
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    const cases = Activity10.getCases();
+    const matched = cases.filter(c => {
+      const tor = Activity10.getTorDetails(c);
+      return (
+        c.id.toLowerCase().includes(q) ||
+        (c.docNo && c.docNo.toLowerCase().includes(q)) ||
+        (tor && tor.accuser && tor.accuser.toLowerCase().includes(q)) ||
+        (tor && tor.accused && tor.accused.toLowerCase().includes(q)) ||
+        c.title.toLowerCase().includes(q)
+      );
+    });
+
+    if (matched.length === 0) {
+      dropdown.innerHTML = `
+        <div class="dropdown-item disabled text-muted small py-2">
+          <i class="fa-solid fa-circle-exclamation me-1 text-warning"></i>ไม่พบผลลัพธ์ที่ตรงกับคำว่า "${q}"
+        </div>
+      `;
+      dropdown.classList.remove('d-none');
+      return;
+    }
+
+    let html = '';
+    matched.forEach(c => {
+      const tor = Activity10.getTorDetails(c);
+      html += `
+        <a class="dropdown-item py-2 px-3 border-bottom text-wrap" href="javascript:void(0);" onclick="chooseSearchSuggestion('${c.id}')">
+          <div class="d-flex justify-content-between align-items-center mb-0.5">
+            <span class="font-monospace fw-bold text-primary small"><i class="fa-solid fa-folder me-1"></i>${c.id}</span>
+            <span class="badge ${c.statusBadge} style-italic" style="font-size:0.65rem;">${c.status}</span>
+          </div>
+          <div class="small fw-semibold text-dark mb-0.5">${c.title}</div>
+          <div class="small text-muted d-flex justify-content-between flex-wrap">
+            <span>ผู้กล่าวหา: ${tor.accuser}</span>
+            <span class="text-danger fw-semibold">ผู้ถูกกล่าวหา: ${tor.accused}</span>
+          </div>
+        </a>
+      `;
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.remove('d-none');
+  }
+
+  function chooseSearchSuggestion(caseId) {
+    const input = document.getElementById('intakeSearchInput');
+    if (input) input.value = caseId;
+    const dropdown = document.getElementById('intakeSearchDropdown');
+    if (dropdown) dropdown.classList.add('d-none');
+    executeIntakeSearch();
+  }
+
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('intakeSearchDropdown');
+    const input = document.getElementById('intakeSearchInput');
+    if (dropdown && input && !dropdown.contains(e.target) && !input.contains(e.target)) {
+      dropdown.classList.add('d-none');
+    }
+  });
 
   function executeIntakeSearch() {
     const q = (document.getElementById('intakeSearchInput') ? document.getElementById('intakeSearchInput').value.trim().toLowerCase() : '');
