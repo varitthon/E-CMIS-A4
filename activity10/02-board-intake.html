@@ -61,8 +61,8 @@
                 <input type="text" id="in_centralSarabanNo" class="form-control form-control-sm font-monospace fw-bold" placeholder="เช่น 2569/4410" value="2569/4410" oninput="autoFormatYearSlashNo(this)">
               </div>
               <div class="col-6">
-                <label class="form-label fw-bold">วันที่รับเอกสาร (พ.ศ.) <span class="text-danger">*</span></label>
-                <input type="text" id="in_physicalDocDate" class="form-control form-control-sm font-monospace fw-bold" placeholder="วว/ดด/พ.ศ. (เช่น 28/07/2569)" value="28/07/2569" maxlength="10" oninput="autoFormatThaiDate(this)">
+                <label class="form-label fw-bold">วันที่รับเอกสาร <span class="text-danger">*</span></label>
+                <input type="date" id="in_physicalDocDate" class="form-control form-control-sm">
               </div>
             </div>
             <div>
@@ -223,19 +223,6 @@
       input.value = raw;
     }
     updateLivePreview();
-  }
-
-  function autoFormatThaiDate(input) {
-    let v = input.value.replace(/[^0-9]/g, '');
-    if (v.length > 8) v = v.substring(0, 8);
-    
-    if (v.length > 4) {
-      input.value = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4);
-    } else if (v.length > 2) {
-      input.value = v.substring(0, 2) + '/' + v.substring(2);
-    } else {
-      input.value = v;
-    }
   }
 
   function updateLivePreview() {
