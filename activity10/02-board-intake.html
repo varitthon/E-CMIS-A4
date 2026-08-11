@@ -46,7 +46,10 @@
             <div class="row g-2 mb-2">
               <div class="col-6">
                 <label class="form-label fw-bold">เลขรับสารบรรณกลาง <span class="text-danger">*</span></label>
-                <input type="text" id="in_centralSarabanNo" class="form-control form-control-sm font-monospace fw-bold" value="รับ-สบร. 2569/4410">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">รับ-สบร. 2569/</span>
+                  <input type="text" id="in_centralSarabanNo" class="form-control font-monospace fw-bold" placeholder="กรอกเฉพาะตัวเลข เช่น 4410" value="4410" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
+                </div>
               </div>
               <div class="col-6">
                 <label class="form-label fw-bold">วันที่รับเอกสาร <span class="text-danger">*</span></label>
@@ -232,7 +235,9 @@
   }
 
   function updateLivePreview() {
-    document.getElementById('pv_sarabanNo').textContent = document.getElementById('in_centralSarabanNo').value || 'รับ-สบร. 2569/4410';
+    const rawVal = document.getElementById('in_centralSarabanNo').value.trim() || '4410';
+    const fullSarabanNo = rawVal.startsWith('รับ-สบร.') ? rawVal : `รับ-สบร. 2569/${rawVal}`;
+    document.getElementById('pv_sarabanNo').textContent = fullSarabanNo;
     document.getElementById('pv_docNo').textContent = document.getElementById('in_docNo').value || 'อส 0014/2569';
     document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
     document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
@@ -290,7 +295,8 @@
   }
 
   function submitBoardIntakeForm() {
-    const centralSarabanNo = document.getElementById('in_centralSarabanNo').value.trim();
+    const rawSarabanNo = document.getElementById('in_centralSarabanNo').value.trim();
+    const centralSarabanNo = rawSarabanNo ? (rawSarabanNo.startsWith('รับ-สบร.') ? rawSarabanNo : `รับ-สบร. 2569/${rawSarabanNo}`) : 'รับ-สบร. 2569/4410';
     const docNo = document.getElementById('in_docNo').value.trim();
     const title = document.getElementById('in_title').value.trim();
     const source = document.getElementById('in_source').value.trim();
