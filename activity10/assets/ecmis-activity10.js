@@ -14,8 +14,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
-      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "legal_officer", // legal_officer, dir_legal, sec_gen, admin_legal
+      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
+      assignedRole: "case_management", // case_management, dir_legal, sec_gen, admin_legal
       status: "กำลังร่างความเห็นแย้ง",
       statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
@@ -110,8 +110,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สนง. ป.ป.ท. เขต 3",
-      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "legal_officer",
+      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
+      assignedRole: "case_management",
       status: "กำลังร่างความเห็นแย้ง",
       statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
@@ -231,7 +231,7 @@
       categoryName: "คดีปกครอง (ศาลปกครอง)",
       source: "ศาลปกครองระยอง (e-Court)",
       officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "legal_officer",
+      assignedRole: "admin_legal",
       status: "กำลังร่างคำคัดค้าน",
       statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
@@ -278,8 +278,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3",
-      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "legal_officer",
+      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
+      assignedRole: "case_management",
       status: "กำลังร่างความเห็นแย้ง",
       statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
@@ -338,9 +338,11 @@
         title: newCaseData.title || "สำนวนคดีกฎหมายใหม่",
         category: category,
         categoryName: newCaseData.categoryName || (category === '10.1' ? 'คดีชั้นอัยการ (ความเห็นแย้ง)' : category === '10.3' ? 'คดีปกครอง (ศาลปกครอง)' : 'ขอเปิดเผยข้อมูลข่าวสาร'),
+        prosecutorCaseTypeNo: newCaseData.prosecutorCaseTypeNo || "1",
+        prosecutorCaseTypeName: newCaseData.prosecutorCaseTypeName || "1. อัยการมีความเห็นไม่ส่งฟ้อง",
         source: newCaseData.source || "ศูนย์รับเรื่องร้องเรียน",
-        officer: newCaseData.officer || "นายณัฐพล บัวทุม (นิติกรเจ้าของสำนวน)",
-        assignedRole: "legal_officer",
+        officer: newCaseData.officer || "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
+        assignedRole: "case_management",
         status: "กำลังร่างความเห็น",
         statusCode: "DRAFTING_OPINION",
         statusBadge: "bg-warning text-dark",
@@ -452,7 +454,7 @@
         item.centralSarabanNo = data.centralSarabanNo || item.centralSarabanNo || `รับ-สบร. 2569/${Math.floor(1000 + Math.random() * 9000)}`;
         item.physicalDocDate = data.physicalDocDate || new Date().toISOString().split('T')[0];
         item.scannedDocFile = data.scannedDocFile || "เอกสารสแกนฉบับจริง_สารบรรณกลาง.pdf";
-        item.boardAdminOfficer = data.boardAdminOfficer || "นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี)";
+        item.boardAdminOfficer = data.boardAdminOfficer || "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)";
         item.scannedStatus = "scanned";
         saveCases(cases);
       }

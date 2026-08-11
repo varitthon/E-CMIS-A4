@@ -67,7 +67,7 @@
               </div>
             </div>
             <div class="small text-muted mt-1 border-top pt-1">
-              ผู้บันทึกนำเข้า: <strong>นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)</strong>
+              ผู้บันทึกนำเข้า: <strong>นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)</strong>
             </div>
           </div>
 
@@ -91,8 +91,8 @@
               <div class="p-2 bg-light rounded border" id="f_categoryName">-</div>
             </div>
             <div class="col-6">
-              <label class="fw-bold text-muted d-block mb-1">วันที่รับเรื่องเข้ากองกฎหมาย:</label>
-              <div class="p-2 bg-light rounded border" id="f_dateReceived">-</div>
+              <label class="fw-bold text-muted d-block mb-1">กรณีคำสั่งพนักงานอัยการ:</label>
+              <div class="p-2 bg-light rounded border text-primary fw-semibold" id="f_prosecutorCaseTypeName">-</div>
             </div>
           </div>
           <div class="mb-2">
@@ -224,6 +224,9 @@
     document.getElementById('f_source').textContent = currentCase.source;
     document.getElementById('f_docNo').textContent = currentCase.docNo || 'อส 0014/2569';
     document.getElementById('f_categoryName').textContent = currentCase.categoryName || 'คดีชั้นอัยการ (ความเห็นแย้ง)';
+    if (document.getElementById('f_prosecutorCaseTypeName')) {
+      document.getElementById('f_prosecutorCaseTypeName').textContent = currentCase.prosecutorCaseTypeName || (currentCase.category === '10.1' ? '1. อัยการมีความเห็นไม่ส่งฟ้อง' : '-');
+    }
     document.getElementById('f_dateReceived').textContent = currentCase.dateReceived || '2026-07-28';
     document.getElementById('f_opinion').textContent = currentCase.legalOpinion || 'พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งตามขั้นตอนกฎหมาย';
 
@@ -242,9 +245,9 @@
     }
     document.getElementById('f_lawReceiveNo').value = currentLawReceiveNo;
 
-    // Check if logged in user is Board Admin Officer (Siriporn.K)
-    const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
-    if (roleId === 'Siriporn.K') {
+    // Check if logged in user is Board Admin Officer (Siriporn.K / case_management)
+    const roleId = sessionStorage.getItem('ecmis_role') || 'admin_legal';
+    if (roleId === 'Siriporn.K' || roleId === 'case_management') {
       const receiveCard = document.getElementById('f_lawReceiveNo').closest('.card');
       if (receiveCard) {
         receiveCard.className = 'card card-ecmis border-info bg-info-subtle';
@@ -286,7 +289,7 @@
         Swal.fire({
           icon: 'success',
           title: 'ลงรับเรื่องและเสนอเรื่องสำเร็จ!',
-          text: `ออกเลขรับ ${currentLawReceiveNo} และส่งเสนอ ผอ.กองกฎหมาย เรียบร้อยแล้ว`,
+          text: 'ส่งเสนอ ผอ.กองกฎหมาย เรียบร้อยแล้ว',
           timer: 1600,
           showConfirmButton: false
         }).then(() => {

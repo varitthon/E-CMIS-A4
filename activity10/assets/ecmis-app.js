@@ -54,7 +54,7 @@ const ROLES = [
     perms:['view.all','download','approve.general'] },
 
   /* ── 4. กองบริหารคดี ───────────────────────────────────────────────── */
-  { id:'case_management', login:'Siriporn.K', row:7, group:'กองบริหารคดี', title:'เจ้าหน้าที่กองบริหารคดี',
+  { id:'case_management', login:'Siriporn.K', row:7, group:'กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ)', title:'เจ้าหน้าที่กองบริหารคดี',
     name:'นางสาวศิริพร กิจการ', org:'กองบริหารคดี', act:'10.1, 10.2, 10.3',
     responsibilities:'จัดทำรายงาน/แจ้งมติให้หน่วยงานเจ้าของสำนวนทราบ และสรุปสถิติ/บันทึกมติคณะกรรมการ ป.ป.ท. ในภาพรวม',
     note:'กระจายหนังสือแจ้งมติไปยังหน่วยงานเจ้าของสำนวน',
@@ -889,7 +889,7 @@ function roleIdForLogin(username){
 }
 
 /* current role — เก็บใน sessionStorage เพื่อให้สลับข้ามหน้าได้ */
-function currentRoleId(){ return sessionStorage.getItem('ecmis_role') || 'legal_officer'; }
+function currentRoleId(){ return sessionStorage.getItem('ecmis_role') || 'admin_legal'; }
 function setRole(id){ sessionStorage.setItem('ecmis_role', id); location.reload(); }
 function currentRole(){ return getRole(currentRoleId()); }
 
@@ -954,7 +954,7 @@ function renderShell(activeHref){
     </li>`).join('');
 
   /* ---- topbar ---- */
-  const activeRoleIds = ['case_management', 'admin_legal', 'legal_officer', 'dir_legal'];
+  const activeRoleIds = ['case_management', 'admin_legal', 'dir_legal'];
   const activeRoles = ROLES.filter(r => activeRoleIds.includes(r.id));
   const groups = [];
   activeRoles.forEach(r => {
@@ -1018,7 +1018,7 @@ function renderShell(activeHref){
           <li class="px-2 py-2 bg-light rounded mb-2">
             <strong class="d-block text-dark" style="font-size:.88rem;">${role.name}</strong>
             <span class="text-navy d-block fw-semibold" style="font-size:.8rem;">${role.title}</span>
-            <small class="text-muted d-block" style="font-size:.74rem;">${role.org} (${role.group})</small>
+            <small class="text-muted d-block" style="font-size:.74rem;">${role.group.includes('(') ? role.group : role.org + ' (' + role.group + ')'}</small>
           </li>
           <li><hr class="dropdown-divider my-1"></li>
           <li class="px-2 py-1"><small class="text-muted d-block text-wrap" style="font-size:.72rem;"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</small></li>

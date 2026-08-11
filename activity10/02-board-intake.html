@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>นำเข้าเอกสารตัวจริง & สแกนเข้าระบบ (กองบริหารคดี) | E-CMIS กิจกรรมที่ 10</title>
+  <title>นำเข้าเอกสาร & สแกนเข้าระบบ (กองบริหารคดี) | E-CMIS กิจกรรมที่ 10</title>
   <link rel="icon" type="image/png" href="pacc_logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
@@ -15,20 +15,7 @@
 <body>
 
 <main class="app-main">
-  <!-- Page Head -->
-  <div class="page-head mb-3">
-    <div class="d-flex align-items-center gap-3">
-      <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
-      <div>
-        <h1 class="m-0" style="font-size:1.35rem;"><i class="fa-solid fa-file-signature me-2 text-primary"></i>บันทึกรับเอกสารตัวจริง & สแกนเข้าระบบ (กองบริหารคดี)</h1>
-        <div class="small text-muted">สำหรับ เจ้าหน้าที่กองบริหารคดี (กลุ่มงานกิจการคณะกรรมการ) รับเอกสารตัวจริงจากสารบรรณกลาง และนำเข้าข้อมูลสู่ระบบ</div>
-      </div>
-    </div>
-    <div class="ms-auto text-end">
-      <span class="badge bg-primary text-white px-3 py-1 fs-6">กลุ่มงานกิจการคณะกรรมการ</span>
-      <div class="small text-muted mt-1">ผู้ลงรับ: นางสาวศิริพร ขวัญเมือง</div>
-    </div>
-  </div>
+
 
   <!-- Stepper Workflow -->
   <div class="card card-ecmis mb-3">
@@ -49,8 +36,8 @@
     <!-- Left Column: Form input (กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ) -->
     <div class="col-xl-6">
       <div class="card card-ecmis mb-3">
-        <div class="card-header bg-navy text-white fw-bold">
-          <i class="fa-solid fa-edit me-1"></i> แบบฟอร์มนำเข้าข้อมูลเอกสารตัวจริง (จากสารบรรณกลาง)
+        <div class="card-header bg-light text-dark fw-bold border-bottom">
+          <i class="fa-solid fa-edit me-1 text-navy"></i> <span style="color:#000000;">แบบฟอร์มรับเรื่อง</span>
         </div>
         <div class="card-body p-3 small">
           <!-- Section 1: Central Saraban Metadata -->
@@ -62,27 +49,40 @@
                 <input type="text" id="in_centralSarabanNo" class="form-control form-control-sm font-monospace fw-bold" value="รับ-สบร. 2569/4410">
               </div>
               <div class="col-6">
-                <label class="form-label fw-bold">วันที่รับเอกสารตัวจริง <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold">วันที่รับเอกสาร <span class="text-danger">*</span></label>
                 <input type="date" id="in_physicalDocDate" class="form-control form-control-sm">
               </div>
             </div>
             <div>
               <label class="form-label fw-bold">เจ้าหน้าที่ผู้รับเรื่อง (กองบริหารคดี)</label>
-              <input type="text" class="form-control form-control-sm bg-white" readonly value="นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)">
+              <input type="text" class="form-control form-control-sm bg-white" readonly value="นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)">
             </div>
           </div>
 
           <!-- Section 2: Prosecutor Document Details -->
           <div class="p-3 bg-light rounded border mb-3">
             <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-gavel me-1"></i> รายละเอียดหนังสือความเห็นพนักงานอัยการ</div>
-            <div class="mb-2">
-              <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย <span class="text-danger">*</span></label>
-              <select id="in_category" class="form-select form-select-sm">
-                <option value="10.1">คดีอาญาทุจริตเเละคดีประพฤติมิชอบ</option>
-                <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-                <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
-                <option value="10.3">คดีศาลปกครอง</option>
-              </select>
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย <span class="text-danger">*</span></label>
+                <select id="in_category" class="form-select form-select-sm" onchange="toggleProsecutorCaseTypeDiv()">
+                  <option value="10.1">คดีอาญาทุจริตเเละคดีประพฤติมิชอบ</option>
+                  <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
+                  <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
+                  <option value="10.3">คดีศาลปกครอง</option>
+                </select>
+              </div>
+              <div class="col-md-6" id="div_prosecutorCaseType">
+                <label class="form-label fw-bold">กรณีความเห็น/คำสั่งพนักงานอัยการ <span class="text-danger">*</span></label>
+                <select id="in_prosecutorCaseType" class="form-select form-select-sm">
+                  <option value="1">1. อัยการมีความเห็นไม่ส่งฟ้อง</option>
+                  <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
+                  <option value="3">3. อัยการมีความเห็นสั่งไม่อุทธรณ์</option>
+                  <option value="4">4. อัยการมีความเห็นสั่งถอนอุทธรณ์</option>
+                  <option value="5">5. อัยการมีความเห็นสั่งไม่ฎีกา</option>
+                  <option value="6">6. อัยการมีความเห็นสั่งถอนฎีกา</option>
+                </select>
+              </div>
             </div>
             <div class="row g-2 mb-2">
               <div class="col-6">
@@ -106,7 +106,7 @@
 
           <!-- Section 3: Physical Document Scan & Upload -->
           <div class="p-3 bg-warning-subtle border border-warning rounded mb-3">
-            <div class="fw-bold text-dark mb-2"><i class="fa-solid fa-scanner me-1 text-warning"></i> สแกนเอกสารตัวจริงเข้าระบบ (Scan PDF)</div>
+            <div class="fw-bold text-dark mb-2"><i class="fa-solid fa-scanner me-1 text-warning"></i> สแกนเอกสารเข้าระบบ (Scan PDF)</div>
             <div class="input-group input-group-sm mb-2">
               <input type="file" id="in_scannedFile" class="form-control" accept=".pdf">
               <button class="btn btn-outline-primary" type="button" onclick="triggerScanSimulation()"><i class="fa-solid fa-print me-1"></i>จำลองการสแกน</button>
@@ -129,7 +129,7 @@
     <div class="col-xl-6">
       <div class="card card-ecmis border h-100">
         <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
-          <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารสแกนตัวจริง (Document Preview)</span>
+          <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารสแกน (Document Preview)</span>
           <span class="badge bg-primary" id="previewBadge">พร้อมเชื่อมโยง</span>
         </div>
         <div class="card-body p-3 bg-dark-subtle d-flex flex-column align-items-center justify-content-center" style="min-height:540px;">
@@ -212,7 +212,21 @@
     ['in_centralSarabanNo', 'in_docNo', 'in_source', 'in_title', 'in_legalOpinion'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateLivePreview);
     });
+
+    toggleProsecutorCaseTypeDiv();
   });
+
+  function toggleProsecutorCaseTypeDiv() {
+    const cat = document.getElementById('in_category').value;
+    const div = document.getElementById('div_prosecutorCaseType');
+    if (div) {
+      if (cat === '10.1') {
+        div.style.display = 'block';
+      } else {
+        div.style.display = 'none';
+      }
+    }
+  }
 
   function updateLivePreview() {
     document.getElementById('pv_sarabanNo').textContent = document.getElementById('in_centralSarabanNo').value || 'รับ-สบร. 2569/4410';
@@ -224,7 +238,7 @@
 
   function triggerScanSimulation() {
     Swal.fire({
-      title: 'กำลังสแกนเอกสารตัวจริง...',
+      title: 'กำลังสแกนเอกสาร...',
       html: '<div class="text-center"><i class="fa-solid fa-scanner fa-spin fa-2x text-primary my-2"></i><br><small class="text-muted">กำลังทำความสะอาดภาพและปรับความคมชัด (High Precision OCR Scan)</small></div>',
       timer: 1300,
       showConfirmButton: false
@@ -243,6 +257,9 @@
     const title = document.getElementById('in_title').value.trim();
     const source = document.getElementById('in_source').value.trim();
     const category = document.getElementById('in_category').value;
+    const prosecutorCaseTypeSelect = document.getElementById('in_prosecutorCaseType');
+    const prosecutorCaseTypeNo = (category === '10.1' && prosecutorCaseTypeSelect) ? prosecutorCaseTypeSelect.value : '';
+    const prosecutorCaseTypeName = (category === '10.1' && prosecutorCaseTypeSelect && prosecutorCaseTypeSelect.options) ? prosecutorCaseTypeSelect.options[prosecutorCaseTypeSelect.selectedIndex].text : '';
     const legalOpinion = document.getElementById('in_legalOpinion').value.trim();
     const physicalDocDate = document.getElementById('in_physicalDocDate').value;
 
@@ -266,6 +283,8 @@
           title: title,
           source: source,
           docNo: docNo,
+          prosecutorCaseTypeNo: prosecutorCaseTypeNo,
+          prosecutorCaseTypeName: prosecutorCaseTypeName,
           legalOpinion: legalOpinion
         });
 
@@ -273,13 +292,12 @@
           centralSarabanNo: centralSarabanNo,
           physicalDocDate: physicalDocDate,
           scannedDocFile: `เอกสารสแกนฉบับจริง_สารบรรณกลาง_${docNo}.pdf`,
-          boardAdminOfficer: 'นางสาวศิริพร ขวัญเมือง (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)'
+          boardAdminOfficer: 'นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)'
         });
 
         Swal.fire({
           icon: 'success',
           title: 'บันทึกและส่งต่อข้อมูลสำเร็จ!',
-          text: `นำเข้าเอกสารตัวจริงเรียบร้อยแล้ว ส่งต่อให้กองกฎหมายดำเนินการต่อไป (${newCase.id})`,
           timer: 1600,
           showConfirmButton: false
         }).then(() => {

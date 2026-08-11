@@ -306,7 +306,6 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
     <div class="collapse navbar-collapse" id="navMain">
       <ul class="navbar-nav mx-auto mt-3 mt-xl-0">
         <li class="nav-item"><a class="nav-link" href="index.html">หน้าแรก</a></li>
-        <li class="nav-item"><a class="nav-link" href="01-work-inbox.html">คิวงานหลัก</a></li>
         <li class="nav-item"><a class="nav-link active-login" href="login.html">เข้าสู่ระบบ</a></li>
       </ul>
     </div>
@@ -346,7 +345,7 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
           <label class="field-label">ชื่อผู้ใช้งานหรืออีเมล (เลือกบทบาทผู้ใช้)</label>
           <div class="input-icon-group">
             <i class="fa-solid fa-user"></i>
-            <input type="text" id="loginUsername" placeholder="เช่น Nattapol.B (นิติกร) หรือเลือกจากรายการ" list="loginUsernameHints" required autocomplete="off">
+            <input type="text" id="loginUsername" placeholder="เช่น Wilai.T (ธุรการกองกฎหมาย) หรือเลือกจากรายการ" list="loginUsernameHints" required autocomplete="off">
             <datalist id="loginUsernameHints"></datalist>
           </div>
         </div>
@@ -469,7 +468,7 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
 
 <script>
 // --- Populate Activity 10 Username Hints ---
-const ACTIVE_ROLE_IDS = ['case_management', 'admin_legal', 'legal_officer', 'dir_legal'];
+const ACTIVE_ROLE_IDS = ['case_management', 'admin_legal', 'dir_legal'];
 
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
@@ -554,8 +553,8 @@ function handleLogin(event){
       if(found) roleId = found.id;
     }
     
-    // Default fallback to legal_officer if non-existent username
-    if(!roleId) roleId = 'legal_officer';
+    // Default fallback to admin_legal if non-existent username
+    if(!roleId) roleId = 'admin_legal';
     
     sessionStorage.setItem('ecmis_role', roleId);
     const role = ECMIS.getRole(roleId);
@@ -653,9 +652,9 @@ function simulateThaidScan(){
   });
   setTimeout(() => {
     clearInterval(thaidTimer);
-    // Set legal_officer or secgen as default for ThaID demo login
-    sessionStorage.setItem('ecmis_role', 'legal_officer');
-    const role = ECMIS.getRole('legal_officer');
+    // Set admin_legal or dir_legal as default for ThaID demo login
+    sessionStorage.setItem('ecmis_role', 'admin_legal');
+    const role = ECMIS.getRole('admin_legal');
     
     Swal.fire({
       icon:'success',
