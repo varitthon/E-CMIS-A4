@@ -328,7 +328,19 @@
       const stored = localStorage.getItem("ecmis_activity10_cases");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.length) return parsed;
+        if (parsed && parsed.length) {
+          parsed.forEach(c => {
+            const seed = INITIAL_CASES.find(ic => ic.id === c.id);
+            if (seed) {
+              if (!c.accuser) c.accuser = seed.accuser;
+              if (!c.accused) c.accused = seed.accused;
+            } else {
+              if (!c.accuser) c.accuser = "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.";
+              if (!c.accused) c.accused = "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)";
+            }
+          });
+          return parsed;
+        }
       }
     } catch(e) {
       console.warn("Could not load localStorage, using initial seed data");
@@ -355,12 +367,15 @@
     },
 
     getTorDetails(c) {
-      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น" };
+      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)", plaintiff: "พนักงานอัยการ / สำนักงาน ป.ป.ท.", defendant: "นายสมชาย ทุจริตมั่น", paccCaseNo: "ปปท. 0012/2568", blackNo: "อ. 104/2569", redNo: "อ. 308/2569", courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ", division: "กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ", statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)" };
+
+      const seed = INITIAL_CASES.find(ic => ic.id === c.id);
+
       return {
-        accuser: c.accuser || "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
-        accused: c.accused || "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
+        accuser: c.accuser || (seed ? seed.accuser : "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท."),
+        accused: c.accused || (seed ? seed.accused : "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)"),
         plaintiff: c.plaintiff || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
-        defendant: c.defendant || c.accused || "นายสมชาย ทุจริตมั่น",
+        defendant: c.defendant || c.accused || (seed ? seed.accused : "นายสมชาย ทุจริตมั่น"),
         paccCaseNo: c.paccCaseNo || "ปปท. 0012/2568",
         blackNo: c.blackNo || "อ. 104/2569",
         redNo: c.redNo || "อ. 308/2569",
