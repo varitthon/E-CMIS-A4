@@ -14,6 +14,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+      accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+      accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
       officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
       assignedRole: "case_management", // case_management, dir_legal, sec_gen, admin_legal
       status: "กำลังร่างความเห็นแย้ง",
@@ -38,6 +40,8 @@
       category: "10.2.1",
       categoryName: "ขอเปิดเผยข้อมูลข่าวสาร",
       source: "ศูนย์รับเรื่องร้องเรียน ป.ป.ท. (ยื่น Walk-in)",
+      accuser: "นายสมเกียรติ รักธรรม (ผู้ร้องเรียน)",
+      accused: "คณะกรรมการไต่สวน ป.ป.ท.",
       officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
       assignedRole: "admin_legal",
       status: "รออนุกรรมการฯ พิจารณา",
@@ -62,6 +66,8 @@
       category: "10.2.2",
       categoryName: "อุทธรณ์การไม่เปิดเผยข้อมูล",
       source: "ระบบรับเรื่องร้องเรียนออนไลน์ (Email)",
+      accuser: "นายประเสริฐ ชูเกียรติ (ผู้อุทธรณ์)",
+      accused: "สำนักงาน ป.ป.ท.",
       officer: "นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)",
       assignedRole: "dir_legal",
       status: "เสนอ ผอ.กองกฎหมาย",
@@ -86,6 +92,8 @@
       category: "10.3",
       categoryName: "คดีปกครอง (ศาลปกครอง)",
       source: "ศาลปกครองสูงสุด (e-Court System)",
+      accuser: "นายเฉลิมพล สุขสวัสดิ์ (ผู้ฟ้องคดี)",
+      accused: "เลขาธิการ ป.ป.ท. และคณะกรรมการ ป.ป.ท.",
       officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
       assignedRole: "sec_gen",
       status: "รอลงนามอนุมัติร่างคำให้การ",
@@ -110,6 +118,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สนง. ป.ป.ท. เขต 3",
+      accuser: "สำนักงาน ป.ป.ท. เขต 3",
+      accused: "นายวิชัย การกุศล (เจ้าพนักงานจัดเก็บรายได้)",
       officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
       assignedRole: "case_management",
       status: "กำลังร่างความเห็นแย้ง",
@@ -134,6 +144,8 @@
       category: "10.2.1",
       categoryName: "ขอเปิดเผยข้อมูลข่าวสาร",
       source: "สำนักข่าวอิศรา (ยื่นคำร้องออนไลน์)",
+      accuser: "สำนักข่าวอิศรา",
+      accused: "สำนักงาน ป.ป.ท.",
       officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
       assignedRole: "admin_legal",
       status: "รับเรื่อง/ตรวจสอบเอกสาร",
@@ -158,6 +170,8 @@
       category: "10.3",
       categoryName: "คดีปกครอง (ศาลปกครอง)",
       source: "ศาลปกครองกลาง (e-Court)",
+      accuser: "นายสุรศักดิ์ กล้าหาญ",
+      accused: "คณะกรรมการ ป.ป.ท.",
       officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
       assignedRole: "dir_legal",
       status: "เสนอ ผอ.กองกฎหมาย",
@@ -182,6 +196,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สนง. ป.ป.ท. เขต 1",
+      accuser: "สำนักงาน ป.ป.ท. เขต 1",
+      accused: "นายศิริโชค มีอำนาจ (หัวหน้าฝ่ายโยธา)",
       officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
       assignedRole: "sec_gen",
       status: "อนุมัติเสนอ อสส. แล้ว",
@@ -206,6 +222,8 @@
       category: "10.2.2",
       categoryName: "อุทธรณ์การไม่เปิดเผยข้อมูล",
       source: "ไปรษณีย์ตอบรับ (EMS)",
+      accuser: "นายกิตติคุณ มั่งคั่ง",
+      accused: "ศูนย์บริการข้อมูลข่าวสาร ป.ป.ท.",
       officer: "นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)",
       assignedRole: "admin_legal",
       status: "กำลังยกร่างคำชี้แจง",
@@ -230,6 +248,8 @@
       category: "10.3",
       categoryName: "คดีปกครอง (ศาลปกครอง)",
       source: "ศาลปกครองระยอง (e-Court)",
+      accuser: "นายประยุทธ วิทยาเดช",
+      accused: "เลขาธิการ ป.ป.ท.",
       officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
       assignedRole: "admin_legal",
       status: "กำลังร่างคำคัดค้าน",
@@ -254,6 +274,8 @@
       category: "10.2.1",
       categoryName: "ขอเปิดเผยข้อมูลข่าวสาร",
       source: "ศูนย์บริการประชาชน ป.ป.ท.",
+      accuser: "นายธนกร โชคดี",
+      accused: "สำนักงาน ป.ป.ท.",
       officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
       assignedRole: "dir_legal",
       status: "เสนอ ผอ.กองกฎหมาย",
@@ -278,6 +300,8 @@
       category: "10.1",
       categoryName: "คดีชั้นอัยการ (ความเห็นแย้ง)",
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3",
+      accuser: "คณะกรรมการ ป.ป.ท.",
+      accused: "นางสาวจันทรเพ็ญ บุญส่ง (เจ้าหน้าที่การเงินและบัญชี)",
       officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
       assignedRole: "case_management",
       status: "กำลังร่างความเห็นแย้ง",
@@ -302,7 +326,10 @@
   function loadCases() {
     try {
       const stored = localStorage.getItem("ecmis_activity10_cases");
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.length) return parsed;
+      }
     } catch(e) {
       console.warn("Could not load localStorage, using initial seed data");
     }
@@ -325,6 +352,22 @@
     getCaseById(id) {
       const cases = loadCases();
       return cases.find(c => c.id === id) || cases[0];
+    },
+
+    getTorDetails(c) {
+      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น" };
+      return {
+        accuser: c.accuser || "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+        accused: c.accused || "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
+        plaintiff: c.plaintiff || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
+        defendant: c.defendant || c.accused || "นายสมชาย ทุจริตมั่น",
+        paccCaseNo: c.paccCaseNo || "ปปท. 0012/2568",
+        blackNo: c.blackNo || "อ. 104/2569",
+        redNo: c.redNo || "อ. 308/2569",
+        courtOrder: c.courtOrder || "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ",
+        division: c.division || "กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ",
+        statuteLimitation: c.statuteLimitation || "15 ปี (หมดอายุความ 28 ก.ค. 2584)"
+      };
     },
 
     addCase(newCaseData) {
