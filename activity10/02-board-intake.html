@@ -145,7 +145,7 @@
               <div class="input-group input-group-sm">
                 <button class="btn btn-outline-secondary bg-light text-dark border px-3" type="button" onclick="document.getElementById('in_scannedFile').click();">เลือกไฟล์</button>
                 <span class="form-control form-control-sm bg-white text-muted d-flex align-items-center" id="file_chosen_text" style="cursor:pointer;" onclick="document.getElementById('in_scannedFile').click();">ไม่ได้เลือกไฟล์ใด</span>
-                <input type="file" id="in_scannedFile" class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip" onchange="updateCustomFileLabel(this)">
+                <input type="file" id="in_scannedFile" class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onchange="updateCustomFileLabel(this)">
               </div>
             </div>
             <div class="small text-muted mb-2" id="scanStatusText"></div>
@@ -155,7 +155,7 @@
                 <i class="fa-solid fa-file-circle-check me-1"></i>ข้อกำหนดการแนบไฟล์ประกอบ:
               </div>
               <div style="font-size:0.83rem; color:#495057; line-height:1.6;">
-                <div>• <strong style="color:#2c3e50;">ประเภทไฟล์ที่รองรับ:</strong> PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, ZIP</div>
+                <div>• <strong style="color:#2c3e50;">ประเภทไฟล์ที่รองรับ:</strong> PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG</div>
                 <div>• <strong style="color:#2c3e50;">ขนาดไฟล์สูงสุด:</strong> ไม่เกิน 25 MB ต่อไฟล์</div>
               </div>
             </div>
@@ -311,14 +311,14 @@
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
     const maxSizeBytes = 25 * 1024 * 1024; // 25 MB Limit
-    const allowedExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'zip'];
+    const allowedExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'];
 
     const ext = file.name.split('.').pop().toLowerCase();
     if (!allowedExts.includes(ext)) {
       Swal.fire({
         icon: 'warning',
         title: 'ชนิดไฟล์ไม่ถูกต้อง',
-        text: 'ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, ZIP เท่านั้น',
+        text: 'ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG เท่านั้น',
         confirmButtonColor: '#0a2647'
       });
       input.value = '';
@@ -373,13 +373,12 @@
       return;
     }
 
-    const cases = Activity10.getCases();
+    const cases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
     const matched = cases.filter(c => {
-      const tor = Activity10.getTorDetails(c);
       return (
         c.id.toLowerCase().includes(q) ||
-        (tor && tor.accuser && tor.accuser.toLowerCase().includes(q)) ||
-        (tor && tor.accused && tor.accused.toLowerCase().includes(q)) ||
+        (c.accuser && c.accuser.toLowerCase().includes(q)) ||
+        (c.accused && c.accused.toLowerCase().includes(q)) ||
         c.title.toLowerCase().includes(q)
       );
     });
@@ -412,12 +411,11 @@
     `;
 
     matched.forEach(c => {
-      const tor = Activity10.getTorDetails(c);
       html += `
         <tr>
           <td><strong class="text-primary font-monospace">${c.id}</strong></td>
-          <td>${tor.accuser}</td>
-          <td class="text-danger fw-semibold">${tor.accused}</td>
+          <td>${c.accuser || '-'}</td>
+          <td class="text-danger fw-semibold">${c.accused || '-'}</td>
           <td>${c.title}</td>
         </tr>
       `;
