@@ -1133,28 +1133,7 @@ function renderShell(activeHref){
   }, 800);
 
 
-  // Add Breadcrumb Trail
-  const activeNav = NAV.find(n => n.href === activeHref);
-  if (activeNav) {
-    let parentSection = 'ภาพรวม';
-    for (let i = 0; i < NAV.length; i++) {
-      if (NAV[i].section) parentSection = NAV[i].section;
-      if (NAV[i].href === activeHref) break;
-    }
-    const breadcrumbHtml = `
-      <nav aria-label="breadcrumb" class="no-print mb-2">
-        <ol class="breadcrumb" style="font-size:0.75rem; margin:0 0 12px 0; padding:0; list-style:none; display:flex; gap:6px">
-          <li class="breadcrumb-item"><a href="01-work-inbox.html" style="text-decoration:none; color:var(--ecmis-navy)"><i class="fa-solid fa-house me-1"></i>Home</a></li>
-          <li class="breadcrumb-item text-muted" style="display:flex; gap:6px"><span style="margin:0 4px">/</span>${parentSection}</li>
-          <li class="breadcrumb-item active" style="display:flex; gap:6px" aria-current="page"><span style="margin:0 4px">/</span>${activeNav.label}</li>
-        </ol>
-      </nav>`;
-    const appMain = document.querySelector('.app-main');
-    if (appMain) {
-      appMain.insertAdjacentHTML('afterbegin', breadcrumbHtml);
-    }
-  }
-}
+
 
 /* -------------------------------------------------------- UI BUILDERS */
 function stepperHtml(statusKey){
