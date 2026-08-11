@@ -235,12 +235,15 @@
 
     // Set default today date
     const todayStr = new Date().toISOString().split('T')[0];
-    document.getElementById('in_physicalDocDate').value = todayStr;
-    document.getElementById('pv_docDate').textContent = todayStr;
+    const physicalDocDateEl = document.getElementById('in_physicalDocDate');
+    if (physicalDocDateEl) physicalDocDateEl.value = todayStr;
+    const pvDocDateEl = document.getElementById('pv_docDate');
+    if (pvDocDateEl) pvDocDateEl.textContent = todayStr;
 
     // Live update preview listeners
     ['in_centralSarabanNo', 'in_docNo', 'in_source', 'in_title', 'in_legalOpinion'].forEach(id => {
-      document.getElementById(id).addEventListener('input', updateLivePreview);
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateLivePreview);
     });
 
     toggleProsecutorCaseTypeDiv();
@@ -284,14 +287,21 @@
 
   function updateLivePreview() {
     const sarabanVal = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '') || '2569/4410';
-    document.getElementById('pv_sarabanNo').textContent = sarabanVal;
+    const pvSaraban = document.getElementById('pv_sarabanNo');
+    if (pvSaraban) pvSaraban.textContent = sarabanVal;
 
     const docVal = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '') || '2569/0014';
-    document.getElementById('pv_docNo').textContent = docVal;
+    const pvDocNo = document.getElementById('pv_docNo');
+    if (pvDocNo) pvDocNo.textContent = docVal;
 
-    document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
-    document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
-    document.getElementById('pv_legalOpinion').textContent = document.getElementById('in_legalOpinion').value || 'รายละเอียดเหตุผลความเห็นอัยการ...';
+    const pvSource = document.getElementById('pv_source');
+    if (pvSource) pvSource.textContent = (document.getElementById('in_source') ? document.getElementById('in_source').value : '') || 'สำนักงานอัยการพิเศษฯ';
+
+    const pvTitle = document.getElementById('pv_title');
+    if (pvTitle) pvTitle.textContent = (document.getElementById('in_title') ? document.getElementById('in_title').value : '') || 'เรื่องพิจารณาคำสั่งอัยการ';
+
+    const pvOpinion = document.getElementById('pv_legalOpinion');
+    if (pvOpinion) pvOpinion.textContent = (document.getElementById('in_legalOpinion') ? document.getElementById('in_legalOpinion').value : '') || 'รายละเอียดเหตุผลความเห็นอัยการ...';
   }
 
   function updateCustomFileLabel(input) {
