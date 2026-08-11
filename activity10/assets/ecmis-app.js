@@ -1959,7 +1959,7 @@ function initCharCounterAndCopy() {
   if (typeof document === 'undefined') return;
   const textareas = document.querySelectorAll('textarea');
   textareas.forEach(ta => {
-    if (ta.hasAttribute('readonly') || ta.hasAttribute('disabled')) return;
+    if (ta.hasAttribute('readonly') || ta.hasAttribute('disabled') || ta.hasAttribute('data-no-helper') || ta.hasAttribute('data-no-copy')) return;
     if (ta.nextElementSibling?.classList.contains('textarea-helper-bar')) return;
     
     const bar = document.createElement('div');
