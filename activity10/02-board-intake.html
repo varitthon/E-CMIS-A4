@@ -52,19 +52,28 @@
           </button>
         </div>
         <div class="card-body p-3 small">
-          <!-- Section 0: Search Case Database (ค้นหาสำนวนคดีเดิม) -->
+          <!-- Section 0: Search Case Database (ค้นหาสำนวนคดีเดิมที่เคยส่งให้อัยการ) -->
           <div class="p-3 bg-white rounded border border-primary-subtle shadow-sm mb-3">
-            <div class="fw-bold text-navy mb-1.5 small">
-              <i class="fa-solid fa-magnifying-glass me-1 text-primary"></i> ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)
+            <div class="d-flex justify-content-between align-items-center mb-1.5">
+              <div class="fw-bold text-navy small">
+                <i class="fa-solid fa-magnifying-glass text-primary me-1"></i> ค้นหาสำนวนคดีเดิมของ ป.ป.ท. (ที่เคยส่งเรื่องให้อัยการ)
+              </div>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size:0.7rem;">ขั้นตอนที่ 1: ตรวจสอบความถูกต้องของสำนวน</span>
             </div>
             <div class="input-group input-group-sm">
-              <input type="text" id="intakeSearchInput" class="form-control" placeholder="พิมพ์เลขสำนวน / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
+              <input type="text" id="intakeSearchInput" class="form-control font-monospace" placeholder="พิมพ์เลขสำนวน ป.ป.ท. (เช่น คดี-10.1-2569/001) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
               <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
                 <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
               </button>
             </div>
-            <div class="form-text text-muted" style="font-size:0.75rem;">
-              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น คดี-10.1-2569/001), <strong>ชื่อผู้กล่าวหา</strong>, หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong>
+            <div class="d-flex justify-content-between align-items-center mt-1.5 flex-wrap gap-1" style="font-size:0.75rem;">
+              <span class="text-muted">* ค้นหาได้ด้วย: <strong>เลขสำนวน ป.ป.ท.</strong>, <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong></span>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted me-1 style-italic">คลิกทดสอบค้นหา:</span>
+                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/001')">คดี-10.1-2569/001</button>
+                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/002')">คดี-10.1-2569/002</button>
+                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/003')">คดี-10.1-2569/003</button>
+              </div>
             </div>
 
             <!-- Search Results Display Panel -->
@@ -362,13 +371,21 @@
     });
   }
 
+  function quickSearchCase(caseId) {
+    const input = document.getElementById('intakeSearchInput');
+    if (input) {
+      input.value = caseId;
+      executeIntakeSearch();
+    }
+  }
+
   function executeIntakeSearch() {
     const q = (document.getElementById('intakeSearchInput') ? document.getElementById('intakeSearchInput').value.trim().toLowerCase() : '');
     const resultsContainer = document.getElementById('intakeSearchResults');
     if (!resultsContainer) return;
 
     if (!q) {
-      Swal.fire({ icon: 'info', title: 'กรุณากรอกคำค้นหา', text: 'พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'info', title: 'กรุณากรอกคำค้นหา', text: 'พิมพ์เลขสำนวน ป.ป.ท., ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา', timer: 1500, showConfirmButton: false });
       resultsContainer.classList.add('d-none');
       return;
     }
@@ -390,53 +407,63 @@
     if (matched.length === 0) {
       resultsContainer.innerHTML = `
         <div class="p-3 bg-light rounded text-center text-muted border">
-          <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
+          <i class="fa-solid fa-circle-exclamation text-warning me-1"></i>ไม่พบข้อมูลสำนวนคดีเดิมที่ตรงกับคำค้นหา "${q}" ในระบบไต่สวน ป.ป.ท.
         </div>
       `;
       return;
     }
 
     let html = `
-      <div class="p-2 bg-light rounded border">
-        <div class="fw-bold text-navy mb-2 small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
-        <div class="table-responsive">
-          <table class="table table-sm table-hover bg-white border mb-0 align-middle" style="font-size:0.8rem;">
-            <thead class="table-light">
-              <tr>
-                <th>เลขสำนวน ป.ป.ท.</th>
-                <th>ชื่อผู้กล่าวหา</th>
-                <th>ชื่อผู้ถูกกล่าวหา</th>
-                <th>เรื่องสำนวน</th>
-                <th class="text-end">ดำเนินการ</th>
-              </tr>
-            </thead>
-            <tbody>
+      <div class="p-2.5 bg-light rounded border border-navy-subtle">
+        <div class="fw-bold text-navy mb-2 small d-flex justify-content-between align-items-center">
+          <span><i class="fa-solid fa-folder-open text-primary me-1"></i>พบข้อมูลสำนวนคดีเดิมที่เคยส่งให้อัยการ (${matched.length} รายการ):</span>
+          <span class="badge bg-navy">ฐานข้อมูลไต่สวน ป.ป.ท.</span>
+        </div>
     `;
 
     matched.forEach(c => {
       const tor = Activity10.getTorDetails(c);
       html += `
-        <tr>
-          <td><strong class="text-primary font-monospace">${c.id}</strong></td>
-          <td>${tor.accuser}</td>
-          <td class="text-danger fw-semibold">${tor.accused}</td>
-          <td>${c.title.substring(0, 35)}...</td>
-          <td class="text-end">
-            <button type="button" class="btn btn-xs btn-navy py-1 px-2.5" onclick="selectCaseFromSearch('${c.id}')">
-              <i class="fa-solid fa-arrow-right-to-bracket me-1"></i>เลือกดึงข้อมูล
-            </button>
-          </td>
-        </tr>
+        <div class="card mb-2 border shadow-sm">
+          <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-primary me-1">เลขสำนวน ป.ป.ท.</span>
+              <strong class="font-monospace text-navy fs-6">${c.id}</strong>
+            </div>
+            <span class="badge ${c.statusBadge}">${c.status}</span>
+          </div>
+          <div class="card-body p-3">
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <span class="text-muted me-1">ผู้กล่าวหา:</span>
+                <strong class="text-dark">${tor.accuser}</strong>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted me-1">ผู้ถูกกล่าวหา:</span>
+                <strong class="text-danger">${tor.accused}</strong>
+              </div>
+            </div>
+            <div class="mb-2">
+              <span class="text-muted me-1">ข้อกล่าวหา / เรื่องคดี:</span>
+              <span class="fw-semibold text-dark">${c.title}</span>
+            </div>
+            <div class="row g-2 mb-2 style-italic text-muted" style="font-size:0.78rem;">
+              <div class="col-md-4"><i class="fa-solid fa-gavel me-1"></i>หมายเลขคดี: ${tor.blackNo} / ${tor.redNo}</div>
+              <div class="col-md-4"><i class="fa-solid fa-building me-1"></i>หน่วยงานรับผิดชอบ: ${tor.division}</div>
+              <div class="col-md-4"><i class="fa-solid fa-clock me-1"></i>อายุความ: ${tor.statuteLimitation}</div>
+            </div>
+            <div class="pt-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <small class="text-muted"><i class="fa-solid fa-file-lines me-1"></i>เลขหนังสืออัยการเดิม: <span class="font-monospace fw-bold text-dark">${c.docNo}</span></small>
+              <button type="button" class="btn btn-sm btn-navy px-3 fw-bold" onclick="selectCaseFromSearch('${c.id}')">
+                <i class="fa-solid fa-arrow-right-to-bracket me-1"></i>เลือกดึงข้อมูลสำนวนนี้เพื่อลงรับเรื่องจากอัยการ
+              </button>
+            </div>
+          </div>
+        </div>
       `;
     });
 
-    html += `
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-
+    html += `</div>`;
     resultsContainer.innerHTML = html;
   }
 
