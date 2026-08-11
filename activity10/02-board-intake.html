@@ -116,7 +116,11 @@
           <!-- Section 3: Physical Document Scan & Upload -->
           <div class="mb-3">
             <div class="mb-2">
-              <input type="file" id="in_scannedFile" class="form-control form-control-sm" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip" onchange="validateUploadedFile(this)">
+              <div class="input-group input-group-sm">
+                <button class="btn btn-outline-secondary bg-light text-dark border px-3" type="button" onclick="document.getElementById('in_scannedFile').click();">เลือกไฟล์</button>
+                <span class="form-control form-control-sm bg-white text-muted d-flex align-items-center" id="file_chosen_text" style="cursor:pointer;" onclick="document.getElementById('in_scannedFile').click();">ไม่ได้เลือกไฟล์ใด</span>
+                <input type="file" id="in_scannedFile" class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip" onchange="updateCustomFileLabel(this)">
+              </div>
             </div>
             <div class="small text-muted mb-2" id="scanStatusText"></div>
             
@@ -265,6 +269,29 @@
     document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
     document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
     document.getElementById('pv_legalOpinion').textContent = document.getElementById('in_legalOpinion').value || 'รายละเอียดเหตุผลความเห็นอัยการ...';
+  }
+
+  function updateCustomFileLabel(input) {
+    const textSpan = document.getElementById('file_chosen_text');
+    if (input.files && input.files[0]) {
+      const isValid = validateUploadedFile(input);
+      if (isValid) {
+        if (textSpan) {
+          textSpan.textContent = input.files[0].name;
+          textSpan.className = 'form-control form-control-sm bg-white text-dark font-monospace fw-bold d-flex align-items-center';
+        }
+      } else {
+        if (textSpan) {
+          textSpan.textContent = 'ไม่ได้เลือกไฟล์ใด';
+          textSpan.className = 'form-control form-control-sm bg-white text-muted d-flex align-items-center';
+        }
+      }
+    } else {
+      if (textSpan) {
+        textSpan.textContent = 'ไม่ได้เลือกไฟล์ใด';
+        textSpan.className = 'form-control form-control-sm bg-white text-muted d-flex align-items-center';
+      }
+    }
   }
 
   function validateUploadedFile(input) {
