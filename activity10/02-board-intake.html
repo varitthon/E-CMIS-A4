@@ -114,8 +114,11 @@
               <textarea id="in_title" class="form-control form-control-sm" rows="3" maxlength="2000" placeholder="กรอกชื่อเรื่องคำร้องหรือสำนวนคดี (สูงสุด 2,000 ตัวอักษร)" oninput="updateTitleCharCount(this); updateLivePreview();">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</textarea>
             </div>
             <div class="mb-2">
-              <label class="form-label fw-bold">สรุปสาระสำคัญ / เหตุผลคำสั่งไม่ฟ้องของอัยการ</label>
-              <textarea id="in_legalOpinion" class="form-control form-control-sm" rows="3" placeholder="สรุปข้อเท็จจริงและความเห็นของอัยการ">จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด</textarea>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label fw-bold mb-0">สรุปสาระสำคัญ / เหตุผลคำสั่งไม่ฟ้องของอัยการ</label>
+                <small class="text-muted" style="font-size:0.75rem;"><span id="opinion_char_count">147</span> / 2,000 ตัวอักษร</small>
+              </div>
+              <textarea id="in_legalOpinion" class="form-control form-control-sm" rows="3" maxlength="2000" placeholder="สรุปข้อเท็จจริงและความเห็นของอัยการ (สูงสุด 2,000 ตัวอักษร)" oninput="updateOpinionCharCount(this); updateLivePreview();">จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด</textarea>
             </div>
           </div>
 
@@ -230,6 +233,13 @@
 
   function updateTitleCharCount(input) {
     const countSpan = document.getElementById('title_char_count');
+    if (countSpan && input) {
+      countSpan.textContent = (input.value ? input.value.length : 0).toLocaleString();
+    }
+  }
+
+  function updateOpinionCharCount(input) {
+    const countSpan = document.getElementById('opinion_char_count');
     if (countSpan && input) {
       countSpan.textContent = (input.value ? input.value.length : 0).toLocaleString();
     }
