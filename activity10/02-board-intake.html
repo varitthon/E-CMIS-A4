@@ -90,7 +90,10 @@
             <div class="row g-2 mb-2">
               <div class="col-6">
                 <label class="form-label fw-bold">เลขที่หนังสืออัยการ <span class="text-danger">*</span></label>
-                <input type="text" id="in_docNo" class="form-control form-control-sm font-monospace" placeholder="เช่น อส 0014/2569" value="อส 0014/2569">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">2569/</span>
+                  <input type="text" id="in_docNo" class="form-control font-monospace fw-bold" placeholder="กรอกเฉพาะตัวเลข เช่น 0014" value="0014" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
+                </div>
               </div>
               <div class="col-6">
                 <label class="form-label fw-bold">หน่วยงานอัยการต้นทาง <span class="text-danger">*</span></label>
@@ -160,7 +163,7 @@
             </div>
             <hr class="my-2">
             <div class="d-flex justify-content-between mb-2">
-              <span><b>ที่:</b> <span id="pv_docNo">อส 0014/2569</span></span>
+              <span><b>ที่:</b> <span id="pv_docNo">2569/0014</span></span>
               <span><b>วันที่:</b> <span id="pv_date">28 กรกฎาคม 2569</span></span>
             </div>
             <div class="mb-2"><b>เรื่อง:</b> <span id="pv_title">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</span></div>
@@ -238,7 +241,9 @@
     const rawVal = document.getElementById('in_centralSarabanNo').value.trim() || '4410';
     const fullSarabanNo = rawVal.includes('/') ? rawVal : `2569/${rawVal}`;
     document.getElementById('pv_sarabanNo').textContent = fullSarabanNo;
-    document.getElementById('pv_docNo').textContent = document.getElementById('in_docNo').value || 'อส 0014/2569';
+    const rawDocNo = document.getElementById('in_docNo').value.trim() || '0014';
+    const fullDocNo = rawDocNo.includes('/') ? rawDocNo : `2569/${rawDocNo}`;
+    document.getElementById('pv_docNo').textContent = fullDocNo;
     document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
     document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
     document.getElementById('pv_legalOpinion').textContent = document.getElementById('in_legalOpinion').value || 'รายละเอียดเหตุผลความเห็นอัยการ...';
@@ -297,7 +302,8 @@
   function submitBoardIntakeForm() {
     const rawSarabanNo = document.getElementById('in_centralSarabanNo').value.trim();
     const centralSarabanNo = rawSarabanNo ? (rawSarabanNo.includes('/') ? rawSarabanNo : `2569/${rawSarabanNo}`) : '2569/4410';
-    const docNo = document.getElementById('in_docNo').value.trim();
+    const rawDocNo = document.getElementById('in_docNo').value.trim();
+    const docNo = rawDocNo ? (rawDocNo.includes('/') ? rawDocNo : `2569/${rawDocNo}`) : '2569/0014';
     const title = document.getElementById('in_title').value.trim();
     const source = document.getElementById('in_source').value.trim();
     const category = document.getElementById('in_category').value;
