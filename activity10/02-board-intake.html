@@ -115,13 +115,17 @@
 
           <!-- Section 3: Physical Document Scan & Upload -->
           <div class="p-3 bg-warning-subtle border border-warning rounded mb-3">
-            <div class="fw-bold text-dark mb-2"><i class="fa-solid fa-scanner me-1 text-warning"></i> สแกนเอกสารเข้าระบบ (Scan PDF)</div>
-            <div class="mb-1">
-              <input type="file" id="in_scannedFile" class="form-control form-control-sm" accept=".pdf,application/pdf" onchange="validateUploadedFile(this)">
+            <div class="fw-bold text-dark mb-2"><i class="fa-solid fa-paperclip me-1 text-warning"></i> สแกน/แนบเอกสารเข้าระบบ</div>
+            <div class="mb-2">
+              <input type="file" id="in_scannedFile" class="form-control form-control-sm" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip" onchange="validateUploadedFile(this)">
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mt-2">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2">
               <div class="small text-muted" id="scanStatusText"></div>
-              <small class="badge bg-white text-dark border" style="font-size:0.75rem;"><i class="fa-solid fa-file-pdf text-danger me-1"></i>เฉพาะไฟล์ <strong>PDF</strong> เท่านั้น (ไม่เกิน <strong>25 MB</strong>)</small>
+              <div class="p-2 bg-white rounded border text-muted" style="font-size:0.75rem; line-height:1.4;">
+                <div class="fw-bold text-navy"><i class="fa-solid fa-circle-info me-1 text-primary"></i>ข้อกำหนดการแนบไฟล์ประกอบ:</div>
+                <div>ประเภทไฟล์ที่รองรับ: <strong>PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, ZIP</strong></div>
+                <div>ขนาดไฟล์สูงสุด: <strong>ไม่เกิน 25 MB ต่อไฟล์</strong></div>
+              </div>
             </div>
           </div>
 
@@ -265,13 +269,14 @@
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
     const maxSizeBytes = 25 * 1024 * 1024; // 25 MB Limit
+    const allowedExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'zip'];
 
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    if (!isPdf) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!allowedExts.includes(ext)) {
       Swal.fire({
         icon: 'warning',
         title: 'ชนิดไฟล์ไม่ถูกต้อง',
-        text: 'ระบบรองรับเฉพาะไฟล์ประเภท PDF (.pdf) เท่านั้น',
+        text: 'ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, ZIP เท่านั้น',
         confirmButtonColor: '#0a2647'
       });
       input.value = '';
@@ -294,7 +299,7 @@
     const statusEl = document.getElementById('scanStatusText');
     if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle text-success me-1"></i>ไฟล์พร้อมแนบ: <strong>${file.name}</strong> (${fileSizeMb} MB)`;
     const pvFileEl = document.getElementById('pv_fileName');
-    if (pvFileEl) pvFileEl.innerHTML = `<i class="fa-solid fa-file-pdf text-danger me-1"></i>${file.name} (${fileSizeMb} MB)`;
+    if (pvFileEl) pvFileEl.innerHTML = `<i class="fa-solid fa-file me-1 text-primary"></i>${file.name} (${fileSizeMb} MB)`;
     return true;
   }
 
