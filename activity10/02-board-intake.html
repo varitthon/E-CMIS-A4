@@ -46,11 +46,7 @@
             <div class="row g-2 mb-2">
               <div class="col-6">
                 <label class="form-label fw-bold">เลขรับสารบรรณกลาง <span class="text-danger">*</span></label>
-                <div class="input-group input-group-sm">
-                  <input type="text" id="in_centralSarabanYear" class="form-control font-monospace fw-bold text-center" style="max-width:80px;" placeholder="ปี พ.ศ." value="2569" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
-                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">/</span>
-                  <input type="text" id="in_centralSarabanNo" class="form-control font-monospace fw-bold" placeholder="เลขที่ เช่น 4410" value="4410" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
-                </div>
+                <input type="text" id="in_centralSarabanNo" class="form-control form-control-sm font-monospace fw-bold" placeholder="เช่น 2569/4410" value="2569/4410" oninput="autoFormatYearSlashNo(this)">
               </div>
               <div class="col-6">
                 <label class="form-label fw-bold">วันที่รับเอกสาร <span class="text-danger">*</span></label>
@@ -91,11 +87,7 @@
             <div class="row g-2 mb-2">
               <div class="col-6">
                 <label class="form-label fw-bold">เลขที่หนังสืออัยการ <span class="text-danger">*</span></label>
-                <div class="input-group input-group-sm">
-                  <input type="text" id="in_docYear" class="form-control font-monospace fw-bold text-center" style="max-width:80px;" placeholder="ปี พ.ศ." value="2569" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
-                  <span class="input-group-text bg-light text-navy fw-bold font-monospace">/</span>
-                  <input type="text" id="in_docNo" class="form-control font-monospace fw-bold" placeholder="เลขที่ เช่น 0014" value="0014" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updateLivePreview();">
-                </div>
+                <input type="text" id="in_docNo" class="form-control form-control-sm font-monospace fw-bold" placeholder="เช่น 2569/0014" value="2569/0014" oninput="autoFormatYearSlashNo(this)">
               </div>
               <div class="col-6">
                 <label class="form-label fw-bold">หน่วยงานอัยการต้นทาง <span class="text-danger">*</span></label>
@@ -239,14 +231,22 @@
     }
   }
 
-  function updateLivePreview() {
-    const yr = (document.getElementById('in_centralSarabanYear') ? document.getElementById('in_centralSarabanYear').value.trim() : '2569') || '2569';
-    const num = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '4410') || '4410';
-    document.getElementById('pv_sarabanNo').textContent = `${yr}/${num}`;
+  function autoFormatYearSlashNo(input) {
+    let raw = input.value.replace(/[^0-9]/g, '');
+    if (raw.length > 4) {
+      input.value = raw.substring(0, 4) + '/' + raw.substring(4);
+    } else {
+      input.value = raw;
+    }
+    updateLivePreview();
+  }
 
-    const docYr = (document.getElementById('in_docYear') ? document.getElementById('in_docYear').value.trim() : '2569') || '2569';
-    const docNum = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '0014') || '0014';
-    document.getElementById('pv_docNo').textContent = `${docYr}/${docNum}`;
+  function updateLivePreview() {
+    const sarabanVal = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '') || '2569/4410';
+    document.getElementById('pv_sarabanNo').textContent = sarabanVal;
+
+    const docVal = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '') || '2569/0014';
+    document.getElementById('pv_docNo').textContent = docVal;
 
     document.getElementById('pv_source').textContent = document.getElementById('in_source').value || 'สำนักงานอัยการพิเศษฯ';
     document.getElementById('pv_title').textContent = document.getElementById('in_title').value || 'เรื่องพิจารณาคำสั่งอัยการ';
@@ -308,13 +308,8 @@
   }
 
   function submitBoardIntakeForm() {
-    const yr = (document.getElementById('in_centralSarabanYear') ? document.getElementById('in_centralSarabanYear').value.trim() : '2569') || '2569';
-    const num = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '4410') || '4410';
-    const centralSarabanNo = `${yr}/${num}`;
-
-    const docYr = (document.getElementById('in_docYear') ? document.getElementById('in_docYear').value.trim() : '2569') || '2569';
-    const docNum = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '0014') || '0014';
-    const docNo = `${docYr}/${docNum}`;
+    const centralSarabanNo = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '') || '2569/4410';
+    const docNo = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '') || '2569/0014';
     const title = document.getElementById('in_title').value.trim();
     const source = document.getElementById('in_source').value.trim();
     const category = document.getElementById('in_category').value;
