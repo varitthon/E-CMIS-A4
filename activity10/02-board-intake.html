@@ -52,29 +52,19 @@
           </button>
         </div>
         <div class="card-body p-3 small">
-          <!-- Section 0: Search Case Database (ค้นหาสำนวนคดีเดิมที่เคยส่งให้อัยการ) -->
+          <!-- Section 0: Search Case Database (ค้นหาสำนวนคดีเดิม) -->
           <div class="p-3 bg-white rounded border border-primary-subtle shadow-sm mb-3">
-            <div class="fw-bold text-navy small mb-1.5">
-              <i class="fa-solid fa-magnifying-glass text-primary me-1"></i> ค้นหาสำนวนคดีเดิมของ ป.ป.ท. (ที่เคยส่งเรื่องให้อัยการ)
+            <div class="fw-bold text-navy mb-1.5 small">
+              <i class="fa-solid fa-magnifying-glass me-1 text-primary"></i> ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)
             </div>
-            <div class="position-relative">
-              <div class="input-group input-group-sm">
-                <input type="text" id="intakeSearchInput" class="form-control font-monospace" placeholder="พิมพ์เลขสำนวน ป.ป.ท. (เช่น คดี-10.1-2569/001) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." oninput="handleIntakeSearchInput(this)" onkeyup="handleIntakeSearchKeyup(event)" autocomplete="off">
-                <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
-                  <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
-                </button>
-              </div>
-              <!-- Live Auto-complete Dropdown -->
-              <div id="intakeSearchDropdown" class="dropdown-menu shadow w-100 position-absolute border mt-1 d-none" style="z-index: 1050; max-height: 280px; overflow-y: auto;"></div>
+            <div class="input-group input-group-sm">
+              <input type="text" id="intakeSearchInput" class="form-control" placeholder="พิมพ์เลขสำนวน / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
+              <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> ค้นหาสำนวน
+              </button>
             </div>
-            <div class="d-flex justify-content-between align-items-center mt-1.5 flex-wrap gap-1" style="font-size:0.75rem;">
-              <span class="text-muted">* ค้นหาได้ด้วย: <strong>เลขสำนวน ป.ป.ท.</strong>, <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong></span>
-              <div class="d-flex align-items-center gap-1">
-                <span class="text-muted me-1 style-italic">คลิกทดสอบค้นหา:</span>
-                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/001')">คดี-10.1-2569/001</button>
-                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/002')">คดี-10.1-2569/002</button>
-                <button type="button" class="btn btn-xs btn-outline-primary font-monospace py-0 px-1.5" style="font-size:0.7rem;" onclick="quickSearchCase('คดี-10.1-2569/003')">คดี-10.1-2569/003</button>
-              </div>
+            <div class="form-text text-muted" style="font-size:0.75rem;">
+              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น คดี-10.1-2569/001), <strong>ชื่อผู้กล่าวหา</strong>, หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong>
             </div>
 
             <!-- Search Results Display Panel -->
@@ -135,16 +125,6 @@
               <div class="col-6">
                 <label class="form-label fw-bold">หน่วยงานอัยการต้นทาง <span class="text-danger">*</span></label>
                 <textarea id="in_source" class="form-control form-control-sm" rows="1" maxlength="2000" style="min-height:31px;" placeholder="เช่น สำนักงานอัยการพิเศษฯ" data-no-voice data-no-helper data-no-copy oninput="updateLivePreview();">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</textarea>
-              </div>
-            </div>
-            <div class="row g-2 mb-2">
-              <div class="col-6">
-                <label class="form-label fw-bold">ชื่อผู้กล่าวหา (Complainant) <span class="text-danger">*</span></label>
-                <input type="text" id="in_accuser" class="form-control form-control-sm" placeholder="เช่น คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท." value="คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.">
-              </div>
-              <div class="col-6">
-                <label class="form-label fw-bold">ชื่อผู้ถูกกล่าวหา (Alleged Offender) <span class="text-danger">*</span></label>
-                <input type="text" id="in_accused" class="form-control form-control-sm text-danger fw-semibold" placeholder="เช่น นายสมชาย ทุจริตมั่น" value="นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)">
               </div>
             </div>
             <div class="mb-2">
@@ -382,102 +362,13 @@
     });
   }
 
-  function quickSearchCase(caseId) {
-    const input = document.getElementById('intakeSearchInput');
-    if (input) {
-      input.value = caseId;
-      executeIntakeSearch();
-    }
-  }
-
-  function showSearchDropdown(html) {
-    const dropdown = document.getElementById('intakeSearchDropdown');
-    if (!dropdown) return;
-    dropdown.innerHTML = html;
-    dropdown.classList.remove('d-none');
-    dropdown.classList.add('show');
-    dropdown.style.display = 'block';
-  }
-
-  function hideSearchDropdown() {
-    const dropdown = document.getElementById('intakeSearchDropdown');
-    if (!dropdown) return;
-    dropdown.classList.add('d-none');
-    dropdown.classList.remove('show');
-    dropdown.style.display = 'none';
-  }
-
-  function handleIntakeSearchInput(input) {
-    const q = input.value.trim().toLowerCase();
-    if (!q) {
-      hideSearchDropdown();
-      return;
-    }
-
-    const cases = Activity10.getCases();
-    const matched = cases.filter(c => {
-      const tor = Activity10.getTorDetails(c);
-      return (
-        c.id.toLowerCase().includes(q) ||
-        (c.docNo && c.docNo.toLowerCase().includes(q)) ||
-        (tor && tor.accuser && tor.accuser.toLowerCase().includes(q)) ||
-        (tor && tor.accused && tor.accused.toLowerCase().includes(q)) ||
-        c.title.toLowerCase().includes(q)
-      );
-    });
-
-    if (matched.length === 0) {
-      showSearchDropdown(`
-        <div class="dropdown-item disabled text-muted small py-2">
-          <i class="fa-solid fa-circle-exclamation me-1 text-warning"></i>ไม่พบผลลัพธ์ที่ตรงกับคำว่า "${q}"
-        </div>
-      `);
-      return;
-    }
-
-    let html = '';
-    matched.forEach(c => {
-      const tor = Activity10.getTorDetails(c);
-      html += `
-        <a class="dropdown-item py-2 px-3 border-bottom text-wrap" href="javascript:void(0);" onclick="chooseSearchSuggestion('${c.id}')">
-          <div class="d-flex justify-content-between align-items-center mb-0.5">
-            <span class="font-monospace fw-bold text-primary small"><i class="fa-solid fa-folder me-1"></i>${c.id}</span>
-            <span class="badge ${c.statusBadge} style-italic" style="font-size:0.65rem;">${c.status}</span>
-          </div>
-          <div class="small fw-semibold text-dark mb-0.5">${c.title}</div>
-          <div class="small text-muted d-flex justify-content-between flex-wrap">
-            <span>ผู้กล่าวหา: ${tor.accuser}</span>
-            <span class="text-danger fw-semibold">ผู้ถูกกล่าวหา: ${tor.accused}</span>
-          </div>
-        </a>
-      `;
-    });
-
-    showSearchDropdown(html);
-  }
-
-  function chooseSearchSuggestion(caseId) {
-    const input = document.getElementById('intakeSearchInput');
-    if (input) input.value = caseId;
-    hideSearchDropdown();
-    executeIntakeSearch();
-  }
-
-  document.addEventListener('click', (e) => {
-    const dropdown = document.getElementById('intakeSearchDropdown');
-    const input = document.getElementById('intakeSearchInput');
-    if (dropdown && input && !dropdown.contains(e.target) && !input.contains(e.target)) {
-      hideSearchDropdown();
-    }
-  });
-
   function executeIntakeSearch() {
     const q = (document.getElementById('intakeSearchInput') ? document.getElementById('intakeSearchInput').value.trim().toLowerCase() : '');
     const resultsContainer = document.getElementById('intakeSearchResults');
     if (!resultsContainer) return;
 
     if (!q) {
-      Swal.fire({ icon: 'info', title: 'กรุณากรอกคำค้นหา', text: 'พิมพ์เลขสำนวน ป.ป.ท., ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'info', title: 'กรุณากรอกคำค้นหา', text: 'พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา', timer: 1500, showConfirmButton: false });
       resultsContainer.classList.add('d-none');
       return;
     }
@@ -487,7 +378,6 @@
       const tor = Activity10.getTorDetails(c);
       return (
         c.id.toLowerCase().includes(q) ||
-        (c.docNo && c.docNo.toLowerCase().includes(q)) ||
         (tor && tor.accuser && tor.accuser.toLowerCase().includes(q)) ||
         (tor && tor.accused && tor.accused.toLowerCase().includes(q)) ||
         c.title.toLowerCase().includes(q)
@@ -499,63 +389,47 @@
     if (matched.length === 0) {
       resultsContainer.innerHTML = `
         <div class="p-3 bg-light rounded text-center text-muted border">
-          <i class="fa-solid fa-circle-exclamation text-warning me-1"></i>ไม่พบข้อมูลสำนวนคดีเดิมที่ตรงกับคำค้นหา "${q}" ในระบบไต่สวน ป.ป.ท.
+          <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
         </div>
       `;
       return;
     }
 
     let html = `
-      <div class="p-2.5 bg-light rounded border border-navy-subtle">
-        <div class="fw-bold text-navy mb-2 small d-flex justify-content-between align-items-center">
-          <span><i class="fa-solid fa-folder-open text-primary me-1"></i>พบข้อมูลสำนวนคดีเดิมที่เคยส่งให้อัยการ (${matched.length} รายการ):</span>
-          <span class="badge bg-navy">ฐานข้อมูลไต่สวน ป.ป.ท.</span>
-        </div>
+      <div class="p-2 bg-light rounded border">
+        <div class="fw-bold text-navy mb-2 small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover bg-white border mb-0 align-middle" style="font-size:0.8rem;">
+            <thead class="table-light">
+              <tr>
+                <th>เลขสำนวน ป.ป.ท.</th>
+                <th>ชื่อผู้กล่าวหา</th>
+                <th>ชื่อผู้ถูกกล่าวหา</th>
+                <th>เรื่องสำนวน</th>
+              </tr>
+            </thead>
+            <tbody>
     `;
 
     matched.forEach(c => {
       const tor = Activity10.getTorDetails(c);
       html += `
-        <div class="card mb-2 border shadow-sm">
-          <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center">
-            <div>
-              <span class="badge bg-primary me-1">เลขสำนวน ป.ป.ท.</span>
-              <strong class="font-monospace text-navy fs-6">${c.id}</strong>
-            </div>
-            <span class="badge ${c.statusBadge}">${c.status}</span>
-          </div>
-          <div class="card-body p-3">
-            <div class="row g-2 mb-2">
-              <div class="col-md-6">
-                <span class="text-muted me-1">ผู้กล่าวหา:</span>
-                <strong class="text-dark">${tor.accuser}</strong>
-              </div>
-              <div class="col-md-6">
-                <span class="text-muted me-1">ผู้ถูกกล่าวหา:</span>
-                <strong class="text-danger">${tor.accused}</strong>
-              </div>
-            </div>
-            <div class="mb-2">
-              <span class="text-muted me-1">ข้อกล่าวหา / เรื่องคดี:</span>
-              <span class="fw-semibold text-dark">${c.title}</span>
-            </div>
-            <div class="row g-2 mb-2 style-italic text-muted" style="font-size:0.78rem;">
-              <div class="col-md-4"><i class="fa-solid fa-gavel me-1"></i>หมายเลขคดี: ${tor.blackNo} / ${tor.redNo}</div>
-              <div class="col-md-4"><i class="fa-solid fa-building me-1"></i>หน่วยงานรับผิดชอบ: ${tor.division}</div>
-              <div class="col-md-4"><i class="fa-solid fa-clock me-1"></i>อายุความ: ${tor.statuteLimitation}</div>
-            </div>
-            <div class="pt-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <small class="text-muted"><i class="fa-solid fa-file-lines me-1"></i>เลขหนังสืออัยการเดิม: <span class="font-monospace fw-bold text-dark">${c.docNo}</span></small>
-              <button type="button" class="btn btn-sm btn-navy px-3 fw-bold" onclick="selectCaseFromSearch('${c.id}')">
-                <i class="fa-solid fa-arrow-right-to-bracket me-1"></i>เลือกดึงข้อมูลสำนวนนี้เพื่อลงรับเรื่องจากอัยการ
-              </button>
-            </div>
-          </div>
-        </div>
+        <tr>
+          <td><strong class="text-primary font-monospace">${c.id}</strong></td>
+          <td>${tor.accuser}</td>
+          <td class="text-danger fw-semibold">${tor.accused}</td>
+          <td>${c.title}</td>
+        </tr>
       `;
     });
 
-    html += `</div>`;
+    html += `
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
     resultsContainer.innerHTML = html;
   }
 
@@ -563,51 +437,6 @@
     if (e.key === 'Enter') {
       executeIntakeSearch();
     }
-  }
-
-  function selectCaseFromSearch(caseId) {
-    const kase = Activity10.getCaseById(caseId);
-    if (!kase) return;
-    const tor = Activity10.getTorDetails(kase);
-
-    // Auto-fill form fields
-    if (document.getElementById('in_centralSarabanNo')) document.getElementById('in_centralSarabanNo').value = kase.centralSarabanNo || '2569/4410';
-    if (document.getElementById('in_docNo')) document.getElementById('in_docNo').value = kase.docNo || '2569/0014';
-    if (document.getElementById('in_source')) document.getElementById('in_source').value = kase.source || '';
-    if (document.getElementById('in_category')) {
-      document.getElementById('in_category').value = kase.category;
-      toggleProsecutorCaseTypeDiv();
-    }
-    if (document.getElementById('in_title')) {
-      document.getElementById('in_title').value = kase.title;
-      updateTitleCharCount(document.getElementById('in_title'));
-    }
-    if (document.getElementById('in_legalOpinion')) {
-      document.getElementById('in_legalOpinion').value = kase.legalOpinion || '';
-      updateOpinionCharCount(document.getElementById('in_legalOpinion'));
-    }
-    if (document.getElementById('in_accuser')) document.getElementById('in_accuser').value = tor.accuser;
-    if (document.getElementById('in_accused')) document.getElementById('in_accused').value = tor.accused;
-
-    updateLivePreview();
-
-    // Hide search results
-    const resultsContainer = document.getElementById('intakeSearchResults');
-    if (resultsContainer) resultsContainer.classList.add('d-none');
-
-    Swal.fire({
-      icon: 'success',
-      title: 'ดึงข้อมูลสำนวนคดีสำเร็จ!',
-      html: `
-        <div class="text-start small">
-          <p class="mb-1"><strong>เลขสำนวน:</strong> <span class="font-monospace text-primary">${kase.id}</span></p>
-          <p class="mb-1"><strong>ผู้กล่าวหา:</strong> ${tor.accuser}</p>
-          <p class="mb-0"><strong>ผู้ถูกกล่าวหา:</strong> <span class="text-danger fw-bold">${tor.accused}</span></p>
-        </div>
-      `,
-      timer: 2000,
-      showConfirmButton: false
-    });
   }
 
   function submitBoardIntakeForm() {
