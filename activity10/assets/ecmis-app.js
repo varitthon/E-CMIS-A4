@@ -984,10 +984,6 @@ function renderShell(activeHref){
       <i class="fa-solid fa-bars"></i>
     </button>
 
-    <button class="btn btn-sm text-white border-0" onclick="document.dispatchEvent(new KeyboardEvent('keydown', {key: 'k', ctrlKey: true}))" title="ค้นหาด่วน (Ctrl+K)">
-      <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
-
     <div class="ms-auto d-flex align-items-center gap-2">
       <!-- Accessibility Toolbar controls -->
       <button class="btn btn-sm text-white border-0" onclick="ECMIS.changeFont(-1)" title="อักษรเล็กลง" style="font-size: 0.8rem">A-</button>
