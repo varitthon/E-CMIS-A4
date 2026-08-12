@@ -377,12 +377,12 @@
     const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
 
     const currentRole = ECMIS.currentRoleId();
-    const isAdminLegal = (currentRole === 'admin_legal' || currentRole === 'Wilai.T');
+    const canAction = (currentRole === 'admin_legal' || currentRole === 'Wilai.T' || currentRole === 'dir_legal' || currentRole === 'Napas.S');
 
     let html = "";
     paginatedCases.forEach(c => {
       const isUrgent = c.slaDaysRemaining <= 5;
-      const actionButtonHtml = isAdminLegal
+      const actionButtonHtml = canAction
         ? `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการเรื่องสำนวน"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`
         : `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
 
