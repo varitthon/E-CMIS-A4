@@ -409,11 +409,11 @@
 
     matched.forEach(c => {
       html += `
-        <tr style="cursor:pointer" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้มาเติมลงในแบบฟอร์ม">
+        <tr>
           <td><strong class="text-primary font-monospace">${c.id.replace(/^.*?-/, '')}</strong></td>
           <td>${c.accuser || '-'}</td>
           <td class="text-danger fw-semibold">${c.accused || '-'}</td>
-          <td>${c.title} <span class="badge bg-navy ms-1" style="font-size:0.68rem"><i class="fa-solid fa-hand-pointer me-1"></i>เลือก</span></td>
+          <td>${c.title}</td>
         </tr>
       `;
     });
@@ -426,29 +426,6 @@
     `;
 
     resultsContainer.innerHTML = html;
-  }
-
-  function selectIntakeCase(caseId) {
-    const cases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
-    const target = cases.find(c => c.id === caseId);
-    if (!target) return;
-
-    if (document.getElementById('in_title')) document.getElementById('in_title').value = target.title || '';
-    if (document.getElementById('in_accuser')) document.getElementById('in_accuser').value = target.accuser || '';
-    if (document.getElementById('in_accused')) document.getElementById('in_accused').value = target.accused || '';
-    if (document.getElementById('in_source')) document.getElementById('in_source').value = target.source || 'สำนักงาน ป.ป.ท.';
-    if (document.getElementById('in_category') && target.category) {
-      document.getElementById('in_category').value = target.category;
-      if (typeof toggleProsecutorCaseTypeDiv === 'function') toggleProsecutorCaseTypeDiv();
-    }
-
-    Swal.fire({
-      icon: 'success',
-      title: 'ดึงข้อมูลสำนวนคดีเดิมสำเร็จ!',
-      text: `นำข้อมูลสำนวน ${target.id.replace(/^.*?-/, '')} ดึงเข้าแบบฟอร์มรับเรื่องเรียบร้อยแล้ว`,
-      timer: 1500,
-      showConfirmButton: false
-    });
   }
 
   function handleIntakeSearchKeyup(e) {
