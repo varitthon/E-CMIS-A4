@@ -38,17 +38,17 @@
         <div class="col-md-4">
           <div class="input-group">
             <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขที่สำนวน / ชื่อเรื่อง / นิติกร..." onkeyup="currentPage = 1; renderTable()">
+            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขสำนวน / ชื่อเรื่อง / นิติกร..." onkeyup="currentPage = 1; renderTable()">
           </div>
         </div>
         <div class="col-md-3">
           <select class="form-select form-select-sm" id="categoryFilter" onchange="renderTable()">
             <option value="all">ทุกหมวดหมู่งานกฎหมาย</option>
-            <option value="10.1">คดีชั้นอัยการ (ความเห็นแย้ง)</option>
+            <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
             <option value="10.2">คำร้อง/อุทธรณ์ข้อมูลข่าวสาร (รวม)</option>
-            <option value="10.2.1">ขอเปิดเผยข้อมูลข่าวสาร</option>
-            <option value="10.2.2">อุทธรณ์การไม่เปิดเผยข้อมูล</option>
-            <option value="10.3">คดีปกครอง (ศาลปกครอง)</option>
+            <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
+            <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
+            <option value="10.3">คดีศาลปกครอง</option>
           </select>
         </div>
         <div class="col-md-3">
@@ -91,8 +91,8 @@
               <thead>
                 <tr>
                   <th><input type="checkbox" id="chkSelectAll" class="form-check-input" onchange="toggleSelectAll(this)" title="เลือกทั้งหมด"></th>
-                  <th>เลขที่สำนวน/คำร้อง</th>
-                  <th>หมวดหมู่อื่น</th>
+                  <th>เลขสำนวน</th>
+                  <th>หมวดหมู่คดี</th>
                   <th>เรื่อง / รายละเอียด</th>
                   <th>สถานะขั้นตอน</th>
                   <th>กรอบเวลา</th>
@@ -390,9 +390,7 @@
         <tr>
           <td><input type="checkbox" class="form-check-input case-chk" value="${c.id}" onchange="updateBulkUI()"></td>
           <td>
-            <strong class="text-navy">${c.id.replace(/-10\.\d(\.\d)?-/, '-')}</strong><br>
-            <small class="text-muted">${c.docNo || ''}</small>
-            ${c.lawReceiveNo ? `<br><span class="badge bg-secondary font-monospace" style="font-size:0.68rem"><i class="fa-solid fa-stamp me-1"></i>${c.lawReceiveNo}</span>` : ''}
+            <strong class="text-navy">${c.id.replace(/^.*?-/, '')}</strong>
           </td>
           <td><span class="st st-regular">${c.categoryName}</span></td>
           <td>
@@ -402,7 +400,7 @@
           <td><span class="st ${c.statusBadge}">${c.status}</span></td>
           <td><span class="st ${slaBadgeClass}"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
           <td class="text-end">
-            <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="${isDirLegal ? 'พิจารณาและมอบหมายเรื่อง' : 'ดูรายละเอียดสำนวน'}"><i class="fa-solid ${btnActionIcon} me-1 text-primary"></i>${btnActionLabel}</button>
+            <button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-navy" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-primary"></i></button>
           </td>
         </tr>
       `;
@@ -553,10 +551,10 @@
           <div class="mb-2">
             <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย</label>
             <select id="swalCat" class="form-select form-select-sm">
-              <option value="10.1">คดีชั้นอัยการ (ความเห็นแย้ง)</option>
-              <option value="10.2.1">ขอเปิดเผยข้อมูลข่าวสาร</option>
-              <option value="10.2.2">อุทธรณ์การไม่เปิดเผยข้อมูล</option>
-              <option value="10.3">คดีปกครอง (ศาลปกครอง)</option>
+              <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
+              <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
+              <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
+              <option value="10.3">คดีศาลปกครอง</option>
             </select>
           </div>
           <div class="mb-2">
