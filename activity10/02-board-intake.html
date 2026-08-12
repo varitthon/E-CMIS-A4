@@ -438,27 +438,27 @@
       <div class="p-2 bg-light rounded border">
         <div class="fw-bold text-navy mb-2 small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
         <div class="table-responsive">
-          <table class="table table-sm table-hover bg-white border mb-0 align-middle" style="font-size:0.8rem;">
-            <thead class="table-light">
-              <tr>
-                <th>เลขสำนวน ป.ป.ท.</th>
-                <th>ชื่อผู้กล่าวหา</th>
-                <th>ชื่อผู้ถูกกล่าวหา</th>
-                <th>เรื่องสำนวน</th>
+          <table class="table table-sm table-hover bg-white border mb-0 align-middle text-dark" style="font-size:0.8rem; color:#000000;">
+            <thead class="table-light text-dark">
+              <tr class="text-dark">
+                <th class="text-dark">เลขสำนวน ป.ป.ท.</th>
+                <th class="text-dark">ชื่อผู้กล่าวหา</th>
+                <th class="text-dark">ชื่อผู้ถูกกล่าวหา</th>
+                <th class="text-dark">เรื่องสำนวน</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="text-dark">
     `;
 
     matched.forEach((c) => {
       const cleanId = c.id.replace(/^.*?-/, '');
       const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
       html += `
-        <tr id="${safeRowId}" style="cursor:pointer" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
-          <td><strong class="text-primary font-monospace">${cleanId}</strong></td>
-          <td>${c.accuser || '-'}</td>
-          <td class="text-danger fw-semibold">${c.accused || '-'}</td>
-          <td>${c.title} <span class="badge bg-navy ms-1" style="font-size:0.68rem"><i class="fa-solid fa-hand-pointer me-1"></i>เลือก</span></td>
+        <tr id="${safeRowId}" class="text-dark" style="cursor:pointer; color:#000000;" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
+          <td><strong class="text-dark font-monospace">${cleanId}</strong></td>
+          <td class="text-dark">${c.accuser || '-'}</td>
+          <td class="text-dark fw-semibold">${c.accused || '-'}</td>
+          <td class="text-dark">${c.title} <span class="badge bg-navy ms-1" style="font-size:0.68rem"><i class="fa-solid fa-hand-pointer me-1"></i>เลือก</span></td>
         </tr>
       `;
     });
