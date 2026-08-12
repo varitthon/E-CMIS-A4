@@ -68,6 +68,49 @@
             <div id="intakeSearchResults" class="mt-2.5 d-none">
               <!-- Rendered dynamically -->
             </div>
+
+            <!-- Selected Case Detail Display Card -->
+            <div class="card card-ecmis mt-3 d-none" id="selectedCaseDetailCard">
+              <div class="card-header bg-navy text-white fw-bold py-2 small d-flex align-items-center justify-content-between">
+                <span><i class="fa-solid fa-folder-open me-1"></i> รายละเอียดสำนวนคดีเต็มที่เลือก</span>
+                <span class="badge bg-success" style="font-size:0.75rem;"><i class="fa-solid fa-check me-1"></i>เชื่อมโยงข้อมูลสำเร็จ</span>
+              </div>
+              <div class="card-body p-3">
+                <div class="row g-2">
+                  <div class="col-12">
+                    <label class="form-label fw-bold">เลขสำนวน</label>
+                    <input class="form-control autofilled font-monospace fw-bold" id="f_caseId" readonly="">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-bold">เรื่องกล่าวหา
+                      <button type="button" class="btn btn-sm btn-outline-secondary voice-btn ms-2" id="voiceBtn-f_subject" title="พิมพ์ด้วยเสียง" style="border-radius: 50%; width: 28px; height: 28px; padding: 0px; display: none; align-items: center; justify-content: center;" disabled="">
+                        <i class="fa-solid fa-microphone"></i>
+                      </button>
+                      <span class="voice-indicator ms-2" id="voiceIndicator-f_subject" style="font-size:0.75rem; color: var(--ecmis-red); display:none;">
+                        <span class="voice-dot"></span>กำลังฟัง...
+                      </span>
+                    </label>
+                    <textarea class="form-control autofilled" id="f_subject" rows="2" readonly=""></textarea>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold">ผู้กล่าวหา / ผู้ร้อง</label>
+                    <input class="form-control autofilled" id="f_complainant" readonly="">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold">ฐานการรับเรื่อง</label>
+                    <input class="form-control autofilled" id="f_base" readonly="">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold">วันที่รับเรื่อง</label>
+                    <input class="form-control autofilled" id="f_received" readonly="">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label fw-bold">ต้องเริ่มไต่สวนภายใน (ม.23)</label>
+                    <input class="form-control autofilled" id="f_deadline60" readonly="">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Section 1: Central Saraban Metadata -->
@@ -407,13 +450,15 @@
             <tbody>
     `;
 
-    matched.forEach(c => {
+    matched.forEach((c) => {
+      const cleanId = c.id.replace(/^.*?-/, '');
+      const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
       html += `
-        <tr>
-          <td><strong class="text-primary font-monospace">${c.id.replace(/^.*?-/, '')}</strong></td>
+        <tr id="${safeRowId}" style="cursor:pointer" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
+          <td><strong class="text-primary font-monospace">${cleanId}</strong></td>
           <td>${c.accuser || '-'}</td>
           <td class="text-danger fw-semibold">${c.accused || '-'}</td>
-          <td>${c.title}</td>
+          <td>${c.title} <span class="badge bg-navy ms-1" style="font-size:0.68rem"><i class="fa-solid fa-hand-pointer me-1"></i>เลือก</span></td>
         </tr>
       `;
     });
@@ -426,6 +471,53 @@
     `;
 
     resultsContainer.innerHTML = html;
+  }
+
+  function selectIntakeCase(caseId) {
+    const cases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
+    const target = cases.find(c => c.id === caseId);
+    if (!target) return;
+
+    const cleanId = target.id.replace(/^.*?-/, '');
+
+    // Fill form input fields
+    if (document.getElementById('in_title')) document.getElementById('in_title').value = target.title || '';
+    if (document.getElementById('in_accuser')) document.getElementById('in_accuser').value = target.accuser || '';
+    if (document.getElementById('in_accused')) document.getElementById('in_accused').value = target.accused || '';
+    if (document.getElementById('in_source')) document.getElementById('in_source').value = target.source || 'สำนักงาน ป.ป.ท.';
+    if (document.getElementById('in_category') && target.category) {
+      document.getElementById('in_category').value = target.category;
+      if (typeof toggleProsecutorCaseTypeDiv === 'function') toggleProsecutorCaseTypeDiv();
+    }
+
+    // Fill selectedCaseDetailCard fields (f_caseId, f_subject, f_complainant, f_base, f_received, f_deadline60)
+    if (document.getElementById('f_caseId')) document.getElementById('f_caseId').value = cleanId;
+    if (document.getElementById('f_subject')) document.getElementById('f_subject').value = target.title || '';
+    if (document.getElementById('f_complainant')) document.getElementById('f_complainant').value = target.accuser || '-';
+    if (document.getElementById('f_base')) document.getElementById('f_base').value = target.source || 'สำนักงาน ป.ป.ท.';
+    if (document.getElementById('f_received')) document.getElementById('f_received').value = target.dateReceived || '28 กรกฎาคม 2569';
+    if (document.getElementById('f_deadline60')) document.getElementById('f_deadline60').value = target.dueDate ? `${target.dueDate} (เหลือ ${target.slaDaysRemaining || 15} วัน)` : 'ภายใน 60 วัน นับแต่วันรับเรื่อง';
+
+    const detailCard = document.getElementById('selectedCaseDetailCard');
+    if (detailCard) {
+      detailCard.classList.remove('d-none');
+      detailCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Highlight row
+    const rows = document.querySelectorAll('#intakeSearchResults tbody tr');
+    rows.forEach(r => r.classList.remove('table-primary', 'fw-bold'));
+    const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const selectedRow = document.getElementById(safeRowId);
+    if (selectedRow) selectedRow.classList.add('table-primary', 'fw-bold');
+
+    Swal.fire({
+      icon: 'success',
+      title: 'เลือกสำนวนคดีสำเร็จ!',
+      text: `เชื่อมโยงและแสดงข้อมูลสำนวน ${cleanId} เรียบร้อยแล้ว`,
+      timer: 1500,
+      showConfirmButton: false
+    });
   }
 
   function handleIntakeSearchKeyup(e) {
