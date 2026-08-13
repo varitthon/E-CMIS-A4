@@ -550,7 +550,7 @@
       const cases = loadCases();
       const item = cases.find(c => c.id === id);
       if (item) {
-        item.lawReceiveNo = lawReceiveNo || `รับ-กม. 2569/${Math.floor(1000 + Math.random() * 9000)}`;
+        item.lawReceiveNo = lawReceiveNo || `2569/${Math.floor(1000 + Math.random() * 9000)}`;
         item.statusCode = "PENDING_DIRECTOR";
         item.status = "เสนอ ผอ.กองกฎหมาย";
         item.statusBadge = "bg-primary text-white";
