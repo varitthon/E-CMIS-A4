@@ -384,6 +384,33 @@
       return item;
     },
 
+    forwardToLegalDirectorAfterReview(id, reviewNotes, isApproved = true) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        if (isApproved) {
+          item.statusCode = "PENDING_DIRECTOR_APPROVAL";
+          item.status = "เสนอ ผอ.กองกฎหมาย ตรวจพิจารณา";
+          item.statusBadge = "bg-primary text-white";
+          item.assignedRole = "dir_legal";
+          item.workflowStep = 5;
+          item.groupDirectorEndorsement = "เห็นชอบร่างความเห็น";
+          if (reviewNotes) item.groupDirectorReviewNotes = reviewNotes;
+          item.groupDirectorApprovedDate = new Date().toLocaleString('th-TH');
+        } else {
+          item.statusCode = "DRAFTING_OPINION";
+          item.status = "นิติกรกำลังจัดทำความเห็น (ส่งกลับแก้ไข)";
+          item.statusBadge = "bg-warning text-dark";
+          item.assignedRole = "legal_officer";
+          item.workflowStep = 5;
+          if (reviewNotes) item.groupDirectorReviewNotes = reviewNotes;
+          item.groupDirectorReturnedDate = new Date().toLocaleString('th-TH');
+        }
+        saveCases(cases);
+      }
+      return item;
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;

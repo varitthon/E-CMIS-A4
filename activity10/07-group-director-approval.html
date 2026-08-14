@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ผอ.กลุ่มงานความเห็นแย้ง ตรวจสอบร่างความเห็น | E-CMIS กิจกรรมที่ 10</title>
+  <link rel="icon" type="image/png" href="pacc_logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link href="assets/ecmis-app.css" rel="stylesheet">
+  <link href="assets/ecmis-activity10.css" rel="stylesheet">
+</head>
+<body>
+
+<main class="app-main">
+  <!-- Page Head -->
+  <div class="page-head mb-3">
+    <div class="d-flex align-items-center gap-3">
+      <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+      <div>
+        <h1 class="m-0" style="font-size:1.35rem;"><i class="fa-solid fa-clipboard-check me-2 text-primary"></i>ตรวจสอบร่างความเห็นทางกฎหมาย</h1>
+        <div class="small text-muted">ตรวจพิจารณาร่างความเห็นแย้งที่นิติกรจัดทำ และบันทึกผลการกลั่นกรองเพื่อเสนอ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ</div>
+      </div>
+    </div>
+    <div class="ms-auto text-end">
+      <span class="badge bg-primary text-white px-3 py-1 fs-6">ผู้อำนวยการกลุ่มงานความเห็นแย้ง</span>
+      <div class="small text-muted mt-1">ผู้ตรวจพิจารณา: นายอานนท์ ชนประชา</div>
+    </div>
+  </div>
+
+  <!-- Stepper Workflow -->
+  <div class="card card-ecmis mb-3">
+    <div class="card-body pb-1" id="stepper">
+      <div class="flow-stepper">
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">1. ธุรการกองกฎหมาย บันทึกรับ &amp; สแกนเอกสาร</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">2. ธุรการกองกฎหมาย ออกเลขรับ กม.</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">3. ผอ.กองกฎหมาย พิจารณา &amp; มอบหมายเรื่อง</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">4. ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกร</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">5. นิติกร จัดทำบันทึกความเห็น</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Left Column: Case details, Officer Draft & Review Form -->
+    <div class="col-xl-6">
+      <!-- Card 1: Officer's Draft Opinion -->
+      <div class="card card-ecmis mb-3">
+        <div class="card-header bg-navy text-white fw-bold d-flex align-items-center justify-content-between">
+          <span><i class="fa-solid fa-file-signature me-1"></i> ร่างความเห็นทางกฎหมายที่เสนอโดยนิติกร</span>
+          <span class="badge bg-warning text-dark"><i class="fa-solid fa-file-lines me-1"></i>ฉบับร่างเสนอตรวจ</span>
+        </div>
+        <div class="card-body p-3 small">
+          <!-- Stamp Badges Section -->
+          <div class="p-2.5 bg-light rounded border mb-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <span class="fw-bold text-muted d-block mb-1">เลขรับสารบรรณกลาง:</span>
+                <span class="font-monospace fw-bold text-primary fs-6" id="f_centralSarabanNo">2569/4410</span>
+              </div>
+              <div class="col-6">
+                <span class="fw-bold text-muted d-block mb-1">เลขรับกองกฎหมาย:</span>
+                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">2569/0142</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="fw-bold text-muted d-block mb-1">เลขสำนวนคดี & ชื่อเรื่องกล่าวหา:</label>
+            <div class="p-2.5 bg-light rounded text-dark fw-bold border" id="f_title" style="font-size:0.95rem;">-</div>
+          </div>
+
+          <!-- Section: Officer Opinion Details -->
+          <div class="p-3 bg-white rounded border border-primary shadow-sm mb-3">
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+              <div>
+                <span class="fw-bold text-muted d-block small">นิติกรเจ้าของสำนวน:</span>
+                <span class="fw-bold text-navy" id="f_officerName">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-muted d-block small">วันที่เสนอร่าง:</span>
+                <span class="text-secondary" id="f_officerSubmittedDate">-</span>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <span class="fw-bold text-muted d-block small mb-1">ผลการตรวจพิจารณาที่นิติกรเสนอ:</span>
+              <span class="badge bg-danger px-2.5 py-1.5 fs-6" id="f_opinionType">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
+              </span>
+            </div>
+
+            <div class="mb-2">
+              <span class="fw-bold text-muted d-block small mb-1">สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมายที่เห็นแย้ง:</span>
+              <div class="p-2.5 bg-light rounded text-dark border font-monospace small" id="f_opinionDraftText" style="line-height:1.5; min-height:80px; max-height:160px; overflow-y:auto;">
+                -
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+              <span class="small text-muted"><i class="fa-solid fa-paperclip me-1 text-primary"></i>ไฟล์ร่างบันทึกความเห็น: <strong id="f_opinionDraftFile">ร่างบันทึกความเห็นแย้ง_สมบูรณ์.docx</strong></span>
+              <button type="button" class="btn btn-xs btn-outline-primary" onclick="Swal.fire({icon:'info', title:'เปิดไฟล์ร่างบันทึกความเห็น...', timer:1000, showConfirmButton:false})">
+                <i class="fa-solid fa-download me-1"></i>ดาวน์โหลดร่าง
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Approval Form for Group Director -->
+      <div id="approvalCardContainer">
+        <div class="card card-ecmis border-primary bg-primary-subtle" id="groupDirectorApprovalCard">
+          <div class="card-header bg-primary text-white fw-bold">
+            <i class="fa-solid fa-clipboard-check me-1"></i> แบบฟอร์มตรวจพิจารณาและเสนอ ผอ.กองกฎหมาย (ผอ.กลุ่มงานความเห็นแย้ง)
+          </div>
+          <div class="card-body p-3 small">
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">ผู้ตรวจพิจารณา (ผอ.กลุ่มงานความเห็นแย้ง):</label>
+              <input type="text" class="form-control form-control-sm bg-white fw-bold" readonly value="นายอานนท์ ชนประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)">
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1.5">ผลการกลั่นกรอง / ตรวจพิจารณา <span class="text-danger">*</span></label>
+              <div class="p-2.5 bg-white rounded border">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="in_groupReviewResult" id="gr_approve" value="APPROVE" checked>
+                  <label class="form-check-label fw-bold text-navy" for="gr_approve">
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="in_groupReviewResult" id="gr_return" value="RETURN">
+                  <label class="form-check-label fw-bold text-danger" for="gr_return">
+                    <i class="fa-solid fa-rotate-left text-danger me-1"></i> ส่งเรื่องกลับให้นิติกรแก้ไขเพิ่มเติม
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">ความเห็น / บันทึกข้อความเสนอ ผอ.กองกฎหมาย:</label>
+              <textarea id="in_groupDirectorReviewNotes" class="form-control form-control-sm bg-white" rows="3" placeholder="ระบุความเห็นเพิ่มเติม...">ได้ตรวจพิจารณาร่างความเห็นแย้งและข้อเท็จจริงในสำนวนการไต่สวนแล้ว เห็นชอบตามร่างความเห็นแย้งของนิติกรเจ้าของสำนวน จึงกราบเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาให้ความเห็นชอบตามขั้นตอนต่อไป</textarea>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 pt-2 border-top">
+              <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitGroupDirectorApproval()">
+                <i class="fa-solid fa-paper-plane me-1"></i> ยืนยันผลการตรวจ &amp; เสนอ ผอ.กองกฎหมาย
+              </button>
+              <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Document Viewer (จำลองเอกสารหนังสืออัยการ) -->
+    <div class="col-xl-6">
+      <div class="card card-ecmis border h-100">
+        <div class="card-header bg-light d-flex align-items-center justify-content-between py-2">
+          <span class="fw-bold text-navy small"><i class="fa-solid fa-file-contract me-1"></i>ตัวอย่างเอกสารความเห็นอัยการและตราประทับ (PDF Viewer)</span>
+          <span class="badge bg-secondary">ฉบับจริง (อ่านอย่างเดียว)</span>
+        </div>
+        <div class="card-body p-3 bg-dark-subtle d-flex flex-column align-items-center justify-content-center" style="min-height:540px;">
+          
+          <!-- Official Stamp Badges Card -->
+          <div class="w-100 p-2.5 rounded mb-2 text-center bg-white border border-primary shadow-sm" style="max-width:480px;">
+            <div class="d-flex align-items-center justify-content-between small mb-1">
+              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-stamp text-primary me-1"></i>เลขรับสารบรรณกลาง: <span id="stamp_saraban_no" class="text-primary">2569/4410</span></span>
+              <span class="badge bg-primary">สแกนสมบูรณ์</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between small border-top pt-1">
+              <span class="fw-bold text-navy font-monospace"><i class="fa-solid fa-certificate text-warning me-1"></i>เลขรับกองกฎหมาย: <span id="stamp_law_no" class="text-navy">2569/0142</span></span>
+              <span class="badge bg-success">ออกเลขรับแล้ว</span>
+            </div>
+          </div>
+
+          <!-- Simulated Paper Document -->
+          <div class="bg-white p-4 shadow-sm rounded text-dark w-100" style="max-width:480px; font-family:'Prompt',sans-serif; font-size:0.83rem; border:1px solid #ddd; line-height:1.6;">
+            <div class="text-center mb-3">
+              <img src="pacc_logo.png" style="height:52px;" alt="ตรา ป.ป.ท.">
+              <div class="fw-bold mt-1" style="font-size:0.95rem;">บันทึกข้อความ / หนังสือแจ้งคำสั่งพนักงานอัยการ</div>
+              <div class="text-muted small" id="doc_source_header">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between mb-2">
+              <span><b>ที่:</b> <span id="doc_no_text">2569/0014</span></span>
+              <span><b>วันที่:</b> <span id="doc_date_text">28 กรกฎาคม 2569</span></span>
+            </div>
+            <div class="mb-2"><b>เรื่อง:</b> <span id="doc_subject_text">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</span></div>
+            <div class="mb-2"><b>เรียน:</b> เลขาธิการคณะกรรมการ ป.ป.ท. (ผ่านกองกฎหมาย)</div>
+            <div class="p-3 bg-light rounded text-muted mb-3" style="font-size:0.78rem; line-height:1.5;" id="doc_body_text">
+              ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป
+            </div>
+            <div class="text-end mt-4">
+              <div class="fw-bold">พนักงานอัยการผู้แทน</div>
+              <div class="small text-muted">(ลงนามดิจิทัลผ่านระบบสารบรรณอัยการ)</div>
+            </div>
+          </div>
+
+          <!-- Attachment Link Preview -->
+          <div class="w-100 mt-3 p-2.5 bg-white rounded border d-flex align-items-center justify-content-between small shadow-sm" style="max-width:480px;">
+            <span id="scanned_filename_display"><i class="fa-solid fa-file-pdf text-danger me-1"></i>เอกสารสแกนฉบับจริง_สารบรรณกลาง_อส0014.pdf (4.2 MB)</span>
+            <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" onclick="Swal.fire({icon:'info', title:'เปิดไฟล์สแกนฉบับจริง...', timer:1000, showConfirmButton:false})">
+              <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js"></script>
+<script src="assets/ecmis-activity10.js"></script>
+<script>
+  ECMIS.renderShell('07-group-director-approval.html');
+
+  let currentCase = null;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const caseId = urlParams.get('id') || 'คดี-10.1-2569/001';
+    currentCase = Activity10.getCaseById(caseId);
+
+    if (!currentCase) {
+      const allCases = Activity10.getCases();
+      currentCase = allCases.length > 0 ? allCases[0] : null;
+    }
+
+    renderCaseDetails();
+  });
+
+  function renderCaseDetails() {
+    if (!currentCase) return;
+
+    const setElText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
+    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '2569/0142');
+
+    setElText('f_title', currentCase.title);
+    setElText('f_officerName', currentCase.officer || 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)');
+    setElText('f_officerSubmittedDate', currentCase.officerSubmittedDate ? `เสนอเมื่อ: ${currentCase.officerSubmittedDate}` : 'เสนอเมื่อ: 28 ก.ค. 2569');
+
+    setElText('f_opinionType', currentCase.opinionType || 'เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ (Dissenting Opinion)');
+    setElText('f_opinionDraftText', currentCase.legalOpinionDraft || currentCase.legalOpinion || 'จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริงของ ป.ป.ท. พบว่าพยานหลักฐานและเส้นทางการเงินมีความเชื่อมโยงชัดเจน จึงเห็นควรทำความเห็นแย้งเสนอเลขาธิการ ป.ป.ท. เพื่อส่งอัยการสูงสุดชี้ขาด');
+    setElText('f_opinionDraftFile', currentCase.opinionDraftFile || 'ร่างบันทึกความเห็นแย้ง_สมบูรณ์.docx');
+
+    setElText('stamp_saraban_no', currentCase.centralSarabanNo || '2569/4410');
+    setElText('stamp_law_no', currentCase.lawReceiveNo || '2569/0142');
+
+    // Document Viewer Panel Texts
+    setElText('doc_source_header', currentCase.source);
+    setElText('doc_no_text', currentCase.docNo || '2569/0014');
+    setElText('doc_date_text', currentCase.dateReceived || '28 กรกฎาคม 2569');
+    setElText('doc_subject_text', currentCase.title);
+    setElText('doc_body_text', currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป');
+
+    // Check if Group Director has already approved/forwarded
+    const isAlreadyApproved = currentCase.statusCode === 'PENDING_DIRECTOR_APPROVAL' || currentCase.groupDirectorApprovedDate;
+
+    if (isAlreadyApproved) {
+      const cardContainer = document.getElementById('approvalCardContainer');
+      if (cardContainer) {
+        cardContainer.innerHTML = `
+          <div class="card card-ecmis border-success bg-success-subtle shadow-sm">
+            <div class="card-header bg-success text-white fw-bold d-flex align-items-center justify-content-between py-2">
+              <span><i class="fa-solid fa-circle-check me-1"></i> สถานะการตรวจพิจารณา (ผอ.กลุ่มงานความเห็นแย้ง)</span>
+              <span class="badge bg-white text-success"><i class="fa-solid fa-lock me-1"></i>เสนอ ผอ.กองกฎหมายแล้ว</span>
+            </div>
+            <div class="card-body p-3 small">
+              <div class="p-3 bg-white rounded border mb-3">
+                <div class="mb-2">
+                  <span class="fw-bold text-muted d-block small">ผู้ตรวจพิจารณา:</span>
+                  <div class="fw-bold text-dark">นายอานนท์ ชนประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</div>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold text-muted d-block small">ผลการกลั่นกรอง:</span>
+                  <div class="fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>${currentCase.groupDirectorEndorsement || 'เห็นชอบร่างความเห็นแย้ง'}</div>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold text-muted d-block small">ความเห็นเสนอ ผอ.กองกฎหมาย:</span>
+                  <div class="p-2 bg-light rounded text-dark border font-monospace small">${currentCase.groupDirectorReviewNotes || 'ได้ตรวจพิจารณาแล้ว เห็นชอบตามร่างความเห็นแย้งของนิติกร'}</div>
+                </div>
+                <div class="row g-2 pt-2 border-top">
+                  <div class="col-6">
+                    <span class="fw-bold text-muted d-block small">วันที่เสนอเรื่อง:</span>
+                    <span class="text-secondary">${currentCase.groupDirectorApprovedDate || 'ดำเนินการเรียบร้อยแล้ว'}</span>
+                  </div>
+                  <div class="col-6">
+                    <span class="fw-bold text-muted d-block small">สถานะปัจจุบัน:</span>
+                    <span class="st ${currentCase.statusBadge || 'bg-primary text-white'}">${currentCase.status}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="alert alert-secondary d-flex align-items-center mb-3 py-2 small">
+                <i class="fa-solid fa-eye me-2 fs-5 text-secondary"></i>
+                <div><b>โหมดดูรายละเอียดเท่านั้น (Read-Only)</b>: ได้ตรวจพิจารณาและเสนอ ผอ.กองกฎหมาย เรียบร้อยแล้ว</div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 pt-2 border-top">
+                <a href="01-work-inbox.html" class="btn btn-outline-navy btn-sm px-4"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function submitGroupDirectorApproval() {
+    if (!currentCase) return;
+
+    const isApproved = document.getElementById('gr_approve').checked;
+    const reviewNotes = document.getElementById('in_groupDirectorReviewNotes').value.trim();
+
+    if (isApproved) {
+      Swal.fire({
+        icon: 'question',
+        title: 'ยืนยันเห็นชอบและเสนอ ผอ.กองกฎหมาย?',
+        text: 'ส่งเรื่องเสนอ นางสาวณพัสตร์ ศรีสมเกียรติ (ผอ.กองกฎหมาย)',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันเสนอ ผอ.กองกฎหมาย',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#0a2647'
+      }).then(res => {
+        if (res.isConfirmed) {
+          Activity10.forwardToLegalDirectorAfterReview(currentCase.id, reviewNotes, true);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'ส่งเรื่องสำเร็จ!',
+            text: 'ส่งเสนอ ผอ.กองกฎหมาย เรียบร้อยแล้ว',
+            timer: 1600,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = '01-work-inbox.html';
+          });
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ยืนยันส่งกลับให้นิติกรแก้ไข?',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันส่งกลับแก้ไข',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#a5322a'
+      }).then(res => {
+        if (res.isConfirmed) {
+          Activity10.forwardToLegalDirectorAfterReview(currentCase.id, reviewNotes, false);
+
+          Swal.fire({
+            icon: 'info',
+            title: 'ส่งเรื่องกลับแก้ไขแล้ว',
+            text: 'ส่งเรื่องกลับไปยังนิติกรเจ้าของสำนวนเรียบร้อยแล้ว',
+            timer: 1600,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = '01-work-inbox.html';
+          });
+        }
+      });
+    }
+  }
+</script>
+</body>
+</html>
