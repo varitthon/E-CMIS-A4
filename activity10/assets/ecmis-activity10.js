@@ -366,6 +366,24 @@
       return item;
     },
 
+    submitOpinionToGroupDirector(id, opinionType, opinionDetails, draftFile) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_GROUP_REVIEW";
+        item.status = "เสนอ ผอ.กลุ่มงาน ตรวจร่างความเห็น";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "group_director";
+        item.workflowStep = 5;
+        item.opinionType = opinionType || "เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
+        if (opinionDetails) item.legalOpinionDraft = opinionDetails;
+        if (draftFile) item.opinionDraftFile = draftFile;
+        item.officerSubmittedDate = new Date().toLocaleString('th-TH');
+        saveCases(cases);
+      }
+      return item;
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;
