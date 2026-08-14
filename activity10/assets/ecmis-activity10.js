@@ -25,6 +25,11 @@
       if (stored !== null) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
+          parsed.forEach(c => {
+            if (c.status === "กำลังยกร่างความเห็นแย้ง" || c.status === "กำลังร่างความเห็นแย้ง") {
+              c.status = "นิติกรกำลังจัดทำความเห็น";
+            }
+          });
           return parsed;
         }
       }
@@ -348,7 +353,7 @@
       const item = cases.find(c => c.id === id);
       if (item) {
         item.statusCode = "DRAFTING_OPINION";
-        item.status = "กำลังยกร่างความเห็นแย้ง";
+        item.status = "นิติกรกำลังจัดทำความเห็น";
         item.statusBadge = "bg-warning text-dark";
         item.assignedRole = "legal_officer";
         item.officer = officerName || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
