@@ -917,7 +917,7 @@ const NAV = [
   { href:'01-work-inbox.html', icon:'fa-inbox', label:'งานกฎหมายในทางคดีที่รอดำเนินการ', badge:true, visible: role => true },
   { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
   { href:'05-group-director-review.html', icon:'fa-user-gear', label:'พิจารณาและมอบหมายนิติกร', visible: role => role.id === 'group_director' || role.id === 'Arnon.C' },
-  { href:'06-officer-opinion.html', icon:'fa-pen-nib', label:'จัดทำบันทึกความเห็นแย้ง', visible: role => role.id === 'legal_officer' || role.id === 'Nattapol.B' }
+  { href:'06-officer-opinion.html', icon:'fa-pen-nib', label:'จัดทำบันทึกความเห็น', visible: role => role.id === 'legal_officer' || role.id === 'Nattapol.B' }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ
