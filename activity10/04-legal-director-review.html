@@ -36,7 +36,7 @@
       <div class="flow-stepper">
         <div class="fstep done">
           <div class="dot"><i class="fa-solid fa-check"></i></div>
-          <div class="lbl">1. กองบริหารคดี บันทึกรับ &amp; สแกนเอกสาร</div>
+          <div class="lbl">1. ธุรการกองกฎหมาย บันทึกรับ &amp; สแกนเอกสาร</div>
         </div>
         <div class="fstep done">
           <div class="dot"><i class="fa-solid fa-check"></i></div>
@@ -110,31 +110,33 @@
       </div>
 
       <!-- Card 2: Assignment Form for Director of Legal Division -->
-      <div class="card card-ecmis border-primary bg-primary-subtle">
-        <div class="card-header bg-primary text-white fw-bold">
-          <i class="fa-solid fa-user-check me-1"></i> แบบฟอร์มมอบหมายส่งต่อเรื่อง (ผอ.กองกฎหมาย)
-        </div>
-        <div class="card-body p-3 small">
-          <div class="mb-3">
-            <label class="fw-bold text-dark mb-1">ผู้มอบหมายงาน (ผอ.กองกฎหมาย):</label>
-            <input type="text" class="form-control form-control-sm bg-white fw-bold" readonly value="นางสาวณพัสตร์ ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)">
+      <div id="assignmentCardContainer">
+        <div class="card card-ecmis border-primary bg-primary-subtle" id="directorAssignmentCard">
+          <div class="card-header bg-primary text-white fw-bold">
+            <i class="fa-solid fa-user-check me-1"></i> แบบฟอร์มมอบหมายส่งต่อเรื่อง (ผอ.กองกฎหมาย)
           </div>
-          <div class="mb-3">
-            <label class="fw-bold text-dark mb-1">มอบหมายส่งต่อให้ผู้บังคับบัญชาตามลำดับชั้น <span class="text-danger">*</span></label>
-            <select id="in_targetDirector" class="form-select form-select-sm fw-bold text-navy">
-              <option value="Arnon.C">นายอานนท์ ชนประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="fw-bold text-dark mb-1">ข้อสั่งการ / มอบหมายเพิ่มเติมถึง ผอ.กลุ่มงาน:</label>
-            <textarea id="in_directorNotes" class="form-control form-control-sm bg-white" rows="2" placeholder="กรอกข้อสั่งการเพิ่มเติม เช่น โปรดมอบหมายนิติกรเจ้าของสำนวนเร่งรัดยกร่างความเห็นแย้งภายใน SLA..."></textarea>
-          </div>
+          <div class="card-body p-3 small">
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">ผู้มอบหมายงาน (ผอ.กองกฎหมาย):</label>
+              <input type="text" class="form-control form-control-sm bg-white fw-bold" readonly value="นางสาวณพัสตร์ ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)">
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">มอบหมายส่งต่อให้ผู้บังคับบัญชาตามลำดับชั้น <span class="text-danger">*</span></label>
+              <select id="in_targetDirector" class="form-select form-select-sm fw-bold text-navy">
+                <option value="Arnon.C">นายอานนท์ ชนประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">ข้อสั่งการ / มอบหมายเพิ่มเติมถึง ผอ.กลุ่มงาน:</label>
+              <textarea id="in_directorNotes" class="form-control form-control-sm bg-white" rows="2" placeholder="กรอกข้อสั่งการเพิ่มเติม เช่น โปรดมอบหมายนิติกรเจ้าของสำนวนเร่งรัดยกร่างความเห็นแย้งภายใน SLA..."></textarea>
+            </div>
 
-          <div class="d-flex align-items-center gap-2 pt-2 border-top">
-            <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitForwardToGroupDirector()">
-              <i class="fa-solid fa-paper-plane me-1"></i> มอบหมายส่งต่อให้ ผอ.กลุ่มงานความเห็นแย้ง
-            </button>
-            <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+            <div class="d-flex align-items-center gap-2 pt-2 border-top">
+              <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitForwardToGroupDirector()">
+                <i class="fa-solid fa-paper-plane me-1"></i> มอบหมายส่งต่อให้ ผอ.กลุ่มงานความเห็นแย้ง
+              </button>
+              <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+            </div>
           </div>
         </div>
       </div>
@@ -212,7 +214,8 @@
     currentCase = Activity10.getCaseById(caseId);
 
     if (!currentCase) {
-      currentCase = Activity10.getCases()[0];
+      const allCases = Activity10.getCases();
+      currentCase = allCases.length > 0 ? allCases[0] : null;
     }
 
     renderCaseDetails();
@@ -245,6 +248,84 @@
     setElText('doc_date_text', currentCase.dateReceived || '28 กรกฎาคม 2569');
     setElText('doc_subject_text', currentCase.title);
     setElText('doc_body_text', currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป');
+
+    // Check if case is already forwarded to Group Director (Read-Only Mode)
+    const isAlreadyForwarded = (currentCase.statusCode !== 'PENDING_DIRECTOR') || (currentCase.workflowStep && currentCase.workflowStep > 3);
+
+    // Update Stepper
+    const stepperEl = document.getElementById('stepper');
+    if (stepperEl) {
+      if (isAlreadyForwarded) {
+        stepperEl.innerHTML = `
+          <div class="flow-stepper">
+            <div class="fstep done">
+              <div class="dot"><i class="fa-solid fa-check"></i></div>
+              <div class="lbl">1. ธุรการกองกฎหมาย บันทึกรับ &amp; สแกนเอกสาร</div>
+            </div>
+            <div class="fstep done">
+              <div class="dot"><i class="fa-solid fa-check"></i></div>
+              <div class="lbl">2. ธุรการกองกฎหมาย ออกเลขรับ กม.</div>
+            </div>
+            <div class="fstep done">
+              <div class="dot"><i class="fa-solid fa-check"></i></div>
+              <div class="lbl">3. ผอ.กองกฎหมาย พิจารณา &amp; มอบหมายเรื่อง</div>
+            </div>
+            <div class="fstep active">
+              <div class="dot">4</div>
+              <div class="lbl">4. ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกร</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Update Assignment Card
+    const cardContainer = document.getElementById('assignmentCardContainer');
+    if (cardContainer && isAlreadyForwarded) {
+      cardContainer.innerHTML = `
+        <div class="card card-ecmis border-success bg-success-subtle shadow-sm">
+          <div class="card-header bg-success text-white fw-bold d-flex align-items-center justify-content-between py-2">
+            <span><i class="fa-solid fa-circle-check me-1"></i> สถานะการมอบหมายงาน (ผอ.กองกฎหมาย)</span>
+            <span class="badge bg-white text-success"><i class="fa-solid fa-lock me-1"></i>มอบหมายส่งต่อแล้ว</span>
+          </div>
+          <div class="card-body p-3 small">
+            <div class="p-3 bg-white rounded border mb-3">
+              <div class="mb-2">
+                <span class="fw-bold text-muted d-block small">ผู้มอบหมายงาน:</span>
+                <div class="fw-bold text-dark">นางสาวณพัสตร์ ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)</div>
+              </div>
+              <div class="mb-2">
+                <span class="fw-bold text-muted d-block small">มอบหมายส่งต่อให้:</span>
+                <div class="fw-bold text-navy"><i class="fa-solid fa-user-tie me-1 text-primary"></i>${currentCase.groupDirector || 'นายอานนท์ ชนประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)'}</div>
+              </div>
+              <div class="mb-2">
+                <span class="fw-bold text-muted d-block small">ข้อสั่งการ / มอบหมายเพิ่มเติม:</span>
+                <div class="p-2 bg-light rounded text-dark border font-monospace small">${currentCase.directorNotes || 'โปรดมอบหมายนิติกรเจ้าของสำนวนดำเนินการตรวจพิจารณาและยกร่างความเห็นแย้งตามขั้นตอนกฎหมาย'}</div>
+              </div>
+              <div class="row g-2 pt-2 border-top">
+                <div class="col-6">
+                  <span class="fw-bold text-muted d-block small">วันที่มอบหมาย:</span>
+                  <span class="text-secondary">${currentCase.directorForwardedDate || 'ดำเนินการเรียบร้อยแล้ว'}</span>
+                </div>
+                <div class="col-6">
+                  <span class="fw-bold text-muted d-block small">สถานะปัจจุบัน:</span>
+                  <span class="st ${currentCase.statusBadge || 'bg-primary text-white'}">${currentCase.status}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-secondary d-flex align-items-center mb-3 py-2 small">
+              <i class="fa-solid fa-eye me-2 fs-5 text-secondary"></i>
+              <div><b>โหมดดูรายละเอียดเท่านั้น (Read-Only)</b>: ได้ดำเนินการมอบหมายส่งต่อให้ ผอ.กลุ่มงาน เรียบร้อยแล้ว ไม่สามารถแก้ไขหรือมอบหมายซ้ำได้</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 pt-2 border-top">
+              <a href="01-work-inbox.html" class="btn btn-outline-navy btn-sm px-4"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
   }
 
   function submitForwardToGroupDirector() {
@@ -263,7 +344,7 @@
     }).then(res => {
       if (res.isConfirmed) {
         // Forward to Group Director via Activity10 engine
-        Activity10.forwardToGroupDirector(currentCase.id, targetDirectorName);
+        Activity10.forwardToGroupDirector(currentCase.id, targetDirectorName, notes);
 
         Swal.fire({
           icon: 'success',

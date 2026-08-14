@@ -156,7 +156,7 @@
     const roleId = ECMIS.currentRoleId();
     const btnIntake = document.getElementById("btnBoardIntake");
     if (btnIntake) {
-      if (roleId === 'case_management' || roleId === 'Siriporn.K') {
+      if (roleId === 'admin_legal' || roleId === 'Wilai.T') {
         btnIntake.style.display = 'inline-flex';
       } else {
         btnIntake.style.display = 'none';
@@ -166,8 +166,21 @@
 
   let activeKpiFilter = null;
 
+  function getCasesForCurrentRole() {
+    const roleId = ECMIS.currentRoleId();
+    let cases = Activity10.getCases();
+    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+      // ถ้าธุรการกองกฎหมายยังไม่ออกเลขรับ ผอ.กองกฎหมายจะไม่เห็นงานในคิวงาน
+      cases = cases.filter(c => {
+        const isNotYetIssued = (c.statusCode === 'PENDING_LEGAL_ADMIN' || c.statusCode === 'PENDING_INTAKE') && !c.lawReceiveNo;
+        return !isNotYetIssued;
+      });
+    }
+    return cases;
+  }
+
   function renderKPI() {
-    const cases = Activity10.getCases();
+    const cases = getCasesForCurrentRole();
     const countTotal = cases.length;
     const count101 = cases.filter(c => c.category === '10.1').length;
     const count102 = cases.filter(c => c.category.startsWith('10.2')).length;
@@ -338,6 +351,18 @@
     renderTable();
   }
 
+  function canActionOnCase(c, roleId) {
+    if (roleId === 'admin_legal' || roleId === 'Wilai.T') {
+      // ธุรการกองกฎหมาย: ดำเนินการได้เฉพาะสำนวนที่ยังไม่ออกเลขรับ กม. และยังไม่ส่งต่อ ผอ.กองกฎหมาย
+      return (c.statusCode === 'PENDING_LEGAL_ADMIN' || c.statusCode === 'PENDING_INTAKE') && !c.lawReceiveNo;
+    }
+    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+      // ผอ.กองกฎหมาย: ดำเนินการได้เฉพาะสำนวนที่เสนอ ผอ.กองกฎหมาย (PENDING_DIRECTOR) ที่ยังไม่ได้ส่งต่อ
+      return c.statusCode === 'PENDING_DIRECTOR';
+    }
+    return false;
+  }
+
   function renderTable() {
     const q = document.getElementById("searchInput").value.toLowerCase().trim();
     const cat = document.getElementById("categoryFilter").value;
@@ -345,7 +370,7 @@
 
     updateKpiActiveState();
 
-    let cases = Activity10.getCases();
+    let cases = getCasesForCurrentRole();
 
     cases = cases.filter(c => {
       const matchQ = !q || c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.officer.toLowerCase().includes(q);
@@ -362,7 +387,17 @@
     document.getElementById("caseCountBadge").innerText = `${cases.length} เรื่อง`;
 
     if (cases.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox fs-2 mb-2 d-block"></i>ไม่พบรายการสำนวนตามเงื่อนไขที่เลือก</td></tr>`;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center py-5 text-muted">
+            <div class="py-4">
+              <i class="fa-solid fa-inbox text-secondary opacity-50 mb-3" style="font-size: 3rem;"></i>
+              <div class="fs-5 fw-bold text-dark mb-1">ยังไม่มีรายการสำนวนคดีในระบบ</div>
+              <p class="text-muted small mb-0">ระบบอยู่ในสถานะเริ่มต้น (ยังไม่ได้รับเรื่องเข้ามา) เจ้าหน้าที่ธุรการกองกฎหมายสามารถกดปุ่ม <strong>"รับเรื่องเข้าระบบ"</strong> เพื่อบันทึกรับสำนวนคดีใหม่</p>
+            </div>
+          </td>
+        </tr>
+      `;
       renderPaginationControls(0);
       updateBulkUI();
       return;
@@ -377,11 +412,11 @@
     const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
 
     const currentRole = ECMIS.currentRoleId();
-    const canAction = (currentRole === 'admin_legal' || currentRole === 'Wilai.T' || currentRole === 'dir_legal' || currentRole === 'Napas.S');
 
     let html = "";
     paginatedCases.forEach(c => {
       const isUrgent = c.slaDaysRemaining <= 5;
+      const canAction = canActionOnCase(c, currentRole);
       const actionButtonHtml = canAction
         ? `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการเรื่องสำนวน"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`
         : `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;

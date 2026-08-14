@@ -6,339 +6,25 @@
 (function(global) {
   'use strict';
 
-  // Seed Data for Activity 10 Cases
-  const INITIAL_CASES = [
-    {
-      id: "คดี-2569/001",
-      title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง",
-      category: "10.1",
-      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
-      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
-      accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
-      accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
-      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
-      assignedRole: "case_management", // case_management, dir_legal, sec_gen, admin_legal
-      status: "รอธุรการออกเลข",
-      statusCode: "PENDING_LEGAL_ADMIN",
-      statusBadge: "bg-info text-white",
-      slaTotalDays: 15,
-      slaDaysRemaining: 3,
-      slaAlert: "sla-warning",
-      dateReceived: "2026-07-28",
-      dueDate: "2026-08-12",
-      workflowStep: 2,
-      docType: "คำสั่งไม่ฟ้องพนักงานอัยการ",
-      docNo: "2569/0014",
-      legalOpinion: "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พยานเอกสารและพยานบุคคลที่ ป.ป.ท. ได้รวบรวมไว้ ปรากฏพยานหลักฐานชัดเจนว่าผู้ถูกกล่าวหามีเจตนาละเว้นการปฏิบัติหน้าที่ตามระเบียบการจัดซื้อจัดจ้างฯ จึงเห็นควรเสนอทำความเห็นแย้งคำสั่งไม่ฟ้องส่งอัยการสูงสุดชี้ขาด",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คำร้อง-2569/014",
-      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนข้อเท็จจริงคดีบริหารงานผิดพลาด",
-      category: "10.2.1",
-      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      source: "ศูนย์รับเรื่องร้องเรียน ป.ป.ท. (ยื่น Walk-in)",
-      accuser: "นายสมเกียรติ รักธรรม (ผู้ร้องเรียน)",
-      accused: "คณะกรรมการไต่สวน ป.ป.ท.",
-      officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
-      assignedRole: "admin_legal",
-      status: "รออนุกรรมการฯ พิจารณา",
-      statusCode: "PENDING_SUBCOMMITTEE",
-      statusBadge: "bg-info text-white",
-      slaTotalDays: 60,
-      slaDaysRemaining: 22,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-07-15",
-      dueDate: "2026-09-13",
-      workflowStep: 3,
-      docType: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
-      docNo: "คร 102/2569",
-      legalOpinion: "เห็นควรเสนอคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ พิจารณาเปิดเผยข้อมูลบางส่วนโดยปกปิดข้อมูลส่วนบุคคล",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "อุทธรณ์-2569/005",
-      title: "คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบสวนวินัยข้าราชการระดับสูง",
-      category: "10.2.2",
-      categoryName: "การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร",
-      source: "ระบบรับเรื่องร้องเรียนออนไลน์ (Email)",
-      accuser: "นายประเสริฐ ชูเกียรติ (ผู้อุทธรณ์)",
-      accused: "สำนักงาน ป.ป.ท.",
-      officer: "นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)",
-      assignedRole: "dir_legal",
-      status: "เสนอ ผอ.กองกฎหมาย",
-      statusCode: "PENDING_DIRECTOR",
-      statusBadge: "bg-primary text-white",
-      slaTotalDays: 60,
-      slaDaysRemaining: 8,
-      slaAlert: "sla-danger",
-      dateReceived: "2026-06-20",
-      dueDate: "2026-08-19",
-      workflowStep: 3,
-      docType: "หนังสือคำอุทธรณ์ของผู้ร้อง",
-      docNo: "อท 55/2569",
-      legalOpinion: "เห็นควรเสนอคณะอนุกรรมการฯ มีมติยกคำอุทธรณ์ เนื่องจากเป็นเอกสารลับทางราชการตามมาตรา 15 (2)",
-      signatureStamped: true,
-      signedBy: "นางสาวณพัสตร์ ศรีสมเกียรติ (ผอ.กองกฎหมาย)",
-      signedDate: "2026-08-05 14:30 น."
-    },
-    {
-      id: "คดีปกครอง-2569/002",
-      title: "คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม",
-      category: "10.3",
-      categoryName: "คดีศาลปกครอง",
-      source: "ศาลปกครองสูงสุด (e-Court System)",
-      accuser: "นายเฉลิมพล สุขสวัสดิ์ (ผู้ฟ้องคดี)",
-      accused: "เลขาธิการ ป.ป.ท. และคณะกรรมการ ป.ป.ท.",
-      officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "sec_gen",
-      status: "รอลงนามอนุมัติร่างคำให้การ",
-      statusCode: "PENDING_SECGEN",
-      statusBadge: "bg-success text-white",
-      slaTotalDays: 30,
-      slaDaysRemaining: 5,
-      slaAlert: "sla-danger",
-      dateReceived: "2026-07-20",
-      dueDate: "2026-08-19",
-      workflowStep: 4,
-      docType: "หมายเรียกและสำเนาคำฟ้องศาลปกครอง",
-      docNo: "ศป 145/2569",
-      legalOpinion: "ยกร่างคำให้การเพิ่มเติมเสนอศาลปกครองสูงสุด ยืนยันว่าการออกคำสั่ง ป.ป.ท. เป็นไปโดยชอบด้วยกฎหมาย",
-      signatureStamped: true,
-      signedBy: "นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)",
-      signedDate: "2026-08-06 09:15 น."
-    },
-    {
-      id: "คดี-2569/002",
-      title: "พิจารณาความเห็นแย้งคดีเบิกจ่ายเงินงบประมาณอุดหนุนโครงการฝึกอบรมเท็จ",
-      category: "10.1",
-      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
-      source: "สนง. ป.ป.ท. เขต 3",
-      accuser: "สำนักงาน ป.ป.ท. เขต 3",
-      accused: "นายวิชัย การกุศล (เจ้าพนักงานจัดเก็บรายได้)",
-      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
-      assignedRole: "case_management",
-      status: "รอธุรการออกเลข",
-      statusCode: "PENDING_LEGAL_ADMIN",
-      statusBadge: "bg-info text-white",
-      slaTotalDays: 15,
-      slaDaysRemaining: 12,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-08-01",
-      dueDate: "2026-08-16",
-      workflowStep: 2,
-      docType: "คำสั่งไม่ฟ้องพนักงานอัยการ",
-      docNo: "อส 0022/2569",
-      legalOpinion: "อยู่ระหว่างรวบรวมพยานหลักฐานและยกร่างบันทึกความเห็นแย้งเสนอ ผอ.กลุ่มงาน",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คำร้อง-2569/015",
-      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการตรวจสอบทรัพย์สินเจ้าหน้าที่ระดับสูง",
-      category: "10.2.1",
-      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      source: "สำนักข่าวอิศรา (ยื่นคำร้องออนไลน์)",
-      accuser: "สำนักข่าวอิศรา",
-      accused: "สำนักงาน ป.ป.ท.",
-      officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
-      assignedRole: "admin_legal",
-      status: "รับเรื่อง/ตรวจสอบเอกสาร",
-      statusCode: "PENDING_INTAKE",
-      statusBadge: "bg-secondary text-white",
-      slaTotalDays: 60,
-      slaDaysRemaining: 45,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-08-02",
-      dueDate: "2026-10-01",
-      workflowStep: 1,
-      docType: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
-      docNo: "คร 103/2569",
-      legalOpinion: "รับเรื่องเข้าสู่ระบบ ตรวจสอบความครบถ้วนของเอกสารก่อนเสนอผู้บริหาร",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คดีปกครอง-2569/003",
-      title: "คดีปกครองฟ้องเพิกถอนคำสั่งชี้มูลความผิดทางวินัยอย่างร้ายแรง กรณีทุจริตที่ดิน",
-      category: "10.3",
-      categoryName: "คดีศาลปกครอง",
-      source: "ศาลปกครองกลาง (e-Court)",
-      accuser: "นายสุรศักดิ์ กล้าหาญ",
-      accused: "คณะกรรมการ ป.ป.ท.",
-      officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "dir_legal",
-      status: "เสนอ ผอ.กองกฎหมาย",
-      statusCode: "PENDING_DIRECTOR",
-      statusBadge: "bg-primary text-white",
-      slaTotalDays: 30,
-      slaDaysRemaining: 18,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-07-28",
-      dueDate: "2026-08-27",
-      workflowStep: 3,
-      docType: "คำฟ้องศาลปกครองกลาง",
-      docNo: "ศป 188/2569",
-      legalOpinion: "จัดทำร่างคำให้การเสร็จสิ้น เสนอ ผอ.กองกฎหมาย เพื่อให้ความเห็นชอบก่อนเสนอเลขาธิการฯ",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คดี-2569/003",
-      title: "ความเห็นแย้งคดีเจ้าหน้าที่เรียกรับผลประโยชน์ในการออกใบอนุญาตสีก่อสร้าง",
-      category: "10.1",
-      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
-      source: "สนง. ป.ป.ท. เขต 1",
-      accuser: "สำนักงาน ป.ป.ท. เขต 1",
-      accused: "นายศิริโชค มีอำนาจ (หัวหน้าฝ่ายโยธา)",
-      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "sec_gen",
-      status: "อนุมัติเสนอ อสส. แล้ว",
-      statusCode: "APPROVED",
-      statusBadge: "bg-success text-white",
-      slaTotalDays: 15,
-      slaDaysRemaining: 1,
-      slaAlert: "sla-danger",
-      dateReceived: "2026-07-25",
-      dueDate: "2026-08-09",
-      workflowStep: 4,
-      docType: "คำสั่งไม่ฟ้องพนักงานอัยการ",
-      docNo: "อส 0055/2569",
-      legalOpinion: "เลขาธิการ ป.ป.ท. อนุมัติความเห็นแย้ง และส่งเรื่องให้อัยการสูงสุดชี้ขาดแล้ว",
-      signatureStamped: true,
-      signedBy: "นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)",
-      signedDate: "2026-08-08 11:00 น."
-    },
-    {
-      id: "อุทธรณ์-2569/006",
-      title: "คำอุทธรณ์กรณี ป.ป.ท. ปฏิเสธการเปิดเผยรายชื่อผู้ร้องเรียนโครงการก่อสร้างถนน",
-      category: "10.2.2",
-      categoryName: "การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร",
-      source: "ไปรษณีย์ตอบรับ (EMS)",
-      accuser: "นายกิตติคุณ มั่งคั่ง",
-      accused: "ศูนย์บริการข้อมูลข่าวสาร ป.ป.ท.",
-      officer: "นายปติคุณ อู่ตะเภา (นิติกรชำนาญการ)",
-      assignedRole: "admin_legal",
-      status: "กำลังยกร่างคำชี้แจง",
-      statusCode: "DRAFTING_OPINION",
-      statusBadge: "bg-warning text-dark",
-      slaTotalDays: 60,
-      slaDaysRemaining: 2,
-      slaAlert: "sla-danger",
-      dateReceived: "2026-06-12",
-      dueDate: "2026-08-11",
-      workflowStep: 2,
-      docType: "หนังสือคำอุทธรณ์",
-      docNo: "อท 58/2569",
-      legalOpinion: "ยกร่างความเห็นคุ้มครองสิทธิ์และคุ้มครองพยาน ไม่เปิดเผยรายชื่อผู้คุ้มครอง",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คดีปกครอง-2569/004",
-      title: "คดีปกครองหมายเลขดำที่ 890/2569 ขอให้ศาลสั่งคุ้มครองชั่วคราวก่อนการพิพากษา",
-      category: "10.3",
-      categoryName: "คดีศาลปกครอง",
-      source: "ศาลปกครองระยอง (e-Court)",
-      accuser: "นายประยุทธ วิทยาเดช",
-      accused: "เลขาธิการ ป.ป.ท.",
-      officer: "นายอานนท์ ชนประชา (นิติกรชำนาญการพิเศษ)",
-      assignedRole: "admin_legal",
-      status: "กำลังร่างคำคัดค้าน",
-      statusCode: "DRAFTING_OPINION",
-      statusBadge: "bg-warning text-dark",
-      slaTotalDays: 30,
-      slaDaysRemaining: 4,
-      slaAlert: "sla-danger",
-      dateReceived: "2026-07-16",
-      dueDate: "2026-08-15",
-      workflowStep: 2,
-      docType: "คำขอไต่สวนฉุกเฉินคุ้มครองชั่วคราว",
-      docNo: "ศป 890/2569",
-      legalOpinion: "เร่งจัดทำคำคัดค้านการคุ้มครองชั่วคราว เสนอ ผอ.กองกฎหมาย",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คำร้อง-2569/016",
-      title: "คำร้องขอคัดสำเนาบันทึกคำให้การในชั้นไต่สวนเบื้องต้น",
-      category: "10.2.1",
-      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      source: "ศูนย์บริการประชาชน ป.ป.ท.",
-      accuser: "นายธนกร โชคดี",
-      accused: "สำนักงาน ป.ป.ท.",
-      officer: "นางสาวนิติพร มีไพฑูรย์ (นิติกรชำนาญการ)",
-      assignedRole: "dir_legal",
-      status: "เสนอ ผอ.กองกฎหมาย",
-      statusCode: "PENDING_DIRECTOR",
-      statusBadge: "bg-primary text-white",
-      slaTotalDays: 60,
-      slaDaysRemaining: 30,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-07-10",
-      dueDate: "2026-09-08",
-      workflowStep: 3,
-      docType: "คำร้องขอคัดสำเนา",
-      docNo: "คร 110/2569",
-      legalOpinion: "อนุญาตให้คัดสำเนาได้เฉพาะส่วนที่เป็นคำให้การของผู้ร้องเอง",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    },
-    {
-      id: "คดี-2569/004",
-      title: "พิจารณาความเห็นแย้งคดีเจ้าหน้าที่รัฐทุจริตยักยอกเงินของหลวงในสำนักงานเขต",
-      category: "10.1",
-      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
-      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3",
-      accuser: "คณะกรรมการ ป.ป.ท.",
-      accused: "นางสาวจันทรเพ็ญ บุญส่ง (เจ้าหน้าที่การเงินและบัญชี)",
-      officer: "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
-      assignedRole: "case_management",
-      status: "กำลังร่างความเห็นแย้ง",
-      statusCode: "DRAFTING_OPINION",
-      statusBadge: "bg-warning text-dark",
-      slaTotalDays: 15,
-      slaDaysRemaining: 9,
-      slaAlert: "sla-normal",
-      dateReceived: "2026-08-04",
-      dueDate: "2026-08-19",
-      workflowStep: 2,
-      docType: "คำสั่งไม่ฟ้องพนักงานอัยการ",
-      docNo: "อส 0089/2569",
-      legalOpinion: "พยานหลักฐานการรับเงินและสลิปโอนเงินมัดแน่น เห็นควรทำความเห็นแย้ง",
-      signatureStamped: false,
-      signedBy: "",
-      signedDate: ""
-    }
-  ];
+  // Data Version Key for LocalStorage Sync
+  const DATA_VERSION = 'v4_clean_empty_initial';
+
+  // Initial Cases in Legal Inbox (เริ่มต้นแบบสะอาด ยังไม่มีการรับเรื่องเข้ามา)
+  const INITIAL_CASES = [];
 
   // Load Persisted Cases from LocalStorage
   function loadCases() {
     try {
+      const ver = localStorage.getItem("ecmis_activity10_version");
+      if (ver !== DATA_VERSION) {
+        localStorage.setItem("ecmis_activity10_version", DATA_VERSION);
+        saveCases(INITIAL_CASES);
+        return INITIAL_CASES;
+      }
       const stored = localStorage.getItem("ecmis_activity10_cases");
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.length) {
-          parsed.forEach(c => {
-            const seed = INITIAL_CASES.find(ic => ic.id === c.id);
-            if (seed) {
-              if (!c.accuser) c.accuser = seed.accuser;
-              if (!c.accused) c.accused = seed.accused;
-            } else {
-              if (!c.accuser) c.accuser = "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.";
-              if (!c.accused) c.accused = "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)";
-            }
-          });
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -357,55 +43,119 @@
     }
   }
 
-  // ฐานข้อมูลสำนวนคดีเดิมของ ป.ป.ท. (สำหรับค้นหาในหน้า 02-board-intake.html แยกจาก 01-work-inbox.html)
+  // ฐานข้อมูลสำนวนคดีเดิมของ ป.ป.ท. (สำหรับค้นหาและเลือกรับเรื่องเข้าระบบในหน้า 02-board-intake.html)
   const PACC_INTAKE_DATABASE = [
     {
       id: "คดี-2569/001",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
       accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
-      accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)"
-    },
-    {
-      id: "คำร้อง-2569/014",
-      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนข้อเท็จจริงคดีบริหารงานผิดพลาด",
-      accuser: "นายสมเกียรติ รักธรรม (ผู้ร้องเรียน)",
-      accused: "คณะกรรมการไต่สวน ป.ป.ท."
-    },
-    {
-      id: "อุทธรณ์-2569/005",
-      title: "คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบสวนวินัยข้าราชการระดับสูง",
-      accuser: "นายประเสริฐ ชูเกียรติ (ผู้อุทธรณ์)",
-      accused: "สำนักงาน ป.ป.ท."
-    },
-    {
-      id: "คดีปกครอง-2569/002",
-      title: "คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม",
-      accuser: "นายเฉลิมพล สุขสวัสดิ์ (ผู้ฟ้องคดี)",
-      accused: "เลขาธิการ ป.ป.ท. และคณะกรรมการ ป.ป.ท."
+      accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
+      paccCaseNo: "ปปท. 0012/2568",
+      blackNo: "อ. 104/2569",
+      redNo: "อ. 308/2569",
+      courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+      statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)"
     },
     {
       id: "คดี-2569/002",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       title: "พิจารณาความเห็นแย้งคดีเบิกจ่ายเงินงบประมาณอุดหนุนโครงการฝึกอบรมเท็จ",
+      source: "สนง. ป.ป.ท. เขต 3",
       accuser: "สำนักงาน ป.ป.ท. เขต 3",
-      accused: "นายวิชัย การกุศล (เจ้าพนักงานจัดเก็บรายได้)"
-    },
-    {
-      id: "คำร้อง-2569/015",
-      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการตรวจสอบทรัพย์สินเจ้าหน้าที่ระดับสูง",
-      accuser: "สำนักข่าวอิศรา",
-      accused: "สำนักงาน ป.ป.ท."
-    },
-    {
-      id: "คดีปกครอง-2569/003",
-      title: "คดีปกครองฟ้องเพิกถอนคำสั่งชี้มูลความผิดทางวินัยอย่างร้ายแรง กรณีทุจริตที่ดิน",
-      accuser: "นายสุรศักดิ์ กล้าหาญ",
-      accused: "คณะกรรมการ ป.ป.ท."
+      accused: "นายวิชัย การกุศล (เจ้าพนักงานจัดเก็บรายได้)",
+      paccCaseNo: "ปปท. 0045/2568",
+      blackNo: "อ. 118/2569",
+      redNo: "อ. 340/2569",
+      courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
+      statuteLimitation: "10 ปี (หมดอายุความ 15 ส.ค. 2579)"
     },
     {
       id: "คดี-2569/003",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       title: "ความเห็นแย้งคดีเจ้าหน้าที่เรียกรับผลประโยชน์ในการออกใบอนุญาตสีก่อสร้าง",
+      source: "สนง. ป.ป.ท. เขต 1",
       accuser: "สำนักงาน ป.ป.ท. เขต 1",
-      accused: "นายศิริโชค มีอำนาจ (หัวหน้าฝ่ายโยธา)"
+      accused: "นายศิริโชค มีอำนาจ (หัวหน้าฝ่ายโยธา)",
+      paccCaseNo: "ปปท. 0089/2568",
+      blackNo: "อ. 132/2569",
+      redNo: "อ. 412/2569",
+      courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
+      statuteLimitation: "15 ปี (หมดอายุความ 25 ก.ค. 2584)"
+    },
+    {
+      id: "คำร้อง-2569/014",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนข้อเท็จจริงคดีบริหารงานผิดพลาด",
+      source: "ศูนย์รับเรื่องร้องเรียน ป.ป.ท. (ยื่น Walk-in)",
+      accuser: "นายสมเกียรติ รักธรรม (ผู้ร้องเรียน)",
+      accused: "คณะกรรมการไต่สวน ป.ป.ท.",
+      paccCaseNo: "ปปท. ขบ 0014/2569",
+      blackNo: "-",
+      redNo: "-",
+      courtOrder: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
+      statuteLimitation: "60 วัน"
+    },
+    {
+      id: "คำร้อง-2569/015",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการตรวจสอบทรัพย์สินเจ้าหน้าที่ระดับสูง",
+      source: "สำนักข่าวอิศรา (ยื่นคำร้องออนไลน์)",
+      accuser: "สำนักข่าวอิศรา",
+      accused: "สำนักงาน ป.ป.ท.",
+      paccCaseNo: "ปปท. ขบ 0015/2569",
+      blackNo: "-",
+      redNo: "-",
+      courtOrder: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
+      statuteLimitation: "60 วัน"
+    },
+    {
+      id: "อุทธรณ์-2569/005",
+      category: "10.2.2",
+      categoryName: "การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร",
+      title: "คำอุทธรณ์การไม่เปิดเผยข้อมูลข่าวสารเกี่ยวกับการสอบสวนวินัยข้าราชการระดับสูง",
+      source: "ระบบรับเรื่องร้องเรียนออนไลน์ (Email)",
+      accuser: "นายประเสริฐ ชูเกียรติ (ผู้อุทธรณ์)",
+      accused: "สำนักงาน ป.ป.ท.",
+      paccCaseNo: "ปปท. อท 0005/2569",
+      blackNo: "-",
+      redNo: "-",
+      courtOrder: "หนังสือคำอุทธรณ์ของผู้ร้อง",
+      statuteLimitation: "60 วัน"
+    },
+    {
+      id: "คดีปกครอง-2569/002",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      title: "คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม",
+      source: "ศาลปกครองสูงสุด (e-Court System)",
+      accuser: "นายเฉลิมพล สุขสวัสดิ์ (ผู้ฟ้องคดี)",
+      accused: "เลขาธิการ ป.ป.ท. และคณะกรรมการ ป.ป.ท.",
+      paccCaseNo: "ปปท. 0090/2567",
+      blackNo: "อ. 145/2569",
+      redNo: "-",
+      courtOrder: "หมายเรียกและสำเนาคำฟ้องศาลปกครอง",
+      statuteLimitation: "30 วัน"
+    },
+    {
+      id: "คดีปกครอง-2569/003",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      title: "คดีปกครองฟ้องเพิกถอนคำสั่งชี้มูลความผิดทางวินัยอย่างร้ายแรง กรณีทุจริตที่ดิน",
+      source: "ศาลปกครองกลาง (e-Court)",
+      accuser: "นายสุรศักดิ์ กล้าหาญ",
+      accused: "คณะกรรมการ ป.ป.ท.",
+      paccCaseNo: "ปปท. 0112/2567",
+      blackNo: "188/2569",
+      redNo: "-",
+      courtOrder: "คำฟ้องศาลปกครองกลาง",
+      statuteLimitation: "30 วัน"
     }
   ];
 
@@ -418,25 +168,26 @@
     
     getCaseById(id) {
       const cases = loadCases();
+      if (!cases || cases.length === 0) return null;
       return cases.find(c => c.id === id) || cases[0];
     },
 
     getTorDetails(c) {
-      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)", plaintiff: "พนักงานอัยการ / สำนักงาน ป.ป.ท.", defendant: "นายสมชาย ทุจริตมั่น", paccCaseNo: "ปปท. 0012/2568", blackNo: "อ. 104/2569", redNo: "อ. 308/2569", courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ", division: "กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ", statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)" };
+      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)", plaintiff: "พนักงานอัยการ / สำนักงาน ป.ป.ท.", defendant: "นายสมชาย ทุจริตมั่น", paccCaseNo: "ปปท. 0012/2568", blackNo: "อ. 104/2569", redNo: "อ. 308/2569", courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ", division: "กองกฎหมาย (กอท.)", statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)" };
 
-      const seed = INITIAL_CASES.find(ic => ic.id === c.id);
+      const seed = PACC_INTAKE_DATABASE.find(ic => ic.id === c.id);
 
       return {
         accuser: c.accuser || (seed ? seed.accuser : "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท."),
         accused: c.accused || (seed ? seed.accused : "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)"),
         plaintiff: c.plaintiff || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
         defendant: c.defendant || c.accused || (seed ? seed.accused : "นายสมชาย ทุจริตมั่น"),
-        paccCaseNo: c.paccCaseNo || "ปปท. 0012/2568",
-        blackNo: c.blackNo || "อ. 104/2569",
-        redNo: c.redNo || "อ. 308/2569",
-        courtOrder: c.courtOrder || "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ",
-        division: c.division || "กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ",
-        statuteLimitation: c.statuteLimitation || "15 ปี (หมดอายุความ 28 ก.ค. 2584)"
+        paccCaseNo: c.paccCaseNo || (seed && seed.paccCaseNo ? seed.paccCaseNo : "ปปท. 0012/2568"),
+        blackNo: c.blackNo || (seed && seed.blackNo ? seed.blackNo : "อ. 104/2569"),
+        redNo: c.redNo || (seed && seed.redNo ? seed.redNo : "อ. 308/2569"),
+        courtOrder: c.courtOrder || (seed && seed.courtOrder ? seed.courtOrder : "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ"),
+        division: c.division || "กองกฎหมาย (กอท.)",
+        statuteLimitation: c.statuteLimitation || (seed && seed.statuteLimitation ? seed.statuteLimitation : "15 ปี (หมดอายุความ 28 ก.ค. 2584)")
       };
     },
 
@@ -455,8 +206,8 @@
         prosecutorCaseTypeNo: newCaseData.prosecutorCaseTypeNo || "1",
         prosecutorCaseTypeName: newCaseData.prosecutorCaseTypeName || "1. อัยการมีความเห็นไม่ส่งฟ้อง",
         source: newCaseData.source || "ศูนย์รับเรื่องร้องเรียน",
-        officer: newCaseData.officer || "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี)",
-        assignedRole: "case_management",
+        officer: newCaseData.officer || "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)",
+        assignedRole: "admin_legal",
         status: "รอธุรการออกเลข",
         statusCode: "PENDING_LEGAL_ADMIN",
         statusBadge: "bg-info text-white",
@@ -568,14 +319,14 @@
         item.centralSarabanNo = data.centralSarabanNo || item.centralSarabanNo || `2569/${Math.floor(1000 + Math.random() * 9000)}`;
         item.physicalDocDate = data.physicalDocDate || new Date().toISOString().split('T')[0];
         item.scannedDocFile = data.scannedDocFile || "เอกสารสแกนฉบับจริง_สารบรรณกลาง.pdf";
-        item.boardAdminOfficer = data.boardAdminOfficer || "นางสาวศิริพร กิจการ (เจ้าหน้าที่กองบริหารคดี / กลุ่มงานกิจการคณะกรรมการ)";
+        item.boardAdminOfficer = data.boardAdminOfficer || "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)";
         item.scannedStatus = "scanned";
         saveCases(cases);
       }
       return item;
     },
 
-    forwardToGroupDirector(id, targetDirectorName) {
+    forwardToGroupDirector(id, targetDirectorName, notes) {
       const cases = loadCases();
       const item = cases.find(c => c.id === id);
       if (item) {
@@ -583,8 +334,10 @@
         item.status = "รอ ผอ.กลุ่มงานความเห็นแย้ง พิจารณา";
         item.statusBadge = "bg-primary text-white";
         item.assignedRole = "group_director";
-        item.workflowStep = 3;
+        item.workflowStep = 4;
         if (targetDirectorName) item.groupDirector = targetDirectorName;
+        if (notes) item.directorNotes = notes;
+        item.directorForwardedDate = new Date().toLocaleString('th-TH');
         saveCases(cases);
       }
       return item;
