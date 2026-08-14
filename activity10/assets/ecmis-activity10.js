@@ -343,6 +343,24 @@
       return item;
     },
 
+    forwardToLegalOfficer(id, officerName, notes, deadlineDate) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "DRAFTING_OPINION";
+        item.status = "กำลังยกร่างความเห็นแย้ง";
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
+        item.officer = officerName || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+        item.workflowStep = 5;
+        if (notes) item.groupDirectorNotes = notes;
+        if (deadlineDate) item.officerDeadline = deadlineDate;
+        item.groupDirectorForwardedDate = new Date().toLocaleString('th-TH');
+        saveCases(cases);
+      }
+      return item;
+    },
+
     resetData() {
       saveCases(INITIAL_CASES);
       return INITIAL_CASES;

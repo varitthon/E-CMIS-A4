@@ -78,11 +78,11 @@ const ROLES = [
     responsibilities:'วิเคราะห์ข้อกฎหมาย/ข้อเท็จจริง, จัดทำบันทึกความเห็น (เห็นชอบ/เห็นแย้ง), ร่างคำให้การ/คำแก้อุทธรณ์คดีปกครอง และติดตามสถานะ/ผลคำพิพากษา',
     note:'หากงานล้นมือ นิติกรกลุ่มงานอื่นอาจถูกมอบหมายให้ช่วยดำเนินการในคดีที่ไม่ซับซ้อนได้',
     perms:['view.all','download','legal.opinion','doc.generate'] },
-  { id:'group_director', login:'Arnon.C', row:11, group:'กองกฎหมาย', title:'ผู้อำนวยการกลุ่มงาน',
-    name:'นายอานนท์ ชนประชา', org:'กองกฎหมาย', act:'10.1, 10.2, 10.3',
-    responsibilities:'กลั่นกรองงานในระดับกลุ่มงาน และให้ความเห็นชอบเบื้องต้นก่อนเสนอผู้อำนวยการกอง',
-    note:'กลั่นกรองในระดับกลุ่มงานก่อนเสนอผู้อำนวยการกอง',
-    perms:['view.all','download','approve.group'] },
+  { id:'group_director', login:'Arnon.C', row:11, group:'กองกฎหมาย (กลุ่มงานความเห็นแย้ง)', title:'ผู้อำนวยการกลุ่มงานความเห็นแย้ง',
+    name:'นายอานนท์ ชนประชา', org:'กองกฎหมาย (กอท.)', act:'10.1, 10.2, 10.3',
+    responsibilities:'ตรวจพิจารณาสำนวนที่ได้รับมอบหมายจาก ผอ.กองกฎหมาย และมอบหมายสั่งการให้นิติกรผู้รับผิดชอบสำนวนดำเนินการจัดทำความเห็นแย้ง/คำให้การ',
+    note:'พิจารณาและมอบหมายส่งต่องานให้นิติกรในกลุ่มงานความเห็นแย้ง',
+    perms:['view.all','download','assign.officer','approve.group'] },
   { id:'dir_legal', login:'Napas.S', row:12, group:'กองกฎหมาย', title:'ผู้อำนวยการกองกฎหมาย',
     name:'นางสาวณพัสตร์ ศรีสมเกียรติ', org:'กองกฎหมาย', act:'10.1, 10.2, 10.3',
     responsibilities:'มอบหมายงานให้นิติกร, ตรวจสอบความถูกต้องของความเห็นทางกฎหมาย และลงนามเห็นชอบตามลำดับขั้น',
@@ -915,7 +915,8 @@ function canRecall(kase, roleId){
 const NAV = [
   { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
   { href:'01-work-inbox.html', icon:'fa-inbox', label:'งานกฎหมายในทางคดีที่รอดำเนินการ', badge:true, visible: role => true },
-  { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' }
+  { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
+  { href:'05-group-director-review.html', icon:'fa-user-gear', label:'พิจารณาและมอบหมายนิติกร', visible: role => role.id === 'group_director' || role.id === 'Arnon.C' }
 ];
 
 /* คืนเฉพาะรายการเมนูที่บทบาทนี้เห็น พร้อมตัด section header ที่ไม่มีรายการ
