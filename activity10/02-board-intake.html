@@ -146,7 +146,7 @@
               </div>
               <div class="col-md-6" id="div_prosecutorCaseType">
                 <label class="form-label fw-bold">กรณีความเห็น/คำสั่งพนักงานอัยการ <span class="text-danger">*</span></label>
-                <select id="in_prosecutorCaseType" class="form-select form-select-sm">
+                <select id="in_prosecutorCaseType" class="form-select form-select-sm" onchange="toggleProsecutorOtherInput()">
                   <option value="1">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
                   <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
                   <option value="3">3. อัยการมีความเห็นสั่งไม่อุทธรณ์</option>
@@ -159,6 +159,10 @@
                   <option value="10">10. อัยการมีความเห็นสั่งถอนฎีกา</option>
                   <option value="11">11. อื่นๆ</option>
                 </select>
+                <div id="div_prosecutorOther" class="mt-2" style="display:none;">
+                  <label class="form-label fw-bold small text-dark mb-1">ระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ) <span class="text-danger">*</span></label>
+                  <input type="text" id="in_prosecutorOtherText" class="form-control form-control-sm" placeholder="โปรดระบุรายละเอียดกรณีอื่นๆ..." oninput="updateLivePreview();">
+                </div>
               </div>
             </div>
             <div class="row g-2 mb-2">
@@ -273,12 +277,27 @@
     toggleProsecutorCaseTypeDiv();
   });
 
+  function toggleProsecutorOtherInput() {
+    const select = document.getElementById('in_prosecutorCaseType');
+    const otherDiv = document.getElementById('div_prosecutorOther');
+    if (select && otherDiv) {
+      if (select.value === '11') {
+        otherDiv.style.display = 'block';
+        const input = document.getElementById('in_prosecutorOtherText');
+        if (input) input.focus();
+      } else {
+        otherDiv.style.display = 'none';
+      }
+    }
+  }
+
   function toggleProsecutorCaseTypeDiv() {
     const cat = document.getElementById('in_category').value;
     const div = document.getElementById('div_prosecutorCaseType');
     if (div) {
       if (cat === '10.1') {
         div.style.display = 'block';
+        toggleProsecutorOtherInput();
       } else {
         div.style.display = 'none';
       }
@@ -537,8 +556,16 @@
     const source = document.getElementById('in_source').value.trim();
     const category = document.getElementById('in_category').value;
     const prosecutorCaseTypeSelect = document.getElementById('in_prosecutorCaseType');
+    const prosecutorOtherInput = document.getElementById('in_prosecutorOtherText');
     const prosecutorCaseTypeNo = (category === '10.1' && prosecutorCaseTypeSelect) ? prosecutorCaseTypeSelect.value : '';
-    const prosecutorCaseTypeName = (category === '10.1' && prosecutorCaseTypeSelect && prosecutorCaseTypeSelect.options) ? prosecutorCaseTypeSelect.options[prosecutorCaseTypeSelect.selectedIndex].text : '';
+    let prosecutorCaseTypeName = '';
+    if (category === '10.1' && prosecutorCaseTypeSelect && prosecutorCaseTypeSelect.options) {
+      if (prosecutorCaseTypeSelect.value === '11' && prosecutorOtherInput && prosecutorOtherInput.value.trim()) {
+        prosecutorCaseTypeName = `11. อื่นๆ (${prosecutorOtherInput.value.trim()})`;
+      } else {
+        prosecutorCaseTypeName = prosecutorCaseTypeSelect.options[prosecutorCaseTypeSelect.selectedIndex].text;
+      }
+    }
     const legalOpinion = document.getElementById('in_legalOpinion').value.trim();
     const physicalDocDate = document.getElementById('in_physicalDocDate').value;
     const accuser = (document.getElementById('in_accuser') ? document.getElementById('in_accuser').value.trim() : '');
