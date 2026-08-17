@@ -35,31 +35,21 @@
   <div class="card card-ecmis mb-3">
     <div class="card-body p-3">
       <div class="row g-2 align-items-center">
-        <div class="col-md-4">
+        <div class="col-md-6">
           <div class="input-group">
             <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขสำนวน / ชื่อเรื่อง / นิติกร..." onkeyup="currentPage = 1; renderTable()">
+            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขสำนวน / เลขรับกองกฎหมาย / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา / นิติกร..." onkeyup="currentPage = 1; renderTable()">
           </div>
         </div>
         <div class="col-md-3">
-          <select class="form-select form-select-sm" id="categoryFilter" onchange="renderTable()">
-            <option value="all">ทุกหมวดหมู่งานกฎหมาย</option>
+          <select class="form-select form-select-sm" id="categoryFilter" title="ประเภทคดี" aria-label="ประเภทคดี" onchange="renderTable()">
+            <option value="all">ทั้งหมด</option>
             <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
-            <option value="10.2">คำร้อง/อุทธรณ์ข้อมูลข่าวสาร (รวม)</option>
             <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-            <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
             <option value="10.3">คดีศาลปกครอง</option>
           </select>
         </div>
-        <div class="col-md-3">
-          <select class="form-select form-select-sm" id="slaFilter" onchange="renderTable()">
-            <option value="all">ทุกสถานะกรอบเวลา</option>
-            <option value="normal">ปกติ (ชิลล์ในกรอบเวลา)</option>
-            <option value="warning">เตือนส้ม (เหลือ ≤ 15 วัน)</option>
-            <option value="danger">เตือนแดง (เหลือ ≤ 5 วัน)</option>
-          </select>
-        </div>
-        <div class="col-md-2 text-end d-flex align-items-center justify-content-end gap-2">
+        <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-2">
           <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" onclick="clearFilters()" title="ล้างตัวกรองทั้งหมด">
             <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
           </button>
@@ -81,21 +71,25 @@
             <table class="table table-hover tbl-ecmis mb-0">
               <colgroup>
                 <col style="width:40px">
-                <col style="width:160px">
-                <col style="width:150px">
-                <col>
-                <col style="width:150px">
+                <col style="width:110px">
+                <col style="width:130px">
                 <col style="width:140px">
+                <col>
                 <col style="width:160px">
+                <col style="width:140px">
+                <col style="width:150px">
+                <col style="width:110px">
               </colgroup>
               <thead>
                 <tr>
                   <th><input type="checkbox" id="chkSelectAll" class="form-check-input" onchange="toggleSelectAll(this)" title="เลือกทั้งหมด"></th>
                   <th>เลขสำนวน</th>
-                  <th>หมวดหมู่คดี</th>
+                  <th>เลขรับกองกฎหมาย</th>
+                  <th>ประเภทคดี</th>
                   <th>เรื่อง / รายละเอียด</th>
-                  <th>สถานะขั้นตอน</th>
-                  <th>กรอบเวลา</th>
+                  <th>ชื่อผู้ถูกกล่าวหา</th>
+                  <th>สถานะปัจจุบัน</th>
+                  <th>วันที่สิ้นสุดอายุความ</th>
                   <th class="text-end">ดำเนินการ</th>
                 </tr>
               </thead>
@@ -304,25 +298,17 @@
   function filterByKpi(type) {
     currentPage = 1;
     const catSelect = document.getElementById("categoryFilter");
-    const slaSelect = document.getElementById("slaFilter");
 
     if (type === 'all' || activeKpiFilter === type) {
       activeKpiFilter = 'all';
-      catSelect.value = 'all';
-      slaSelect.value = 'all';
+      if (catSelect) catSelect.value = 'all';
     } else {
       if (type === '10.1') {
-        catSelect.value = '10.1';
-        slaSelect.value = 'all';
-      } else if (type === '10.2') {
-        catSelect.value = '10.2';
-        slaSelect.value = 'all';
+        if (catSelect) catSelect.value = '10.1';
+      } else if (type === '10.2' || type === '10.2.1') {
+        if (catSelect) catSelect.value = '10.2.1';
       } else if (type === '10.3') {
-        catSelect.value = '10.3';
-        slaSelect.value = 'all';
-      } else if (type === 'danger') {
-        catSelect.value = 'all';
-        slaSelect.value = 'danger';
+        if (catSelect) catSelect.value = '10.3';
       }
     }
     renderTable();
@@ -330,14 +316,12 @@
 
   function updateKpiActiveState() {
     const cat = document.getElementById("categoryFilter") ? document.getElementById("categoryFilter").value : 'all';
-    const sla = document.getElementById("slaFilter") ? document.getElementById("slaFilter").value : 'all';
 
     let currentActive = null;
-    if (cat === 'all' && sla === 'all') currentActive = 'all';
-    else if (cat === '10.1' && sla === 'all') currentActive = '10.1';
-    else if (cat === '10.2' && sla === 'all') currentActive = '10.2';
-    else if (cat === '10.3' && sla === 'all') currentActive = '10.3';
-    else if (cat === 'all' && sla === 'danger') currentActive = 'danger';
+    if (cat === 'all') currentActive = 'all';
+    else if (cat === '10.1') currentActive = '10.1';
+    else if (cat === '10.2.1' || cat === '10.2') currentActive = '10.2';
+    else if (cat === '10.3') currentActive = '10.3';
 
     activeKpiFilter = currentActive;
 
@@ -353,8 +337,7 @@
   function clearFilters() {
     currentPage = 1;
     document.getElementById("searchInput").value = "";
-    document.getElementById("categoryFilter").value = "all";
-    document.getElementById("slaFilter").value = "all";
+    if (document.getElementById("categoryFilter")) document.getElementById("categoryFilter").value = "all";
     renderTable();
   }
 
@@ -402,22 +385,46 @@
 
   function renderTable() {
     const q = document.getElementById("searchInput").value.toLowerCase().trim();
-    const cat = document.getElementById("categoryFilter").value;
-    const sla = document.getElementById("slaFilter").value;
+    const cat = document.getElementById("categoryFilter") ? document.getElementById("categoryFilter").value : 'all';
 
     updateKpiActiveState();
 
     let cases = getCasesForCurrentRole();
 
     cases = cases.filter(c => {
-      const matchQ = !q || c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || c.officer.toLowerCase().includes(q);
-      const matchCat = (cat === 'all') || (c.category === cat) || (cat === '10.2' && c.category.startsWith('10.2'));
-      let matchSla = true;
-      if (sla === 'normal') matchSla = c.slaDaysRemaining > 15;
-      if (sla === 'warning') matchSla = c.slaDaysRemaining <= 15 && c.slaDaysRemaining > 5;
-      if (sla === 'danger') matchSla = c.slaDaysRemaining <= 5;
+      const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
+      const caseId = (c.id || '').toLowerCase();
+      const cleanId = caseId.replace(/^.*?-/, '');
+      const paccCaseNo = (c.paccCaseNo || (tor && tor.paccCaseNo) || '').toLowerCase();
+      const investigationNo = (c.investigationNo || '').toLowerCase();
+      const lawReceiveNo = (c.lawReceiveNo || '').toLowerCase();
+      const title = (c.title || '').toLowerCase();
+      const officer = (c.officer || '').toLowerCase();
+      const accuser = (c.accuser || (tor && tor.accuser) || '').toLowerCase();
+      const accused = (c.accused || (tor && tor.accused) || '').toLowerCase();
+      const docNo = (c.docNo || '').toLowerCase();
+      const centralSarabanNo = (c.centralSarabanNo || '').toLowerCase();
 
-      return matchQ && matchCat && matchSla;
+      const matchQ = !q || 
+        caseId.includes(q) || 
+        cleanId.includes(q) || 
+        paccCaseNo.includes(q) || 
+        investigationNo.includes(q) || 
+        lawReceiveNo.includes(q) || 
+        title.includes(q) || 
+        officer.includes(q) || 
+        accuser.includes(q) || 
+        accused.includes(q) || 
+        docNo.includes(q) || 
+        centralSarabanNo.includes(q);
+
+      const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining)
+        ? Activity10.calculateDaysRemaining(c)
+        : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
+
+      const matchCat = (cat === 'all') || (c.category === cat) || (cat === '10.2.1' && (c.category === '10.2.1' || c.category.startsWith('10.2')));
+
+      return matchQ && matchCat;
     });
 
     const tbody = document.getElementById("caseTableBody");
@@ -426,7 +433,7 @@
     if (cases.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" class="text-center py-5 text-muted">
+          <td colspan="9" class="text-center py-5 text-muted">
             <div class="py-4">
               <i class="fa-solid fa-inbox text-secondary opacity-50 mb-3" style="font-size: 3rem;"></i>
               <div class="fs-5 fw-bold text-dark mb-1">ยังไม่มีรายการสำนวนคดีในระบบ</div>
@@ -452,8 +459,27 @@
 
     let html = "";
     paginatedCases.forEach(c => {
-      const isUrgent = c.slaDaysRemaining <= 5;
+      const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining)
+        ? Activity10.calculateDaysRemaining(c)
+        : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
+      const isUrgent = days <= 7;
       const actionButtonHtml = getActionButtonHtml(c, currentRole);
+      const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
+      const displayPaccNo = c.paccCaseNo || (tor && tor.paccCaseNo) || '';
+      const displayAccused = c.accused || (tor && tor.accused) || (tor && tor.defendant) || '';
+      const cleanAccused = displayAccused.replace(/\s*\([^)]*\)/g, '').trim();
+
+      // นับวัน และถ้าเวลาเหลือ <= 7 วัน ให้เปลี่ยนสีตัวอักษรเป็นสีแดง
+      let slaHtml = '';
+      if (days <= 0) {
+        slaHtml = `<span class="text-danger fw-bold small"><i class="fa-solid fa-triangle-exclamation text-danger me-1"></i>เกินกำหนด ${Math.abs(days)} วัน</span>`;
+      } else if (days <= 7) {
+        slaHtml = `<span class="text-danger fw-bold small"><i class="fa-solid fa-clock text-danger me-1"></i>เหลือ ${days} วัน</span>`;
+      } else if (days <= 15) {
+        slaHtml = `<span class="text-warning-emphasis fw-semibold small"><i class="fa-solid fa-clock text-warning me-1"></i>เหลือ ${days} วัน</span>`;
+      } else {
+        slaHtml = `<span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>เหลือ ${days} วัน</span>`;
+      }
 
       html += `
         <tr>
@@ -461,13 +487,20 @@
           <td>
             <strong class="text-dark font-monospace">${c.id.replace(/^.*?-/, '')}</strong>
           </td>
+          <td>
+            ${c.lawReceiveNo 
+              ? `<div class="text-primary font-monospace fw-bold" style="font-size:0.82rem;"><i class="fa-solid fa-receipt me-1"></i>${c.lawReceiveNo}</div>` 
+              : `<span class="text-muted small">- ยังไม่ออกเลข -</span>`}
+          </td>
           <td><span class="text-dark small">${c.categoryName}</span></td>
           <td>
             <div class="fw-bold text-dark">${c.title}</div>
-            <small class="text-muted"><i class="fa-solid fa-user me-1"></i>${c.officer}</small>
+          </td>
+          <td>
+            ${cleanAccused ? `<span class="text-dark fw-medium small">${cleanAccused}</span>` : `<span class="text-muted small">-</span>`}
           </td>
           <td><span class="st ${c.statusBadge}">${c.status}</span></td>
-          <td><span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>เหลือ ${c.slaDaysRemaining} วัน</span></td>
+          <td>${slaHtml}</td>
           <td class="text-end">
             ${actionButtonHtml}
           </td>
@@ -622,7 +655,6 @@
             <select id="swalCat" class="form-select form-select-sm">
               <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
               <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-              <option value="10.2.2">การขออุทธรณ์ในการเปิดเผยข้อมูลข่าวสาร</option>
               <option value="10.3">คดีศาลปกครอง</option>
             </select>
           </div>

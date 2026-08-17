@@ -7,10 +7,153 @@
   'use strict';
 
   // Data Version Key for LocalStorage Sync
-  const DATA_VERSION = 'v4_clean_empty_initial';
+  const DATA_VERSION = 'v5_sample_urgent_cases_under_7d';
 
-  // Initial Cases in Legal Inbox (เริ่มต้นแบบสะอาด ยังไม่มีการรับเรื่องเข้ามา)
-  const INITIAL_CASES = [];
+  function getDateWithOffset(daysOffset) {
+    const d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    return d.toISOString().split('T')[0];
+  }
+
+  // Initial Cases in Legal Inbox (ตัวอย่างสำนวนที่มีกรอบเวลาเร่งด่วน < 7 วัน และแบบปกติ)
+  const INITIAL_CASES = [
+    {
+      id: "คดี-2569/002",
+      title: "พิจารณาความเห็นแย้งคดีเบิกจ่ายเงินงบประมาณอุดหนุนโครงการฝึกอบรมเท็จ",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
+      prosecutorCaseTypeNo: "1",
+      prosecutorCaseTypeName: "1. อัยการมีความเห็นไม่ส่งฟ้อง",
+      source: "สนง. ป.ป.ท. เขต 3",
+      accuser: "สำนักงาน ป.ป.ท. เขต 3",
+      accused: "นายวิชัย การกุศล (เจ้าพนักงานจัดเก็บรายได้)",
+      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
+      assignedRole: "legal_officer",
+      status: "นิติกรกำลังจัดทำความเห็น",
+      statusCode: "DRAFTING_OPINION",
+      statusBadge: "bg-warning text-dark",
+      lawReceiveNo: "2569/0350",
+      paccCaseNo: "ปปท. 0045/2568",
+      blackNo: "อ. 118/2569",
+      redNo: "อ. 340/2569",
+      courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
+      statuteLimitation: "10 ปี (หมดอายุความ 15 ส.ค. 2579)",
+      slaTotalDays: 15,
+      slaDaysRemaining: 5,
+      slaAlert: "sla-danger",
+      dateReceived: getDateWithOffset(-10),
+      dueDate: getDateWithOffset(5), // เหลือ 5 วัน (< 7 วัน => สีแดง)
+      workflowStep: 4,
+      docType: "คำสั่งไม่ฟ้องของพนักงานอัยการ",
+      docNo: "อส 0018/2569",
+      legalOpinion: "ตรวจพิจารณาข้อเท็จจริงและพยานหลักฐานแล้ว เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้อง",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
+    },
+    {
+      id: "คดี-2569/001",
+      title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
+      prosecutorCaseTypeNo: "1",
+      prosecutorCaseTypeName: "1. อัยการมีความเห็นไม่ส่งฟ้อง",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+      accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+      accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
+      officer: "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)",
+      assignedRole: "admin_legal",
+      status: "รอธุรการออกเลข",
+      statusCode: "PENDING_LEGAL_ADMIN",
+      statusBadge: "bg-info text-white",
+      lawReceiveNo: "",
+      paccCaseNo: "ปปท. 0012/2568",
+      blackNo: "อ. 104/2569",
+      redNo: "อ. 308/2569",
+      courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+      statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)",
+      slaTotalDays: 15,
+      slaDaysRemaining: 3,
+      slaAlert: "sla-danger",
+      dateReceived: getDateWithOffset(-12),
+      dueDate: getDateWithOffset(3), // เหลือ 3 วัน (< 7 วัน => สีแดง)
+      workflowStep: 2,
+      docType: "คำสั่งไม่ฟ้องของพนักงานอัยการ",
+      docNo: "อส 0012/2568",
+      legalOpinion: "อยู่ระหว่างตรวจพิจารณาข้อเท็จจริงและพยานหลักฐาน",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
+    },
+    {
+      id: "คดีปกครอง-2569/002",
+      title: "คดีปกครองหมายเลขดำที่ อ.145/2569 ศาลปกครองสูงสุดออกหมายเรียกให้ทำคำให้การเพิ่มเติม",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      prosecutorCaseTypeNo: "1",
+      prosecutorCaseTypeName: "1. คดีศาลปกครอง",
+      source: "ศาลปกครองสูงสุด (e-Court System)",
+      accuser: "นายเฉลิมพล สุขสวัสดิ์ (ผู้ฟ้องคดี)",
+      accused: "เลขาธิการ ป.ป.ท. และคณะกรรมการ ป.ป.ท.",
+      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
+      assignedRole: "legal_officer",
+      status: "นิติกรกำลังจัดทำความเห็น",
+      statusCode: "DRAFTING_OPINION",
+      statusBadge: "bg-warning text-dark",
+      lawReceiveNo: "2569/0355",
+      paccCaseNo: "ปปท. 0090/2567",
+      blackNo: "อ. 145/2569",
+      redNo: "-",
+      courtOrder: "หมายเรียกและสำเนาคำฟ้องศาลปกครอง",
+      statuteLimitation: "30 วัน",
+      slaTotalDays: 30,
+      slaDaysRemaining: 2,
+      slaAlert: "sla-danger",
+      dateReceived: getDateWithOffset(-28),
+      dueDate: getDateWithOffset(2), // เหลือ 2 วัน (< 7 วัน => สีแดง)
+      workflowStep: 4,
+      docType: "หมายเรียกศาลปกครอง",
+      docNo: "ศป 0145/2569",
+      legalOpinion: "อยู่ระหว่างยกร่างคำให้การเพิ่มเติมและรวบรวมพยานหลักฐาน",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
+    },
+    {
+      id: "คำร้อง-2569/014",
+      title: "คำร้องขอเปิดเผยข้อมูลข่าวสารรายงานการไต่สวนข้อเท็จจริงคดีบริหารงานผิดพลาด",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      prosecutorCaseTypeNo: "1",
+      prosecutorCaseTypeName: "1. คำร้องขอเปิดเผยข้อมูล",
+      source: "ศูนย์รับเรื่องร้องเรียน ป.ป.ท. (ยื่น Walk-in)",
+      accuser: "นายสมเกียรติ รักธรรม (ผู้ร้องเรียน)",
+      accused: "คณะกรรมการไต่สวน ป.ป.ท.",
+      officer: "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
+      assignedRole: "legal_officer",
+      status: "เสนอ ผอ.กลุ่มงาน ตรวจร่างความเห็น",
+      statusCode: "PENDING_GROUP_REVIEW",
+      statusBadge: "bg-primary text-white",
+      lawReceiveNo: "2569/0352",
+      paccCaseNo: "ปปท. ขบ 0014/2569",
+      blackNo: "-",
+      redNo: "-",
+      courtOrder: "คำร้องขอเปิดเผยข้อมูลข่าวสาร",
+      statuteLimitation: "60 วัน",
+      slaTotalDays: 15,
+      slaDaysRemaining: 10,
+      slaAlert: "sla-normal",
+      dateReceived: getDateWithOffset(-5),
+      dueDate: getDateWithOffset(10), // เหลือ 10 วัน
+      workflowStep: 5,
+      docType: "หนังสือคำร้องขอข้อมูลข่าวสาร",
+      docNo: "ขบ 0014/2569",
+      legalOpinion: "เห็นควรเปิดเผยข้อมูลข่าวสารตาม พ.ร.บ. ข้อมูลข่าวสารของราชการ พ.ศ. 2540",
+      signatureStamped: false,
+      signedBy: "",
+      signedDate: ""
+    }
+  ];
 
   // Load Persisted Cases from LocalStorage
   function loadCases() {
@@ -194,6 +337,44 @@
         division: c.division || "กองกฎหมาย (กอท.)",
         statuteLimitation: c.statuteLimitation || (seed && seed.statuteLimitation ? seed.statuteLimitation : "15 ปี (หมดอายุความ 28 ก.ค. 2584)")
       };
+    },
+
+    calculateDaysRemaining(c) {
+      if (!c) return 15;
+      const targetDateStr = c.officerDeadline || c.dueDate;
+      if (targetDateStr) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const m = String(targetDateStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) {
+          let year = parseInt(m[1], 10);
+          if (year > 2500) year -= 543;
+          const month = parseInt(m[2], 10) - 1;
+          const day = parseInt(m[3], 10);
+          const targetDate = new Date(year, month, day);
+          if (!isNaN(targetDate.getTime())) {
+            const diffTime = targetDate.getTime() - today.getTime();
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          }
+        }
+      }
+      if (typeof c.slaDaysRemaining === 'number') {
+        return c.slaDaysRemaining;
+      }
+      return 15;
+    },
+
+    renderSlaBadgeHtml(c) {
+      const days = Activity10.calculateDaysRemaining(c);
+      if (days <= 0) {
+        return `<span class="text-danger fw-bold small"><i class="fa-solid fa-triangle-exclamation text-danger me-1"></i>เกินกำหนด ${Math.abs(days)} วัน</span>`;
+      } else if (days <= 7) {
+        return `<span class="text-danger fw-bold small"><i class="fa-solid fa-clock text-danger me-1"></i>เหลือ ${days} วัน</span>`;
+      } else if (days <= 15) {
+        return `<span class="text-warning-emphasis fw-semibold small"><i class="fa-solid fa-clock text-warning me-1"></i>เหลือ ${days} วัน</span>`;
+      } else {
+        return `<span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>เหลือ ${days} วัน</span>`;
+      }
     },
 
     addCase(newCaseData) {

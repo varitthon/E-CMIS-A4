@@ -936,11 +936,75 @@ function renderShell(activeHref){
   const inboxCount = inboxFor(role.id).length;
 
   /* ---- notification center ---- */
-  const notifications = [
-    { title:'เสนอเรื่องใหม่', body:'สำนวน คดี-10.1-2569/001 รอลงนามความเห็นแย้ง', time:'10 นาทีที่แล้ว', icon:'fa-user-check', cls:'bg-primary text-white' },
-    { title:'คำร้องขอเปิดเผยข้อมูล', body:'คำร้อง-10.2-2569/014 เข้าสู่ระบบแล้ว', time:'1 ชม. ที่แล้ว', icon:'fa-envelope-open-text', cls:'bg-success text-white' },
-    { title:'เตือนกรอบเวลาคดีปกครอง', body:'คดีปกครอง-10.3-2569/002 เหลือเวลา 5 วัน', time:'2 ชม. ที่แล้ว', icon:'fa-clock', cls:'bg-warning text-dark' }
-  ];
+  let notifications = [];
+  const allCases = (typeof Activity10 !== 'undefined' && Activity10.getCases) ? Activity10.getCases() : [];
+
+  if (role.id === 'legal_officer' || role.id === 'Nattapol.B') {
+    // นิติกร: แสดงการแจ้งเตือนสำนวนคดีที่รับผิดชอบ พร้อมแจ้งเตือนกรอบเวลาเร่งด่วน (<= 7 วัน)
+    const officerCases = allCases.filter(c => {
+      return c.assignedRole === 'legal_officer' || c.statusCode === 'DRAFTING_OPINION' || (c.officer && c.officer.includes('ณัฐพล'));
+    });
+
+    if (officerCases.length > 0) {
+      officerCases.forEach(c => {
+        const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
+        const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining) 
+          ? Activity10.calculateDaysRemaining(c) 
+          : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
+        const cleanId = c.id.replace(/^.*?-/, '');
+        const paccNo = c.paccCaseNo || (tor && tor.paccCaseNo) || '';
+        const displayId = paccNo ? `${cleanId} (${paccNo})` : cleanId;
+
+        if (days <= 0) {
+          notifications.push({
+            title: `⚠️ สำนวนเกินกำหนดเวลา! (${cleanId})`,
+            body: `สำนวน ${displayId} เกินกำหนดเวลาแล้ว ${Math.abs(days)} วัน`,
+            time: 'ด่วนที่สุด',
+            icon: 'fa-triangle-exclamation',
+            cls: 'bg-danger text-white'
+          });
+        } else if (days <= 7) {
+          notifications.push({
+            title: `🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ ${days} วัน)`,
+            body: `สำนวน ${displayId} ครบกำหนดยกร่างความเห็นภายใน ${days} วัน`,
+            time: 'เร่งด่วน',
+            icon: 'fa-clock',
+            cls: 'bg-danger text-white'
+          });
+        } else if (days <= 15) {
+          notifications.push({
+            title: `🟠 เตือนกรอบเวลา (เหลือ ${days} วัน)`,
+            body: `สำนวน ${displayId} เหลือเวลาจัดทำความเห็น ${days} วัน`,
+            time: 'วันนี้',
+            icon: 'fa-clock',
+            cls: 'bg-warning text-dark'
+          });
+        } else {
+          notifications.push({
+            title: '📋 มอบหมายสำนวนใหม่',
+            body: `สำนวน ${displayId} อยู่ระหว่างจัดทำความเห็น (เหลือ ${days} วัน)`,
+            time: 'วันนี้',
+            icon: 'fa-user-pen',
+            cls: 'bg-primary text-white'
+          });
+        }
+      });
+    } else {
+      notifications = [
+        { title:'🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 5 วัน)', body:'สำนวน คดี-2569/001 ครบกำหนดยกร่างความเห็นแย้งภายใน 5 วัน', time:'เร่งด่วน', icon:'fa-clock', cls:'bg-danger text-white' },
+        { title:'🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 7 วัน)', body:'สำนวน คดี-2569/002 ครบกำหนดยกร่างความเห็นแย้งภายใน 7 วัน', time:'วันนี้', icon:'fa-clock', cls:'bg-danger text-white' },
+        { title:'📋 ได้รับมอบหมายสำนวนใหม่', body:'สำนวน คดีปกครอง-2569/002 ให้จัดทำคำให้การเพิ่มเติม', time:'1 ชม. ที่แล้ว', icon:'fa-user-pen', cls:'bg-primary text-white' }
+      ];
+    }
+  } else {
+    // Default notifications for other roles
+    notifications = [
+      { title:'เสนอเรื่องใหม่', body:'สำนวน คดี-10.1-2569/001 รอลงนามความเห็นแย้ง', time:'10 นาทีที่แล้ว', icon:'fa-user-check', cls:'bg-primary text-white' },
+      { title:'คำร้องขอเปิดเผยข้อมูล', body:'คำร้อง-10.2-2569/014 เข้าสู่ระบบแล้ว', time:'1 ชม. ที่แล้ว', icon:'fa-envelope-open-text', cls:'bg-success text-white' },
+      { title:'เตือนกรอบเวลาคดีปกครอง', body:'คดีปกครอง-10.3-2569/002 เหลือเวลา 5 วัน', time:'2 ชม. ที่แล้ว', icon:'fa-clock', cls:'bg-warning text-dark' }
+    ];
+  }
+
   const notifItems = notifications.map(n => `
     <li class="p-2 border-bottom" style="font-size:0.78rem">
       <div class="d-flex gap-2">
@@ -994,12 +1058,12 @@ function renderShell(activeHref){
       <button class="btn btn-sm text-white border-0" onclick="ECMIS.toggleHighContrast()" title="ปรับสีคอนทราสต์สูง"><i class="fa-solid fa-circle-half-stroke"></i></button>
       
       <!-- Notification bell dropdown -->
-      <div class="dropdown">
+      <div class="dropdown" id="topbarNotifDropdown">
         <button class="btn btn-sm text-white position-relative border-0" data-bs-toggle="dropdown" aria-expanded="false" title="การแจ้งเตือน">
           <i class="fa-regular fa-bell"></i>
-          <span class="position-absolute top-50 start-100 translate-middle-y badge rounded-pill bg-danger" style="font-size:.58rem; transform: translate(-30%, -85%) !important">3</span>
+          ${notifications.length > 0 ? `<span class="position-absolute top-50 start-100 translate-middle-y badge rounded-pill bg-danger" style="font-size:.58rem; transform: translate(-30%, -85%) !important" id="topbarNotifBadge">${notifications.length}</span>` : ''}
         </button>
-        <ul class="dropdown-menu dropdown-menu-end p-0" style="width:290px; max-height:360px; overflow-y:auto">
+        <ul class="dropdown-menu dropdown-menu-end p-0" style="width:290px; max-height:360px; overflow-y:auto" id="topbarNotifList">
           <li><h6 class="dropdown-header border-bottom p-2 text-dark dark-text-light" style="font-size: 0.82rem">การแจ้งเตือนล่าสุด</h6></li>
           ${notifItems}
           <li class="text-center p-2"><a href="#" style="font-size:0.75rem; text-decoration:none; color:var(--ecmis-navy)">ดูการแจ้งเตือนทั้งหมด</a></li>

@@ -59,13 +59,13 @@
               ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)
             </div>
             <div class="input-group input-group-sm">
-              <input type="text" id="intakeSearchInput" class="form-control" placeholder="พิมพ์เลขสำนวน / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
+              <input type="text" id="intakeSearchInput" class="form-control" placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..." onkeyup="handleIntakeSearchKeyup(event)">
               <button class="btn btn-navy px-3" type="button" onclick="executeIntakeSearch()">
                 ค้นหาสำนวน
               </button>
             </div>
             <div class="form-text text-muted" style="font-size:0.75rem;">
-              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น 2569/001), <strong>ชื่อผู้กล่าวหา</strong>, หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong>
+              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น 2569/001), <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong> (เช่น ปปท. 0012/2568), <strong>ชื่อผู้กล่าวหา</strong>, หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong>
             </div>
 
             <!-- Search Results Display Panel -->
@@ -75,7 +75,7 @@
 
             <!-- Selected Case Detail Display Card -->
             <div class="p-3 bg-light rounded border mt-3 d-none" id="selectedCaseDetailCard">
-              <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-folder-open me-1"></i> รายละเอียดสำนวนคดีเต็มที่เลือก</div>
+              <div class="fw-bold text-navy mb-2"><i class="fa-solid fa-folder-open me-1"></i> รายละเอียดคดี</div>
               <div class="row g-2">
                 <div class="col-12">
                   <label class="form-label fw-bold">เลขสำนวน</label>
@@ -92,21 +92,17 @@
                   </label>
                   <textarea class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_subject" rows="2" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;"></textarea>
                 </div>
-                <div class="col-6">
+                <div class="col-12">
                   <label class="form-label fw-bold">ผู้กล่าวหา / ผู้ร้อง</label>
                   <input type="text" class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_complainant" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;">
                 </div>
-                <div class="col-6">
-                  <label class="form-label fw-bold">ฐานการรับเรื่อง</label>
-                  <input type="text" class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_base" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;">
+                <div class="col-12">
+                  <label class="form-label fw-bold">ผู้ถูกกล่าวหา / จำเลย</label>
+                  <input type="text" class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_accused" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;">
                 </div>
-                <div class="col-6">
+                <div class="col-12">
                   <label class="form-label fw-bold">วันที่รับเรื่อง</label>
                   <input type="text" class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_received" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;">
-                </div>
-                <div class="col-6">
-                  <label class="form-label fw-bold">ต้องเริ่มไต่สวนภายใน (ม.23)</label>
-                  <input type="text" class="form-control form-control-sm text-secondary fw-semibold autofilled" id="f_deadline60" readonly="" disabled="" style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important; border-color: #ced4da !important;">
                 </div>
               </div>
             </div>
@@ -439,6 +435,9 @@
     const matched = cases.filter(c => {
       return (
         c.id.toLowerCase().includes(q) ||
+        (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
+        (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
+        (c.redNo && c.redNo.toLowerCase().includes(q)) ||
         (c.accuser && c.accuser.toLowerCase().includes(q)) ||
         (c.accused && c.accused.toLowerCase().includes(q)) ||
         c.title.toLowerCase().includes(q)
@@ -477,7 +476,10 @@
       const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, '_')}`;
       html += `
         <tr id="${safeRowId}" class="text-dark" style="cursor:pointer; color:#000000;" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
-          <td><strong class="text-dark font-monospace">${cleanId}</strong></td>
+          <td>
+            <strong class="text-dark font-monospace">${cleanId}</strong>
+            ${c.paccCaseNo ? `<div class="text-muted small">${c.paccCaseNo}</div>` : ''}
+          </td>
           <td class="text-dark">${c.accuser || '-'}</td>
           <td class="text-dark fw-semibold">${c.accused || '-'}</td>
           <td class="text-dark">${c.title} <span class="badge bg-navy ms-1" style="font-size:0.68rem"><i class="fa-solid fa-hand-pointer me-1"></i>เลือก</span></td>
@@ -495,10 +497,13 @@
     resultsContainer.innerHTML = html;
   }
 
+  let selectedIntakeCaseData = null;
+
   function selectIntakeCase(caseId) {
     const cases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
     const target = cases.find(c => c.id === caseId);
     if (!target) return;
+    selectedIntakeCaseData = target;
 
     const cleanId = target.id.replace(/^.*?-/, '');
 
@@ -516,9 +521,8 @@
     if (document.getElementById('f_caseId')) document.getElementById('f_caseId').value = cleanId;
     if (document.getElementById('f_subject')) document.getElementById('f_subject').value = target.title || '';
     if (document.getElementById('f_complainant')) document.getElementById('f_complainant').value = target.accuser || '-';
-    if (document.getElementById('f_base')) document.getElementById('f_base').value = target.source || 'สำนักงาน ป.ป.ท.';
+    if (document.getElementById('f_accused')) document.getElementById('f_accused').value = target.accused || target.defendant || '-';
     if (document.getElementById('f_received')) document.getElementById('f_received').value = target.dateReceived || '28 กรกฎาคม 2569';
-    if (document.getElementById('f_deadline60')) document.getElementById('f_deadline60').value = target.dueDate ? `${target.dueDate} (เหลือ ${target.slaDaysRemaining || 15} วัน)` : 'ภายใน 60 วัน นับแต่วันรับเรื่อง';
 
     const detailCard = document.getElementById('selectedCaseDetailCard');
     if (detailCard) {
@@ -594,7 +598,8 @@
           prosecutorCaseTypeName: prosecutorCaseTypeName,
           legalOpinion: legalOpinion,
           accuser: accuser,
-          accused: accused
+          accused: accused,
+          paccCaseNo: selectedIntakeCaseData ? selectedIntakeCaseData.paccCaseNo : ''
         });
 
         Activity10.savePhysicalDocIntake(newCase.id, {
