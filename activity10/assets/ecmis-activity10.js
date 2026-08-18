@@ -7,7 +7,7 @@
   'use strict';
 
   // Data Version Key for LocalStorage Sync
-  const DATA_VERSION = 'v5_sample_urgent_cases_under_7d';
+  const DATA_VERSION = 'v6_intake_with_law_receive_no';
 
   function getDateWithOffset(daysOffset) {
     const d = new Date();
@@ -61,12 +61,12 @@
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
       accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
       accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)",
-      officer: "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)",
-      assignedRole: "admin_legal",
-      status: "รอธุรการออกเลข",
-      statusCode: "PENDING_LEGAL_ADMIN",
-      statusBadge: "bg-info text-white",
-      lawReceiveNo: "",
+      officer: "นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)",
+      assignedRole: "dir_legal",
+      status: "เสนอ ผอ.กองกฎหมาย พิจารณา/สั่งการ",
+      statusCode: "PENDING_DIRECTOR",
+      statusBadge: "bg-primary text-white",
+      lawReceiveNo: "2569/0348",
       paccCaseNo: "ปปท. 0012/2568",
       blackNo: "อ. 104/2569",
       redNo: "อ. 308/2569",

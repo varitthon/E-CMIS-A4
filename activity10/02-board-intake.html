@@ -204,12 +204,34 @@
             </div>
           </div>
 
-          <!-- Submit Buttons -->
-          <div class="d-flex align-items-center gap-2 pt-2 border-top">
-            <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitBoardIntakeForm()">
-              <i class="fa-solid fa-paper-plane me-1"></i> บันทึกข้อมูล & ส่งต่อให้กองกฎหมาย
-            </button>
-            <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+          <!-- Card: Issue Legal Receive Number (ระบบออกเลขรับกองกฎหมาย - ธุรการกองกฎหมาย) -->
+          <div class="card card-ecmis border-warning bg-warning-subtle mt-3" id="legalReceiveCard">
+            <div class="card-body p-3 small">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="fw-bold text-dark fs-6"><i class="fa-solid fa-stamp me-1 text-warning"></i>ระบบออกเลขรับกองกฎหมาย (อัตโนมัติ)</span>
+                <span class="badge bg-success" id="receiveStatusBadge">พร้อมออกเลขรับ</span>
+              </div>
+              <div class="input-group input-group-sm mb-2">
+                <span class="input-group-text bg-navy text-dark fw-bold">เลขรับ กม.</span>
+                <input type="text" id="f_lawReceiveNo" class="form-control font-monospace fw-bold text-navy fs-6" readonly="">
+              </div>
+              <div class="small text-muted mb-3">
+                <i class="fa-solid fa-user-check me-1"></i>เจ้าหน้าที่ผู้ลงรับเรื่อง: <strong>นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)</strong>
+              </div>
+              <div class="mb-3">
+                <label class="fw-bold text-dark mb-1">ส่งเสนอเรื่องต่อผู้บังคับบัญชา:</label>
+                <select id="f_nextAssignee" class="form-select form-select-sm">
+                  <option value="dir_legal">นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)</option>
+                </select>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 pt-2 border-top">
+                <button type="button" class="btn btn-navy btn-sm px-3" onclick="submitReceiveAndForward()">
+                  <i class="fa-solid fa-paper-plane me-1"></i> ลงรับเลขกองกฎหมาย &amp; เสนอ ผอ.กองกฎหมาย
+                </button>
+                <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -269,6 +291,7 @@
       if (el) el.addEventListener('input', updateLivePreview);
     });
 
+    generateLawReceiveNo();
     toggleProsecutorCaseTypeDiv();
   });
 
@@ -552,6 +575,19 @@
     }
   }
 
+  let currentLawReceiveNo = '';
+
+  function generateLawReceiveNo() {
+    const randomSuffix = String(Math.floor(Math.random() * 900 + 100)).padStart(4, '0');
+    currentLawReceiveNo = `2569/${randomSuffix}`;
+    const el = document.getElementById('f_lawReceiveNo');
+    if (el) el.value = currentLawReceiveNo;
+  }
+
+  function submitReceiveAndForward() {
+    submitBoardIntakeForm();
+  }
+
   function submitBoardIntakeForm() {
     const centralSarabanNo = (document.getElementById('in_centralSarabanNo') ? document.getElementById('in_centralSarabanNo').value.trim() : '') || '2569/4410';
     const docNo = (document.getElementById('in_docNo') ? document.getElementById('in_docNo').value.trim() : '') || '2569/0014';
@@ -571,8 +607,16 @@
     }
     const legalOpinion = document.getElementById('in_legalOpinion').value.trim();
     const physicalDocDate = document.getElementById('in_physicalDocDate').value;
-    const accuser = (document.getElementById('in_accuser') ? document.getElementById('in_accuser').value.trim() : '');
-    const accused = (document.getElementById('in_accused') ? document.getElementById('in_accused').value.trim() : '');
+    const lawReceiveNo = (document.getElementById('f_lawReceiveNo') ? document.getElementById('f_lawReceiveNo').value.trim() : '') || currentLawReceiveNo;
+
+    let accuser = selectedIntakeCaseData ? selectedIntakeCaseData.accuser : 'คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.';
+    let accused = selectedIntakeCaseData ? selectedIntakeCaseData.accused : '';
+    if (!accused) {
+      const accusedInput = document.getElementById('f_accused');
+      if (accusedInput && accusedInput.value.trim()) {
+        accused = accusedInput.value.trim();
+      }
+    }
 
     if (!title || !docNo || !centralSarabanNo) {
       Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลสำคัญให้ครบถ้วน', text: 'ต้องมี เลขรับสารบรรณกลาง, เลขหนังสืออัยการ และชื่อเรื่อง' });
@@ -581,14 +625,14 @@
 
     Swal.fire({
       icon: 'question',
-      title: 'ยืนยันนำเข้าข้อมูลและลงรับเรื่องเข้าระบบ?',
+      title: 'ยืนยันลงรับเลขกองกฎหมาย & เสนอ ผอ.กองกฎหมาย?',
       showCancelButton: true,
-      confirmButtonText: 'ยืนยันบันทึก & ส่งต่อกองกฎหมาย',
+      confirmButtonText: 'ยืนยันลงรับเลข & เสนอ ผอ.กองกฎหมาย',
       cancelButtonText: 'ยกเลิก',
       confirmButtonColor: '#0a2647'
     }).then(res => {
       if (res.isConfirmed) {
-        // Create or update case in Activity10 store
+        // Create or update case in Activity10 store with lawReceiveNo and forward to dir_legal
         const newCase = Activity10.addCase({
           category: category,
           title: title,
@@ -599,7 +643,13 @@
           legalOpinion: legalOpinion,
           accuser: accuser,
           accused: accused,
-          paccCaseNo: selectedIntakeCaseData ? selectedIntakeCaseData.paccCaseNo : ''
+          paccCaseNo: selectedIntakeCaseData ? selectedIntakeCaseData.paccCaseNo : '',
+          lawReceiveNo: lawReceiveNo,
+          status: 'เสนอ ผอ.กองกฎหมาย พิจารณา/สั่งการ',
+          statusCode: 'PENDING_DIRECTOR',
+          statusBadge: 'bg-primary text-white',
+          assignedRole: 'dir_legal',
+          officer: 'นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)'
         });
 
         Activity10.savePhysicalDocIntake(newCase.id, {
@@ -611,8 +661,9 @@
 
         Swal.fire({
           icon: 'success',
-          title: 'บันทึกและส่งต่อข้อมูลสำเร็จ!',
-          timer: 1600,
+          title: 'ลงรับเลขกองกฎหมายและส่งเสนอสำเร็จ!',
+          text: `ออกเลขรับกองกฎหมายเลขที่ ${lawReceiveNo} เรียบร้อยแล้ว`,
+          timer: 1800,
           showConfirmButton: false
         }).then(() => {
           // Navigate to 01-work-inbox.html (completing intake duty)
