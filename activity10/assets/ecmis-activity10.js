@@ -7,7 +7,7 @@
   'use strict';
 
   // Data Version Key for LocalStorage Sync
-  const DATA_VERSION = 'v6_intake_with_law_receive_no';
+  const DATA_VERSION = 'v8_clean_initial_cases';
 
   function getDateWithOffset(daysOffset) {
     const d = new Date();
@@ -384,6 +384,40 @@
       const casePrefix = category === '10.1' ? 'คดี' : (category.startsWith('10.2') ? (category === '10.2.2' ? 'อุทธรณ์' : 'คำร้อง') : 'คดีปกครอง');
       const caseId = newCaseData.id ? newCaseData.id.replace(/-10\.\d(\.\d)?-/, '-') : `${casePrefix}-2569/${String(count).padStart(3, '0')}`;
 
+      const status = newCaseData.status || (newCaseData.lawReceiveNo ? "เสนอ ผอ.กองกฎหมาย พิจารณา/สั่งการ" : "รอธุรการออกเลข");
+      const statusCode = newCaseData.statusCode || (newCaseData.lawReceiveNo ? "PENDING_DIRECTOR" : "PENDING_LEGAL_ADMIN");
+      const statusBadge = newCaseData.statusBadge || (newCaseData.lawReceiveNo ? "bg-primary text-white" : "bg-info text-white");
+      const assignedRole = newCaseData.assignedRole || (newCaseData.lawReceiveNo ? "dir_legal" : "admin_legal");
+      const officer = newCaseData.officer || (newCaseData.lawReceiveNo ? "นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)" : "นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)");
+
+      // Check if existing case matches
+      const existingItem = cases.find(c => c.id === caseId || (newCaseData.id && c.id === newCaseData.id) || (newCaseData.paccCaseNo && c.paccCaseNo && c.paccCaseNo === newCaseData.paccCaseNo));
+
+      if (existingItem) {
+        if (newCaseData.title) existingItem.title = newCaseData.title;
+        existingItem.category = category;
+        if (newCaseData.categoryName) existingItem.categoryName = newCaseData.categoryName;
+        if (newCaseData.prosecutorCaseTypeNo) existingItem.prosecutorCaseTypeNo = newCaseData.prosecutorCaseTypeNo;
+        if (newCaseData.prosecutorCaseTypeName) existingItem.prosecutorCaseTypeName = newCaseData.prosecutorCaseTypeName;
+        if (newCaseData.source) existingItem.source = newCaseData.source;
+        existingItem.officer = officer;
+        existingItem.assignedRole = assignedRole;
+        existingItem.status = status;
+        existingItem.statusCode = statusCode;
+        existingItem.statusBadge = statusBadge;
+        if (newCaseData.lawReceiveNo) existingItem.lawReceiveNo = newCaseData.lawReceiveNo;
+        if (newCaseData.paccCaseNo) existingItem.paccCaseNo = newCaseData.paccCaseNo;
+        if (newCaseData.accuser) existingItem.accuser = newCaseData.accuser;
+        if (newCaseData.accused) existingItem.accused = newCaseData.accused;
+        if (newCaseData.docNo) existingItem.docNo = newCaseData.docNo;
+        if (newCaseData.legalOpinion) existingItem.legalOpinion = newCaseData.legalOpinion;
+        if (newCaseData.centralSarabanNo) existingItem.centralSarabanNo = newCaseData.centralSarabanNo;
+        if (newCaseData.physicalDocDate) existingItem.physicalDocDate = newCaseData.physicalDocDate;
+        existingItem.workflowStep = newCaseData.workflowStep || (newCaseData.lawReceiveNo ? 3 : 2);
+        saveCases(cases);
+        return existingItem;
+      }
+
       const createdCase = {
         id: caseId,
         title: newCaseData.title || "สำนวนคดีกฎหมายใหม่",
@@ -392,20 +426,30 @@
         prosecutorCaseTypeNo: newCaseData.prosecutorCaseTypeNo || "1",
         prosecutorCaseTypeName: newCaseData.prosecutorCaseTypeName || "1. อัยการมีความเห็นไม่ส่งฟ้อง",
         source: newCaseData.source || "ศูนย์รับเรื่องร้องเรียน",
-        officer: newCaseData.officer || "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)",
-        assignedRole: "admin_legal",
-        status: "รอธุรการออกเลข",
-        statusCode: "PENDING_LEGAL_ADMIN",
-        statusBadge: "bg-info text-white",
+        accuser: newCaseData.accuser || "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+        accused: newCaseData.accused || "",
+        officer: officer,
+        assignedRole: assignedRole,
+        status: status,
+        statusCode: statusCode,
+        statusBadge: statusBadge,
+        lawReceiveNo: newCaseData.lawReceiveNo || "",
+        paccCaseNo: newCaseData.paccCaseNo || "",
+        blackNo: newCaseData.blackNo || "-",
+        redNo: newCaseData.redNo || "-",
+        courtOrder: newCaseData.courtOrder || (category === '10.1' ? "คำสั่งไม่ฟ้องพนักงานอัยการ" : "เอกสารรับเรื่อง"),
+        statuteLimitation: newCaseData.statuteLimitation || "15 ปี",
         slaTotalDays: newCaseData.slaTotalDays || 15,
         slaDaysRemaining: newCaseData.slaTotalDays || 15,
         slaAlert: "sla-normal",
         dateReceived: new Date().toISOString().split('T')[0],
-        dueDate: newCaseData.dueDate || "2026-08-25",
-        workflowStep: 2,
+        dueDate: newCaseData.dueDate || getDateWithOffset(15),
+        workflowStep: newCaseData.workflowStep || (newCaseData.lawReceiveNo ? 3 : 2),
         docType: newCaseData.docType || "เอกสารแนบสำนวน",
         docNo: newCaseData.docNo || "นร 10/2569",
         legalOpinion: newCaseData.legalOpinion || "อยู่ระหว่างตรวจพิจารณาข้อเท็จจริงและพยานหลักฐาน",
+        centralSarabanNo: newCaseData.centralSarabanNo || "",
+        physicalDocDate: newCaseData.physicalDocDate || "",
         signatureStamped: false,
         signedBy: "",
         signedDate: ""
@@ -505,7 +549,7 @@
         item.centralSarabanNo = data.centralSarabanNo || item.centralSarabanNo || `2569/${Math.floor(1000 + Math.random() * 9000)}`;
         item.physicalDocDate = data.physicalDocDate || new Date().toISOString().split('T')[0];
         item.scannedDocFile = data.scannedDocFile || "เอกสารสแกนฉบับจริง_สารบรรณกลาง.pdf";
-        item.boardAdminOfficer = data.boardAdminOfficer || "นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)";
+        item.boardAdminOfficer = data.boardAdminOfficer || "นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)";
         item.scannedStatus = "scanned";
         saveCases(cases);
       }

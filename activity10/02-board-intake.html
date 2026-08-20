@@ -123,7 +123,7 @@
             </div>
             <div>
               <label class="form-label fw-bold">เจ้าหน้าที่ผู้รับเรื่อง (ธุรการกองกฎหมาย)</label>
-              <input type="text" class="form-control form-control-sm text-secondary fw-semibold" readonly disabled style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important;" value="นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)">
+              <input type="text" class="form-control form-control-sm text-secondary fw-semibold" readonly disabled style="cursor: not-allowed; background-color: #ffffff !important; color: #6c757d !important;" value="นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)">
             </div>
           </div>
 
@@ -216,7 +216,7 @@
                 <input type="text" id="f_lawReceiveNo" class="form-control font-monospace fw-bold text-navy fs-6" readonly="">
               </div>
               <div class="small text-muted mb-3">
-                <i class="fa-solid fa-user-check me-1"></i>เจ้าหน้าที่ผู้ลงรับเรื่อง: <strong>นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)</strong>
+                <i class="fa-solid fa-user-check me-1"></i>เจ้าหน้าที่ผู้ลงรับเรื่อง: <strong>นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)</strong>
               </div>
               <div class="mb-3">
                 <label class="fw-bold text-dark mb-1">ส่งเสนอเรื่องต่อผู้บังคับบัญชา:</label>
@@ -265,7 +265,7 @@
 
   document.addEventListener("DOMContentLoaded", function() {
     const roleId = ECMIS.currentRoleId();
-    if (roleId !== 'admin_legal' && roleId !== 'Wilai.T') {
+    if (roleId !== 'admin_legal' && roleId !== 'Kanda.R') {
       Swal.fire({
         icon: 'warning',
         title: 'ไม่มีสิทธิ์เข้าถึง',
@@ -293,6 +293,13 @@
 
     generateLawReceiveNo();
     toggleProsecutorCaseTypeDiv();
+
+    // Check URL parameters for caseId pre-selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const caseIdParam = urlParams.get('caseId') || urlParams.get('id');
+    if (caseIdParam) {
+      selectIntakeCase(caseIdParam);
+    }
   });
 
   function toggleProsecutorOtherInput() {
@@ -523,8 +530,12 @@
   let selectedIntakeCaseData = null;
 
   function selectIntakeCase(caseId) {
-    const cases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
-    const target = cases.find(c => c.id === caseId);
+    const cases = Activity10.getCases ? Activity10.getCases() : [];
+    const dbCases = Activity10.getPaccIntakeDatabase ? Activity10.getPaccIntakeDatabase() : [];
+    let target = cases.find(c => c.id === caseId || c.id.replace(/^.*?-/, '') === caseId.replace(/^.*?-/, ''));
+    if (!target) {
+      target = dbCases.find(c => c.id === caseId || c.id.replace(/^.*?-/, '') === caseId.replace(/^.*?-/, ''));
+    }
     if (!target) return;
     selectedIntakeCaseData = target;
 
@@ -634,6 +645,7 @@
       if (res.isConfirmed) {
         // Create or update case in Activity10 store with lawReceiveNo and forward to dir_legal
         const newCase = Activity10.addCase({
+          id: selectedIntakeCaseData ? selectedIntakeCaseData.id : null,
           category: category,
           title: title,
           source: source,
@@ -645,18 +657,21 @@
           accused: accused,
           paccCaseNo: selectedIntakeCaseData ? selectedIntakeCaseData.paccCaseNo : '',
           lawReceiveNo: lawReceiveNo,
+          centralSarabanNo: centralSarabanNo,
+          physicalDocDate: physicalDocDate,
           status: 'เสนอ ผอ.กองกฎหมาย พิจารณา/สั่งการ',
           statusCode: 'PENDING_DIRECTOR',
           statusBadge: 'bg-primary text-white',
           assignedRole: 'dir_legal',
-          officer: 'นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)'
+          officer: 'นางสาวณพัสตรี ศรีสมเกียรติ (ผู้อำนวยการกองกฎหมาย)',
+          workflowStep: 3
         });
 
         Activity10.savePhysicalDocIntake(newCase.id, {
           centralSarabanNo: centralSarabanNo,
           physicalDocDate: physicalDocDate,
           scannedDocFile: `เอกสารสแกนฉบับจริง_สารบรรณกลาง_${docNo}.pdf`,
-          boardAdminOfficer: 'นางวิไล ทรัพย์ประเสริฐ (เจ้าหน้าที่ธุรการกองกฎหมาย)'
+          boardAdminOfficer: 'นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)'
         });
 
         Swal.fire({

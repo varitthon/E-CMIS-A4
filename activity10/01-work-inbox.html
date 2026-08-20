@@ -147,7 +147,7 @@
     const roleId = ECMIS.currentRoleId();
     const btnIntake = document.getElementById("btnBoardIntake");
     if (btnIntake) {
-      if (roleId === 'admin_legal' || roleId === 'Wilai.T') {
+      if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
         btnIntake.style.display = 'inline-flex';
       } else {
         btnIntake.style.display = 'none';
@@ -160,21 +160,21 @@
   function getCasesForCurrentRole() {
     const roleId = ECMIS.currentRoleId();
     let cases = Activity10.getCases();
-    if (roleId === 'admin_legal' || roleId === 'Wilai.T') {
+    if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
       // ธุรการกองกฎหมาย: เห็นสำนวนทั้งหมดในระบบ
       return cases;
     } else if (roleId === 'dir_legal' || roleId === 'Napas.S') {
       // ผอ.กองกฎหมาย: เห็นสำนวนที่ลงรับเรื่องเข้าระบบแล้วทั้งหมด
-      return cases;
+      return cases.filter(c => c.statusCode !== 'PENDING_LEGAL_ADMIN');
     } else if (roleId === 'group_director' || roleId === 'Arnon.C') {
       // ผอ.กลุ่มงานความเห็นแย้ง: เห็นเฉพาะงานที่ ผอ.กองกฎหมาย มอบหมายมาแล้ว
       cases = cases.filter(c => {
-        return c.statusCode !== 'PENDING_DIRECTOR';
+        return c.statusCode !== 'PENDING_LEGAL_ADMIN' && c.statusCode !== 'PENDING_DIRECTOR';
       });
     } else if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
       // นิติกร: เห็นเฉพาะงานที่ได้รับมอบหมาย
       cases = cases.filter(c => {
-        return c.statusCode !== 'PENDING_DIRECTOR' && c.statusCode !== 'PENDING_GROUP_DIRECTOR';
+        return c.statusCode !== 'PENDING_LEGAL_ADMIN' && c.statusCode !== 'PENDING_DIRECTOR' && c.statusCode !== 'PENDING_GROUP_DIRECTOR';
       });
     }
     return cases;
@@ -345,7 +345,10 @@
 
   function getActionButtonHtml(c, roleId) {
     // 1. ธุรการกองกฎหมาย (ลงรับเรื่องและออกเลขรับแล้ว -> กดดูรายละเอียดสำนวนและเอกสารอัยการ)
-    if (roleId === 'admin_legal' || roleId === 'Wilai.T') {
+    if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
+      if (c.statusCode === 'PENDING_LEGAL_ADMIN' || c.status === 'รอธุรการออกเลข' || !c.lawReceiveNo) {
+        return `<a href="02-board-intake.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-primary px-2 fw-semibold" title="ออกเลขรับ กม. & ลงทะเบียน"><i class="fa-solid fa-stamp me-1"></i>ออกเลขรับ กม.</a>`;
+      }
       return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
     }
 
