@@ -884,8 +884,24 @@ function getRole(id){ return ROLES.find(r => r.id === id) || ROLES[0]; }
 function roleIdForLogin(username){
   const u = String(username || '').trim().toLowerCase();
   if(!u) return null;
+  // 1. Direct match by login
   const r = ROLES.find(r => r.login && r.login.toLowerCase() === u);
-  return r ? r.id : null;
+  if(r) return r.id;
+  // 2. Match by id or starts with login or full name or title
+  const r2 = ROLES.find(r => 
+    (r.id && r.id.toLowerCase() === u) ||
+    (r.login && r.login.toLowerCase().startsWith(u)) ||
+    (r.name && r.name.toLowerCase().includes(u)) ||
+    (r.title && r.title.toLowerCase().includes(u))
+  );
+  if(r2) return r2.id;
+  // 3. Keyword / Alias Match
+  if(u.includes('kanda') || u.includes('wilai') || u.includes('กานดา') || u.includes('วิไล') || u.includes('ธุรการ')) return 'admin_legal';
+  if(u.includes('napas') || u.includes('ณพัสตร') || u.includes('ผอ.กอง')) return 'dir_legal';
+  if(u.includes('arnon') || u.includes('อานนท์') || u.includes('ผอ.กลุ่ม')) return 'group_director';
+  if(u.includes('nattapol') || u.includes('ณัฐพล') || u.includes('นิติกร')) return 'legal_officer';
+  if(u.includes('siriporn') || u.includes('ศิริพร') || u.includes('กบค')) return 'case_management';
+  return null;
 }
 
 /* current role — เก็บใน sessionStorage เพื่อให้สลับข้ามหน้าได้ */
