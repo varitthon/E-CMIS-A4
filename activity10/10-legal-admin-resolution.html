@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ธุรการกองกฎหมาย รับผลมติและส่งต่อ ผอ.กองกฎหมาย | E-CMIS กิจกรรมที่ 10</title>
+  <link rel="icon" type="image/png" href="pacc_logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link href="assets/ecmis-app.css" rel="stylesheet">
+  <link href="assets/ecmis-activity10.css" rel="stylesheet">
+</head>
+<body>
+
+<main class="app-main">
+  <!-- Page Head -->
+  <div class="page-head mb-3">
+    <div class="d-flex align-items-center gap-3">
+      <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+      <div>
+        <h1 class="m-0" style="font-size:1.35rem;"><i class="fa-solid fa-file-signature me-2 text-primary"></i>ธุรการกองกฎหมาย รับผลมติและส่งต่อ ผอ.กองกฎหมาย</h1>
+        <div class="small text-muted">รับหนังสือผลมติจากการประชุมคณะกรรมการ ป.ป.ท. เพื่อส่งต่อให้ ผอ.กองกฎหมาย พิจารณาสั่งการต่อไป</div>
+      </div>
+    </div>
+    <div class="ms-auto text-end">
+      <span class="badge bg-primary text-white px-3 py-1 fs-6">เจ้าหน้าที่ธุรการกองกฎหมาย</span>
+      <div class="small text-muted mt-1">ผู้ดำเนินการ: นางสาวกานดา รักษาการ</div>
+    </div>
+  </div>
+
+  <!-- Stepper Workflow -->
+  <div class="card card-ecmis mb-3">
+    <div class="card-body pb-1" id="stepper">
+      <div class="flow-stepper">
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">1. บันทึกรับ &amp; สแกนเอกสาร</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">2. ออกเลขรับ กม.</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">3. ผอ.กองกฎหมาย มอบหมาย</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">4. ผอ.กลุ่มงาน มอบหมาย</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">5. นิติกร จัดทำความเห็น</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">6. ผอ.กลุ่มงาน ตรวจร่าง</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">7. ผอ.กองกฎหมาย ตรวจพิจารณา</div>
+        </div>
+        <div class="fstep done">
+          <div class="dot"><i class="fa-solid fa-check"></i></div>
+          <div class="lbl">8. คณะกรรมการมีมติ (ระบบภายนอก)</div>
+        </div>
+        <div class="fstep active" id="step9">
+          <div class="dot">9</div>
+          <div class="lbl">9. ธุรการรับผลมติ &amp; ส่งต่อ ผอ.กม.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12">
+      <!-- Card 1: Case details & Metadata -->
+      <div class="card card-ecmis mb-3">
+        <div class="card-header bg-navy text-white fw-bold d-flex align-items-center justify-content-between">
+          <span><i class="fa-solid fa-file-invoice me-1"></i> รายละเอียดสำนวนคดี &amp; ผลมติการประชุมคณะกรรมการ</span>
+          <span class="badge bg-success text-white"><i class="fa-solid fa-check-double me-1"></i>รับผลมติแล้ว</span>
+        </div>
+        <div class="card-body p-3 small">
+          <!-- Stamp Badges Section -->
+          <div class="p-2.5 bg-light rounded border mb-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <span class="fw-bold text-muted d-block mb-1">เลขรับสารบรรณกลาง:</span>
+                <span class="font-monospace fw-bold text-primary fs-6" id="f_centralSarabanNo">2569/4502</span>
+              </div>
+              <div class="col-6">
+                <span class="fw-bold text-muted d-block mb-1">เลขรับกองกฎหมาย:</span>
+                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">2569/0019</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="fw-bold text-muted d-block mb-1">เลขสำนวนคดี &amp; ชื่อเรื่องกล่าวหา:</label>
+            <div class="p-2.5 bg-light rounded text-dark fw-bold border" id="f_title" style="font-size:0.95rem;">-</div>
+          </div>
+
+          <!-- Section: Executive / Committee Decision Summary -->
+          <div class="p-3 bg-success-subtle rounded border border-success mb-3">
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-success-subtle">
+              <div>
+                <span class="fw-bold text-muted d-block small">ผู้ส่งผลมติ:</span>
+                <span class="fw-bold text-navy" id="f_signedBy">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-muted d-block small">วันที่ลงนาม / ส่งผลมติ:</span>
+                <span class="text-secondary fw-bold" id="f_signedDate">21 ส.ค. 2569</span>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <span class="fw-bold text-muted d-block small mb-1">ผลมติ:</span>
+              <div class="fw-bold text-success"><i class="fa-solid fa-signature me-1"></i><span id="f_signedOrder">เห็นชอบ</span></div>
+            </div>
+
+            <!-- Signed PDF File Attachment -->
+            <div class="d-flex align-items-center justify-content-between p-2.5 bg-white rounded border border-success-subtle mt-2">
+              <div>
+                <i class="fa-solid fa-file-pdf text-danger me-2 fs-5"></i>
+                <strong>หนังสือผลมติ:</strong>
+                <span class="text-muted ms-1" id="f_signedDocFile">หนังสือผลมติ_2569_006.pdf</span>
+              </div>
+              <button type="button" class="btn btn-xs btn-outline-success" onclick="Swal.fire({icon:'success', title:'เปิดไฟล์หนังสือผลมติ...', timer:1000, showConfirmButton:false})">
+                <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Legal Admin Forward to Legal Director Form -->
+      <div id="finalDispatchCardContainer">
+        <div class="card card-ecmis border-primary bg-primary-subtle shadow-sm" id="adminFinalDispatchCard">
+          <div class="card-header bg-primary text-white fw-bold d-flex align-items-center justify-content-between">
+            <span><i class="fa-solid fa-paper-plane me-1"></i> แบบฟอร์มบันทึกรับผลมติและส่งต่อ ผอ.กองกฎหมาย (ธุรการกองกฎหมาย)</span>
+            <span class="badge bg-white text-primary">ขั้นตอนรับผลมติ</span>
+          </div>
+          <div class="card-body p-3 small">
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">เจ้าหน้าที่ผู้ดำเนินการ (ธุรการกองกฎหมาย):</label>
+              <input type="text" class="form-control form-control-sm bg-white fw-bold" readonly value="นางสาวกานดา รักษาการ (เจ้าหน้าที่ธุรการกองกฎหมาย)">
+            </div>
+
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">ส่งเสนอผู้บังคับบัญชา / ผู้รับมอบหมาย:</label>
+              <input type="text" class="form-control form-control-sm bg-white fw-bold text-navy" readonly value="นายนภัส สุทธิรักษ์ (ผู้อำนวยการกองกฎหมาย)">
+            </div>
+
+            <div class="mb-3">
+              <label class="fw-bold text-dark mb-1">บันทึกการส่งต่อ / หมายเหตุเพิ่มเติม:</label>
+              <textarea id="in_finalDispatchNotes" class="form-control form-control-sm bg-white" rows="2" placeholder="ระบุบันทึกการส่งต่อ...">ได้รับหนังสือผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว จึงเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาสั่งการต่อไป</textarea>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 pt-2 border-top">
+              <button type="button" class="btn btn-navy btn-sm px-4 fw-bold" onclick="submitFinalDispatch()">
+                <i class="fa-solid fa-paper-plane me-1"></i> บันทึกรับผลมติ &amp; ส่งต่อ ผอ.กองกฎหมาย
+              </button>
+              <a href="01-work-inbox.html" class="btn btn-outline-secondary btn-sm px-3">ยกเลิก</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/ecmis-app.js?v=20260820_2"></script>
+<script src="assets/ecmis-activity10.js?v=20260820_2"></script>
+<script>
+  ECMIS.renderShell('10-legal-admin-resolution.html');
+
+  let currentCase = null;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const caseId = urlParams.get('id') || 'คดี-2569/006';
+    currentCase = Activity10.getCaseById(caseId);
+
+    if (!currentCase) {
+      const allCases = Activity10.getCases();
+      currentCase = allCases.length > 0 ? allCases[0] : null;
+    }
+
+    renderCaseDetails();
+  });
+
+  function renderCaseDetails() {
+    if (!currentCase) return;
+
+    const setElText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
+    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '2569/0019');
+    setElText('f_title', currentCase.title);
+
+    setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
+    setElText('f_signedDate', currentCase.signedDate || '21 ส.ค. 2569');
+    setElText('f_signedOrder', currentCase.signedExecutiveOrder || 'เห็นชอบ');
+    setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
+
+    // Check if Legal Admin has forwarded resolution to Legal Director
+    const isForwarded = currentCase.adminForwardedToDirectorDate || currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION';
+
+    if (isForwarded) {
+      const cardContainer = document.getElementById('finalDispatchCardContainer');
+      if (cardContainer) {
+        cardContainer.innerHTML = `
+          <div class="card card-ecmis border-success bg-success-subtle shadow-sm">
+            <div class="card-header bg-success text-white fw-bold d-flex align-items-center justify-content-between py-2">
+              <span><i class="fa-solid fa-circle-check me-1"></i> สถานะการส่งต่อ ผอ.กองกฎหมาย</span>
+              <span class="badge bg-white text-success"><i class="fa-solid fa-lock me-1"></i>ส่งต่อ ผอ.กองกฎหมายแล้ว</span>
+            </div>
+            <div class="card-body p-3 small">
+              <div class="p-3 bg-white rounded border mb-3">
+                <div class="mb-2">
+                  <span class="fw-bold text-muted d-block small">ผู้รับมอบหมาย:</span>
+                  <div class="fw-bold text-navy"><i class="fa-solid fa-user-tie me-1 text-primary"></i>นายนภัส สุทธิรักษ์ (ผู้อำนวยการกองกฎหมาย)</div>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-bold text-muted d-block small">บันทึกการส่งต่อ:</span>
+                  <div class="p-2 bg-light rounded text-dark border font-monospace small">${currentCase.adminResolutionNotes || currentCase.finalDispatchNotes || 'ได้รับหนังสือผลมติเรียบร้อยแล้ว และส่งต่อ ผอ.กองกฎหมาย เพื่อพิจารณาสั่งการ'}</div>
+                </div>
+                <div class="row g-2 pt-2 border-top">
+                  <div class="col-6">
+                    <span class="fw-bold text-muted d-block small">วันที่ส่งต่อ:</span>
+                    <span class="text-secondary">${currentCase.adminForwardedToDirectorDate || currentCase.finalDispatchedAt || 'ดำเนินการเรียบร้อยแล้ว'}</span>
+                  </div>
+                  <div class="col-6">
+                    <span class="fw-bold text-muted d-block small">สถานะปัจจุบัน:</span>
+                    <span class="st ${currentCase.statusBadge || 'bg-primary text-white'}">${currentCase.status}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="alert alert-success d-flex align-items-center mb-3 py-2 small">
+                <i class="fa-solid fa-check-circle me-2 fs-5 text-success"></i>
+                <div><b>ส่งต่อเรียบร้อยแล้ว</b>: สำนวนและผลมติได้ส่งต่อให้ ผอ.กองกฎหมาย พิจารณาสั่งการเรียบร้อยแล้ว</div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 pt-2 border-top">
+                <a href="01-work-inbox.html" class="btn btn-outline-navy btn-sm px-4"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function submitFinalDispatch() {
+    if (!currentCase) return;
+
+    const notes = document.getElementById('in_finalDispatchNotes') ? document.getElementById('in_finalDispatchNotes').value.trim() : '';
+
+    Swal.fire({
+      icon: 'question',
+      title: 'ยืนยันรับผลมติและส่งต่อ ผอ.กองกฎหมาย?',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน & ส่งต่อ ผอ.กองกฎหมาย',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#0a2647'
+    }).then(res => {
+      if (res.isConfirmed) {
+        Activity10.finalDispatchByLegalAdmin(currentCase.id, {
+          notes: notes
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'ส่งต่อ ผอ.กองกฎหมาย สำเร็จ!',
+          text: 'ส่งเรื่องให้ ผอ.กองกฎหมาย เพื่อพิจารณาสั่งการเรียบร้อยแล้ว',
+          timer: 1600,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = '01-work-inbox.html';
+        });
+      }
+    });
+  }
+</script>
+</body>
+</html>

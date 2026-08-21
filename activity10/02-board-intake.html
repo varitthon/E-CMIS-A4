@@ -485,7 +485,10 @@
 
     let html = `
       <div class="p-2 bg-light rounded border">
-        <div class="fw-bold text-navy mb-2 small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="fw-bold text-navy small"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:0.75rem;" onclick="document.getElementById('intakeSearchResults').classList.add('d-none')" title="ปิดแถบผลการค้นหา"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
+        </div>
         <div class="table-responsive">
           <table class="table table-sm table-hover bg-white border mb-0 align-middle text-dark" style="font-size:0.8rem; color:#000000;">
             <thead class="table-light text-dark">
@@ -555,6 +558,12 @@
     if (document.getElementById('f_complainant')) document.getElementById('f_complainant').value = target.accuser || '-';
     if (document.getElementById('f_accused')) document.getElementById('f_accused').value = target.accused || target.defendant || '-';
     if (document.getElementById('f_received')) document.getElementById('f_received').value = target.dateReceived || '28 กรกฎาคม 2569';
+
+    // Hide search results panel after selecting
+    const resultsContainer = document.getElementById('intakeSearchResults');
+    if (resultsContainer) {
+      resultsContainer.classList.add('d-none');
+    }
 
     const detailCard = document.getElementById('selectedCaseDetailCard');
     if (detailCard) {
@@ -659,7 +668,7 @@
           lawReceiveNo: lawReceiveNo,
           centralSarabanNo: centralSarabanNo,
           physicalDocDate: physicalDocDate,
-          status: 'เสนอ ผอ.กองกฎหมาย พิจารณา/สั่งการ',
+          status: 'ผอ.กองกฎหมายพิจารณา',
           statusCode: 'PENDING_DIRECTOR',
           statusBadge: 'bg-primary text-white',
           assignedRole: 'dir_legal',

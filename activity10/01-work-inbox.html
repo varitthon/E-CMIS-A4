@@ -159,24 +159,70 @@
 
   function getCasesForCurrentRole() {
     const roleId = ECMIS.currentRoleId();
-    let cases = Activity10.getCases();
+    const cases = Activity10.getCases();
+
+    // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
+    // เห็นสำนวนทั้งหมดในระบบ โดยงานที่ออกเลขรับและส่งเสนอ ผอ.กม. ไปแล้ว จะแสดงปุ่มสำหรับกดดู (View-only)
     if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
-      // ธุรการกองกฎหมาย: เห็นสำนวนทั้งหมดในระบบ
       return cases;
-    } else if (roleId === 'dir_legal' || roleId === 'Napas.S') {
-      // ผอ.กองกฎหมาย: เห็นสำนวนที่ลงรับเรื่องเข้าระบบแล้วทั้งหมด
-      return cases.filter(c => c.statusCode !== 'PENDING_LEGAL_ADMIN');
-    } else if (roleId === 'group_director' || roleId === 'Arnon.C') {
-      // ผอ.กลุ่มงานความเห็นแย้ง: เห็นเฉพาะงานที่ ผอ.กองกฎหมาย มอบหมายมาแล้ว
-      cases = cases.filter(c => {
-        return c.statusCode !== 'PENDING_LEGAL_ADMIN' && c.statusCode !== 'PENDING_DIRECTOR';
-      });
-    } else if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
-      // นิติกร: เห็นเฉพาะงานที่ได้รับมอบหมาย
-      cases = cases.filter(c => {
-        return c.statusCode !== 'PENDING_LEGAL_ADMIN' && c.statusCode !== 'PENDING_DIRECTOR' && c.statusCode !== 'PENDING_GROUP_DIRECTOR';
+    }
+
+    // 2. ผู้อำนวยการกองกฎหมาย (dir_legal / Napas.S)
+    // เห็นเฉพาะงานที่รอ ผอ.กม. พิจารณา/สั่งการ:
+    // - ธุรการออกเลขรับแล้ว ส่งเสนอ ผอ.กม. พิจารณามอบหมายกลุ่มงาน (PENDING_DIRECTOR)
+    // - ผอ.กลุ่มงาน ตรวจร่างความเห็นแล้ว ส่งเสนอ ผอ.กม. ตรวจพิจารณา (PENDING_DIRECTOR_APPROVAL)
+    // - ธุรการส่งต่อหนังสือผลมติมาให้ ผอ.กม. สั่งการ (PENDING_DIRECTOR_RESOLUTION / เสนอผลมติ ผอ.กองกฎหมาย)
+    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+      return cases.filter(c => {
+        return c.statusCode === 'PENDING_DIRECTOR' || 
+               c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || 
+               c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || 
+               c.status === 'ผอ.กองกฎหมายพิจารณา' ||
+               c.status === 'ผอ.กองกฎหมายพิจารณาผลมติ' ||
+               c.status === 'พิจารณาความเห็นของนิติกร' ||
+               c.status === 'เสนอผลมติ ผอ.กองกฎหมาย' ||
+               c.status === 'เสนอ ผอ.กองกฎหมาย ตรวจพิจารณา' || 
+               (c.status && c.status.includes('ผอ.กองกฎหมาย') && c.lawReceiveNo);
       });
     }
+
+    // 3. ผู้อำนวยการกลุ่มงานความเห็นแย้ง (group_director / Arnon.C)
+    // เห็นเฉพาะงานที่รอกลุ่มงานดำเนินการ:
+    // - ผอ.กม. มอบหมายเรื่องมาให้กลุ่มงาน เพื่อมอบหมายนิติกร (PENDING_GROUP_DIRECTOR)
+    // - นิติกร ทำความเห็นเสร็จแล้ว ส่งเสนอ ผอ.กลุ่มงาน ตรวจร่าง (PENDING_GROUP_REVIEW)
+    if (roleId === 'group_director' || roleId === 'Arnon.C') {
+      return cases.filter(c => {
+        return c.statusCode === 'PENDING_GROUP_DIRECTOR' || 
+               c.statusCode === 'PENDING_GROUP_REVIEW' || 
+               c.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณา' ||
+               c.status === 'พิจารณาความเห็นของนิติกร' ||
+               c.status === 'รอ ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกร' ||
+               c.status === 'มอบหมายกลุ่มงานความเห็นแย้ง' || 
+               c.status === 'เสนอ ผอ.กลุ่มงาน ตรวจร่างความเห็น';
+      });
+    }
+
+    // 4. นิติกรเจ้าของสำนวน (legal_officer / Nattapol.B)
+    // เห็นเฉพาะงานที่นิติกรได้รับมอบหมายให้จัดทำความเห็น:
+    // - DRAFTING_OPINION หรือ assignedRole === 'legal_officer'
+    if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
+      return cases.filter(c => {
+        return c.statusCode === 'DRAFTING_OPINION' || 
+               c.status === 'นิติกรจัดทำความเห็น' ||
+               c.status === 'นิติกรกำลังจัดทำความเห็น' ||
+               (c.assignedRole === 'legal_officer' && c.statusCode !== 'PENDING_GROUP_REVIEW' && c.statusCode !== 'PENDING_DIRECTOR_APPROVAL' && c.statusCode !== 'PENDING_DISPATCH' && c.statusCode !== 'PENDING_DEPUTY_SG' && c.statusCode !== 'RETURNED_FROM_EXEC' && c.statusCode !== 'COMPLETED');
+      });
+    }
+
+    // 5. รองเลขาธิการ ป.ป.ท. (deputy_sg / Surapong.W)
+    // เห็นเฉพาะงานที่ส่งเสนอผู้บริหารตรวจสอบ:
+    // - PENDING_DEPUTY_SG
+    if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
+      return cases.filter(c => {
+        return c.statusCode === 'PENDING_DEPUTY_SG' || c.status === 'รอ รองเลขาธิการ ป.ป.ท. ตรวจสอบ';
+      });
+    }
+
     return cases;
   }
 
@@ -346,16 +392,19 @@
   function getActionButtonHtml(c, roleId) {
     // 1. ธุรการกองกฎหมาย (ลงรับเรื่องและออกเลขรับแล้ว -> กดดูรายละเอียดสำนวนและเอกสารอัยการ)
     if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
-      if (c.statusCode === 'PENDING_LEGAL_ADMIN' || c.status === 'รอธุรการออกเลข' || !c.lawReceiveNo) {
-        return `<a href="02-board-intake.html?caseId=${encodeURIComponent(c.id)}" class="btn btn-xs btn-primary px-2 fw-semibold" title="ออกเลขรับ กม. & ลงทะเบียน"><i class="fa-solid fa-stamp me-1"></i>ออกเลขรับ กม.</a>`;
+      if (c.statusCode === 'PENDING_DISPATCH' || c.status === 'ธุรการออกเลขส่งภายใน' || c.status === 'ส่งเรื่องให้ธุรการกองกฎหมายดำเนินการ') {
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-paper-plane me-1"></i>ดำเนินการ</button>`;
+      }
+      if (c.statusCode === 'RETURNED_FROM_EXEC' || c.statusCode === 'PENDING_FINAL_DISPATCH' || c.status === 'ธุรการรับผลมติ' || (c.status && (c.status.includes('ธุรการรับผลมติ') || c.status.includes('ธุรการับผลมติ') || c.status.includes('ผู้บริหารลงนามแล้ว') || c.status.includes('รับเรื่องคืน')))) {
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-arrow-right me-1"></i>ดำเนินการ</button>`;
       }
       return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
     }
 
     // 2. ผอ.กองกฎหมาย
     if (roleId === 'dir_legal' || roleId === 'Napas.S') {
-      if (c.statusCode === 'PENDING_DIRECTOR' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="พิจารณาสั่งการ"><i class="fa-solid fa-pen-to-square me-1"></i>พิจารณาสั่งการ</button>`;
+      if (c.statusCode === 'PENDING_DIRECTOR' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || (c.status && (c.status.includes('ผอ.กองกฎหมาย') || c.status.includes('เสนอผลมติ') || c.status.includes('พิจารณาความเห็น')))) {
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
       }
       return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
     }
@@ -363,9 +412,9 @@
     // 3. ผอ.กลุ่มงานความเห็นแย้ง
     if (roleId === 'group_director' || roleId === 'Arnon.C') {
       if (c.statusCode === 'PENDING_GROUP_DIRECTOR') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="มอบหมายนิติกร"><i class="fa-solid fa-user-plus me-1"></i>มอบหมายนิติกร</button>`;
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-user-plus me-1"></i>ดำเนินการ</button>`;
       } else if (c.statusCode === 'PENDING_GROUP_REVIEW') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-primary px-2 fw-semibold" title="ตรวจสอบความเห็น"><i class="fa-solid fa-clipboard-check me-1"></i>ตรวจร่างความเห็น</button>`;
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-clipboard-check me-1"></i>ดำเนินการ</button>`;
       }
       return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
     }
@@ -373,7 +422,7 @@
     // 4. นิติกร
     if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
       if (c.statusCode === 'DRAFTING_OPINION' || (c.assignedRole === 'legal_officer' && c.statusCode !== 'PENDING_GROUP_REVIEW' && c.statusCode !== 'PENDING_DIRECTOR_APPROVAL')) {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="จัดทำความเห็น"><i class="fa-solid fa-pen-to-square me-1"></i>จัดทำความเห็น</button>`;
+        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
       }
       return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
     }
@@ -433,9 +482,9 @@
         <tr>
           <td colspan="9" class="text-center py-5 text-muted">
             <div class="py-4">
-              <i class="fa-solid fa-inbox text-secondary opacity-50 mb-3" style="font-size: 3rem;"></i>
-              <div class="fs-5 fw-bold text-dark mb-1">ยังไม่มีรายการสำนวนคดีในระบบ</div>
-              <p class="text-muted small mb-0">ระบบอยู่ในสถานะเริ่มต้น (ยังไม่ได้รับเรื่องเข้ามา) เจ้าหน้าที่ธุรการกองกฎหมายสามารถกดปุ่ม <strong>"รับเรื่องเข้าระบบ"</strong> เพื่อบันทึกรับสำนวนคดีใหม่</p>
+              <i class="fa-solid fa-circle-check text-success opacity-50 mb-3" style="font-size: 3rem;"></i>
+              <div class="fs-5 fw-bold text-dark mb-1">ไม่มีรายการงานค้างที่รอดำเนินการ</div>
+              <p class="text-muted small mb-0">ขณะนี้ไม่มีสำนวนคดีที่รอให้บทบาทของคุณดำเนินการในระบบ</p>
             </div>
           </td>
         </tr>
@@ -797,7 +846,13 @@
     const c = Activity10.getCaseById(caseId);
 
     if (roleId === 'Napas.S' || roleId === 'dir_legal') {
-      window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(caseId)}`;
+      if (c && c.statusCode === 'PENDING_DIRECTOR_RESOLUTION') {
+        window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(caseId)}`;
+      } else if (c && (c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || c.status === 'เสนอ ผอ.กองกฎหมาย ตรวจพิจารณา' || (c.workflowStep && c.workflowStep >= 6 && c.workflowStep < 8))) {
+        window.location.href = `08-legal-director-approval.html?id=${encodeURIComponent(caseId)}`;
+      } else {
+        window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(caseId)}`;
+      }
     } else if (roleId === 'Arnon.C' || roleId === 'group_director') {
       if (c && (c.statusCode === 'PENDING_GROUP_REVIEW' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL')) {
         window.location.href = `07-group-director-approval.html?id=${encodeURIComponent(caseId)}`;
@@ -806,6 +861,16 @@
       }
     } else if (roleId === 'Nattapol.B' || roleId === 'legal_officer') {
       window.location.href = `06-officer-opinion.html?id=${encodeURIComponent(caseId)}`;
+    } else if (roleId === 'Kanda.R' || roleId === 'admin_legal') {
+      if (c && (c.statusCode === 'RETURNED_FROM_EXEC' || c.statusCode === 'PENDING_FINAL_DISPATCH' || c.statusCode === 'COMPLETED' || c.status === 'ธุรการรับผลมติ' || (c.status && (c.status.includes('ธุรการรับผลมติ') || c.status.includes('ธุรการับผลมติ') || c.status.includes('ผู้บริหารลงนามแล้ว') || c.status.includes('รับเรื่องคืน') || c.status.includes('ส่งหนังสือถึงอัยการสูงสุด'))))) {
+        window.location.href = `10-legal-admin-resolution.html?id=${encodeURIComponent(caseId)}`;
+      } else if (c && (c.statusCode === 'PENDING_DISPATCH' || c.status === 'ธุรการออกเลขส่งภายใน' || c.statusCode === 'PENDING_DEPUTY_SG' || c.statusCode === 'PENDING_SECGEN' || c.adminDispatchedDate || c.adminDispatchNo || c.status === 'รอ รองเลขาธิการ ป.ป.ท. ตรวจสอบ' || c.status === 'ส่งเรื่องให้ธุรการกองกฎหมายดำเนินการ' || (c.workflowStep && c.workflowStep >= 7))) {
+        window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(caseId)}`;
+      } else {
+        window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
+      }
+    } else if (roleId === 'Surapong.W' || roleId === 'deputy_sg') {
+      window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(caseId)}`;
     } else {
       window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
     }

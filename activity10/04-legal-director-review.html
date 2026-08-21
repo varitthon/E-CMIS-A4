@@ -42,17 +42,29 @@
           <div class="dot"><i class="fa-solid fa-check"></i></div>
           <div class="lbl">2. ธุรการกองกฎหมาย ออกเลขรับ กม.</div>
         </div>
-        <div class="fstep active">
+        <div class="fstep active" id="step3">
           <div class="dot">3</div>
           <div class="lbl">3. ผอ.กองกฎหมาย พิจารณา &amp; มอบหมายเรื่อง</div>
         </div>
-        <div class="fstep">
+        <div class="fstep" id="step4">
           <div class="dot">4</div>
           <div class="lbl">4. ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกร</div>
         </div>
-        <div class="fstep">
+        <div class="fstep" id="step5">
           <div class="dot">5</div>
           <div class="lbl">5. นิติกร จัดทำบันทึกความเห็น</div>
+        </div>
+        <div class="fstep" id="step6">
+          <div class="dot">6</div>
+          <div class="lbl">6. ผอ.กลุ่มงานความเห็นแย้ง ตรวจร่างความเห็น</div>
+        </div>
+        <div class="fstep" id="step7">
+          <div class="dot">7</div>
+          <div class="lbl">7. ผอ.กองกฎหมาย ตรวจพิจารณา &amp; สั่งการ</div>
+        </div>
+        <div class="fstep" id="step8">
+          <div class="dot">8</div>
+          <div class="lbl">8. ธุรการกองกฎหมาย ดำเนินการออกเลขส่ง</div>
         </div>
       </div>
     </div>
@@ -109,6 +121,49 @@
           <div class="mb-2">
             <label class="fw-bold text-muted d-block mb-1">สรุปสาระสำคัญ / เหตุผลความเห็นคำสั่งไม่ฟ้องของอัยการ:</label>
             <div class="p-3 bg-light rounded text-dark border" id="f_opinion" style="min-height:90px; max-height:150px; overflow-y:auto; line-height:1.5;">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Resolution Details (Shown if forwarded from 10-legal-admin-resolution.html) -->
+      <div class="card card-ecmis mb-3 border-success d-none" id="resolutionCard">
+        <div class="card-header bg-success text-white fw-bold d-flex align-items-center justify-content-between py-2">
+          <span><i class="fa-solid fa-file-circle-check me-1"></i> ข้อมูลผลมติ (ส่งต่อจากธุรการกองกฎหมาย)</span>
+          <span class="badge bg-white text-success"><i class="fa-solid fa-check me-1"></i>รับผลมติแล้ว</span>
+        </div>
+        <div class="card-body p-3 small">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <span class="fw-bold text-muted d-block small mb-1">ผู้ส่งผลมติ</span>
+              <div class="p-2 bg-light rounded text-dark fw-bold border" id="res_signedBy">-</div>
+            </div>
+            <div class="col-md-6">
+              <span class="fw-bold text-muted d-block small mb-1">วันที่ส่งผลมติ</span>
+              <div class="p-2 bg-light rounded text-dark font-monospace border" id="res_signedDate">-</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <span class="fw-bold text-muted d-block small mb-1">ผลมติ</span>
+            <div class="p-2 bg-success-subtle rounded border border-success text-success fw-bold">
+              <i class="fa-solid fa-signature me-1"></i><span id="res_signedOrder">เห็นชอบ</span>
+            </div>
+          </div>
+          <div class="mb-2">
+            <span class="fw-bold text-muted d-block small mb-1">หนังสือผลมติ</span>
+            <div class="p-2 bg-light rounded border d-flex align-items-center justify-content-between">
+              <div>
+                <i class="fa-solid fa-file-pdf text-danger me-2 fs-5"></i>
+                <strong class="text-dark">หนังสือผลมติ</strong>
+                <span class="text-muted ms-1" id="res_signedDocFile">หนังสือผลมติ_2569_006.pdf</span>
+              </div>
+              <button type="button" class="btn btn-xs btn-outline-success" onclick="Swal.fire({icon:'success', title:'เปิดไฟล์หนังสือผลมติ...', timer:1000, showConfirmButton:false})">
+                <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+              </button>
+            </div>
+          </div>
+          <div id="res_notesBlock" class="d-none mt-3 pt-2 border-top">
+            <span class="fw-bold text-muted d-block small mb-1">บันทึกข้อความจากธุรการกองกฎหมาย</span>
+            <div class="p-2 bg-light rounded text-dark border" id="res_adminNotes">-</div>
           </div>
         </div>
       </div>
@@ -200,8 +255,34 @@
     setElText('doc_subject_text', currentCase.title);
     setElText('doc_body_text', currentCase.legalOpinion || 'ด้วย พนักงานอัยการ ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้ว มีคำสั่งไม่ฟ้องผู้ถูกกล่าวหาในคดีนี้... จึงเรียนมาเพื่อโปรดทราบและดำเนินการทำความเห็นแย้งเสนออัยการสูงสุดตามขั้นตอนกฎหมายต่อไป');
 
+    // Populate Resolution Details if forwarded from 10-legal-admin-resolution.html
+    const hasResolution = currentCase.signedExecutiveOrder || currentCase.signedDocFile || currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || (currentCase.workflowStep && currentCase.workflowStep >= 8);
+    const resCard = document.getElementById('resolutionCard');
+    if (resCard) {
+      if (hasResolution) {
+        resCard.classList.remove('d-none');
+        setElText('res_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
+        setElText('res_signedDate', currentCase.signedDate || '21 ส.ค. 2569');
+        setElText('res_signedOrder', currentCase.signedExecutiveOrder || 'เห็นชอบ');
+        setElText('res_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
+        
+        const adminNotes = currentCase.adminResolutionNotes || currentCase.finalDispatchNotes || '';
+        const notesBlock = document.getElementById('res_notesBlock');
+        if (notesBlock) {
+          if (adminNotes) {
+            notesBlock.classList.remove('d-none');
+            setElText('res_adminNotes', adminNotes);
+          } else {
+            notesBlock.classList.add('d-none');
+          }
+        }
+      } else {
+        resCard.classList.add('d-none');
+      }
+    }
+
     // Check if case is already forwarded to Group Director (Read-Only Mode)
-    const isAlreadyForwarded = (currentCase.statusCode !== 'PENDING_DIRECTOR') || (currentCase.workflowStep && currentCase.workflowStep > 3);
+    const isAlreadyForwarded = (currentCase.statusCode !== 'PENDING_DIRECTOR' && currentCase.statusCode !== 'PENDING_DIRECTOR_RESOLUTION');
 
     // Update Stepper
     const stepperEl = document.getElementById('stepper');
