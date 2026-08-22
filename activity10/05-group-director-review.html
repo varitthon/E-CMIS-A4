@@ -89,7 +89,7 @@
               </div>
               <div class="col-6">
                 <span class="fw-bold text-muted d-block mb-1">เลขรับกองกฎหมาย:</span>
-                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">2569/0142</span>
+                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">0142/2569</span>
               </div>
             </div>
           </div>
@@ -183,7 +183,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js?v=20260820_2"></script>
-<script src="assets/ecmis-activity10.js?v=20260820_2"></script>
+<script src="assets/ecmis-activity10.js?v=20260822_1"></script>
 <script>
   ECMIS.renderShell('05-group-director-review.html');
 
@@ -199,6 +199,11 @@
       currentCase = allCases.length > 0 ? allCases[0] : null;
     }
 
+    if (currentCase && (currentCase.statusCode === 'PENDING_GROUP_RESOLUTION' || currentCase.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ' || (currentCase.workflowStep && currentCase.workflowStep >= 10))) {
+      window.location.href = `12-group-director-resolution.html?id=${encodeURIComponent(currentCase.id)}`;
+      return;
+    }
+
     renderCaseDetails();
   });
 
@@ -211,7 +216,7 @@
     };
 
     setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
-    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '2569/0142');
+    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0142/2569');
 
     setElText('f_title', currentCase.title);
     setElText('f_source', currentCase.source);
@@ -230,7 +235,7 @@
     }
 
     setElText('stamp_saraban_no', currentCase.centralSarabanNo || '2569/4410');
-    setElText('stamp_law_no', currentCase.lawReceiveNo || '2569/0142');
+    setElText('stamp_law_no', currentCase.lawReceiveNo || '0142/2569');
 
     // Document Viewer Panel Texts
     setElText('doc_source_header', currentCase.source);

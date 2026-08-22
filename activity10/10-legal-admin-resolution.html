@@ -70,6 +70,10 @@
           <div class="dot">9</div>
           <div class="lbl">9. ธุรการรับผลมติ &amp; ส่งต่อ ผอ.กม.</div>
         </div>
+        <div class="fstep" id="step10">
+          <div class="dot">10</div>
+          <div class="lbl">10. ผอ.กม. สั่งการตามผลมติ</div>
+        </div>
       </div>
     </div>
   </div>
@@ -92,7 +96,7 @@
               </div>
               <div class="col-6">
                 <span class="fw-bold text-muted d-block mb-1">เลขรับกองกฎหมาย:</span>
-                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">2569/0019</span>
+                <span class="font-monospace fw-bold text-navy fs-6" id="f_lawReceiveNo">0019/2569</span>
               </div>
             </div>
           </div>
@@ -174,7 +178,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js?v=20260820_2"></script>
-<script src="assets/ecmis-activity10.js?v=20260820_2"></script>
+<script src="assets/ecmis-activity10.js?v=20260822_1"></script>
 <script>
   ECMIS.renderShell('10-legal-admin-resolution.html');
 
@@ -202,7 +206,7 @@
     };
 
     setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
-    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '2569/0019');
+    setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0019/2569');
     setElText('f_title', currentCase.title);
 
     setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
@@ -214,6 +218,16 @@
     const isForwarded = currentCase.adminForwardedToDirectorDate || currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION';
 
     if (isForwarded) {
+      const step9El = document.getElementById('step9');
+      const step10El = document.getElementById('step10');
+      if (step9El) {
+        step9El.className = 'fstep done';
+        step9El.querySelector('.dot').innerHTML = '<i class="fa-solid fa-check"></i>';
+      }
+      if (step10El) {
+        step10El.className = 'fstep active';
+      }
+
       const cardContainer = document.getElementById('finalDispatchCardContainer');
       if (cardContainer) {
         cardContainer.innerHTML = `

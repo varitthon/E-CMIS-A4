@@ -930,10 +930,12 @@ function canRecall(kase, roleId){
    เมนู sidebar กรองตามสิทธิ์จริงของแต่ละบทบาท (13 บทบาท ตาม Google Sheet) */
 const NAV = [
   { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
-  { href:'01-work-inbox.html', icon:'fa-inbox', label:'งานกฎหมายในทางคดีที่รอดำเนินการ', badge:true, visible: role => true },
+  { href:'01-work-inbox.html', icon:'fa-inbox', label:'รายการงานกฎหมายและสำนวนคดี', badge:true, visible: role => true },
   { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
   { href:'08-legal-director-approval.html', icon:'fa-user-check', label:'ตรวจพิจารณาและสั่งการ', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
+  { href:'11-legal-director-resolution.html', icon:'fa-file-circle-check', label:'พิจารณาผลมติและสั่งการ', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
   { href:'05-group-director-review.html', icon:'fa-user-gear', label:'พิจารณาและมอบหมายนิติกร', visible: role => role.id === 'group_director' || role.id === 'Arnon.C' },
+  { href:'12-group-director-resolution.html', icon:'fa-user-pen', label:'พิจารณาผลมติและมอบหมายนิติกร', visible: role => role.id === 'group_director' || role.id === 'Arnon.C' },
   { href:'09-legal-admin-dispatch.html', icon:'fa-paper-plane', label:'ออกเลขส่งและส่งต่อผู้บริหาร', visible: role => role.id === 'admin_legal' || role.id === 'Kanda.R' },
   { href:'10-legal-admin-resolution.html', icon:'fa-file-signature', label:'รับผลมติและส่งต่อ ผอ.กองกฎหมาย', visible: role => role.id === 'admin_legal' || role.id === 'Kanda.R' }
 ];
