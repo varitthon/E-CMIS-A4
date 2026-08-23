@@ -1,762 +1,1014 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>คิวงานหลัก | E-CMIS ระบบกฎหมายในทางคดี</title>
-<link rel="icon" type="image/png" href="pacc_logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-<link href="assets/ecmis-app.css" rel="stylesheet">
-<link href="assets/ecmis-activity10.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-CMIS - รายการงานกฎหมายและสำนวนคดี</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-sidebar: #1a2b48;
+            --bg-header: #ffffff;
+            --bg-table-th: #f1f5f9;
+            --text-main: #334155;
+            --text-title: #1e293b;
+            --border-color: #e2e8f0;
+            --base-font-size: 13.5px;
+        }
+
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #090d16;
+            --bg-header: #1e293b;
+            --bg-table-th: #334155;
+            --text-main: #cbd5e1;
+            --text-title: #f8fafc;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; margin: 0; padding: 0; transition: background-color 0.2s, color 0.2s; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; font-size: var(--base-font-size); overflow: hidden; }
+        
+        .sidebar { width: 240px; background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: width 0.2s ease; overflow-y: auto; overflow-x: hidden; white-space: nowrap; }
+        .sidebar.collapsed { width: 0; }
+        .brand { padding: 14px 20px; font-weight: 700; font-size: 1.05em; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); text-decoration: none; color: #fff; }
+        .brand img { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.3)); }
+        .brand span { line-height: 1.2; }
+        .brand small { display: block; font-size: 0.7em; font-weight: 400; color: rgba(255,255,255,0.7); }
+        .menu { list-style: none; margin-top: 10px; }
+        .menu li a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: #94a3b8; text-decoration: none; font-size: 0.95em; transition: all 0.2s; }
+        .menu li.active a, .menu li a:hover { background-color: #2563eb; color: #fff; font-weight: 500; }
+        
+        .sidebar-bottom { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.15); font-size: 0.82em; color: #94a3b8; }
+
+        .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .topbar { background: var(--bg-header); padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .btn-toggle-menu { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-title); padding: 4px 8px; border-radius: 4px; }
+        .btn-toggle-menu:hover { background: var(--border-color); }
+        .breadcrumb { font-size: 0.9em; color: #64748b; display: flex; gap: 6px; align-items: center; }
+        
+        .top-controls { display: flex; align-items: center; gap: 12px; }
+        .icon-btn-group { display: flex; align-items: center; gap: 6px; }
+        .font-sizer { display: flex; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
+        .ctrl-btn { border: none; background: none; padding: 6px 12px; cursor: pointer; font-size: 0.85em; color: var(--text-title); font-weight: 600; }
+        .ctrl-btn:hover { background: var(--border-color); }
+        
+        .circle-icon-btn { position: relative; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--text-title); }
+        .circle-icon-btn:hover { background: var(--border-color); }
+        .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 10px; border: 1px solid #fff; }
+
+        .user-profile-top { position: relative; display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid var(--border-color); cursor: pointer; user-select: none; }
+        .avatar { width: 34px; height: 34px; background: #2563eb; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: 600; font-size: 0.9em; color: var(--text-title); line-height: 1.2; }
+        .user-role { font-size: 0.78em; color: #64748b; }
+
+        /* Profile & Logout Dropdown */
+        .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 280px; z-index: 1000; overflow: hidden; }
+        .profile-dropdown-menu.show { display: block; }
+        .profile-dropdown-header { padding: 10px 14px; background: var(--bg-table-th); border-bottom: 1px solid var(--border-color); font-size: 0.8em; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
+        .profile-dropdown-body { padding: 12px 14px; }
+        .profile-card { background: var(--bg-body); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+        .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
+        .profile-card-title { font-size: 0.82em; color: #2563eb; font-weight: 600; display: block; margin-top: 2px; }
+        .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
+        .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
+        .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
+        .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
+
+        .content { padding: 20px 24px; flex: 1; }
+        .page-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+        .page-title { font-size: 1.35em; font-weight: 700; color: var(--text-title); display: flex; align-items: center; gap: 8px; }
+        .page-actions { display: flex; align-items: center; gap: 8px; }
+        
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+        .card { background: var(--bg-card); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.2s ease; }
+        .card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card.active { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+        .card-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .card-num { font-size: 1.6em; font-weight: 700; line-height: 1.1; }
+        .card-label { font-size: 0.88em; color: #64748b; margin-top: 2px; }
+
+        .filter-card { background: var(--bg-card); border-radius: 8px; padding: 14px 18px; border: 1px solid var(--border-color); margin-bottom: 16px; }
+        .filter-grid { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .filter-grid .form-group { flex: 1; min-width: 200px; }
+        .filter-grid .btn-container { flex: 0 0 auto; display: flex; gap: 8px; }
+        
+        .form-group label { display: block; font-size: 0.88em; font-weight: 600; color: #64748b; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 7px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.95em; background-color: var(--bg-card); color: var(--text-title); }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+        
+        .btn { padding: 7px 18px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 35px; text-decoration: none; transition: all 0.2s ease; }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-primary:hover { background: #1d4ed8; color: #fff; }
+        .btn-outline { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-title); }
+        .btn-outline:hover { background: var(--border-color); }
+        .btn-dark { background: #1a2b48; color: #fff; }
+        .btn-dark:hover { background: #0f172a; color: #fff; }
+
+        .table-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .table-title-bar { padding: 12px 18px; background: var(--bg-card); font-weight: 700; color: var(--text-title); border-bottom: 1px solid var(--border-color); font-size: 1em; display: flex; justify-content: space-between; align-items: center; }
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: var(--bg-table-th); padding: 11px 12px; font-size: 0.88em; font-weight: 700; color: var(--text-title); border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 0.93em; color: var(--text-main); vertical-align: middle; }
+        tr:hover { background-color: rgba(37,99,235,0.03); }
+        
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 600; display: inline-block; white-space: nowrap; }
+        .badge-status { background: #0284c7; color: #fff; }
+        .badge-status.bg-success { background: #16a34a !important; color: #fff !important; }
+        .badge-status.bg-warning { background: #f59e0b !important; color: #1e293b !important; }
+        .badge-status.bg-info { background: #0284c7 !important; color: #fff !important; }
+        .badge-status.bg-primary { background: #2563eb !important; color: #fff !important; }
+        .badge-status.bg-danger { background: #dc2626 !important; color: #fff !important; }
+        .badge-danger-sla { font-weight: 700; font-size: 0.88em; white-space: nowrap; }
+
+        .action-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; text-decoration: none; }
+        .action-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .action-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 2px 5px rgba(37,99,235,0.3); }
+
+        .btn-action-primary {
+            background: #2563eb;
+            color: #fff;
+            border: 1px solid #2563eb;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.86em;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(37,99,235,0.25);
+            text-decoration: none;
+        }
+        .btn-action-primary:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #fff;
+            box-shadow: 0 3px 8px rgba(37,99,235,0.4);
+            transform: translateY(-1px);
+        }
+
+        .table-footer { padding: 12px 18px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; font-size: 0.9em; flex-wrap: wrap; gap: 10px; }
+        .paging-controls { display: flex; align-items: center; gap: 4px; }
+        .page-btn { padding: 5px 10px; border: 1px solid var(--border-color); background: var(--bg-card); border-radius: 4px; cursor: pointer; font-size: 0.9em; color: var(--text-title); min-width: 32px; text-align: center; }
+        .page-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Notification Dropdown */
+        .notif-dropdown-menu { display: none; position: absolute; top: 46px; right: 80px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 320px; z-index: 1000; overflow: hidden; }
+        .notif-dropdown-menu.show { display: block; }
+        .notif-dropdown-header { padding: 10px 14px; background: var(--bg-table-th); border-bottom: 1px solid var(--border-color); font-size: 0.85em; font-weight: 700; color: var(--text-title); display: flex; justify-content: space-between; align-items: center; }
+        .notif-item { padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-size: 0.85em; }
+        .notif-item strong { display: block; color: var(--text-title); margin-bottom: 2px; }
+        .notif-item span { color: #64748b; font-size: 0.9em; }
+
+        @media (max-width: 992px) {
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .sidebar { position: fixed; height: 100vh; z-index: 999; }
+            .sidebar.collapsed { width: 0; }
+        }
+        @media (max-width: 576px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .filter-grid { flex-direction: column; align-items: stretch; }
+        }
+    </style>
 </head>
 <body>
 
-<main class="app-main">
-
-  <div class="page-head">
-    <div>
-      <h1><i class="fa-solid fa-inbox me-2"></i>รายการสำนวนคดี</h1>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div>
+            <a href="01-work-inbox.html" class="brand">
+                <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
+                <span>E-CMIS
+                    <small>ระบบกฎหมายในทางคดี</small>
+                </span>
+            </a>
+            <ul class="menu" id="sidebarMenu">
+                <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+                <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-bottom">
+            <div>สำนักงาน ป.ป.ท.</div>
+            <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
+        </div>
     </div>
-    <div class="d-flex align-items-center gap-2 ms-auto">
-      <button class="btn btn-xs btn-outline-secondary" onclick="resetDemoData()"><i class="fa-solid fa-rotate me-1"></i>รีเซ็ต</button>
-      <a href="02-board-intake.html" class="btn btn-dark btn-sm" id="btnBoardIntake"><i class="fa-solid fa-file-signature me-1"></i>รับเรื่องเข้าระบบ</a>
-    </div>
-  </div>
 
-  <!-- KPI Row -->
-  <div class="row g-3 mb-4" id="kpiContainer">
-    <!-- Rendered dynamically -->
-  </div>
-
-  <!-- Filter & Search Controls -->
-  <div class="card card-ecmis mb-3">
-    <div class="card-body p-3">
-      <div class="row g-2 align-items-center">
-        <div class="col-md-6">
-          <div class="input-group">
-            <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="ค้นหาเลขสำนวน / เลขรับกองกฎหมาย / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา / นิติกร..." onkeyup="currentPage = 1; renderTable()">
-          </div>
-        </div>
-        <div class="col-md-3">
-          <select class="form-select form-select-sm" id="categoryFilter" title="ประเภทคดี" aria-label="ประเภทคดี" onchange="renderTable()">
-            <option value="all">ทั้งหมด</option>
-            <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
-            <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-            <option value="10.3">คดีศาลปกครอง</option>
-          </select>
-        </div>
-        <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-2">
-          <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" onclick="clearFilters()" title="ล้างตัวกรองทั้งหมด">
-            <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
-          </button>
-          <span class="badge bg-secondary text-white px-3 py-2 fs-6 rounded-pill" id="caseCountBadge">0 เรื่อง</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Table Work Queue -->
-  <div class="row g-3">
-    <div class="col-12">
-      <div class="card card-ecmis mb-3">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span>รายการงานกฎหมายและสำนวนคดี</span>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover tbl-ecmis mb-0">
-              <colgroup>
-                <col style="width:105px">
-                <col style="width:115px">
-                <col style="width:130px">
-                <col>
-                <col style="width:140px">
-                <col style="width:140px">
-                <col style="width:125px">
-                <col style="width:125px">
-                <col style="width:105px">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>เลขสำนวน</th>
-                  <th>เลขรับกกม.</th>
-                  <th>ประเภทสำนวน</th>
-                  <th>ชื่อเรื่อง</th>
-                  <th>ชื่อผู้กล่าวหา</th>
-                  <th>ชื่อผู้ถูกกล่าวหา</th>
-                  <th>สถานะ</th>
-                  <th>อายุความ/SLA</th>
-                  <th class="text-end">ดำเนินการ</th>
-                </tr>
-              </thead>
-              <tbody id="caseTableBody">
-                <!-- Rendered dynamically -->
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Pagination footer -->
-          <div class="px-3 py-2 border-top bg-light d-flex align-items-center justify-content-between flex-wrap gap-3" id="tableFooter">
-            <div></div>
-            <!-- Pagination Controls -->
-            <div class="ms-auto" id="paginationWrapper">
-              <nav aria-label="Table navigation">
-                <ul class="pagination pagination-sm mb-0" id="paginationControls">
-                  <!-- Rendered dynamically -->
-                </ul>
-              </nav>
+    <!-- Main Content Area -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+                <div class="breadcrumb">
+                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">รายการงานกฎหมายและสำนวนคดี</span>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+            
+            <div class="top-controls">
+                <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+                    <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+                    <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+                </div>
+                <div class="icon-btn-group">
+                    <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+                    <div class="circle-icon-btn" onclick="toggleNotifDropdown()" title="การแจ้งเตือน">
+                        🔔<span class="noti-badge" id="topbarNotiBadge">3</span>
+                    </div>
+                </div>
 
-</main>
+                <!-- Notifications Dropdown -->
+                <div class="notif-dropdown-menu" id="notifDropdown">
+                    <div class="notif-dropdown-header">
+                        <span>การแจ้งเตือนล่าสุด</span>
+                        <span style="font-size: 0.8em; color: #2563eb;">ทั้งหมด</span>
+                    </div>
+                    <div id="notifListContainer">
+                        <div class="notif-item">
+                            <strong style="color:#dc2626;">🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 2 วัน)</strong>
+                            <span>สำนวน คดี-100001/2569 ครบกำหนดยกร่างความเห็นแย้ง</span>
+                        </div>
+                        <div class="notif-item">
+                            <strong>📋 มอบหมายสำนวนใหม่</strong>
+                            <span>สำนวน คดี-100002/2569 รอ ผอ.กลุ่มงาน มอบหมายนิติกร</span>
+                        </div>
+                        <div class="notif-item">
+                            <strong>📨 คำร้องขอเปิดเผยข้อมูลข่าวสาร</strong>
+                            <span>คำร้อง 100101/2569 เข้าสู่ระบบแล้ว</span>
+                        </div>
+                    </div>
+                </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="assets/ecmis-app.js?v=20260820_2"></script>
-<script src="assets/ecmis-activity10.js?v=20260822_1"></script>
-<script>
-  ECMIS.renderShell('01-work-inbox.html');
+                <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+                    <div class="avatar" id="userAvatar">ก</div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">น.ส.กานดา รักษาการ</span>
+                        <span class="user-role" id="userRoleTitle">เจ้าหน้าที่ธุรการกองกฎหมาย</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
 
-  document.addEventListener("DOMContentLoaded", function() {
-    checkRolePermissions();
-    renderKPI();
-    renderTable();
-  });
-
-  function checkRolePermissions() {
-    const roleId = ECMIS.currentRoleId();
-    const btnIntake = document.getElementById("btnBoardIntake");
-    if (btnIntake) {
-      if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
-        btnIntake.style.display = 'inline-flex';
-      } else {
-        btnIntake.style.display = 'none';
-      }
-    }
-  }
-
-  let activeKpiFilter = null;
-
-  function getCasesForCurrentRole() {
-    const roleId = ECMIS.currentRoleId();
-    const cases = Activity10.getCases();
-
-    // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
-    // เห็นสำนวนทั้งหมดในระบบ โดยงานที่ออกเลขรับและส่งเสนอ ผอ.กม. ไปแล้ว จะแสดงปุ่มสำหรับกดดู (View-only)
-    if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
-      return cases;
-    }
-
-    // 2. ผู้อำนวยการกองกฎหมาย (dir_legal / Napas.S)
-    // เห็นเฉพาะงานที่รอ ผอ.กม. พิจารณา/สั่งการ:
-    // - ธุรการออกเลขรับแล้ว ส่งเสนอ ผอ.กม. พิจารณามอบหมายกลุ่มงาน (PENDING_DIRECTOR)
-    // - ผอ.กลุ่มงาน ตรวจร่างความเห็นแล้ว ส่งเสนอ ผอ.กม. ตรวจพิจารณา (PENDING_DIRECTOR_APPROVAL)
-    // - ธุรการส่งต่อหนังสือผลมติมาให้ ผอ.กม. สั่งการ (PENDING_DIRECTOR_RESOLUTION / เสนอผลมติ ผอ.กองกฎหมาย)
-    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
-      return cases.filter(c => {
-        return c.statusCode === 'PENDING_DIRECTOR' || 
-               c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || 
-               c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || 
-               c.statusCode === 'COMPLETED' ||
-               c.status === 'ผอ.กองกฎหมายพิจารณา' ||
-               c.status === 'ผอ.กองกฎหมายพิจารณาผลมติ' ||
-               c.status === 'ผอ.กองกฎหมายสั่งการตามมติแล้ว' ||
-               c.status === 'พิจารณาความเห็นของนิติกร' ||
-               c.status === 'เสนอผลมติ ผอ.กองกฎหมาย' ||
-               c.status === 'เสนอ ผอ.กองกฎหมาย ตรวจพิจารณา' || 
-               (c.status && c.status.includes('ผอ.กองกฎหมาย') && c.lawReceiveNo);
-      });
-    }
-
-    // 3. ผู้อำนวยการกลุ่มงานความเห็นแย้ง (group_director / Arnon.C)
-    // เห็นเฉพาะงานที่รอกลุ่มงานดำเนินการ:
-    // - ผอ.กม. มอบหมายเรื่องมาให้กลุ่มงาน เพื่อมอบหมายนิติกร (PENDING_GROUP_DIRECTOR)
-    // - นิติกร ทำความเห็นเสร็จแล้ว ส่งเสนอ ผอ.กลุ่มงาน ตรวจร่าง (PENDING_GROUP_REVIEW)
-    if (roleId === 'group_director' || roleId === 'Arnon.C') {
-      return cases.filter(c => {
-        return c.statusCode === 'PENDING_GROUP_DIRECTOR' || 
-               c.statusCode === 'PENDING_GROUP_REVIEW' || 
-               c.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณา' ||
-               c.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ' ||
-               c.status === 'พิจารณาความเห็นของนิติกร' ||
-               c.status === 'รอ ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกร' ||
-               c.status === 'มอบหมายกลุ่มงานความเห็นแย้ง' || 
-               c.status === 'เสนอ ผอ.กลุ่มงาน ตรวจร่างความเห็น';
-      });
-    }
-
-    // 4. นิติกรเจ้าของสำนวน (legal_officer / Nattapol.B)
-    // เห็นเฉพาะงานที่นิติกรได้รับมอบหมายให้จัดทำความเห็น:
-    // - DRAFTING_OPINION หรือ assignedRole === 'legal_officer'
-    if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
-      return cases.filter(c => {
-        return c.statusCode === 'DRAFTING_OPINION' || 
-               c.status === 'นิติกรจัดทำความเห็น' ||
-               c.status === 'นิติกรกำลังจัดทำความเห็น' ||
-               (c.assignedRole === 'legal_officer' && c.statusCode !== 'PENDING_GROUP_REVIEW' && c.statusCode !== 'PENDING_DIRECTOR_APPROVAL' && c.statusCode !== 'PENDING_DISPATCH' && c.statusCode !== 'PENDING_DEPUTY_SG' && c.statusCode !== 'RETURNED_FROM_EXEC' && c.statusCode !== 'COMPLETED');
-      });
-    }
-
-    // 5. รองเลขาธิการ ป.ป.ท. (deputy_sg / Surapong.W)
-    // เห็นเฉพาะงานที่ส่งเสนอผู้บริหารตรวจสอบ:
-    // - PENDING_DEPUTY_SG
-    if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
-      return cases.filter(c => {
-        return c.statusCode === 'PENDING_DEPUTY_SG' || c.status === 'รอ รองเลขาธิการ ป.ป.ท. ตรวจสอบ';
-      });
-    }
-
-    return cases;
-  }
-
-  function renderKPI() {
-    const cases = getCasesForCurrentRole();
-    const countTotal = cases.length;
-    const count101 = cases.filter(c => c.category === '10.1').length;
-    const count102 = cases.filter(c => c.category.startsWith('10.2')).length;
-    const count103 = cases.filter(c => c.category === '10.3').length;
-
-    document.getElementById("kpiContainer").innerHTML = `
-      <div class="col-6 col-md-3">
-        <div class="card card-ecmis h-100 p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive bg-white border" style="min-height:92px;" data-kpi="all" onclick="filterByKpi('all')" title="คลิกเพื่อดูกล่องทั้งหมด">
-          <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
-            <i class="fa-solid fa-folder-open"></i>
-          </div>
-          <div style="min-width:0">
-            <h3 class="m-0 fw-bold text-dark" style="line-height:1.1">${countTotal}</h3>
-            <small class="text-muted fw-semibold d-block mt-1" style="font-size:0.76rem;line-height:1.2">งานทั้งหมด</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card card-ecmis h-100 p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive bg-white border" style="min-height:92px;" data-kpi="10.1" onclick="filterByKpi('10.1')" title="คลิกเพื่อกรองคดีศาลอาญาทุจริตและประพฤติมิชอบ">
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div style="min-width:0">
-            <h3 class="m-0 fw-bold text-primary" style="line-height:1.1">${count101}</h3>
-            <small class="text-muted fw-semibold d-block mt-1" style="font-size:0.76rem;line-height:1.2">คดีศาลอาญาทุจริตและประพฤติมิชอบ</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card card-ecmis h-100 p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive bg-white border" style="min-height:92px;" data-kpi="10.2" onclick="filterByKpi('10.2')" title="คลิกเพื่อกรองคำร้องขอเปิดเผยข้อมูล">
-          <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
-            <i class="fa-solid fa-envelope-open-text"></i>
-          </div>
-          <div style="min-width:0">
-            <h3 class="m-0 fw-bold text-warning" style="line-height:1.1">${count102}</h3>
-            <small class="text-muted fw-semibold d-block mt-1" style="font-size:0.76rem;line-height:1.2">คำร้องขอเปิดเผยข้อมูล</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card card-ecmis h-100 p-3 d-flex flex-row align-items-center gap-3 kpi-card-interactive bg-white border" style="min-height:92px;" data-kpi="10.3" onclick="filterByKpi('10.3')" title="คลิกเพื่อกรองคดีศาลปกครอง">
-          <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;font-size:1.3rem;">
-            <i class="fa-solid fa-landmark"></i>
-          </div>
-          <div style="min-width:0">
-            <h3 class="m-0 fw-bold text-info" style="line-height:1.1">${count103}</h3>
-            <small class="text-muted fw-semibold d-block mt-1" style="font-size:0.76rem;line-height:1.2">คดีศาลปกครอง</small>
-          </div>
-        </div>
-      </div>
-    `;
-
-    updateKpiActiveState();
-  }
-
-  let currentPage = 1;
-  let pageSize = 5;
-
-  function changePage(page) {
-    currentPage = page;
-    renderTable();
-  }
-
-  function changePageSize(size) {
-    pageSize = parseInt(size, 10);
-    currentPage = 1;
-    renderTable();
-  }
-
-  function renderPaginationControls(totalItems) {
-    const totalPages = Math.ceil(totalItems / pageSize) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-    if (currentPage < 1) currentPage = 1;
-
-    const paginationUl = document.getElementById("paginationControls");
-    if (!paginationUl) return;
-
-    if (totalItems === 0 || totalPages <= 1) {
-      paginationUl.innerHTML = "";
-      return;
-    }
-
-    let html = "";
-
-    // Prev Button
-    html += `
-      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-        <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); ${currentPage > 1 ? `changePage(${currentPage - 1})` : ''}" aria-label="Previous">
-          <i class="fa-solid fa-chevron-left"></i>
-        </a>
-      </li>
-    `;
-
-    // Page Numbers
-    for (let i = 1; i <= totalPages; i++) {
-      html += `
-        <li class="page-item ${i === currentPage ? 'active' : ''}">
-          <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); changePage(${i});">${i}</a>
-        </li>
-      `;
-    }
-
-    // Next Button
-    html += `
-      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-        <a class="page-link py-1 px-2" href="#" onclick="event.preventDefault(); ${currentPage < totalPages ? `changePage(${currentPage + 1})` : ''}" aria-label="Next">
-          <i class="fa-solid fa-chevron-right"></i>
-        </a>
-      </li>
-    `;
-
-    paginationUl.innerHTML = html;
-  }
-
-  function filterByKpi(type) {
-    currentPage = 1;
-    const catSelect = document.getElementById("categoryFilter");
-
-    if (type === 'all' || activeKpiFilter === type) {
-      activeKpiFilter = 'all';
-      if (catSelect) catSelect.value = 'all';
-    } else {
-      if (type === '10.1') {
-        if (catSelect) catSelect.value = '10.1';
-      } else if (type === '10.2' || type === '10.2.1') {
-        if (catSelect) catSelect.value = '10.2.1';
-      } else if (type === '10.3') {
-        if (catSelect) catSelect.value = '10.3';
-      }
-    }
-    renderTable();
-  }
-
-  function updateKpiActiveState() {
-    const cat = document.getElementById("categoryFilter") ? document.getElementById("categoryFilter").value : 'all';
-
-    let currentActive = null;
-    if (cat === 'all') currentActive = 'all';
-    else if (cat === '10.1') currentActive = '10.1';
-    else if (cat === '10.2.1' || cat === '10.2') currentActive = '10.2';
-    else if (cat === '10.3') currentActive = '10.3';
-
-    activeKpiFilter = currentActive;
-
-    document.querySelectorAll(".kpi-card-interactive").forEach(card => {
-      if (card.dataset.kpi === activeKpiFilter) {
-        card.classList.add("active-kpi-filter");
-      } else {
-        card.classList.remove("active-kpi-filter");
-      }
-    });
-  }
-
-  function clearFilters() {
-    activeKpiFilter = null;
-    currentPage = 1;
-    document.getElementById("searchInput").value = "";
-    if (document.getElementById("categoryFilter")) document.getElementById("categoryFilter").value = "all";
-    renderTable();
-  }
-
-  function getActionButtonHtml(c, roleId) {
-    // 1. ธุรการกองกฎหมาย (ลงรับเรื่องและออกเลขรับแล้ว -> กดดูรายละเอียดสำนวนและเอกสารอัยการ)
-    if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
-      if (c.statusCode === 'PENDING_DISPATCH' || c.status === 'ธุรการออกเลขส่งภายใน' || c.status === 'ส่งเรื่องให้ธุรการกองกฎหมายดำเนินการ') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-paper-plane me-1"></i>ดำเนินการ</button>`;
-      }
-      if (c.statusCode === 'RETURNED_FROM_EXEC' || c.statusCode === 'PENDING_FINAL_DISPATCH' || c.status === 'ธุรการรับผลมติ' || (c.status && (c.status.includes('ธุรการรับผลมติ') || c.status.includes('ธุรการับผลมติ') || c.status.includes('ผู้บริหารลงนามแล้ว') || c.status.includes('รับเรื่องคืน')))) {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-arrow-right me-1"></i>ดำเนินการ</button>`;
-      }
-      return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
-    }
-
-    // 2. ผอ.กองกฎหมาย
-    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
-      if (c.statusCode === 'PENDING_DIRECTOR' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || (c.status && (c.status.includes('ผอ.กองกฎหมาย') || c.status.includes('เสนอผลมติ') || c.status.includes('พิจารณาความเห็น')))) {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
-      }
-      return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
-    }
-
-    // 3. ผอ.กลุ่มงานความเห็นแย้ง
-    if (roleId === 'group_director' || roleId === 'Arnon.C') {
-      if (c.statusCode === 'PENDING_GROUP_DIRECTOR') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-user-plus me-1"></i>ดำเนินการ</button>`;
-      } else if (c.statusCode === 'PENDING_GROUP_REVIEW') {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-clipboard-check me-1"></i>ดำเนินการ</button>`;
-      } else if (c.statusCode === 'PENDING_GROUP_RESOLUTION' || c.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ' || (c.status && c.status.includes('ผอ.กลุ่มงาน') && c.status.includes('ผลมติ'))) {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-user-gear me-1"></i>ดำเนินการ</button>`;
-      }
-      return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
-    }
-
-    // 4. นิติกร
-    if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
-      if (c.statusCode === 'DRAFTING_OPINION' || (c.assignedRole === 'legal_officer' && c.statusCode !== 'PENDING_GROUP_REVIEW' && c.statusCode !== 'PENDING_DIRECTOR_APPROVAL')) {
-        return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-dark px-2 fw-semibold" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
-      }
-      return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
-    }
-
-    return `<button type="button" onclick="openProsecutorDocModal('${c.id}')" class="btn btn-xs btn-outline-secondary text-dark" title="ดูรายละเอียดสำนวน"><i class="fa-solid fa-eye text-dark"></i></button>`;
-  }
-
-  function renderTable() {
-    const q = document.getElementById("searchInput").value.toLowerCase().trim();
-    const cat = document.getElementById("categoryFilter") ? document.getElementById("categoryFilter").value : 'all';
-
-    updateKpiActiveState();
-
-    let cases = getCasesForCurrentRole();
-
-    cases = cases.filter(c => {
-      const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
-      const caseId = (c.id || '').toLowerCase();
-      const cleanId = caseId.replace(/^.*?-/, '');
-      const paccCaseNo = (c.paccCaseNo || (tor && tor.paccCaseNo) || '').toLowerCase();
-      const investigationNo = (c.investigationNo || '').toLowerCase();
-      const lawReceiveNo = (c.lawReceiveNo || '').toLowerCase();
-      const title = (c.title || '').toLowerCase();
-      const officer = (c.officer || '').toLowerCase();
-      const accuser = (c.accuser || (tor && tor.accuser) || '').toLowerCase();
-      const accused = (c.accused || (tor && tor.accused) || '').toLowerCase();
-      const docNo = (c.docNo || '').toLowerCase();
-      const centralSarabanNo = (c.centralSarabanNo || '').toLowerCase();
-
-      const matchQ = !q || 
-        caseId.includes(q) || 
-        cleanId.includes(q) || 
-        paccCaseNo.includes(q) || 
-        investigationNo.includes(q) || 
-        lawReceiveNo.includes(q) || 
-        title.includes(q) || 
-        officer.includes(q) || 
-        accuser.includes(q) || 
-        accused.includes(q) || 
-        docNo.includes(q) || 
-        centralSarabanNo.includes(q);
-
-      const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining)
-        ? Activity10.calculateDaysRemaining(c)
-        : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
-
-      const matchCat = (cat === 'all') || (c.category === cat) || (cat === '10.2.1' && (c.category === '10.2.1' || c.category.startsWith('10.2')));
-
-      return matchQ && matchCat;
-    });
-
-    const tbody = document.getElementById("caseTableBody");
-    document.getElementById("caseCountBadge").innerText = `${cases.length} เรื่อง`;
-
-    if (cases.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="9" class="text-center py-5 text-muted">
-            <div class="py-4">
-              <i class="fa-solid fa-circle-check text-success opacity-50 mb-3" style="font-size: 3rem;"></i>
-              <div class="fs-5 fw-bold text-dark mb-1">ไม่มีรายการงานค้างที่รอดำเนินการ</div>
-              <p class="text-muted small mb-0">ขณะนี้ไม่มีสำนวนคดีที่รอให้บทบาทของคุณดำเนินการในระบบ</p>
+                    <!-- Profile & Logout Dropdown -->
+                    <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+                        <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+                        <div class="profile-dropdown-body">
+                            <div class="profile-card">
+                                <span class="profile-card-name" id="profileCardName">นางสาวกานดา รักษาการ</span>
+                                <span class="profile-card-title" id="profileCardTitle">เจ้าหน้าที่ธุรการกองกฎหมาย</span>
+                                <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
+                            </div>
+                            <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+                        </div>
+                        <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>ออกจากระบบ</span>
+                        </a>
+                    </div>
+                </div>
             </div>
-          </td>
-        </tr>
-      `;
-      renderPaginationControls(0);
-      return;
-    }
-
-    const totalPages = Math.ceil(cases.length / pageSize) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-
-    renderPaginationControls(cases.length);
-
-    const startIndex = (currentPage - 1) * pageSize;
-    const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
-
-    const currentRole = ECMIS.currentRoleId();
-
-    let html = "";
-    paginatedCases.forEach(c => {
-      const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining)
-        ? Activity10.calculateDaysRemaining(c)
-        : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
-      const isUrgent = days <= 7;
-      const actionButtonHtml = getActionButtonHtml(c, currentRole);
-      const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
-      const displayPaccNo = c.paccCaseNo || (tor && tor.paccCaseNo) || '';
-      const displayAccuser = c.accuser || (tor && tor.accuser) || (tor && tor.complainant) || '';
-      const displayAccused = c.accused || (tor && tor.accused) || (tor && tor.defendant) || '';
-      const cleanAccuser = displayAccuser.replace(/\s*\([^)]*\)/g, '').trim();
-      const cleanAccused = displayAccused.replace(/\s*\([^)]*\)/g, '').trim();
-
-      // นับวัน และถ้าเวลาเหลือ <= 7 วัน ให้เปลี่ยนสีตัวอักษรเป็นสีแดง
-      let slaHtml = '';
-      if (days <= 0) {
-        slaHtml = `<span class="text-danger fw-bold small"><i class="fa-solid fa-triangle-exclamation text-danger me-1"></i>เกินกำหนด ${Math.abs(days)} วัน</span>`;
-      } else if (days <= 7) {
-        slaHtml = `<span class="text-danger fw-bold small"><i class="fa-solid fa-clock text-danger me-1"></i>เหลือ ${days} วัน</span>`;
-      } else if (days <= 15) {
-        slaHtml = `<span class="text-warning-emphasis fw-semibold small"><i class="fa-solid fa-clock text-warning me-1"></i>เหลือ ${days} วัน</span>`;
-      } else {
-        slaHtml = `<span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>เหลือ ${days} วัน</span>`;
-      }
-
-      html += `
-        <tr>
-          <td>
-            <strong class="text-dark font-monospace">${c.id.replace(/^.*?-/, '')}</strong>
-          </td>
-          <td>
-            ${c.lawReceiveNo 
-              ? `<div class="text-primary font-monospace fw-bold" style="font-size:0.82rem;"><i class="fa-solid fa-receipt me-1"></i>${c.lawReceiveNo}</div>` 
-              : `<span class="text-muted small">- ยังไม่ออกเลข -</span>`}
-          </td>
-          <td><span class="text-dark small">${c.categoryName}</span></td>
-          <td>
-            <div class="fw-bold text-dark">${c.title}</div>
-          </td>
-          <td>
-            ${cleanAccuser ? `<span class="text-dark fw-medium small">${cleanAccuser}</span>` : `<span class="text-muted small">-</span>`}
-          </td>
-          <td>
-            ${cleanAccused ? `<span class="text-dark fw-medium small">${cleanAccused}</span>` : `<span class="text-muted small">-</span>`}
-          </td>
-          <td><span class="st ${c.statusBadge}">${c.status}</span></td>
-          <td>${slaHtml}</td>
-          <td class="text-end">
-            ${actionButtonHtml}
-          </td>
-        </tr>
-      `;
-    });
-    tbody.innerHTML = html;
-  }
-
-  function resetDemoData() {
-    Swal.fire({
-      title: 'คืนค่าข้อมูลตัวอย่าง?',
-      text: 'รีเซ็ตข้อมูลคดีกลับสู่ค่าเริ่มต้นสำหรับสาธิต',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'ตกลงรีเซ็ต',
-      confirmButtonColor: '#0F2A62'
-    }).then(res => {
-      if (res.isConfirmed) {
-        Activity10.resetData();
-        renderKPI();
-        renderTable();
-        Swal.fire({ icon:'success', title:'รีเซ็ตสำเร็จ', timer:1000, showConfirmButton:false });
-      }
-    });
-  }
-
-  function openNewCaseModal(){
-    Swal.fire({
-      title: 'ลงทะเบียนรับหนังสือ/สำนวนใหม่',
-      html: `
-        <div class="text-start small">
-          <div class="mb-2">
-            <label class="form-label fw-bold">หมวดหมู่งานกฎหมาย</label>
-            <select id="swalCat" class="form-select form-select-sm">
-              <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
-              <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-              <option value="10.3">คดีศาลปกครอง</option>
-            </select>
-          </div>
-          <div class="mb-2">
-            <label class="form-label fw-bold">ชื่อเรื่อง / รายละเอียดสำนวน</label>
-            <input type="text" id="swalTitle" class="form-control form-control-sm" placeholder="กรอกชื่อเรื่องคำร้องหรือสำนวนคดี">
-          </div>
-          <div class="mb-2">
-            <label class="form-label fw-bold">หน่วยงานต้นทาง / ที่มา</label>
-            <input type="text" id="swalSource" class="form-control form-control-sm" placeholder="เช่น สำนักงานอัยการพิเศษฯ หรือ ศาลปกครอง">
-          </div>
         </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'บันทึกการลงทะเบียน',
-      cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#0F2A62',
-      preConfirm: () => {
-        const title = document.getElementById('swalTitle').value.trim();
-        if (!title) {
-          Swal.showValidationMessage('กรุณากรอกชื่อเรื่องสำนวน');
-          return false;
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="page-header-bar">
+                <div class="page-title">📁 รายการงานกฎหมายและสำนวนคดี</div>
+                <div class="page-actions">
+                    <button class="btn btn-outline" onclick="resetDemoData()" title="รีเซ็ตข้อมูลตัวอย่าง"><i class="fa-solid fa-rotate me-1"></i>รีเซ็ต</button>
+                    <a href="02-board-intake.html" class="btn btn-primary" id="btnBoardIntake"><i class="fa-solid fa-file-signature me-1"></i>รับเรื่องเข้าระบบ</a>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="cards-grid">
+                <div class="card active" id="card-all" onclick="selectCategory('ALL')">
+                    <div class="card-icon" style="background: #e2e8f0; color: #334155;">📁</div>
+                    <div><div class="card-num" id="count-all">0</div><div class="card-label">งานทั้งหมด</div></div>
+                </div>
+                <div class="card" id="card-101" onclick="selectCategory('10.1')">
+                    <div class="card-icon" style="background: #dbeafe; color: #2563eb;">⚖️</div>
+                    <div><div class="card-num" style="color: #2563eb;" id="count-101">0</div><div class="card-label">คดีอาญาทุจริตฯ</div></div>
+                </div>
+                <div class="card" id="card-102" onclick="selectCategory('10.2')">
+                    <div class="card-icon" style="background: #fef3c7; color: #d97706;">📨</div>
+                    <div><div class="card-num" style="color: #d97706;" id="count-102">0</div><div class="card-label">ขอเปิดเผยข้อมูลข่าวสาร</div></div>
+                </div>
+                <div class="card" id="card-103" onclick="selectCategory('10.3')">
+                    <div class="card-icon" style="background: #e0e7ff; color: #4f46e5;">🏛️</div>
+                    <div><div class="card-num" style="color: #4f46e5;" id="count-103">0</div><div class="card-label">คดีศาลปกครอง</div></div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Card -->
+            <div class="filter-card">
+                <div class="filter-grid">
+                    <div class="form-group" style="flex: 2;">
+                        <label>ค้นหาข้อมูล</label>
+                        <input type="text" id="searchInput" class="form-control" onkeyup="onSearchChange()" placeholder="ค้นหาเลขสำนวน/เลขรับ กกม./ผู้กล่าวหา/ผู้ถูกกล่าวหา/นิติกร...">
+                    </div>
+                    
+                    <div class="form-group" id="filterDropdownContainer" style="flex: 1.5;">
+                        <label id="dynamicFilterLabel">ประเภทงาน</label>
+                        <select id="dynamicSelect" class="form-control" onchange="onDynamicSelectChange()">
+                            <option value="ALL">เลือกทั้งหมด</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-container">
+                        <button class="btn btn-outline" onclick="clearFilters()" title="ล้างตัวกรอง"><i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง</button>
+                        <button class="btn btn-primary" onclick="onSearchChange()"><i class="fa-solid fa-magnifying-glass me-1"></i>ค้นหา</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="table-card">
+                <div class="table-title-bar">
+                    <span>รายการงานกฎหมายและสำนวนคดี</span>
+                    <span class="badge" style="background:#e2e8f0; color:#334155;" id="tableBadgeCount">0 รายการ</span>
+                </div>
+                <div class="table-responsive">
+                    <table id="dataTable">
+                        <thead id="tableHeader"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div>แสดงผล <b id="showingCount">0</b> จากทั้งหมด <b id="totalCount">0</b> รายการ (หน้า <span id="currentPageNum">1</span>/<span id="totalPagesNum">1</span>)</div>
+                    <div class="paging-controls" id="pagingControls"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260823_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20260823_1"></script>
+    <script>
+        const PAGE_SIZE = 10;
+        let currentPage = 1;
+        let currentCategory = 'ALL';
+        let fontSizeLevel = 0;
+
+        const svgEyeIcon = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+
+        // Master mock dataset from law001-3.html (ครบ 32 รายการทุกสถานะ)
+        const lawRefData = [
+            // --- 10.1 คดีอาญาทุจริตฯ (ครบ 11 สถานะ) ---
+            { id: 'คดี-100001/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100001/2569', lawNo: '001/2569', title: 'เบิกจ่ายงบประมาณโครงการเท็จ', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายสมชาย ทุจริตมั่น', officer: 'นายกฤษดา', status: 'รอมอบหมายกลุ่มงาน', statusCode: 'PENDING_DIRECTOR', slaText: '🔴 เหลือ 2 วัน', slaDays: 2 },
+            { id: 'คดี-100002/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100002/2569', lawNo: '002/2569', title: 'ทุจริตจัดซื้อจัดจ้างอาหารกลางวัน', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายวิชัย ใจดี', officer: 'น.ส.วิภาดา', status: 'รอมอบหมายนิติกร', statusCode: 'PENDING_GROUP_DIRECTOR', slaText: '🟡 เหลือ 5 วัน', slaDays: 5 },
+            { id: 'คดี-100003/2569', type: '10.1', subType: 'ถอนฟ้อง', caseNo: '100003/2569', lawNo: '003/2569', title: 'เรียกรับสินบนโครงการก่อสร้าง', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายประเสริฐ มั่นคง', officer: 'นายณัฐพล บัวทุม', status: 'นิติกรกำลังจัดทำความเห็น', statusCode: 'DRAFTING_OPINION', assignedRole: 'legal_officer', slaText: '🟡 เหลือ 10 วัน', slaDays: 10 },
+            { id: 'คดี-100004/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100004/2569', lawNo: '004/2569', title: 'ละเว้นการปฏิบัติหน้าที่โดยมิชอบ', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายอนันต์ กล้าหาญ', officer: 'น.ส.วิภาดา', status: 'เสนอ ผอ.กลุ่ม ตรวจร่างความเห็น', statusCode: 'PENDING_GROUP_REVIEW', slaText: '🟡 เหลือ 8 วัน', slaDays: 8 },
+            { id: 'คดี-100005/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100005/2569', lawNo: '005/2569', title: 'เบิกจ่ายเงินเบี้ยประชุมเท็จ', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นางสาวดารารัตน์', officer: 'นายกฤษดา', status: 'เสนอ ผอ.กองกฎหมาย พิจารณา', statusCode: 'PENDING_DIRECTOR_APPROVAL', slaText: '🟡 เหลือ 6 วัน', slaDays: 6 },
+            { id: 'คดี-100006/2569', type: '10.1', subType: 'ถอนฟ้อง', caseNo: '100006/2569', lawNo: '006/2569', title: 'ทุจริตเงินกองทุนหมู่บ้าน', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายสมศักดิ์ รักดี', officer: 'น.ส.วิภาดา', status: 'เสนอผู้บริหารลงนาม', statusCode: 'PENDING_DEPUTY_SG', slaText: '🔴 เหลือ 2 วัน', slaDays: 2 },
+            { id: 'คดี-100007/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100007/2569', lawNo: '007/2569', title: 'ใช้เอกสารทางราชการปลอม', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายธนพล ซื่อตรง', officer: 'นายณรงค์', status: 'อยู่ระหว่างคณะกรรมการ ป.ป.ท. พิจารณา', statusCode: 'PENDING_BOARD', slaText: '🟢 ปกติ', slaDays: 20 },
+            { id: 'คดี-100008/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100008/2569', lawNo: '008/2569', title: 'เรียกรับเงินวิ่งเต้นโยกย้าย', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายพิชัย รุ่งเรือง', officer: 'นายกฤษดา', status: 'ส่งอัยการสูงสุดชี้ขาด', statusCode: 'PENDING_FINAL_DISPATCH', slaText: '🟢 ปกติ', slaDays: 25 },
+            { id: 'คดี-100009/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100009/2569', lawNo: '009/2569', title: 'จัดซื้อรถยนต์ราชการแพงเกินจริง', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายสุรชัย มั่นคอย', officer: 'น.ส.วิภาดา', status: 'จบกระบวนการสั่งไม่ฟ้อง', statusCode: 'COMPLETED', slaText: '🟢 เสร็จสิ้น', slaDays: 99 },
+            { id: 'คดี-100010/2569', type: '10.1', subType: 'ถอนฟ้อง', caseNo: '100010/2569', lawNo: '010/2569', title: 'เบิกค่าเดินทางไปราชการเท็จ', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นางมาลี', officer: 'นายณรงค์', status: 'จบกระบวนการสั่งไม่อุทธรณ์/ไม่ฎีกา', statusCode: 'COMPLETED', slaText: '🟢 เสร็จสิ้น', slaDays: 99 },
+            { id: 'คดี-100011/2569', type: '10.1', subType: 'สั่งไม่ฟ้อง', caseNo: '100011/2569', lawNo: '011/2569', title: 'ทุจริตโครงการขุดลอกคูคลอง', accuser: 'สำนักงาน ป.ป.ท.', accused: 'นายอภิชาติ ชาญชัย', officer: 'นายกฤษดา', status: 'อยู่ระหว่างพิจารณาคดีในชั้นศาล', statusCode: 'IN_COURT', slaText: '🟡 เหลือ 20 วัน', slaDays: 20 },
+
+            // --- 10.2 การขอเปิดเผยข้อมูลข่าวสาร (ครบ 11 สถานะ) ---
+            { id: 'คำร้อง-100101/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100101/2569', caseNo: '100101/2569', reqDate: '10/08/2569', title: 'ขอคัดลอกรายงานการไต่สวน', reqUser: 'นายสุรชัย ขอตรวจสอบ', accuser: 'นายสุรชัย ขอตรวจสอบ', officer: 'นายณรงค์', status: 'ส่งกอง/สำนักที่รับผิดชอบ', statusCode: 'FORWARDED_DIVISION', slaText: '🟡 เหลือ 12 วัน', slaDays: 12 },
+            { id: 'คำร้อง-100102/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100102/2569', caseNo: '100102/2569', reqDate: '11/08/2569', title: 'ขอข้อมูลผลการวินิจฉัย', reqUser: 'นางสาวดารารัตน์ ข่าวสาร', accuser: 'นางสาวดารารัตน์ ข่าวสาร', officer: 'น.ส.วิภาดา', status: 'รอกองข้อมูลทำความเห็น', statusCode: 'PENDING_OPINION', slaText: '🟡 เหลือ 10 วัน', slaDays: 10 },
+            { id: 'คำร้อง-100103/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100103/2569', caseNo: '100103/2569', reqDate: '12/08/2569', title: 'ขอข้อมูลคำสั่งแต่งตั้งคณะกรรมการ', reqUser: 'นายวิชัย เปิดเผย', accuser: 'นายวิชัย เปิดเผย', officer: 'นายณัฐพล บัวทุม', status: 'รอนิติกรทำความเห็นเสนอ', statusCode: 'DRAFTING_OPINION', assignedRole: 'legal_officer', slaText: '🟡 เหลือ 9 วัน', slaDays: 9 },
+            { id: 'คำร้อง-100104/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100104/2569', caseNo: '100104/2569', reqDate: '13/08/2569', title: 'ขอเอกสารรายงานผลการตรวจสอบ', reqUser: 'นายประเสริฐ สื่อมวลชน', accuser: 'นายประเสริฐ สื่อมวลชน', officer: 'น.ส.วิภาดา', status: 'เสนอคณะอนุกรรมการกลั่นกรองฯ พิจารณา', statusCode: 'PENDING_SUBCOMMITTEE', slaText: '🟡 เหลือ 7 วัน', slaDays: 7 },
+            { id: 'คำร้อง-100105/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100105/2569', caseNo: '100105/2569', reqDate: '14/08/2569', title: 'ขอทราบผลการพิจารณาคดีทุจริต', reqUser: 'นางสาววิไลลักษณ์', accuser: 'นางสาววิไลลักษณ์', officer: 'นายณรงค์', status: 'เสนอผู้บริหารเห็นชอบมติ', statusCode: 'PENDING_EXEC_APPROVAL', slaText: '🔴 เหลือ 2 วัน', slaDays: 2 },
+            { id: 'คำร้อง-100106/2569', type: '10.2', level: 'ชั้นต้น', reqNo: '100106/2569', caseNo: '100106/2569', reqDate: '15/08/2569', title: 'ขอคัดสำนวนคำร้องเรียน', reqUser: 'นายสมชาย ประชาชน', accuser: 'นายสมชาย ประชาชน', officer: 'นายกฤษดา', status: 'แจ้งผลผู้ร้องขอ / ปิดคำร้อง', statusCode: 'COMPLETED', slaText: '🟢 เสร็จสิ้น', slaDays: 99 },
+            { id: 'อุทธรณ์-100107/2569', type: '10.2', level: 'ชั้นอุทธรณ์', reqNo: '100107/2569', caseNo: '100107/2569', reqDate: '16/08/2569', title: 'อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', reqUser: 'นายสุรชัย ขอตรวจสอบ', accuser: 'นายสุรชัย ขอตรวจสอบ', officer: 'นายณรงค์', status: 'อยู่ระหว่างคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ', statusCode: 'PENDING_APPEAL_COMM', slaText: '🔴 เหลือ 3 วัน', slaDays: 3 },
+            { id: 'อุทธรณ์-100108/2569', type: '10.2', level: 'ชั้นอุทธรณ์', reqNo: '100108/2569', caseNo: '100108/2569', reqDate: '17/08/2569', title: 'อุทธรณ์คำสั่งปฏิเสธการให้ข้อมูลข่าวสาร', reqUser: 'นางสาวดารารัตน์', accuser: 'นางสาวดารารัตน์', officer: 'น.ส.วิภาดา', status: 'รอกองข้อมูลจัดทำรายงานชี้แจง', statusCode: 'PENDING_DIVISION_REPORT', slaText: '🟡 เหลือ 8 วัน', slaDays: 8 },
+            { id: 'อุทธรณ์-100109/2569', type: '10.2', level: 'ชั้นอุทธรณ์', reqNo: '100109/2569', caseNo: '100109/2569', reqDate: '18/08/2569', title: 'อุทธรณ์เพิ่มเติมคำขอข้อมูล', reqUser: 'นายวิชัย เปิดเผย', accuser: 'นายวิชัย เปิดเผย', officer: 'นายกฤษดา', status: 'เสนอคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ พิจารณา', statusCode: 'PENDING_APPEAL_REVIEW', slaText: '🟡 เหลือ 5 วัน', slaDays: 5 },
+            { id: 'อุทธรณ์-100110/2569', type: '10.2', level: 'ชั้นอุทธรณ์', reqNo: '100110/2569', caseNo: '100110/2569', reqDate: '19/08/2569', title: 'เสนอความเห็นชั้นอุทธรณ์ต่อผู้บริหาร', reqUser: 'นายประเสริฐ สื่อมวลชน', accuser: 'นายประเสริฐ สื่อมวลชน', officer: 'น.ส.วิภาดา', status: 'เสนอผู้บริหารเห็นชอบ', statusCode: 'PENDING_EXEC_SIGN', slaText: '🔴 เหลือ 1 วัน', slaDays: 1 },
+            { id: 'อุทธรณ์-100111/2569', type: '10.2', level: 'ชั้นอุทธรณ์', reqNo: '100111/2569', caseNo: '100111/2569', reqDate: '20/08/2569', title: 'แจ้งผลคำวินิจฉัยอุทธรณ์เสร็จสิ้น', reqUser: 'นางสาววิไลลักษณ์', accuser: 'นางสาววิไลลักษณ์', officer: 'นายณรงค์', status: 'แจ้งผลวินิจฉัย/ปิดสำนวนอุทธรณ์', statusCode: 'COMPLETED', slaText: '🟢 เสร็จสิ้น', slaDays: 99 },
+
+            // --- 10.3 คดีศาลปกครอง (ครบ 10 สถานะ) ---
+            { id: 'คดีปกครอง-100201/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100201/2569', lawNo: 'กกม. 020/2569', title: 'ฟ้องขอให้เพิกถอนคำสั่งทางปกครอง', officer: 'น.ส.วิภาดา', status: 'รอมอบหมายคดีปกครอง', statusCode: 'PENDING_DIRECTOR', slaText: '🔴 เหลือ 30 วัน', slaDays: 30 },
+            { id: 'คดีปกครอง-100202/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100202/2569', lawNo: 'กกม. 021/2569', title: 'ฟ้องเรียกค่าเสียหายทางละเมิด', officer: 'นายกฤษดา', status: 'รอนิติกรทำคำให้การ', statusCode: 'PENDING_GROUP_DIRECTOR', slaText: '🟡 เหลือ 25 วัน', slaDays: 25 },
+            { id: 'คดีปกครอง-100203/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100203/2569', lawNo: 'กกม. 022/2569', title: 'ฟ้องคดีพิพาทเกี่ยวกับการออกคำสั่งไล่ออก', officer: 'นายณัฐพล บัวทุม', status: 'นิติกรทำร่างคำให้การ', statusCode: 'DRAFTING_OPINION', assignedRole: 'legal_officer', slaText: '🟡 เหลือ 20 วัน', slaDays: 20 },
+            { id: 'คดีปกครอง-100204/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100204/2569', lawNo: 'กกม. 023/2569', title: 'ฟ้องเพิกถอนคำสั่งลงโทษทางวินัย', officer: 'นายณรงค์', status: 'เสนอ ผอ.กลุ่มฯ ตรวจ', statusCode: 'PENDING_GROUP_REVIEW', slaText: '🟡 เหลือ 15 วัน', slaDays: 15 },
+            { id: 'คดีปกครอง-100205/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100205/2569', lawNo: 'กกม. 024/2569', title: 'ฟ้องคดีพิพาทสัญญาทางปกครอง', officer: 'นายกฤษดา', status: 'เสนอ ผอ.กองกฎหมาย ตรวจ', statusCode: 'PENDING_DIRECTOR_APPROVAL', slaText: '🟡 เหลือ 10 วัน', slaDays: 10 },
+            { id: 'คดีปกครอง-100206/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100206/2569', lawNo: 'กกม. 025/2569', title: 'ฟ้องขอให้ชดใช้ค่าสินไหมทดแทน', officer: 'น.ส.วิภาดา', status: 'เสนอผู้บริหารลงนาม', statusCode: 'PENDING_DEPUTY_SG', slaText: '🔴 เหลือ 4 วัน', slaDays: 4 },
+            { id: 'คดีปกครอง-100207/2569', type: '10.3', level: 'ศาลปกครองชั้นต้น', caseNo: '100207/2569', lawNo: 'กกม. 026/2569', title: 'ฟ้องเพิกถอนมติคณะกรรมการ ป.ป.ท.', officer: 'นายณรงค์', status: 'ส่งพนักงานอัยการดำเนินคดีแทน', statusCode: 'PENDING_DISPATCH', slaText: '🟢 ปกติ', slaDays: 45 },
+            { id: 'คดีปกครอง-100208/2569', type: '10.3', level: 'ศาลปกครองสูงสุด', caseNo: '100208/2569', lawNo: 'กกม. 027/2569', title: 'อุทธรณ์คดีพิพาทเจ้าหน้าที่รัฐกระทำละเมิด', officer: 'นายกฤษดา', status: 'อยู่ระหว่างการพิจารณาของศาลปกครอง', statusCode: 'IN_COURT', slaText: '🟡 เหลือ 15 วัน', slaDays: 15 },
+            { id: 'คดีปกครอง-100209/2569', type: '10.3', level: 'ศาลปกครองสูงสุด', caseNo: '100209/2569', lawNo: 'กกม. 028/2569', title: 'อุทธรณ์คำพิพากษาศาลปกครองชั้นต้น', officer: 'น.ส.วิภาดา', status: 'อยู่ระหว่างพิจารณาอุทธรณ์คดีปกครอง', statusCode: 'IN_APPEAL', slaText: '🔴 เหลือ 5 วัน', slaDays: 5 },
+            { id: 'คดีปกครอง-100210/2569', type: '10.3', level: 'ศาลปกครองสูงสุด', caseNo: '100210/2569', lawNo: 'กกม. 029/2569', title: 'คดีพิพาทสิ้นสุดตามคำพิพากษาศาลสูงสุด', officer: 'นายณรงค์', status: 'คดีถึงที่สุด/ปิดสำนวนคดีปกครอง', statusCode: 'COMPLETED', slaText: '🟢 เสร็จสิ้น', slaDays: 99 }
+        ];
+
+        function getAllDatabaseCases() {
+            const rawActCases = (typeof Activity10 !== 'undefined' && Activity10.getCases) ? Activity10.getCases() : [];
+            
+            // Map Activity10 cases into standard structure
+            const mappedActCases = rawActCases.map(c => {
+                const days = (typeof Activity10 !== 'undefined' && Activity10.calculateDaysRemaining)
+                    ? Activity10.calculateDaysRemaining(c)
+                    : (typeof c.slaDaysRemaining === 'number' ? c.slaDaysRemaining : 15);
+                const tor = (typeof Activity10 !== 'undefined' && Activity10.getTorDetails) ? Activity10.getTorDetails(c) : {};
+                
+                let slaText = '';
+                if (days <= 0) slaText = `🔴 เกิน ${Math.abs(days)} วัน`;
+                else if (days <= 7) slaText = `🔴 เหลือ ${days} วัน`;
+                else if (days <= 15) slaText = `🟡 เหลือ ${days} วัน`;
+                else slaText = `🟢 เหลือ ${days} วัน`;
+
+                let cat = c.category || '10.1';
+                let subType = c.subType || (c.prosecutorCaseTypeName && c.prosecutorCaseTypeName.includes('ถอนฟ้อง') ? 'ถอนฟ้อง' : 'สั่งไม่ฟ้อง');
+                let level = c.level || (cat === '10.3' ? 'ศาลปกครองชั้นต้น' : 'ชั้นต้น');
+
+                return {
+                    id: c.id,
+                    type: cat.startsWith('10.2') ? '10.2' : cat,
+                    subType: subType,
+                    level: level,
+                    caseNo: c.paccCaseNo || c.id.replace(/^.*?-/, ''),
+                    reqNo: c.id.replace(/^.*?-/, ''),
+                    lawNo: c.lawReceiveNo || '-',
+                    reqDate: c.dateReceived ? c.dateReceived.split('-').reverse().join('/') : '15/08/2569',
+                    title: c.title,
+                    accuser: c.accuser || (tor && tor.accuser) || '-',
+                    accused: c.accused || (tor && tor.accused) || '-',
+                    reqUser: c.accuser || (tor && tor.accuser) || '-',
+                    officer: c.officer ? c.officer.split(' ')[0] + ' ' + (c.officer.split(' ')[1] || '') : 'นายนภัส',
+                    status: c.status,
+                    statusCode: c.statusCode,
+                    statusBadge: c.statusBadge,
+                    assignedRole: c.assignedRole,
+                    slaText: slaText,
+                    slaDays: days,
+                    raw: c
+                };
+            });
+
+            // Combine with lawRefData (ensuring unique ids)
+            const combined = [...mappedActCases];
+            lawRefData.forEach(ref => {
+                const exists = combined.some(c => c.id === ref.id || c.caseNo === ref.caseNo);
+                if (!exists) {
+                    combined.push(ref);
+                }
+            });
+
+            return combined;
         }
-        return {
-          category: document.getElementById('swalCat').value,
-          title: title,
-          source: document.getElementById('swalSource').value || 'ศูนย์รับเรื่องร้องเรียน ป.ป.ท.'
+
+        function getCurrentRole() {
+            return sessionStorage.getItem('ecmis_role') || 'admin_legal';
+        }
+
+        function updateRoleDisplay() {
+            const roleId = getCurrentRole();
+            const btnIntake = document.getElementById("btnBoardIntake");
+            const avatar = document.getElementById("userAvatar");
+            const nameEl = document.getElementById("userName");
+            const roleEl = document.getElementById("userRoleTitle");
+
+            const roleMap = {
+                'admin_legal': { name: 'น.ส.กานดา รักษาการ', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
+                'Kanda.R': { name: 'น.ส.กานดา รักษาการ', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
+                'dir_legal': { name: 'น.ส.ณพัสตร์ ศรีสมเกียรติ', role: 'ผู้อำนวยการกองกฎหมาย', av: 'ณ', intake: false },
+                'Napas.S': { name: 'น.ส.ณพัสตร์ ศรีสมเกียรติ', role: 'ผู้อำนวยการกองกฎหมาย', av: 'ณ', intake: false },
+                'group_director': { name: 'นายอานนท์ ชนประชา', role: 'ผู้อำนวยการกลุ่มงานความเห็นแย้ง', av: 'อ', intake: false },
+                'Arnon.C': { name: 'นายอานนท์ ชนประชา', role: 'ผู้อำนวยการกลุ่มงานความเห็นแย้ง', av: 'อ', intake: false },
+                'legal_officer': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
+                'Nattapol.B': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
+                'deputy_sg': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false },
+                'Surapong.W': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false }
+            };
+
+            const cur = roleMap[roleId] || roleMap['admin_legal'];
+            if (avatar) avatar.innerText = cur.av;
+            if (nameEl) nameEl.innerText = cur.name;
+            if (roleEl) roleEl.innerText = cur.role;
+            if (btnIntake) btnIntake.style.display = cur.intake ? 'inline-flex' : 'none';
+
+            const cardName = document.getElementById("profileCardName");
+            const cardTitle = document.getElementById("profileCardTitle");
+            if (cardName) cardName.innerText = cur.name;
+            if (cardTitle) cardTitle.innerText = cur.role;
+
+            renderSidebarMenu();
+        }
+
+        function renderSidebarMenu() {
+            const roleId = getCurrentRole();
+            const menuEl = document.getElementById("sidebarMenu");
+            if (!menuEl) return;
+
+            let itemsHtml = `
+                <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+            `;
+
+            if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
+                itemsHtml += `
+                    <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+                `;
+            } else if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+                itemsHtml += `
+                    <li><a href="04-legal-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายสำนวนคดี</span></a></li>
+                    <li><a href="08-legal-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจพิจารณาและสั่งการ</span></a></li>
+                `;
+            } else if (roleId === 'group_director' || roleId === 'Arnon.C') {
+                itemsHtml += `
+                    <li><a href="05-group-director-review.html"><i class="fa-solid fa-user-gear"></i> <span>มอบหมายนิติกร</span></a></li>
+                    <li><a href="07-group-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจร่างความเห็น</span></a></li>
+                `;
+            }
+
+            menuEl.innerHTML = itemsHtml;
+        }
+
+        function toggleProfileDropdown(e) {
+            if (e) e.stopPropagation();
+            const dropdown = document.getElementById("profileDropdown");
+            if (dropdown) dropdown.classList.toggle('show');
+            const notif = document.getElementById("notifDropdown");
+            if (notif) notif.classList.remove('show');
+        }
+
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById("notifDropdown");
+            if (dropdown) dropdown.classList.toggle('show');
+            const profile = document.getElementById("profileDropdown");
+            if (profile) profile.classList.remove('show');
+        }
+
+        function confirmLogout(e) {
+            if (e) e.preventDefault();
+            Swal.fire({
+                title: 'ออกจากระบบ?',
+                text: 'คุณต้องการออกจากระบบ E-CMIS หรือไม่',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    sessionStorage.removeItem('ecmis_role');
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.closest('.user-profile-top')) {
+                const profile = document.getElementById("profileDropdown");
+                if (profile) profile.classList.remove('show');
+            }
+            if (!e.target.closest('.circle-icon-btn') && !e.target.closest('#notifDropdown')) {
+                const notif = document.getElementById("notifDropdown");
+                if (notif) notif.classList.remove('show');
+            }
         };
-      }
-    }).then(res => {
-      if (res.isConfirmed && res.value) {
-        const newCase = Activity10.addCase(res.value);
-        renderKPI();
-        renderTable();
-        Swal.fire({
-          icon: 'success',
-          title: 'ลงทะเบียนสำเร็จ!',
-          text: `สร้างเลขสำนวน ${newCase.id} เรียบร้อยแล้ว`,
-          confirmButtonColor: '#0F2A62'
-        });
-      }
-    });
-  }
 
-  function openDraftModal(caseId){
-    const kase = Activity10.getCaseById(caseId);
-    Swal.fire({
-      title: `ยกร่างความเห็น — ${kase.id}`,
-      html: `
-        <div class="text-start small">
-          <p><b>เรื่อง:</b> ${kase.title}</p>
-          <p><b>สถานะปัจจุบัน:</b> <span class="badge bg-warning text-dark">${kase.status}</span></p>
-          <div class="mb-2">
-            <label class="form-label fw-bold">บันทึกความเห็นทางกฎหมาย (ยกร่าง)</label>
-            <textarea id="swalOpinion" class="form-control form-control-sm" rows="4">${kase.legalOpinion || ''}</textarea>
-          </div>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'บันทึกร่างความเห็น',
-      cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#0F2A62'
-    }).then(res => {
-      if (res.isConfirmed) {
-        const newOpinion = document.getElementById('swalOpinion').value.trim();
-        kase.legalOpinion = newOpinion;
-        Activity10.updateCaseStatus(kase.id, 'DRAFTING_OPINION', 'นิติกรกำลังจัดทำความเห็น', 'bg-warning text-dark');
-        renderTable();
-        Swal.fire({ icon:'success', title:'บันทึกร่างความเห็นสำเร็จ', timer:1200, showConfirmButton:false });
-      }
-    });
-  }
+        function getCasesForRole(allCases) {
+            const roleId = getCurrentRole();
+            if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
+                return allCases;
+            }
+            if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+                return allCases.filter(c => 
+                    c.statusCode === 'PENDING_DIRECTOR' || 
+                    c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || 
+                    c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || 
+                    c.statusCode === 'COMPLETED' ||
+                    (c.status && (c.status.includes('ผอ.กองกฎหมาย') || c.status.includes('เสนอผลมติ') || c.status.includes('พิจารณาความเห็น')))
+                );
+            }
+            if (roleId === 'group_director' || roleId === 'Arnon.C') {
+                return allCases.filter(c => 
+                    c.statusCode === 'PENDING_GROUP_DIRECTOR' || 
+                    c.statusCode === 'PENDING_GROUP_REVIEW' || 
+                    c.statusCode === 'PENDING_GROUP_RESOLUTION' || 
+                    (c.status && (c.status.includes('ผอ.กลุ่มงาน') || c.status.includes('มอบหมายนิติกร') || c.status.includes('ผอ.กลุ่ม')))
+                );
+            }
+            if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
+                return allCases.filter(c => 
+                    c.statusCode === 'DRAFTING_OPINION' || 
+                    c.assignedRole === 'legal_officer' ||
+                    (c.officer && (c.officer.includes('ณัฐพล') || c.officer.includes('กฤษดา'))) ||
+                    (c.status && c.status.includes('นิติกร'))
+                );
+            }
+            if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
+                return allCases.filter(c => 
+                    c.statusCode === 'PENDING_DEPUTY_SG' || 
+                    (c.status && c.status.includes('ผู้บริหาร'))
+                );
+            }
+            return allCases;
+        }
 
-  function openApprovalModal(caseId){
-    const kase = Activity10.getCaseById(caseId);
-    Swal.fire({
-      title: `เสนอพิจารณาอนุมัติ — ${kase.id}`,
-      html: `
-        <div class="text-start small">
-          <p><b>เรื่อง:</b> ${kase.title}</p>
-          <p><b>ความเห็นทางกฎหมาย:</b> ${kase.legalOpinion || 'อยู่ระหว่างตรวจพิจารณา'}</p>
-          <hr>
-          <p class="fw-bold">เลือกผลการพิจารณา:</p>
-        </div>
-      `,
-      showCancelButton: true,
-      showDenyButton: true,
-      confirmButtonText: 'อนุมัติ / เห็นชอบ',
-      denyButtonText: 'ส่งกลับแก้ไข',
-      cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#0F2A62',
-      denyButtonColor: '#a5322a'
-    }).then(res => {
-      if (res.isConfirmed) {
-        Activity10.updateCaseStatus(kase.id, 'PENDING_DIRECTOR', 'เสนอ ผอ.กองกฎหมาย', 'bg-primary text-white');
-        renderKPI();
-        renderTable();
-        Swal.fire({ icon:'success', title:'เสนอพิจารณาอนุมัติสำเร็จ!', timer:1200, showConfirmButton:false });
-      } else if (res.isDenied) {
-        Activity10.updateCaseStatus(kase.id, 'DRAFTING_OPINION', 'ส่งกลับแก้ไขร่างความเห็น', 'bg-secondary text-white');
-        renderKPI();
-        renderTable();
-        Swal.fire({ icon:'info', title:'ส่งเรื่องกลับแก้ไขแล้ว', timer:1200, showConfirmButton:false });
-      }
-    });
-  }
+        function updateCardCounts() {
+            const allCases = getAllDatabaseCases();
+            const roleCases = getCasesForRole(allCases);
 
-  function openSignModal(caseId){
-    const kase = Activity10.getCaseById(caseId);
-    Swal.fire({
-      title: `ลงนาม e-Signature — ${kase.id}`,
-      html: `
-        <div class="text-start small">
-          <p><b>เรื่อง:</b> ${kase.title}</p>
-          <p><b>ผู้ลงนาม:</b> นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)</p>
-          <div class="p-3 bg-light border rounded text-center my-2">
-            <i class="fa-solid fa-signature fa-2x text-navy mb-2"></i>
-            <div><small class="font-monospace text-muted">DIGITAL SIGNATURE STAMP</small></div>
-            <b>[ลงนามกำกับด้วยใบรับรองอิเล็กทรอนิกส์ PKI]</b>
-          </div>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'ยืนยันลงนามดิจิทัล',
-      cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#198754'
-    }).then(res => {
-      if (res.isConfirmed) {
-        kase.signatureStamped = true;
-        kase.signedBy = 'นายอภิชาติ สุจริตกุล (เลขาธิการ ป.ป.ท.)';
-        kase.signedDate = new Date().toLocaleString('th-TH');
-        Activity10.updateCaseStatus(kase.id, 'PENDING_SECGEN', 'ลงนามเรียบร้อยแล้ว', 'bg-success text-white');
-        renderKPI();
-        renderTable();
-        Swal.fire({ icon:'success', title:'ลงนามดิจิทัลสำเร็จ!', timer:1200, showConfirmButton:false });
-      }
-    });
-  }
+            document.getElementById('count-all').innerText = roleCases.length;
+            document.getElementById('count-101').innerText = roleCases.filter(d => d.type === '10.1').length;
+            document.getElementById('count-102').innerText = roleCases.filter(d => d.type === '10.2').length;
+            document.getElementById('count-103').innerText = roleCases.filter(d => d.type === '10.3').length;
+        }
 
-  function openProsecutorDocModal(caseId) {
-    const roleId = sessionStorage.getItem('ecmis_role') || 'admin_legal';
-    const c = Activity10.getCaseById(caseId);
+        function updateDynamicFilter(cat) {
+            const labelElem = document.getElementById('dynamicFilterLabel');
+            const selectElem = document.getElementById('dynamicSelect');
+            let subOptionsHtml = '<option value="ALL">เลือกทั้งหมด</option>';
 
-    if (roleId === 'Napas.S' || roleId === 'dir_legal') {
-      if (c && (c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || c.status === 'ผอ.กองกฎหมายพิจารณาผลมติ' || c.status === 'เสนอผลมติ ผอ.กองกฎหมาย' || (c.status && c.status.includes('สั่งการตามมติ')) || c.statusCode === 'COMPLETED' || (c.workflowStep && c.workflowStep >= 9))) {
-        window.location.href = `11-legal-director-resolution.html?id=${encodeURIComponent(caseId)}`;
-      } else if (c && (c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || c.status === 'เสนอ ผอ.กองกฎหมาย ตรวจพิจารณา' || (c.workflowStep && c.workflowStep >= 6 && c.workflowStep < 8))) {
-        window.location.href = `08-legal-director-approval.html?id=${encodeURIComponent(caseId)}`;
-      } else {
-        window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(caseId)}`;
-      }
-    } else if (roleId === 'Arnon.C' || roleId === 'group_director') {
-      if (c && (c.statusCode === 'PENDING_GROUP_RESOLUTION' || c.status === 'ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ' || (c.status && c.status.includes('ผลมติ')))) {
-        window.location.href = `12-group-director-resolution.html?id=${encodeURIComponent(caseId)}`;
-      } else if (c && (c.statusCode === 'PENDING_GROUP_REVIEW' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL')) {
-        window.location.href = `07-group-director-approval.html?id=${encodeURIComponent(caseId)}`;
-      } else {
-        window.location.href = `05-group-director-review.html?id=${encodeURIComponent(caseId)}`;
-      }
-    } else if (roleId === 'Nattapol.B' || roleId === 'legal_officer') {
-      window.location.href = `06-officer-opinion.html?id=${encodeURIComponent(caseId)}`;
-    } else if (roleId === 'Kanda.R' || roleId === 'admin_legal') {
-      if (c && (c.statusCode === 'RETURNED_FROM_EXEC' || c.statusCode === 'PENDING_FINAL_DISPATCH' || c.statusCode === 'COMPLETED' || c.status === 'ธุรการรับผลมติ' || (c.status && (c.status.includes('ธุรการรับผลมติ') || c.status.includes('ธุรการับผลมติ') || c.status.includes('ผู้บริหารลงนามแล้ว') || c.status.includes('รับเรื่องคืน') || c.status.includes('ส่งหนังสือถึงอัยการสูงสุด'))))) {
-        window.location.href = `10-legal-admin-resolution.html?id=${encodeURIComponent(caseId)}`;
-      } else if (c && (c.statusCode === 'PENDING_DISPATCH' || c.status === 'ธุรการออกเลขส่งภายใน' || c.statusCode === 'PENDING_DEPUTY_SG' || c.statusCode === 'PENDING_SECGEN' || c.adminDispatchedDate || c.adminDispatchNo || c.status === 'รอ รองเลขาธิการ ป.ป.ท. ตรวจสอบ' || c.status === 'ส่งเรื่องให้ธุรการกองกฎหมายดำเนินการ' || (c.workflowStep && c.workflowStep >= 7))) {
-        window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(caseId)}`;
-      } else {
-        window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
-      }
-    } else if (roleId === 'Surapong.W' || roleId === 'deputy_sg') {
-      window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(caseId)}`;
-    } else {
-      window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(caseId)}`;
-    }
-  }
-</script>
+            if (cat === 'ALL') {
+                labelElem.innerText = 'ประเภทงาน';
+                subOptionsHtml += `
+                    <option value="10.1">คดีอาญาทุจริตฯ</option>
+                    <option value="10.2">การขอเปิดเผยข้อมูลข่าวสาร</option>
+                    <option value="10.3">คดีศาลปกครอง</option>
+                `;
+            } else if (cat === '10.1') {
+                labelElem.innerText = 'ประเภทสำนวน';
+                subOptionsHtml += `
+                    <option value="สั่งไม่ฟ้อง">สั่งไม่ฟ้อง</option>
+                    <option value="ถอนฟ้อง">ถอนฟ้อง</option>
+                `;
+            } else if (cat === '10.2') {
+                labelElem.innerText = 'ระดับ';
+                subOptionsHtml += `
+                    <option value="ชั้นต้น">ชั้นต้น</option>
+                    <option value="ชั้นอุทธรณ์">ชั้นอุทธรณ์</option>
+                `;
+            } else if (cat === '10.3') {
+                labelElem.innerText = 'ระดับ';
+                subOptionsHtml += `
+                    <option value="ศาลปกครองชั้นต้น">ศาลปกครองชั้นต้น</option>
+                    <option value="ศาลปกครองสูงสุด">ศาลปกครองสูงสุด</option>
+                `;
+            }
+            selectElem.innerHTML = subOptionsHtml;
+        }
+
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('collapsed'); 
+        }
+
+        function changeFontSize(dir) {
+            fontSizeLevel = Math.max(-1, Math.min(2, fontSizeLevel + dir));
+            const sizeMap = { '-1': '12px', '0': '13.5px', '1': '15px', '2': '16.5px' };
+            document.documentElement.style.setProperty('--base-font-size', sizeMap[fontSizeLevel]);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
+        }
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            currentPage = 1;
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            if(cat === 'ALL') document.getElementById('card-all').classList.add('active');
+            if(cat === '10.1') document.getElementById('card-101').classList.add('active');
+            if(cat === '10.2') document.getElementById('card-102').classList.add('active');
+            if(cat === '10.3') document.getElementById('card-103').classList.add('active');
+
+            updateDynamicFilter(cat);
+            renderTable();
+        }
+
+        function onDynamicSelectChange() { currentPage = 1; renderTable(); }
+        function onSearchChange() { currentPage = 1; renderTable(); }
+        function goToPage(page) { currentPage = page; renderTable(); }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('dynamicSelect').value = 'ALL';
+            currentPage = 1;
+            renderTable();
+        }
+
+        function openProsecutorDocModal(caseId) {
+            const roleId = getCurrentRole();
+            const allCases = getAllDatabaseCases();
+            const c = allCases.find(item => item.id === caseId || item.caseNo === caseId) || { id: caseId };
+
+            if (roleId === 'Napas.S' || roleId === 'dir_legal') {
+                if (c && (c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || (c.status && (c.status.includes('ผลมติ') || c.status.includes('สั่งการตามมติ'))) || c.statusCode === 'COMPLETED')) {
+                    window.location.href = `11-legal-director-resolution.html?id=${encodeURIComponent(c.id)}`;
+                } else if (c && (c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || (c.status && c.status.includes('ตรวจพิจารณา')))) {
+                    window.location.href = `08-legal-director-approval.html?id=${encodeURIComponent(c.id)}`;
+                } else {
+                    window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(c.id)}`;
+                }
+            } else if (roleId === 'Arnon.C' || roleId === 'group_director') {
+                if (c && (c.statusCode === 'PENDING_GROUP_RESOLUTION' || (c.status && c.status.includes('ผลมติ')))) {
+                    window.location.href = `12-group-director-resolution.html?id=${encodeURIComponent(c.id)}`;
+                } else if (c && (c.statusCode === 'PENDING_GROUP_REVIEW' || c.statusCode === 'PENDING_DIRECTOR_APPROVAL')) {
+                    window.location.href = `07-group-director-approval.html?id=${encodeURIComponent(c.id)}`;
+                } else {
+                    window.location.href = `05-group-director-review.html?id=${encodeURIComponent(c.id)}`;
+                }
+            } else if (roleId === 'Nattapol.B' || roleId === 'legal_officer') {
+                window.location.href = `06-officer-opinion.html?id=${encodeURIComponent(c.id)}`;
+            } else if (roleId === 'Kanda.R' || roleId === 'admin_legal') {
+                if (c && (c.statusCode === 'RETURNED_FROM_EXEC' || c.statusCode === 'PENDING_FINAL_DISPATCH' || c.statusCode === 'COMPLETED' || (c.status && (c.status.includes('รับผลมติ') || c.status.includes('ส่งหนังสือถึงอัยการสูงสุด'))))) {
+                    window.location.href = `10-legal-admin-resolution.html?id=${encodeURIComponent(c.id)}`;
+                } else if (c && (c.statusCode === 'PENDING_DISPATCH' || c.statusCode === 'PENDING_DEPUTY_SG' || (c.status && (c.status.includes('ออกเลขส่ง') || c.status.includes('ตรวจสอบ'))))) {
+                    window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(c.id)}`;
+                } else {
+                    window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
+                }
+            } else if (roleId === 'Surapong.W' || roleId === 'deputy_sg') {
+                window.location.href = `09-legal-admin-dispatch.html?id=${encodeURIComponent(c.id)}`;
+            } else {
+                window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
+            }
+        }
+
+        function resetDemoData() {
+            Swal.fire({
+                title: 'คืนค่าข้อมูลตัวอย่าง?',
+                text: 'ระบบจะรีเซ็ตข้อมูลคดีและสำนวนกลับสู่ค่าเริ่มต้นสำหรับการสาธิต',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ตกลงรีเซ็ต',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#2563eb'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    if (typeof Activity10 !== 'undefined' && Activity10.resetData) {
+                        Activity10.resetData();
+                    }
+                    updateCardCounts();
+                    renderTable();
+                    Swal.fire({ icon:'success', title:'รีเซ็ตสำเร็จ', timer:1000, showConfirmButton:false });
+                }
+            });
+        }
+
+        function getActionButton(item, roleId) {
+            const caseId = item.id || item.caseNo;
+            const status = item.status || '';
+            const statusCode = item.statusCode || '';
+            const assignedRole = item.assignedRole || '';
+
+            // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
+            if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
+                if (statusCode === 'PENDING_DISPATCH' || status.includes('ธุรการออกเลขส่ง') || status.includes('ส่งเรื่องให้ธุรการ')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-paper-plane me-1"></i>ดำเนินการ</button>`;
+                }
+                if (statusCode === 'RETURNED_FROM_EXEC' || statusCode === 'PENDING_FINAL_DISPATCH' || status.includes('ธุรการรับผลมติ') || status.includes('ธุรการับผลมติ') || status.includes('ผู้บริหารลงนามแล้ว') || status.includes('รับเรื่องคืน') || status.includes('ส่งหนังสือถึงอัยการ')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-arrow-right me-1"></i>ดำเนินการ</button>`;
+                }
+            }
+
+            // 2. ผอ.กองกฎหมาย (dir_legal / Napas.S)
+            if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+                if (statusCode === 'PENDING_DIRECTOR' || statusCode === 'PENDING_DIRECTOR_APPROVAL' || statusCode === 'PENDING_DIRECTOR_RESOLUTION' || status.includes('ผอ.กองกฎหมาย') || status.includes('เสนอผลมติ') || status.includes('พิจารณาความเห็น') || status.includes('รอมอบหมายกลุ่มงาน') || status.includes('เสนอ ผอ.กองกฎหมาย')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
+                }
+            }
+
+            // 3. ผอ.กลุ่มงานความเห็นแย้ง (group_director / Arnon.C)
+            if (roleId === 'group_director' || roleId === 'Arnon.C') {
+                if (statusCode === 'PENDING_GROUP_DIRECTOR' || status.includes('รอมอบหมายนิติกร') || status.includes('ผอ.กลุ่มงานความเห็นแย้งพิจารณา')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-user-plus me-1"></i>ดำเนินการ</button>`;
+                }
+                if (statusCode === 'PENDING_GROUP_REVIEW' || status.includes('เสนอ ผอ.กลุ่ม') || status.includes('ตรวจร่างความเห็น')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-clipboard-check me-1"></i>ดำเนินการ</button>`;
+                }
+                if (statusCode === 'PENDING_GROUP_RESOLUTION' || status.includes('ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ') || (status.includes('ผอ.กลุ่มงาน') && status.includes('ผลมติ'))) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-user-gear me-1"></i>ดำเนินการ</button>`;
+                }
+            }
+
+            // 4. นิติกรเจ้าของสำนวน (legal_officer / Nattapol.B)
+            if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
+                if (statusCode === 'DRAFTING_OPINION' || status.includes('นิติกรกำลังจัดทำ') || status.includes('นิติกรจัดทำความเห็น') || status.includes('รอนิติกร') || (assignedRole === 'legal_officer' && statusCode !== 'PENDING_GROUP_REVIEW' && statusCode !== 'PENDING_DIRECTOR_APPROVAL' && statusCode !== 'COMPLETED')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-pen-to-square me-1"></i>ดำเนินการ</button>`;
+                }
+            }
+
+            // 5. รองเลขาธิการ ป.ป.ท. (deputy_sg / Surapong.W)
+            if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
+                if (statusCode === 'PENDING_DEPUTY_SG' || status.includes('รองเลขาธิการ') || status.includes('ผู้บริหารลงนาม')) {
+                    return `<button class="btn-action-primary" onclick="openProsecutorDocModal('${caseId}')" title="ดำเนินการ"><i class="fa-solid fa-file-signature me-1"></i>ดำเนินการ</button>`;
+                }
+            }
+
+            // Default: View details button with SVG Eye icon
+            return `<button class="action-btn" onclick="openProsecutorDocModal('${caseId}')" title="ดูรายละเอียดสำนวน">${svgEyeIcon}</button>`;
+        }
+
+        function renderTable() {
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            const cat = currentCategory;
+            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+            const dynamicVal = document.getElementById('dynamicSelect').value;
+            const currentRole = getCurrentRole();
+
+            const allCases = getAllDatabaseCases();
+            let filteredData = getCasesForRole(allCases);
+            
+            if(cat !== 'ALL') {
+                filteredData = filteredData.filter(d => d.type === cat);
+            }
+
+            if(dynamicVal !== 'ALL') {
+                if(cat === 'ALL') {
+                    filteredData = filteredData.filter(d => d.type === dynamicVal);
+                } else if(cat === '10.1') {
+                    filteredData = filteredData.filter(d => d.subType === dynamicVal);
+                } else if(cat === '10.2' || cat === '10.3') {
+                    filteredData = filteredData.filter(d => d.level === dynamicVal);
+                }
+            }
+
+            if(searchVal !== '') {
+                filteredData = filteredData.filter(d => 
+                    (d.caseNo && d.caseNo.toLowerCase().includes(searchVal)) ||
+                    (d.reqNo && d.reqNo.toLowerCase().includes(searchVal)) ||
+                    (d.lawNo && d.lawNo.toLowerCase().includes(searchVal)) ||
+                    (d.title && d.title.toLowerCase().includes(searchVal)) ||
+                    (d.accuser && d.accuser.toLowerCase().includes(searchVal)) ||
+                    (d.accused && d.accused.toLowerCase().includes(searchVal)) ||
+                    (d.reqUser && d.reqUser.toLowerCase().includes(searchVal)) ||
+                    (d.officer && d.officer.toLowerCase().includes(searchVal)) ||
+                    (d.status && d.status.toLowerCase().includes(searchVal))
+                );
+            }
+
+            const totalItems = filteredData.length;
+            const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * PAGE_SIZE;
+            const paginatedData = filteredData.slice(startIndex, startIndex + PAGE_SIZE);
+
+            document.getElementById('showingCount').innerText = paginatedData.length;
+            document.getElementById('totalCount').innerText = totalItems;
+            document.getElementById('tableBadgeCount').innerText = `${totalItems} รายการ`;
+            document.getElementById('currentPageNum').innerText = currentPage;
+            document.getElementById('totalPagesNum').innerText = totalPages;
+
+            renderPaginationControls(totalPages);
+
+            // 1. หัวคอลัมน์กล่อง 10.1 (คดีอาญาทุจริตฯ)
+            if (cat === '10.1') {
+                header.innerHTML = `
+                    <tr>
+                        <th>เลขสำนวน</th>
+                        <th>เลขรับ กกม.</th>
+                        <th>ประเภทสำนวน</th>
+                        <th>ชื่อเรื่อง</th>
+                        <th>ชื่อผู้กล่าวหา</th>
+                        <th>ชื่อผู้ถูกกล่าวหา</th>
+                        <th>นิติกร</th>
+                        <th>สถานะ</th>
+                        <th>อายุความ / SLA</th>
+                        <th style="text-align: center;">ดำเนินการ</th>
+                    </tr>`;
+                
+                body.innerHTML = paginatedData.length === 0 ? 
+                    `<tr><td colspan="10" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>` :
+                    paginatedData.map((item) => `
+                    <tr>
+                        <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.caseNo}</strong></td>
+                        <td>${item.lawNo !== '-' ? `<span style="font-family:monospace; font-weight:600; color:#2563eb;">${item.lawNo}</span>` : '<span style="color:#94a3b8;">- ยังไม่ออกเลข -</span>'}</td>
+                        <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.subType}</span></td>
+                        <td style="max-width:220px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
+                        <td>${item.accuser}</td>
+                        <td>${item.accused}</td>
+                        <td>${item.officer}</td>
+                        <td><span class="badge badge-status ${item.statusBadge || ''}">${item.status}</span></td>
+                        <td><span class="badge-danger-sla">${item.slaText}</span></td>
+                        <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
+                    </tr>`).join('');
+
+            } 
+            // 2. หัวคอลัมน์กล่อง 10.2 (การขอเปิดเผยข้อมูลข่าวสาร)
+            else if (cat === '10.2') {
+                header.innerHTML = `
+                    <tr>
+                        <th>เลขที่คำขอ</th>
+                        <th>วันที่รับคำขอ</th>
+                        <th>ระดับ</th>
+                        <th>เรื่อง / รายละเอียด</th>
+                        <th>ผู้ร้องขอ</th>
+                        <th>นิติกร</th>
+                        <th>สถานะ</th>
+                        <th>อายุความ / SLA</th>
+                        <th style="text-align: center;">ดำเนินการ</th>
+                    </tr>`;
+
+                body.innerHTML = paginatedData.length === 0 ? 
+                    `<tr><td colspan="9" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>` :
+                    paginatedData.map((item) => `
+                    <tr>
+                        <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.reqNo || item.caseNo}</strong></td>
+                        <td>${item.reqDate || '-'}</td>
+                        <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.level}</span></td>
+                        <td style="max-width:220px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
+                        <td>${item.reqUser || item.accuser || '-'}</td>
+                        <td>${item.officer}</td>
+                        <td><span class="badge badge-status ${item.statusBadge || ''}">${item.status}</span></td>
+                        <td><span class="badge-danger-sla">${item.slaText}</span></td>
+                        <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
+                    </tr>`).join('');
+
+            } 
+            // 3. หัวคอลัมน์กล่อง 10.3 (คดีศาลปกครอง)
+            else if (cat === '10.3') {
+                header.innerHTML = `
+                    <tr>
+                        <th>เลขสำนวน</th>
+                        <th>เลขรับ กกม.</th>
+                        <th>ระดับ</th>
+                        <th>ชื่อเรื่อง</th>
+                        <th>นิติกร</th>
+                        <th>สถานะ</th>
+                        <th>อายุความ / SLA</th>
+                        <th style="text-align: center;">ดำเนินการ</th>
+                    </tr>`;
+
+                body.innerHTML = paginatedData.length === 0 ? 
+                    `<tr><td colspan="8" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>` :
+                    paginatedData.map((item) => `
+                    <tr>
+                        <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.caseNo}</strong></td>
+                        <td>${item.lawNo !== '-' ? `<span style="font-family:monospace; font-weight:600; color:#2563eb;">${item.lawNo}</span>` : '<span style="color:#94a3b8;">- ยังไม่ออกเลข -</span>'}</td>
+                        <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.level}</span></td>
+                        <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
+                        <td>${item.officer}</td>
+                        <td><span class="badge badge-status ${item.statusBadge || ''}">${item.status}</span></td>
+                        <td><span class="badge-danger-sla">${item.slaText}</span></td>
+                        <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
+                    </tr>`).join('');
+
+            } 
+            // 4. หัวคอลัมน์กล่องทั้งหมด (ALL)
+            else {
+                header.innerHTML = `
+                    <tr>
+                        <th>เลขสำนวน</th>
+                        <th>เลขรับ กกม.</th>
+                        <th>ประเภทสำนวน/ระดับ</th>
+                        <th>ชื่อเรื่อง</th>
+                        <th>ชื่อผู้กล่าวหา/ผู้ร้องขอ</th>
+                        <th>ชื่อผู้ถูกกล่าวหา</th>
+                        <th>นิติกร</th>
+                        <th>สถานะ</th>
+                        <th>อายุความ / SLA</th>
+                        <th style="text-align: center;">ดำเนินการ</th>
+                    </tr>`;
+
+                body.innerHTML = paginatedData.length === 0 ? 
+                    `<tr><td colspan="10" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>` :
+                    paginatedData.map((item) => `
+                    <tr>
+                        <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.caseNo || item.reqNo}</strong></td>
+                        <td>${item.lawNo && item.lawNo !== '-' ? `<span style="font-family:monospace; font-weight:600; color:#2563eb;">${item.lawNo}</span>` : (item.reqDate || '<span style="color:#94a3b8;">-</span>')}</td>
+                        <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${item.subType || item.level || '-'}</span></td>
+                        <td style="max-width:200px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
+                        <td>${item.accuser || item.reqUser || '-'}</td>
+                        <td>${item.accused || '-'}</td>
+                        <td>${item.officer}</td>
+                        <td><span class="badge badge-status ${item.statusBadge || ''}">${item.status}</span></td>
+                        <td><span class="badge-danger-sla">${item.slaText}</span></td>
+                        <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
+                    </tr>`).join('');
+            }
+        }
+
+        function renderPaginationControls(totalPages) {
+            const container = document.getElementById('pagingControls');
+            let html = '';
+            html += `<button class="page-btn" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''} title="หน้าแรก">&lt;&lt;</button>`;
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="หน้าก่อนหน้า">&lt;</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="หน้าถัดไป">&gt;</button>`;
+            html += `<button class="page-btn" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} title="หน้าสุดท้าย">&gt;&gt;</button>`;
+            container.innerHTML = html;
+        }
+
+        // Initialize page
+        window.onload = function() {
+            updateRoleDisplay();
+            updateCardCounts();
+            selectCategory('ALL');
+        };
+    </script>
 </body>
 </html>
