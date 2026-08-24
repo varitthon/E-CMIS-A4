@@ -911,6 +911,61 @@ function currentRole(){ return getRole(currentRoleId()); }
 
 /* งานที่ค้างอยู่ที่บทบาทนี้ (Work Inbox count) */
 function inboxFor(roleId){
+  if (typeof Activity10 !== 'undefined' && Activity10.getCases) {
+    const actCases = Activity10.getCases();
+    if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
+      return actCases.filter(c => 
+        c.assignedRole === 'admin_legal' ||
+        c.statusCode === 'PENDING_INTAKE' || 
+        c.statusCode === 'INTAKE' || 
+        c.statusCode === 'REGISTERED' || 
+        c.statusCode === 'PENDING_DISPATCH' || 
+        c.statusCode === 'RETURNED_FROM_EXEC' || 
+        c.statusCode === 'PENDING_FINAL_DISPATCH' || 
+        c.statusCode === 'FORWARDED_DIVISION' ||
+        (c.status && (
+          c.status.includes('ธุรการ') || 
+          c.status.includes('รับเรื่อง') || 
+          c.status.includes('ลงทะเบียน') || 
+          c.status.includes('ออกเลขส่ง') || 
+          c.status.includes('ส่งเรื่องให้ธุรการ') || 
+          c.status.includes('ส่งหนังสือถึงอัยการ') || 
+          c.status.includes('ส่งอัยการสูงสุดชี้ขาด') || 
+          c.status.includes('รับผลมติ')
+        ))
+      );
+    }
+    if (roleId === 'dir_legal' || roleId === 'Napas.S') {
+      return actCases.filter(c => 
+        c.statusCode === 'PENDING_DIRECTOR' || 
+        c.statusCode === 'PENDING_DIRECTOR_APPROVAL' || 
+        c.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || 
+        (c.status && (c.status.includes('ผอ.กองกฎหมาย') || c.status.includes('เสนอผลมติ') || c.status.includes('พิจารณาความเห็น') || c.status.includes('รอมอบหมายกลุ่มงาน') || c.status.includes('เสนอ ผอ.กองกฎหมาย')))
+      );
+    }
+    if (roleId === 'group_director' || roleId === 'Arnon.C') {
+      return actCases.filter(c => 
+        c.statusCode === 'PENDING_GROUP_DIRECTOR' || 
+        c.statusCode === 'PENDING_GROUP_REVIEW' || 
+        c.statusCode === 'PENDING_GROUP_RESOLUTION' || 
+        (c.status && (c.status.includes('ผอ.กลุ่มงาน') || c.status.includes('มอบหมายนิติกร') || c.status.includes('ผอ.กลุ่ม') || c.status.includes('ตรวจร่างความเห็น')))
+      );
+    }
+    if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
+      return actCases.filter(c => 
+        c.statusCode === 'DRAFTING_OPINION' || 
+        c.assignedRole === 'legal_officer' ||
+        (c.officer && (c.officer.includes('ณัฐพล') || c.officer.includes('กฤษดา'))) ||
+        (c.status && c.status.includes('นิติกร'))
+      );
+    }
+    if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
+      return actCases.filter(c => 
+        c.statusCode === 'PENDING_DEPUTY_SG' || 
+        (c.status && c.status.includes('ผู้บริหาร'))
+      );
+    }
+  }
   return CASES.filter(c => STATUS[c.status] && STATUS[c.status].owner === roleId);
 }
 
@@ -931,6 +986,7 @@ function canRecall(kase, roleId){
 const NAV = [
   { section:'ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี' },
   { href:'01-work-inbox.html', icon:'fa-inbox', label:'รายการงานกฎหมายและสำนวนคดี', badge:true, visible: role => true },
+  { href:'02-board-intake.html', icon:'fa-folder-plus', label:'บันทึกรับเรื่องเข้าระบบ', visible: role => role.id === 'admin_legal' || role.id === 'Kanda.R' },
   { href:'04-legal-director-review.html', icon:'fa-user-tie', label:'พิจารณาและมอบหมายเรื่อง', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
   { href:'08-legal-director-approval.html', icon:'fa-user-check', label:'ตรวจพิจารณาและสั่งการ', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },
   { href:'11-legal-director-resolution.html', icon:'fa-file-circle-check', label:'พิจารณาผลมติและสั่งการ', visible: role => role.id === 'dir_legal' || role.id === 'Napas.S' },

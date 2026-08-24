@@ -6,8 +6,8 @@
 (function(global) {
   'use strict';
 
-  // Data Version Key for LocalStorage Sync (v31: เลขรับ กกม. รูปแบบ เลขรับ/ปี พ.ศ. เช่น 0019/2569)
-  const DATA_VERSION = 'v31_law_receive_no_format_2569';
+  // Data Version Key for LocalStorage Sync (v32: เลขสำนวน ป.ป.ท. รูปแบบ ตัวเลข/ปี พ.ศ. เช่น 0038/2568 ตัดคำว่า ปปท. ออก)
+  const DATA_VERSION = 'v32_case_no_clean_num_year_2568';
   const STORAGE_KEY = 'ecmis_act10_cases_' + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -34,7 +34,7 @@
       statusCode: "RETURNED_FROM_EXEC",
       statusBadge: "bg-success text-white",
       lawReceiveNo: "0019/2569",
-      paccCaseNo: "ปปท. 0038/2568",
+      paccCaseNo: "0038/2568",
       blackNo: "อ. 120/2569",
       redNo: "อ. 355/2569",
       courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
@@ -72,7 +72,7 @@
       statusCode: "PENDING_DIRECTOR",
       statusBadge: "bg-primary text-white",
       lawReceiveNo: "0017/2569",
-      paccCaseNo: "ปปท. 0049/2568",
+      paccCaseNo: "0049/2568",
       blackNo: "อ. 115/2569",
       redNo: "อ. 340/2569",
       courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
@@ -103,7 +103,7 @@
       statusCode: "PENDING_GROUP_DIRECTOR",
       statusBadge: "bg-info text-dark",
       lawReceiveNo: "0015/2569",
-      paccCaseNo: "ปปท. 0040/2568",
+      paccCaseNo: "0040/2568",
       blackNo: "อ. 108/2569",
       redNo: "อ. 312/2569",
       courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
@@ -135,7 +135,7 @@
       statusCode: "PENDING_DIRECTOR_APPROVAL",
       statusBadge: "bg-primary text-white",
       lawReceiveNo: "0014/2569",
-      paccCaseNo: "ปปท. 0012/2568",
+      paccCaseNo: "0012/2568",
       blackNo: "อ. 104/2569",
       redNo: "อ. 308/2569",
       courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
@@ -170,7 +170,7 @@
       statusCode: "DRAFTING_OPINION",
       statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0012/2569",
-      paccCaseNo: "ปปท. 0031/2568",
+      paccCaseNo: "0031/2568",
       blackNo: "อ. 98/2569",
       redNo: "อ. 290/2569",
       courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
@@ -202,7 +202,7 @@
       statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)",
       dateReceived: getDateWithOffset(-2),
       dueDate: getDateWithOffset(13),
-      paccCaseNo: "ปปท. 0012/2568",
+      paccCaseNo: "0012/2568",
       blackNo: "อ. 104/2569",
       redNo: "อ. 308/2569",
       centralSarabanNo: "2569/4401"
@@ -219,7 +219,7 @@
       statuteLimitation: "10 ปี (หมดอายุความ 15 ส.ค. 2579)",
       dateReceived: getDateWithOffset(-5),
       dueDate: getDateWithOffset(10),
-      paccCaseNo: "ปปท. 0031/2568",
+      paccCaseNo: "0031/2568",
       blackNo: "อ. 98/2569",
       redNo: "อ. 290/2569",
       centralSarabanNo: "2569/4412"
@@ -236,7 +236,7 @@
       statuteLimitation: "15 ปี (หมดอายุความ 10 ต.ค. 2584)",
       dateReceived: getDateWithOffset(-3),
       dueDate: getDateWithOffset(12),
-      paccCaseNo: "ปปท. 0045/2568",
+      paccCaseNo: "0045/2568",
       blackNo: "อ. 112/2569",
       redNo: "อ. 319/2569",
       centralSarabanNo: "2569/4420"
@@ -364,7 +364,7 @@
     },
 
     getTorDetails(c) {
-      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)", plaintiff: "พนักงานอัยการ / สำนักงาน ป.ป.ท.", defendant: "นายสมชาย ทุจริตมั่น", paccCaseNo: "ปปท. 0012/2568", blackNo: "อ. 104/2569", redNo: "อ. 308/2569", courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ", division: "กองกฎหมาย (กอท.)", statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)" };
+      if (!c) return { accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.", accused: "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)", plaintiff: "พนักงานอัยการ / สำนักงาน ป.ป.ท.", defendant: "นายสมชาย ทุจริตมั่น", paccCaseNo: "0012/2568", blackNo: "อ. 104/2569", redNo: "อ. 308/2569", courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ", division: "กองกฎหมาย (กอท.)", statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)" };
       
       const seed = PACC_INTAKE_DATABASE.find(ic => ic.id === c.id);
       
@@ -373,7 +373,7 @@
         accused: c.accused || (seed ? seed.accused : "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)"),
         plaintiff: c.accuser || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
         defendant: c.accused || "นายสมชาย ทุจริตมั่น",
-        paccCaseNo: c.paccCaseNo || (seed && seed.paccCaseNo ? seed.paccCaseNo : "ปปท. 0012/2568"),
+        paccCaseNo: c.paccCaseNo || (seed && seed.paccCaseNo ? seed.paccCaseNo : "0012/2568"),
         blackNo: c.blackNo || (seed && seed.blackNo ? seed.blackNo : "อ. 104/2569"),
         redNo: c.redNo || (seed && seed.redNo ? seed.redNo : "อ. 308/2569"),
         courtOrder: c.courtOrder || (seed && seed.courtOrder ? seed.courtOrder : "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ"),
