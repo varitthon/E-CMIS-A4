@@ -149,6 +149,42 @@
         .d-none { display: none !important; }
         .font-monospace { font-family: monospace; }
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+        
+        .btn-mic {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #2563eb;
+            font-size: 12px;
+            vertical-align: middle;
+            margin-left: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .btn-mic:hover {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            transform: scale(1.08);
+        }
+        .btn-mic.recording {
+            background: #dc2626 !important;
+            color: #fff !important;
+            border-color: #b91c1c !important;
+            animation: pulse-mic 1.2s infinite ease-in-out;
+        }
+        @keyframes pulse-mic {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+            50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+        }
 
         @media (max-width: 1024px) {
             .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
@@ -375,19 +411,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label><span>ชื่อเรื่องกล่าวหา / สำนวนคดี <span style="color:#dc2626;">*</span></span></label>
+                        <label><span>ชื่อเรื่องกล่าวหา / สำนวนคดี <span style="color:#dc2626;">*</span> <button type="button" class="btn-mic" id="btnMicTitle" onclick="toggleSpeechToText('in_title', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
                         <textarea id="in_title" class="form-control" rows="3" maxlength="2000" placeholder="กรอกชื่อเรื่องคำร้องหรือสำนวนคดี" oninput="updateTitleCharCount(this); updateLivePreview();">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อจัดจ้างโครงการปรับปรุงอาคารส่วนกลาง</textarea>
                         <div class="char-count">ตัวอักษร: <span id="title_char_count">76</span>/2000</div>
                     </div>
 
                     <div class="form-group">
-                        <label><span>สรุปสาระสำคัญ</span></label>
+                        <label><span>สรุปสาระสำคัญ <button type="button" class="btn-mic" id="btnMicSummary" onclick="toggleSpeechToText('in_summary', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
                         <textarea id="in_summary" class="form-control" rows="3" maxlength="2000" placeholder="สรุปสาระสำคัญของข้อเท็จจริงในสำนวนคดี" oninput="updateSummaryCharCount(this); updateLivePreview();">คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี</textarea>
                         <div class="char-count">ตัวอักษร: <span id="summary_char_count">122</span>/2000</div>
                     </div>
 
                     <div class="form-group">
-                        <label><span>ความเห็นของอัยการ</span></label>
+                        <label><span>ความเห็นของอัยการ <button type="button" class="btn-mic" id="btnMicOpinion" onclick="toggleSpeechToText('in_legalOpinion', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
                         <textarea id="in_legalOpinion" class="form-control" rows="3" maxlength="2000" placeholder="สรุปข้อเท็จจริงและความเห็นของอัยการ" oninput="updateOpinionCharCount(this); updateLivePreview();">จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด</textarea>
                         <div class="char-count">ตัวอักษร: <span id="opinion_char_count">147</span>/2000</div>
                     </div>
@@ -792,6 +828,139 @@
         function handleIntakeSearchKeyup(e) {
             if (e.key === 'Enter') {
                 executeIntakeSearch();
+            }
+        }
+
+        let activeRecognition = null;
+        let isRecording = false;
+
+        function triggerCharCountUpdate(targetId, textarea) {
+            if (targetId === 'in_title' && typeof updateTitleCharCount === 'function') updateTitleCharCount(textarea);
+            if (targetId === 'in_summary' && typeof updateSummaryCharCount === 'function') updateSummaryCharCount(textarea);
+            if (targetId === 'in_legalOpinion' && typeof updateOpinionCharCount === 'function') updateOpinionCharCount(textarea);
+            if (typeof updateLivePreview === 'function') updateLivePreview();
+        }
+
+        function toggleSpeechToText(targetId, btnEl) {
+            const textarea = document.getElementById(targetId);
+            if (!textarea) return;
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (isRecording) {
+                if (activeRecognition) {
+                    try { activeRecognition.stop(); } catch(e) {}
+                }
+                stopRecordingUI(btnEl);
+                return;
+            }
+
+            if (!SpeechRecognition) {
+                // Fallback simulation or modal if browser does not support SpeechRecognition
+                Swal.fire({
+                    icon: 'info',
+                    title: 'พิมพ์ด้วยเสียง (จำลอง Speech-to-Text)',
+                    text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง คุณต้องการแทรกข้อความตัวอย่างจากการพูดหรือไม่?',
+                    showCancelButton: true,
+                    confirmButtonText: 'แทรกข้อความจากการพูด',
+                    cancelButtonText: 'ยกเลิก',
+                    confirmButtonColor: '#1e3a8a'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        const sampleSpoken = ' และพบข้อพิรุธในการเบิกจ่ายงบประมาณแผ่นดินโดยมิชอบ';
+                        textarea.value = (textarea.value ? textarea.value.trim() : '') + sampleSpoken;
+                        triggerCharCountUpdate(targetId, textarea);
+                    }
+                });
+                return;
+            }
+
+            try {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'th-TH';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                recognition.continuous = false;
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    activeRecognition = recognition;
+                    startRecordingUI(btnEl);
+                    const toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                    toast.fire({
+                        icon: 'info',
+                        title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
+                    });
+                };
+
+                recognition.onresult = function(event) {
+                    if (event.results && event.results[0] && event.results[0][0]) {
+                        const transcript = event.results[0][0].transcript.trim();
+                        if (transcript) {
+                            const currentText = textarea.value.trim();
+                            textarea.value = currentText ? `${currentText} ${transcript}` : transcript;
+                            triggerCharCountUpdate(targetId, textarea);
+                            
+                            const toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                title: `✍️ บันทึกเสียง: "${transcript}"`
+                            });
+                        }
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.warn('Speech recognition error:', event.error);
+                    stopRecordingUI(btnEl);
+                    if (event.error === 'not-allowed') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ไมโครโฟนถูกปิดกั้น',
+                            text: 'กรุณากดอนุญาตให้เบราว์เซอร์เข้าถึงไมโครโฟนเพื่อใช้งานฟังก์ชันนี้',
+                            confirmButtonColor: '#1e3a8a'
+                        });
+                    }
+                };
+
+                recognition.onend = function() {
+                    stopRecordingUI(btnEl);
+                };
+
+                recognition.start();
+
+            } catch (err) {
+                console.error('Error starting speech recognition:', err);
+                stopRecordingUI(btnEl);
+            }
+        }
+
+        function startRecordingUI(btnEl) {
+            if (btnEl) {
+                btnEl.classList.add('recording');
+                btnEl.title = 'กำลังฟังเสียง... คลิกเพื่อหยุด';
+                btnEl.innerHTML = '<i class="fa-solid fa-microphone-lines"></i>';
+            }
+        }
+
+        function stopRecordingUI(btnEl) {
+            isRecording = false;
+            activeRecognition = null;
+            if (btnEl) {
+                btnEl.classList.remove('recording');
+                btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
+                btnEl.innerHTML = '<i class="fa-solid fa-microphone"></i>';
             }
         }
 
