@@ -1,1254 +1,1254 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>นิติกรจัดส่งหนังสือให้อัยการ/อสส. | E-CMIS กิจกรรมที่ 10 (S18)</title>
-    <link rel="icon" type="image/png" href="pacc_logo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>นิติกรจัดส่งหนังสือให้อัยการ/อสส. | E-CMIS กิจกรรมที่ 10</title>
+ <link rel="icon" type="image/png" href="pacc_logo.png">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+ <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg-body: #f0f4f8;
-            --bg-card: #ffffff;
-            --bg-sidebar: #1a2b48;
-            --bg-header: #ffffff;
-            --border-color: #e2e8f0;
-            --text-title: #1e293b;
-            --text-main: #334155;
-            --sidebar-width: 260px;
-            --primary-blue: #1e3a8a;
-            --primary-accent: #2563eb;
-            --ems-red: #e11d48;
-            --ems-bg: #fff1f2;
-        }
+ <style>
+ :root {
+ --bg-body: #f0f4f8;
+ --bg-card: #ffffff;
+ --bg-sidebar: #1a2b48;
+ --bg-header: #ffffff;
+ --border-color: #e2e8f0;
+ --text-title: #1e293b;
+ --text-main: #334155;
+ --sidebar-width: 260px;
+ --primary-blue: #1e3a8a;
+ --primary-accent: #2563eb;
+ --ems-red: #e11d48;
+ --ems-bg: #fff1f2;
+ }
 
-        body.dark-mode {
-            --bg-body: #0b1329;
-            --bg-card: #152238;
-            --bg-sidebar: #0f172a;
-            --bg-header: #152238;
-            --border-color: #1e293b;
-            --text-title: #f8fafc;
-            --text-main: #94a3b8;
-            --ems-bg: #2a121a;
-        }
+ body.dark-mode {
+ --bg-body: #0b1329;
+ --bg-card: #152238;
+ --bg-sidebar: #0f172a;
+ --bg-header: #152238;
+ --border-color: #1e293b;
+ --text-title: #f8fafc;
+ --text-main: #94a3b8;
+ --ems-bg: #2a121a;
+ }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-        h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+ h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
 
-        /* Sidebar Styles */
-        .sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: margin-left 0.3s ease; z-index: 100; }
-        .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
-        .brand { height: 60px; display: flex; align-items: center; padding: 0 20px; font-size: 1.15em; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; gap: 10px; }
-        .brand img { height: 32px; }
-        .brand small { font-size: 0.65em; display: block; opacity: 0.8; font-weight: 400; }
-        
-        .menu { list-style: none; padding: 15px 0; overflow-y: auto; }
-        .menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-size: 0.9em; transition: all 0.2s; font-weight: 400; }
-        .menu li a:hover, .menu li.active a { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #38bdf8; }
-        .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
-        
-        .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
+ /* Sidebar Styles */
+ .sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: margin-left 0.3s ease; z-index: 100; }
+ .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
+ .brand { height: 60px; display: flex; align-items: center; padding: 0 20px; font-size: 1.15em; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; gap: 10px; }
+ .brand img { height: 32px; }
+ .brand small { font-size: 0.65em; display: block; opacity: 0.8; font-weight: 400; }
+ 
+ .menu { list-style: none; padding: 15px 0; overflow-y: auto; }
+ .menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-size: 0.9em; transition: all 0.2s; font-weight: 400; }
+ .menu li a:hover, .menu li.active a { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #38bdf8; }
+ .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
+ 
+ .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
 
-        /* Main Content Styles */
-        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-        
-        /* Topbar Styles */
-        .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
-        .topbar-left { display: flex; align-items: center; gap: 15px; }
-        .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
-        .breadcrumb { font-size: 0.88em; color: #64748b; }
-        
-        .top-controls { display: flex; align-items: center; gap: 16px; }
-        .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
-        .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
-        .ctrl-btn:hover { background: var(--bg-card); }
-        
-        .icon-btn-group { display: flex; gap: 8px; }
-        .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
-        .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
-        
-        .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
-        .user-profile-top:hover { background: rgba(0,0,0,0.04); }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
-        .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
-        .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
-        .user-role { font-size: 0.72em; color: #64748b; }
+ /* Main Content Styles */
+ .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+ 
+ /* Topbar Styles */
+ .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+ .topbar-left { display: flex; align-items: center; gap: 15px; }
+ .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
+ .breadcrumb { font-size: 0.88em; color: #64748b; }
+ 
+ .top-controls { display: flex; align-items: center; gap: 16px; }
+ .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
+ .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
+ .ctrl-btn:hover { background: var(--bg-card); }
+ 
+ .icon-btn-group { display: flex; gap: 8px; }
+ .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
+ .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
+ 
+ .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
+ .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+ .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
+ .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+ .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
+ .user-role { font-size: 0.72em; color: #64748b; }
 
-        /* Profile Dropdown */
-        .profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; animation: fadeInDropdown 0.18s ease; }
-        .profile-dropdown-menu.show { display: block; }
-        @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-        .profile-dropdown-header { padding: 12px 16px 8px 16px; font-size: 0.76em; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
-        .profile-dropdown-body { padding: 12px 14px; }
-        .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
-        .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
-        .profile-card-title { font-size: 0.82em; color: #2563eb; font-weight: 600; display: block; margin-top: 2px; }
-        .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
-        .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
-        .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
-        .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
+ /* Profile Dropdown */
+ .profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; animation: fadeInDropdown 0.18s ease; }
+ .profile-dropdown-menu.show { display: block; }
+ @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+ .profile-dropdown-header { padding: 12px 16px 8px 16px; font-size: 0.76em; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+ .profile-dropdown-body { padding: 12px 14px; }
+ .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+ .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
+ .profile-card-title { font-size: 0.82em; color: #2563eb; font-weight: 600; display: block; margin-top: 2px; }
+ .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
+ .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
+ .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
+ .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
 
-        .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
-        
-        /* Stepper Header */
-        .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 1050px; margin: 0 auto; }
-        .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
-        .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
-        .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
-        .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
-        .step-item.completed .step-circle { background: #2563eb; border-color: #2563eb; color: #fff; }
-        .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 160px; }
-        .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
+ .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+ 
+ /* Stepper Header */
+ .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+ .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 1050px; margin: 0 auto; }
+ .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
+ .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
+ .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+ .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+ .step-item.completed .step-circle { background: #2563eb; border-color: #2563eb; color: #fff; }
+ .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 160px; }
+ .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
-        /* Scenario Switcher Bar */
-        .scenario-switcher-bar {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border-radius: 10px;
-            padding: 12px 18px;
-            color: #fff;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .scenario-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .scenario-btn {
-            background: rgba(255,255,255,0.1);
-            color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.82em;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .scenario-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        .scenario-btn.active {
-            background: #f59e0b;
-            color: #1e293b;
-            border-color: #f59e0b;
-            font-weight: 700;
-            box-shadow: 0 2px 6px rgba(245,158,11,0.4);
-        }
+ /* Scenario Switcher Bar */
+ .scenario-switcher-bar {
+ background: linear-gradient(135deg, #1e293b, #0f172a);
+ border-radius: 10px;
+ padding: 12px 18px;
+ color: #fff;
+ margin-bottom: 20px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ flex-wrap: wrap;
+ gap: 12px;
+ box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+ }
+ .scenario-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+ .scenario-btn {
+ background: rgba(255,255,255,0.1);
+ color: #e2e8f0;
+ border: 1px solid rgba(255,255,255,0.2);
+ padding: 6px 14px;
+ border-radius: 6px;
+ font-size: 0.82em;
+ font-weight: 500;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ }
+ .scenario-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+ .scenario-btn.active {
+ background: #f59e0b;
+ color: #1e293b;
+ border-color: #f59e0b;
+ font-weight: 700;
+ box-shadow: 0 2px 6px rgba(245,158,11,0.4);
+ }
 
-        /* Form Card */
-        .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
-        .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
-        .form-card-body { padding: 20px; }
+ /* Form Card */
+ .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+ .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
+ .form-card-body { padding: 20px; }
 
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-        
-        .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
-        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
-        textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+ .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+ .form-group:last-child { margin-bottom: 0; }
+ .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+ 
+ .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+ .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+ textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
 
-        .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
-        .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
+ .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
+ .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
 
-        /* Action Footer */
-        .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
-        .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
-        .btn-primary { background: #1e3a8a; color: #fff; }
-        .btn-primary:hover { background: #1e293b; color: #fff; }
-        .btn-success { background: #16a34a; color: #fff; }
-        .btn-success:hover { background: #15803d; color: #fff; }
-        .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
-        .btn-ems { background: var(--ems-red); color: #fff; font-weight: 600; }
-        .btn-ems:hover { background: #be123c; color: #fff; }
+ /* Action Footer */
+ .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
+ .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+ .btn-primary { background: #1e3a8a; color: #fff; }
+ .btn-primary:hover { background: #1e293b; color: #fff; }
+ .btn-success { background: #16a34a; color: #fff; }
+ .btn-success:hover { background: #15803d; color: #fff; }
+ .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+ .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+ .btn-ems { background: var(--ems-red); color: #fff; font-weight: 600; }
+ .btn-ems:hover { background: #be123c; color: #fff; }
 
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
-        .font-monospace { font-family: monospace; }
-        .d-none { display: none !important; }
+ .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+ .font-monospace { font-family: monospace; }
+ .d-none { display: none !important; }
 
-        /* Speech to Text Microphone Button */
-        .btn-mic {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #2563eb;
-            font-size: 12px;
-            vertical-align: middle;
-            margin-left: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            position: relative;
-        }
-        .btn-mic:hover {
-            background: #2563eb;
-            color: #fff;
-            border-color: #2563eb;
-            transform: scale(1.08);
-        }
-        .btn-mic.recording {
-            background: #dc2626 !important;
-            color: #fff !important;
-            border-color: #b91c1c !important;
-            animation: pulse-mic 1.2s infinite ease-in-out;
-        }
-        @keyframes pulse-mic {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
-            50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
-        }
+ /* Speech to Text Microphone Button */
+ .btn-mic {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 50%;
+ width: 26px;
+ height: 26px;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ color: #2563eb;
+ font-size: 12px;
+ vertical-align: middle;
+ margin-left: 6px;
+ transition: all 0.2s ease;
+ box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+ position: relative;
+ }
+ .btn-mic:hover {
+ background: #2563eb;
+ color: #fff;
+ border-color: #2563eb;
+ transform: scale(1.08);
+ }
+ .btn-mic.recording {
+ background: #dc2626 !important;
+ color: #fff !important;
+ border-color: #b91c1c !important;
+ animation: pulse-mic 1.2s infinite ease-in-out;
+ }
+ @keyframes pulse-mic {
+ 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+ 50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+ 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+ }
 
-        /* Dispatch Method Selector Cards */
-        .method-selector-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-        .method-card {
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px 16px;
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .method-card:hover {
-            border-color: #93c5fd;
-            background: rgba(37,99,235,0.02);
-        }
-        .method-card.active {
-            border-color: #2563eb;
-            background: rgba(37,99,235,0.05);
-            box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
-        }
-        .method-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background: #e2e8f0;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-        .method-card.active .method-icon {
-            background: #2563eb;
-            color: #fff;
-        }
+ /* Dispatch Method Selector Cards */
+ .method-selector-grid {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 14px;
+ margin-bottom: 18px;
+ }
+ .method-card {
+ border: 2px solid var(--border-color);
+ border-radius: 8px;
+ padding: 14px 16px;
+ background: var(--bg-card);
+ cursor: pointer;
+ transition: all 0.2s ease;
+ display: flex;
+ align-items: flex-start;
+ gap: 12px;
+ }
+ .method-card:hover {
+ border-color: #93c5fd;
+ background: rgba(37,99,235,0.02);
+ }
+ .method-card.active {
+ border-color: #2563eb;
+ background: rgba(37,99,235,0.05);
+ box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+ }
+ .method-icon {
+ width: 38px;
+ height: 38px;
+ border-radius: 8px;
+ background: #e2e8f0;
+ color: #334155;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 1.2em;
+ flex-shrink: 0;
+ }
+ .method-card.active .method-icon {
+ background: #2563eb;
+ color: #fff;
+ }
 
-        /* EMS Tracking Timeline */
-        .tracking-box {
-            background: var(--ems-bg);
-            border: 1px solid rgba(225,29,72,0.2);
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-top: 14px;
-        }
-        .tracking-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            border-bottom: 1px dashed rgba(225,29,72,0.3);
-            padding-bottom: 10px;
-        }
-        .tracking-timeline {
-            position: relative;
-            padding-left: 28px;
-        }
-        .tracking-timeline::before {
-            content: '';
-            position: absolute;
-            top: 6px;
-            bottom: 6px;
-            left: 9px;
-            width: 2px;
-            background: #cbd5e1;
-        }
-        .timeline-node {
-            position: relative;
-            margin-bottom: 14px;
-        }
-        .timeline-node:last-child { margin-bottom: 0; }
-        .timeline-dot {
-            position: absolute;
-            left: -28px;
-            top: 3px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fff;
-            border: 2px solid #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #64748b;
-        }
-        .timeline-node.current .timeline-dot {
-            background: #16a34a;
-            border-color: #16a34a;
-            color: #fff;
-        }
-        .timeline-node.passed .timeline-dot {
-            background: #2563eb;
-            border-color: #2563eb;
-            color: #fff;
-        }
-        .timeline-time { font-size: 0.78em; color: #64748b; font-family: monospace; }
-        .timeline-title { font-size: 0.88em; font-weight: 600; color: var(--text-title); }
-        .timeline-desc { font-size: 0.82em; color: #64748b; }
+ /* EMS Tracking Timeline */
+ .tracking-box {
+ background: var(--ems-bg);
+ border: 1px solid rgba(225,29,72,0.2);
+ border-radius: 8px;
+ padding: 16px 20px;
+ margin-top: 14px;
+ }
+ .tracking-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 14px;
+ border-bottom: 1px dashed rgba(225,29,72,0.3);
+ padding-bottom: 10px;
+ }
+ .tracking-timeline {
+ position: relative;
+ padding-left: 28px;
+ }
+ .tracking-timeline::before {
+ content: '';
+ position: absolute;
+ top: 6px;
+ bottom: 6px;
+ left: 9px;
+ width: 2px;
+ background: #cbd5e1;
+ }
+ .timeline-node {
+ position: relative;
+ margin-bottom: 14px;
+ }
+ .timeline-node:last-child { margin-bottom: 0; }
+ .timeline-dot {
+ position: absolute;
+ left: -28px;
+ top: 3px;
+ width: 20px;
+ height: 20px;
+ border-radius: 50%;
+ background: #fff;
+ border: 2px solid #94a3b8;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 10px;
+ color: #64748b;
+ }
+ .timeline-node.current .timeline-dot {
+ background: #16a34a;
+ border-color: #16a34a;
+ color: #fff;
+ }
+ .timeline-node.passed .timeline-dot {
+ background: #2563eb;
+ border-color: #2563eb;
+ color: #fff;
+ }
+ .timeline-time { font-size: 0.78em; color: #64748b; font-family: monospace; }
+ .timeline-title { font-size: 0.88em; font-weight: 600; color: var(--text-title); }
+ .timeline-desc { font-size: 0.82em; color: #64748b; }
 
-        @media (max-width: 1024px) {
-            .form-grid-2, .form-grid-3, .method-selector-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+ @media (max-width: 1024px) {
+ .form-grid-2, .form-grid-3, .method-selector-grid { grid-template-columns: 1fr; }
+ }
+ </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <div>
-            <a href="01-work-inbox.html" class="brand">
-                <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
-                <span>E-CMIS
-                    <small>ระบบกฎหมายในทางคดี</small>
-                </span>
-            </a>
-            <ul class="menu" id="sidebarMenu">
-                <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
-                <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
-            </ul>
-        </div>
-        <div class="sidebar-bottom">
-            <div>สำนักงาน ป.ป.ท.</div>
-            <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
-        </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main">
-        <!-- Topbar -->
-        <div class="topbar">
-            <div class="topbar-left">
-                <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
-                <div class="breadcrumb">
-                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">นิติกร จัดส่งหนังสือให้อัยการ/อสส. (S18)</span>
-                </div>
-            </div>
-            
-            <div class="top-controls">
-                <div class="font-sizer" title="ปรับขนาดตัวอักษร">
-                    <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
-                    <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
-                    <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
-                </div>
-                <div class="icon-btn-group">
-                    <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
-                    <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
-                </div>
-                <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
-                    <div class="avatar" id="userAvatar">ณ</div>
-                    <div class="user-info">
-                        <span class="user-name" id="userName">นายณัฐพล บัวทุม</span>
-                        <span class="user-role" id="userRoleTitle">นิติกรชำนาญการพิเศษ</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
-
-                    <!-- Profile & Logout Dropdown -->
-                    <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
-                        <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
-                        <div class="profile-dropdown-body">
-                            <div class="profile-card">
-                                <span class="profile-card-name" id="profileCardName">นายณัฐพล บัวทุม</span>
-                                <span class="profile-card-title" id="profileCardTitle">นิติกรชำนาญการพิเศษ (เจ้าของสำนวน)</span>
-                                <span class="profile-card-org" id="profileCardOrg">กลุ่มงานความเห็นแย้ง · กองกฎหมาย (กอท.)</span>
-                            </div>
-                            <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
-                        </div>
-                        <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>ออกจากระบบ</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Body -->
-        <div class="content">
-
-            <!-- Stepper Progress Header -->
-            <div class="stepper-card">
-                <div class="stepper" id="stepper">
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">1. นิติกรจัดทำหนังสือ</div>
-                    </div>
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">2. ผอ.กลุ่มงาน/ผอ.กอง ตรวจสอบ</div>
-                    </div>
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">3. ธุรการออกเลขส่งเสนอลงนาม</div>
-                    </div>
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">4. ธุรการตรวจรับหนังสือลงนาม</div>
-                    </div>
-                    <div class="step-item active">
-                        <div class="step-circle">5</div>
-                        <div class="step-label">5. นิติกรจัดส่งให้อัยการ/อสส.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Scenario Switcher Bar for Interactive Demo -->
-            <div class="scenario-switcher-bar">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-sliders text-warning" style="font-size:1.1em;"></i>
-                    <span style="font-size:0.88em; font-weight:600;">เลือกเงื่อนไขการส่งหนังสือ (Interactive Test Scenarios):</span>
-                </div>
-                <div class="scenario-btn-group">
-                    <button type="button" class="scenario-btn active" id="btnScenarioDisagreedEMS" onclick="switchScenario('disagreed_ems')">
-                        <i class="fa-solid fa-envelope-open-text me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ทางไปรษณีย์ (EMS)
-                    </button>
-                    <button type="button" class="scenario-btn" id="btnScenarioDisagreedHand" onclick="switchScenario('disagreed_hand')">
-                        <i class="fa-solid fa-person-walking-arrow-right me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ด้วยตนเอง
-                    </button>
-                    <button type="button" class="scenario-btn" id="btnScenarioAgreedEMS" onclick="switchScenario('agreed_ems')">
-                        <i class="fa-solid fa-check-double me-1"></i>กรณี 1: เห็นชอบ ➔ ส่งอัยการต้นทาง (EMS)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Card 1: Read-Only Case Details & Signed Document Info -->
-            <div class="form-card">
-                <div class="form-card-header">
-                    <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>ข้อมูลสำนวนและหนังสือฉบับลงนามสมบูรณ์จากธุรการ</span>
-                    <span class="badge" id="badgeCaseResolution" style="background:#fee2e2; color:#991b1b;">
-                        <i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง
-                    </span>
-                </div>
-                <div class="form-card-body">
-                    
-                    <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
-                        <div class="form-grid-3" style="margin-bottom: 0;">
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/4530</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0024/2569</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งภายนอก:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1288</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
-                        <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อครุภัณฑ์การศึกษาและสื่อการเรียนการสอน</div>
-                    </div>
-
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>หน่วยงานอัยการต้นทาง</label>
-                            <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
-                        </div>
-                        <div class="form-group">
-                            <label>เลขที่หนังสืออัยการ</label>
-                            <div class="read-box font-monospace" style="font-weight: 700;" id="f_docNo">อส 0038/2569</div>
-                        </div>
-                    </div>
-
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>ผู้บริหารผู้ลงนามในหนังสือ</label>
-                            <div class="read-box" id="f_presidentName">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</div>
-                        </div>
-                        <div class="form-group">
-                            <label>ไฟล์หนังสือฉบับลงนามสมบูรณ์ (มีตราครุฑ &amp; เลขส่งภายนอก)</label>
-                            <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
-                                <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-                                    <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.3em;"></i>
-                                    <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="f_signedDocFileName">หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf</span>
-                                </div>
-                                <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewSignedPdfFile()">
-                                    <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Card 2: Dispatch Form (Officer Action) -->
-            <div id="dispatchFormContainer">
-                <div class="form-card" style="border: 2px solid #1e3a8a;">
-                    <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
-                        <span><i class="fa-solid fa-truck-fast text-primary me-2"></i>บันทึกการจัดส่งหนังสือ &amp; ติดตามสถานะ (Dispatch &amp; Tracking)</span>
-                        <span class="badge" id="badgeRecipientTarget" style="background:#1e3a8a; color:#fff;">
-                            <i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: สำนักงานอัยการสูงสุด (อสส.)
-                        </span>
-                    </div>
-                    <div class="form-card-body">
-                        
-                        <!-- Target Destination Callout Box -->
-                        <div id="targetDestinationBox" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <span style="font-size: 0.82em; color: #1e40af; font-weight: 600; display: block; margin-bottom: 2px;">
-                                    <i class="fa-solid fa-location-dot me-1"></i>หน่วยงานผู้รับหนังสือปลายทาง:
-                                </span>
-                                <span style="font-size: 1.05em; font-weight: 700; color: #1e3a8a;" id="txtTargetRecipient">
-                                    สำนักงานอัยการสูงสุด (อสส.) — เพื่อพิจารณาชี้ขาดความเห็นแย้ง
-                                </span>
-                            </div>
-                            <span class="badge" style="background:#dbeafe; color:#1e40af; font-size:0.85em;" id="badgeCaseRule">
-                                ตาม ป.วิ.อ. ม.145/1 / พ.ร.บ. ป.ป.ท.
-                            </span>
-                        </div>
-
-                        <!-- Dispatch Method Selector (Visible when Scenario 2: Disagreed) -->
-                        <div id="methodSelectorWrap">
-                            <label style="font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 8px; display: block;">
-                                เลือกวิธีการจัดส่งหนังสือ:
-                            </label>
-                            <div class="method-selector-grid">
-                                <div class="method-card active" id="cardMethodPostal" onclick="selectDispatchMethod('postal_ems')">
-                                    <div class="method-icon"><i class="fa-solid fa-envelopes-bulk"></i></div>
-                                    <div>
-                                        <div style="font-weight: 700; color: var(--text-title); font-size: 0.95em;">1. ส่งผ่านทางไปรษณีย์ด่วนพิเศษ (EMS)</div>
-                                        <div style="font-size: 0.82em; color: #64748b; margin-top: 2px;">นิติกรนำหนังสือไปออกเลข EMS ที่ไปรษณีย์ และนำเลข 13 หลักมากรอกในระบบเพื่อติดตามสถานะ</div>
-                                    </div>
-                                </div>
-                                <div class="method-card" id="cardMethodHand" onclick="selectDispatchMethod('hand_delivery')">
-                                    <div class="method-icon"><i class="fa-solid fa-person-walking"></i></div>
-                                    <div>
-                                        <div style="font-weight: 700; color: var(--text-title); font-size: 0.95em;">2. นิติกรนำไปส่งให้อัยการสูงสุดด้วยตัวเอง</div>
-                                        <div style="font-size: 0.82em; color: #64748b; margin-top: 2px;">นิติกรเดินทางไปยื่นส่งเอกสารที่สำนักงานอัยการสูงสุด (อสส.) ด้วยตนเอง พร้อมรับใบรับ/เลขรับเรื่อง</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Section A: Postal EMS Fields (Shown when Postal Method active) -->
-                        <div id="sectionPostalEMS">
-                            <div style="background: var(--ems-bg); border: 1px solid rgba(225,29,72,0.2); border-radius: 8px; padding: 16px 18px; margin-bottom: 16px;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--ems-red);">
-                                    <i class="fa-solid fa-truck-ramp-box" style="font-size:1.2em;"></i>
-                                    <span style="font-weight:700; font-size:0.95em;">ข้อมูลการจัดส่งทางไปรษณีย์ด่วนพิเศษ (Thailand Post EMS)</span>
-                                </div>
-
-                                <div class="form-grid-3">
-                                    <div class="form-group">
-                                        <label>
-                                            <span>เลขติดตามพัสดุ EMS (13 หลัก) <span style="color:#dc2626;">*</span></span>
-                                        </label>
-                                        <div style="display:flex; gap:6px;">
-                                            <input type="text" id="in_emsTrackingNo" class="form-control font-monospace" placeholder="เช่น ED123456789TH" value="ED889912345TH" style="font-weight:700; color:var(--ems-red); letter-spacing:1px;" maxlength="13" oninput="this.value = this.value.toUpperCase()">
-                                            <button type="button" class="btn btn-ems" style="height:38px; padding:0 12px; font-size:0.82em;" onclick="verifyEmsTracking()">
-                                                <i class="fa-solid fa-satellite-dish me-1"></i>เช็คสถานะ
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>วันที่ฝากส่งไปรษณีย์ <span style="color:#dc2626;">*</span></label>
-                                        <input type="date" id="in_emsDate" class="form-control font-monospace" style="font-weight:600;">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>ที่ทำการไปรษณีย์ต้นทาง</label>
-                                        <input type="text" id="in_emsPostOffice" class="form-control" placeholder="เช่น ปณ. ศูนย์ราชการเฉลิมพระเกียรติฯ" value="ไปรษณีย์ไทย สาขาศูนย์ราชการเฉลิมพระเกียรติฯ (แจ้งวัฒนะ)">
-                                    </div>
-                                </div>
-
-                                <div class="form-grid-2">
-                                    <div class="form-group">
-                                        <label>แนบไฟล์สลิป EMS / ใบเสร็จรับฝากไปรษณีย์</label>
-                                        <input type="file" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
-                                        <input type="text" id="in_emsRecipientLabel" class="form-control" readonly style="background:var(--bg-body); font-weight:600;" value="สำนักงานอัยการสูงสุด (ศูนย์ราชการอาคารราชบุรีดิเรกฤทธิ์)">
-                                    </div>
-                                </div>
-
-                                <!-- EMS Live Tracking Simulation Box -->
-                                <div class="tracking-box" id="emsTrackingResultBox">
-                                    <div class="tracking-header">
-                                        <div>
-                                            <span style="font-size:0.82em; color:#e11d48; font-weight:700;">
-                                                <i class="fa-solid fa-barcode me-1"></i>ผลการติดตามพัสดุไปรษณีย์ไทย EMS: <span class="font-monospace" id="lblEmsTrackingNo">ED889912345TH</span>
-                                            </span>
-                                        </div>
-                                        <span class="badge" style="background:#16a34a; color:#fff;" id="badgeEmsStatus">
-                                            <i class="fa-solid fa-spinner fa-spin me-1"></i>อยู่ระหว่างการนำส่ง
-                                        </span>
-                                    </div>
-                                    <div class="tracking-timeline" id="emsTimelineNodes">
-                                        <div class="timeline-node passed">
-                                            <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
-                                            <div class="timeline-time">25/08/2569 09:30 น.</div>
-                                            <div class="timeline-title">รับฝากสิ่งของส่งทางไปรษณีย์เรียบร้อย</div>
-                                            <div class="timeline-desc">ที่ทำการไปรษณีย์ ศูนย์ราชการเฉลิมพระเกียรติฯ</div>
-                                        </div>
-                                        <div class="timeline-node current">
-                                            <div class="timeline-dot"><i class="fa-solid fa-truck"></i></div>
-                                            <div class="timeline-time">25/08/2569 11:15 น.</div>
-                                            <div class="timeline-title">อยู่ระหว่างการขนส่งไปยังศูนย์คัดแยกหลักสี่</div>
-                                            <div class="timeline-desc">เตรียมส่งต่อไปยังสำนักงานอัยการสูงสุด</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- Section B: Hand Delivery Fields (Shown when Hand Delivery Method active) -->
-                        <div id="sectionHandDelivery" class="d-none">
-                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px 18px; margin-bottom: 16px;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#166534;">
-                                    <i class="fa-solid fa-handshake" style="font-size:1.2em;"></i>
-                                    <span style="font-weight:700; font-size:0.95em;">ข้อมูลการนำส่งให้อัยการสูงสุดด้วยตนเอง (Hand Delivery)</span>
-                                </div>
-
-                                <div class="form-grid-3">
-                                    <div class="form-group">
-                                        <label>วันที่นำส่งด้วยตนเอง <span style="color:#dc2626;">*</span></label>
-                                        <input type="date" id="in_handDate" class="form-control font-monospace" style="font-weight:600;">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>เวลานำส่ง <span style="color:#dc2626;">*</span></label>
-                                        <input type="time" id="in_handTime" class="form-control font-monospace" value="10:30">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>เลขที่รับสำนักงานอัยการสูงสุด (เลขรับ อสส.) <span style="color:#dc2626;">*</span></label>
-                                        <input type="text" id="in_oagReceiveDocNo" class="form-control font-monospace" placeholder="เช่น อส 0001/4588" value="อส 0001/4588" style="font-weight:700; color:#166534;">
-                                    </div>
-                                </div>
-
-                                <div class="form-grid-2">
-                                    <div class="form-group">
-                                        <label>สถานที่นำส่งเอกสาร</label>
-                                        <input type="text" id="in_handLocation" class="form-control" value="สำนักงานอัยการสูงสุด ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์ ชั้น 2">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>ผู้รับมอบเอกสารที่สำนักงานอัยการสูงสุด</label>
-                                        <input type="text" id="in_handRecipient" class="form-control" placeholder="ระบุชื่อ-นามสกุล / ตำแหน่งผู้รับ" value="นางสาวพรพิมล รัตนสาร (เจ้าหน้าที่ธุรการ สารบรรณกลาง อสส.)">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>แนบไฟล์สแกนใบรับเอกสาร / ตราประทับรับเรื่องของสำนักงานอัยการสูงสุด</label>
-                                    <input type="file" id="in_handReceiptFile" class="form-control" style="padding:5px 10px;">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Common Notes & Speech to Text -->
-                        <div class="form-group">
-                            <label>
-                                <span>หมายเหตุ / บันทึกการนำส่งของนิติกร
-                                    <button type="button" class="btn-mic" id="btnMicDispatch" onclick="toggleSpeechToText('in_dispatchNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
-                                        <i class="fa-solid fa-microphone"></i>
-                                    </button>
-                                </span>
-                            </label>
-                            <textarea id="in_dispatchNotes" class="form-control" rows="3" placeholder="ระบุบันทึกหรือข้อสังเกตในการจัดส่งหนังสือ...">ดำเนินการจัดส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ เลขที่ ที่ ปปท 0014/1288 ให้สำนักงานอัยการสูงสุด (อสส.) เรียบร้อยแล้ว พร้อมบันทึกเลขติดตามในระบบ E-CMIS</textarea>
-                        </div>
-
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="form-actions">
-                        <div style="display:flex; gap:10px;">
-                            <button type="button" class="btn btn-primary" onclick="submitOfficerExternalDispatchForm()">
-                                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()">
-                                <i class="fa-solid fa-print me-1"></i>พิมพ์ใบนำส่งเอกสาร
-                            </button>
-                        </div>
-                        <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260820_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260825_1"></script>
-
-    <script>
-        let currentCase = null;
-        let currentScenario = 'disagreed_ems'; // 'disagreed_ems' | 'disagreed_hand' | 'agreed_ems'
-        let currentDispatchMethod = 'postal_ems'; // 'postal_ems' | 'hand_delivery'
-        let activeRecognition = null;
-        let isRecording = false;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initUserProfile();
-            setDefaultDates();
-            loadCaseData();
-        });
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
-            localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
-        }
-
-        function changeFontSize(direction) {
-            const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
-            if (direction === 0) {
-                document.body.style.fontSize = '14px';
-            } else {
-                document.body.style.fontSize = (currentSize + direction * 1) + 'px';
-            }
-        }
-
-        function toggleProfileDropdown(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown) dropdown.classList.toggle('show');
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        function confirmLogout(e) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'question',
-                title: 'ยืนยันการออกจากระบบ?',
-                text: 'คุณต้องการออกจากระบบการทำงานหรือไม่',
-                showCancelButton: true,
-                confirmButtonText: 'ออกจากระบบ',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#64748b'
-            }).then(res => {
-                if (res.isConfirmed) {
-                    sessionStorage.removeItem('ecmis_role');
-                    window.location.href = 'login.html';
-                }
-            });
-        }
-
-        function initUserProfile() {
-            const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
-            if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
-                const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[9]; // legal_officer
-                if (role) {
-                    const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
-                    const initial = shortName.charAt(0);
-                    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
-                    if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
-                    if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
-                    if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
-                    if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title + ' (เจ้าของสำนวน)';
-                    if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
-                }
-            }
-        }
-
-        function setDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('in_emsDate')) document.getElementById('in_emsDate').value = today;
-            if (document.getElementById('in_handDate')) document.getElementById('in_handDate').value = today;
-        }
-
-        function loadCaseData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const caseId = urlParams.get('id') || 'คดี-100008/2569';
-            currentCase = Activity10.getCaseById(caseId);
-
-            if (!currentCase) {
-                const allCases = Activity10.getCases ? Activity10.getCases() : [];
-                currentCase = allCases.length > 0 ? allCases[0] : null;
-            }
-
-            if (!currentCase) return;
-
-            // Detect initial scenario from case data
-            const isAgreed = (currentCase.finalOpinionType && currentCase.finalOpinionType.includes('เห็นชอบ')) || (currentCase.title && currentCase.title.includes('เห็นชอบ'));
-            if (isAgreed) {
-                switchScenario('agreed_ems', false);
-            } else {
-                switchScenario('disagreed_ems', false);
-            }
-
-            populateCaseView();
-        }
-
-        function populateCaseView() {
-            if (!currentCase) return;
-
-            const setElText = (id, text) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = text;
-            };
-
-            setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4530');
-            setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0024/2569');
-            setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1288');
-            setElText('f_title', currentCase.title || '-');
-            setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1');
-            setElText('f_docNo', currentCase.docNo || 'อส 0038/2569');
-            setElText('f_presidentName', currentCase.signedPresidentName || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
-            setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf');
-
-            // Check if already dispatched
-            if (currentCase.statusCode === 'DISPATCHED_TO_PROSECUTOR' || currentCase.officerDispatchedDate) {
-                renderAlreadyDispatchedView();
-            }
-        }
-
-        function switchScenario(scenarioKey, triggerPopulate = true) {
-            currentScenario = scenarioKey;
-
-            // Update button styles
-            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
-            if (scenarioKey === 'disagreed_ems') document.getElementById('btnScenarioDisagreedEMS').classList.add('active');
-            if (scenarioKey === 'disagreed_hand') document.getElementById('btnScenarioDisagreedHand').classList.add('active');
-            if (scenarioKey === 'agreed_ems') document.getElementById('btnScenarioAgreedEMS').classList.add('active');
-
-            const badgeRes = document.getElementById('badgeCaseResolution');
-            const badgeTarget = document.getElementById('badgeRecipientTarget');
-            const txtRecipient = document.getElementById('txtTargetRecipient');
-            const methodSelectorWrap = document.getElementById('methodSelectorWrap');
-            const inRecipientLabel = document.getElementById('in_emsRecipientLabel');
-
-            if (scenarioKey === 'agreed_ems') {
-                // Scenario 1: Agreed -> Send to Origin Prosecutor via EMS
-                if (badgeRes) {
-                    badgeRes.className = 'badge';
-                    badgeRes.style.background = '#dcfce7';
-                    badgeRes.style.color = '#166534';
-                    badgeRes.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>มติเห็นชอบตามคำสั่งอัยการ';
-                }
-                if (badgeTarget) {
-                    badgeTarget.style.background = '#0284c7';
-                    badgeTarget.innerHTML = '<i class="fa-solid fa-building me-1"></i>ส่งถึง: พนักงานอัยการเจ้าของสำนวน (ต้นทาง)';
-                }
-                if (txtRecipient) {
-                    txtRecipient.textContent = `${currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2'} — เพื่อแจ้งผลมติเห็นชอบตามคำสั่งไม่ฟ้อง`;
-                }
-                if (inRecipientLabel) {
-                    inRecipientLabel.value = currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2';
-                }
-
-                // Hide Hand delivery option (strictly EMS for Agreed case)
-                if (methodSelectorWrap) methodSelectorWrap.classList.add('d-none');
-                selectDispatchMethod('postal_ems');
-
-                // Update sample files
-                if (document.getElementById('f_signedDocFileName')) {
-                    document.getElementById('f_signedDocFileName').textContent = 'หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1290.pdf';
-                }
-                if (document.getElementById('in_dispatchNotes')) {
-                    document.getElementById('in_dispatchNotes').value = 'ดำเนินการส่งหนังสือแจ้งมติเห็นชอบตามคำสั่งไม่ฟ้องให้พนักงานอัยการเจ้าของสำนวนทางไปรษณีย์ด่วนพิเศษ (EMS) เรียบร้อยแล้ว';
-                }
-
-            } else {
-                // Scenario 2: Disagreed -> Send to Attorney General (OAG)
-                if (badgeRes) {
-                    badgeRes.className = 'badge';
-                    badgeRes.style.background = '#fee2e2';
-                    badgeRes.style.color = '#991b1b';
-                    badgeRes.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง';
-                }
-                if (badgeTarget) {
-                    badgeTarget.style.background = '#1e3a8a';
-                    badgeTarget.innerHTML = '<i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: สำนักงานอัยการสูงสุด (อสส.)';
-                }
-                if (txtRecipient) {
-                    txtRecipient.textContent = 'สำนักงานอัยการสูงสุด (อสส.) — เพื่อพิจารณาชี้ขาดความเห็นแย้งตามกฎหมาย';
-                }
-                if (inRecipientLabel) {
-                    inRecipientLabel.value = 'สำนักงานอัยการสูงสุด (ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์)';
-                }
-
-                // Show method selector
-                if (methodSelectorWrap) methodSelectorWrap.classList.remove('d-none');
-
-                if (scenarioKey === 'disagreed_ems') {
-                    selectDispatchMethod('postal_ems');
-                    if (document.getElementById('in_dispatchNotes')) {
-                        document.getElementById('in_dispatchNotes').value = 'ดำเนินการจัดส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ เลขที่ ที่ ปปท 0014/1288 ให้สำนักงานอัยการสูงสุด (อสส.) ทางไปรษณีย์ EMS เรียบร้อยแล้ว';
-                    }
-                } else if (scenarioKey === 'disagreed_hand') {
-                    selectDispatchMethod('hand_delivery');
-                    if (document.getElementById('in_dispatchNotes')) {
-                        document.getElementById('in_dispatchNotes').value = 'นิติกรเจ้าของสำนวนเดินทางไปนำส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ ให้สำนักงานอัยการสูงสุด (อสส.) ด้วยตนเอง และได้รับเลขรับเรื่อง อส 0001/4588 เรียบร้อยแล้ว';
-                    }
-                }
-
-                if (document.getElementById('f_signedDocFileName')) {
-                    document.getElementById('f_signedDocFileName').textContent = 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf';
-                }
-            }
-        }
-
-        function selectDispatchMethod(method) {
-            currentDispatchMethod = method;
-            const cardPostal = document.getElementById('cardMethodPostal');
-            const cardHand = document.getElementById('cardMethodHand');
-            const sectionPostal = document.getElementById('sectionPostalEMS');
-            const sectionHand = document.getElementById('sectionHandDelivery');
-
-            if (method === 'postal_ems') {
-                if (cardPostal) cardPostal.classList.add('active');
-                if (cardHand) cardHand.classList.remove('active');
-                if (sectionPostal) sectionPostal.classList.remove('d-none');
-                if (sectionHand) sectionHand.classList.add('d-none');
-            } else {
-                if (cardPostal) cardPostal.classList.remove('active');
-                if (cardHand) cardHand.classList.add('active');
-                if (sectionPostal) sectionPostal.classList.add('d-none');
-                if (sectionHand) sectionHand.classList.remove('d-none');
-            }
-        }
-
-        function verifyEmsTracking() {
-            const emsInput = document.getElementById('in_emsTrackingNo');
-            const emsNo = emsInput ? emsInput.value.trim() : '';
-
-            if (!emsNo || emsNo.length < 13) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'กรุณาระบุเลข EMS ให้ถูกต้อง',
-                    text: 'เลขติดตามพัสดุไปรษณีย์ด่วนพิเศษต้องมีความยาว 13 หลัก เช่น ED123456789TH',
-                    confirmButtonColor: '#1e3a8a'
-                });
-                return;
-            }
-
-            document.getElementById('lblEmsTrackingNo').textContent = emsNo;
-            
-            Swal.fire({
-                title: 'กำลังเชื่อมต่อระบบไปรษณีย์ไทย...',
-                html: `ตรวจสอบสถานะพัสดุหมายเลข <strong>${emsNo}</strong>`,
-                timer: 900,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                const toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
-                toast.fire({
-                    icon: 'success',
-                    title: `พบข้อมูลพัสดุ EMS: ${emsNo} สถานะปกติ`
-                });
-            });
-        }
-
-        function viewSignedPdfFile() {
-            Swal.fire({
-                icon: 'info',
-                title: 'เปิดดูหนังสือฉบับลงนามสมบูรณ์',
-                html: `
-                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                        <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือส่ง:</strong> ${document.getElementById('f_externalDispatchNo').textContent}</p>
-                        <p style="margin-bottom: 6px;"><strong>ผู้ลงนาม:</strong> ${document.getElementById('f_presidentName').textContent}</p>
-                        <p style="margin-bottom: 0;"><strong>สถานะ:</strong> มีตราครุฑและประทับลายมือชื่อดิจิทัลสมบูรณ์ (พร้อมจัดส่ง)</p>
-                    </div>
-                `,
-                confirmButtonColor: '#1e3a8a',
-                confirmButtonText: 'ปิดหน้าต่าง'
-            });
-        }
-
-        function printDispatchSlip() {
-            Swal.fire({
-                icon: 'success',
-                title: 'กำลังพิมพ์ใบนำส่งเอกสาร...',
-                text: 'ระบบกำลังจัดเตรียมใบนำส่งหนังสือราชการและใบปะหน้าพัสดุสำหรับจัดส่ง',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-
-        function submitOfficerExternalDispatchForm() {
-            if (!currentCase) return;
-
-            let payload = {
-                dispatchScenario: currentScenario,
-                dispatchMethod: currentDispatchMethod,
-                dispatchNotes: document.getElementById('in_dispatchNotes').value.trim()
-            };
-
-            if (currentDispatchMethod === 'postal_ems') {
-                const emsNo = document.getElementById('in_emsTrackingNo').value.trim();
-                const emsDate = document.getElementById('in_emsDate').value;
-                const postOffice = document.getElementById('in_emsPostOffice').value.trim();
-
-                if (!emsNo || emsNo.length < 10) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'กรุณากรอกเลขติดตาม EMS',
-                        text: 'กรุณากรอกเลขติดตามพัสดุไปรษณีย์ EMS 13 หลักที่ได้จากไปรษณีย์ไทย เพื่อใช้ติดตามสถานะ',
-                        confirmButtonColor: '#1e3a8a'
-                    });
-                    return;
-                }
-
-                payload.emsTrackingNo = emsNo;
-                payload.dispatchDate = emsDate;
-                payload.dispatchPostOffice = postOffice;
-                payload.dispatchRecipientName = document.getElementById('in_emsRecipientLabel').value;
-            } else {
-                const handDate = document.getElementById('in_handDate').value;
-                const handTime = document.getElementById('in_handTime').value;
-                const oagDocNo = document.getElementById('in_oagReceiveDocNo').value.trim();
-                const handRecipient = document.getElementById('in_handRecipient').value.trim();
-                const location = document.getElementById('in_handLocation').value.trim();
-
-                if (!oagDocNo) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'กรุณาระบุเลขรับ อสส.',
-                        text: 'กรุณากรอกเลขรับเอกสารที่ได้รับจากสำนักงานอัยการสูงสุด',
-                        confirmButtonColor: '#1e3a8a'
-                    });
-                    return;
-                }
-
-                payload.dispatchDate = handDate;
-                payload.dispatchTime = handTime;
-                payload.oagReceiveDocNo = oagDocNo;
-                payload.handDeliveryRecipient = handRecipient;
-                payload.dispatchLocation = location;
-                payload.dispatchRecipientName = 'สำนักงานอัยการสูงสุด (อสส.)';
-            }
-
-            const methodText = currentDispatchMethod === 'postal_ems'
-                ? `ไปรษณีย์ด่วนพิเศษ (EMS หมายเลข <strong>${payload.emsTrackingNo}</strong>)`
-                : `นิติกรนำส่งด้วยตนเอง (เลขรับ อสส. <strong>${payload.oagReceiveDocNo}</strong>)`;
-
-            Swal.fire({
-                icon: 'question',
-                title: 'ยืนยันการบันทึกจัดส่งหนังสือ?',
-                html: `
-                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                        <p style="margin-bottom: 4px;"><strong>เลขที่หนังสือส่ง:</strong> ${document.getElementById('f_externalDispatchNo').textContent}</p>
-                        <p style="margin-bottom: 4px;"><strong>ปลายทาง:</strong> ${document.getElementById('txtTargetRecipient').textContent}</p>
-                        <p style="margin-bottom: 0;"><strong>วิธีการจัดส่ง:</strong> ${methodText}</p>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'ยืนยันการจัดส่ง',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#64748b'
-            }).then(res => {
-                if (res.isConfirmed) {
-                    Activity10.submitOfficerExternalDispatch(currentCase.id, payload);
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'บันทึกการจัดส่งหนังสือเรียบร้อยแล้ว!',
-                        text: 'ระบบได้บันทึกข้อมูลการจัดส่งและปิดขั้นตอน S18 เรียบร้อยแล้ว',
-                        timer: 1800,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = '01-work-inbox.html';
-                    });
-                }
-            });
-        }
-
-        function renderAlreadyDispatchedView() {
-            const container = document.getElementById('dispatchFormContainer');
-            if (!container) return;
-
-            const isPostal = currentCase.dispatchMethod === 'postal_ems';
-            const detailHtml = isPostal ? `
-                <div class="form-grid-3">
-                    <div class="form-group">
-                        <label>เลขติดตามพัสดุ EMS</label>
-                        <div class="read-box font-monospace" style="font-weight:700; color:var(--ems-red);">${currentCase.emsTrackingNo || 'ED889912345TH'}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>วันที่ฝากส่งไปรษณีย์</label>
-                        <div class="read-box font-monospace">${currentCase.dispatchDate || '-'}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>ที่ทำการไปรษณีย์ต้นทาง</label>
-                        <div class="read-box">${currentCase.dispatchPostOffice || 'ไปรษณีย์ไทย สาขาศูนย์ราชการฯ'}</div>
-                    </div>
-                </div>
-            ` : `
-                <div class="form-grid-3">
-                    <div class="form-group">
-                        <label>เลขที่รับ อสส.</label>
-                        <div class="read-box font-monospace" style="font-weight:700; color:#166534;">${currentCase.oagReceiveDocNo || 'อส 0001/4588'}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>วันที่และเวลานำส่ง</label>
-                        <div class="read-box font-monospace">${currentCase.dispatchDate || '-'} ${currentCase.dispatchTime || ''}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>ผู้รับมอบเอกสารที่ อสส.</label>
-                        <div class="read-box">${currentCase.handDeliveryRecipient || 'เจ้าหน้าที่ธุรการ สารบรรณ อสส.'}</div>
-                    </div>
-                </div>
-            `;
-
-            container.innerHTML = `
-                <div class="form-card" style="border: 2px solid #16a34a;">
-                    <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
-                        <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดส่งหนังสือเสร็จสมบูรณ์ (S18)</span>
-                        <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ส่งเรียบร้อยแล้ว</span>
-                    </div>
-                    <div class="form-card-body">
-                        <div class="form-group">
-                            <label>หน่วยงานปลายทางที่จัดส่ง</label>
-                            <div class="read-box" style="font-weight:700; color:#1e3a8a;">${currentCase.dispatchRecipientName || 'สำนักงานอัยการสูงสุด (อสส.)'}</div>
-                        </div>
-                        ${detailHtml}
-                        <div class="form-group">
-                            <label>บันทึกการจัดส่งของนิติกร</label>
-                            <div class="read-box read-box-textarea">${currentCase.dispatchNotes || 'จัดส่งหนังสือฉบับลงนามสมบูรณ์เรียบร้อยแล้ว'}</div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()"><i class="fa-solid fa-print me-1"></i>พิมพ์หลักฐานการจัดส่ง</button>
-                        <a href="01-work-inbox.html" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Speech-to-Text Web API
-        function startRecordingUI(btnEl) {
-            if (!btnEl) return;
-            btnEl.classList.add('recording');
-            btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
-        }
-
-        function stopRecordingUI(btnEl) {
-            if (!btnEl) return;
-            btnEl.classList.remove('recording');
-            btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
-            isRecording = false;
-        }
-
-        function toggleSpeechToText(targetId, btnEl) {
-            const inputEl = document.getElementById(targetId);
-            if (!inputEl) return;
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (isRecording) {
-                if (activeRecognition) {
-                    try { activeRecognition.stop(); } catch(e) {}
-                }
-                stopRecordingUI(btnEl);
-                return;
-            }
-
-            if (!SpeechRecognition) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'พิมพ์ด้วยเสียง (Speech-to-Text)',
-                    text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
-                    confirmButtonColor: '#1e3a8a'
-                });
-                return;
-            }
-
-            try {
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'th-TH';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-                recognition.continuous = false;
-
-                recognition.onstart = function() {
-                    isRecording = true;
-                    activeRecognition = recognition;
-                    startRecordingUI(btnEl);
-                    const toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                    toast.fire({
-                        icon: 'info',
-                        title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
-                    });
-                };
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    if (transcript) {
-                        const currentVal = inputEl.value ? inputEl.value.trim() : '';
-                        inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
-                    }
-                };
-
-                recognition.onerror = function(event) {
-                    console.error('Speech recognition error:', event.error);
-                    stopRecordingUI(btnEl);
-                };
-
-                recognition.onend = function() {
-                    stopRecordingUI(btnEl);
-                };
-
-                recognition.start();
-            } catch (err) {
-                console.error('Recognition start error:', err);
-                stopRecordingUI(btnEl);
-            }
-        }
-    </script>
+ <!-- Sidebar Navigation -->
+ <div class="sidebar" id="sidebar">
+ <div>
+ <a href="01-work-inbox.html" class="brand">
+ <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
+ <span>E-CMIS
+ <small>ระบบกฎหมายในทางคดี</small>
+ </span>
+ </a>
+ <ul class="menu" id="sidebarMenu">
+ <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+ <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+ </ul>
+ </div>
+ <div class="sidebar-bottom">
+ <div>สำนักงาน ป.ป.ท.</div>
+ <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
+ </div>
+ </div>
+
+ <!-- Main Content Area -->
+ <div class="main">
+ <!-- Topbar -->
+ <div class="topbar">
+ <div class="topbar-left">
+ <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+ <div class="breadcrumb">
+ <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">นิติกร จัดส่งหนังสือให้อัยการ/อสส.</span>
+ </div>
+ </div>
+ 
+ <div class="top-controls">
+ <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+ <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+ <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+ <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+ </div>
+ <div class="icon-btn-group">
+ <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+ <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
+ </div>
+ <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+ <div class="avatar" id="userAvatar">ณ</div>
+ <div class="user-info">
+ <span class="user-name" id="userName">นายณัฐพล บัวทุม</span>
+ <span class="user-role" id="userRoleTitle">นิติกรชำนาญการพิเศษ</span>
+ </div>
+ <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
+
+ <!-- Profile & Logout Dropdown -->
+ <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+ <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+ <div class="profile-dropdown-body">
+ <div class="profile-card">
+ <span class="profile-card-name" id="profileCardName">นายณัฐพล บัวทุม</span>
+ <span class="profile-card-title" id="profileCardTitle">นิติกรชำนาญการพิเศษ (เจ้าของสำนวน)</span>
+ <span class="profile-card-org" id="profileCardOrg">กลุ่มงานความเห็นแย้ง · กองกฎหมาย (กอท.)</span>
+ </div>
+ <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+ </div>
+ <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+ <i class="fa-solid fa-right-from-bracket"></i>
+ <span>ออกจากระบบ</span>
+ </a>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Content Body -->
+ <div class="content">
+
+ <!-- Stepper Progress Header -->
+ <div class="stepper-card">
+ <div class="stepper" id="stepper">
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">1. นิติกรจัดทำหนังสือ</div>
+ </div>
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">2. ผอ.กลุ่มงาน/ผอ.กอง ตรวจสอบ</div>
+ </div>
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">3. ธุรการออกเลขส่งเสนอลงนาม</div>
+ </div>
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">4. ธุรการตรวจรับหนังสือลงนาม</div>
+ </div>
+ <div class="step-item active">
+ <div class="step-circle">5</div>
+ <div class="step-label">5. นิติกรจัดส่งให้อัยการ/อสส.</div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Scenario Switcher Bar for Interactive Demo -->
+ <div class="scenario-switcher-bar">
+ <div style="display:flex; align-items:center; gap:8px;">
+ <i class="fa-solid fa-sliders text-warning" style="font-size:1.1em;"></i>
+ <span style="font-size:0.88em; font-weight:600;">เลือกเงื่อนไขการส่งหนังสือ (Interactive Test Scenarios):</span>
+ </div>
+ <div class="scenario-btn-group">
+ <button type="button" class="scenario-btn active" id="btnScenarioDisagreedEMS" onclick="switchScenario('disagreed_ems')">
+ <i class="fa-solid fa-envelope-open-text me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ทางไปรษณีย์ (EMS)
+ </button>
+ <button type="button" class="scenario-btn" id="btnScenarioDisagreedHand" onclick="switchScenario('disagreed_hand')">
+ <i class="fa-solid fa-person-walking-arrow-right me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ด้วยตนเอง
+ </button>
+ <button type="button" class="scenario-btn" id="btnScenarioAgreedEMS" onclick="switchScenario('agreed_ems')">
+ <i class="fa-solid fa-check-double me-1"></i>กรณี 1: เห็นชอบ ➔ ส่งอัยการต้นทาง (EMS)
+ </button>
+ </div>
+ </div>
+
+ <!-- Card 1: Read-Only Case Details & Signed Document Info -->
+ <div class="form-card">
+ <div class="form-card-header">
+ <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>ข้อมูลสำนวนและหนังสือฉบับลงนามสมบูรณ์จากธุรการ</span>
+ <span class="badge" id="badgeCaseResolution" style="background:#fee2e2; color:#991b1b;">
+ <i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง
+ </span>
+ </div>
+ <div class="form-card-body">
+ 
+ <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
+ <div class="form-grid-3" style="margin-bottom: 0;">
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/4530</span>
+ </div>
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0024/2569</span>
+ </div>
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งภายนอก:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1288</span>
+ </div>
+ </div>
+ </div>
+
+ <div class="form-group">
+ <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+ <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อครุภัณฑ์การศึกษาและสื่อการเรียนการสอน</div>
+ </div>
+
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>หน่วยงานอัยการต้นทาง</label>
+ <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
+ </div>
+ <div class="form-group">
+ <label>เลขที่หนังสืออัยการ</label>
+ <div class="read-box font-monospace" style="font-weight: 700;" id="f_docNo">อส 0038/2569</div>
+ </div>
+ </div>
+
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>ผู้บริหารผู้ลงนามในหนังสือ</label>
+ <div class="read-box" id="f_presidentName">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</div>
+ </div>
+ <div class="form-group">
+ <label>ไฟล์หนังสือฉบับลงนามสมบูรณ์ (มีตราครุฑ &amp; เลขส่งภายนอก)</label>
+ <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
+ <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+ <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.3em;"></i>
+ <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="f_signedDocFileName">หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf</span>
+ </div>
+ <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewSignedPdfFile()">
+ <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+ </button>
+ </div>
+ </div>
+ </div>
+
+ </div>
+ </div>
+
+ <!-- Card 2: Dispatch Form (Officer Action) -->
+ <div id="dispatchFormContainer">
+ <div class="form-card" style="border: 2px solid #1e3a8a;">
+ <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
+ <span><i class="fa-solid fa-truck-fast text-primary me-2"></i>บันทึกการจัดส่งหนังสือ &amp; ติดตามสถานะ (Dispatch &amp; Tracking)</span>
+ <span class="badge" id="badgeRecipientTarget" style="background:#1e3a8a; color:#fff;">
+ <i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: สำนักงานอัยการสูงสุด (อสส.)
+ </span>
+ </div>
+ <div class="form-card-body">
+ 
+ <!-- Target Destination Callout Box -->
+ <div id="targetDestinationBox" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+ <div>
+ <span style="font-size: 0.82em; color: #1e40af; font-weight: 600; display: block; margin-bottom: 2px;">
+ <i class="fa-solid fa-location-dot me-1"></i>หน่วยงานผู้รับหนังสือปลายทาง:
+ </span>
+ <span style="font-size: 1.05em; font-weight: 700; color: #1e3a8a;" id="txtTargetRecipient">
+ สำนักงานอัยการสูงสุด (อสส.) — เพื่อพิจารณาชี้ขาดความเห็นแย้ง
+ </span>
+ </div>
+ <span class="badge" style="background:#dbeafe; color:#1e40af; font-size:0.85em;" id="badgeCaseRule">
+ ตาม ป.วิ.อ. ม.145/1 / พ.ร.บ. ป.ป.ท.
+ </span>
+ </div>
+
+ <!-- Dispatch Method Selector (Visible when Scenario 2: Disagreed) -->
+ <div id="methodSelectorWrap">
+ <label style="font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 8px; display: block;">
+ เลือกวิธีการจัดส่งหนังสือ:
+ </label>
+ <div class="method-selector-grid">
+ <div class="method-card active" id="cardMethodPostal" onclick="selectDispatchMethod('postal_ems')">
+ <div class="method-icon"><i class="fa-solid fa-envelopes-bulk"></i></div>
+ <div>
+ <div style="font-weight: 700; color: var(--text-title); font-size: 0.95em;">1. ส่งผ่านทางไปรษณีย์ด่วนพิเศษ (EMS)</div>
+ <div style="font-size: 0.82em; color: #64748b; margin-top: 2px;">นิติกรนำหนังสือไปออกเลข EMS ที่ไปรษณีย์ และนำเลข 13 หลักมากรอกในระบบเพื่อติดตามสถานะ</div>
+ </div>
+ </div>
+ <div class="method-card" id="cardMethodHand" onclick="selectDispatchMethod('hand_delivery')">
+ <div class="method-icon"><i class="fa-solid fa-person-walking"></i></div>
+ <div>
+ <div style="font-weight: 700; color: var(--text-title); font-size: 0.95em;">2. นิติกรนำไปส่งให้อัยการสูงสุดด้วยตัวเอง</div>
+ <div style="font-size: 0.82em; color: #64748b; margin-top: 2px;">นิติกรเดินทางไปยื่นส่งเอกสารที่สำนักงานอัยการสูงสุด (อสส.) ด้วยตนเอง พร้อมรับใบรับ/เลขรับเรื่อง</div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Section A: Postal EMS Fields (Shown when Postal Method active) -->
+ <div id="sectionPostalEMS">
+ <div style="background: var(--ems-bg); border: 1px solid rgba(225,29,72,0.2); border-radius: 8px; padding: 16px 18px; margin-bottom: 16px;">
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--ems-red);">
+ <i class="fa-solid fa-truck-ramp-box" style="font-size:1.2em;"></i>
+ <span style="font-weight:700; font-size:0.95em;">ข้อมูลการจัดส่งทางไปรษณีย์ด่วนพิเศษ</span>
+ </div>
+
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>
+ <span>เลขติดตามพัสดุ EMS <span style="color:#dc2626;">*</span></span>
+ </label>
+ <div style="display:flex; gap:6px;">
+ <input type="text" id="in_emsTrackingNo" class="form-control font-monospace" placeholder="เช่น ED123456789TH" value="ED889912345TH" style="font-weight:700; color:var(--ems-red); letter-spacing:1px;" maxlength="13" oninput="this.value = this.value.toUpperCase()">
+ <button type="button" class="btn btn-ems" style="height:38px; padding:0 12px; font-size:0.82em;" onclick="verifyEmsTracking()">
+ <i class="fa-solid fa-satellite-dish me-1"></i>เช็คสถานะ
+ </button>
+ </div>
+ </div>
+ <div class="form-group">
+ <label>วันที่ฝากส่งไปรษณีย์ <span style="color:#dc2626;">*</span></label>
+ <input type="date" id="in_emsDate" class="form-control font-monospace" style="font-weight:600;">
+ </div>
+ <div class="form-group">
+ <label>ที่ทำการไปรษณีย์ต้นทาง</label>
+ <input type="text" id="in_emsPostOffice" class="form-control" placeholder="เช่น ปณ. ศูนย์ราชการเฉลิมพระเกียรติฯ" value="ไปรษณีย์ไทย สาขาศูนย์ราชการเฉลิมพระเกียรติฯ (แจ้งวัฒนะ)">
+ </div>
+ </div>
+
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>แนบไฟล์สลิป EMS / ใบเสร็จรับฝากไปรษณีย์</label>
+ <input type="file" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;">
+ </div>
+ <div class="form-group">
+ <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
+ <input type="text" id="in_emsRecipientLabel" class="form-control" readonly style="background:var(--bg-body); font-weight:600;" value="สำนักงานอัยการสูงสุด (ศูนย์ราชการอาคารราชบุรีดิเรกฤทธิ์)">
+ </div>
+ </div>
+
+ <!-- EMS Live Tracking Simulation Box -->
+ <div class="tracking-box" id="emsTrackingResultBox">
+ <div class="tracking-header">
+ <div>
+ <span style="font-size:0.82em; color:#e11d48; font-weight:700;">
+ <i class="fa-solid fa-barcode me-1"></i>ผลการติดตามพัสดุไปรษณีย์ไทย EMS: <span class="font-monospace" id="lblEmsTrackingNo">ED889912345TH</span>
+ </span>
+ </div>
+ <span class="badge" style="background:#16a34a; color:#fff;" id="badgeEmsStatus">
+ <i class="fa-solid fa-spinner fa-spin me-1"></i>อยู่ระหว่างการนำส่ง
+ </span>
+ </div>
+ <div class="tracking-timeline" id="emsTimelineNodes">
+ <div class="timeline-node passed">
+ <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+ <div class="timeline-time">25/08/2569 09:30 น.</div>
+ <div class="timeline-title">รับฝากสิ่งของส่งทางไปรษณีย์เรียบร้อย</div>
+ <div class="timeline-desc">ที่ทำการไปรษณีย์ ศูนย์ราชการเฉลิมพระเกียรติฯ</div>
+ </div>
+ <div class="timeline-node current">
+ <div class="timeline-dot"><i class="fa-solid fa-truck"></i></div>
+ <div class="timeline-time">25/08/2569 11:15 น.</div>
+ <div class="timeline-title">อยู่ระหว่างการขนส่งไปยังศูนย์คัดแยกหลักสี่</div>
+ <div class="timeline-desc">เตรียมส่งต่อไปยังสำนักงานอัยการสูงสุด</div>
+ </div>
+ </div>
+ </div>
+
+ </div>
+ </div>
+
+ <!-- Section B: Hand Delivery Fields (Shown when Hand Delivery Method active) -->
+ <div id="sectionHandDelivery" class="d-none">
+ <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px 18px; margin-bottom: 16px;">
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#166534;">
+ <i class="fa-solid fa-handshake" style="font-size:1.2em;"></i>
+ <span style="font-weight:700; font-size:0.95em;">ข้อมูลการนำส่งให้อัยการสูงสุดด้วยตนเอง (Hand Delivery)</span>
+ </div>
+
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>วันที่นำส่งด้วยตนเอง <span style="color:#dc2626;">*</span></label>
+ <input type="date" id="in_handDate" class="form-control font-monospace" style="font-weight:600;">
+ </div>
+ <div class="form-group">
+ <label>เวลานำส่ง <span style="color:#dc2626;">*</span></label>
+ <input type="time" id="in_handTime" class="form-control font-monospace" value="10:30">
+ </div>
+ <div class="form-group">
+ <label>เลขที่รับสำนักงานอัยการสูงสุด (เลขรับ อสส.) <span style="color:#dc2626;">*</span></label>
+ <input type="text" id="in_oagReceiveDocNo" class="form-control font-monospace" placeholder="เช่น อส 0001/4588" value="อส 0001/4588" style="font-weight:700; color:#166534;">
+ </div>
+ </div>
+
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>สถานที่นำส่งเอกสาร</label>
+ <input type="text" id="in_handLocation" class="form-control" value="สำนักงานอัยการสูงสุด ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์ ชั้น 2">
+ </div>
+ <div class="form-group">
+ <label>ผู้รับมอบเอกสารที่สำนักงานอัยการสูงสุด</label>
+ <input type="text" id="in_handRecipient" class="form-control" placeholder="ระบุชื่อ-นามสกุล / ตำแหน่งผู้รับ" value="นางสาวพรพิมล รัตนสาร (เจ้าหน้าที่ธุรการ สารบรรณกลาง อสส.)">
+ </div>
+ </div>
+
+ <div class="form-group">
+ <label>แนบไฟล์สแกนใบรับเอกสาร / ตราประทับรับเรื่องของสำนักงานอัยการสูงสุด</label>
+ <input type="file" id="in_handReceiptFile" class="form-control" style="padding:5px 10px;">
+ </div>
+ </div>
+ </div>
+
+ <!-- Common Notes & Speech to Text -->
+ <div class="form-group">
+ <label>
+ <span>หมายเหตุ / บันทึกการนำส่งของนิติกร
+ <button type="button" class="btn-mic" id="btnMicDispatch" onclick="toggleSpeechToText('in_dispatchNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
+ <i class="fa-solid fa-microphone"></i>
+ </button>
+ </span>
+ </label>
+ <textarea id="in_dispatchNotes" class="form-control" rows="3" placeholder="ระบุบันทึกหรือข้อสังเกตในการจัดส่งหนังสือ...">ดำเนินการจัดส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ เลขที่ ที่ ปปท 0014/1288 ให้สำนักงานอัยการสูงสุด (อสส.) เรียบร้อยแล้ว พร้อมบันทึกเลขติดตามในระบบ E-CMIS</textarea>
+ </div>
+
+ </div>
+
+ <!-- Action Buttons -->
+ <div class="form-actions">
+ <div style="display:flex; gap:10px;">
+ <button type="button" class="btn btn-primary" onclick="submitOfficerExternalDispatchForm()">
+ <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+ </button>
+ <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()">
+ <i class="fa-solid fa-print me-1"></i>พิมพ์ใบนำส่งเอกสาร
+ </button>
+ </div>
+ <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+ </div>
+ </div>
+ </div>
+
+ </div>
+ </div>
+
+ <!-- Scripts -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="assets/ecmis-app.js?v=20260820_2"></script>
+ <script src="assets/ecmis-activity10.js?v=20260825_1"></script>
+
+ <script>
+ let currentCase = null;
+ let currentScenario = 'disagreed_ems'; // 'disagreed_ems' | 'disagreed_hand' | 'agreed_ems'
+ let currentDispatchMethod = 'postal_ems'; // 'postal_ems' | 'hand_delivery'
+ let activeRecognition = null;
+ let isRecording = false;
+
+ document.addEventListener('DOMContentLoaded', () => {
+ initUserProfile();
+ setDefaultDates();
+ loadCaseData();
+ });
+
+ function toggleSidebar() {
+ document.getElementById('sidebar').classList.toggle('collapsed');
+ }
+
+ function toggleTheme() {
+ document.body.classList.toggle('dark-mode');
+ const isDark = document.body.classList.contains('dark-mode');
+ document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
+ localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
+ }
+
+ function changeFontSize(direction) {
+ const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+ if (direction === 0) {
+ document.body.style.fontSize = '14px';
+ } else {
+ document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+ }
+ }
+
+ function toggleProfileDropdown(e) {
+ e.stopPropagation();
+ const dropdown = document.getElementById('profileDropdown');
+ if (dropdown) dropdown.classList.toggle('show');
+ }
+
+ document.addEventListener('click', (e) => {
+ const dropdown = document.getElementById('profileDropdown');
+ if (dropdown && !dropdown.contains(e.target)) {
+ dropdown.classList.remove('show');
+ }
+ });
+
+ function confirmLogout(e) {
+ e.preventDefault();
+ Swal.fire({
+ icon: 'question',
+ title: 'ยืนยันการออกจากระบบ?',
+ text: 'คุณต้องการออกจากระบบการทำงานหรือไม่',
+ showCancelButton: true,
+ confirmButtonText: 'ออกจากระบบ',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#dc2626',
+ cancelButtonColor: '#64748b'
+ }).then(res => {
+ if (res.isConfirmed) {
+ sessionStorage.removeItem('ecmis_role');
+ window.location.href = 'login.html';
+ }
+ });
+ }
+
+ function initUserProfile() {
+ const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
+ if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
+ const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[9]; // legal_officer
+ if (role) {
+ const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
+ const initial = shortName.charAt(0);
+ if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
+ if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
+ if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
+ if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
+ if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title + ' (เจ้าของสำนวน)';
+ if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
+ }
+ }
+ }
+
+ function setDefaultDates() {
+ const today = new Date().toISOString().split('T')[0];
+ if (document.getElementById('in_emsDate')) document.getElementById('in_emsDate').value = today;
+ if (document.getElementById('in_handDate')) document.getElementById('in_handDate').value = today;
+ }
+
+ function loadCaseData() {
+ const urlParams = new URLSearchParams(window.location.search);
+ const caseId = urlParams.get('id') || 'คดี-100008/2569';
+ currentCase = Activity10.getCaseById(caseId);
+
+ if (!currentCase) {
+ const allCases = Activity10.getCases ? Activity10.getCases() : [];
+ currentCase = allCases.length > 0 ? allCases[0] : null;
+ }
+
+ if (!currentCase) return;
+
+ // Detect initial scenario from case data
+ const isAgreed = (currentCase.finalOpinionType && currentCase.finalOpinionType.includes('เห็นชอบ')) || (currentCase.title && currentCase.title.includes('เห็นชอบ'));
+ if (isAgreed) {
+ switchScenario('agreed_ems', false);
+ } else {
+ switchScenario('disagreed_ems', false);
+ }
+
+ populateCaseView();
+ }
+
+ function populateCaseView() {
+ if (!currentCase) return;
+
+ const setElText = (id, text) => {
+ const el = document.getElementById(id);
+ if (el) el.textContent = text;
+ };
+
+ setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4530');
+ setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0024/2569');
+ setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1288');
+ setElText('f_title', currentCase.title || '-');
+ setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1');
+ setElText('f_docNo', currentCase.docNo || 'อส 0038/2569');
+ setElText('f_presidentName', currentCase.signedPresidentName || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
+ setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf');
+
+ // Check if already dispatched
+ if (currentCase.statusCode === 'DISPATCHED_TO_PROSECUTOR' || currentCase.officerDispatchedDate) {
+ renderAlreadyDispatchedView();
+ }
+ }
+
+ function switchScenario(scenarioKey, triggerPopulate = true) {
+ currentScenario = scenarioKey;
+
+ // Update button styles
+ document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+ if (scenarioKey === 'disagreed_ems') document.getElementById('btnScenarioDisagreedEMS').classList.add('active');
+ if (scenarioKey === 'disagreed_hand') document.getElementById('btnScenarioDisagreedHand').classList.add('active');
+ if (scenarioKey === 'agreed_ems') document.getElementById('btnScenarioAgreedEMS').classList.add('active');
+
+ const badgeRes = document.getElementById('badgeCaseResolution');
+ const badgeTarget = document.getElementById('badgeRecipientTarget');
+ const txtRecipient = document.getElementById('txtTargetRecipient');
+ const methodSelectorWrap = document.getElementById('methodSelectorWrap');
+ const inRecipientLabel = document.getElementById('in_emsRecipientLabel');
+
+ if (scenarioKey === 'agreed_ems') {
+ // Scenario 1: Agreed -> Send to Origin Prosecutor via EMS
+ if (badgeRes) {
+ badgeRes.className = 'badge';
+ badgeRes.style.background = '#dcfce7';
+ badgeRes.style.color = '#166534';
+ badgeRes.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>มติเห็นชอบตามคำสั่งอัยการ';
+ }
+ if (badgeTarget) {
+ badgeTarget.style.background = '#0284c7';
+ badgeTarget.innerHTML = '<i class="fa-solid fa-building me-1"></i>ส่งถึง: พนักงานอัยการเจ้าของสำนวน (ต้นทาง)';
+ }
+ if (txtRecipient) {
+ txtRecipient.textContent = `${currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2'} — เพื่อแจ้งผลมติเห็นชอบตามคำสั่งไม่ฟ้อง`;
+ }
+ if (inRecipientLabel) {
+ inRecipientLabel.value = currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2';
+ }
+
+ // Hide Hand delivery option (strictly EMS for Agreed case)
+ if (methodSelectorWrap) methodSelectorWrap.classList.add('d-none');
+ selectDispatchMethod('postal_ems');
+
+ // Update sample files
+ if (document.getElementById('f_signedDocFileName')) {
+ document.getElementById('f_signedDocFileName').textContent = 'หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1290.pdf';
+ }
+ if (document.getElementById('in_dispatchNotes')) {
+ document.getElementById('in_dispatchNotes').value = 'ดำเนินการส่งหนังสือแจ้งมติเห็นชอบตามคำสั่งไม่ฟ้องให้พนักงานอัยการเจ้าของสำนวนทางไปรษณีย์ด่วนพิเศษ (EMS) เรียบร้อยแล้ว';
+ }
+
+ } else {
+ // Scenario 2: Disagreed -> Send to Attorney General (OAG)
+ if (badgeRes) {
+ badgeRes.className = 'badge';
+ badgeRes.style.background = '#fee2e2';
+ badgeRes.style.color = '#991b1b';
+ badgeRes.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง';
+ }
+ if (badgeTarget) {
+ badgeTarget.style.background = '#1e3a8a';
+ badgeTarget.innerHTML = '<i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: สำนักงานอัยการสูงสุด (อสส.)';
+ }
+ if (txtRecipient) {
+ txtRecipient.textContent = 'สำนักงานอัยการสูงสุด (อสส.) — เพื่อพิจารณาชี้ขาดความเห็นแย้งตามกฎหมาย';
+ }
+ if (inRecipientLabel) {
+ inRecipientLabel.value = 'สำนักงานอัยการสูงสุด (ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์)';
+ }
+
+ // Show method selector
+ if (methodSelectorWrap) methodSelectorWrap.classList.remove('d-none');
+
+ if (scenarioKey === 'disagreed_ems') {
+ selectDispatchMethod('postal_ems');
+ if (document.getElementById('in_dispatchNotes')) {
+ document.getElementById('in_dispatchNotes').value = 'ดำเนินการจัดส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ เลขที่ ที่ ปปท 0014/1288 ให้สำนักงานอัยการสูงสุด (อสส.) ทางไปรษณีย์ EMS เรียบร้อยแล้ว';
+ }
+ } else if (scenarioKey === 'disagreed_hand') {
+ selectDispatchMethod('hand_delivery');
+ if (document.getElementById('in_dispatchNotes')) {
+ document.getElementById('in_dispatchNotes').value = 'นิติกรเจ้าของสำนวนเดินทางไปนำส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ ให้สำนักงานอัยการสูงสุด (อสส.) ด้วยตนเอง และได้รับเลขรับเรื่อง อส 0001/4588 เรียบร้อยแล้ว';
+ }
+ }
+
+ if (document.getElementById('f_signedDocFileName')) {
+ document.getElementById('f_signedDocFileName').textContent = 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf';
+ }
+ }
+ }
+
+ function selectDispatchMethod(method) {
+ currentDispatchMethod = method;
+ const cardPostal = document.getElementById('cardMethodPostal');
+ const cardHand = document.getElementById('cardMethodHand');
+ const sectionPostal = document.getElementById('sectionPostalEMS');
+ const sectionHand = document.getElementById('sectionHandDelivery');
+
+ if (method === 'postal_ems') {
+ if (cardPostal) cardPostal.classList.add('active');
+ if (cardHand) cardHand.classList.remove('active');
+ if (sectionPostal) sectionPostal.classList.remove('d-none');
+ if (sectionHand) sectionHand.classList.add('d-none');
+ } else {
+ if (cardPostal) cardPostal.classList.remove('active');
+ if (cardHand) cardHand.classList.add('active');
+ if (sectionPostal) sectionPostal.classList.add('d-none');
+ if (sectionHand) sectionHand.classList.remove('d-none');
+ }
+ }
+
+ function verifyEmsTracking() {
+ const emsInput = document.getElementById('in_emsTrackingNo');
+ const emsNo = emsInput ? emsInput.value.trim() : '';
+
+ if (!emsNo || emsNo.length < 13) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณาระบุเลข EMS ให้ถูกต้อง',
+ text: 'เลขติดตามพัสดุไปรษณีย์ด่วนพิเศษต้องมีความยาว 13 หลัก เช่น ED123456789TH',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
+
+ document.getElementById('lblEmsTrackingNo').textContent = emsNo;
+ 
+ Swal.fire({
+ title: 'กำลังเชื่อมต่อระบบไปรษณีย์ไทย...',
+ html: `ตรวจสอบสถานะพัสดุหมายเลข <strong>${emsNo}</strong>`,
+ timer: 900,
+ timerProgressBar: true,
+ didOpen: () => {
+ Swal.showLoading();
+ }
+ }).then(() => {
+ const toast = Swal.mixin({
+ toast: true,
+ position: 'top-end',
+ showConfirmButton: false,
+ timer: 2500
+ });
+ toast.fire({
+ icon: 'success',
+ title: `พบข้อมูลพัสดุ EMS: ${emsNo} สถานะปกติ`
+ });
+ });
+ }
+
+ function viewSignedPdfFile() {
+ Swal.fire({
+ icon: 'info',
+ title: 'เปิดดูหนังสือฉบับลงนามสมบูรณ์',
+ html: `
+ <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+ <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือส่ง:</strong> ${document.getElementById('f_externalDispatchNo').textContent}</p>
+ <p style="margin-bottom: 6px;"><strong>ผู้ลงนาม:</strong> ${document.getElementById('f_presidentName').textContent}</p>
+ <p style="margin-bottom: 0;"><strong>สถานะ:</strong> มีตราครุฑและประทับลายมือชื่อดิจิทัลสมบูรณ์ (พร้อมจัดส่ง)</p>
+ </div>
+ `,
+ confirmButtonColor: '#1e3a8a',
+ confirmButtonText: 'ปิดหน้าต่าง'
+ });
+ }
+
+ function printDispatchSlip() {
+ Swal.fire({
+ icon: 'success',
+ title: 'กำลังพิมพ์ใบนำส่งเอกสาร...',
+ text: 'ระบบกำลังจัดเตรียมใบนำส่งหนังสือราชการและใบปะหน้าพัสดุสำหรับจัดส่ง',
+ timer: 1500,
+ showConfirmButton: false
+ });
+ }
+
+ function submitOfficerExternalDispatchForm() {
+ if (!currentCase) return;
+
+ let payload = {
+ dispatchScenario: currentScenario,
+ dispatchMethod: currentDispatchMethod,
+ dispatchNotes: document.getElementById('in_dispatchNotes').value.trim()
+ };
+
+ if (currentDispatchMethod === 'postal_ems') {
+ const emsNo = document.getElementById('in_emsTrackingNo').value.trim();
+ const emsDate = document.getElementById('in_emsDate').value;
+ const postOffice = document.getElementById('in_emsPostOffice').value.trim();
+
+ if (!emsNo || emsNo.length < 10) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณากรอกเลขติดตาม EMS',
+ text: 'กรุณากรอกเลขติดตามพัสดุไปรษณีย์ EMS 13 หลักที่ได้จากไปรษณีย์ไทย เพื่อใช้ติดตามสถานะ',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
+
+ payload.emsTrackingNo = emsNo;
+ payload.dispatchDate = emsDate;
+ payload.dispatchPostOffice = postOffice;
+ payload.dispatchRecipientName = document.getElementById('in_emsRecipientLabel').value;
+ } else {
+ const handDate = document.getElementById('in_handDate').value;
+ const handTime = document.getElementById('in_handTime').value;
+ const oagDocNo = document.getElementById('in_oagReceiveDocNo').value.trim();
+ const handRecipient = document.getElementById('in_handRecipient').value.trim();
+ const location = document.getElementById('in_handLocation').value.trim();
+
+ if (!oagDocNo) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณาระบุเลขรับ อสส.',
+ text: 'กรุณากรอกเลขรับเอกสารที่ได้รับจากสำนักงานอัยการสูงสุด',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
+
+ payload.dispatchDate = handDate;
+ payload.dispatchTime = handTime;
+ payload.oagReceiveDocNo = oagDocNo;
+ payload.handDeliveryRecipient = handRecipient;
+ payload.dispatchLocation = location;
+ payload.dispatchRecipientName = 'สำนักงานอัยการสูงสุด (อสส.)';
+ }
+
+ const methodText = currentDispatchMethod === 'postal_ems'
+ ? `ไปรษณีย์ด่วนพิเศษ (EMS หมายเลข <strong>${payload.emsTrackingNo}</strong>)`
+ : `นิติกรนำส่งด้วยตนเอง (เลขรับ อสส. <strong>${payload.oagReceiveDocNo}</strong>)`;
+
+ Swal.fire({
+ icon: 'question',
+ title: 'ยืนยันการบันทึกจัดส่งหนังสือ?',
+ html: `
+ <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+ <p style="margin-bottom: 4px;"><strong>เลขที่หนังสือส่ง:</strong> ${document.getElementById('f_externalDispatchNo').textContent}</p>
+ <p style="margin-bottom: 4px;"><strong>ปลายทาง:</strong> ${document.getElementById('txtTargetRecipient').textContent}</p>
+ <p style="margin-bottom: 0;"><strong>วิธีการจัดส่ง:</strong> ${methodText}</p>
+ </div>
+ `,
+ showCancelButton: true,
+ confirmButtonText: 'ยืนยันการจัดส่ง',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#16a34a',
+ cancelButtonColor: '#64748b'
+ }).then(res => {
+ if (res.isConfirmed) {
+ Activity10.submitOfficerExternalDispatch(currentCase.id, payload);
+
+ Swal.fire({
+ icon: 'success',
+ title: 'บันทึกการจัดส่งหนังสือเรียบร้อยแล้ว!',
+ text: 'ระบบได้บันทึกข้อมูลการจัดส่งและปิดขั้นตอน S18 เรียบร้อยแล้ว',
+ timer: 1800,
+ showConfirmButton: false
+ }).then(() => {
+ window.location.href = '01-work-inbox.html';
+ });
+ }
+ });
+ }
+
+ function renderAlreadyDispatchedView() {
+ const container = document.getElementById('dispatchFormContainer');
+ if (!container) return;
+
+ const isPostal = currentCase.dispatchMethod === 'postal_ems';
+ const detailHtml = isPostal ? `
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>เลขติดตามพัสดุ EMS</label>
+ <div class="read-box font-monospace" style="font-weight:700; color:var(--ems-red);">${currentCase.emsTrackingNo || 'ED889912345TH'}</div>
+ </div>
+ <div class="form-group">
+ <label>วันที่ฝากส่งไปรษณีย์</label>
+ <div class="read-box font-monospace">${currentCase.dispatchDate || '-'}</div>
+ </div>
+ <div class="form-group">
+ <label>ที่ทำการไปรษณีย์ต้นทาง</label>
+ <div class="read-box">${currentCase.dispatchPostOffice || 'ไปรษณีย์ไทย สาขาศูนย์ราชการฯ'}</div>
+ </div>
+ </div>
+ ` : `
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>เลขที่รับ อสส.</label>
+ <div class="read-box font-monospace" style="font-weight:700; color:#166534;">${currentCase.oagReceiveDocNo || 'อส 0001/4588'}</div>
+ </div>
+ <div class="form-group">
+ <label>วันที่และเวลานำส่ง</label>
+ <div class="read-box font-monospace">${currentCase.dispatchDate || '-'} ${currentCase.dispatchTime || ''}</div>
+ </div>
+ <div class="form-group">
+ <label>ผู้รับมอบเอกสารที่ อสส.</label>
+ <div class="read-box">${currentCase.handDeliveryRecipient || 'เจ้าหน้าที่ธุรการ สารบรรณ อสส.'}</div>
+ </div>
+ </div>
+ `;
+
+ container.innerHTML = `
+ <div class="form-card" style="border: 2px solid #16a34a;">
+ <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
+ <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดส่งหนังสือเสร็จสมบูรณ์</span>
+ <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ส่งเรียบร้อยแล้ว</span>
+ </div>
+ <div class="form-card-body">
+ <div class="form-group">
+ <label>หน่วยงานปลายทางที่จัดส่ง</label>
+ <div class="read-box" style="font-weight:700; color:#1e3a8a;">${currentCase.dispatchRecipientName || 'สำนักงานอัยการสูงสุด (อสส.)'}</div>
+ </div>
+ ${detailHtml}
+ <div class="form-group">
+ <label>บันทึกการจัดส่งของนิติกร</label>
+ <div class="read-box read-box-textarea">${currentCase.dispatchNotes || 'จัดส่งหนังสือฉบับลงนามสมบูรณ์เรียบร้อยแล้ว'}</div>
+ </div>
+ </div>
+ <div class="form-actions">
+ <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()"><i class="fa-solid fa-print me-1"></i>พิมพ์หลักฐานการจัดส่ง</button>
+ <a href="01-work-inbox.html" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+ </div>
+ </div>
+ `;
+ }
+
+ // Speech-to-Text Web API
+ function startRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.add('recording');
+ btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
+ }
+
+ function stopRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.remove('recording');
+ btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
+ isRecording = false;
+ }
+
+ function toggleSpeechToText(targetId, btnEl) {
+ const inputEl = document.getElementById(targetId);
+ if (!inputEl) return;
+
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+ if (isRecording) {
+ if (activeRecognition) {
+ try { activeRecognition.stop(); } catch(e) {}
+ }
+ stopRecordingUI(btnEl);
+ return;
+ }
+
+ if (!SpeechRecognition) {
+ Swal.fire({
+ icon: 'info',
+ title: 'พิมพ์ด้วยเสียง',
+ text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
+
+ try {
+ const recognition = new SpeechRecognition();
+ recognition.lang = 'th-TH';
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 1;
+ recognition.continuous = false;
+
+ recognition.onstart = function() {
+ isRecording = true;
+ activeRecognition = recognition;
+ startRecordingUI(btnEl);
+ const toast = Swal.mixin({
+ toast: true,
+ position: 'top-end',
+ showConfirmButton: false,
+ timer: 3000,
+ timerProgressBar: true
+ });
+ toast.fire({
+ icon: 'info',
+ title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
+ });
+ };
+
+ recognition.onresult = function(event) {
+ const transcript = event.results[0][0].transcript;
+ if (transcript) {
+ const currentVal = inputEl.value ? inputEl.value.trim() : '';
+ inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
+ }
+ };
+
+ recognition.onerror = function(event) {
+ console.error('Speech recognition error:', event.error);
+ stopRecordingUI(btnEl);
+ };
+
+ recognition.onend = function() {
+ stopRecordingUI(btnEl);
+ };
+
+ recognition.start();
+ } catch (err) {
+ console.error('Recognition start error:', err);
+ stopRecordingUI(btnEl);
+ }
+ }
+ </script>
 </body>
 </html>

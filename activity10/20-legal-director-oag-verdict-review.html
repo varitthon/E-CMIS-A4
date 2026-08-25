@@ -1,719 +1,719 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัยชี้ขาด อสส. &amp; สั่งการ | E-CMIS กิจกรรมที่ 10</title>
-    <link rel="icon" type="image/png" href="pacc_logo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัยชี้ขาด อสส. &amp; สั่งการ | E-CMIS กิจกรรมที่ 10</title>
+ <link rel="icon" type="image/png" href="pacc_logo.png">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+ <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg-body: #f0f4f8;
-            --bg-card: #ffffff;
-            --bg-sidebar: #1a2b48;
-            --bg-header: #ffffff;
-            --border-color: #e2e8f0;
-            --text-title: #1e293b;
-            --text-main: #334155;
-            --sidebar-width: 260px;
-            --primary-blue: #1e3a8a;
-            --primary-accent: #2563eb;
-            --success-color: #16a34a;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-        }
+ <style>
+ :root {
+ --bg-body: #f0f4f8;
+ --bg-card: #ffffff;
+ --bg-sidebar: #1a2b48;
+ --bg-header: #ffffff;
+ --border-color: #e2e8f0;
+ --text-title: #1e293b;
+ --text-main: #334155;
+ --sidebar-width: 260px;
+ --primary-blue: #1e3a8a;
+ --primary-accent: #2563eb;
+ --success-color: #16a34a;
+ --warning-color: #d97706;
+ --danger-color: #dc2626;
+ }
 
-        body.dark-mode {
-            --bg-body: #0b1329;
-            --bg-card: #152238;
-            --bg-sidebar: #0f172a;
-            --bg-header: #152238;
-            --border-color: #1e293b;
-            --text-title: #f8fafc;
-            --text-main: #94a3b8;
-        }
+ body.dark-mode {
+ --bg-body: #0b1329;
+ --bg-card: #152238;
+ --bg-sidebar: #0f172a;
+ --bg-header: #152238;
+ --border-color: #1e293b;
+ --text-title: #f8fafc;
+ --text-main: #94a3b8;
+ }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-        h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+ h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
 
-        /* Sidebar Styles */
-        .sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: margin-left 0.3s ease; z-index: 100; }
-        .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
-        .brand { height: 60px; display: flex; align-items: center; padding: 0 20px; font-size: 1.15em; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; gap: 10px; }
-        .brand img { height: 32px; }
-        .brand small { font-size: 0.65em; display: block; opacity: 0.8; font-weight: 400; }
-        
-        .menu { list-style: none; padding: 15px 0; overflow-y: auto; }
-        .menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-size: 0.9em; transition: all 0.2s; font-weight: 400; }
-        .menu li a:hover, .menu li.active a { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #38bdf8; }
-        .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
-        
-        .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
+ /* Sidebar Styles */
+ .sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: margin-left 0.3s ease; z-index: 100; }
+ .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
+ .brand { height: 60px; display: flex; align-items: center; padding: 0 20px; font-size: 1.15em; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; gap: 10px; }
+ .brand img { height: 32px; }
+ .brand small { font-size: 0.65em; display: block; opacity: 0.8; font-weight: 400; }
+ 
+ .menu { list-style: none; padding: 15px 0; overflow-y: auto; }
+ .menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-size: 0.9em; transition: all 0.2s; font-weight: 400; }
+ .menu li a:hover, .menu li.active a { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #38bdf8; }
+ .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
+ 
+ .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
 
-        /* Main Content Styles */
-        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-        
-        /* Topbar Styles */
-        .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
-        .topbar-left { display: flex; align-items: center; gap: 15px; }
-        .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
-        .breadcrumb { font-size: 0.88em; color: #64748b; }
-        
-        .top-controls { display: flex; align-items: center; gap: 16px; }
-        .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
-        .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
-        .ctrl-btn:hover { background: var(--bg-card); }
-        
-        .icon-btn-group { display: flex; gap: 8px; }
-        .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
-        .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
-        
-        .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
-        .user-profile-top:hover { background: rgba(0,0,0,0.04); }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #1e3a8a; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
-        .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
-        .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
-        .user-role { font-size: 0.72em; color: #64748b; }
+ /* Main Content Styles */
+ .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+ 
+ /* Topbar Styles */
+ .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+ .topbar-left { display: flex; align-items: center; gap: 15px; }
+ .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
+ .breadcrumb { font-size: 0.88em; color: #64748b; }
+ 
+ .top-controls { display: flex; align-items: center; gap: 16px; }
+ .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
+ .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
+ .ctrl-btn:hover { background: var(--bg-card); }
+ 
+ .icon-btn-group { display: flex; gap: 8px; }
+ .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
+ .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
+ 
+ .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
+ .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+ .avatar { width: 34px; height: 34px; border-radius: 50%; background: #1e3a8a; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
+ .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+ .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
+ .user-role { font-size: 0.72em; color: #64748b; }
 
-        /* Profile Dropdown */
-        .profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; animation: fadeInDropdown 0.18s ease; }
-        .profile-dropdown-menu.show { display: block; }
-        @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-        .profile-dropdown-header { padding: 12px 16px 8px 16px; font-size: 0.76em; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
-        .profile-dropdown-body { padding: 12px 14px; }
-        .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
-        .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
-        .profile-card-title { font-size: 0.82em; color: #1e3a8a; font-weight: 600; display: block; margin-top: 2px; }
-        .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
-        .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
-        .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
-        .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
+ /* Profile Dropdown */
+ .profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; animation: fadeInDropdown 0.18s ease; }
+ .profile-dropdown-menu.show { display: block; }
+ @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+ .profile-dropdown-header { padding: 12px 16px 8px 16px; font-size: 0.76em; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+ .profile-dropdown-body { padding: 12px 14px; }
+ .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+ .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
+ .profile-card-title { font-size: 0.82em; color: #1e3a8a; font-weight: 600; display: block; margin-top: 2px; }
+ .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
+ .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
+ .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
+ .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
 
-        .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
-        
-        /* Stepper Header */
-        .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 950px; margin: 0 auto; }
-        .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
-        .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
-        .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
-        .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
-        .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
-        .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 180px; }
-        .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
+ .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+ 
+ /* Stepper Header */
+ .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+ .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 950px; margin: 0 auto; }
+ .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
+ .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
+ .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+ .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+ .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+ .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 180px; }
+ .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
-        /* Form Card */
-        .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
-        .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
-        .form-card-body { padding: 20px; }
+ /* Form Card */
+ .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+ .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
+ .form-card-body { padding: 20px; }
 
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-        
-        .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
-        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
-        textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+ .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+ .form-group:last-child { margin-bottom: 0; }
+ .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+ 
+ .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+ .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+ textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
 
-        .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
-        .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
+ .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
+ .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
 
-        /* Action Footer */
-        .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
-        .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
-        .btn-primary { background: #1e3a8a; color: #fff; }
-        .btn-primary:hover { background: #1e293b; color: #fff; }
-        .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+ /* Action Footer */
+ .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
+ .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+ .btn-primary { background: #1e3a8a; color: #fff; }
+ .btn-primary:hover { background: #1e293b; color: #fff; }
+ .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+ .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
 
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
-        .font-monospace { font-family: monospace; }
-        .d-none { display: none !important; }
+ .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+ .font-monospace { font-family: monospace; }
+ .d-none { display: none !important; }
 
-        /* Speech to Text Microphone Button */
-        .btn-mic {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #2563eb;
-            font-size: 12px;
-            vertical-align: middle;
-            margin-left: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            position: relative;
-        }
-        .btn-mic:hover {
-            background: #2563eb;
-            color: #fff;
-            border-color: #2563eb;
-            transform: scale(1.08);
-        }
-        .btn-mic.recording {
-            background: #dc2626 !important;
-            color: #fff !important;
-            border-color: #b91c1c !important;
-            animation: pulse-mic 1.2s infinite ease-in-out;
-        }
-        @keyframes pulse-mic {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
-            50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
-        }
+ /* Speech to Text Microphone Button */
+ .btn-mic {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 50%;
+ width: 26px;
+ height: 26px;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ color: #2563eb;
+ font-size: 12px;
+ vertical-align: middle;
+ margin-left: 6px;
+ transition: all 0.2s ease;
+ box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+ position: relative;
+ }
+ .btn-mic:hover {
+ background: #2563eb;
+ color: #fff;
+ border-color: #2563eb;
+ transform: scale(1.08);
+ }
+ .btn-mic.recording {
+ background: #dc2626 !important;
+ color: #fff !important;
+ border-color: #b91c1c !important;
+ animation: pulse-mic 1.2s infinite ease-in-out;
+ }
+ @keyframes pulse-mic {
+ 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+ 50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+ 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+ }
 
-        @media (max-width: 1024px) {
-            .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
-        }
-    </style>
+ @media (max-width: 1024px) {
+ .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+ }
+ </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <div>
-            <a href="01-work-inbox.html" class="brand">
-                <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
-                <span>E-CMIS
-                    <small>ระบบกฎหมายในทางคดี</small>
-                </span>
-            </a>
-            <ul class="menu" id="sidebarMenu">
-                <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
-                <li><a href="04-legal-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายสำนวนคดี</span></a></li>
-                <li><a href="08-legal-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจพิจารณาและสั่งการ</span></a></li>
-                <li><a href="11-legal-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติและสั่งการ</span></a></li>
-                <li><a href="15-legal-director-final-review.html"><i class="fa-solid fa-file-signature"></i> <span>ตรวจร่างหนังสือตามมติ</span></a></li>
-                <li><a href="20-legal-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
-            </ul>
-        </div>
-        <div class="sidebar-bottom">
-            <div>สำนักงาน ป.ป.ท.</div>
-            <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
-        </div>
-    </div>
+ <!-- Sidebar Navigation -->
+ <div class="sidebar" id="sidebar">
+ <div>
+ <a href="01-work-inbox.html" class="brand">
+ <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
+ <span>E-CMIS
+ <small>ระบบกฎหมายในทางคดี</small>
+ </span>
+ </a>
+ <ul class="menu" id="sidebarMenu">
+ <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+ <li><a href="04-legal-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายสำนวนคดี</span></a></li>
+ <li><a href="08-legal-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจพิจารณาและสั่งการ</span></a></li>
+ <li><a href="11-legal-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติและสั่งการ</span></a></li>
+ <li><a href="15-legal-director-final-review.html"><i class="fa-solid fa-file-signature"></i> <span>ตรวจร่างหนังสือตามมติ</span></a></li>
+ <li><a href="20-legal-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
+ </ul>
+ </div>
+ <div class="sidebar-bottom">
+ <div>สำนักงาน ป.ป.ท.</div>
+ <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
+ </div>
+ </div>
 
-    <!-- Main Content Area -->
-    <div class="main">
-        <!-- Topbar -->
-        <div class="topbar">
-            <div class="topbar-left">
-                <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
-                <div class="breadcrumb">
-                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัย อสส. &amp; สั่งการ</span>
-                </div>
-            </div>
-            
-            <div class="top-controls">
-                <div class="font-sizer" title="ปรับขนาดตัวอักษร">
-                    <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
-                    <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
-                    <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
-                </div>
-                <div class="icon-btn-group">
-                    <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
-                    <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
-                </div>
-                <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
-                    <div class="avatar" id="userAvatar">น</div>
-                    <div class="user-info">
-                        <span class="user-name" id="userName">นายนภัส สอนดี</span>
-                        <span class="user-role" id="userRoleTitle">ผู้อำนวยการกองกฎหมาย</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
+ <!-- Main Content Area -->
+ <div class="main">
+ <!-- Topbar -->
+ <div class="topbar">
+ <div class="topbar-left">
+ <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+ <div class="breadcrumb">
+ <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัย อสส. &amp; สั่งการ</span>
+ </div>
+ </div>
+ 
+ <div class="top-controls">
+ <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+ <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+ <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+ <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+ </div>
+ <div class="icon-btn-group">
+ <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+ <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
+ </div>
+ <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+ <div class="avatar" id="userAvatar">น</div>
+ <div class="user-info">
+ <span class="user-name" id="userName">นายนภัส สอนดี</span>
+ <span class="user-role" id="userRoleTitle">ผู้อำนวยการกองกฎหมาย</span>
+ </div>
+ <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
 
-                    <!-- Profile & Logout Dropdown -->
-                    <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
-                        <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
-                        <div class="profile-dropdown-body">
-                            <div class="profile-card">
-                                <span class="profile-card-name" id="profileCardName">นายนภัส สอนดี</span>
-                                <span class="profile-card-title" id="profileCardTitle">ผู้อำนวยการกองกฎหมาย</span>
-                                <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
-                            </div>
-                            <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
-                        </div>
-                        <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>ออกจากระบบ</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+ <!-- Profile & Logout Dropdown -->
+ <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+ <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+ <div class="profile-dropdown-body">
+ <div class="profile-card">
+ <span class="profile-card-name" id="profileCardName">นายนภัส สอนดี</span>
+ <span class="profile-card-title" id="profileCardTitle">ผู้อำนวยการกองกฎหมาย</span>
+ <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
+ </div>
+ <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+ </div>
+ <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+ <i class="fa-solid fa-right-from-bracket"></i>
+ <span>ออกจากระบบ</span>
+ </a>
+ </div>
+ </div>
+ </div>
+ </div>
 
-        <!-- Content Body -->
-        <div class="content">
+ <!-- Content Body -->
+ <div class="content">
 
-            <!-- Stepper Progress Header for Post-OAG Verdict Phase -->
-            <div class="stepper-card">
-                <div class="stepper" id="stepper">
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">1. ธุรการรับผลคำวินิจฉัย อสส.</div>
-                    </div>
-                    <div class="step-item active">
-                        <div class="step-circle">2</div>
-                        <div class="step-label">2. ผอ.กอง ตรวจสอบ &amp; สั่งการ</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-circle">3</div>
-                        <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-circle">4</div>
-                        <div class="step-label">4. นิติกรบันทึกผล &amp; แจ้งกองบริหารคดี</div>
-                    </div>
-                </div>
-            </div>
+ <!-- Stepper Progress Header for Post-OAG Verdict Phase -->
+ <div class="stepper-card">
+ <div class="stepper" id="stepper">
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">1. ธุรการรับผลคำวินิจฉัย อสส.</div>
+ </div>
+ <div class="step-item active">
+ <div class="step-circle">2</div>
+ <div class="step-label">2. ผอ.กอง ตรวจสอบ &amp; สั่งการ</div>
+ </div>
+ <div class="step-item">
+ <div class="step-circle">3</div>
+ <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร</div>
+ </div>
+ <div class="step-item">
+ <div class="step-circle">4</div>
+ <div class="step-label">4. นิติกรบันทึกผล &amp; แจ้งกองบริหารคดี</div>
+ </div>
+ </div>
+ </div>
 
-            <!-- Card 1: Read-Only Historical Case & OAG Verdict Info -->
-            <div class="form-card">
-                <div class="form-card-header">
-                    <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)</span>
-                    <span class="badge" id="badgeVerdictDecision" style="background:#dcfce7; color:#166534;">
-                        <i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี
-                    </span>
-                </div>
-                <div class="form-card-body">
-                    
-                    <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
-                        <div class="form-grid-3" style="margin-bottom: 0;">
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง ป.ป.ท.:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/5102</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0028/2569</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งความเห็นแย้งเดิม:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1150</span>
-                            </div>
-                        </div>
-                    </div>
+ <!-- Card 1: Read-Only Historical Case & OAG Verdict Info -->
+ <div class="form-card">
+ <div class="form-card-header">
+ <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)</span>
+ <span class="badge" id="badgeVerdictDecision" style="background:#dcfce7; color:#166534;">
+ <i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี
+ </span>
+ </div>
+ <div class="form-card-body">
+ 
+ <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
+ <div class="form-grid-3" style="margin-bottom: 0;">
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง ป.ป.ท.:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/5102</span>
+ </div>
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0028/2569</span>
+ </div>
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งความเห็นแย้งเดิม:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1150</span>
+ </div>
+ </div>
+ </div>
 
-                    <div class="form-group">
-                        <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
-                        <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
-                    </div>
+ <div class="form-group">
+ <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+ <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
+ </div>
 
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
-                            <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
-                        </div>
-                        <div class="form-group">
-                            <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
-                            <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
-                        </div>
-                    </div>
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
+ <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
+ </div>
+ <div class="form-group">
+ <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
+ <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
+ </div>
+ </div>
 
-                    <!-- OAG Verdict Detailed Box -->
-                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-top: 6px;">
-                        <div style="font-weight: 700; color: #1e3a8a; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-gavel"></i>
-                            <span>ข้อมูลคำวินิจฉัยชี้ขาดจากสำนักงานอัยการสูงสุด</span>
-                        </div>
+ <!-- OAG Verdict Detailed Box -->
+ <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-top: 6px;">
+ <div style="font-weight: 700; color: #1e3a8a; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+ <i class="fa-solid fa-gavel"></i>
+ <span>ข้อมูลคำวินิจฉัยชี้ขาดจากสำนักงานอัยการสูงสุด</span>
+ </div>
 
-                        <div class="form-grid-3">
-                            <div class="form-group">
-                                <label>เลขที่หนังสือคำวินิจฉัย อสส.</label>
-                                <div class="read-box font-monospace" style="font-weight: 700; color: #1e3a8a;" id="f_oagVerdictNo">อส 0001/6789</div>
-                            </div>
-                            <div class="form-group">
-                                <label>วันที่ลงในหนังสือ อสส.</label>
-                                <div class="read-box font-monospace" id="f_oagVerdictDate">25/08/2569</div>
-                            </div>
-                            <div class="form-group">
-                                <label>วันที่กองกฎหมายลงรับ</label>
-                                <div class="read-box font-monospace" id="f_oagVerdictReceiveDate">25/08/2569</div>
-                            </div>
-                        </div>
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>เลขที่หนังสือคำวินิจฉัย อสส.</label>
+ <div class="read-box font-monospace" style="font-weight: 700; color: #1e3a8a;" id="f_oagVerdictNo">อส 0001/6789</div>
+ </div>
+ <div class="form-group">
+ <label>วันที่ลงในหนังสือ อสส.</label>
+ <div class="read-box font-monospace" id="f_oagVerdictDate">25/08/2569</div>
+ </div>
+ <div class="form-group">
+ <label>วันที่กองกฎหมายลงรับ</label>
+ <div class="read-box font-monospace" id="f_oagVerdictReceiveDate">25/08/2569</div>
+ </div>
+ </div>
 
-                        <div class="form-group">
-                            <label>สรุปสาระสำคัญคำวินิจฉัยชี้ขาดของ อสส.</label>
-                            <div class="read-box read-box-textarea" id="f_oagVerdictSummary">
-                                อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.
-                            </div>
-                        </div>
+ <div class="form-group">
+ <label>สรุปสาระสำคัญคำวินิจฉัยชี้ขาดของ อสส.</label>
+ <div class="read-box read-box-textarea" id="f_oagVerdictSummary">
+ อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.
+ </div>
+ </div>
 
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label>ไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF)</label>
-                            <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
-                                <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-                                    <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
-                                    <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="f_oagVerdictFile">หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf</span>
-                                </div>
-                                <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewVerdictPdfFile()">
-                                    <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+ <div class="form-group" style="margin-bottom: 0;">
+ <label>ไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF)</label>
+ <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
+ <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+ <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
+ <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="f_oagVerdictFile">หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf</span>
+ </div>
+ <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewVerdictPdfFile()">
+ <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+ </button>
+ </div>
+ </div>
+ </div>
 
-                </div>
-            </div>
+ </div>
+ </div>
 
-            <!-- Card 2: Legal Director Review & Assignment Form -->
-            <div class="form-card" style="border: 2px solid #1e3a8a;">
-                <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
-                    <span><i class="fa-solid fa-user-gear text-primary me-2"></i>คำสั่งการและมอบหมายกลุ่มงาน (ผอ.กองกฎหมาย)</span>
-                    <span class="badge" style="background:#1e3a8a; color:#fff;">
-                        <i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย
-                    </span>
-                </div>
-                <div class="form-card-body">
-                    
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>มอบหมายส่งต่อให้ผู้บังคับบัญชาตามลำดับชั้น <span style="color:#dc2626;">*</span></label>
-                            <select id="in_targetDirector" class="form-control" style="font-weight: 600; color: #1e3a8a;">
-                                <option value="Arnon.C">นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>วันที่สั่งการ <span style="color:#dc2626;">*</span></label>
-                            <input type="date" id="in_directorReviewDate" class="form-control font-monospace" style="font-weight:600;">
-                        </div>
-                    </div>
+ <!-- Card 2: Legal Director Review & Assignment Form -->
+ <div class="form-card" style="border: 2px solid #1e3a8a;">
+ <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
+ <span><i class="fa-solid fa-user-gear text-primary me-2"></i>คำสั่งการและมอบหมายกลุ่มงาน (ผอ.กองกฎหมาย)</span>
+ <span class="badge" style="background:#1e3a8a; color:#fff;">
+ <i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย
+ </span>
+ </div>
+ <div class="form-card-body">
+ 
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label>มอบหมายส่งต่อให้ผู้บังคับบัญชาตามลำดับชั้น <span style="color:#dc2626;">*</span></label>
+ <select id="in_targetDirector" class="form-control" style="font-weight: 600; color: #1e3a8a;">
+ <option value="Arnon.C">นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label>วันที่สั่งการ <span style="color:#dc2626;">*</span></label>
+ <input type="date" id="in_directorReviewDate" class="form-control font-monospace" style="font-weight:600;">
+ </div>
+ </div>
 
-                    <div class="form-group">
-                        <label>
-                            <span>ข้อสั่งการ / ความเห็นของ ผอ.กองกฎหมาย <span style="color:#dc2626;">*</span>
-                                <button type="button" class="btn-mic" id="btnMicDirector" onclick="toggleSpeechToText('in_directorNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
-                                    <i class="fa-solid fa-microphone"></i>
-                                </button>
-                            </span>
-                        </label>
-                        <textarea id="in_directorNotes" class="form-control" rows="4" placeholder="ระบุข้อสั่งการของ ผอ.กองกฎหมาย...">รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง เพื่อมอบหมายนิติกรเจ้าของสำนวนสรุปผลคดีและทำหนังสือแจ้งกองบริหารคดีดำเนินการในส่วนที่เกี่ยวข้องต่อไป</textarea>
-                    </div>
+ <div class="form-group">
+ <label>
+ <span>ข้อสั่งการ / ความเห็นของ ผอ.กองกฎหมาย <span style="color:#dc2626;">*</span>
+ <button type="button" class="btn-mic" id="btnMicDirector" onclick="toggleSpeechToText('in_directorNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
+ <i class="fa-solid fa-microphone"></i>
+ </button>
+ </span>
+ </label>
+ <textarea id="in_directorNotes" class="form-control" rows="4" placeholder="ระบุข้อสั่งการของ ผอ.กองกฎหมาย...">รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง เพื่อมอบหมายนิติกรเจ้าของสำนวนสรุปผลคดีและทำหนังสือแจ้งกองบริหารคดีดำเนินการในส่วนที่เกี่ยวข้องต่อไป</textarea>
+ </div>
 
-                </div>
+ </div>
 
-                <!-- Action Buttons -->
-                <div class="form-actions">
-                    <button type="button" class="btn btn-primary" onclick="submitLegalDirectorOAGVerdictReviewForm()">
-                        <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
-                    </button>
-                    <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-                </div>
-            </div>
+ <!-- Action Buttons -->
+ <div class="form-actions">
+ <button type="button" class="btn btn-primary" onclick="submitLegalDirectorOAGVerdictReviewForm()">
+ <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+ </button>
+ <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+ </div>
+ </div>
 
-        </div>
-    </div>
+ </div>
+ </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260820_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260825_2"></script>
+ <!-- Scripts -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="assets/ecmis-app.js?v=20260820_2"></script>
+ <script src="assets/ecmis-activity10.js?v=20260825_2"></script>
 
-    <script>
-        let currentCase = null;
-        let activeRecognition = null;
-        let isRecording = false;
+ <script>
+ let currentCase = null;
+ let activeRecognition = null;
+ let isRecording = false;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initUserProfile();
-            setDefaultDate();
-            loadCaseData();
-        });
+ document.addEventListener('DOMContentLoaded', () => {
+ initUserProfile();
+ setDefaultDate();
+ loadCaseData();
+ });
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
+ function toggleSidebar() {
+ document.getElementById('sidebar').classList.toggle('collapsed');
+ }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
-            localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
-        }
+ function toggleTheme() {
+ document.body.classList.toggle('dark-mode');
+ const isDark = document.body.classList.contains('dark-mode');
+ document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
+ localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
+ }
 
-        function changeFontSize(direction) {
-            const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
-            if (direction === 0) {
-                document.body.style.fontSize = '14px';
-            } else {
-                document.body.style.fontSize = (currentSize + direction * 1) + 'px';
-            }
-        }
+ function changeFontSize(direction) {
+ const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+ if (direction === 0) {
+ document.body.style.fontSize = '14px';
+ } else {
+ document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+ }
+ }
 
-        function toggleProfileDropdown(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown) dropdown.classList.toggle('show');
-        }
+ function toggleProfileDropdown(e) {
+ e.stopPropagation();
+ const dropdown = document.getElementById('profileDropdown');
+ if (dropdown) dropdown.classList.toggle('show');
+ }
 
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
+ document.addEventListener('click', (e) => {
+ const dropdown = document.getElementById('profileDropdown');
+ if (dropdown && !dropdown.contains(e.target)) {
+ dropdown.classList.remove('show');
+ }
+ });
 
-        function confirmLogout(e) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'question',
-                title: 'ยืนยันการออกจากระบบ?',
-                text: 'คุณต้องการออกจากระบบการทำงานหรือไม่',
-                showCancelButton: true,
-                confirmButtonText: 'ออกจากระบบ',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#64748b'
-            }).then(res => {
-                if (res.isConfirmed) {
-                    sessionStorage.removeItem('ecmis_role');
-                    window.location.href = 'login.html';
-                }
-            });
-        }
+ function confirmLogout(e) {
+ e.preventDefault();
+ Swal.fire({
+ icon: 'question',
+ title: 'ยืนยันการออกจากระบบ?',
+ text: 'คุณต้องการออกจากระบบการทำงานหรือไม่',
+ showCancelButton: true,
+ confirmButtonText: 'ออกจากระบบ',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#dc2626',
+ cancelButtonColor: '#64748b'
+ }).then(res => {
+ if (res.isConfirmed) {
+ sessionStorage.removeItem('ecmis_role');
+ window.location.href = 'login.html';
+ }
+ });
+ }
 
-        function initUserProfile() {
-            const roleId = sessionStorage.getItem('ecmis_role') || 'dir_legal';
-            if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
-                const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[7]; // dir_legal
-                if (role) {
-                    const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
-                    const initial = shortName.charAt(0);
-                    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
-                    if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
-                    if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
-                    if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
-                    if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title;
-                    if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
-                }
-            }
-        }
+ function initUserProfile() {
+ const roleId = sessionStorage.getItem('ecmis_role') || 'dir_legal';
+ if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
+ const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[7]; // dir_legal
+ if (role) {
+ const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
+ const initial = shortName.charAt(0);
+ if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
+ if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
+ if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
+ if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
+ if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title;
+ if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
+ }
+ }
+ }
 
-        function setDefaultDate() {
-            const today = new Date().toISOString().split('T')[0];
-            if (document.getElementById('in_directorReviewDate')) document.getElementById('in_directorReviewDate').value = today;
-        }
+ function setDefaultDate() {
+ const today = new Date().toISOString().split('T')[0];
+ if (document.getElementById('in_directorReviewDate')) document.getElementById('in_directorReviewDate').value = today;
+ }
 
-        function loadCaseData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const caseId = urlParams.get('id') || 'คดี-100010/2569';
-            currentCase = Activity10.getCaseById(caseId);
+ function loadCaseData() {
+ const urlParams = new URLSearchParams(window.location.search);
+ const caseId = urlParams.get('id') || 'คดี-100010/2569';
+ currentCase = Activity10.getCaseById(caseId);
 
-            if (!currentCase) {
-                const allCases = Activity10.getCases ? Activity10.getCases() : [];
-                currentCase = allCases.find(c => c.statusCode === 'PENDING_DIRECTOR_OAG_VERDICT_REVIEW') || allCases[0] || null;
-            }
+ if (!currentCase) {
+ const allCases = Activity10.getCases ? Activity10.getCases() : [];
+ currentCase = allCases.find(c => c.statusCode === 'PENDING_DIRECTOR_OAG_VERDICT_REVIEW') || allCases[0] || null;
+ }
 
-            if (!currentCase) return;
+ if (!currentCase) return;
 
-            populateCaseView();
-        }
+ populateCaseView();
+ }
 
-        function populateCaseView() {
-            if (!currentCase) return;
+ function populateCaseView() {
+ if (!currentCase) return;
 
-            const setElText = (id, text) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = text;
-            };
+ const setElText = (id, text) => {
+ const el = document.getElementById(id);
+ if (el) el.textContent = text;
+ };
 
-            setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/5102');
-            setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
-            setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
-            setElText('f_title', currentCase.title || '-');
-            setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
-            setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
+ setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/5102');
+ setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
+ setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
+ setElText('f_title', currentCase.title || '-');
+ setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
+ setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
 
-            setElText('f_oagVerdictNo', currentCase.oagVerdictNo || 'อส 0001/6789');
-            setElText('f_oagVerdictDate', currentCase.oagVerdictDate || '25/08/2569');
-            setElText('f_oagVerdictReceiveDate', currentCase.oagVerdictReceiveDate || '25/08/2569');
-            setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหาตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.');
-            setElText('f_oagVerdictFile', currentCase.oagVerdictFile || 'หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf');
+ setElText('f_oagVerdictNo', currentCase.oagVerdictNo || 'อส 0001/6789');
+ setElText('f_oagVerdictDate', currentCase.oagVerdictDate || '25/08/2569');
+ setElText('f_oagVerdictReceiveDate', currentCase.oagVerdictReceiveDate || '25/08/2569');
+ setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหาตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.');
+ setElText('f_oagVerdictFile', currentCase.oagVerdictFile || 'หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf');
 
-            const isProsecute = currentCase.oagVerdictDecision !== 'NON_PROSECUTE';
-            const badge = document.getElementById('badgeVerdictDecision');
-            if (badge) {
-                badge.style.background = isProsecute ? '#dcfce7' : '#fee2e2';
-                badge.style.color = isProsecute ? '#166534' : '#991b1b';
-                badge.innerHTML = isProsecute
-                    ? '<i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี'
-                    : '<i class="fa-solid fa-ban me-1"></i>อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี';
-            }
-        }
+ const isProsecute = currentCase.oagVerdictDecision !== 'NON_PROSECUTE';
+ const badge = document.getElementById('badgeVerdictDecision');
+ if (badge) {
+ badge.style.background = isProsecute ? '#dcfce7' : '#fee2e2';
+ badge.style.color = isProsecute ? '#166534' : '#991b1b';
+ badge.innerHTML = isProsecute
+ ? '<i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี'
+ : '<i class="fa-solid fa-ban me-1"></i>อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี';
+ }
+ }
 
-        function viewVerdictPdfFile() {
-            Swal.fire({
-                icon: 'info',
-                title: 'เปิดดูหนังสือคำวินิจฉัยชี้ขาดของ อสส.',
-                html: `
-                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                        <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('f_oagVerdictNo').textContent}</p>
-                        <p style="margin-bottom: 6px;"><strong>วันที่ในหนังสือ:</strong> ${document.getElementById('f_oagVerdictDate').textContent}</p>
-                        <p style="margin-bottom: 6px;"><strong>ผลคำวินิจฉัย:</strong> ${document.getElementById('badgeVerdictDecision').innerText}</p>
-                        <p style="margin-bottom: 0;"><strong>สถานะ:</strong> ลายมือชื่ออัยการสูงสุดสมบูรณ์</p>
-                    </div>
-                `,
-                confirmButtonColor: '#1e3a8a',
-                confirmButtonText: 'ปิดหน้าต่าง'
-            });
-        }
+ function viewVerdictPdfFile() {
+ Swal.fire({
+ icon: 'info',
+ title: 'เปิดดูหนังสือคำวินิจฉัยชี้ขาดของ อสส.',
+ html: `
+ <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+ <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('f_oagVerdictNo').textContent}</p>
+ <p style="margin-bottom: 6px;"><strong>วันที่ในหนังสือ:</strong> ${document.getElementById('f_oagVerdictDate').textContent}</p>
+ <p style="margin-bottom: 6px;"><strong>ผลคำวินิจฉัย:</strong> ${document.getElementById('badgeVerdictDecision').innerText}</p>
+ <p style="margin-bottom: 0;"><strong>สถานะ:</strong> ลายมือชื่ออัยการสูงสุดสมบูรณ์</p>
+ </div>
+ `,
+ confirmButtonColor: '#1e3a8a',
+ confirmButtonText: 'ปิดหน้าต่าง'
+ });
+ }
 
-        function submitLegalDirectorOAGVerdictReviewForm() {
-            if (!currentCase) return;
+ function submitLegalDirectorOAGVerdictReviewForm() {
+ if (!currentCase) return;
 
-            const notes = document.getElementById('in_directorNotes').value.trim();
-            const reviewDate = document.getElementById('in_directorReviewDate').value;
+ const notes = document.getElementById('in_directorNotes').value.trim();
+ const reviewDate = document.getElementById('in_directorReviewDate').value;
 
-            if (!notes) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'กรุณาระบุข้อสั่งการ',
-                    text: 'กรุณาระบุข้อสั่งการหรือความเห็นของ ผอ.กองกฎหมาย ก่อนส่งต่อ',
-                    confirmButtonColor: '#1e3a8a'
-                });
-                return;
-            }
+ if (!notes) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณาระบุข้อสั่งการ',
+ text: 'กรุณาระบุข้อสั่งการหรือความเห็นของ ผอ.กองกฎหมาย ก่อนส่งต่อ',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
 
-            const targetSelect = document.getElementById('in_targetDirector');
-            const targetLeaderName = targetSelect ? targetSelect.options[targetSelect.selectedIndex].text : 'นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)';
+ const targetSelect = document.getElementById('in_targetDirector');
+ const targetLeaderName = targetSelect ? targetSelect.options[targetSelect.selectedIndex].text : 'นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)';
 
-            Swal.fire({
-                icon: 'question',
-                title: 'ยืนยันการสั่งการและมอบหมายกลุ่มงาน?',
-                html: `
-                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-                        <p style="margin-bottom: 4px;"><strong>สำนวนคดี:</strong> ${document.getElementById('f_lawReceiveNo').textContent}</p>
-                        <p style="margin-bottom: 4px;"><strong>ผู้รับมอบหมาย:</strong> ${targetLeaderName}</p>
-                        <p style="margin-bottom: 0;"><strong>ขั้นตอนต่อไป:</strong> ผอ.กลุ่มงาน มอบหมายนิติกรเจ้าของสำนวนบันทึกผล</p>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'ยืนยันสั่งการ',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#1e3a8a',
-                cancelButtonColor: '#64748b'
-            }).then(res => {
-                if (res.isConfirmed) {
-                    const payload = {
-                        directorOagVerdictNotes: notes,
-                        directorOagVerdictReviewDate: reviewDate,
-                        directorAssignedGroup: 'กลุ่มงานความเห็นแย้ง',
-                        directorAssignedLeader: targetLeaderName
-                    };
+ Swal.fire({
+ icon: 'question',
+ title: 'ยืนยันการสั่งการและมอบหมายกลุ่มงาน?',
+ html: `
+ <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+ <p style="margin-bottom: 4px;"><strong>สำนวนคดี:</strong> ${document.getElementById('f_lawReceiveNo').textContent}</p>
+ <p style="margin-bottom: 4px;"><strong>ผู้รับมอบหมาย:</strong> ${targetLeaderName}</p>
+ <p style="margin-bottom: 0;"><strong>ขั้นตอนต่อไป:</strong> ผอ.กลุ่มงาน มอบหมายนิติกรเจ้าของสำนวนบันทึกผล</p>
+ </div>
+ `,
+ showCancelButton: true,
+ confirmButtonText: 'ยืนยันสั่งการ',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#1e3a8a',
+ cancelButtonColor: '#64748b'
+ }).then(res => {
+ if (res.isConfirmed) {
+ const payload = {
+ directorOagVerdictNotes: notes,
+ directorOagVerdictReviewDate: reviewDate,
+ directorAssignedGroup: 'กลุ่มงานความเห็นแย้ง',
+ directorAssignedLeader: targetLeaderName
+ };
 
-                    Activity10.submitLegalDirectorOAGVerdictReview(currentCase.id, payload);
+ Activity10.submitLegalDirectorOAGVerdictReview(currentCase.id, payload);
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'บันทึกคำสั่งการสำเร็จ!',
-                        text: 'ส่งสำนวนคดีให้ ผอ.กลุ่มงานความเห็นแย้ง เรียบร้อยแล้ว',
-                        timer: 1800,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = '01-work-inbox.html';
-                    });
-                }
-            });
-        }
+ Swal.fire({
+ icon: 'success',
+ title: 'บันทึกคำสั่งการสำเร็จ!',
+ text: 'ส่งสำนวนคดีให้ ผอ.กลุ่มงานความเห็นแย้ง เรียบร้อยแล้ว',
+ timer: 1800,
+ showConfirmButton: false
+ }).then(() => {
+ window.location.href = '01-work-inbox.html';
+ });
+ }
+ });
+ }
 
-        // Speech-to-Text Web API
-        function startRecordingUI(btnEl) {
-            if (!btnEl) return;
-            btnEl.classList.add('recording');
-            btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
-        }
+ // Speech-to-Text Web API
+ function startRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.add('recording');
+ btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
+ }
 
-        function stopRecordingUI(btnEl) {
-            if (!btnEl) return;
-            btnEl.classList.remove('recording');
-            btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
-            isRecording = false;
-        }
+ function stopRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.remove('recording');
+ btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
+ isRecording = false;
+ }
 
-        function toggleSpeechToText(targetId, btnEl) {
-            const inputEl = document.getElementById(targetId);
-            if (!inputEl) return;
+ function toggleSpeechToText(targetId, btnEl) {
+ const inputEl = document.getElementById(targetId);
+ if (!inputEl) return;
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-            if (isRecording) {
-                if (activeRecognition) {
-                    try { activeRecognition.stop(); } catch(e) {}
-                }
-                stopRecordingUI(btnEl);
-                return;
-            }
+ if (isRecording) {
+ if (activeRecognition) {
+ try { activeRecognition.stop(); } catch(e) {}
+ }
+ stopRecordingUI(btnEl);
+ return;
+ }
 
-            if (!SpeechRecognition) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'พิมพ์ด้วยเสียง (Speech-to-Text)',
-                    text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
-                    confirmButtonColor: '#1e3a8a'
-                });
-                return;
-            }
+ if (!SpeechRecognition) {
+ Swal.fire({
+ icon: 'info',
+ title: 'พิมพ์ด้วยเสียง',
+ text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
 
-            try {
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'th-TH';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-                recognition.continuous = false;
+ try {
+ const recognition = new SpeechRecognition();
+ recognition.lang = 'th-TH';
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 1;
+ recognition.continuous = false;
 
-                recognition.onstart = function() {
-                    isRecording = true;
-                    activeRecognition = recognition;
-                    startRecordingUI(btnEl);
-                    const toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                    toast.fire({
-                        icon: 'info',
-                        title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
-                    });
-                };
+ recognition.onstart = function() {
+ isRecording = true;
+ activeRecognition = recognition;
+ startRecordingUI(btnEl);
+ const toast = Swal.mixin({
+ toast: true,
+ position: 'top-end',
+ showConfirmButton: false,
+ timer: 3000,
+ timerProgressBar: true
+ });
+ toast.fire({
+ icon: 'info',
+ title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
+ });
+ };
 
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    if (transcript) {
-                        const currentVal = inputEl.value ? inputEl.value.trim() : '';
-                        inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
-                    }
-                };
+ recognition.onresult = function(event) {
+ const transcript = event.results[0][0].transcript;
+ if (transcript) {
+ const currentVal = inputEl.value ? inputEl.value.trim() : '';
+ inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
+ }
+ };
 
-                recognition.onerror = function(event) {
-                    console.error('Speech recognition error:', event.error);
-                    stopRecordingUI(btnEl);
-                };
+ recognition.onerror = function(event) {
+ console.error('Speech recognition error:', event.error);
+ stopRecordingUI(btnEl);
+ };
 
-                recognition.onend = function() {
-                    stopRecordingUI(btnEl);
-                };
+ recognition.onend = function() {
+ stopRecordingUI(btnEl);
+ };
 
-                recognition.start();
-            } catch (err) {
-                console.error('Recognition start error:', err);
-                stopRecordingUI(btnEl);
-            }
-        }
-    </script>
+ recognition.start();
+ } catch (err) {
+ console.error('Recognition start error:', err);
+ stopRecordingUI(btnEl);
+ }
+ }
+ </script>
 </body>
 </html>
