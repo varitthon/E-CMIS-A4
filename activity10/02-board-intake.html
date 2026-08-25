@@ -380,18 +380,16 @@
  <div class="form-group" id="div_prosecutorCaseType">
  <label>กรณีความเห็น/คำสั่งพนักงานอัยการ <span style="color:#dc2626;">*</span></label>
  <select id="in_prosecutorCaseType" class="form-control" onchange="toggleProsecutorOtherInput()">
- <option value="1">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
- <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
- <option value="3">3. อัยการมีความเห็นสั่งไม่อุทธรณ์</option>
- <option value="4">4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)</option>
- <option value="5">5. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)</option>
- <option value="6">6. อัยการมีความเห็นสั่งถอนอุทธรณ์</option>
- <option value="7">7. อัยการมีความเห็นสั่งไม่ฎีกา</option>
- <option value="8">8. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)</option>
- <option value="9">9. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)</option>
- <option value="10">10. อัยการมีความเห็นสั่งถอนฎีกา</option>
- <option value="11">11. อื่นๆ</option>
- </select>
+                                <option value="1">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
+                                <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
+                                <option value="3">3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)</option>
+                                <option value="4">4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)</option>
+                                <option value="5">5. อัยการมีความเห็นสั่งถอนอุทธรณ์</option>
+                                <option value="6">6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)</option>
+                                <option value="7">7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)</option>
+                                <option value="8">8. อัยการมีความเห็นสั่งถอนฎีกา</option>
+                                <option value="9">9. อื่นๆ</option>
+                            </select>
  <div id="div_prosecutorOther" style="display:none; margin-top:8px;">
  <label style="font-size:0.82em; color:var(--text-title); margin-bottom:4px;">ระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ) <span style="color:#dc2626;">*</span></label>
  <input type="text" id="in_prosecutorOtherText" class="form-control" placeholder="โปรดระบุรายละเอียดกรณีอื่นๆ..." oninput="updateLivePreview();">
@@ -584,7 +582,7 @@
  const select = document.getElementById('in_prosecutorCaseType');
  const otherDiv = document.getElementById('div_prosecutorOther');
  if (select && otherDiv) {
- if (select.value === '11') {
+ if (select.value === '9' || select.value === '11') {
  otherDiv.style.display = 'block';
  const input = document.getElementById('in_prosecutorOtherText');
  if (input) input.focus();
@@ -986,8 +984,8 @@
  const prosecutorCaseTypeNo = (category === '10.1' && prosecutorCaseTypeSelect) ? prosecutorCaseTypeSelect.value : '';
  let prosecutorCaseTypeName = '';
  if (category === '10.1' && prosecutorCaseTypeSelect && prosecutorCaseTypeSelect.options) {
- if (prosecutorCaseTypeSelect.value === '11' && prosecutorOtherInput && prosecutorOtherInput.value.trim()) {
- prosecutorCaseTypeName = `11. อื่นๆ (${prosecutorOtherInput.value.trim()})`;
+ if ((prosecutorCaseTypeSelect.value === '9' || prosecutorCaseTypeSelect.value === '11') && prosecutorOtherInput && prosecutorOtherInput.value.trim()) {
+ prosecutorCaseTypeName = `9. อื่นๆ (${prosecutorOtherInput.value.trim()})`;
  } else {
  prosecutorCaseTypeName = prosecutorCaseTypeSelect.options[prosecutorCaseTypeSelect.selectedIndex].text;
  }
