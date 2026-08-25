@@ -7,7 +7,7 @@
  'use strict';
 
  // Data Version Key for LocalStorage Sync (v39: ปรับปรุง Flow S18-S22 และชื่อมาตรฐานสมบูรณ์)
- const DATA_VERSION = 'v41_s17_sample_case_update';
+ const DATA_VERSION = 'v42_remove_case_0045';
  const STORAGE_KEY = 'ecmis_act10_cases_' + DATA_VERSION;
 
  function getDateWithOffset(daysOffset) {
@@ -287,40 +287,6 @@
  signedDocFile: "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
  signedExecutiveDate: getDateWithOffset(0),
  executiveSignNotesRound2: "ผู้บริหารลงนามหนังสือความเห็นแย้งฉบับสมบูรณ์เรียบร้อยแล้ว ส่งคืนธุรการกองกฎหมายเพื่อตรวจรับและออกเลขส่งภายนอก"
- },
- {
- id: "คดี-100006/2569",
- title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อระบบกล้องวงจรปิด CCTV",
- category: "10.1",
- categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
- prosecutorCaseTypeNo: "1",
- prosecutorCaseTypeName: "1. อัยการมีความเห็นไม่ส่งฟ้อง",
- source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
- accuser: "สำนักงาน ป.ป.ท.",
- accused: "นายประเสริฐ เทคโนโลยี (อดีตเจ้าหน้าที่คอมพิวเตอร์)",
- officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
- assignedRole: "admin_legal",
- status: "ผอ.กองตรวจหนังสือความเห็นแล้ว รอธุรการออกเลขส่ง",
- statusCode: "PENDING_FINAL_DISPATCH_ROUND2",
- statusBadge: "bg-warning text-dark",
- lawReceiveNo: "0021/2569",
- paccCaseNo: "0045/2568",
- blackNo: "อ. 128/2569",
- redNo: "อ. 370/2569",
- courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการ",
- statuteLimitation: "15 ปี (หมดอายุความ 30 ต.ค. 2584)",
- slaTotalDays: 15,
- slaDaysRemaining: 9,
- slaAlert: "sla-normal",
- dateReceived: getDateWithOffset(-6),
- dueDate: getDateWithOffset(9),
- workflowStep: 13,
- docType: "คำสั่งไม่ฟ้องของพนักงานอัยการ",
- docNo: "อส 0029/2569",
- centralSarabanNo: "2569/4515",
- finalOpinionType: "เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
- finalDocSubject: "ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ คดีทุจริตจัดซื้อระบบกล้องวงจรปิด CCTV",
- finalDocSummary: "จากการไต่สวนปรากฏพยานหลักฐานชัดเจนว่าผู้ถูกกล่าวหามีเจตนาเอื้อประโยชน์ จึงเห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป"
  },
  {
  id: "คดี-100005/2569",
