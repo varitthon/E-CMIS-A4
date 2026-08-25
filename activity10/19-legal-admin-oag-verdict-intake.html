@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ธุรการกองกฎหมาย รับผลคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.) | E-CMIS กิจกรรมที่ 10</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-sidebar: #1a2b48;
+            --bg-header: #ffffff;
+            --border-color: #e2e8f0;
+            --text-title: #1e293b;
+            --text-main: #334155;
+            --sidebar-width: 260px;
+            --primary-blue: #1e3a8a;
+            --primary-accent: #2563eb;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+        }
+
+        body.dark-mode {
+            --bg-body: #0b1329;
+            --bg-card: #152238;
+            --bg-sidebar: #0f172a;
+            --bg-header: #152238;
+            --border-color: #1e293b;
+            --text-title: #f8fafc;
+            --text-main: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
+
+        /* Sidebar Styles */
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: margin-left 0.3s ease; z-index: 100; }
+        .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
+        .brand { height: 60px; display: flex; align-items: center; padding: 0 20px; font-size: 1.15em; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; gap: 10px; }
+        .brand img { height: 32px; }
+        .brand small { font-size: 0.65em; display: block; opacity: 0.8; font-weight: 400; }
+        
+        .menu { list-style: none; padding: 15px 0; overflow-y: auto; }
+        .menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-size: 0.9em; transition: all 0.2s; font-weight: 400; }
+        .menu li a:hover, .menu li.active a { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #38bdf8; }
+        .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
+        
+        .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
+
+        /* Main Content Styles */
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+        
+        /* Topbar Styles */
+        .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+        .topbar-left { display: flex; align-items: center; gap: 15px; }
+        .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
+        .breadcrumb { font-size: 0.88em; color: #64748b; }
+        
+        .top-controls { display: flex; align-items: center; gap: 16px; }
+        .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
+        .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
+        .ctrl-btn:hover { background: var(--bg-card); }
+        
+        .icon-btn-group { display: flex; gap: 8px; }
+        .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
+        .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
+        
+        .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
+        .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #0284c7; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
+        .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+        .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
+        .user-role { font-size: 0.72em; color: #64748b; }
+
+        /* Profile Dropdown */
+        .profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 1000; overflow: hidden; animation: fadeInDropdown 0.18s ease; }
+        .profile-dropdown-menu.show { display: block; }
+        @keyframes fadeInDropdown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .profile-dropdown-header { padding: 12px 16px 8px 16px; font-size: 0.76em; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+        .profile-dropdown-body { padding: 12px 14px; }
+        .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
+        .profile-card-title { font-size: 0.82em; color: #0284c7; font-weight: 600; display: block; margin-top: 2px; }
+        .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
+        .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
+        .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
+        .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
+
+        .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+        
+        /* Stepper Header */
+        .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 950px; margin: 0 auto; }
+        .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
+        .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
+        .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+        .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+        .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 180px; }
+        .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
+
+        /* Scenario Switcher Bar */
+        .scenario-switcher-bar {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 10px;
+            padding: 12px 18px;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .scenario-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .scenario-btn {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.82em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .scenario-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .scenario-btn.active {
+            background: #f59e0b;
+            color: #1e293b;
+            border-color: #f59e0b;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(245,158,11,0.4);
+        }
+
+        /* Form Card */
+        .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+        .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
+        .form-card-body { padding: 20px; }
+
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+        
+        .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+        textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+
+        .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
+        .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
+
+        /* Decision Selector Cards */
+        .verdict-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .verdict-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 18px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .verdict-card:hover {
+            border-color: #93c5fd;
+            background: rgba(37,99,235,0.02);
+        }
+        .verdict-card.active-prosecute {
+            border-color: #16a34a;
+            background: rgba(22,163,74,0.05);
+            box-shadow: 0 0 0 2px rgba(22,163,74,0.2);
+        }
+        .verdict-card.active-non-prosecute {
+            border-color: #dc2626;
+            background: rgba(220,38,38,0.05);
+            box-shadow: 0 0 0 2px rgba(220,38,38,0.2);
+        }
+        .verdict-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: #e2e8f0;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+        .verdict-card.active-prosecute .verdict-icon {
+            background: #16a34a;
+            color: #fff;
+        }
+        .verdict-card.active-non-prosecute .verdict-icon {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        /* Action Footer */
+        .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
+        .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+        .btn-primary { background: #1e3a8a; color: #fff; }
+        .btn-primary:hover { background: #1e293b; color: #fff; }
+        .btn-success { background: #16a34a; color: #fff; }
+        .btn-success:hover { background: #15803d; color: #fff; }
+        .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+        .font-monospace { font-family: monospace; }
+        .d-none { display: none !important; }
+
+        /* Speech to Text Microphone Button */
+        .btn-mic {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #2563eb;
+            font-size: 12px;
+            vertical-align: middle;
+            margin-left: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .btn-mic:hover {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+            transform: scale(1.08);
+        }
+        .btn-mic.recording {
+            background: #dc2626 !important;
+            color: #fff !important;
+            border-color: #b91c1c !important;
+            animation: pulse-mic 1.2s infinite ease-in-out;
+        }
+        @keyframes pulse-mic {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+            50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+        }
+
+        @media (max-width: 1024px) {
+            .form-grid-2, .form-grid-3, .verdict-selector-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div>
+            <a href="01-work-inbox.html" class="brand">
+                <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
+                <span>E-CMIS
+                    <small>ระบบกฎหมายในทางคดี</small>
+                </span>
+            </a>
+            <ul class="menu" id="sidebarMenu">
+                <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+                <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+                <li><a href="09-legal-admin-dispatch.html"><i class="fa-solid fa-paper-plane"></i> <span>ออกเลขส่งและส่งต่อผู้บริหาร</span></a></li>
+                <li><a href="10-legal-admin-resolution.html"><i class="fa-solid fa-file-signature"></i> <span>รับผลมติและส่งต่อ ผอ.กอง</span></a></li>
+                <li><a href="16-legal-admin-final-dispatch.html"><i class="fa-solid fa-stamp"></i> <span>ออกเลขส่งเสนอลงนาม (รอบ 2)</span></a></li>
+                <li><a href="17-legal-admin-external-dispatch-receive.html"><i class="fa-solid fa-file-circle-check"></i> <span>ตรวจรับหนังสือลงนาม &amp; ส่งนิติกร</span></a></li>
+                <li><a href="19-legal-admin-oag-verdict-intake.html"><i class="fa-solid fa-gavel"></i> <span>รับผลคำวินิจฉัยชี้ขาด อสส.</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-bottom">
+            <div>สำนักงาน ป.ป.ท.</div>
+            <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+                <div class="breadcrumb">
+                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ธุรการรับผลคำวินิจฉัยชี้ขาด อสส.</span>
+                </div>
+            </div>
+            
+            <div class="top-controls">
+                <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+                    <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+                    <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+                    <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+                </div>
+                <div class="icon-btn-group">
+                    <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+                    <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">3</span></div>
+                </div>
+                <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+                    <div class="avatar" id="userAvatar">ก</div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
+                        <span class="user-role" id="userRoleTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
+
+                    <!-- Profile & Logout Dropdown -->
+                    <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+                        <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+                        <div class="profile-dropdown-body">
+                            <div class="profile-card">
+                                <span class="profile-card-name" id="profileCardName">นางกานดา รักษ์ธรรม</span>
+                                <span class="profile-card-title" id="profileCardTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
+                                <span class="profile-card-org" id="profileCardOrg">ฝ่ายบริหารงานทั่วไป · กองกฎหมาย (กอท.)</span>
+                            </div>
+                            <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+                        </div>
+                        <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>ออกจากระบบ</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content">
+
+            <!-- Stepper Progress Header for Post-OAG Verdict Phase -->
+            <div class="stepper-card">
+                <div class="stepper" id="stepper">
+                    <div class="step-item active">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">1. ธุรการรับผลคำวินิจฉัย อสส.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">2. ผอ.กอง ตรวจสอบ &amp; สั่งการ (S20)</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร (S21)</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">4. นิติกรบันทึกผล &amp; แจ้งกองบริหารคดี (S22)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1: Read-Only Historical Case & Dispatched Document Info -->
+            <div class="form-card">
+                <div class="form-card-header">
+                    <span><i class="fa-solid fa-file-shield text-primary me-2"></i>ข้อมูลสำนวนคดีและการส่งหนังสือความเห็นแย้งถึง อสส. (เดิม)</span>
+                    <span class="badge" style="background:#fee2e2; color:#991b1b;">
+                        <i class="fa-solid fa-paper-plane me-1"></i>เคยส่ง อสส. ชี้ขาดแล้ว
+                    </span>
+                </div>
+                <div class="form-card-body">
+                    
+                    <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
+                        <div class="form-grid-3" style="margin-bottom: 0;">
+                            <div>
+                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง ป.ป.ท.:</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/5102</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0028/2569</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งความเห็นแย้ง (ถึง อสส.):</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1150</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+                        <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
+                            <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
+                        </div>
+                        <div class="form-group">
+                            <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
+                            <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>นิติกรเจ้าของสำนวนเดิม</label>
+                            <div class="read-box" id="f_officer">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</div>
+                        </div>
+                        <div class="form-group">
+                            <label>ช่องทางและหลักฐานการจัดส่งให้ อสส. (เดิม)</label>
+                            <div class="read-box font-monospace" style="font-weight: 600; color:#1e40af;" id="f_dispatchProof">
+                                <i class="fa-solid fa-truck-fast me-1"></i>ส่งทางไปรษณีย์ EMS (หมายเลข ED887711223TH)
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Card 2: OAG Verdict Intake Form (Admin Action) -->
+            <div class="form-card" style="border: 2px solid #1e3a8a;">
+                <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
+                    <span><i class="fa-solid fa-gavel text-primary me-2"></i>บันทึกรับหนังสือคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.) เข้าระบบ</span>
+                    <span class="badge" style="background:#1e3a8a; color:#fff;" id="badgeStepRole">
+                        <i class="fa-solid fa-user-pen me-1"></i>ธุรการกองกฎหมาย
+                    </span>
+                </div>
+                <div class="form-card-body">
+                    
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label>
+                                <span>เลขที่หนังสือคำวินิจฉัยของ อสส. <span style="color:#dc2626;">*</span></span>
+                            </label>
+                            <input type="text" id="in_oagVerdictNo" class="form-control font-monospace" value="อส 0001/6789" placeholder="เช่น อส 0001/6789" style="font-weight:700; color:#1e3a8a;">
+                        </div>
+                        <div class="form-group">
+                            <label>วันที่ลงในหนังสือ อสส. <span style="color:#dc2626;">*</span></label>
+                            <input type="date" id="in_oagVerdictDate" class="form-control font-monospace" style="font-weight:600;">
+                        </div>
+                        <div class="form-group">
+                            <label>วันที่กองกฎหมายลงรับเรื่อง <span style="color:#dc2626;">*</span></label>
+                            <input type="date" id="in_oagVerdictReceiveDate" class="form-control font-monospace" style="font-weight:600;">
+                        </div>
+                    </div>
+
+                    <!-- Decision Selection Cards -->
+                    <div class="form-group">
+                        <label>
+                            <span>ผลคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.) <span style="color:#dc2626;">*</span></span>
+                        </label>
+                        <div class="verdict-selector-grid">
+                            <div class="verdict-card active-prosecute" id="cardVerdictProsecute" onclick="selectVerdictDecision('PROSECUTE')">
+                                <div class="verdict-icon"><i class="fa-solid fa-gavel"></i></div>
+                                <div>
+                                    <div style="font-weight: 700; color: #16a34a; font-size: 1.02em;">1. อัยการสูงสุดชี้ขาด "ให้ฟ้องคดี"</div>
+                                    <div style="font-size: 0.84em; color: #64748b; margin-top: 3px;">อสส. มีคำวินิจฉัยชี้ขาดเห็นพ้องตามความเห็นแย้งของคณะกรรมการ ป.ป.ท. ให้ดำเนินคดีอาญาฟ้องผู้ถูกกล่าวหาต่อศาล</div>
+                                </div>
+                            </div>
+                            <div class="verdict-card" id="cardVerdictNonProsecute" onclick="selectVerdictDecision('NON_PROSECUTE')">
+                                <div class="verdict-icon"><i class="fa-solid fa-ban"></i></div>
+                                <div>
+                                    <div style="font-weight: 700; color: #dc2626; font-size: 1.02em;">2. อัยการสูงสุดชี้ขาด "ไม่ฟ้อง/ยุติคดี"</div>
+                                    <div style="font-size: 0.84em; color: #64748b; margin-top: 3px;">อสส. มีคำวินิจฉัยชี้ขาดไม่ฟ้องตามคำสั่งเดิมของพนักงานอัยการ ให้ยุติการดำเนินคดีอาญา</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verdict Summary Textarea with Speech-to-Text -->
+                    <div class="form-group">
+                        <label>
+                            <span>สรุปสาระสำคัญคำวินิจฉัยชี้ขาดของ อสส.
+                                <button type="button" class="btn-mic" id="btnMicSummary" onclick="toggleSpeechToText('in_oagVerdictSummary', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                            </span>
+                        </label>
+                        <textarea id="in_oagVerdictSummary" class="form-control" rows="4" placeholder="ระบุสรุปสาระสำคัญและเหตุผลในคำวินิจฉัยชี้ขาดของอัยการสูงสุด...">อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.</textarea>
+                    </div>
+
+                    <!-- File Upload & Preview -->
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>แนบไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF) <span style="color:#dc2626;">*</span></label>
+                            <input type="file" id="in_oagVerdictFile" class="form-control" style="padding:5px 10px;" accept=".pdf,.doc,.docx">
+                        </div>
+                        <div class="form-group">
+                            <label>ไฟล์ตัวอย่างสำหรับทดสอบ</label>
+                            <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                                    <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
+                                    <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="lblVerdictFileName">หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf</span>
+                                </div>
+                                <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewSampleVerdictPdf()">
+                                    <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label>
+                            <span>หมายเหตุธุรการ / ข้อสังเกตในการรับเรื่อง
+                                <button type="button" class="btn-mic" id="btnMicNotes" onclick="toggleSpeechToText('in_adminVerdictNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                            </span>
+                        </label>
+                        <textarea id="in_adminVerdictNotes" class="form-control" rows="2" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)...">รับหนังสือคำวินิจฉัยชี้ขาดจากสำนักงานอัยการสูงสุดเรียบร้อยแล้ว เสนอ ผอ.กองกฎหมาย เพื่อโปรดตรวจสอบและสั่งการตามขั้นตอนต่อไป</textarea>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="submitLegalAdminOAGVerdictIntakeForm()">
+                        <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+                    </button>
+                    <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260820_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260825_2"></script>
+
+    <script>
+        let currentCase = null;
+        let selectedDecision = 'PROSECUTE'; // 'PROSECUTE' | 'NON_PROSECUTE'
+        let activeRecognition = null;
+        let isRecording = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUserProfile();
+            setDefaultDates();
+            loadCaseData();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
+            localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
+        }
+
+        function changeFontSize(direction) {
+            const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+            if (direction === 0) {
+                document.body.style.fontSize = '14px';
+            } else {
+                document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+            }
+        }
+
+        function toggleProfileDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function confirmLogout(e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: 'ยืนยันการออกจากระบบ?',
+                text: 'คุณต้องการออกจากระบบการทำงานหรือไม่',
+                showCancelButton: true,
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    sessionStorage.removeItem('ecmis_role');
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        function initUserProfile() {
+            const roleId = sessionStorage.getItem('ecmis_role') || 'admin_legal';
+            if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
+                const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[8]; // admin_legal
+                if (role) {
+                    const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
+                    const initial = shortName.charAt(0);
+                    if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
+                    if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
+                    if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
+                    if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
+                    if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title;
+                    if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'ฝ่ายบริหารงานทั่วไป กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
+                }
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            if (document.getElementById('in_oagVerdictDate')) document.getElementById('in_oagVerdictDate').value = today;
+            if (document.getElementById('in_oagVerdictReceiveDate')) document.getElementById('in_oagVerdictReceiveDate').value = today;
+        }
+
+        function loadCaseData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const caseId = urlParams.get('id') || 'คดี-100010/2569';
+            currentCase = Activity10.getCaseById(caseId);
+
+            if (!currentCase) {
+                const allCases = Activity10.getCases ? Activity10.getCases() : [];
+                currentCase = allCases.find(c => c.statusCode === 'PENDING_ADMIN_OAG_VERDICT_INTAKE') || allCases[0] || null;
+            }
+
+            if (!currentCase) return;
+
+            populateCaseView();
+        }
+
+        function populateCaseView() {
+            if (!currentCase) return;
+
+            const setElText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+
+            setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/5102');
+            setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
+            setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
+            setElText('f_title', currentCase.title || '-');
+            setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
+            setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
+            setElText('f_officer', currentCase.officer || 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)');
+
+            const dispatchText = currentCase.dispatchMethod === 'postal_ems'
+                ? `ส่งทางไปรษณีย์ EMS (หมายเลข ${currentCase.emsTrackingNo || 'ED887711223TH'})`
+                : `ส่งให้อัยการสูงสุดด้วยตนเอง (เลขรับ ${currentCase.oagReceiveDocNo || 'อส 0001/4588'})`;
+            setElText('f_dispatchProof', dispatchText);
+
+            if (currentCase.docNo) {
+                document.getElementById('in_oagVerdictNo').value = currentCase.docNo;
+            }
+        }
+
+        function selectVerdictDecision(decision) {
+            selectedDecision = decision;
+            const cardProsecute = document.getElementById('cardVerdictProsecute');
+            const cardNonProsecute = document.getElementById('cardVerdictNonProsecute');
+            const txtSummary = document.getElementById('in_oagVerdictSummary');
+            const lblFile = document.getElementById('lblVerdictFileName');
+
+            if (decision === 'PROSECUTE') {
+                if (cardProsecute) cardProsecute.className = 'verdict-card active-prosecute';
+                if (cardNonProsecute) cardNonProsecute.className = 'verdict-card';
+                if (txtSummary) {
+                    txtSummary.value = 'อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.';
+                }
+                if (lblFile) lblFile.textContent = 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ให้ฟ้องคดี_อส0001_6789.pdf';
+            } else {
+                if (cardProsecute) cardProsecute.className = 'verdict-card';
+                if (cardNonProsecute) cardNonProsecute.className = 'verdict-card active-non-prosecute';
+                if (txtSummary) {
+                    txtSummary.value = 'อัยการสูงสุดได้พิจารณาพยานหลักฐานในสำนวนคดีแล้ว เห็นพ้องกับคำสั่งไม่ฟ้องเดิมของพนักงานอัยการ โดยเห็นว่าพยานหลักฐานยังไม่เพียงพอจะรับฟังได้ว่าผู้ถูกกล่าวหากระทำความผิด จึงมีคำวินิจฉัยชี้ขาด "ไม่ฟ้องคดี" และให้ยุติการดำเนินคดีอาญากับผู้ถูกกล่าวหา';
+                }
+                if (lblFile) lblFile.textContent = 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ไม่ฟ้องคดี_อส0001_6790.pdf';
+            }
+        }
+
+        function switchScenario(scenarioKey) {
+            const btnProsecute = document.getElementById('btnScenarioProsecute');
+            const btnNonProsecute = document.getElementById('btnScenarioNonProsecute');
+
+            if (scenarioKey === 'prosecute') {
+                btnProsecute.classList.add('active');
+                btnNonProsecute.classList.remove('active');
+                selectVerdictDecision('PROSECUTE');
+            } else {
+                btnProsecute.classList.remove('active');
+                btnNonProsecute.classList.add('active');
+                selectVerdictDecision('NON_PROSECUTE');
+            }
+        }
+
+        function viewSampleVerdictPdf() {
+            const isProsecute = selectedDecision === 'PROSECUTE';
+            Swal.fire({
+                icon: 'info',
+                title: 'เปิดดูหนังสือคำวินิจฉัยชี้ขาดของ อสส.',
+                html: `
+                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('in_oagVerdictNo').value}</p>
+                        <p style="margin-bottom: 6px;"><strong>วันที่ในหนังสือ:</strong> ${document.getElementById('in_oagVerdictDate').value}</p>
+                        <p style="margin-bottom: 6px;"><strong>ผลคำวินิจฉัย:</strong> <span style="font-weight:700; color:${isProsecute ? '#16a34a' : '#dc2626'};">${isProsecute ? 'ชี้ขาดให้ฟ้องคดี' : 'ชี้ขาดไม่ฟ้อง/ยุติคดี'}</span></p>
+                        <p style="margin-bottom: 0;"><strong>สถานะไฟล์:</strong> เอกสารมีลายมือชื่ออัยการสูงสุดสมบูรณ์ (พร้อมเสนอ ผอ.กอง ตรวจสอบ)</p>
+                    </div>
+                `,
+                confirmButtonColor: '#1e3a8a',
+                confirmButtonText: 'ปิดหน้าต่าง'
+            });
+        }
+
+        function submitLegalAdminOAGVerdictIntakeForm() {
+            if (!currentCase) return;
+
+            const verdictNo = document.getElementById('in_oagVerdictNo').value.trim();
+            const verdictDate = document.getElementById('in_oagVerdictDate').value;
+            const receiveDate = document.getElementById('in_oagVerdictReceiveDate').value;
+            const summary = document.getElementById('in_oagVerdictSummary').value.trim();
+            const notes = document.getElementById('in_adminVerdictNotes').value.trim();
+
+            if (!verdictNo) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณากรอกเลขที่หนังสือ อสส.',
+                    text: 'กรุณากรอกเลขที่หนังสือคำวินิจฉัยชี้ขาดที่ได้รับจากสำนักงานอัยการสูงสุด',
+                    confirmButtonColor: '#1e3a8a'
+                });
+                return;
+            }
+
+            const decisionText = selectedDecision === 'PROSECUTE'
+                ? '<span style="color:#16a34a; font-weight:700;">อสส. ชี้ขาดให้ฟ้องคดี (เห็นพ้องตาม ป.ป.ท.)</span>'
+                : '<span style="color:#dc2626; font-weight:700;">อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี (ตามคำสั่งอัยการเดิม)</span>';
+
+            Swal.fire({
+                icon: 'question',
+                title: 'ยืนยันการรับผลคำวินิจฉัยชี้ขาด อสส.?',
+                html: `
+                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 4px;"><strong>เลขที่หนังสือ อสส.:</strong> ${verdictNo}</p>
+                        <p style="margin-bottom: 4px;"><strong>ผลคำวินิจฉัยชี้ขาด:</strong> ${decisionText}</p>
+                        <p style="margin-bottom: 0;"><strong>ขั้นตอนต่อไป:</strong> ส่งต่อ ผอ.กองกฎหมาย ตรวจสอบและสั่งการ (S20)</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยันและส่งต่อ ผอ.กอง',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#1e3a8a',
+                cancelButtonColor: '#64748b'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    const payload = {
+                        oagVerdictNo: verdictNo,
+                        oagVerdictDate: verdictDate,
+                        oagVerdictReceiveDate: receiveDate,
+                        oagVerdictDecision: selectedDecision,
+                        oagVerdictDecisionText: selectedDecision === 'PROSECUTE' ? 'อสส. ชี้ขาดให้ฟ้องคดีตามความเห็นแย้งของ ป.ป.ท.' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดีตามคำสั่งเดิมของอัยการ',
+                        oagVerdictSummary: summary,
+                        oagVerdictFile: document.getElementById('lblVerdictFileName').textContent,
+                        adminVerdictNotes: notes
+                    };
+
+                    Activity10.submitLegalAdminOAGVerdictIntake(currentCase.id, payload);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'รับผลคำวินิจฉัยชี้ขาด อสส. สำเร็จ!',
+                        text: 'ส่งสำนวนพร้อมคำวินิจฉัยชี้ขาดให้ ผอ.กองกฎหมาย ตรวจสอบเรียบร้อยแล้ว',
+                        timer: 1800,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '01-work-inbox.html';
+                    });
+                }
+            });
+        }
+
+        // Speech-to-Text Web API
+        function startRecordingUI(btnEl) {
+            if (!btnEl) return;
+            btnEl.classList.add('recording');
+            btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
+        }
+
+        function stopRecordingUI(btnEl) {
+            if (!btnEl) return;
+            btnEl.classList.remove('recording');
+            btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
+            isRecording = false;
+        }
+
+        function toggleSpeechToText(targetId, btnEl) {
+            const inputEl = document.getElementById(targetId);
+            if (!inputEl) return;
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (isRecording) {
+                if (activeRecognition) {
+                    try { activeRecognition.stop(); } catch(e) {}
+                }
+                stopRecordingUI(btnEl);
+                return;
+            }
+
+            if (!SpeechRecognition) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'พิมพ์ด้วยเสียง (Speech-to-Text)',
+                    text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
+                    confirmButtonColor: '#1e3a8a'
+                });
+                return;
+            }
+
+            try {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'th-TH';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                recognition.continuous = false;
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    activeRecognition = recognition;
+                    startRecordingUI(btnEl);
+                    const toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                    toast.fire({
+                        icon: 'info',
+                        title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
+                    });
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    if (transcript) {
+                        const currentVal = inputEl.value ? inputEl.value.trim() : '';
+                        inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopRecordingUI(btnEl);
+                };
+
+                recognition.onend = function() {
+                    stopRecordingUI(btnEl);
+                };
+
+                recognition.start();
+            } catch (err) {
+                console.error('Recognition start error:', err);
+                stopRecordingUI(btnEl);
+            }
+        }
+    </script>
+</body>
+</html>

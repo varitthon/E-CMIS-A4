@@ -68,6 +68,75 @@ const LegalRulesEngine = {
     return transitions[currentState]?.[action] || null;
   },
 
+  // S18 Rules Engine: Determine external recipient & dispatch constraints
+  getS18DispatchRules(resolutionType) {
+    if (resolutionType === 'AGREED' || resolutionType === 'AGREED_PROSECUTOR') {
+      return {
+        recipientType: 'PROSECUTOR_ORIGIN',
+        recipientLabel: 'พนักงานอัยการเจ้าของสำนวน (ต้นทาง)',
+        allowedMethods: ['POSTAL_EMS'],
+        requireEmsTracking: true
+      };
+    } else {
+      return {
+        recipientType: 'ATTORNEY_GENERAL',
+        recipientLabel: 'สำนักงานอัยการสูงสุด (อสส.)',
+        allowedMethods: ['POSTAL_EMS', 'HAND_DELIVERY'],
+        requireEmsTracking: false
+      };
+    }
+  },
+
+  // Validate S18 Dispatch Submission
+  validateS18Dispatch(dispatchPayload) {
+    const rules = this.getS18DispatchRules(dispatchPayload.resolutionType);
+    if (!rules.allowedMethods.includes(dispatchPayload.method)) {
+      return { valid: false, error: `Invalid dispatch method: ${dispatchPayload.method} not allowed for ${dispatchPayload.resolutionType}` };
+    }
+    if (dispatchPayload.method === 'POSTAL_EMS') {
+      if (!dispatchPayload.emsTrackingNo || !/^E[A-Z]\d{9}TH$/i.test(dispatchPayload.emsTrackingNo)) {
+        return { valid: false, error: 'Invalid EMS tracking format (must be 13 chars, e.g. ED123456789TH)' };
+      }
+    } else if (dispatchPayload.method === 'HAND_DELIVERY') {
+      if (!dispatchPayload.oagReceiveDocNo) {
+        return { valid: false, error: 'Missing OAG receive document number' };
+      }
+    }
+    return { valid: true, error: null };
+  },
+
+  // Validate S19 OAG Verdict Intake
+  validateS19OAGVerdict(verdictPayload) {
+    if (!verdictPayload.oagVerdictNo) return { valid: false, error: 'Missing OAG verdict doc number' };
+    if (!['PROSECUTE', 'NON_PROSECUTE'].includes(verdictPayload.oagVerdictDecision)) {
+      return { valid: false, error: 'Invalid OAG verdict decision' };
+    }
+    if (!verdictPayload.oagVerdictFile) return { valid: false, error: 'Missing OAG verdict PDF file' };
+    return { valid: true, error: null };
+  },
+
+  // Validate S20 Director Review & Assignment
+  validateS20DirectorReview(reviewPayload) {
+    if (!reviewPayload.directorOagVerdictNotes) return { valid: false, error: 'Missing director notes/order' };
+    if (!reviewPayload.directorAssignedGroup) return { valid: false, error: 'Missing assigned group' };
+    return { valid: true, error: null };
+  },
+
+  // Validate S21 Group Director Review & Officer Assignment
+  validateS21GroupDirectorReview(groupPayload) {
+    if (!groupPayload.groupDirectorOagVerdictNotes) return { valid: false, error: 'Missing group director notes/order' };
+    if (!groupPayload.assignedOfficer) return { valid: false, error: 'Missing assigned legal officer' };
+    return { valid: true, error: null };
+  },
+
+  // Validate S22 Officer Final Notification & Case Closure
+  validateS22CaseClosedNotification(notifyPayload) {
+    if (!notifyPayload.caseClosedNotifyDocNo) return { valid: false, error: 'Missing internal notification document number' };
+    if (!notifyPayload.officerCaseClosedNotes) return { valid: false, error: 'Missing notification message/notes' };
+    if (!notifyPayload.caseClosedNotifyTarget) return { valid: false, error: 'Missing target division (Case Administration Division)' };
+    return { valid: true, error: null };
+  },
+
   // Validate E2E Payload Completeness
   validateDispatchPayload(caseData) {
     if (!caseData.id || !caseData.title) return { valid: false, error: 'Missing core identity' };
@@ -187,6 +256,199 @@ assert.equal(resValid.valid, true, "E2E 4.2: ข้อมูลและ e-Signa
 
 console.log("   ✅ Passed all E2E validation tests.\n");
 
+
+// =========================================================================
+// TEST SUITE 5: Step S18 — External Dispatch to Prosecutor / OAG
+// =========================================================================
+console.log("🔹 [TEST SUITE 5] Step S18: External Dispatch & Tracking Rules");
+
+// S18 Test 5.1: Scenario 1 (Agreed) -> Origin Prosecutor via EMS only
+const ruleAgreed = LegalRulesEngine.getS18DispatchRules('AGREED');
+assert.equal(ruleAgreed.recipientType, 'PROSECUTOR_ORIGIN', "S18 5.1a: มติเห็นชอบต้องส่งให้อัยการต้นทาง");
+assert.deepEqual(ruleAgreed.allowedMethods, ['POSTAL_EMS'], "S18 5.1b: มติเห็นชอบต้องส่งผ่านไปรษณีย์ EMS เท่านั้น");
+
+// S18 Test 5.2: Scenario 2 (Disagreed) -> Attorney General (OAG) via EMS or Hand Delivery
+const ruleDisagreed = LegalRulesEngine.getS18DispatchRules('DISAGREED');
+assert.equal(ruleDisagreed.recipientType, 'ATTORNEY_GENERAL', "S18 5.2a: มติเห็นแย้งต้องส่งให้ อสส.");
+assert.deepEqual(ruleDisagreed.allowedMethods, ['POSTAL_EMS', 'HAND_DELIVERY'], "S18 5.2b: มติเห็นแย้งเลือกส่ง EMS หรือ ส่งด้วยตนเองได้");
+
+// S18 Test 5.3: EMS Tracking Format Validation (Valid 13 chars)
+const validEms = LegalRulesEngine.validateS18Dispatch({
+  resolutionType: 'DISAGREED',
+  method: 'POSTAL_EMS',
+  emsTrackingNo: 'ED889912345TH'
+});
+assert.equal(validEms.valid, true, "S18 5.3: เลข EMS ถูกต้องตามมาตรฐาน 13 หลัก ต้องผ่าน Validation");
+
+// S18 Test 5.4: EMS Tracking Format Validation (Invalid format)
+const invalidEms = LegalRulesEngine.validateS18Dispatch({
+  resolutionType: 'AGREED',
+  method: 'POSTAL_EMS',
+  emsTrackingNo: '12345'
+});
+assert.equal(invalidEms.valid, false, "S18 5.4: เลข EMS ผิดรูปแบบต้องไม่ผ่าน Validation");
+
+// S18 Test 5.5: Hand Delivery Validation (Missing OAG Receive No)
+const invalidHand = LegalRulesEngine.validateS18Dispatch({
+  resolutionType: 'DISAGREED',
+  method: 'HAND_DELIVERY',
+  oagReceiveDocNo: ''
+});
+assert.equal(invalidHand.valid, false, "S18 5.5: ส่งด้วยตนเองแต่ไม่มีเลขรับ อสส. ต้องไม่ผ่าน Validation");
+
+// S18 Test 5.6: Hand Delivery Validation (Valid OAG Receive No)
+const validHand = LegalRulesEngine.validateS18Dispatch({
+  resolutionType: 'DISAGREED',
+  method: 'HAND_DELIVERY',
+  oagReceiveDocNo: 'อส 0001/4588'
+});
+assert.equal(validHand.valid, true, "S18 5.6: ส่งด้วยตนเองและมีเลขรับ อสส. ครบถ้วน ต้องผ่าน Validation");
+
+console.log("   ✅ Passed all 6 S18 Dispatch and Tracking tests.\n");
+
+
+// =========================================================================
+// TEST SUITE 6: Step S19 — OAG Verdict Intake by Legal Admin
+// =========================================================================
+console.log("🔹 [TEST SUITE 6] Step S19: OAG Verdict Intake Validation");
+
+// S19 Test 6.1: Missing OAG Verdict Document Number
+const invalidVerdict1 = LegalRulesEngine.validateS19OAGVerdict({
+  oagVerdictNo: '',
+  oagVerdictDecision: 'PROSECUTE',
+  oagVerdictFile: 'verdict.pdf'
+});
+assert.equal(invalidVerdict1.valid, false, "S19 6.1: ขาดเลขที่หนังสือ อสส. ต้องไม่ผ่าน Validation");
+
+// S19 Test 6.2: Invalid Verdict Decision Type
+const invalidVerdict2 = LegalRulesEngine.validateS19OAGVerdict({
+  oagVerdictNo: 'อส 0001/6789',
+  oagVerdictDecision: 'UNKNOWN_DECISION',
+  oagVerdictFile: 'verdict.pdf'
+});
+assert.equal(invalidVerdict2.valid, false, "S19 6.2: ผลคำวินิจฉัยไม่ถูกต้อง ต้องไม่ผ่าน Validation");
+
+// S19 Test 6.3: Valid Prosecute Decision
+const validVerdict1 = LegalRulesEngine.validateS19OAGVerdict({
+  oagVerdictNo: 'อส 0001/6789',
+  oagVerdictDecision: 'PROSECUTE',
+  oagVerdictFile: 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ให้ฟ้องคดี_อส0001_6789.pdf'
+});
+assert.equal(validVerdict1.valid, true, "S19 6.3: อสส. ชี้ขาดให้ฟ้องคดี ข้อมูลครบถ้วน ต้องผ่าน Validation");
+
+// S19 Test 6.4: Valid Non-Prosecute Decision
+const validVerdict2 = LegalRulesEngine.validateS19OAGVerdict({
+  oagVerdictNo: 'อส 0001/6790',
+  oagVerdictDecision: 'NON_PROSECUTE',
+  oagVerdictFile: 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ไม่ฟ้องคดี_อส0001_6790.pdf'
+});
+assert.equal(validVerdict2.valid, true, "S19 6.4: อสส. ชี้ขาดไม่ฟ้องคดี ข้อมูลครบถ้วน ต้องผ่าน Validation");
+
+console.log("   ✅ Passed all 4 S19 OAG Verdict Intake tests.\n");
+
+
+// =========================================================================
+// TEST SUITE 7: Step S20 — Director Review & Assignment
+// =========================================================================
+console.log("🔹 [TEST SUITE 7] Step S20: Legal Director Review & Assignment");
+
+// S20 Test 7.1: Missing Director Notes/Order
+const invalidReview1 = LegalRulesEngine.validateS20DirectorReview({
+  directorOagVerdictNotes: '',
+  directorAssignedGroup: 'กลุ่มงานความเห็นแย้ง'
+});
+assert.equal(invalidReview1.valid, false, "S20 7.1: ขาดข้อสั่งการของ ผอ.กอง ต้องไม่ผ่าน Validation");
+
+// S20 Test 7.2: Missing Assigned Group
+const invalidReview2 = LegalRulesEngine.validateS20DirectorReview({
+  directorOagVerdictNotes: 'รับทราบคำวินิจฉัยชี้ขาด',
+  directorAssignedGroup: ''
+});
+assert.equal(invalidReview2.valid, false, "S20 7.2: ขาดกลุ่มงานที่มอบหมาย ต้องไม่ผ่าน Validation");
+
+// S20 Test 7.3: Valid Director Review
+const validReview = LegalRulesEngine.validateS20DirectorReview({
+  directorOagVerdictNotes: 'รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง ดำเนินการต่อ',
+  directorAssignedGroup: 'กลุ่มงานความเห็นแย้ง'
+});
+assert.equal(validReview.valid, true, "S20 7.3: ข้อสั่งการและกลุ่มงานมอบหมายครบถ้วน ต้องผ่าน Validation");
+
+console.log("   ✅ Passed all 3 S20 Director Review tests.\n");
+
+
+// =========================================================================
+// TEST SUITE 8: Step S21 — Group Director Review & Officer Assignment
+// =========================================================================
+console.log("🔹 [TEST SUITE 8] Step S21: Group Director Review & Officer Assignment");
+
+// S21 Test 8.1: Missing Group Director Notes/Order
+const invalidGroupReview1 = LegalRulesEngine.validateS21GroupDirectorReview({
+  groupDirectorOagVerdictNotes: '',
+  assignedOfficer: 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)'
+});
+assert.equal(invalidGroupReview1.valid, false, "S21 8.1: ขาดข้อสั่งการของ ผอ.กลุ่มงาน ต้องไม่ผ่าน Validation");
+
+// S21 Test 8.2: Missing Assigned Officer
+const invalidGroupReview2 = LegalRulesEngine.validateS21GroupDirectorReview({
+  groupDirectorOagVerdictNotes: 'มอบหมายนิติกรดำเนินการต่อ',
+  assignedOfficer: ''
+});
+assert.equal(invalidGroupReview2.valid, false, "S21 8.2: ขาดนิติกรผู้รับมอบหมาย ต้องไม่ผ่าน Validation");
+
+// S21 Test 8.3: Valid Group Director Review
+const validGroupReview = LegalRulesEngine.validateS21GroupDirectorReview({
+  groupDirectorOagVerdictNotes: 'มอบหมายนิติกรเจ้าของสำนวน ดำเนินการสรุปผลคำวินิจฉัยชี้ขาดของอัยการสูงสุด และจัดทำหนังสือแจ้งกองบริหารคดีเพื่อดำเนินการตามขั้นตอนต่อไป',
+  assignedOfficer: 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)'
+});
+assert.equal(validGroupReview.valid, true, "S21 8.3: ข้อสั่งการและนิติกรมอบหมายครบถ้วน ต้องผ่าน Validation");
+
+console.log("   ✅ Passed all 3 S21 Group Director Review tests.\n");
+
+
+// =========================================================================
+// TEST SUITE 9: Step S22 — Officer Final Notification & Case Closure
+// =========================================================================
+console.log("🔹 [TEST SUITE 9] Step S22: Officer Final Notification & Case Closure");
+
+// S22 Test 9.1: Missing Notification Document Number
+const invalidCaseClosed1 = LegalRulesEngine.validateS22CaseClosedNotification({
+  caseClosedNotifyDocNo: '',
+  officerCaseClosedNotes: 'แจ้งผลคำวินิจฉัยชี้ขาด อสส.',
+  caseClosedNotifyTarget: 'กองบริหารคดี (กบค.)'
+});
+assert.equal(invalidCaseClosed1.valid, false, "S22 9.1: ขาดเลขที่หนังสือแจ้งภายใน ต้องไม่ผ่าน Validation");
+
+// S22 Test 9.2: Missing Notification Notes/Message
+const invalidCaseClosed2 = LegalRulesEngine.validateS22CaseClosedNotification({
+  caseClosedNotifyDocNo: 'ที่ ปปท 0014/น.1420',
+  officerCaseClosedNotes: '',
+  caseClosedNotifyTarget: 'กองบริหารคดี (กบค.)'
+});
+assert.equal(invalidCaseClosed2.valid, false, "S22 9.2: ขาดข้อความในหนังสือแจ้ง ต้องไม่ผ่าน Validation");
+
+// S22 Test 9.3: Missing Target Division
+const invalidCaseClosed3 = LegalRulesEngine.validateS22CaseClosedNotification({
+  caseClosedNotifyDocNo: 'ที่ ปปท 0014/น.1420',
+  officerCaseClosedNotes: 'แจ้งผลคำวินิจฉัยชี้ขาด อสส.',
+  caseClosedNotifyTarget: ''
+});
+assert.equal(invalidCaseClosed3.valid, false, "S22 9.3: ขาดหน่วยงานรับแจ้ง ต้องไม่ผ่าน Validation");
+
+// S22 Test 9.4: Valid Final Case Closure Notification
+const validCaseClosed = LegalRulesEngine.validateS22CaseClosedNotification({
+  caseClosedNotifyDocNo: 'ที่ ปปท 0014/น.1420',
+  officerCaseClosedNotes: 'กองกฎหมายขอแจ้งผลคำวินิจฉัยชี้ขาดของอัยการสูงสุด เพื่อให้กองบริหารคดีทราบและดำเนินการตามขั้นตอนต่อไป',
+  caseClosedNotifyTarget: 'กองบริหารคดี (กบค.)'
+});
+assert.equal(validCaseClosed.valid, true, "S22 9.4: ข้อมูลหนังสือแจ้งกองบริหารคดีครบถ้วน สมบูรณ์ตามระเบียบ");
+
+console.log("   ✅ Passed all 4 S22 Final Notification & Case Closure tests.\n");
+
 console.log("------------------------------------------------------------");
-console.log("🎉 ALL TEST SUITES PASSED SUCCESSFULLY (15/15 Tests OK)");
+console.log("🎉 ALL TEST SUITES PASSED SUCCESSFULLY (35/35 Tests OK)");
 console.log("------------------------------------------------------------");
+
+
+
+
+

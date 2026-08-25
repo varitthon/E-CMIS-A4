@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ธุรการกองกฎหมาย ตรวจสอบหนังสือลงนาม &amp; ส่งต่อนิติกร | E-CMIS กิจกรรมที่ 10</title>
+    <title>ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัยชี้ขาด อสส. &amp; สั่งการ | E-CMIS กิจกรรมที่ 10</title>
     <link rel="icon" type="image/png" href="pacc_logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +21,11 @@
             --text-title: #1e293b;
             --text-main: #334155;
             --sidebar-width: 260px;
+            --primary-blue: #1e3a8a;
+            --primary-accent: #2563eb;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
         }
 
         body.dark-mode {
@@ -71,7 +76,7 @@
         
         .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
         .user-profile-top:hover { background: rgba(0,0,0,0.04); }
-        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
+        .avatar { width: 34px; height: 34px; border-radius: 50%; background: #1e3a8a; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
         .user-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
         .user-name { font-size: 0.85em; font-weight: 600; color: var(--text-title); }
         .user-role { font-size: 0.72em; color: #64748b; }
@@ -84,7 +89,7 @@
         .profile-dropdown-body { padding: 12px 14px; }
         .profile-card { background: var(--bg-body); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
         .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
-        .profile-card-title { font-size: 0.82em; color: #059669; font-weight: 600; display: block; margin-top: 2px; }
+        .profile-card-title { font-size: 0.82em; color: #1e3a8a; font-weight: 600; display: block; margin-top: 2px; }
         .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
         .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
         .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
@@ -98,9 +103,9 @@
         .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
         .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
         .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
-        .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
-        .step-item.completed .step-circle { background: #2563eb; border-color: #2563eb; color: #fff; }
-        .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 150px; }
+        .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+        .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 180px; }
         .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
         /* Form Card */
@@ -109,6 +114,7 @@
         .form-card-body { padding: 20px; }
 
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
         .form-group:last-child { margin-bottom: 0; }
         .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -132,7 +138,7 @@
         .font-monospace { font-family: monospace; }
         .d-none { display: none !important; }
 
-        /* Speech to Text Microphone Button (Same as 02-board-intake.html) */
+        /* Speech to Text Microphone Button */
         .btn-mic {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -169,24 +175,8 @@
             100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
         }
 
-        /* Verification Status Item Box */
-        .verify-item {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .verify-item.verified {
-            border-color: #86efac;
-            background: #f0fdf4;
-        }
-
         @media (max-width: 1024px) {
-            .form-grid-2 { grid-template-columns: 1fr; }
+            .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -203,7 +193,11 @@
             </a>
             <ul class="menu" id="sidebarMenu">
                 <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
-                <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+                <li><a href="04-legal-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายสำนวนคดี</span></a></li>
+                <li><a href="08-legal-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจพิจารณาและสั่งการ</span></a></li>
+                <li><a href="11-legal-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติและสั่งการ</span></a></li>
+                <li><a href="15-legal-director-final-review.html"><i class="fa-solid fa-file-signature"></i> <span>ตรวจร่างหนังสือตามมติ</span></a></li>
+                <li><a href="20-legal-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
             </ul>
         </div>
         <div class="sidebar-bottom">
@@ -219,7 +213,7 @@
             <div class="topbar-left">
                 <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
                 <div class="breadcrumb">
-                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ธุรการ ตรวจรับหนังสือลงนาม &amp; ส่งต่อนิติกร</span>
+                    <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ผอ.กองกฎหมาย ตรวจสอบคำวินิจฉัย อสส. &amp; สั่งการ</span>
                 </div>
             </div>
             
@@ -231,13 +225,13 @@
                 </div>
                 <div class="icon-btn-group">
                     <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
-                    <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">3</span></div>
+                    <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
                 </div>
                 <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
-                    <div class="avatar" id="userAvatar">ก</div>
+                    <div class="avatar" id="userAvatar">น</div>
                     <div class="user-info">
-                        <span class="user-name" id="userName">นางกานดา รัตนวิชัย</span>
-                        <span class="user-role" id="userRoleTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
+                        <span class="user-name" id="userName">นายนภัส สอนดี</span>
+                        <span class="user-role" id="userRoleTitle">ผู้อำนวยการกองกฎหมาย</span>
                     </div>
                     <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
 
@@ -246,9 +240,9 @@
                         <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
                         <div class="profile-dropdown-body">
                             <div class="profile-card">
-                                <span class="profile-card-name" id="profileCardName">นางกานดา รัตนวิชัย</span>
-                                <span class="profile-card-title" id="profileCardTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
-                                <span class="profile-card-org" id="profileCardOrg">งานธุรการและสารบรรณ · กองกฎหมาย (กอท.)</span>
+                                <span class="profile-card-name" id="profileCardName">นายนภัส สอนดี</span>
+                                <span class="profile-card-title" id="profileCardTitle">ผู้อำนวยการกองกฎหมาย</span>
+                                <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
                             </div>
                             <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
                         </div>
@@ -264,167 +258,159 @@
         <!-- Content Body -->
         <div class="content">
 
-            <!-- Stepper Progress Header -->
+            <!-- Stepper Progress Header for Post-OAG Verdict Phase -->
             <div class="stepper-card">
                 <div class="stepper" id="stepper">
                     <div class="step-item completed">
                         <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">1. นิติกรจัดทำหนังสือ</div>
-                    </div>
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">2. ผอ.กลุ่มงาน/ผอ.กอง ตรวจสอบ</div>
-                    </div>
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-label">3. ธุรการออกเลขส่งเสนอลงนาม</div>
+                        <div class="step-label">1. ธุรการรับผลคำวินิจฉัย อสส.</div>
                     </div>
                     <div class="step-item active">
-                        <div class="step-circle">4</div>
-                        <div class="step-label">4. ธุรการตรวจรับหนังสือลงนาม &amp; ส่งนิติกร</div>
+                        <div class="step-circle">2</div>
+                        <div class="step-label">2. ผอ.กอง ตรวจสอบ &amp; สั่งการ</div>
                     </div>
                     <div class="step-item">
-                        <div class="step-circle">5</div>
-                        <div class="step-label">5. นิติกรจัดส่งให้อัยการ/อสส. (S18)</div>
+                        <div class="step-circle">3</div>
+                        <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">4. นิติกรบันทึกผล &amp; แจ้งกองบริหารคดี</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 1: Read-Only Case Details & Internal Dispatch -->
+            <!-- Card 1: Read-Only Historical Case & OAG Verdict Info -->
             <div class="form-card">
                 <div class="form-card-header">
-                    <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดสำนวนและประวัติการเสนอลงนาม</span>
-                    <span class="badge" style="background:#fef3c7; color:#92400e;"><i class="fa-solid fa-lock me-1"></i>ข้อมูลสำนวน</span>
+                    <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)</span>
+                    <span class="badge" id="badgeVerdictDecision" style="background:#dcfce7; color:#166534;">
+                        <i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี
+                    </span>
                 </div>
                 <div class="form-card-body">
-                    <!-- Central Saraban & Law Receive Badge Box -->
+                    
                     <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
-                        <div class="form-grid-2" style="margin-bottom: 0;">
+                        <div class="form-grid-3" style="margin-bottom: 0;">
                             <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/4410</span>
+                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง ป.ป.ท.:</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/5102</span>
                             </div>
                             <div>
                                 <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
-                                <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0014/2569</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0028/2569</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งความเห็นแย้งเดิม:</span>
+                                <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1150</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
-                        <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">-</div>
+                        <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
                     </div>
 
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label>หน่วยงานอัยการต้นทาง</label>
-                            <div class="read-box" id="f_source">-</div>
+                            <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
+                            <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
                         </div>
                         <div class="form-group">
-                            <label>เลขที่หนังสืออัยการ</label>
-                            <div class="read-box font-monospace" style="font-weight: 700;" id="f_docNo">-</div>
+                            <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
+                            <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
                         </div>
                     </div>
 
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>เลขที่หนังสือส่งภายใน</label>
-                            <div class="read-box font-monospace" style="font-weight:700; color:#1e3a8a;" id="f_finalDispatchRound2No">0088/2569</div>
+                    <!-- OAG Verdict Detailed Box -->
+                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-top: 6px;">
+                        <div style="font-weight: 700; color: #1e3a8a; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-gavel"></i>
+                            <span>ข้อมูลคำวินิจฉัยชี้ขาดจากสำนักงานอัยการสูงสุด</span>
                         </div>
+
+                        <div class="form-grid-3">
+                            <div class="form-group">
+                                <label>เลขที่หนังสือคำวินิจฉัย อสส.</label>
+                                <div class="read-box font-monospace" style="font-weight: 700; color: #1e3a8a;" id="f_oagVerdictNo">อส 0001/6789</div>
+                            </div>
+                            <div class="form-group">
+                                <label>วันที่ลงในหนังสือ อสส.</label>
+                                <div class="read-box font-monospace" id="f_oagVerdictDate">25/08/2569</div>
+                            </div>
+                            <div class="form-group">
+                                <label>วันที่กองกฎหมายลงรับ</label>
+                                <div class="read-box font-monospace" id="f_oagVerdictReceiveDate">25/08/2569</div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label>วันที่ออกเลขหนังสือส่งภายใน</label>
-                            <div class="read-box font-monospace" id="f_finalDispatchRound2Date">24/08/2569</div>
+                            <label>สรุปสาระสำคัญคำวินิจฉัยชี้ขาดของ อสส.</label>
+                            <div class="read-box read-box-textarea" id="f_oagVerdictSummary">
+                                อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>ไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF)</label>
+                            <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                                    <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
+                                    <span class="font-monospace" style="font-weight:600; font-size:0.88em; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" id="f_oagVerdictFile">หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf</span>
+                                </div>
+                                <button type="button" class="btn btn-secondary" style="height:28px; padding:0 10px; font-size:0.8em;" onclick="viewVerdictPdfFile()">
+                                    <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Card 2: Verification Checklist of Signed Official Document -->
-            <div class="form-card" style="border: 2px solid #059669;">
-                <div class="form-card-header" style="background: rgba(5,150,105,0.05);">
-                    <span><i class="fa-solid fa-stamp text-success me-2"></i>ตรวจสอบความถูกต้องของหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์</span>
-                    <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-signature me-1"></i>ประธานลงนามเรียบร้อย</span>
+            <!-- Card 2: Legal Director Review & Assignment Form -->
+            <div class="form-card" style="border: 2px solid #1e3a8a;">
+                <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
+                    <span><i class="fa-solid fa-user-gear text-primary me-2"></i>คำสั่งการและมอบหมายกลุ่มงาน (ผอ.กองกฎหมาย)</span>
+                    <span class="badge" style="background:#1e3a8a; color:#fff;">
+                        <i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย
+                    </span>
                 </div>
                 <div class="form-card-body">
                     
-                    <!-- Item 1: External Dispatch No. -->
-                    <div class="verify-item verified">
-                        <div>
-                            <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">
-                                <i class="fa-solid fa-barcode text-success me-1"></i>1. เลขที่หนังสือส่งภายนอก (ส่งถึงอัยการสูงสุด)
-                            </span>
-                            <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.1em;" id="f_externalDispatchNo">ที่ ปปท 0014/1245</span>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>มอบหมายส่งต่อให้ผู้บังคับบัญชาตามลำดับชั้น <span style="color:#dc2626;">*</span></label>
+                            <select id="in_targetDirector" class="form-control" style="font-weight: 600; color: #1e3a8a;">
+                                <option value="Arnon.C">นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</option>
+                            </select>
                         </div>
-                        <span class="badge" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-circle-check me-1"></i>มีเลขส่งภายนอกแล้ว</span>
+                        <div class="form-group">
+                            <label>วันที่สั่งการ <span style="color:#dc2626;">*</span></label>
+                            <input type="date" id="in_directorReviewDate" class="form-control font-monospace" style="font-weight:600;">
+                        </div>
                     </div>
 
-                    <!-- Item 2: President / Executive Signing Status -->
-                    <div class="verify-item verified">
-                        <div>
-                            <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">
-                                <i class="fa-solid fa-file-signature text-success me-1"></i>2. การลงนามของผู้บริหาร / ประธาน
+                    <div class="form-group">
+                        <label>
+                            <span>ข้อสั่งการ / ความเห็นของ ผอ.กองกฎหมาย <span style="color:#dc2626;">*</span>
+                                <button type="button" class="btn-mic" id="btnMicDirector" onclick="toggleSpeechToText('in_directorNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
                             </span>
-                            <span style="font-weight: 600; color: #1e293b; font-size: 0.95em;" id="f_presidentName">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</span>
-                        </div>
-                        <span class="badge" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-circle-check me-1"></i>ประธานลงนามแล้ว</span>
-                    </div>
-
-                    <!-- Item 3: Signed Final Document PDF File -->
-                    <div class="verify-item verified" style="margin-bottom: 0;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fa-solid fa-file-pdf text-danger" style="font-size: 1.8rem;"></i>
-                            <div>
-                                <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block;">3. ไฟล์หนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ (มีตราครุฑ เลขส่งภายนอก และลายเซ็น)</span>
-                                <span style="font-weight: 700; color: #1e293b; font-size: 0.92em;" id="f_signedDocFileName">หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf</span>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-secondary" style="height: 32px; padding: 0 12px; font-size: 0.82em;" onclick="Swal.fire({icon:'info', title:'เปิดไฟล์หนังสือฉบับลงนามสมบูรณ์', text:'เปิดไฟล์เอกสารหนังสือความเห็นแย้งฉบับมีตราครุฑ เลขส่งภายนอก และลายเซ็นประธานเรียบร้อยแล้ว', timer:1600, showConfirmButton:false})">
-                            <i class="fa-solid fa-eye me-1"></i>เปิดดูเอกสาร
-                        </button>
+                        </label>
+                        <textarea id="in_directorNotes" class="form-control" rows="4" placeholder="ระบุข้อสั่งการของ ผอ.กองกฎหมาย...">รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง เพื่อมอบหมายนิติกรเจ้าของสำนวนสรุปผลคดีและทำหนังสือแจ้งกองบริหารคดีดำเนินการในส่วนที่เกี่ยวข้องต่อไป</textarea>
                     </div>
 
                 </div>
-            </div>
 
-            <!-- Card 3: Forward to Legal Officer Form -->
-            <div id="adminSignedDocReceiveContainer">
-                <div class="form-card" style="border: 2px solid #2563eb;">
-                    <div class="form-card-header" style="background: rgba(37,99,235,0.05);">
-                        <span><i class="fa-solid fa-share-nodes text-primary me-2"></i>บันทึกการตรวจสอบ &amp; ส่งต่อนิติกรเจ้าของสำนวน</span>
-                        <span class="badge" style="background:#dbeafe; color:#1e40af;">ขั้นตอนการปฏิบัติงาน</span>
-                    </div>
-                    <div class="form-card-body">
-                        
-                        <div class="form-grid-2">
-                            <div class="form-group">
-                                <label>ผู้รับมอบหมาย (นิติกรเจ้าของสำนวน)</label>
-                                <input type="text" class="form-control" style="font-weight: 600; background: var(--bg-body);" readonly value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">
-                            </div>
-                            <div class="form-group">
-                                <label>วันที่ตรวจสอบและส่งต่อ</label>
-                                <input type="date" id="in_verifyDate" class="form-control font-monospace" style="font-weight: 600;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <span>หมายเหตุ / บันทึกการส่งต่อนิติกร
-                                    <button type="button" class="btn-mic" id="btnMicNotes" onclick="toggleSpeechToText('in_adminVerifyNotes', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)">
-                                        <i class="fa-solid fa-microphone"></i>
-                                    </button>
-                                </span>
-                            </label>
-                            <textarea id="in_adminVerifyNotes" class="form-control" rows="3" placeholder="ระบุหมายเหตุหรือข้อความบันทึกส่งต่อนิติกร (ถ้ามี)...">ตรวจสอบความสมบูรณ์ของหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์และมีเลขที่หนังสือส่งภายนอก ที่ ปปท 0014/1245 เรียบร้อยแล้ว ส่งต่อนิติกรเจ้าของสำนวนเพื่อดำเนินการตามขั้นตอนต่อไป</textarea>
-                        </div>
-
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-primary" onclick="submitLegalAdminSignedDocReceiveForm()">
-                            <i class="fa-solid fa-paper-plane me-1"></i>บันทึกเเละส่งต่อนิติกร
-                        </button>
-                        <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-                    </div>
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="submitLegalDirectorOAGVerdictReviewForm()">
+                        <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+                    </button>
+                    <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
                 </div>
             </div>
 
@@ -434,7 +420,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260820_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260822_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20260825_2"></script>
 
     <script>
         let currentCase = null;
@@ -443,7 +429,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initUserProfile();
-            setDefaultVerifyDate();
+            setDefaultDate();
             loadCaseData();
         });
 
@@ -460,7 +446,11 @@
 
         function changeFontSize(direction) {
             const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
-            document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+            if (direction === 0) {
+                document.body.style.fontSize = '14px';
+            } else {
+                document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+            }
         }
 
         function toggleProfileDropdown(e) {
@@ -496,9 +486,9 @@
         }
 
         function initUserProfile() {
-            const roleId = sessionStorage.getItem('ecmis_role') || 'admin_legal';
+            const roleId = sessionStorage.getItem('ecmis_role') || 'dir_legal';
             if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
-                const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[1];
+                const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[7]; // dir_legal
                 if (role) {
                     const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
                     const initial = shortName.charAt(0);
@@ -512,24 +502,27 @@
             }
         }
 
-        function setDefaultVerifyDate() {
-            const dateInput = document.getElementById('in_verifyDate');
-            if (dateInput) {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
-            }
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            if (document.getElementById('in_directorReviewDate')) document.getElementById('in_directorReviewDate').value = today;
         }
 
         function loadCaseData() {
             const urlParams = new URLSearchParams(window.location.search);
-            const caseId = urlParams.get('id') || 'คดี-100005/2569';
+            const caseId = urlParams.get('id') || 'คดี-100010/2569';
             currentCase = Activity10.getCaseById(caseId);
 
             if (!currentCase) {
                 const allCases = Activity10.getCases ? Activity10.getCases() : [];
-                currentCase = allCases.length > 0 ? allCases[0] : null;
+                currentCase = allCases.find(c => c.statusCode === 'PENDING_DIRECTOR_OAG_VERDICT_REVIEW') || allCases[0] || null;
             }
 
+            if (!currentCase) return;
+
+            populateCaseView();
+        }
+
+        function populateCaseView() {
             if (!currentCase) return;
 
             const setElText = (id, text) => {
@@ -537,87 +530,97 @@
                 if (el) el.textContent = text;
             };
 
-            setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
-            setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0019/2569');
+            setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/5102');
+            setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
+            setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
             setElText('f_title', currentCase.title || '-');
-            setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2');
-            setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
-            setElText('f_finalDispatchRound2No', currentCase.finalDispatchRound2No || '0088/2569');
-            setElText('f_finalDispatchRound2Date', currentCase.finalDispatchRound2Date || '24/08/2569');
-            setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1245');
-            setElText('f_presidentName', currentCase.signedPresidentName || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
-            setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf');
+            setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
+            setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
 
-            // Check if already verified & forwarded by Admin (Read-Only)
-            const isAlreadySubmitted = (currentCase.workflowStep && currentCase.workflowStep > 14) || currentCase.adminVerifiedDate;
-            const container = document.getElementById('adminSignedDocReceiveContainer');
-            if (container && isAlreadySubmitted) {
-                container.innerHTML = `
-                    <div class="form-card" style="border: 1px solid #16a34a;">
-                        <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
-                            <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการตรวจสอบ &amp; ส่งต่อนิติกร</span>
-                            <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-lock me-1"></i>ส่งต่อนิติกรแล้ว</span>
-                        </div>
-                        <div class="form-card-body">
-                            <div class="form-grid-2">
-                                <div class="form-group">
-                                    <label>ผู้รับมอบหมาย</label>
-                                    <div class="read-box" style="font-weight:600; color:#1e3a8a;">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</div>
-                                </div>
-                                <div class="form-group">
-                                    <label>วันที่ตรวจสอบและส่งต่อ</label>
-                                    <div class="read-box font-monospace">${currentCase.adminVerifiedDate || '-'}</div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>หมายเหตุ / บันทึกการส่งต่อนิติกร</label>
-                                <div class="read-box read-box-textarea">${currentCase.adminVerificationNotes || 'ตรวจสอบความสมบูรณ์ของหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์และมีเลขที่หนังสือส่งภายนอกเรียบร้อยแล้ว ส่งต่อนิติกรเจ้าของสำนวนเพื่อดำเนินการต่อไป'}</div>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <a href="01-work-inbox.html" class="btn btn-secondary">กลับหน้าคิวงาน</a>
-                        </div>
-                    </div>
-                `;
+            setElText('f_oagVerdictNo', currentCase.oagVerdictNo || 'อส 0001/6789');
+            setElText('f_oagVerdictDate', currentCase.oagVerdictDate || '25/08/2569');
+            setElText('f_oagVerdictReceiveDate', currentCase.oagVerdictReceiveDate || '25/08/2569');
+            setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหาตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.');
+            setElText('f_oagVerdictFile', currentCase.oagVerdictFile || 'หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf');
+
+            const isProsecute = currentCase.oagVerdictDecision !== 'NON_PROSECUTE';
+            const badge = document.getElementById('badgeVerdictDecision');
+            if (badge) {
+                badge.style.background = isProsecute ? '#dcfce7' : '#fee2e2';
+                badge.style.color = isProsecute ? '#166534' : '#991b1b';
+                badge.innerHTML = isProsecute
+                    ? '<i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี'
+                    : '<i class="fa-solid fa-ban me-1"></i>อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี';
             }
         }
 
-        function submitLegalAdminSignedDocReceiveForm() {
+        function viewVerdictPdfFile() {
+            Swal.fire({
+                icon: 'info',
+                title: 'เปิดดูหนังสือคำวินิจฉัยชี้ขาดของ อสส.',
+                html: `
+                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('f_oagVerdictNo').textContent}</p>
+                        <p style="margin-bottom: 6px;"><strong>วันที่ในหนังสือ:</strong> ${document.getElementById('f_oagVerdictDate').textContent}</p>
+                        <p style="margin-bottom: 6px;"><strong>ผลคำวินิจฉัย:</strong> ${document.getElementById('badgeVerdictDecision').innerText}</p>
+                        <p style="margin-bottom: 0;"><strong>สถานะ:</strong> ลายมือชื่ออัยการสูงสุดสมบูรณ์</p>
+                    </div>
+                `,
+                confirmButtonColor: '#1e3a8a',
+                confirmButtonText: 'ปิดหน้าต่าง'
+            });
+        }
+
+        function submitLegalDirectorOAGVerdictReviewForm() {
             if (!currentCase) return;
 
-            const verifyDate = document.getElementById('in_verifyDate').value;
-            const notes = document.getElementById('in_adminVerifyNotes').value.trim();
+            const notes = document.getElementById('in_directorNotes').value.trim();
+            const reviewDate = document.getElementById('in_directorReviewDate').value;
+
+            if (!notes) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาระบุข้อสั่งการ',
+                    text: 'กรุณาระบุข้อสั่งการหรือความเห็นของ ผอ.กองกฎหมาย ก่อนส่งต่อ',
+                    confirmButtonColor: '#1e3a8a'
+                });
+                return;
+            }
+
+            const targetSelect = document.getElementById('in_targetDirector');
+            const targetLeaderName = targetSelect ? targetSelect.options[targetSelect.selectedIndex].text : 'นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)';
 
             Swal.fire({
                 icon: 'question',
-                title: 'ยืนยันส่งต่อนิติกรเจ้าของสำนวน?',
+                title: 'ยืนยันการสั่งการและมอบหมายกลุ่มงาน?',
                 html: `
-                    <div style="text-align: left; font-size: 0.9em; padding: 8px 12px; background: #f8fafc; border-radius: 6px;">
-                        <p style="margin-bottom: 4px;"><strong>เลขหนังสือส่งภายนอก:</strong> ที่ ปปท 0014/1245</p>
-                        <p style="margin-bottom: 4px;"><strong>สถานะการลงนาม:</strong> ประธานลงนามแล้ว</p>
-                        <p style="margin-bottom: 0;"><strong>ส่งต่อนิติกร:</strong> นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</p>
+                    <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 4px;"><strong>สำนวนคดี:</strong> ${document.getElementById('f_lawReceiveNo').textContent}</p>
+                        <p style="margin-bottom: 4px;"><strong>ผู้รับมอบหมาย:</strong> ${targetLeaderName}</p>
+                        <p style="margin-bottom: 0;"><strong>ขั้นตอนต่อไป:</strong> ผอ.กลุ่มงาน มอบหมายนิติกรเจ้าของสำนวนบันทึกผล</p>
                     </div>
                 `,
                 showCancelButton: true,
-                confirmButtonText: 'ยืนยันส่งต่อนิติกร',
+                confirmButtonText: 'ยืนยันสั่งการ',
                 cancelButtonText: 'ยกเลิก',
                 confirmButtonColor: '#1e3a8a',
                 cancelButtonColor: '#64748b'
             }).then(res => {
                 if (res.isConfirmed) {
-                    Activity10.submitLegalAdminSignedDocReceive(currentCase.id, {
-                        externalDispatchNo: 'ที่ ปปท 0014/1245',
-                        externalDispatchDate: verifyDate,
-                        signedPresidentName: 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)',
-                        signedDocFile: 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf',
-                        notes: notes
-                    });
+                    const payload = {
+                        directorOagVerdictNotes: notes,
+                        directorOagVerdictReviewDate: reviewDate,
+                        directorAssignedGroup: 'กลุ่มงานความเห็นแย้ง',
+                        directorAssignedLeader: targetLeaderName
+                    };
+
+                    Activity10.submitLegalDirectorOAGVerdictReview(currentCase.id, payload);
 
                     Swal.fire({
                         icon: 'success',
-                        title: 'ส่งต่อนิติกรสำเร็จ!',
-                        text: 'ส่งมอบสำนวนพร้อมหนังสือฉบับลงนามให้นิติกรเจ้าของสำนวนเรียบร้อยแล้ว',
-                        timer: 1600,
+                        title: 'บันทึกคำสั่งการสำเร็จ!',
+                        text: 'ส่งสำนวนคดีให้ ผอ.กลุ่มงานความเห็นแย้ง เรียบร้อยแล้ว',
+                        timer: 1800,
                         showConfirmButton: false
                     }).then(() => {
                         window.location.href = '01-work-inbox.html';
@@ -626,7 +629,7 @@
             });
         }
 
-        // Speech-to-Text Web API (Same as 02-board-intake.html)
+        // Speech-to-Text Web API
         function startRecordingUI(btnEl) {
             if (!btnEl) return;
             btnEl.classList.add('recording');
