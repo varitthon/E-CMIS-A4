@@ -466,7 +466,7 @@
             }
 
             // Check if already forwarded (Read-Only)
-            const isAlreadyForwarded = (currentCase.statusCode !== 'PENDING_GROUP_DIRECTOR') && (currentCase.workflowStep && currentCase.workflowStep > 4);
+            const isAlreadyForwarded = currentCase.statusCode !== 'PENDING_GROUP_DIRECTOR' && (currentCase.groupDirectorForwardedDate || (currentCase.workflowStep && currentCase.workflowStep > 4));
             const cardContainer = document.getElementById('assignmentCardContainer');
             if (cardContainer && isAlreadyForwarded) {
                 cardContainer.innerHTML = `

@@ -7,7 +7,7 @@
   'use strict';
 
   // Data Version Key for LocalStorage Sync (v39: ปรับปรุง Flow S18-S22 และชื่อมาตรฐานสมบูรณ์)
-  const DATA_VERSION = 'v39_s18_s22_final_fix';
+  const DATA_VERSION = 'v41_s17_sample_case_update';
   const STORAGE_KEY = 'ecmis_act10_cases_' + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -260,11 +260,11 @@
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3",
       accuser: "สำนักงาน ป.ป.ท.",
       accused: "นายเชาวลิต ช่างก่อ (อดีตนายช่างโยธาอาวุโส)",
-      officer: "นางกานดา รัตนวิชัย (เจ้าหน้าที่ธุรการชำนาญงาน)",
+      officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
       assignedRole: "admin_legal",
-      status: "เสนอผู้บริหารลงนามหนังสือความเห็น (รอบ 2)",
-      statusCode: "SUBMITTED_TO_EXEC_ROUND2",
-      statusBadge: "bg-success text-white",
+      status: "ผู้บริหารลงนามแล้ว (รอธุรการตรวจรับ)",
+      statusCode: "PENDING_ADMIN_SIGNED_RECEIVE",
+      statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0022/2569",
       paccCaseNo: "0052/2568",
       blackNo: "อ. 135/2569",
@@ -276,7 +276,7 @@
       slaAlert: "sla-normal",
       dateReceived: getDateWithOffset(-3),
       dueDate: getDateWithOffset(12),
-      workflowStep: 14,
+      workflowStep: 17,
       docType: "คำสั่งไม่ฟ้องของพนักงานอัยการ",
       docNo: "อส 0031/2569",
       centralSarabanNo: "2569/4520",
@@ -284,7 +284,9 @@
       finalDispatchRound2Date: getDateWithOffset(-1),
       externalDispatchNo: "ที่ ปปท 0014/1245",
       signedPresidentName: "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
-      signedDocFile: "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf"
+      signedDocFile: "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
+      signedExecutiveDate: getDateWithOffset(0),
+      executiveSignNotesRound2: "ผู้บริหารลงนามหนังสือความเห็นแย้งฉบับสมบูรณ์เรียบร้อยแล้ว ส่งคืนธุรการกองกฎหมายเพื่อตรวจรับและออกเลขส่งภายนอก"
     },
     {
       id: "คดี-100006/2569",
@@ -296,7 +298,7 @@
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
       accuser: "สำนักงาน ป.ป.ท.",
       accused: "นายประเสริฐ เทคโนโลยี (อดีตเจ้าหน้าที่คอมพิวเตอร์)",
-      officer: "นางกานดา รัตนวิชัย (เจ้าหน้าที่ธุรการชำนาญงาน)",
+      officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
       assignedRole: "admin_legal",
       status: "ผอ.กองตรวจหนังสือความเห็นแล้ว รอธุรการออกเลขส่ง",
       statusCode: "PENDING_FINAL_DISPATCH_ROUND2",
@@ -330,7 +332,7 @@
       source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2",
       accuser: "สำนักงาน ป.ป.ท.",
       accused: "นายมนตรี ว่องไว (อดีตวิศวกรโยธาชำนาญการ)",
-      officer: "นางกานดา รัตนวิชัย (เจ้าหน้าที่ธุรการชำนาญงาน)",
+      officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
       assignedRole: "admin_legal",
       status: "ธุรการรับผลมติ",
       statusCode: "RETURNED_FROM_EXEC",
@@ -356,7 +358,11 @@
       signedDocFile: "หนังสือผลมติ_2569_006.pdf",
       adminDispatchNo: "2569/0410",
       adminDispatchDate: "20 ส.ค. 2569",
-      centralSarabanNo: "2569/4502"
+      centralSarabanNo: "2569/4502",
+      boardMeetingNo: "14/2569",
+      boardMeetingDate: "21 ส.ค. 2569",
+      boardResolution: "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
+      boardResolutionDetail: "ที่ประชุมคณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงประกอบบันทึกความเห็นของกองกฎหมายแล้ว มีมติเป็นเอกฉันท์เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ และมอบหมายให้เลขาธิการ ป.ป.ท. ทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาดตามขั้นตอนกฎหมายต่อไป"
     },
     {
       id: "คดี-100003/2569",
@@ -946,6 +952,144 @@
       return item;
     },
 
+    
+    submitGroupDirectorApproval(id, reviewDecision, notes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        if (reviewDecision === 'APPROVE' || reviewDecision === true) {
+          item.statusCode = "PENDING_DIRECTOR_APPROVAL";
+          item.status = "เสนอ ผอ.กองกฎหมายพิจารณาความเห็น";
+          item.statusBadge = "bg-primary text-white";
+          item.assignedRole = "dir_legal";
+          item.workflowStep = 7;
+          item.groupDirectorEndorsement = "เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย";
+          item.groupDirectorNotes = notes || "";
+          item.groupDirectorApprovedDate = new Date().toLocaleString('th-TH');
+        } else {
+          item.statusCode = "DRAFTING_OPINION";
+          item.status = "นิติกรกำลังจัดทำความเห็น (ส่งกลับแก้ไข)";
+          item.statusBadge = "bg-warning text-dark";
+          item.assignedRole = "legal_officer";
+          item.workflowStep = 5;
+          item.groupDirectorReturnNotes = notes || "ขอให้ตรวจสอบข้อเท็จจริงเพิ่มเติม";
+          item.groupDirectorReturnedDate = new Date().toLocaleString('th-TH');
+        }
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    submitDirectorApproval(id, decision, notes, forwardTarget) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        if (decision === 'APPROVE' || decision === true) {
+          item.statusCode = "PENDING_DISPATCH";
+          item.status = "ธุรการออกเลขส่งและส่งต่อผู้บริหาร";
+          item.statusBadge = "bg-primary text-white";
+          item.assignedRole = "admin_legal";
+          item.workflowStep = 8;
+          item.legalDirectorEndorsement = "เห็นชอบตามร่างความเห็นแย้ง และมอบหมายธุรการส่งเสนอผู้บริหาร";
+          item.legalDirectorApprovalNotes = notes || "ได้ตรวจพิจารณาแล้ว เห็นชอบตามร่างความเห็นแย้ง";
+          item.legalDirectorForwardTarget = forwardTarget || "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)";
+          item.legalDirectorApprovedDate = new Date().toLocaleString('th-TH');
+          item.directorFinalOpinion = notes || item.legalDirectorApprovalNotes;
+          item.directorApprovedDate = item.legalDirectorApprovedDate;
+          item.forwardTarget = forwardTarget || "deputy_sg";
+        } else {
+          item.statusCode = "DRAFTING_OPINION";
+          item.status = "นิติกรกำลังจัดทำความเห็น (ผอ.กอง ส่งกลับแก้ไข)";
+          item.statusBadge = "bg-warning text-dark";
+          item.assignedRole = "legal_officer";
+          item.workflowStep = 5;
+          item.directorReturnNotes = notes || "แก้ไขข้อกฎหมายเพิ่มเติม";
+          item.directorReturnedDate = new Date().toLocaleString('th-TH');
+        }
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    submitLegalAdminDispatch(id, dispatchNo, target, notes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_DEPUTY_SG";
+        item.status = "เสนอผู้บริหารลงนามหนังสือความเห็น";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "deputy_sg";
+        item.workflowStep = 9;
+        item.adminDispatchNo = dispatchNo || `2569/${Math.floor(1000 + Math.random() * 9000)}`;
+        item.adminDispatchDate = new Date().toLocaleDateString('th-TH');
+        item.adminDispatchOfficer = "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)";
+        item.adminDispatchTarget = target || "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)";
+        item.adminDispatchNotes = notes || "";
+        item.adminDispatchedDate = new Date().toLocaleString('th-TH');
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    submitLegalAdminResolutionIntake(id, notes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_DIRECTOR_RESOLUTION";
+        item.status = "เสนอผลมติ ผอ.กองกฎหมาย";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "dir_legal";
+        item.workflowStep = 10;
+        item.adminResolutionIntakeNotes = notes || "";
+        item.adminResolutionIntakeDate = new Date().toLocaleString('th-TH');
+        item.finalDispatchNotes = notes || "";
+        item.adminResolutionNotes = notes || "";
+        item.adminForwardedToDirectorDate = new Date().toLocaleString('th-TH');
+        item.finalDispatchedAt = new Date().toLocaleString('th-TH');
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    submitDirectorResolutionOrder(id, target, notes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_GROUP_RESOLUTION";
+        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ";
+        item.statusBadge = "bg-info text-dark";
+        item.assignedRole = "group_director";
+        item.workflowStep = 11;
+        item.directorResolutionTarget = target || "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)";
+        item.directorResolutionOrderNotes = notes || "";
+        item.directorResolutionOrder = "มอบ ผอ.กลุ่มงานความเห็นแย้ง ดำเนินการตามมติ";
+        item.directorResolutionOrderedDate = new Date().toLocaleString('th-TH');
+        item.directorResolutionOrderDate = item.directorResolutionOrderedDate;
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    submitGroupDirectorResolutionOrder(id, target, notes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_OFFICER_FINAL_DOC";
+        item.status = "นิติกรจัดทำหนังสือความเห็นตามมติ";
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
+        item.workflowStep = 12;
+        item.groupDirectorResolutionTarget = target || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+        item.groupDirectorResolutionOfficer = item.groupDirectorResolutionTarget;
+        item.groupDirectorResolutionOrderNotes = notes || "";
+        item.groupDirectorResolutionOrder = "มอบหมายนิติกรจัดทำหนังสือแจ้งความเห็นตามผลมติ";
+        item.groupDirectorResolutionOrderedDate = new Date().toLocaleString('th-TH');
+        item.groupDirectorResolutionOrderDate = item.groupDirectorResolutionOrderedDate;
+        saveCases(cases);
+      }
+      return item;
+    },
+
     forwardToLegalDirectorAfterReview(id, reviewNotes, isApproved = true) {
       const cases = loadCases();
       const item = cases.find(c => c.id === id);
@@ -1175,6 +1319,48 @@
     },
 
     // S15: ธุรการกองกฎหมาย ตรวจสอบเลขหนังสือส่งภายนอก & ลายมือชื่อประธาน และส่งต่อนิติกร (S16)
+    
+    signExecutiveDocRound1(id, signedNotes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "RETURNED_FROM_EXEC";
+        item.status = "ธุรการรับผลมติ";
+        item.statusBadge = "bg-success text-white";
+        item.assignedRole = "admin_legal";
+        item.workflowStep = 10;
+        item.signedBy = "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)";
+        item.signedDate = new Date().toLocaleDateString('th-TH');
+        item.signedExecutiveOrder = "เห็นชอบให้ทำความเห็นแย้ง";
+        item.signedDocFile = "หนังสือผลมติ_2569_006.pdf";
+        item.boardResolution = item.boardResolution || "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
+        item.boardResolutionDetail = item.boardResolutionDetail || "ที่ประชุมคณะกรรมการ ป.ป.ท. มีมติเห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
+        item.boardMeetingNo = item.boardMeetingNo || "14/2569";
+        item.boardMeetingDate = item.boardMeetingDate || new Date().toLocaleDateString('th-TH');
+        item.executiveSignNotesRound1 = signedNotes || "ลงนามเรียบร้อยแล้ว ส่งคืนกองกฎหมายเพื่อดำเนินการตามมติ";
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    signExecutiveDocRound2(id, signedNotes) {
+      const cases = loadCases();
+      const item = cases.find(c => c.id === id);
+      if (item) {
+        item.statusCode = "PENDING_ADMIN_SIGNED_RECEIVE";
+        item.status = "ผู้บริหารลงนามแล้ว (รอธุรการตรวจรับ)";
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "admin_legal";
+        item.workflowStep = 17;
+        item.signedPresidentName = "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)";
+        item.signedExecutiveDate = new Date().toLocaleString('th-TH');
+        item.signedDocFile = "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf";
+        item.executiveSignNotesRound2 = signedNotes || "ลงนามเรียบร้อยแล้ว ส่งคืนกองกฎหมายเพื่อออกเลขส่งภายนอกและดำเนินการต่อไป";
+        saveCases(cases);
+      }
+      return item;
+    },
+
     submitLegalAdminSignedDocReceive(id, verifyData) {
       const cases = loadCases();
       const item = cases.find(c => c.id === id);

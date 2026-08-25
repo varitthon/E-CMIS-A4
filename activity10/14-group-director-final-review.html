@@ -549,7 +549,7 @@
             setElText('f_finalDocFile', currentCase.finalDocFile || 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf');
 
             // Render Read-Only View if already reviewed
-            const isAlreadyReviewed = currentCase.groupDirectorFinalReviewedDate || (currentCase.statusCode !== 'PENDING_GROUP_FINAL_REVIEW' && currentCase.workflowStep > 11);
+            const isAlreadyReviewed = currentCase.statusCode !== 'PENDING_GROUP_FINAL_REVIEW' && (currentCase.groupDirectorFinalReviewedDate || (currentCase.workflowStep && currentCase.workflowStep > 14));
             if (isAlreadyReviewed) {
                 renderReadOnlyReview();
             }

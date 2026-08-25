@@ -541,7 +541,7 @@
             setElText('f_directorResolutionOrderNotes', currentCase.directorResolutionOrderNotes || 'รับทราบผลมติคณะกรรมการ ป.ป.ท. มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง กำกับนิติกรเจ้าของสำนวนจัดทำร่างหนังสือส่งอัยการสูงสุดและหนังสือแจ้งหน่วยงานที่เกี่ยวข้องตามมติต่อไป');
 
             // Check if Group Director has already ordered
-            const isAlreadyOrdered = currentCase.statusCode === 'PENDING_FINAL_DOC_DRAFT' || currentCase.groupDirectorResolutionOrderDate;
+            const isAlreadyOrdered = currentCase.statusCode === 'PENDING_OFFICER_FINAL_DOC' || currentCase.statusCode === 'PENDING_FINAL_DOC_DRAFT' || (currentCase.workflowStep && currentCase.workflowStep > 12) || currentCase.groupDirectorResolutionOrderDate;
 
             if (isAlreadyOrdered) {
                 const step12El = document.getElementById('step12');

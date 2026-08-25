@@ -822,7 +822,7 @@
                     window.location.href = `20-legal-director-oag-verdict-review.html?id=${encodeURIComponent(c.id)}`;
                 } else if (sc === 'PENDING_DIRECTOR_FINAL_REVIEW') {
                     window.location.href = `15-legal-director-final-review.html?id=${encodeURIComponent(c.id)}`;
-                } else if (sc === 'PENDING_DIRECTOR_RESOLUTION') {
+                } else if (sc === 'PENDING_DIRECTOR_RESOLUTION' || sc === 'PENDING_DIRECTOR_RESOLUTION_ORDER') {
                     window.location.href = `11-legal-director-resolution.html?id=${encodeURIComponent(c.id)}`;
                 } else if (sc === 'PENDING_DIRECTOR_APPROVAL') {
                     window.location.href = `08-legal-director-approval.html?id=${encodeURIComponent(c.id)}`;
@@ -836,7 +836,7 @@
                     window.location.href = `21-group-director-oag-verdict-review.html?id=${encodeURIComponent(c.id)}`;
                 } else if (sc === 'PENDING_GROUP_FINAL_REVIEW') {
                     window.location.href = `14-group-director-final-review.html?id=${encodeURIComponent(c.id)}`;
-                } else if (sc === 'PENDING_GROUP_RESOLUTION') {
+                } else if (sc === 'PENDING_GROUP_RESOLUTION' || sc === 'PENDING_GROUP_DIRECTOR_RESOLUTION_ORDER') {
                     window.location.href = `12-group-director-resolution.html?id=${encodeURIComponent(c.id)}`;
                 } else if (sc === 'PENDING_GROUP_REVIEW') {
                     window.location.href = `07-group-director-approval.html?id=${encodeURIComponent(c.id)}`;
@@ -869,6 +869,83 @@
             handleCaseAction(caseId);
         }
 
+        
+        function signExecutiveRound1(caseId) {
+            const allCases = getAllDatabaseCases();
+            const c = allCases.find(item => item.id === caseId || item.caseNo === caseId);
+            if (!c) return;
+
+            Swal.fire({
+                icon: 'question',
+                title: 'ลงนามหนังสือเสนอ คกก. ป.ป.ท. (รอบที่ 1)?',
+                html: `
+                    <div style="text-align:left; font-size:0.9em; padding:10px 14px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
+                        <p style="margin-bottom:4px;"><strong>สำนวน:</strong> ${c.title || c.id}</p>
+                        <p style="margin-bottom:0;"><strong>ผู้ลงนาม:</strong> นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'ลงนามและส่งผลมติคืนกองกฎหมาย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#15803d',
+                cancelButtonColor: '#64748b'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    if (typeof Activity10 !== 'undefined' && Activity10.signExecutiveDocRound1) {
+                        Activity10.signExecutiveDocRound1(c.id);
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ลงนามรอบที่ 1 สำเร็จ!',
+                        text: 'ส่งผลมติกลับไปยังธุรการกองกฎหมาย (S10) เรียบร้อยแล้ว',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        updateCardCounts();
+                        renderTable();
+                    });
+                }
+            });
+        }
+
+        function signExecutiveRound2(caseId) {
+            const allCases = getAllDatabaseCases();
+            const c = allCases.find(item => item.id === caseId || item.caseNo === caseId);
+            if (!c) return;
+
+            Swal.fire({
+                icon: 'question',
+                title: 'ลงนามหนังสือความเห็นฉบับสมบูรณ์ (รอบที่ 2)?',
+                html: `
+                    <div style="text-align:left; font-size:0.9em; padding:10px 14px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
+                        <p style="margin-bottom:4px;"><strong>สำนวน:</strong> ${c.title || c.id}</p>
+                        <p style="margin-bottom:0;"><strong>ผู้ลงนาม:</strong> นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'ลงนามสมบูรณ์และส่งคืนกองกฎหมาย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#15803d',
+                cancelButtonColor: '#64748b'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    if (typeof Activity10 !== 'undefined' && Activity10.signExecutiveDocRound2) {
+                        Activity10.signExecutiveDocRound2(c.id);
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ลงนามรอบที่ 2 สำเร็จ!',
+                        text: 'ส่งหนังสือฉบับลงนามสมบูรณ์กลับไปยังธุรการกองกฎหมาย (S17) เรียบร้อยแล้ว',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        updateCardCounts();
+                        renderTable();
+                    });
+                }
+            });
+        }
+
         function resetDemoData() {
             Swal.fire({
                 title: 'คืนค่าข้อมูลตัวอย่าง?',
@@ -899,7 +976,7 @@
                 if (statusCode === 'PENDING_ADMIN_OAG_VERDICT_INTAKE' || (statusCode === 'DISPATCHED_TO_PROSECUTOR' && (item.dispatchRecipientType === 'attorney_general' || item.dispatchScenario === 'case_disagreed' || (item.finalOpinionType && item.finalOpinionType.includes('เห็นแย้ง'))))) {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="รับผลคำวินิจฉัย อสส. & ส่งต่อ ผอ.กอง">ดำเนินการ</button>`;
                 }
-                if (statusCode === 'SUBMITTED_TO_EXEC_ROUND2' || statusCode === 'PENDING_ADMIN_SIGNED_RECEIVE') {
+                if (statusCode === 'PENDING_ADMIN_SIGNED_RECEIVE') {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ตรวจรับหนังสือลงนาม & ส่งต่อนิติกร (S17)">ดำเนินการ</button>`;
                 }
                 if (statusCode === 'PENDING_FINAL_DISPATCH_ROUND2') {
@@ -922,7 +999,7 @@
                 if (statusCode === 'PENDING_DIRECTOR_FINAL_REVIEW') {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ผอ.กองตรวจร่างหนังสือสมบูรณ์ (S15)">ดำเนินการ</button>`;
                 }
-                if (statusCode === 'PENDING_DIRECTOR_RESOLUTION') {
+                if (statusCode === 'PENDING_DIRECTOR_RESOLUTION' || statusCode === 'PENDING_DIRECTOR_RESOLUTION_ORDER') {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="พิจารณาผลมติ">ดำเนินการ</button>`;
                 }
                 if (statusCode === 'PENDING_DIRECTOR_APPROVAL') {
@@ -942,7 +1019,7 @@
                 if (statusCode === 'PENDING_GROUP_FINAL_REVIEW') {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ผอ.กลุ่มงานตรวจร่างหนังสือสมบูรณ์ (S14)">ดำเนินการ</button>`;
                 }
-                if (statusCode === 'PENDING_GROUP_RESOLUTION') {
+                if (statusCode === 'PENDING_GROUP_RESOLUTION' || statusCode === 'PENDING_GROUP_DIRECTOR_RESOLUTION_ORDER') {
                     return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="พิจารณาผลมติ">ดำเนินการ</button>`;
                 }
                 if (statusCode === 'PENDING_GROUP_REVIEW') {
@@ -973,8 +1050,11 @@
 
             // 5. รองเลขาธิการ ป.ป.ท. (deputy_sg / Surapong.W)
             if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
+                if (statusCode === 'SUBMITTED_TO_EXEC_ROUND2') {
+                    return `<button class="btn-action-primary" style="background:#15803d; border-color:#15803d;" onclick="signExecutiveRound2('${caseId}')" title="ผู้บริหารลงนามหนังสือฉบับสมบูรณ์ (รอบ 2)"><i class="fa-solid fa-file-signature me-1"></i>ลงนาม (รอบ 2)</button>`;
+                }
                 if (statusCode === 'PENDING_DEPUTY_SG') {
-                    return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ลงนาม">ดำเนินการ</button>`;
+                    return `<button class="btn-action-primary" style="background:#15803d; border-color:#15803d;" onclick="signExecutiveRound1('${caseId}')" title="ผู้บริหารลงนามเสนอ คกก. ป.ป.ท. (รอบ 1)"><i class="fa-solid fa-file-signature me-1"></i>ลงนาม (รอบ 1)</button>`;
                 }
                 return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดสำนวน">${svgEyeIcon}</button>`;
             }

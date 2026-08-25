@@ -393,7 +393,7 @@
                             </div>
                             <div class="form-group">
                                 <label>มอบหมายให้ (ธุรการกองกฎหมาย)</label>
-                                <input type="text" class="form-control" style="font-weight: 600; background: var(--bg-body);" readonly value="นางกานดา รัตนวิชัย (เจ้าหน้าที่ธุรการชำนาญงาน)">
+                                <input type="text" class="form-control" style="font-weight: 600; background: var(--bg-body);" readonly value="นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)">
                             </div>
                         </div>
 
@@ -532,7 +532,7 @@
             setElText('f_groupDirectorFinalNotes', currentCase.groupDirectorFinalReviewNotes || 'ได้ตรวจสอบความถูกต้องและครบถ้วนของร่างหนังสือความเห็นแย้งแล้ว เห็นชอบตามร่างหนังสือที่นิติกรจัดทำ จึงเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาและดำเนินการต่อไป');
 
             // Check if already submitted by Legal Director (Read-Only)
-            const isAlreadySubmitted = (currentCase.workflowStep && currentCase.workflowStep > 12) || currentCase.legalDirectorFinalReviewedDate;
+            const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_DIRECTOR_FINAL_REVIEW' && (currentCase.legalDirectorFinalReviewedDate || (currentCase.workflowStep && currentCase.workflowStep > 15));
             const container = document.getElementById('legalDirectorReviewContainer');
             if (container && isAlreadySubmitted) {
                 container.innerHTML = `
@@ -549,7 +549,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>ผู้รับมอบหมาย</label>
-                                    <div class="read-box" style="font-weight:600;">นางกานดา รัตนวิชัย (เจ้าหน้าที่ธุรการชำนาญงาน)</div>
+                                    <div class="read-box" style="font-weight:600;">นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)</div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -577,7 +577,7 @@
                 html: `
                     <div style="text-align: left; font-size: 0.9em; padding: 8px 12px; background: #f8fafc; border-radius: 6px;">
                         <p style="margin-bottom: 4px;"><strong>คำสั่งการ:</strong> ${action}</p>
-                        <p style="margin-bottom: 0;"><strong>ผู้รับมอบหมาย:</strong> นางกานดา รัตนวิชัย (ธุรการกองกฎหมาย - S14)</p>
+                        <p style="margin-bottom: 0;"><strong>ผู้รับมอบหมาย:</strong> นางกานดา รักษ์ธรรม (ธุรการกองกฎหมาย - S14)</p>
                     </div>
                 `,
                 showCancelButton: true,

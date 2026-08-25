@@ -236,7 +236,7 @@
                 <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
                     <div class="avatar" id="userAvatar">ก</div>
                     <div class="user-info">
-                        <span class="user-name" id="userName">นางกานดา รัตนวิชัย</span>
+                        <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
                         <span class="user-role" id="userRoleTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
                     </div>
                     <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
@@ -246,7 +246,7 @@
                         <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
                         <div class="profile-dropdown-body">
                             <div class="profile-card">
-                                <span class="profile-card-name" id="profileCardName">นางกานดา รัตนวิชัย</span>
+                                <span class="profile-card-name" id="profileCardName">นางกานดา รักษ์ธรรม</span>
                                 <span class="profile-card-title" id="profileCardTitle">เจ้าหน้าที่ธุรการชำนาญงาน</span>
                                 <span class="profile-card-org" id="profileCardOrg">งานธุรการและสารบรรณ · กองกฎหมาย (กอท.)</span>
                             </div>
@@ -549,7 +549,7 @@
             setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf');
 
             // Check if already verified & forwarded by Admin (Read-Only)
-            const isAlreadySubmitted = (currentCase.workflowStep && currentCase.workflowStep > 14) || currentCase.adminVerifiedDate;
+            const isAlreadySubmitted = (currentCase.statusCode !== 'SUBMITTED_TO_EXEC_ROUND2' && currentCase.statusCode !== 'PENDING_ADMIN_SIGNED_RECEIVE') && (currentCase.adminVerifiedDate || (currentCase.workflowStep && currentCase.workflowStep > 17));
             const container = document.getElementById('adminSignedDocReceiveContainer');
             if (container && isAlreadySubmitted) {
                 container.innerHTML = `

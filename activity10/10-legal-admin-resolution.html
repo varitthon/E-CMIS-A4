@@ -505,7 +505,7 @@
             setElText('f_boardResolutionDetail', currentCase.boardResolutionDetail || 'ที่ประชุมคณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงประกอบบันทึกความเห็นของกองกฎหมายแล้ว มีมติเป็นเอกฉันท์เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ');
 
             // Check if Legal Admin has already processed resolution intake
-            const isAlreadyIntaked = currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION_ORDER' || currentCase.adminResolutionIntakeDate;
+            const isAlreadyIntaked = currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION' || currentCase.statusCode === 'PENDING_DIRECTOR_RESOLUTION_ORDER' || (currentCase.workflowStep && currentCase.workflowStep > 10) || currentCase.adminResolutionIntakeDate;
 
             if (isAlreadyIntaked) {
                 const step10El = document.getElementById('step10');
