@@ -306,33 +306,39 @@
  </div>
  <div class="helper-text" style="margin-bottom: 20px;">* ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น 2569/001), <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong> (เช่น ปปท. 0012/2568), <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong></div>
 
- <!-- Search Results Display Panel -->
- <div id="intakeSearchResults" class="d-none" style="margin-bottom: 20px;"></div>
+                <!-- Search Results Display Panel -->
+                <div id="intakeSearchResults" class="d-none" style="margin-bottom: 20px;"></div>
 
- <!-- ส่วนแสดงข้อมูลรายละเอียดสำนวนคดี (แสดงหลังกดเลือกจากค้นหา) -->
- <div id="selectedCaseDetailCard" class="case-detail-container d-none">
- <div class="case-detail-title">📁 รายละเอียดข้อมูลสำนวนคดีที่เลือก</div>
- <div class="form-group">
-                        <label>เลขสำนวน ป.ป.ท.</label>
-                        <input type="text" id="f_caseId" class="form-control font-monospace" readonly style="background-color:var(--bg-card); font-weight:700; color:#1e3a8a;">
+                <!-- ส่วนแสดงข้อมูลรายละเอียดสำนวนคดี (แสดงหลังกดเลือกจากค้นหา) -->
+                <div id="selectedCaseDetailCard" class="case-detail-container d-none">
+                    <div class="case-detail-title">📁 รายละเอียดข้อมูลสำนวนคดีที่เลือก</div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>เลขสำนวน ป.ป.ท.</label>
+                            <input type="text" id="f_caseId" class="form-control font-monospace" readonly style="background-color:var(--bg-card); font-weight:700; color:#1e3a8a;">
+                        </div>
+                        <div class="form-group">
+                            <label>เลขดำ ป.ป.ท.</label>
+                            <input type="text" id="f_blackNo" class="form-control font-monospace" readonly style="background-color:var(--bg-card); font-weight:700; color:#1e3a8a;">
+                        </div>
                     </div>
- <div class="form-group">
- <label>ชื่อเรื่อง / ข้อกล่าวหา</label>
- <textarea id="f_subject" class="form-control" rows="2" readonly style="background-color:var(--bg-card);"></textarea>
- </div>
- <div class="form-grid-2">
- <div class="form-group">
- <label>ผู้กล่าวหา / ผู้ร้อง</label>
- <input type="text" id="f_complainant" class="form-control" readonly style="background-color:var(--bg-card);">
- </div>
- <div class="form-group">
- <label>ผู้ถูกกล่าวหา / จำเลย</label>
- <input type="text" id="f_accused" class="form-control" readonly style="background-color:var(--bg-card);">
- </div>
- </div>
- </div>
+                    <div class="form-group">
+                        <label>ชื่อเรื่อง / ข้อกล่าวหา</label>
+                        <textarea id="f_subject" class="form-control" rows="2" readonly style="background-color:var(--bg-card);"></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>ผู้กล่าวหา / ผู้ร้อง</label>
+                            <input type="text" id="f_complainant" class="form-control" readonly style="background-color:var(--bg-card);">
+                        </div>
+                        <div class="form-group">
+                            <label>ผู้ถูกกล่าวหา / จำเลย</label>
+                            <input type="text" id="f_accused" class="form-control" readonly style="background-color:var(--bg-card);">
+                        </div>
+                    </div>
+                </div>
 
- <hr style="border:0; border-top:1px solid var(--border-color); margin-bottom:20px;">
+                <hr style="border:0; border-top:1px solid var(--border-color); margin-bottom:20px;">
 
  <!-- ข้อมูลการรับจากฝ่ายสารบรรณกลาง -->
  <div style="font-weight: 700; color: var(--text-title); margin-bottom: 12px; display:flex; align-items:center; gap:6px;">
@@ -784,6 +790,7 @@
 
  // Fill selectedCaseDetailCard fields
  if (document.getElementById('f_caseId')) document.getElementById('f_caseId').value = cleanId;
+ if (document.getElementById('f_blackNo')) document.getElementById('f_blackNo').value = target.blackNo || '-';
  if (document.getElementById('f_subject')) document.getElementById('f_subject').value = target.title || '';
  if (document.getElementById('f_complainant')) document.getElementById('f_complainant').value = target.accuser || '-';
  if (document.getElementById('f_accused')) document.getElementById('f_accused').value = target.accused || target.defendant || '-';

@@ -288,7 +288,6 @@
  </div>
  </div>
  </div>
- </div>
 
  <!-- Card 1: Read-Only Case Details & Executive Resolution -->
  <div class="form-card">
@@ -541,6 +540,11 @@
  setElText('f_signedOrder', currentCase.signedExecutiveOrder ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง` : 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง');
  setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
  setElText('f_groupDirectorResolutionNotes', currentCase.groupDirectorResolutionNotes || currentCase.directorResolutionNotes || 'มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป');
+
+ const subjInput = document.getElementById('in_finalDocSubject');
+ if (subjInput && currentCase.title) {
+   subjInput.value = 'ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ ' + currentCase.title;
+ }
 
  // Check if already forwarded (Read-Only)
  const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_OFFICER_FINAL_DOC' && (currentCase.finalDocSubmittedDate || (currentCase.workflowStep && currentCase.workflowStep > 13));

@@ -887,7 +887,8 @@
  workflowStep: newCaseData.workflowStep || (newCaseData.lawReceiveNo ? 3 : 2),
  docType: newCaseData.docType || "เอกสารแนบสำนวน",
  docNo: newCaseData.docNo || "นร 10/2569",
- legalOpinion: newCaseData.legalOpinion || "อยู่ระหว่างตรวจพิจารณาข้อเท็จจริงและพยานหลักฐาน",
+ summary: newCaseData.summary || "คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี",
+ legalOpinion: newCaseData.legalOpinion || "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด",
  centralSarabanNo: newCaseData.centralSarabanNo || "",
  signedBy: "",
  signedDate: ""
