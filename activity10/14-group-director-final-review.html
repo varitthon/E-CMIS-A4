@@ -34,6 +34,7 @@
  .form-card-body { padding: 20px; }
 
  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -57,11 +58,12 @@
  .font-monospace { font-family: monospace; }
  .d-none { display: none !important; }
 
- /* Radio Choice Option Box */
- .opinion-card-option { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; background: var(--bg-card); display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
- .opinion-card-option:hover { border-color: #93c5fd; background: #f8fafc; }
- .opinion-card-option.selected { border-color: #2563eb; background: #eff6ff; }
- .opinion-card-option input[type="radio"] { margin-top: 3px; }
+ /* Decision Choice Cards */
+ .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+ .decision-card { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; background: var(--bg-card); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: row; align-items: center; gap: 12px; }
+ .decision-card:hover { border-color: #93c5fd; background: rgba(37,99,235,0.02); }
+ .decision-card.active-approve { border-color: #16a34a; background: rgba(22,163,74,0.05); }
+ .decision-card.active-return { border-color: #dc2626; background: rgba(220,38,38,0.05); }
 
  /* Speech to Text Microphone Button */
  .btn-mic {
@@ -101,7 +103,7 @@
  }
 
  @media (max-width: 1024px) {
- .form-grid-2 { grid-template-columns: 1fr; }
+ .form-grid-2, .decision-grid { grid-template-columns: 1fr; }
  }
  </style>
 </head>
@@ -236,10 +238,14 @@
  <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">-</div>
  </div>
 
- <div class="form-grid-2">
+ <div class="form-grid-3">
  <div class="form-group">
  <label>หน่วยงานอัยการต้นทาง</label>
  <div class="read-box" id="f_source">-</div>
+ </div>
+ <div class="form-group">
+ <label>ระดับศาล</label>
+ <div class="read-box" id="f_level">-</div>
  </div>
  <div class="form-group">
  <label>เลขที่หนังสืออัยการ</label>
@@ -327,10 +333,11 @@
  <div class="form-group">
  <label>ผลการตรวจพิจารณา <span style="color:#dc2626;">*</span></label>
  
- <label class="opinion-card-option selected" id="optApprove" onclick="selectReviewOption('APPROVE')">
- <input type="radio" name="rdReviewOption" id="rdApprove" value="APPROVE" checked>
- <div>
- <div style="font-weight:700; color:#166534;">
+ <div class="decision-grid">
+ <label class="decision-card active-approve" style="display: flex; justify-content: start;" id="optApprove" onclick="selectReviewOption('APPROVE')">
+ <input type="radio" name="rdReviewOption" id="rdApprove" value="APPROVE" checked style="accent-color:#16a34a; width:18px; height:18px;">
+ <div style="display: flex; flex-direction: column;">
+ <div style="font-weight:700; color:#166534; font-size:0.92em;">
  <i class="fa-solid fa-circle-check text-success me-1"></i> เห็นชอบร่างหนังสือความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย ตรวจพิจารณา
  </div>
  <div style="font-size:0.82em; color:#64748b; margin-top:2px;">
@@ -339,10 +346,10 @@
  </div>
  </label>
 
- <label class="opinion-card-option" id="optReturn" onclick="selectReviewOption('RETURN')">
- <input type="radio" name="rdReviewOption" id="rdReturn" value="RETURN">
- <div>
- <div style="font-weight:700; color:#dc2626;">
+ <label class="decision-card" style="display: flex; justify-content: start;" id="optReturn" onclick="selectReviewOption('RETURN')">
+ <input type="radio" name="rdReviewOption" id="rdReturn" value="RETURN" style="accent-color:#dc2626; width:18px; height:18px;">
+ <div style="display: flex; flex-direction: column;">
+ <div style="font-weight:700; color:#dc2626; font-size:0.92em;">
  <i class="fa-solid fa-rotate-left text-danger me-1"></i> ส่งกลับให้นิติกรแก้ไขเพิ่มเติม
  </div>
  <div style="font-size:0.82em; color:#64748b; margin-top:2px;">
@@ -350,6 +357,7 @@
  </div>
  </div>
  </label>
+ </div>
  </div>
 
  <div class="form-group">
@@ -437,6 +445,7 @@
  setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0014/2569');
  setElText('f_title', currentCase.title);
+ setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1');
  setElText('f_docNo', currentCase.docNo || 'อส 0014/2569');
  setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
@@ -490,8 +499,8 @@
  const isApprove = val === 'APPROVE';
  document.getElementById('rdApprove').checked = isApprove;
  document.getElementById('rdReturn').checked = !isApprove;
- document.getElementById('optApprove').classList.toggle('selected', isApprove);
- document.getElementById('optReturn').classList.toggle('selected', !isApprove);
+ document.getElementById('optApprove').className = isApprove ? 'decision-card active-approve' : 'decision-card';
+ document.getElementById('optReturn').className = !isApprove ? 'decision-card active-return' : 'decision-card';
  }
 
  function submitGroupDirectorFinalReviewForm() {

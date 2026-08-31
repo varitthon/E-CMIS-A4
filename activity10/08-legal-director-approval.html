@@ -127,7 +127,7 @@
 
  /* Decision Choice Cards */
  .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
- .decision-card { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; background: var(--bg-card); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+ .decision-card { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; background: var(--bg-card); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: row; align-items: center; gap: 12px; }
  .decision-card:hover { border-color: #93c5fd; background: rgba(37,99,235,0.02); }
  .decision-card.active-approve { border-color: #1e3a8a; background: rgba(30,58,138,0.05); }
  .decision-card.active-return { border-color: #dc2626; background: rgba(220,38,38,0.05); }
@@ -325,6 +325,10 @@
  <div class="read-box" id="f_source">-</div>
  </div>
  <div class="form-group">
+ <label>ระดับศาล</label>
+ <div class="read-box" id="f_level">-</div>
+ </div>
+ <div class="form-group">
  <label>เลขที่หนังสืออัยการ</label>
  <div class="read-box font-monospace fw-bold" id="f_docNo">-</div>
  </div>
@@ -388,18 +392,18 @@
  <div class="form-group">
  <label>ผลการตรวจพิจารณา / คำสั่งการ <span style="color:#dc2626;">*</span></label>
  <div class="decision-grid">
- <label class="decision-card active-approve" id="label_dir_approve" onclick="selectDirectorDecision('APPROVE')">
+ <label class="decision-card active-approve" style="display: flex; justify-content: start;" id="label_dir_approve" onclick="selectDirectorDecision('APPROVE')">
  <input type="radio" name="in_directorDecision" id="dir_approve" value="APPROVE" checked style="accent-color:#1e3a8a; width:18px; height:18px;">
- <div>
+ <div style="display: flex; flex-direction: column;">
  <div style="font-weight:700; color:#1e3a8a; font-size:0.92em;">
  <i class="fa-solid fa-circle-check text-success me-1"></i> เห็นชอบตามร่างความเห็นแย้ง และส่งเรื่องต่อไปที่ ธุรการกองกฎหมาย
  </div>
  <div style="font-size:0.78em; color:#64748b;">(มอบหมายธุรการออกเลขส่งและส่งเสนอผู้บริหารตามลำดับชั้น)</div>
  </div>
  </label>
- <label class="decision-card" id="label_dir_return" onclick="selectDirectorDecision('RETURN')">
+ <label class="decision-card" style="display: flex; justify-content: start;" id="label_dir_return" onclick="selectDirectorDecision('RETURN')">
  <input type="radio" name="in_directorDecision" id="dir_return" value="RETURN" style="accent-color:#dc2626; width:18px; height:18px;">
- <div>
+ <div style="display: flex; flex-direction: column;">
  <div style="font-weight:700; color:#dc2626; font-size:0.92em;">
  <i class="fa-solid fa-rotate-left text-danger me-1"></i> ส่งเรื่องกลับให้ ผอ.กลุ่มงาน / นิติกร แก้ไขเพิ่มเติม
  </div>
@@ -554,12 +558,29 @@
  setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0014/2569');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || '-');
  setElText('f_docNo', currentCase.docNo || '2569/0014');
  setElText('f_accused', currentCase.accused || '-');
 
  setElText('f_officerName', currentCase.officer || 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)');
- setElText('f_opinionType', currentCase.opinionType || 'เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ (Dissenting Opinion)');
+  const opTypeEl = document.getElementById('f_opinionType');
+  if (opTypeEl) {
+    const opText = currentCase.opinionType || 'เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ (Dissenting Opinion)';
+    let icon = 'fa-triangle-exclamation';
+    let colorClass = 'text-danger';
+    let customStyle = '';
+    if (opText.includes('เห็นชอบ')) {
+      icon = 'fa-circle-check';
+      colorClass = 'text-success';
+    } else if (opText.includes('ความเห็นอื่นๆ') || opText.includes('Other')) {
+      icon = 'fa-circle-question';
+      colorClass = '';
+      customStyle = 'style="color: #d97706;"';
+    }
+    opTypeEl.className = `read-box fw-bold ${colorClass}`;
+    opTypeEl.innerHTML = `<i class="fa-solid ${icon} me-1" ${customStyle}></i><span ${customStyle}>${opText}</span>`;
+  }
  setElText('f_opinionDraftText', currentCase.legalOpinionDraft || currentCase.legalOpinion || 'จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริงของ ป.ป.ท. พบว่าพยานหลักฐานและเส้นทางการเงินมีความเชื่อมโยงชัดเจน จึงเห็นควรทำความเห็นแย้งเสนอเลขาธิการ ป.ป.ท. เพื่อส่งอัยการสูงสุดชี้ขาด');
 
  setElText('f_groupDirectorEndorsement', currentCase.groupDirectorEndorsement || 'เห็นชอบตามร่างความเห็นแย้ง');

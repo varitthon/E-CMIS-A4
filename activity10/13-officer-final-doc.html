@@ -34,6 +34,7 @@
  .form-card-body { padding: 20px; }
 
  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+ .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -57,12 +58,13 @@
  .font-monospace { font-family: monospace; }
  .d-none { display: none !important; }
 
- /* Radio Opinion Selection Box */
- .opinion-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
- .opinion-card-option { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; background: var(--bg-card); display: flex; align-items: flex-start; gap: 10px; }
- .opinion-card-option:hover { border-color: #93c5fd; background: #f8fafc; }
- .opinion-card-option.selected { border-color: #2563eb; background: #eff6ff; }
- .opinion-card-option input[type="radio"] { margin-top: 3px; }
+ /* Decision Choice Cards */
+ .decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+ .decision-card { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; background: var(--bg-card); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: row; align-items: center; gap: 12px; }
+ .decision-card:hover { border-color: #93c5fd; background: rgba(37,99,235,0.02); }
+ .decision-card.active-dissent { border-color: #dc2626; background: rgba(220,38,38,0.05); }
+ .decision-card.active-agree { border-color: #16a34a; background: rgba(22,163,74,0.05); }
+ .decision-card.active-other { border-color: #d97706; background: rgba(217,119,6,0.05); }
 
  /* Speech to Text Microphone Button */
  .btn-mic {
@@ -102,7 +104,7 @@
  }
 
  @media (max-width: 1024px) {
- .form-grid-2, .opinion-select-grid { grid-template-columns: 1fr; }
+ .form-grid-2, .decision-grid { grid-template-columns: 1fr; }
  }
  </style>
 </head>
@@ -240,10 +242,14 @@
  <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">-</div>
  </div>
 
- <div class="form-grid-2">
+ <div class="form-grid-3">
  <div class="form-group">
  <label>หน่วยงานอัยการต้นทาง</label>
  <div class="read-box" id="f_source">-</div>
+ </div>
+ <div class="form-group">
+ <label>ระดับศาล</label>
+ <div class="read-box" id="f_level">-</div>
  </div>
  <div class="form-group">
  <label>เลขที่หนังสืออัยการ</label>
@@ -308,25 +314,42 @@
 
  <div class="form-group">
  <label>แนวทางจัดทำหนังสือตามมติ <span style="color:#dc2626;">*</span></label>
- <div class="opinion-select-grid">
- <label class="opinion-card-option selected" id="label_op_dissent" onclick="selectOpinionOption('DISSENT')">
+ <div class="decision-grid">
+ <label class="decision-card active-dissent" style="display: flex; justify-content: start;" id="label_op_dissent" onclick="selectOpinionOption('DISSENT')">
  <input type="radio" name="in_opinionOption" id="op_dissent" value="DISSENT" checked style="accent-color:#dc2626; width:18px; height:18px;">
- <div>
+ <div style="display: flex; flex-direction: column;">
  <div style="font-weight:700; color:#dc2626; font-size:0.92em;">
  <i class="fa-solid fa-triangle-exclamation me-1"></i> ทำหนังสือความเห็นแย้งคำสั่งไม่ฟ้อง (เสนอ อสส. ชี้ขาด)
  </div>
  <div style="font-size:0.78em; color:#64748b;">(จัดทำหนังสือส่งถึงอัยการสูงสุด เพื่อพิจารณาชี้ขาดตาม ป.วิ.อ. มาตรา 145/1)</div>
  </div>
  </label>
- <label class="opinion-card-option" id="label_op_agree" onclick="selectOpinionOption('AGREE')">
+ <label class="decision-card" style="display: flex; justify-content: start;" id="label_op_agree" onclick="selectOpinionOption('AGREE')">
  <input type="radio" name="in_opinionOption" id="op_agree" value="AGREE" style="accent-color:#16a34a; width:18px; height:18px;">
- <div>
+ <div style="display: flex; flex-direction: column;">
  <div style="font-weight:700; color:#16a34a; font-size:0.92em;">
  <i class="fa-solid fa-circle-check me-1"></i> ทำหนังสือเห็นชอบตามคำสั่งไม่ฟ้อง (ยุติเรื่อง)
  </div>
  <div style="font-size:0.78em; color:#64748b;">(จัดทำหนังสือแจ้งพนักงานอัยการเจ้าของสำนวนว่าไม่มีความเห็นแย้ง)</div>
  </div>
  </label>
+ <label class="decision-card" style="display: flex; justify-content: start;" id="label_op_other" onclick="selectOpinionOption('OTHER')">
+ <input type="radio" name="in_opinionOption" id="op_other" value="OTHER" style="accent-color:#d97706; width:18px; height:18px;">
+ <div style="display: flex; flex-direction: column;">
+ <div style="font-weight:700; color:#d97706; font-size:0.92em;">
+ <i class="fa-solid fa-circle-question me-1"></i> ความเห็นอื่นๆ
+ </div>
+ <div style="font-size:0.78em; color:#64748b;">(โปรดระบุรายละเอียดความเห็น)</div>
+ </div>
+ </label>
+ </div>
+
+ <!-- Other opinion specify field -->
+ <div id="otherReasonContainer" class="d-none" style="margin-top: 10px; background: rgba(217,119,6,0.05); border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px;">
+ <label for="in_opinionOtherSpecify" style="color:#b45309; font-weight:600; font-size:0.88em; margin-bottom:6px; display:block;">
+ <i class="fa-solid fa-circle-info me-1"></i>ระบุหัวข้อ/ประเภทความเห็นอื่นๆ <span style="color:#dc2626;">*</span>
+ </label>
+ <input type="text" id="in_opinionOtherSpecify" class="form-control" placeholder="เช่น ขอเอกสารพยานหลักฐานเพิ่มเติม, ชะลอการพิจารณาเพื่อรอผลคดีอื่น...">
  </div>
  </div>
 
@@ -424,6 +447,7 @@
  setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0019/2569');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2');
  setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
  setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
@@ -472,27 +496,67 @@
  function selectOpinionOption(type) {
  const optDissent = document.getElementById('op_dissent');
  const optAgree = document.getElementById('op_agree');
+ const optOther = document.getElementById('op_other');
  const lblDissent = document.getElementById('label_op_dissent');
  const lblAgree = document.getElementById('label_op_agree');
+ const lblOther = document.getElementById('label_op_other');
+ const otherContainer = document.getElementById('otherReasonContainer');
  const subj = document.getElementById('in_finalDocSubject');
 
- if (type === 'DISSENT') {
+ const t = (type || '').toUpperCase();
+
+ if (lblDissent) lblDissent.className = 'decision-card';
+ if (lblAgree) lblAgree.className = 'decision-card';
+ if (lblOther) lblOther.className = 'decision-card';
+
+ if (t === 'DISSENT') {
  if (optDissent) optDissent.checked = true;
- if (lblDissent) lblDissent.className = 'opinion-card-option selected';
- if (lblAgree) lblAgree.className = 'opinion-card-option';
+ if (lblDissent) lblDissent.className = 'decision-card active-dissent';
+ if (otherContainer) otherContainer.classList.add('d-none');
  if (subj && currentCase) subj.value = 'ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ ' + (currentCase.title || '');
- } else {
+ } else if (t === 'AGREE') {
  if (optAgree) optAgree.checked = true;
- if (lblAgree) lblAgree.className = 'opinion-card-option selected';
- if (lblDissent) lblDissent.className = 'opinion-card-option';
+ if (lblAgree) lblAgree.className = 'decision-card active-agree';
+ if (otherContainer) otherContainer.classList.add('d-none');
  if (subj && currentCase) subj.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + (currentCase.title || '');
+ } else if (t === 'OTHER') {
+ if (optOther) optOther.checked = true;
+ if (lblOther) lblOther.className = 'decision-card active-other';
+ if (otherContainer) {
+ otherContainer.classList.remove('d-none');
+ document.getElementById('in_opinionOtherSpecify')?.focus();
+ }
+ if (subj && currentCase) subj.value = 'หนังสือแจ้งผลการพิจารณา (ความเห็นอื่นๆ) ' + (currentCase.title || '');
  }
  }
  
  function submitOfficerFinalDocForm() {
  if (!currentCase) return;
 
- const opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
+ const isAgree = document.getElementById('op_agree')?.checked;
+ const isOther = document.getElementById('op_other')?.checked;
+
+ let opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
+ let defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
+ if (isAgree) {
+ opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
+ defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
+ } else if (isOther) {
+ const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();
+ if (!otherSpecify) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณาระบุหัวข้อความเห็นอื่นๆ',
+ text: 'โปรดระบุหัวข้อหรือประเภทของความเห็นอื่นๆ ในช่องที่กำหนด',
+ confirmButtonColor: '#1e3a8a'
+ });
+ document.getElementById('in_opinionOtherSpecify')?.focus();
+ return;
+ }
+ opinionType = `ความเห็นอื่นๆ: ${otherSpecify}`;
+ defaultFile = 'ร่างหนังสือความเห็นอื่นๆ.pdf';
+ }
+
  const subject = document.getElementById('in_finalDocSubject').value.trim();
  const summary = document.getElementById('in_finalDocSummary').value.trim();
 
@@ -526,7 +590,7 @@
  opinionType: opinionType,
  subject: subject,
  summary: summary,
- file: 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf'
+ file: defaultFile
  });
 
  Swal.fire({

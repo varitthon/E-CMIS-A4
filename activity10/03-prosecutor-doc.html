@@ -1,373 +1,756 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>ตรวจดูเอกสารอัยการ & รายละเอียดสำนวน | E-CMIS กิจกรรมที่ 10</title>
- <link rel="icon" type="image/png" href="pacc_logo.png">
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
- <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ตรวจดูเอกสารอัยการ & รายละเอียดสำนวน | E-CMIS กิจกรรมที่ 10</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
 
- <link rel="stylesheet" href="assets/ecmis-shell.css">
- <style>
- h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
- .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
- .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+    <link rel="stylesheet" href="assets/ecmis-shell.css" />
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
 
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
 
- .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+      /* Stepper Header */
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 40px;
+        right: 40px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        text-decoration: none;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+      }
+      .step-item.completed .step-circle {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.8em;
+        color: #64748b;
+        text-align: center;
+        white-space: nowrap;
+        max-width: 140px;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 600;
+      }
 
- /* Stepper Header */
- .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
- .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 900px; margin: 0 auto; }
- .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
- .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
- .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
- .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
- .step-item.completed .step-circle { background: #2563eb; border-color: #2563eb; color: #fff; }
- .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 140px; }
- .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
+      /* Form Card */
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
 
- /* Form Card */
- .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
- .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
- .form-card-body { padding: 20px; }
+      .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+      }
 
- .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
- .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
- .form-group:last-child { margin-bottom: 0; }
- .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; }
+      .read-box {
+        background-color: var(--bg-body);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 0.9em;
+        color: var(--text-title);
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+      }
+      .read-box-textarea {
+        min-height: 80px;
+        align-items: flex-start;
+        line-height: 1.5;
+      }
 
- .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
- .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
+      /* Action Footer */
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
 
- /* Action Footer */
- .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
- .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
- .btn-primary { background: #1e3a8a; color: #fff; }
- .btn-primary:hover { background: #1e293b; color: #fff; }
- .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
- .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .badge-status {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
 
- .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
- .badge-status { background: #e0f2fe; color: #0369a1; }
- .font-monospace { font-family: monospace; }
- .d-none { display: none !important; }
+      @media (max-width: 1024px) {
+        .form-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span
+            >E-CMIS
+            <small>ระบบกฎหมายในทางคดี</small>
+          </span>
+        </a>
+        <ul class="menu" id="sidebarMenu">
+          <li class="active">
+            <a href="01-work-inbox.html"
+              ><i class="fa-solid fa-scale-balanced"></i>
+              <span>งานกฎหมายในทางคดี</span></a
+            >
+          </li>
+          <li>
+            <a href="02-board-intake.html"
+              ><i class="fa-solid fa-inbox"></i>
+              <span>บันทึกรับเรื่องเข้าระบบ</span></a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          ระบบงานคดี กิจกรรมที่ 10
+        </div>
+      </div>
+    </div>
 
- @media (max-width: 1024px) {
- .form-grid-2 { grid-template-columns: 1fr; }
- }
- </style>
-</head>
-<body>
+    <!-- Main Content Area -->
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >ตรวจดูเอกสารอัยการ &amp; รายละเอียดสำนวน</span
+            >
+          </div>
+        </div>
 
- <!-- Sidebar Navigation -->
- <div class="sidebar" id="sidebar">
- <div>
- <a href="01-work-inbox.html" class="brand">
- <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
- <span>E-CMIS
- <small>ระบบกฎหมายในทางคดี</small>
- </span>
- </a>
- <ul class="menu" id="sidebarMenu">
- <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
- <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
- </ul>
- </div>
- <div class="sidebar-bottom">
- <div>สำนักงาน ป.ป.ท.</div>
- <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
- </div>
- </div>
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">3</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">ก</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
+              <span class="user-role" id="userRoleTitle"
+                >เจ้าหน้าที่ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
 
- <!-- Main Content Area -->
- <div class="main">
- <!-- Topbar -->
- <div class="topbar">
- <div class="topbar-left">
- <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
- <div class="breadcrumb">
- <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">ตรวจดูเอกสารอัยการ &amp; รายละเอียดสำนวน</span>
- </div>
- </div>
-
- <div class="top-controls">
- <div class="font-sizer" title="ปรับขนาดตัวอักษร">
- <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
- <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
- <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
- </div>
- <div class="icon-btn-group">
- <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
- <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">3</span></div>
- </div>
- <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
- <div class="avatar" id="userAvatar">ก</div>
- <div class="user-info">
- <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
- <span class="user-role" id="userRoleTitle">เจ้าหน้าที่ธุรการกองกฎหมาย</span>
- </div>
- <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
-
- <!-- Profile & Logout Dropdown -->
- <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
- <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
- <div class="profile-dropdown-body">
- <div class="profile-card">
- <span class="profile-card-name" id="profileCardName">นางกานดา รักษ์ธรรม</span>
- <span class="profile-card-title" id="profileCardTitle">เจ้าหน้าที่ธุรการกองกฎหมาย</span>
- <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
- </div>
- <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
- </div>
- <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
- <i class="fa-solid fa-right-from-bracket"></i>
- <span>ออกจากระบบ</span>
- </a>
- </div>
- </div>
- </div>
- </div>
-
- <!-- Content Body -->
- <div class="content">
-
- <!-- Stepper Progress Header -->
- <div class="stepper-card">
- <div class="stepper">
- <div class="step-item completed">
- <div class="step-circle"><i class="fa-solid fa-check"></i></div>
- <div class="step-label">1. บันทึกรับเรื่อง &amp; ออกเลขรับ กม.</div>
- </div>
- <div class="step-item active">
- <div class="step-circle">2</div>
- <div class="step-label">2. ผอ.กอง ตรวจสั่งการ &amp; มอบหมาย</div>
- </div>
- <div class="step-item">
- <div class="step-circle">3</div>
- <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร</div>
- </div>
- <div class="step-item">
- <div class="step-circle">4</div>
- <div class="step-label">4. นิติกร จัดทำความเห็นแย้ง</div>
- </div>
- <div class="step-item">
- <div class="step-circle">5</div>
- <div class="step-label">5. เสนอผู้บริหารลงนามชี้ขาด</div>
- </div>
- </div>
- </div>
-
- <!-- Card 1: Read-Only Case Details & Prosecutor Documents -->
- <div class="form-card">
- <div class="form-card-header">
- <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดสำนวนคดีและเอกสารอัยการ</span>
- <span class="badge badge-status" id="stBadge">ผอ.กองกฎหมายพิจารณา</span>
- </div>
- <div class="form-card-body">
- <!-- Central Saraban & Law Receive Badge Box -->
- <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
- <div class="form-grid-2" style="margin-bottom: 0;">
- <div>
- <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง:</span>
- <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/4410</span>
- </div>
- <div>
- <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">วันที่รับเอกสารตัวจริงเข้ากองกฎหมาย:</span>
- <span style="font-weight: 600; color: var(--text-title);" id="f_physicalDocDate">28 กรกฎาคม 2569</span>
- </div>
- </div>
- </div>
-
- <div class="form-group">
- <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
- <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">-</div>
- </div>
-
- <div class="form-grid-2">
- <div class="form-group">
- <label>หน่วยงานอัยการต้นทาง</label>
- <div class="read-box" id="f_source">-</div>
- </div>
- <div class="form-group">
- <label>เลขที่หนังสืออัยการ</label>
- <div class="read-box font-monospace" style="font-weight: 700;" id="f_docNo">-</div>
- </div>
- </div>
-
- <div class="form-grid-2">
- <div class="form-group">
- <label>ผู้กล่าวหา / ผู้ร้อง</label>
- <div class="read-box" id="f_accuser">-</div>
- </div>
- <div class="form-group">
- <label>ผู้ถูกกล่าวหา / จำเลย</label>
- <div class="read-box" id="f_accused">-</div>
- </div>
- </div>
-
- <div class="form-grid-2">
- <div class="form-group">
- <label>หมวดหมู่งานกฎหมาย</label>
- <div class="read-box" id="f_categoryName">-</div>
- </div>
- <div class="form-group">
- <label>กรณีคำสั่งพนักงานอัยการ</label>
- <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
- </div>
- </div>
-
-              <div class="form-group">
-                <label>สรุปสาระสำคัญ</label>
-                <div class="read-box read-box-textarea" id="f_summary">-</div>
+            <!-- Profile & Logout Dropdown -->
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName"
+                    >นางกานดา รักษ์ธรรม</span
+                  >
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >เจ้าหน้าที่ธุรการกองกฎหมาย</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg"
+                    >กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span
+                  >
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
               </div>
+              <a
+                href="login.html"
+                onclick="confirmLogout(event)"
+                class="logout-link"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div class="form-group">
-                <label>ความเห็นของอัยการ</label>
-                <div class="read-box read-box-textarea" id="f_opinion">-</div>
+      <!-- Content Body -->
+      <div class="content">
+        <!-- Stepper Progress Header -->
+        <div class="stepper-card">
+          <div class="stepper">
+            <div class="step-item completed">
+              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+              <div class="step-label">
+                1. บันทึกรับเรื่อง &amp; ออกเลขรับ กม.
               </div>
- </div>
- </div>
+            </div>
+            <div class="step-item active">
+              <div class="step-circle">2</div>
+              <div class="step-label">2. ผอ.กอง ตรวจสั่งการ &amp; มอบหมาย</div>
+            </div>
+            <div class="step-item">
+              <div class="step-circle">3</div>
+              <div class="step-label">3. ผอ.กลุ่มงาน มอบหมายนิติกร</div>
+            </div>
+            <div class="step-item">
+              <div class="step-circle">4</div>
+              <div class="step-label">4. นิติกร จัดทำความเห็นแย้ง</div>
+            </div>
+            <div class="step-item">
+              <div class="step-circle">5</div>
+              <div class="step-label">5. เสนอผู้บริหารลงนามชี้ขาด</div>
+            </div>
+          </div>
+        </div>
 
- <!-- Card 2: Legal Receive Info & Current Progress -->
- <div class="form-card">
- <div class="form-card-header">
- <span><i class="fa-solid fa-stamp text-primary me-2"></i>ข้อมูลการลงรับกองกฎหมาย &amp; สถานะปัจจุบัน</span>
- <span class="badge" style="background:#dcfce7; color:#166534;" id="receiveStatusBadge">ลงรับเรื่องแล้ว</span>
- </div>
- <div class="form-card-body">
- <div class="form-grid-2">
- <div class="form-group">
- <label>เลขรับกองกฎหมาย</label>
- <div class="read-box font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_lawReceiveNo_display">-</div>
- </div>
- <div class="form-group">
- <label>สถานะปัจจุบันของสำนวน</label>
- <div class="read-box" style="font-weight: 600;" id="f_status_display">-</div>
- </div>
- </div>
- <div class="form-group">
- <label>ผู้รับผิดชอบสำนวนปัจจุบัน</label>
- <div class="read-box" id="f_officer_display">-</div>
- </div>
- </div>
- </div>
+        <!-- Card 1: Read-Only Case Details & Prosecutor Documents -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <span
+              ><i class="fa-solid fa-file-invoice text-primary me-2"></i
+              >รายละเอียดสำนวนคดีและเอกสารอัยการ</span
+            >
+            <span class="badge badge-status" id="stBadge"
+              >ผอ.กองกฎหมายพิจารณา</span
+            >
+          </div>
+          <div class="form-card-body">
+            <!-- Central Saraban & Law Receive Badge Box -->
+            <div
+              style="
+                background: var(--bg-body);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 14px 18px;
+                margin-bottom: 18px;
+              "
+            >
+              <div class="form-grid-2" style="margin-bottom: 0">
+                <div>
+                  <span
+                    style="
+                      font-size: 0.82em;
+                      color: #64748b;
+                      font-weight: 600;
+                      display: block;
+                      margin-bottom: 2px;
+                    "
+                    >เลขรับสารบรรณกลาง:</span
+                  >
+                  <span
+                    class="font-monospace"
+                    style="font-weight: 700; color: #2563eb; font-size: 1.05em"
+                    id="f_centralSarabanNo"
+                    >2569/4410</span
+                  >
+                </div>
+                <div>
+                  <span
+                    style="
+                      font-size: 0.82em;
+                      color: #64748b;
+                      font-weight: 600;
+                      display: block;
+                      margin-bottom: 2px;
+                    "
+                    >วันที่รับเอกสารตัวจริงเข้ากองกฎหมาย:</span
+                  >
+                  <span
+                    style="font-weight: 600; color: var(--text-title)"
+                    id="f_physicalDocDate"
+                    >28 กรกฎาคม 2569</span
+                  >
+                </div>
+              </div>
+            </div>
 
- <!-- Form Actions Footer -->
- <div class="form-actions" id="actionButtonsContainer">
- <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
- </div>
+            <div class="form-group">
+              <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+              <div
+                class="read-box"
+                style="font-weight: 600; font-size: 0.95em"
+                id="f_title"
+              >
+                -
+              </div>
+            </div>
 
- </div>
- </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>หน่วยงานอัยการต้นทาง</label>
+                <div class="read-box" id="f_source">-</div>
+              </div>
+              <div class="form-group">
+                <label>ระดับศาล</label>
+                <div class="read-box" id="f_level">-</div>
+              </div>
+              <div class="form-group">
+                <label>เลขที่หนังสืออัยการ</label>
+                <div
+                  class="read-box font-monospace"
+                  style="font-weight: 700"
+                  id="f_docNo"
+                >
+                  -
+                </div>
+              </div>
+            </div>
 
- <!-- Scripts -->
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <script src="assets/ecmis-app.js?v=20260820_2"></script>
- <script src="assets/ecmis-activity10.js?v=20260822_1"></script>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>ผู้กล่าวหา / ผู้ร้อง</label>
+                <div class="read-box" id="f_accuser">-</div>
+              </div>
+              <div class="form-group">
+                <label>ผู้ถูกกล่าวหา / จำเลย</label>
+                <div class="read-box" id="f_accused">-</div>
+              </div>
+            </div>
 
- <script src="assets/ecmis-shell.js"></script>
- <script>
- let currentCase = null;
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>หมวดหมู่งานกฎหมาย</label>
+                <div class="read-box" id="f_categoryName">-</div>
+              </div>
+              <div class="form-group">
+                <label>กรณีคำสั่งพนักงานอัยการ</label>
+                <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+              </div>
+            </div>
 
- document.addEventListener('DOMContentLoaded', () => {
- initUserProfile();
- loadCaseData();
- });
+            <div class="form-group">
+              <label>สรุปสาระสำคัญ</label>
+              <div class="read-box read-box-textarea" id="f_summary">-</div>
+            </div>
 
+            <div class="form-group">
+              <label>ความเห็นของอัยการ</label>
+              <div class="read-box read-box-textarea" id="f_opinion">-</div>
+            </div>
+          </div>
+        </div>
 
+        <!-- Card 2: Legal Receive Info & Current Progress -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <span
+              ><i class="fa-solid fa-stamp text-primary me-2"></i
+              >ข้อมูลการลงรับกองกฎหมาย &amp; สถานะปัจจุบัน</span
+            >
+            <span
+              class="badge"
+              style="background: #dcfce7; color: #166534"
+              id="receiveStatusBadge"
+              >ลงรับเรื่องแล้ว</span
+            >
+          </div>
+          <div class="form-card-body">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>เลขรับกองกฎหมาย</label>
+                <div
+                  class="read-box font-monospace"
+                  style="font-weight: 700; color: #2563eb; font-size: 1.05em"
+                  id="f_lawReceiveNo_display"
+                >
+                  -
+                </div>
+              </div>
+              <div class="form-group">
+                <label>สถานะปัจจุบันของสำนวน</label>
+                <div
+                  class="read-box"
+                  style="font-weight: 600"
+                  id="f_status_display"
+                >
+                  -
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>ผู้รับผิดชอบสำนวนปัจจุบัน</label>
+              <div class="read-box" id="f_officer_display">-</div>
+            </div>
+          </div>
+        </div>
 
- function toggleTheme() {
- document.body.classList.toggle('dark-mode');
- const isDark = document.body.classList.contains('dark-mode');
- document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
- localStorage.setItem('ecmis_theme', isDark ? 'dark' : 'light');
- }
+        <!-- Form Actions Footer -->
+        <div class="form-actions" id="actionButtonsContainer">
+          <a href="01-work-inbox.html" class="btn btn-secondary"
+            ><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a
+          >
+        </div>
+      </div>
+    </div>
 
- function changeFontSize(direction) {
- const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
- document.body.style.fontSize = (currentSize + direction * 1) + 'px';
- }
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260820_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260822_1"></script>
 
- document.addEventListener('click', (e) => {
- const dropdown = document.getElementById('profileDropdown');
- if (dropdown && !dropdown.contains(e.target)) {
- dropdown.classList.remove('show');
- }
- });
+    <script src="assets/ecmis-shell.js"></script>
+    <script>
+      let currentCase = null;
 
- function initUserProfile() {
- const roleId = sessionStorage.getItem('ecmis_role') || 'admin_legal';
- if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
- const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[0];
- if (role) {
- const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
- const initial = shortName.charAt(0);
- if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
- if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
- if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
- if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
- if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title;
- if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
- }
- }
- }
+      document.addEventListener("DOMContentLoaded", () => {
+        initUserProfile();
+        loadCaseData();
+      });
 
- function loadCaseData() {
- const urlParams = new URLSearchParams(window.location.search);
- const caseId = urlParams.get('id') || 'คดี-10.1-2569/001';
- currentCase = Activity10.getCaseById(caseId);
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
 
- if (!currentCase) {
- const all = Activity10.getCases ? Activity10.getCases() : [];
- currentCase = all.length > 0 ? all[0] : null;
- }
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize = currentSize + direction * 1 + "px";
+      }
 
- if (!currentCase) return;
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target)) {
+          dropdown.classList.remove("show");
+        }
+      });
 
- const setElText = (id, text) => {
- const el = document.getElementById(id);
- if (el) el.textContent = text;
- };
+      function initUserProfile() {
+        const roleId = sessionStorage.getItem("ecmis_role") || "admin_legal";
+        if (typeof ECMIS !== "undefined" && ECMIS.ROLES) {
+          const role =
+            ECMIS.ROLES.find((r) => r.id === roleId) || ECMIS.ROLES[0];
+          if (role) {
+            const shortName = role.name
+              .replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, "")
+              .trim();
+            const initial = shortName.charAt(0);
+            if (document.getElementById("userAvatar"))
+              document.getElementById("userAvatar").innerText = initial;
+            if (document.getElementById("userName"))
+              document.getElementById("userName").innerText = role.name;
+            if (document.getElementById("userRoleTitle"))
+              document.getElementById("userRoleTitle").innerText = role.title;
+            if (document.getElementById("profileCardName"))
+              document.getElementById("profileCardName").innerText = role.name;
+            if (document.getElementById("profileCardTitle"))
+              document.getElementById("profileCardTitle").innerText =
+                role.title;
+            if (document.getElementById("profileCardOrg"))
+              document.getElementById("profileCardOrg").innerText =
+                (role.group || "กองกฎหมาย") + " · สำนักงาน ป.ป.ท.";
+          }
+        }
+      }
 
- setElText('stBadge', currentCase.status || 'ผอ.กองกฎหมายพิจารณา');
- setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
- setElText('f_physicalDocDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.physicalDocDate || currentCase.dateReceived) : (currentCase.physicalDocDate || currentCase.dateReceived)) || '25/08/2569');
- setElText('f_title', currentCase.title || '-');
- setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1');
- setElText('f_docNo', currentCase.docNo || '2569/0014');
- setElText('f_accuser', currentCase.accuser || 'คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.');
- setElText('f_accused', currentCase.accused || '-');
- setElText('f_categoryName', currentCase.categoryName || (currentCase.category === '10.1' ? '10.1 ความเห็นแย้ง (คำสั่งไม่ฟ้อง/ฟ้องไม่หมด)' : currentCase.category === '10.2' ? '10.2 ขอเปิดเผยข้อมูลข่าวสาร' : '10.3 คดีศาลปกครอง'));
- setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || (currentCase.category === '10.1' ? '1. อัยการมีความเห็นสั่งไม่ฟ้อง' : '-'));
-    setElText('f_summary', currentCase.summary || 'คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี');
-    setElText('f_opinion', currentCase.legalOpinion || 'จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด');
+      function loadCaseData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get("id") || "คดี-10.1-2569/001";
+        currentCase = Activity10.getCaseById(caseId);
+        console.log(currentCase);
+        if (!currentCase) {
+          const all = Activity10.getCases ? Activity10.getCases() : [];
+          currentCase = all.length > 0 ? all[0] : null;
+        }
+        if (!currentCase) return;
 
- setElText('f_lawReceiveNo_display', currentCase.lawReceiveNo || '0014/2569');
- setElText('f_status_display', currentCase.status || '-');
- setElText('f_officer_display', currentCase.officer || '-');
+        const setElText = (id, text) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = text;
+        };
 
- const currentRole = sessionStorage.getItem('ecmis_role') || 'admin_legal';
- const actionContainer = document.getElementById('actionButtonsContainer');
- if (actionContainer) {
- if ((currentRole === 'dir_legal' || currentRole === 'Napas.S') && (currentCase.statusCode === 'PENDING_DIRECTOR')) {
- actionContainer.innerHTML = `
+        setElText("stBadge", currentCase.status || "ผอ.กองกฎหมายพิจารณา");
+        setElText(
+          "f_centralSarabanNo",
+          currentCase.centralSarabanNo || "2569/4410",
+        );
+        setElText(
+          "f_physicalDocDate",
+          (window.Activity10 && Activity10.formatDisplayDate
+            ? Activity10.formatDisplayDate(
+                currentCase.physicalDocDate || currentCase.dateReceived,
+              )
+            : currentCase.physicalDocDate || currentCase.dateReceived) ||
+            "25/08/2569",
+        );
+        setElText("f_title", currentCase.title || "-");
+        setElText(
+          "f_source",
+          currentCase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+        );
+        setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
+
+        setElText("f_docNo", currentCase.docNo || "2569/0014");
+        setElText(
+          "f_accuser",
+          currentCase.accuser || "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+        );
+        setElText("f_accused", currentCase.accused || "-");
+        setElText(
+          "f_categoryName",
+          currentCase.categoryName ||
+            (currentCase.category === "10.1"
+              ? "10.1 ความเห็นแย้ง (คำสั่งไม่ฟ้อง/ฟ้องไม่หมด)"
+              : currentCase.category === "10.2"
+                ? "10.2 ขอเปิดเผยข้อมูลข่าวสาร"
+                : "10.3 คดีศาลปกครอง"),
+        );
+        setElText(
+          "f_prosecutorCaseTypeName",
+          currentCase.prosecutorCaseTypeName ||
+            (currentCase.category === "10.1"
+              ? "1. อัยการมีความเห็นสั่งไม่ฟ้อง"
+              : "-"),
+        );
+        setElText(
+          "f_summary",
+          currentCase.summary ||
+            "คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี",
+        );
+        setElText(
+          "f_opinion",
+          currentCase.legalOpinion ||
+            "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด",
+        );
+
+        setElText(
+          "f_lawReceiveNo_display",
+          currentCase.lawReceiveNo || "0014/2569",
+        );
+        setElText("f_status_display", currentCase.status || "-");
+        setElText("f_officer_display", currentCase.officer || "-");
+
+        const currentRole =
+          sessionStorage.getItem("ecmis_role") || "admin_legal";
+        const actionContainer = document.getElementById(
+          "actionButtonsContainer",
+        );
+        if (actionContainer) {
+          if (
+            (currentRole === "dir_legal" || currentRole === "Napas.S") &&
+            currentCase.statusCode === "PENDING_DIRECTOR"
+          ) {
+            actionContainer.innerHTML = `
  <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
  <a href="04-legal-director-review.html?id=${encodeURIComponent(currentCase.id)}" class="btn btn-primary">
  <i class="fa-solid fa-pen-to-square me-1"></i>ไปยังหน้าพิจารณาสั่งการ (ผอ.กองกฎหมาย)
  </a>
  `;
- } else {
- actionContainer.innerHTML = `
+          } else {
+            actionContainer.innerHTML = `
  <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
  `;
- }
- }
- }
- </script>
-</body>
+          }
+        }
+      }
+    </script>
+  </body>
 </html>
