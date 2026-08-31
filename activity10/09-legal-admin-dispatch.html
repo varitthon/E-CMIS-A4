@@ -10,6 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="assets/ecmis-shell.css">
 
  <style>
  :root {
@@ -38,8 +39,6 @@
  --text-main: #94a3b8;
  }
 
- * { box-sizing: border-box; margin: 0; padding: 0; }
- body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
  h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
 
  /* Sidebar Styles */
@@ -56,23 +55,11 @@
  
  .sidebar-bottom { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #94a3b8; }
 
- /* Main Content Styles */
- .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
- 
  /* Topbar Styles */
  .topbar { height: 60px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
  .topbar-left { display: flex; align-items: center; gap: 15px; }
  .btn-toggle-menu { background: none; border: none; font-size: 1.2em; cursor: pointer; color: var(--text-title); }
  .breadcrumb { font-size: 0.88em; color: #64748b; }
- 
- .top-controls { display: flex; align-items: center; gap: 16px; }
- .font-sizer { display: flex; align-items: center; background: var(--bg-body); border-radius: 6px; padding: 2px; border: 1px solid var(--border-color); }
- .ctrl-btn { background: none; border: none; padding: 4px 8px; font-size: 0.8em; font-weight: 600; cursor: pointer; color: var(--text-title); border-radius: 4px; }
- .ctrl-btn:hover { background: var(--bg-card); }
- 
- .icon-btn-group { display: flex; gap: 8px; }
- .circle-icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-title); position: relative; }
- .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 0.65em; font-weight: 700; border-radius: 10px; padding: 1px 5px; }
  
  .user-profile-top { display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
  .user-profile-top:hover { background: rgba(0,0,0,0.04); }
@@ -414,6 +401,7 @@
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260825_1"></script>
  <script src="assets/ecmis-activity10.js?v=20260825_2"></script>
+ <script src="assets/ecmis-shell.js"></script>
 
  <script>
  let currentCase = null;
@@ -425,10 +413,6 @@
  setDefaultDate();
  loadCaseData();
  });
-
- function toggleSidebar() {
- document.getElementById('sidebar').classList.toggle('collapsed');
- }
 
  function toggleTheme() {
  document.body.classList.toggle('dark-mode');
@@ -444,12 +428,6 @@
  } else {
  document.body.style.fontSize = (currentSize + direction * 1) + 'px';
  }
- }
-
- function toggleProfileDropdown(e) {
- e.stopPropagation();
- const dropdown = document.getElementById('profileDropdown');
- if (dropdown) dropdown.classList.toggle('show');
  }
 
  document.addEventListener('click', (e) => {

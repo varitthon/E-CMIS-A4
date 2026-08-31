@@ -8,81 +8,9 @@
  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="assets/ecmis-shell.css">
  <style>
- :root {
- --bg-body: #f0f4f8;
- --bg-card: #ffffff;
- --bg-sidebar: #1a2b48;
- --bg-header: #ffffff;
- --bg-table-th: #f1f5f9;
- --text-main: #334155;
- --text-title: #1e293b;
- --border-color: #e2e8f0;
- --base-font-size: 13.5px;
- }
-
- body.dark-mode {
- --bg-body: #0f172a;
- --bg-card: #1e293b;
- --bg-sidebar: #090d16;
- --bg-header: #1e293b;
- --bg-table-th: #334155;
- --text-main: #cbd5e1;
- --text-title: #f8fafc;
- --border-color: #334155;
- }
-
- * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; margin: 0; padding: 0; transition: background-color 0.2s, color 0.2s; }
- body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; font-size: var(--base-font-size); overflow: hidden; }
- 
- .sidebar { width: 240px; background-color: var(--bg-sidebar); color: #fff; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; transition: width 0.2s ease; overflow-y: auto; overflow-x: hidden; white-space: nowrap; }
- .sidebar.collapsed { width: 0; }
- .brand { padding: 14px 20px; font-weight: 700; font-size: 1.05em; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); text-decoration: none; color: #fff; }
- .brand img { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.3)); }
- .brand span { line-height: 1.2; }
- .brand small { display: block; font-size: 0.7em; font-weight: 400; color: rgba(255,255,255,0.7); }
- .menu { list-style: none; margin-top: 10px; }
- .menu li a { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: #94a3b8; text-decoration: none; font-size: 0.95em; transition: all 0.2s; }
- .menu li.active a, .menu li a:hover { background-color: #2563eb; color: #fff; font-weight: 500; }
- 
- .sidebar-bottom { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.15); font-size: 0.82em; color: #94a3b8; }
-
- .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
- .topbar { background: var(--bg-header); padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
- .topbar-left { display: flex; align-items: center; gap: 14px; }
- .btn-toggle-menu { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-title); padding: 4px 8px; border-radius: 4px; }
- .btn-toggle-menu:hover { background: var(--border-color); }
- .breadcrumb { font-size: 0.9em; color: #64748b; display: flex; gap: 6px; align-items: center; }
- 
- .top-controls { display: flex; align-items: center; gap: 12px; }
- .icon-btn-group { display: flex; align-items: center; gap: 6px; }
- .font-sizer { display: flex; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
- .ctrl-btn { border: none; background: none; padding: 6px 12px; cursor: pointer; font-size: 0.85em; color: var(--text-title); font-weight: 600; }
- .ctrl-btn:hover { background: var(--border-color); }
- 
- .circle-icon-btn { position: relative; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--text-title); }
- .circle-icon-btn:hover { background: var(--border-color); }
- .noti-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 10px; border: 1px solid #fff; }
-
- .user-profile-top { position: relative; display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid var(--border-color); cursor: pointer; user-select: none; }
- .avatar { width: 34px; height: 34px; background: #2563eb; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
- .user-info { display: flex; flex-direction: column; }
- .user-name { font-weight: 600; font-size: 0.9em; color: var(--text-title); line-height: 1.2; }
- .user-role { font-size: 0.78em; color: #64748b; }
-
- /* Profile & Logout Dropdown */
- .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 280px; z-index: 1000; overflow: hidden; }
- .profile-dropdown-menu.show { display: block; }
- .profile-dropdown-header { padding: 10px 14px; background: var(--bg-table-th); border-bottom: 1px solid var(--border-color); font-size: 0.8em; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
- .profile-dropdown-body { padding: 12px 14px; }
- .profile-card { background: var(--bg-body); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
- .profile-card-name { font-weight: 700; font-size: 0.92em; color: var(--text-title); display: block; }
- .profile-card-title { font-size: 0.82em; color: #2563eb; font-weight: 600; display: block; margin-top: 2px; }
- .profile-card-org { font-size: 0.76em; color: #64748b; display: block; margin-top: 2px; }
- .profile-note { font-size: 0.76em; color: #64748b; line-height: 1.4; padding: 0 4px 4px 4px; display: block; }
- .logout-link { display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: #dc2626; text-decoration: none; font-weight: 600; font-size: 0.88em; transition: background 0.15s; border-top: 1px solid var(--border-color); cursor: pointer; }
- .logout-link:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
-
+ body { font-size: var(--base-font-size); }
  .content { padding: 20px 24px; flex: 1; }
  .page-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
  .page-title { font-size: 1.35em; font-weight: 700; color: var(--text-title); display: flex; align-items: center; gap: 8px; }
@@ -165,18 +93,8 @@
  .page-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; }
  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
- /* Notification Dropdown */
- .notif-dropdown-menu { display: none; position: absolute; top: 46px; right: 80px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 320px; z-index: 1000; overflow: hidden; }
- .notif-dropdown-menu.show { display: block; }
- .notif-dropdown-header { padding: 10px 14px; background: var(--bg-table-th); border-bottom: 1px solid var(--border-color); font-size: 0.85em; font-weight: 700; color: var(--text-title); display: flex; justify-content: space-between; align-items: center; }
- .notif-item { padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-size: 0.85em; }
- .notif-item strong { display: block; color: var(--text-title); margin-bottom: 2px; }
- .notif-item span { color: #64748b; font-size: 0.9em; }
-
  @media (max-width: 992px) {
  .cards-grid { grid-template-columns: repeat(2, 1fr); }
- .sidebar { position: fixed; height: 100vh; z-index: 999; }
- .sidebar.collapsed { width: 0; }
  }
  @media (max-width: 576px) {
  .cards-grid { grid-template-columns: 1fr; }
@@ -356,11 +274,11 @@
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260823_1"></script>
  <script src="assets/ecmis-activity10.js?v=20260826_v43"></script>
+ <script src="assets/ecmis-shell.js"></script>
  <script>
  const PAGE_SIZE = 10;
  let currentPage = 1;
  let currentCategory = 'ALL';
- let fontSizeLevel = 0;
 
  const svgEyeIcon = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
 
@@ -476,97 +394,6 @@
  return combined;
  }
 
- function getCurrentRole() {
- return sessionStorage.getItem('ecmis_role') || 'admin_legal';
- }
-
- function updateRoleDisplay() {
- const roleId = getCurrentRole();
- const btnIntake = document.getElementById("btnBoardIntake");
- const avatar = document.getElementById("userAvatar");
- const nameEl = document.getElementById("userName");
- const roleEl = document.getElementById("userRoleTitle");
-
- const roleMap = {
- 'admin_legal': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
- 'Kanda.R': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
- 'dir_legal': { name: 'นายนภัส สอนดี', role: 'ผู้อำนวยการกองกฎหมาย', av: 'น', intake: false },
- 'Napas.S': { name: 'นายนภัส สอนดี', role: 'ผู้อำนวยการกองกฎหมาย', av: 'น', intake: false },
- 'group_director': { name: 'นายอานนท์ ชินประชา', role: 'ผู้อำนวยการกลุ่มงานความเห็นแย้ง', av: 'อ', intake: false },
- 'Arnon.C': { name: 'นายอานนท์ ชินประชา', role: 'ผู้อำนวยการกลุ่มงานความเห็นแย้ง', av: 'อ', intake: false },
- 'legal_officer': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
- 'Nattapol.B': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
- 'deputy_sg': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false },
- 'Surapong.W': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false }
- };
-
- const cur = roleMap[roleId] || roleMap['admin_legal'];
- if (avatar) avatar.innerText = cur.av;
- if (nameEl) nameEl.innerText = cur.name;
- if (roleEl) roleEl.innerText = cur.role;
- if (btnIntake) btnIntake.style.display = cur.intake ? 'inline-flex' : 'none';
-
- const cardName = document.getElementById("profileCardName");
- const cardTitle = document.getElementById("profileCardTitle");
- if (cardName) cardName.innerText = cur.name;
- if (cardTitle) cardTitle.innerText = cur.role;
-
- renderSidebarMenu();
- renderNotifications();
- }
-
- function renderNotifications() {
- const roleId = getCurrentRole();
- const container = document.getElementById("notifListContainer");
- const badge = document.getElementById("topbarNotiBadge");
- if (!container) return;
-
- let notifs = [];
- if (roleId === 'admin_legal' || roleId === 'Kanda.R') {
- notifs = [
- { title: '📨 ผลมติจากผู้บริหารลงนามแล้ว', text: 'สำนวน 0038/2568 ผู้บริหารลงนามแล้ว รอธุรการส่งหนังสือถึงอัยการสูงสุด', icon: '🔴', urgent: true },
- { title: '📋 คำร้องขอเปิดเผยข้อมูลข่าวสาร', text: 'คำร้อง 100101/2569 เข้าสู่ระบบแล้ว ส่งกอง/สำนักที่รับผิดชอบ', icon: '📨', urgent: false },
- { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง 100207/2569 รอส่งพนักงานอัยการดำเนินคดีแทน', icon: '⚖️', urgent: false }
- ];
- } else if (roleId === 'legal_officer' || roleId === 'Nattapol.B') {
- notifs = [
- { title: '🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 2 วัน)', text: 'สำนวน คดี-100001/2569 ครบกำหนดยกร่างความเห็นแย้ง', icon: '🔴', urgent: true },
- { title: '📋 ได้รับมอบหมายสำนวนใหม่', text: 'สำนวน คดี-100003/2569 รอนิติกรจัดทำความเห็นแย้ง', icon: '📋', urgent: false },
- { title: '📨 คำร้องขอเปิดเผยข้อมูลข่าวสาร', text: 'คำร้อง 100103/2569 รอนิติกรทำความเห็นเสนอ', icon: '📨', urgent: false }
- ];
- } else if (roleId === 'dir_legal' || roleId === 'Napas.S') {
- notifs = [
- { title: '🔴 มอบหมายสำนวนคดีใหม่', text: 'สำนวน คดี-100003/2569 รอมอบหมายกลุ่มงาน', icon: '🔴', urgent: true },
- { title: '📋 ตรวจพิจารณาความเห็น', text: 'สำนวน คดี-100004/2569 รอ ผอ.กอง ตรวจพิจารณาและสั่งการ', icon: '📋', urgent: false },
- { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100205/2569 เสนอ ผอ.กองกฎหมาย ตรวจ', icon: '🏛️', urgent: false }
- ];
- } else if (roleId === 'group_director' || roleId === 'Arnon.C') {
- notifs = [
- { title: '🔴 มอบหมายนิติกร', text: 'สำนวน คดี-100002/2569 รอ ผอ.กลุ่มงาน มอบหมายนิติกร', icon: '🔴', urgent: true },
- { title: '📋 ตรวจร่างความเห็นนิติกร', text: 'สำนวน คดี-100004/2569 เสนอ ผอ.กลุ่ม ตรวจร่างความเห็น', icon: '📋', urgent: false },
- { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100204/2569 เสนอ ผอ.กลุ่ม ตรวจร่างคำให้การ', icon: '🏛️', urgent: false }
- ];
- } else if (roleId === 'deputy_sg' || roleId === 'Surapong.W') {
- notifs = [
- { title: '🔴 รอลงนามความเห็นแย้ง', text: 'สำนวน คดี-100006/2569 เสนอผู้บริหารลงนาม', icon: '🔴', urgent: true },
- { title: '📨 คำร้องขอเปิดเผยข้อมูล', text: 'คำร้อง-100105/2569 เสนอผู้บริหารเห็นชอบมติ', icon: '📨', urgent: false },
- { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100206/2569 เสนอผู้บริหารลงนามคำให้การ', icon: '🏛️', urgent: false }
- ];
- } else {
- notifs = [
- { title: '📨 รายการงานใหม่', text: 'มีงานกฎหมายในทางคดีเข้าระบบ', icon: '📋', urgent: false }
- ];
- }
-
- if (badge) badge.innerText = notifs.length;
- container.innerHTML = notifs.map(n => `
- <div class="notif-item">
- <strong style="${n.urgent ? 'color:#dc2626;' : ''}">${n.title}</strong>
- <span>${n.text}</span>
- </div>
- `).join('');
- }
-
  function renderSidebarMenu() {
  const roleId = getCurrentRole();
  const menuEl = document.getElementById("sidebarMenu");
@@ -608,51 +435,6 @@
 
  menuEl.innerHTML = itemsHtml;
  }
-
- function toggleProfileDropdown(e) {
- if (e) e.stopPropagation();
- const dropdown = document.getElementById("profileDropdown");
- if (dropdown) dropdown.classList.toggle('show');
- const notif = document.getElementById("notifDropdown");
- if (notif) notif.classList.remove('show');
- }
-
- function toggleNotifDropdown() {
- const dropdown = document.getElementById("notifDropdown");
- if (dropdown) dropdown.classList.toggle('show');
- const profile = document.getElementById("profileDropdown");
- if (profile) profile.classList.remove('show');
- }
-
- function confirmLogout(e) {
- if (e) e.preventDefault();
- Swal.fire({
- title: 'ออกจากระบบ?',
- text: 'คุณต้องการออกจากระบบ E-CMIS หรือไม่',
- icon: 'question',
- showCancelButton: true,
- confirmButtonText: 'ออกจากระบบ',
- cancelButtonText: 'ยกเลิก',
- confirmButtonColor: '#dc2626',
- cancelButtonColor: '#64748b'
- }).then(res => {
- if (res.isConfirmed) {
- sessionStorage.removeItem('ecmis_role');
- window.location.href = 'login.html';
- }
- });
- }
-
- window.onclick = function(e) {
- if (!e.target.closest('.user-profile-top')) {
- const profile = document.getElementById("profileDropdown");
- if (profile) profile.classList.remove('show');
- }
- if (!e.target.closest('.circle-icon-btn') && !e.target.closest('#notifDropdown')) {
- const notif = document.getElementById("notifDropdown");
- if (notif) notif.classList.remove('show');
- }
- };
 
  function getCasesForRole(allCases) {
  const roleId = getCurrentRole();
@@ -750,22 +532,6 @@
  `;
  }
  selectElem.innerHTML = subOptionsHtml;
- }
-
- function toggleSidebar() { 
- document.getElementById('sidebar').classList.toggle('collapsed'); 
- }
-
- function changeFontSize(dir) {
- fontSizeLevel = Math.max(-1, Math.min(2, fontSizeLevel + dir));
- const sizeMap = { '-1': '12px', '0': '13.5px', '1': '15px', '2': '16.5px' };
- document.documentElement.style.setProperty('--base-font-size', sizeMap[fontSizeLevel]);
- }
-
- function toggleTheme() {
- document.body.classList.toggle('dark-mode');
- const isDark = document.body.classList.contains('dark-mode');
- document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
  }
 
  function selectCategory(cat) {
