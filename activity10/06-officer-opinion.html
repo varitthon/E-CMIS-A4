@@ -916,12 +916,25 @@
                   >แนบไฟล์ร่างบันทึกความเห็นแย้งฉบับสมบูรณ์ (.docx /
                   .pdf)</label
                 >
-                <input
-                  type="file"
-                  class="form-control"
-                  id="in_opinionFile"
-                  style="padding: 6px 12px"
-                />
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="in_opinionFile"
+                    style="padding: 6px 12px"
+                    onchange="toggleRemoveBtn('in_opinionFile', 'btn_removeOpinionFile')"
+                  />
+                  <button
+                    type="button"
+                    id="btn_removeOpinionFile"
+                    class="btn btn-secondary"
+                    style="display: none; padding: 6px 10px"
+                    onclick="removeSelectedFile('in_opinionFile', 'btn_removeOpinionFile')"
+                    title="ลบไฟล์ที่แนบ"
+                  >
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
                 <span style="font-size: 0.75em; color: #64748b; margin-top: 4px"
                   >*
                   ระบบจะสร้างเอกสารร่างความเห็นอัตโนมัติหากไม่ได้แนบไฟล์</span
@@ -963,6 +976,23 @@
         initUserProfile();
         loadCaseData();
       });
+
+      function toggleRemoveBtn(inputId, btnId) {
+        const input = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.style.display =
+            input && input.files && input.files.length > 0
+              ? "inline-flex"
+              : "none";
+        }
+      }
+
+      function removeSelectedFile(inputId, btnId) {
+        const input = document.getElementById(inputId);
+        if (input) input.value = "";
+        toggleRemoveBtn(inputId, btnId);
+      }
 
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");

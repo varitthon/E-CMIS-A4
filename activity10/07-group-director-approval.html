@@ -623,7 +623,7 @@
                 <label>ผลการตรวจพิจารณาที่นิติกรเสนอ</label>
                 <div class="read-box fw-bold text-danger" id="f_opinionType">
                   <i class="fa-solid fa-triangle-exclamation me-1"></i
-                  >เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
+                  >เสนอทำความเห็นแย้งมติของพนักงานอัยการ
                 </div>
               </div>
             </div>
@@ -956,7 +956,7 @@
         if (opTypeEl) {
           const opText =
             currentCase.opinionType ||
-            "เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ (Dissenting Opinion)";
+            "เสนอทำความเห็นแย้งมติของพนักงานอัยการ (Dissenting Opinion)";
           let icon = "fa-triangle-exclamation";
           let colorClass = "text-danger";
           let customStyle = "";
@@ -1072,25 +1072,126 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (res.isConfirmed) {
-            Activity10.submitGroupDirectorApproval(
-              currentCase.id,
-              reviewDecision,
-              notes,
-            );
+            openSignatureModal(function (signatureDataUrl) {
+              Activity10.submitGroupDirectorApproval(
+                currentCase.id,
+                reviewDecision,
+                notes,
+                signatureDataUrl,
+              );
 
-            Swal.fire({
-              icon: "success",
-              title: isApproved
-                ? "เสนอ ผอ.กองกฎหมาย สำเร็จ!"
-                : "ส่งกลับแก้ไขเรียบร้อยแล้ว!",
-              text: isApproved
-                ? "ส่งเรื่องให้ ผอ.กองกฎหมาย ตรวจพิจารณาเรียบร้อยแล้ว"
-                : "ส่งเรื่องกลับไปยังนิติกรเจ้าของสำนวนแล้ว",
-              timer: 1600,
-              showConfirmButton: false,
-            }).then(() => {
-              window.location.href = "01-work-inbox.html";
+              Swal.fire({
+                icon: "success",
+                title: isApproved
+                  ? "เสนอ ผอ.กองกฎหมาย สำเร็จ!"
+                  : "ส่งกลับแก้ไขเรียบร้อยแล้ว!",
+                text: isApproved
+                  ? "ส่งเรื่องให้ ผอ.กองกฎหมาย ตรวจพิจารณาเรียบร้อยแล้ว"
+                  : "ส่งเรื่องกลับไปยังนิติกรเจ้าของสำนวนแล้ว",
+                timer: 1600,
+                showConfirmButton: false,
+              }).then(() => {
+                window.location.href = "01-work-inbox.html";
+              });
             });
+          }
+        });
+      }
+
+      // Electronic signature pad (shared pattern across 07/08/14/15)
+      let sigPadCtx = null;
+      let sigPadDrawing = false;
+      let sigPadHasDrawing = false;
+
+      function getSigPadPos(canvas, evt) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height),
+        };
+      }
+
+      function bindSignaturePad() {
+        const canvas = document.getElementById("signatureCanvasPad");
+        if (!canvas) return;
+        sigPadCtx = canvas.getContext("2d");
+        sigPadCtx.lineWidth = 2.2;
+        sigPadCtx.lineCap = "round";
+        sigPadCtx.strokeStyle = "#1e3a8a";
+        sigPadHasDrawing = false;
+        sigPadDrawing = false;
+
+        const startDraw = (evt) => {
+          evt.preventDefault();
+          sigPadDrawing = true;
+          const pos = getSigPadPos(canvas, evt);
+          sigPadCtx.beginPath();
+          sigPadCtx.moveTo(pos.x, pos.y);
+        };
+        const moveDraw = (evt) => {
+          if (!sigPadDrawing) return;
+          evt.preventDefault();
+          const pos = getSigPadPos(canvas, evt);
+          sigPadCtx.lineTo(pos.x, pos.y);
+          sigPadCtx.stroke();
+          sigPadHasDrawing = true;
+        };
+        const endDraw = () => {
+          sigPadDrawing = false;
+        };
+
+        canvas.addEventListener("mousedown", startDraw);
+        canvas.addEventListener("mousemove", moveDraw);
+        window.addEventListener("mouseup", endDraw);
+        canvas.addEventListener("touchstart", startDraw, { passive: false });
+        canvas.addEventListener("touchmove", moveDraw, { passive: false });
+        canvas.addEventListener("touchend", endDraw);
+      }
+
+      function clearSignaturePad() {
+        const canvas = document.getElementById("signatureCanvasPad");
+        if (!canvas || !sigPadCtx) return;
+        sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
+        sigPadHasDrawing = false;
+      }
+
+      function openSignatureModal(onConfirm) {
+        Swal.fire({
+          title: "ลงลายมือชื่ออิเล็กทรอนิกส์ก่อนส่งเรื่อง",
+          html: `
+ <div style="text-align:center;">
+ <canvas id="signatureCanvasPad" width="440" height="180" style="border:1px dashed #94a3b8; border-radius:8px; background:#fff; touch-action:none; cursor:crosshair; max-width:100%;"></canvas>
+ <div style="margin-top:8px;">
+ <button type="button" class="btn btn-secondary" style="padding:4px 12px; font-size:0.82em;" onclick="clearSignaturePad()">
+ <i class="fa-solid fa-eraser me-1"></i>ล้างลายเซ็น
+ </button>
+ </div>
+ <div style="font-size:0.78em; color:#64748b; margin-top:6px;">โปรดลงลายมือชื่อในกรอบด้านบนด้วยเมาส์หรือสัมผัสหน้าจอ ก่อนกดยืนยัน</div>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText:
+            '<i class="fa-solid fa-signature me-1"></i>ยืนยันลายเซ็น & ส่งเรื่อง',
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+          allowOutsideClick: false,
+          didOpen: bindSignaturePad,
+          preConfirm: () => {
+            if (!sigPadHasDrawing) {
+              Swal.showValidationMessage(
+                "กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการส่งเรื่อง",
+              );
+              return false;
+            }
+            const canvas = document.getElementById("signatureCanvasPad");
+            return canvas.toDataURL("image/png");
+          },
+        }).then((result) => {
+          if (result.isConfirmed && typeof onConfirm === "function") {
+            onConfirm(result.value);
           }
         });
       }

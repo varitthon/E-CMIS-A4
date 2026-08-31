@@ -1202,7 +1202,7 @@
       return item;
     },
 
-    submitGroupDirectorApproval(id, reviewDecision, notes) {
+    submitGroupDirectorApproval(id, reviewDecision, notes, signature) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
       if (item) {
@@ -1226,12 +1226,13 @@
             notes || "ขอให้ตรวจสอบข้อเท็จจริงเพิ่มเติม";
           item.groupDirectorReturnedDate = new Date().toLocaleString("th-TH");
         }
+        item.groupDirectorApprovalSignature = signature || null;
         saveCases(cases);
       }
       return item;
     },
 
-    submitDirectorApproval(id, decision, notes, forwardTarget) {
+    submitDirectorApproval(id, decision, notes, forwardTarget, signature) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
       if (item) {
@@ -1260,6 +1261,7 @@
           item.directorReturnNotes = notes || "แก้ไขข้อกฎหมายเพิ่มเติม";
           item.directorReturnedDate = new Date().toLocaleString("th-TH");
         }
+        item.legalDirectorApprovalSignature = signature || null;
         saveCases(cases);
       }
       return item;
@@ -1563,6 +1565,8 @@
           item.groupDirectorFinalReviewAction =
             reviewData.action || "เห็นชอบร่างหนังสือ";
           item.groupDirectorFinalReviewNotes = reviewData.notes || "";
+          item.groupDirectorFinalReviewSignature =
+            reviewData.signature || null;
         }
         item.groupDirectorFinalReviewedDate = new Date().toLocaleString(
           "th-TH",
@@ -1586,6 +1590,8 @@
           item.legalDirectorFinalReviewAction =
             reviewData.action || "เห็นชอบและมอบหมายธุรการออกเลขส่ง";
           item.legalDirectorFinalReviewNotes = reviewData.notes || "";
+          item.legalDirectorFinalReviewSignature =
+            reviewData.signature || null;
         }
         item.legalDirectorFinalReviewedDate = new Date().toLocaleString(
           "th-TH",

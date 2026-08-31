@@ -1019,6 +1019,16 @@
                   accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                   onchange="updateCustomFileLabel(this)"
                 />
+                <button
+                  type="button"
+                  id="btn_removeScannedFile"
+                  class="btn btn-secondary"
+                  style="display: none; padding: 4px 10px; font-size: 0.8em"
+                  onclick="removeScannedFile()"
+                  title="ลบไฟล์ที่แนบ"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
               </div>
               <div
                 class="small text-muted mt-1"
@@ -1243,6 +1253,26 @@
         if (input.files && input.files[0]) {
           validateUploadedFile(input);
         }
+        toggleRemoveScannedBtn();
+      }
+
+      function toggleRemoveScannedBtn() {
+        const input = document.getElementById("in_scannedFile");
+        const btn = document.getElementById("btn_removeScannedFile");
+        if (btn) {
+          btn.style.display =
+            input && input.files && input.files.length > 0
+              ? "inline-flex"
+              : "none";
+        }
+      }
+
+      function removeScannedFile() {
+        const input = document.getElementById("in_scannedFile");
+        if (input) input.value = "";
+        const statusEl = document.getElementById("scanStatusText");
+        if (statusEl) statusEl.innerHTML = "";
+        toggleRemoveScannedBtn();
       }
 
       function validateUploadedFile(input) {

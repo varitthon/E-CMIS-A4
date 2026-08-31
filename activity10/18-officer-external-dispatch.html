@@ -529,7 +529,12 @@
  <div class="form-grid-2">
  <div class="form-group">
  <label>แนบไฟล์สลิป EMS / ใบเสร็จรับฝากไปรษณีย์</label>
- <input type="file" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;">
+ <div style="display:flex; align-items:center; gap:8px;">
+ <input type="file" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;" onchange="toggleRemoveBtn('in_emsReceiptFile','btn_removeEmsReceiptFile')">
+ <button type="button" id="btn_removeEmsReceiptFile" class="btn btn-secondary" style="display:none; padding:5px 10px;" onclick="removeSelectedFile('in_emsReceiptFile','btn_removeEmsReceiptFile')" title="ลบไฟล์ที่แนบ">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>
  </div>
  <div class="form-group">
  <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
@@ -604,7 +609,12 @@
 
  <div class="form-group">
  <label>แนบไฟล์สแกนใบรับเอกสาร / ตราประทับรับเรื่องของสำนักงานอัยการสูงสุด</label>
- <input type="file" id="in_handReceiptFile" class="form-control" style="padding:5px 10px;">
+ <div style="display:flex; align-items:center; gap:8px;">
+ <input type="file" id="in_handReceiptFile" class="form-control" style="padding:5px 10px;" onchange="toggleRemoveBtn('in_handReceiptFile','btn_removeHandReceiptFile')">
+ <button type="button" id="btn_removeHandReceiptFile" class="btn btn-secondary" style="display:none; padding:5px 10px;" onclick="removeSelectedFile('in_handReceiptFile','btn_removeHandReceiptFile')" title="ลบไฟล์ที่แนบ">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>
  </div>
  </div>
  </div>
@@ -659,6 +669,20 @@
  setDefaultDates();
  loadCaseData();
  });
+
+ function toggleRemoveBtn(inputId, btnId) {
+ const input = document.getElementById(inputId);
+ const btn = document.getElementById(btnId);
+ if (btn) {
+ btn.style.display = (input && input.files && input.files.length > 0) ? 'inline-flex' : 'none';
+ }
+ }
+
+ function removeSelectedFile(inputId, btnId) {
+ const input = document.getElementById(inputId);
+ if (input) input.value = '';
+ toggleRemoveBtn(inputId, btnId);
+ }
 
  function toggleTheme() {
  document.body.classList.toggle('dark-mode');
@@ -781,7 +805,7 @@
  badgeTarget.innerHTML = '<i class="fa-solid fa-building me-1"></i>ส่งถึง: พนักงานอัยการเจ้าของสำนวน (ต้นทาง)';
  }
  if (txtRecipient) {
- txtRecipient.textContent = `${currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2'} — เพื่อแจ้งผลมติเห็นชอบตามคำสั่งไม่ฟ้อง`;
+ txtRecipient.textContent = `${currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2'} — เพื่อแจ้งผลมติเห็นชอบตามมติอัยการ`;
  }
  if (inRecipientLabel) {
  inRecipientLabel.value = currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2';
@@ -796,7 +820,7 @@
  document.getElementById('f_signedDocFileName').textContent = 'หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1290.pdf';
  }
  if (document.getElementById('in_dispatchNotes')) {
- document.getElementById('in_dispatchNotes').value = 'ดำเนินการส่งหนังสือแจ้งมติเห็นชอบตามคำสั่งไม่ฟ้องให้พนักงานอัยการเจ้าของสำนวนทางไปรษณีย์ด่วนพิเศษ (EMS) เรียบร้อยแล้ว';
+ document.getElementById('in_dispatchNotes').value = 'ดำเนินการส่งหนังสือแจ้งมติเห็นชอบตามมติอัยการให้พนักงานอัยการเจ้าของสำนวนทางไปรษณีย์ด่วนพิเศษ (EMS) เรียบร้อยแล้ว';
  }
 
  } else {

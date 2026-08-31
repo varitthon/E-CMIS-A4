@@ -302,6 +302,10 @@
  <i class="fa-solid fa-stamp me-1 text-purple"></i>ผลตรวจ ผอ.กองกฎหมาย (นางสาวนภัส)
  </span>
  <span style="font-size: 0.82em; color: #334155;" id="f_legalDirectorNotes">เห็นชอบและมอบหมายธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร</span>
+ <div id="f_legalDirectorFinalSignatureBox" style="display:none; margin-top:8px;">
+ <div style="font-size:0.75em; color:#64748b; margin-bottom:4px;">ลายมือชื่ออิเล็กทรอนิกส์:</div>
+ <img id="f_legalDirectorFinalSignatureImg" src="" alt="ลายมือชื่อ ผอ.กองกฎหมาย" style="max-height:60px; border:1px solid #f0abfc; border-radius:6px; background:#fff; padding:4px;">
+ </div>
  </div>
  </div>
  </div>
@@ -441,6 +445,14 @@
  setElText('f_finalDocSummary', currentCase.finalDocSummary || 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป');
  setElText('f_groupDirectorNotes', currentCase.groupDirectorFinalReviewNotes || 'เห็นชอบตามร่างหนังสือที่นิติกรจัดทำ และเสนอ ผอ.กองกฎหมาย');
  setElText('f_legalDirectorNotes', currentCase.legalDirectorFinalReviewNotes || 'เห็นชอบและมอบหมายธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร');
+ if (currentCase.legalDirectorFinalReviewSignature) {
+ const sigBox = document.getElementById('f_legalDirectorFinalSignatureBox');
+ const sigImg = document.getElementById('f_legalDirectorFinalSignatureImg');
+ if (sigBox && sigImg) {
+ sigImg.src = currentCase.legalDirectorFinalReviewSignature;
+ sigBox.style.display = 'block';
+ }
+ }
 
  // Check if already submitted by Admin (Read-Only)
  const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_FINAL_DISPATCH_ROUND2' && (currentCase.finalDispatchRound2SubmittedDate || (currentCase.workflowStep && currentCase.workflowStep > 16));

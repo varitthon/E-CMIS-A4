@@ -300,6 +300,10 @@
  <span class="badge" style="background:#dbeafe; color:#1e40af;">เห็นชอบแล้ว</span>
  </div>
  <div class="read-box font-monospace" style="background:#fff; font-size:0.88em;" id="f_groupDirectorFinalNotes">ได้ตรวจสอบความถูกต้องและครบถ้วนของร่างหนังสือความเห็นแย้งแล้ว เห็นชอบตามร่างหนังสือที่นิติกรจัดทำ จึงเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาและดำเนินการต่อไป</div>
+ <div id="f_groupDirectorFinalSignatureBox" style="display:none; margin-top:8px;">
+ <div style="font-size:0.78em; color:#64748b; margin-bottom:4px;">ลายมือชื่ออิเล็กทรอนิกส์:</div>
+ <img id="f_groupDirectorFinalSignatureImg" src="" alt="ลายมือชื่อ ผอ.กลุ่มงานความเห็นแย้ง" style="max-height:60px; border:1px solid #bfdbfe; border-radius:6px; background:#fff; padding:4px;">
+ </div>
  </div>
  </div>
  </div>
@@ -426,6 +430,14 @@
  setElText('f_finalDocSubject', currentCase.finalDocSubject || currentCase.title);
  setElText('f_finalDocSummary', currentCase.finalDocSummary || 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป');
  setElText('f_groupDirectorFinalNotes', currentCase.groupDirectorFinalReviewNotes || 'ได้ตรวจสอบความถูกต้องและครบถ้วนของร่างหนังสือความเห็นแย้งแล้ว เห็นชอบตามร่างหนังสือที่นิติกรจัดทำ จึงเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาและดำเนินการต่อไป');
+ if (currentCase.groupDirectorFinalReviewSignature) {
+ const sigBox = document.getElementById('f_groupDirectorFinalSignatureBox');
+ const sigImg = document.getElementById('f_groupDirectorFinalSignatureImg');
+ if (sigBox && sigImg) {
+ sigImg.src = currentCase.groupDirectorFinalReviewSignature;
+ sigBox.style.display = 'block';
+ }
+ }
 
  // Check if already submitted by Legal Director (Read-Only)
  const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_DIRECTOR_FINAL_REVIEW' && (currentCase.legalDirectorFinalReviewedDate || (currentCase.workflowStep && currentCase.workflowStep > 15));
@@ -483,9 +495,11 @@
  cancelButtonColor: '#64748b'
  }).then(res => {
  if (res.isConfirmed) {
+ openSignatureModal(function (signatureDataUrl) {
  Activity10.submitLegalDirectorFinalReview(currentCase.id, {
  action: action,
- notes: notes
+ notes: notes,
+ signature: signatureDataUrl
  });
 
  Swal.fire({
@@ -497,6 +511,100 @@
  }).then(() => {
  window.location.href = '01-work-inbox.html';
  });
+ });
+ }
+ });
+ }
+
+ // Electronic signature pad (shared pattern across 07/08/14/15)
+ let sigPadCtx = null;
+ let sigPadDrawing = false;
+ let sigPadHasDrawing = false;
+
+ function getSigPadPos(canvas, evt) {
+ const rect = canvas.getBoundingClientRect();
+ const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+ const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+ return {
+ x: (clientX - rect.left) * (canvas.width / rect.width),
+ y: (clientY - rect.top) * (canvas.height / rect.height),
+ };
+ }
+
+ function bindSignaturePad() {
+ const canvas = document.getElementById('signatureCanvasPad');
+ if (!canvas) return;
+ sigPadCtx = canvas.getContext('2d');
+ sigPadCtx.lineWidth = 2.2;
+ sigPadCtx.lineCap = 'round';
+ sigPadCtx.strokeStyle = '#1e3a8a';
+ sigPadHasDrawing = false;
+ sigPadDrawing = false;
+
+ const startDraw = (evt) => {
+ evt.preventDefault();
+ sigPadDrawing = true;
+ const pos = getSigPadPos(canvas, evt);
+ sigPadCtx.beginPath();
+ sigPadCtx.moveTo(pos.x, pos.y);
+ };
+ const moveDraw = (evt) => {
+ if (!sigPadDrawing) return;
+ evt.preventDefault();
+ const pos = getSigPadPos(canvas, evt);
+ sigPadCtx.lineTo(pos.x, pos.y);
+ sigPadCtx.stroke();
+ sigPadHasDrawing = true;
+ };
+ const endDraw = () => { sigPadDrawing = false; };
+
+ canvas.addEventListener('mousedown', startDraw);
+ canvas.addEventListener('mousemove', moveDraw);
+ window.addEventListener('mouseup', endDraw);
+ canvas.addEventListener('touchstart', startDraw, { passive: false });
+ canvas.addEventListener('touchmove', moveDraw, { passive: false });
+ canvas.addEventListener('touchend', endDraw);
+ }
+
+ function clearSignaturePad() {
+ const canvas = document.getElementById('signatureCanvasPad');
+ if (!canvas || !sigPadCtx) return;
+ sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
+ sigPadHasDrawing = false;
+ }
+
+ function openSignatureModal(onConfirm) {
+ Swal.fire({
+ title: 'ลงลายมือชื่ออิเล็กทรอนิกส์ก่อนส่งเรื่อง',
+ html: `
+ <div style="text-align:center;">
+ <canvas id="signatureCanvasPad" width="440" height="180" style="border:1px dashed #94a3b8; border-radius:8px; background:#fff; touch-action:none; cursor:crosshair; max-width:100%;"></canvas>
+ <div style="margin-top:8px;">
+ <button type="button" class="btn btn-secondary" style="padding:4px 12px; font-size:0.82em;" onclick="clearSignaturePad()">
+ <i class="fa-solid fa-eraser me-1"></i>ล้างลายเซ็น
+ </button>
+ </div>
+ <div style="font-size:0.78em; color:#64748b; margin-top:6px;">โปรดลงลายมือชื่อในกรอบด้านบนด้วยเมาส์หรือสัมผัสหน้าจอ ก่อนกดยืนยัน</div>
+ </div>
+ `,
+ showCancelButton: true,
+ confirmButtonText: '<i class="fa-solid fa-signature me-1"></i>ยืนยันลายเซ็น & ส่งเรื่อง',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#1e3a8a',
+ cancelButtonColor: '#64748b',
+ allowOutsideClick: false,
+ didOpen: bindSignaturePad,
+ preConfirm: () => {
+ if (!sigPadHasDrawing) {
+ Swal.showValidationMessage('กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการส่งเรื่อง');
+ return false;
+ }
+ const canvas = document.getElementById('signatureCanvasPad');
+ return canvas.toDataURL('image/png');
+ },
+ }).then((result) => {
+ if (result.isConfirmed && typeof onConfirm === 'function') {
+ onConfirm(result.value);
  }
  });
  }
