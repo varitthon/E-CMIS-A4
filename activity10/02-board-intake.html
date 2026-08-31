@@ -576,11 +576,65 @@
                 </button>
               </div>
             </div>
+            <div
+              style="
+                background: var(--bg-body);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 14px 16px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.82em;
+                  font-weight: 700;
+                  color: var(--text-title);
+                  margin-bottom: 10px;
+                "
+              >
+                <i class="fa-solid fa-filter me-1"></i>ตัวกรองแบบละเอียด
+              </div>
+              <div class="form-grid-3" style="margin-bottom: 0">
+                <div class="form-group" style="margin-bottom: 0">
+                  <label>เลขดำ ป.ป.ท.</label>
+                  <input
+                    type="text"
+                    id="intakeFilterBlackNo"
+                    class="form-control"
+                    placeholder="เช่น อ. 104/2569"
+                    onkeyup="handleIntakeSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label>จาก</label>
+                  <input
+                    type="text"
+                    id="intakeFilterSource"
+                    class="form-control"
+                    placeholder="หน่วยงานอัยการต้นทาง..."
+                    onkeyup="handleIntakeSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label>เรื่อง</label>
+                  <input
+                    type="text"
+                    id="intakeFilterSubject"
+                    class="form-control"
+                    placeholder="ชื่อเรื่อง / ข้อกล่าวหา..."
+                    onkeyup="handleIntakeSearchKeyup(event)"
+                  />
+                </div>
+              </div>
+            </div>
             <div class="helper-text" style="margin-bottom: 20px">
               * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น 2569/001),
               <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong> (เช่น ปปท. 0012/2568),
               <strong>ชื่อผู้กล่าวหา</strong> หรือ
-              <strong>ชื่อผู้ถูกกล่าวหา</strong>
+              <strong>ชื่อผู้ถูกกล่าวหา</strong> / กรอก
+              <strong>เลขดำ ป.ป.ท.</strong>, <strong>จาก</strong> หรือ
+              <strong>เรื่อง</strong> เพิ่มเติมเพื่อกรองผลให้แคบลง
             </div>
 
             <!-- Search Results Display Panel -->
@@ -1238,20 +1292,24 @@
       }
 
       function executeIntakeSearch() {
-        const q = document.getElementById("intakeSearchInput")
-          ? document
-              .getElementById("intakeSearchInput")
-              .value.trim()
-              .toLowerCase()
-          : "";
+        const getVal = (id) => {
+          const el = document.getElementById(id);
+          return el ? el.value.trim().toLowerCase() : "";
+        };
+
+        const q = getVal("intakeSearchInput");
+        const filterBlackNo = getVal("intakeFilterBlackNo");
+        const filterSource = getVal("intakeFilterSource");
+        const filterSubject = getVal("intakeFilterSubject");
+
         const resultsContainer = document.getElementById("intakeSearchResults");
         if (!resultsContainer) return;
 
-        if (!q) {
+        if (!q && !filterBlackNo && !filterSource && !filterSubject) {
           Swal.fire({
             icon: "info",
             title: "กรุณากรอกคำค้นหา",
-            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือชื่อผู้ถูกกล่าวหา",
+            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา, ผู้ถูกกล่าวหา หรือกรอกเลขดำ ป.ป.ท./จาก/เรื่อง",
             timer: 1500,
             showConfirmButton: false,
           });
@@ -1263,14 +1321,28 @@
           ? Activity10.getPaccIntakeDatabase()
           : [];
         const matched = cases.filter((c) => {
-          return (
+          const matchesQuery =
+            !q ||
             c.id.toLowerCase().includes(q) ||
             (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
             (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
             (c.redNo && c.redNo.toLowerCase().includes(q)) ||
             (c.accuser && c.accuser.toLowerCase().includes(q)) ||
             (c.accused && c.accused.toLowerCase().includes(q)) ||
-            c.title.toLowerCase().includes(q)
+            c.title.toLowerCase().includes(q);
+
+          const matchesBlackNo =
+            !filterBlackNo ||
+            (c.blackNo && c.blackNo.toLowerCase().includes(filterBlackNo));
+          const matchesSource =
+            !filterSource ||
+            (c.source && c.source.toLowerCase().includes(filterSource));
+          const matchesSubject =
+            !filterSubject ||
+            (c.title && c.title.toLowerCase().includes(filterSubject));
+
+          return (
+            matchesQuery && matchesBlackNo && matchesSource && matchesSubject
           );
         });
 
