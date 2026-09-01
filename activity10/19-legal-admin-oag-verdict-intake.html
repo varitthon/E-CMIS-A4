@@ -11,6 +11,7 @@
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
  <link rel="stylesheet" href="assets/ecmis-shell.css">
+ <link rel="stylesheet" href="assets/ecmis-modal.css">
 
  <style>
  h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
@@ -644,11 +645,11 @@
  icon: 'info',
  title: 'เปิดดูหนังสือคำวินิจฉัยชี้ขาดของ อสส.',
  html: `
- <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
- <p style="margin-bottom: 6px;"><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('in_oagVerdictNo').value}</p>
- <p style="margin-bottom: 6px;"><strong>วันที่ในหนังสือ:</strong> ${(window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(document.getElementById('in_oagVerdictDate').value) : document.getElementById('in_oagVerdictDate').value)}</p>
- <p style="margin-bottom: 6px;"><strong>ผลคำวินิจฉัย:</strong> <span style="font-weight:700; color:${isProsecute ? '#16a34a' : '#dc2626'};">${isProsecute ? 'ชี้ขาดให้ฟ้องคดี' : 'ชี้ขาดไม่ฟ้อง/ยุติคดี'}</span></p>
- <p style="margin-bottom: 0;"><strong>สถานะไฟล์:</strong> เอกสารมีลายมือชื่ออัยการสูงสุดสมบูรณ์ (พร้อมเสนอ ผอ.กอง ตรวจสอบ)</p>
+ <div class="emd-summary">
+ <p><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('in_oagVerdictNo').value}</p>
+ <p><strong>วันที่ในหนังสือ:</strong> ${(window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(document.getElementById('in_oagVerdictDate').value) : document.getElementById('in_oagVerdictDate').value)}</p>
+ <p><strong>ผลคำวินิจฉัย:</strong> <span class="${isProsecute ? 'emd-strong-ok' : 'emd-strong-bad'}">${isProsecute ? 'ชี้ขาดให้ฟ้องคดี' : 'ชี้ขาดไม่ฟ้อง/ยุติคดี'}</span></p>
+ <p><strong>สถานะไฟล์:</strong> เอกสารมีลายมือชื่ออัยการสูงสุดสมบูรณ์ (พร้อมเสนอ ผอ.กอง ตรวจสอบ)</p>
  </div>
  `,
  confirmButtonColor: '#1e3a8a',
@@ -683,10 +684,10 @@
  icon: 'question',
  title: 'ยืนยันการรับผลคำวินิจฉัยชี้ขาด อสส.?',
  html: `
- <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
- <p style="margin-bottom: 4px;"><strong>เลขที่หนังสือ อสส.:</strong> ${verdictNo}</p>
- <p style="margin-bottom: 4px;"><strong>ผลคำวินิจฉัยชี้ขาด:</strong> ${decisionText}</p>
- <p style="margin-bottom: 0;"><strong>ขั้นตอนต่อไป:</strong> ส่งต่อ ผอ.กองกฎหมาย ตรวจสอบและสั่งการ</p>
+ <div class="emd-summary">
+ <p><strong>เลขที่หนังสือ อสส.:</strong> ${verdictNo}</p>
+ <p><strong>ผลคำวินิจฉัยชี้ขาด:</strong> ${decisionText}</p>
+ <p><strong>ขั้นตอนต่อไป:</strong> ส่งต่อ ผอ.กองกฎหมาย ตรวจสอบและสั่งการ</p>
  </div>
  `,
  showCancelButton: true,
