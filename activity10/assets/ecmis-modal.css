@@ -1,0 +1,121 @@
+/* ============================================================
+   ecmis-modal.css - Shared styles for SweetAlert2 modal content
+   ------------------------------------------------------------
+   Every selector is scoped under .swal2-container on purpose.
+   Each page's inline <style> block loads AFTER all <link> tags and
+   defines a bare `.badge` rule; an unscoped single-class rule here
+   would tie on specificity and lose on source order. The extra
+   `.swal2-container` raises every rule to (0,2,0) so it wins
+   regardless of order, and keeps these rules out of page markup.
+   ============================================================ */
+
+/* --- Summary / confirmation box ---------------------------- */
+.swal2-container .emd-summary {
+  text-align: left;
+  font-size: 0.9em;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+.swal2-container .emd-summary p {
+  margin-bottom: 4px;
+}
+.swal2-container .emd-summary p:last-child {
+  margin-bottom: 0;
+}
+
+/* NOTE: .emd-strong-ok / .emd-strong-bad are chosen at RUNTIME by a
+   ternary in 19-legal-admin-oag-verdict-intake.html. A grep-based
+   "unused class" sweep will not see them - do not delete. */
+.swal2-container .emd-strong-ok {
+  color: #166534;
+  font-weight: 700;
+}
+.swal2-container .emd-strong-bad {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* --- Generic text sizes ------------------------------------ */
+.swal2-container .emd-body {
+  font-size: 0.9rem;
+}
+.swal2-container .emd-fs-sm {
+  font-size: 0.78rem;
+}
+
+/* --- Signature modal (pages 06, 07, 08, 14, 15, 22) -------- */
+.swal2-container .emd-sig-title {
+  color: #0f2a62;
+}
+.swal2-container .emd-sig-signer {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
+}
+.swal2-container .emd-sig-label {
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+/* `!important` on border-color is required: these cards carry Bootstrap's
+   `.border` utility, which is itself `!important` in Bootstrap 5.3 and
+   would otherwise win at any specificity. Nothing else here needs it. */
+.swal2-container .emd-sig-card {
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #ffffff;
+  border-color: #e5e7eb !important;
+}
+.swal2-container .emd-sig-card.is-active {
+  background: #f0f6ff;
+  border-color: #2563eb !important;
+}
+
+.swal2-container .emd-sig-ico {
+  width: 38px;
+  height: 38px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+.swal2-container .emd-sig-ico.is-primary {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.swal2-container .emd-sig-card-title {
+  font-size: 0.88rem;
+}
+.swal2-container .emd-sig-card-desc {
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.swal2-container .emd-sig-pad {
+  background: #fafbfd;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+}
+.swal2-container .emd-sig-canvas {
+  width: 100%;
+  height: 170px;
+  touch-action: none;
+}
+
+/* `display:block` is correct because both panels are plain <div>s today.
+   If either ever gains a `d-flex` class, Bootstrap's !important would
+   beat this and the panel would look broken only when hidden. */
+.swal2-container .emd-sig-panel {
+  display: none;
+}
+.swal2-container .emd-sig-panel.is-visible {
+  display: block;
+}
+.swal2-container .emd-sig-cert {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.82rem;
+}
