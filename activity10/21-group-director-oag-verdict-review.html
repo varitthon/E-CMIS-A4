@@ -37,8 +37,6 @@
  .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
  .form-card-body { padding: 20px; }
 
- .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
- .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -46,9 +44,6 @@
  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
  .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
  textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
-
- .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
- .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
 
  /* Action Footer */
  .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
@@ -99,10 +94,7 @@
  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
  }
 
- @media (max-width: 1024px) {
- .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
- }
- </style>
+  </style>
 </head>
 <body>
 
@@ -232,22 +224,33 @@
  </div>
 
  <div class="form-group">
- <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+ <label>ชื่อเรื่องกล่าวหา</label>
  <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
  </div>
-
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
+   <label>เลขสำนวนคดี</label>
+   <div class="read-box" id="f_caseNo">-</div>
+ </div>
+   <div class="form-group">
  <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
  <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>ระดับศาล</label>
  <div class="read-box" id="f_level">-</div>
  </div>
- <div class="form-group">
- <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
+   <div class="form-group">
+ <label>ผู้ถูกกล่าวหา</label>
  <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
+ </div>
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
+   <label>ตำแหน่ง</label>
+   <div class="read-box" id="f_accusedPosition">-</div>
  </div>
  </div>
 
@@ -265,11 +268,11 @@
  </div>
  <div class="form-group">
  <label>วันที่ลงในหนังสือ อสส.</label>
- <div class="read-box font-monospace" id="f_oagVerdictDate">25/08/2569</div>
+ <div class="read-box font-monospace" id="f_oagVerdictDate">25-08-2569</div>
  </div>
  <div class="form-group">
  <label>วันที่กองกฎหมายลงรับ</label>
- <div class="read-box font-monospace" id="f_oagVerdictReceiveDate">25/08/2569</div>
+ <div class="read-box font-monospace" id="f_oagVerdictReceiveDate">25-08-2569</div>
  </div>
  </div>
 
@@ -318,14 +321,14 @@
  </div>
  <div class="form-card-body">
  
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>มอบหมายนิติกรเจ้าของสำนวน <span style="color:#dc2626;">*</span></label>
  <select id="in_targetOfficer" class="form-control" style="font-weight: 600; color: #1e3a8a;">
  <option value="Nattapol.B">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ - เจ้าของสำนวนเดิม)</option>
  </select>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>วันที่สั่งการ <span style="color:#dc2626;">*</span></label>
  <input type="date" id="in_groupDirectorReviewDate" class="form-control font-monospace" style="font-weight:600;">
  </div>
@@ -445,13 +448,15 @@
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
  setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_accusedPosition', currentCase.accusedPosition || '-');
+ setElText('f_caseNo', currentCase.id || '-');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
 
  setElText('f_oagVerdictNo', currentCase.oagVerdictNo || 'อส 0001/6789');
- setElText('f_oagVerdictDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictDate) : currentCase.oagVerdictDate) || '25/08/2569');
- setElText('f_oagVerdictReceiveDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictReceiveDate) : currentCase.oagVerdictReceiveDate) || '25/08/2569');
+ setElText('f_oagVerdictDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictDate) : currentCase.oagVerdictDate) || '25-08-2569');
+ setElText('f_oagVerdictReceiveDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictReceiveDate) : currentCase.oagVerdictReceiveDate) || '25-08-2569');
  setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหาตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.');
  setElText('f_oagVerdictFile', currentCase.oagVerdictFile || 'หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf');
  setElText('f_directorNotes', currentCase.directorOagVerdictNotes || 'รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง เพื่อมอบหมายนิติกรเจ้าของสำนวนสรุปผลคดีและทำหนังสือแจ้งกองบริหารคดีดำเนินการในส่วนที่เกี่ยวข้องต่อไป');

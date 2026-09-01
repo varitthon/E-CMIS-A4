@@ -19,6 +19,10 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
     <link rel="stylesheet" href="assets/ecmis-shell.css" />
     <style>
@@ -144,18 +148,6 @@
         padding: 20px;
       }
 
-      .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
-      .form-grid-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
       .form-group {
         display: flex;
         flex-direction: column;
@@ -193,23 +185,6 @@
         height: auto;
         resize: vertical;
         padding: 10px 12px;
-      }
-
-      .read-box {
-        background-color: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 0.9em;
-        color: var(--text-title);
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-      }
-      .read-box-textarea {
-        min-height: 70px;
-        align-items: flex-start;
-        line-height: 1.5;
       }
 
       /* Action Footer */
@@ -352,10 +327,7 @@
         }
       }
 
-      @media (max-width: 1024px) {
-        .form-grid-2,
-        .form-grid-3,
-        .decision-grid {
+      @media (max-width: 1024px) {.decision-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -519,31 +491,27 @@
             </div>
             <div class="step-item completed">
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">2. ออกเลขรับ กม.</div>
+              <div class="step-label">2. ผอ.กอง มอบหมาย</div>
             </div>
             <div class="step-item completed">
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">3. ผอ.กอง มอบหมาย</div>
-            </div>
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">4. ผอ.กลุ่มงาน มอบหมาย</div>
+              <div class="step-label">3. ผอ.กลุ่มงาน มอบหมาย</div>
             </div>
             <div class="step-item active" id="step5">
-              <div class="step-circle">5</div>
-              <div class="step-label">5. นิติกร ยกร่างความเห็น</div>
+              <div class="step-circle">4</div>
+              <div class="step-label">4. นิติกร ยกร่างความเห็น</div>
             </div>
             <div class="step-item" id="step6">
-              <div class="step-circle">6</div>
-              <div class="step-label">6. ผอ.กลุ่มงาน ตรวจร่าง</div>
+              <div class="step-circle">5</div>
+              <div class="step-label">5. ผอ.กลุ่มงาน ตรวจร่าง</div>
             </div>
             <div class="step-item" id="step7">
-              <div class="step-circle">7</div>
-              <div class="step-label">7. ผอ.กอง ตรวจพิจารณา</div>
+              <div class="step-circle">6</div>
+              <div class="step-label">6. ผอ.กอง ตรวจพิจารณา</div>
             </div>
             <div class="step-item" id="step8">
-              <div class="step-circle">8</div>
-              <div class="step-label">8. ธุรการ ออกเลขส่ง</div>
+              <div class="step-circle">7</div>
+              <div class="step-label">7. ธุรการ ออกเลขส่ง</div>
             </div>
           </div>
         </div>
@@ -560,7 +528,7 @@
             >
           </div>
           <div class="form-card-body">
-            <div class="form-grid-3">
+                        <div class="form-grid-2">
               <div class="form-group">
                 <label>เลขรับสารบรรณกลาง</label>
                 <div
@@ -580,6 +548,8 @@
                   0142/2569
                 </div>
               </div>
+            </div>
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>กำหนดส่งมอบงาน</label>
                 <div
@@ -593,7 +563,7 @@
             </div>
 
             <div class="form-group">
-              <label>เลขสำนวนคดี &amp; ชื่อเรื่องกล่าวหา</label>
+              <label>ชื่อเรื่องกล่าวหา</label>
               <div
                 class="read-box fw-bold"
                 id="f_title"
@@ -602,12 +572,17 @@
                 -
               </div>
             </div>
-
-            <div class="form-grid-2">
+                        <div class="form-grid-2">
+              <div class="form-group">
+              <label>เลขสำนวนคดี</label>
+              <div class="read-box" id="f_caseNo">-</div>
+            </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
               </div>
+            </div>
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>ระดับศาล</label>
                 <div class="read-box" id="f_level">-</div>
@@ -887,7 +862,8 @@
                 <label>
                   <span>
                     <span id="lbl_opinionDraft"
-                      >สาระสำคัญ / ข้อเท็จจริงและข้อกฎหมายประกอบความเห็นแย้ง</span
+                      >สาระสำคัญ /
+                      ข้อเท็จจริงและข้อกฎหมายประกอบความเห็นแย้ง</span
                     >
                     <span style="color: #dc2626">*</span>
                     <button
@@ -922,14 +898,21 @@
                     class="form-control"
                     id="in_opinionFile"
                     style="padding: 6px 12px"
-                    onchange="toggleRemoveBtn('in_opinionFile', 'btn_removeOpinionFile')"
+                    onchange="
+                      toggleRemoveBtn('in_opinionFile', 'btn_removeOpinionFile')
+                    "
                   />
                   <button
                     type="button"
                     id="btn_removeOpinionFile"
                     class="btn btn-secondary"
                     style="display: none; padding: 6px 10px"
-                    onclick="removeSelectedFile('in_opinionFile', 'btn_removeOpinionFile')"
+                    onclick="
+                      removeSelectedFile(
+                        'in_opinionFile',
+                        'btn_removeOpinionFile',
+                      )
+                    "
                     title="ลบไฟล์ที่แนบ"
                   >
                     <i class="fa-solid fa-trash-can"></i>
@@ -1021,7 +1004,7 @@
 
       function handleLogout() {
         Swal.fire({
-          title: "ออกจากระบบ?",
+          title: "ออกจากระบบ",
           text: "คุณต้องการออกจากระบบหรือไม่",
           icon: "question",
           showCancelButton: true,
@@ -1131,6 +1114,7 @@
         );
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0142/2569");
         setElText("f_title", currentCase.title || "-");
+        setElText("f_caseNo", currentCase.id || "-");
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText("f_source", currentCase.source || "-");
         setElText("f_docNo", currentCase.docNo || "2569/0014");
@@ -1141,7 +1125,7 @@
                 currentCase.officerDeadline || currentCase.dueDate,
               )
             : currentCase.officerDeadline || currentCase.dueDate) ||
-            "25/08/2569",
+            "25-08-2569",
         );
         setElText(
           "f_summary",
@@ -1212,20 +1196,23 @@
  <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>เสนอความเห็นแล้ว</span>
  </div>
  <div class="form-card-body">
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>นิติกรผู้จัดทำ</label>
- <div class="read-box fw-bold text-dark">${currentCase.officer || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)"}</div>
+ <div class="read-box fw-bold text-dark">${(window.Activity10 ? Activity10.fullName(currentCase.officer, currentCase.officerPosition) : currentCase.officer) || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)"}</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>วันที่จัดทำและเสนอ</label>
  <div class="read-box font-monospace text-secondary">${currentCase.officerSubmittedDate || "ดำเนินการเรียบร้อยแล้ว"}</div>
  </div>
  </div>
- <div class="form-group">
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>ผลการตรวจพิจารณาทางกฎหมาย</label>
  <div class="read-box fw-bold" style="color: ${opinionColor};"><i class="fa-solid ${opinionIcon} me-1"></i>${currentCase.opinionType || "เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ"}</div>
  </div>
+ </div>
+
  <div class="form-group">
  <label>สาระสำคัญ / เหตุผลความเห็นแย้ง</label>
  <div class="read-box read-box-textarea font-monospace">${currentCase.legalOpinionDraft || currentCase.legalOpinion || "-"}</div>
@@ -1259,7 +1246,8 @@
 
         if (isAgree) {
           opinionCode = "AGREE";
-          opinionType = "เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (No Objection)";
+          opinionType =
+            "เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (No Objection)";
           defaultFile = "ร่างบันทึกเห็นชอบคำสั่งไม่ฟ้อง.docx";
           summaryHtml = `<span style="color: #16a34a; font-weight: 700;">เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ</span>`;
         } else if (isOther) {
@@ -1304,7 +1292,7 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันบันทึกและเสนอความเห็นทางกฎหมาย?",
+          title: "ยืนยันบันทึกและ\nเสนอความเห็นทางกฎหมาย",
           html: `
             <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
               <p style="margin-bottom: 6px;"><strong>ผลการพิจารณา:</strong> ${summaryHtml}</p>
@@ -1318,22 +1306,253 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (res.isConfirmed) {
-            Activity10.submitOpinionToGroupDirector(
-              currentCase.id,
-              opinionType,
-              opinionDraft,
-              fileName,
-            );
+            openSignatureModal(function (signatureDataUrl) {
+              Activity10.submitOpinionToGroupDirector(
+                currentCase.id,
+                opinionType,
+                opinionDraft,
+                fileName,
+                signatureDataUrl,
+              );
 
-            Swal.fire({
-              icon: "success",
-              title: "บันทึกและเสนอความเห็นสำเร็จ!",
-              text: "ส่งเรื่องเสนอ ผอ.กลุ่มงานความเห็นแย้ง เรียบร้อยแล้ว",
-              timer: 1600,
-              showConfirmButton: false,
-            }).then(() => {
-              window.location.href = "01-work-inbox.html";
+              Swal.fire({
+                icon: "success",
+                title: "บันทึกและเสนอความเห็นสำเร็จ!",
+                text: "ส่งเรื่องเสนอ ผอ.กลุ่มงานความเห็นแย้ง เรียบร้อยแล้ว",
+                timer: 1600,
+                showConfirmButton: false,
+              }).then(() => {
+                window.location.href = "01-work-inbox.html";
+              });
             });
+          }
+        });
+      }
+
+      // Electronic signature pad (shared pattern across 06/07/08/14/15/22)
+      let sigPadCtx = null;
+      let sigPadDrawing = false;
+      let sigPadHasDrawing = false;
+      let sigMode = "hand";
+
+      function getSigPadPos(canvas, evt) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height),
+        };
+      }
+
+      function selectSignatureMode(mode) {
+        sigMode = mode;
+        const cardHand = document.getElementById("swal-card-hand");
+        const cardCert = document.getElementById("swal-card-cert");
+        const badge = document.getElementById("swal-sig-mode-badge");
+        const boxCanvas = document.getElementById("swal-box-canvas");
+        const boxCert = document.getElementById("swal-box-cert");
+        if (cardHand) {
+          cardHand.style.background = mode === "hand" ? "#F0F6FF" : "#FFFFFF";
+          cardHand.style.borderColor = mode === "hand" ? "#2563EB" : "#E5E7EB";
+        }
+        if (cardCert) {
+          cardCert.style.background = mode === "cert" ? "#F0F6FF" : "#FFFFFF";
+          cardCert.style.borderColor = mode === "cert" ? "#2563EB" : "#E5E7EB";
+        }
+        if (badge) {
+          badge.innerHTML =
+            mode === "hand"
+              ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
+              : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
+        }
+        if (boxCanvas)
+          boxCanvas.style.display = mode === "hand" ? "block" : "none";
+        if (boxCert) boxCert.style.display = mode === "cert" ? "block" : "none";
+      }
+
+      function bindSignaturePad() {
+        const canvas = document.getElementById("swal-sig-canvas");
+        if (!canvas) return;
+        sigPadCtx = canvas.getContext("2d");
+        sigPadCtx.lineWidth = 2.4;
+        sigPadCtx.lineCap = "round";
+        sigPadCtx.strokeStyle = "#0F172A";
+        sigPadHasDrawing = false;
+        sigPadDrawing = false;
+        sigMode = "hand";
+
+        const startDraw = (evt) => {
+          evt.preventDefault();
+          sigPadDrawing = true;
+          const pos = getSigPadPos(canvas, evt);
+          sigPadCtx.beginPath();
+          sigPadCtx.moveTo(pos.x, pos.y);
+        };
+        const moveDraw = (evt) => {
+          if (!sigPadDrawing) return;
+          evt.preventDefault();
+          const pos = getSigPadPos(canvas, evt);
+          sigPadCtx.lineTo(pos.x, pos.y);
+          sigPadCtx.stroke();
+          sigPadHasDrawing = true;
+        };
+        const endDraw = () => {
+          sigPadDrawing = false;
+        };
+
+        canvas.addEventListener("mousedown", startDraw);
+        canvas.addEventListener("mousemove", moveDraw);
+        window.addEventListener("mouseup", endDraw);
+        canvas.addEventListener("touchstart", startDraw, { passive: false });
+        canvas.addEventListener("touchmove", moveDraw, { passive: false });
+        canvas.addEventListener("touchend", endDraw);
+
+        const clearBtn = document.getElementById("swal-sig-clear");
+        if (clearBtn) clearBtn.addEventListener("click", clearSignaturePad);
+        const cardHand = document.getElementById("swal-card-hand");
+        const cardCert = document.getElementById("swal-card-cert");
+        if (cardHand)
+          cardHand.addEventListener("click", () => selectSignatureMode("hand"));
+        if (cardCert)
+          cardCert.addEventListener("click", () => selectSignatureMode("cert"));
+      }
+
+      function clearSignaturePad() {
+        const canvas = document.getElementById("swal-sig-canvas");
+        if (!canvas || !sigPadCtx) return;
+        sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
+        sigPadHasDrawing = false;
+      }
+
+      function generateCertificateStampImage(signerFull, certId) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 440;
+        canvas.height = 180;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ECFDF5";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#A7F3D0";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+        ctx.fillStyle = "#065F46";
+        ctx.font = "bold 16px sans-serif";
+        ctx.fillText("ลงนามด้วยใบรับรองอิเล็กทรอนิกส์", 20, 40);
+        ctx.font = "13px sans-serif";
+        ctx.fillText("Certificate: " + certId, 20, 68);
+        const parenIdx = signerFull.indexOf("(");
+        const namePart =
+          parenIdx > -1 ? signerFull.slice(0, parenIdx).trim() : signerFull;
+        const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText(namePart, 20, 100);
+        ctx.font = "12px sans-serif";
+        ctx.fillText(rolePart, 20, 122);
+        ctx.font = "11px sans-serif";
+        ctx.fillStyle = "#16A34A";
+        ctx.fillText(new Date().toLocaleString("th-TH"), 20, 150);
+        return canvas.toDataURL("image/png");
+      }
+
+      function openSignatureModal(onConfirm) {
+        const title = "ลงนามเสนอความเห็นทางกฎหมายต่อ ผอ.กลุ่มงานความเห็นแย้ง";
+        const signerFull =
+          (currentCase && currentCase.officer) ||
+          "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+        const certId = "PACC-LEGALOFFICER-2569-006";
+
+        Swal.fire({
+          width: "720px",
+          html: `
+ <div class="text-start" style="font-size:0.9rem;">
+ <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+ <i class="fa-solid fa-pen-nib text-primary fa-lg"></i>
+ <h5 class="m-0 fw-bold" style="color:#0F2A62;">${title}</h5>
+ </div>
+ <div class="p-3 mb-3 rounded-3 d-flex align-items-center gap-2" style="background:#EFF6FF; border:1px solid #DBEAFE; color:#1E40AF; font-size:0.85rem;">
+ <i class="fa-solid fa-user me-1"></i>
+ <span>ผู้ลงนามคือ <strong>${signerFull}</strong></span>
+ </div>
+ <div class="d-flex align-items-center justify-content-between mb-2">
+ <div>
+ <div class="fw-bold" style="font-size:0.9rem; color:#1F2937;">เลือกวิธีลงนาม <span class="text-danger">*</span></div>
+ <div class="text-muted" style="font-size:0.78rem;">เลือกได้เพียง 1 วิธีต่อการอนุมัติหนึ่งครั้ง</div>
+ </div>
+ <div id="swal-sig-mode-badge" class="badge rounded-pill bg-light text-primary border px-2 py-1" style="font-size:0.78rem;">
+ <i class="fa-solid fa-check me-1"></i> เซ็นมือ
+ </div>
+ </div>
+ <div class="row g-3 mb-3">
+ <div class="col-6">
+ <div id="swal-card-hand" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100" style="cursor:pointer; background:#F0F6FF; border-color:#2563EB !important; transition:all 0.2s;">
+ <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:38px; height:38px; background:#DBEAFE; color:#2563EB;">
+ <i class="fa-solid fa-pen fa-lg"></i>
+ </div>
+ <div>
+ <div class="fw-bold text-dark" style="font-size:0.88rem;">1. เซ็นมือ</div>
+ <div class="text-muted" style="font-size:0.75rem; line-height:1.35;">ใช้เมาส์หรือทัชแพดลากลายเซ็น</div>
+ </div>
+ </div>
+ </div>
+ <div class="col-6">
+ <div id="swal-card-cert" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100" style="cursor:pointer; background:#FFFFFF; border-color:#E5E7EB !important; transition:all 0.2s;">
+ <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:38px; height:38px; background:#F1F5F9; color:#64748B;">
+ <i class="fa-solid fa-shield-halved fa-lg"></i>
+ </div>
+ <div>
+ <div class="fw-bold text-dark" style="font-size:0.88rem;">2. ลายเซ็นดิจิทัล</div>
+ <div class="text-muted" style="font-size:0.75rem; line-height:1.35;">ประทับลายเซ็นอัตโนมัติด้วยใบรับรองอิเล็กทรอนิกส์ที่มีอยู่</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div id="swal-box-canvas" class="border rounded-3 p-3 mb-3 bg-white">
+ <div class="d-flex align-items-center justify-content-between mb-2">
+ <div>
+ <div class="fw-bold" style="font-size:0.9rem; color:#0F172A;">เซ็นชื่อในกรอบด้านล่าง</div>
+ <div class="text-muted" style="font-size:0.76rem;">กดเมาส์ค้างแล้วลาก หรือใช้นิ้วบนอุปกรณ์ระบบสัมผัส</div>
+ </div>
+ <button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2" id="swal-sig-clear" style="font-size:0.78rem;">
+ <i class="fa-solid fa-eraser me-1"></i> ล้างลายเซ็น
+ </button>
+ </div>
+ <div class="sig-canvas-wrapper" style="border: 1px dashed #94A3B8; border-radius: 8px; background:#FAFBFD;">
+ <canvas id="swal-sig-canvas" width="640" height="170" style="width:100%; height:170px; touch-action:none;"></canvas>
+ </div>
+ </div>
+ <div id="swal-box-cert" class="p-3 rounded-3" style="display:none; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#065F46; font-size:0.82rem;">
+ <div class="d-flex align-items-center gap-2 mb-1">
+ <i class="fa-solid fa-circle-check text-success fa-lg"></i>
+ <strong>Certificate: ${certId}</strong>
+ </div>
+ <div>ผู้ถือใบรับรอง: <strong>${signerFull}</strong></div>
+ <div class="mt-1 text-success" style="font-size:0.78rem;">ระบบจะประทับลายเซ็นอิเล็กทรอนิกส์ลงในเอกสารโดยอัตโนมัติ</div>
+ </div>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: '<i class="fa-solid fa-pen me-1"></i> ลงนาม',
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#16A34A",
+          cancelButtonColor: "#7C8CA3",
+          allowOutsideClick: false,
+          didOpen: bindSignaturePad,
+          preConfirm: () => {
+            if (sigMode === "hand") {
+              if (!sigPadHasDrawing) {
+                Swal.showValidationMessage(
+                  "กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการลงนาม",
+                );
+                return false;
+              }
+              const canvas = document.getElementById("swal-sig-canvas");
+              return canvas.toDataURL("image/png");
+            }
+            return generateCertificateStampImage(signerFull, certId);
+          },
+        }).then((result) => {
+          if (result.isConfirmed && typeof onConfirm === "function") {
+            onConfirm(result.value);
           }
         });
       }

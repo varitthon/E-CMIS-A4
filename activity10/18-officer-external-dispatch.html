@@ -81,8 +81,6 @@
  .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
  .form-card-body { padding: 20px; }
 
- .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
- .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -90,9 +88,6 @@
  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
  .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
  textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
-
- .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
- .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
 
  /* Action Footer */
  .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
@@ -254,8 +249,7 @@
  .timeline-title { font-size: 0.88em; font-weight: 600; color: var(--text-title); }
  .timeline-desc { font-size: 0.82em; color: #64748b; }
 
- @media (max-width: 1024px) {
- .form-grid-2, .form-grid-3, .method-selector-grid { grid-template-columns: 1fr; }
+ @media (max-width: 1024px) {.method-selector-grid { grid-template-columns: 1fr; }
  }
  </style>
 </head>
@@ -406,31 +400,35 @@
  </div>
 
  <div class="form-group">
- <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+ <label>ชื่อเรื่องกล่าวหา</label>
  <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตจัดซื้อครุภัณฑ์การศึกษาและสื่อการเรียนการสอน</div>
  </div>
-
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
+   <label>เลขสำนวนคดี</label>
+   <div class="read-box" id="f_caseNo">-</div>
+ </div>
+   <div class="form-group">
  <label>หน่วยงานอัยการต้นทาง</label>
  <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</div>
  </div>
-  <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
   <label>ระดับศาล</label>
   <div class="read-box" id="f_level">-</div>
   </div>
- <div class="form-group">
+   <div class="form-group">
  <label>เลขที่หนังสืออัยการ</label>
  <div class="read-box font-monospace" style="font-weight: 700;" id="f_docNo">อส 0038/2569</div>
  </div>
  </div>
-
  <div class="form-grid-2">
- <div class="form-group">
+   <div class="form-group">
  <label>ผู้บริหารผู้ลงนามในหนังสือ</label>
  <div class="read-box" id="f_presidentName">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>ไฟล์หนังสือฉบับลงนามสมบูรณ์ (มีตราครุฑ &amp; เลขส่งภายนอก)</label>
  <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
  <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
@@ -526,8 +524,8 @@
  </div>
  </div>
 
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>แนบไฟล์สลิป EMS / ใบเสร็จรับฝากไปรษณีย์</label>
  <div style="display:flex; align-items:center; gap:8px;">
  <input type="file" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;" onchange="toggleRemoveBtn('in_emsReceiptFile','btn_removeEmsReceiptFile')">
@@ -536,7 +534,7 @@
  </button>
  </div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
  <input type="text" id="in_emsRecipientLabel" class="form-control" readonly style="background:var(--bg-body); font-weight:600;" value="สำนักงานอัยการสูงสุด (ศูนย์ราชการอาคารราชบุรีดิเรกฤทธิ์)">
  </div>
@@ -557,13 +555,13 @@
  <div class="tracking-timeline" id="emsTimelineNodes">
  <div class="timeline-node passed">
  <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
- <div class="timeline-time">25/08/2569 09:30 น.</div>
+ <div class="timeline-time">25-08-2569 09:30 น.</div>
  <div class="timeline-title">รับฝากสิ่งของส่งทางไปรษณีย์เรียบร้อย</div>
  <div class="timeline-desc">ที่ทำการไปรษณีย์ ศูนย์ราชการเฉลิมพระเกียรติฯ</div>
  </div>
  <div class="timeline-node current">
  <div class="timeline-dot"><i class="fa-solid fa-truck"></i></div>
- <div class="timeline-time">25/08/2569 11:15 น.</div>
+ <div class="timeline-time">25-08-2569 11:15 น.</div>
  <div class="timeline-title">อยู่ระหว่างการขนส่งไปยังศูนย์คัดแยกหลักสี่</div>
  <div class="timeline-desc">เตรียมส่งต่อไปยังสำนักงานอัยการสูงสุด</div>
  </div>
@@ -581,27 +579,28 @@
  <span style="font-weight:700; font-size:0.95em;">ข้อมูลการนำส่งให้อัยการสูงสุดด้วยตนเอง (Hand Delivery)</span>
  </div>
 
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>วันที่นำส่งด้วยตนเอง <span style="color:#dc2626;">*</span></label>
  <input type="date" id="in_handDate" class="form-control font-monospace" style="font-weight:600;">
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>เวลานำส่ง <span style="color:#dc2626;">*</span></label>
  <input type="time" id="in_handTime" class="form-control font-monospace" value="10:30">
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>เลขที่รับสำนักงานอัยการสูงสุด (เลขรับ อสส.) <span style="color:#dc2626;">*</span></label>
  <input type="text" id="in_oagReceiveDocNo" class="form-control font-monospace" placeholder="เช่น อส 0001/4588" value="อส 0001/4588" style="font-weight:700; color:#166534;">
  </div>
- </div>
-
- <div class="form-grid-2">
- <div class="form-group">
+   <div class="form-group">
  <label>สถานที่นำส่งเอกสาร</label>
  <input type="text" id="in_handLocation" class="form-control" value="สำนักงานอัยการสูงสุด ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์ ชั้น 2">
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>ผู้รับมอบเอกสารที่สำนักงานอัยการสูงสุด</label>
  <input type="text" id="in_handRecipient" class="form-control" placeholder="ระบุชื่อ-นามสกุล / ตำแหน่งผู้รับ" value="นางสาวพรพิมล รัตนสาร (เจ้าหน้าที่ธุรการ สารบรรณกลาง อสส.)">
  </div>
@@ -765,6 +764,7 @@
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0024/2569');
  setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1288');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_caseNo', currentCase.id || '-');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_docNo', currentCase.docNo || 'อส 0038/2569');

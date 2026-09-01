@@ -143,12 +143,6 @@
         padding: 20px;
       }
 
-      .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
       .form-group {
         display: flex;
         flex-direction: column;
@@ -183,23 +177,6 @@
         height: auto;
         resize: vertical;
         padding: 10px 12px;
-      }
-
-      .read-box {
-        background-color: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 0.9em;
-        color: var(--text-title);
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-      }
-      .read-box-textarea {
-        min-height: 80px;
-        align-items: flex-start;
-        line-height: 1.5;
       }
 
       /* Action Footer */
@@ -264,12 +241,7 @@
         display: none !important;
       }
 
-      @media (max-width: 1024px) {
-        .form-grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
+          </style>
   </head>
   <body>
     <!-- Sidebar Navigation -->
@@ -406,9 +378,7 @@
           <div class="stepper" id="stepper">
             <div class="step-item completed">
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">
-                1. บันทึกรับเรื่อง &amp; ออกเลขรับ กม.
-              </div>
+              <div class="step-label">1. บันทึกรับเรื่อง</div>
             </div>
             <div class="step-item active">
               <div class="step-circle">2</div>
@@ -492,7 +462,7 @@
             </div>
 
             <div class="form-group">
-              <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+              <label>ชื่อเรื่องกล่าวหา</label>
               <div
                 class="read-box"
                 style="font-weight: 600; font-size: 0.95em"
@@ -501,7 +471,12 @@
                 -
               </div>
             </div>
-            <div class="form-group">
+                        <div class="form-grid-2">
+              <div class="form-group">
+              <label>เลขสำนวนคดี</label>
+              <div class="read-box" id="f_caseNo">-</div>
+            </div>
+              <div class="form-group">
               <label>ระดับศาล</label>
               <div
                 class="read-box"
@@ -511,7 +486,7 @@
                 -
               </div>
             </div>
-
+            </div>
             <div class="form-grid-2">
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
@@ -528,7 +503,6 @@
                 </div>
               </div>
             </div>
-
             <div class="form-grid-2">
               <div class="form-group">
                 <label>หมวดหมู่งานกฎหมาย</label>
@@ -714,6 +688,7 @@
         );
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0014/2569");
         setElText("f_title", currentCase.title || "-");
+        setElText("f_caseNo", currentCase.id || "-");
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText(
           "f_source",
@@ -733,7 +708,7 @@
           "f_dateReceived",
           (window.Activity10 && Activity10.formatDisplayDate
             ? Activity10.formatDisplayDate(currentCase.dateReceived)
-            : currentCase.dateReceived) || "25/08/2569",
+            : currentCase.dateReceived) || "25-08-2569",
         );
         setElText(
           "f_summary",
@@ -768,14 +743,17 @@
  <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-lock me-1"></i>มอบหมายส่งต่อแล้ว</span>
  </div>
  <div class="form-card-body">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>ผู้มอบหมายงาน</label>
  <div class="read-box">นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>มอบหมายส่งต่อให้</label>
  <div class="read-box" style="font-weight:600; color:#1e3a8a;"><i class="fa-solid fa-user-tie me-2 text-primary"></i>${currentCase.groupDirector || "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)"}</div>
  </div>
+ </div>
+
  <div class="form-group">
  <label>ข้อสั่งการ / มอบหมายเพิ่มเติม</label>
  <div class="read-box read-box-textarea">${currentCase.directorNotes || "โปรดมอบหมายนิติกรเจ้าของสำนวนดำเนินการตรวจพิจารณาและยกร่างความเห็นแย้งตามขั้นตอนกฎหมาย"}</div>
@@ -800,7 +778,7 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันมอบหมายส่งต่อให้ ผอ.กลุ่มงานความเห็นแย้ง?",
+          title: "ยืนยันมอบหมายส่งต่อให้\nผอ.กลุ่มงานความเห็นแย้ง",
           text: "ระบบจะส่งต่อสำนวนให้ นายอานนท์ ชินประชา ดำเนินการมอบหมายนิติกร",
           showCancelButton: true,
           confirmButtonText: "ยืนยันมอบหมายส่งต่อ",

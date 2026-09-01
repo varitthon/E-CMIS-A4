@@ -100,8 +100,6 @@
  .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
  .form-card-body { padding: 20px; }
 
- .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
- .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -109,9 +107,6 @@
  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
  .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
  textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
-
- .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
- .read-box-textarea { min-height: 70px; align-items: flex-start; line-height: 1.5; }
 
  /* Action Footer */
  .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
@@ -162,10 +157,7 @@
  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
  }
 
- @media (max-width: 1024px) {
- .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
- }
- </style>
+  </style>
 </head>
 <body>
 
@@ -284,40 +276,48 @@
  <span class="badge" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-lock me-1"></i>ข้อมูลต้นทาง</span>
  </div>
  <div class="form-card-body">
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>เลขรับสารบรรณกลาง</label>
  <div class="read-box font-monospace fw-bold text-primary" id="f_centralSarabanNo">2569/4410</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>เลขรับกองกฎหมาย</label>
  <div class="read-box font-monospace fw-bold" style="color:#1e3a8a;" id="f_lawReceiveNo">0014/2569</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>ผู้ถูกกล่าวหา</label>
  <div class="read-box fw-bold text-dark" id="f_accused">-</div>
  </div>
  </div>
 
  <div class="form-group">
- <label>เลขสำนวนคดี &amp; ชื่อเรื่องกล่าวหา</label>
+ <label>ชื่อเรื่องกล่าวหา</label>
  <div class="read-box fw-bold" id="f_title" style="min-height:42px;">-</div>
  </div>
-
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
+   <label>เลขสำนวนคดี</label>
+   <div class="read-box" id="f_caseNo">-</div>
+ </div>
+   <div class="form-group">
  <label>หน่วยงานอัยการต้นทาง</label>
  <div class="read-box" id="f_source">-</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>ระดับศาล</label>
  <div class="read-box" id="f_level">-</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>เลขที่หนังสืออัยการ</label>
  <div class="read-box font-monospace fw-bold" id="f_docNo">-</div>
  </div>
  </div>
+
  </div>
  </div>
 
@@ -380,12 +380,12 @@
  <input type="text" class="form-control" readonly value="นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)" style="font-weight:600;">
  </div>
 
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>คำสั่งการตามผลมติ <span style="color:#dc2626;">*</span></label>
  <input type="text" class="form-control" id="in_groupDirectorAction" readonly value="รับทราบผลมติ และมอบหมายนิติกรจัดทำร่างหนังสือตามมติ" style="font-weight:600; color:#1e3a8a;">
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>มอบหมายส่งต่อนิติกรเจ้าของสำนวน <span style="color:#dc2626;">*</span></label>
  <select id="in_targetOfficer" class="form-control" style="font-weight:600; color:#1e3a8a;">
  <option value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</option>
@@ -513,6 +513,7 @@
  setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4410');
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0014/2569');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_caseNo', currentCase.id || '-');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || '-');
  setElText('f_docNo', currentCase.docNo || '2569/0014');
@@ -545,20 +546,23 @@
  <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>มอบหมายเรียบร้อยแล้ว</span>
  </div>
  <div class="form-card-body">
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>ผู้มอบหมาย</label>
  <div class="read-box fw-bold text-dark">นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>วันที่มอบหมาย</label>
  <div class="read-box font-monospace text-secondary">${currentCase.groupDirectorResolutionOrderDate || 'ดำเนินการเรียบร้อยแล้ว'}</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>นิติกรผู้รับมอบหมาย</label>
  <div class="read-box fw-bold text-navy">${currentCase.groupDirectorResolutionTarget || 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)'}</div>
  </div>
  </div>
+
  <div class="form-group">
  <label>ข้อสั่งการถึงนิติกรเจ้าของสำนวน</label>
  <div class="read-box read-box-textarea font-monospace">${currentCase.groupDirectorResolutionOrderNotes || '-'}</div>

@@ -72,8 +72,6 @@
  .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
  .form-card-body { padding: 20px; }
 
- .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
- .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
  .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
  .form-group:last-child { margin-bottom: 0; }
  .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
@@ -81,9 +79,6 @@
  .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
  .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
  textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
-
- .read-box { background-color: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; font-size: 0.9em; color: var(--text-title); min-height: 38px; display: flex; align-items: center; }
- .read-box-textarea { min-height: 80px; align-items: flex-start; line-height: 1.5; }
 
  /* Decision Selector Cards */
  .verdict-selector-grid {
@@ -189,8 +184,7 @@
  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
  }
 
- @media (max-width: 1024px) {
- .form-grid-2, .form-grid-3, .verdict-selector-grid { grid-template-columns: 1fr; }
+ @media (max-width: 1024px) {.verdict-selector-grid { grid-template-columns: 1fr; }
  }
  </style>
 </head>
@@ -323,31 +317,41 @@
  </div>
 
  <div class="form-group">
- <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+ <label>ชื่อเรื่องกล่าวหา</label>
  <div class="read-box" style="font-weight: 600; font-size: 0.95em;" id="f_title">พิจารณาคำวินิจฉัยชี้ขาดของอัยการสูงสุด คดีทุจริตจัดซื้ออุปกรณ์ระบบสารสนเทศและกล้องวงจรปิด</div>
  </div>
-
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
+   <label>เลขสำนวนคดี</label>
+   <div class="read-box" id="f_caseNo">-</div>
+ </div>
+   <div class="form-group">
  <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
  <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>ระดับศาล</label>
  <div class="read-box" id="f_level">-</div>
  </div>
- <div class="form-group">
- <label>ผู้ถูกกล่าวหา / ตำแหน่ง</label>
+   <div class="form-group">
+ <label>ผู้ถูกกล่าวหา</label>
  <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
  </div>
  </div>
-
  <div class="form-grid-2">
- <div class="form-group">
+   <div class="form-group">
+   <label>ตำแหน่ง</label>
+   <div class="read-box" id="f_accusedPosition">-</div>
+ </div>
+   <div class="form-group">
  <label>นิติกรเจ้าของสำนวนเดิม</label>
  <div class="read-box" id="f_officer">นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>ช่องทางและหลักฐานการจัดส่งให้ อสส. (เดิม)</label>
  <div class="read-box font-monospace" style="font-weight: 600; color:#1e40af;" id="f_dispatchProof">
  <i class="fa-solid fa-truck-fast me-1"></i>ส่งทางไปรษณีย์ EMS (หมายเลข ED887711223TH)
@@ -368,18 +372,20 @@
  </div>
  <div class="form-card-body">
  
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>
  <span>เลขที่หนังสือคำวินิจฉัยของ อสส. <span style="color:#dc2626;">*</span></span>
  </label>
  <input type="text" id="in_oagVerdictNo" class="form-control font-monospace" value="อส 0001/6789" placeholder="เช่น อส 0001/6789" style="font-weight:700; color:#1e3a8a;">
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>วันที่ลงในหนังสือ อสส. <span style="color:#dc2626;">*</span></label>
  <input type="date" id="in_oagVerdictDate" class="form-control font-monospace" style="font-weight:600;">
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>วันที่กองกฎหมายลงรับเรื่อง <span style="color:#dc2626;">*</span></label>
  <input type="date" id="in_oagVerdictReceiveDate" class="form-control font-monospace" style="font-weight:600;">
  </div>
@@ -421,8 +427,8 @@
  </div>
 
  <!-- File Upload & Preview -->
- <div class="form-grid-2">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>แนบไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF) <span style="color:#dc2626;">*</span></label>
  <div style="display:flex; align-items:center; gap:8px;">
  <input type="file" id="in_oagVerdictFile" class="form-control" style="padding:5px 10px;" accept=".pdf,.doc,.docx" onchange="toggleRemoveBtn('in_oagVerdictFile','btn_removeOagVerdictFile')">
@@ -431,7 +437,7 @@
  </button>
  </div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>ไฟล์ตัวอย่างสำหรับทดสอบ</label>
  <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
  <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
@@ -576,6 +582,8 @@
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
  setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
  setElText('f_title', currentCase.title || '-');
+ setElText('f_accusedPosition', currentCase.accusedPosition || '-');
+ setElText('f_caseNo', currentCase.id || '-');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');

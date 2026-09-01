@@ -124,20 +124,6 @@
         padding: 20px;
       }
 
-      .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
-      .form-grid-3 {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-        align-items: flex-end;
-      }
-
       .form-group {
         display: flex;
         flex-direction: column;
@@ -385,9 +371,6 @@
 
       @media (max-width: 1024px) {
         .form-grid-2,
-        .form-grid-3 {
-          grid-template-columns: 1fr;
-        }
       }
     </style>
   </head>
@@ -555,12 +538,16 @@
           <div class="form-card-body">
             <!-- ค้นหาฐานข้อมูลเดิม -->
             <div class="form-grid-3">
-              <div class="form-group" style="margin-bottom: 0">
+              <div
+                class="form-group"
+                style="margin-bottom: 0; grid-column: span 2 / span 3"
+              >
                 <label>ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
                 <input
                   type="text"
                   id="intakeSearchInput"
                   class="form-control"
+                  style="width: 100%"
                   placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
                   onkeyup="handleIntakeSearchKeyup(event)"
                 />
@@ -569,7 +556,7 @@
                 <button
                   type="button"
                   class="btn btn-primary"
-                  style="width: 100%"
+                  style="width: 100%; margin-top: 20px"
                   onclick="executeIntakeSearch()"
                 >
                   🔍 ค้นหาสำนวน
@@ -694,7 +681,7 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้กล่าวหา / ผู้ร้อง</label>
+                  <label>ผู้กล่าวหา</label>
                   <input
                     type="text"
                     id="f_complainant"
@@ -704,10 +691,30 @@
                   />
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกกล่าวหา / จำเลย</label>
+                  <label>ผู้ร้อง</label>
+                  <input
+                    type="text"
+                    id="f_petitioner"
+                    class="form-control"
+                    readonly
+                    style="background-color: var(--bg-card)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกกล่าวหา</label>
                   <input
                     type="text"
                     id="f_accused"
+                    class="form-control"
+                    readonly
+                    style="background-color: var(--bg-card)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>จำเลย</label>
+                  <input
+                    type="text"
+                    id="f_defendant"
                     class="form-control"
                     readonly
                     style="background-color: var(--bg-card)"
@@ -1118,8 +1125,8 @@
               class="btn btn-primary"
               onclick="submitReceiveAndForward()"
             >
-              <i class="fa-solid fa-paper-plane me-1"></i> ลงรับกองกฎหมาย &amp;
-              เสนอ ผอ.กองกฎหมาย
+              <i class="fa-solid fa-paper-plane me-1"></i> บันทึก และ เสนอ
+              ผอ.กองกฎหมาย
             </button>
             <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
           </div>
@@ -1416,7 +1423,7 @@
  ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
  </td>
  <td>${c.accuser || "-"}</td>
- <td style="font-weight:600;">${c.accused || "-"}</td>
+ <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
  <td>${c.title}</td>
  </tr>
  `;
@@ -1483,8 +1490,13 @@
           document.getElementById("f_complainant").value =
             target.accuser || "-";
         if (document.getElementById("f_accused"))
-          document.getElementById("f_accused").value =
-            target.accused || target.defendant || "-";
+          document.getElementById("f_accused").value = target.accused || "-";
+        if (document.getElementById("f_petitioner"))
+          document.getElementById("f_petitioner").value =
+            target.petitioner || "-";
+        if (document.getElementById("f_defendant"))
+          document.getElementById("f_defendant").value =
+            target.defendant || "-";
 
         // Hide search results panel after selecting
         const resultsContainer = document.getElementById("intakeSearchResults");
@@ -1564,7 +1576,7 @@
           Swal.fire({
             icon: "info",
             title: "พิมพ์ด้วยเสียง (จำลอง Speech-to-Text)",
-            text: "เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง คุณต้องการแทรกข้อความตัวอย่างจากการพูดหรือไม่?",
+            text: "เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง คุณต้องการแทรกข้อความตัวอย่างจากการพูดหรือไม่",
             showCancelButton: true,
             confirmButtonText: "แทรกข้อความจากการพูด",
             cancelButtonText: "ยกเลิก",
@@ -1775,8 +1787,8 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยัน & เสนอ ผอ.กองกฎหมาย?",
-          text: "บันทึกรับเรื่องเข้าสู่ระบบกองกฎหมายและส่งต่อ ผอ.กองกฎหมาย",
+          title: "ยืนยัน & เสนอ ผอ.กองกฎหมาย",
+          text: "บันทึกรับเรื่องและส่งต่อ ผอ.กองกฎหมาย",
           showCancelButton: true,
           confirmButtonText: "ยืนยัน & เสนอ ผอ.กองกฎหมาย",
           cancelButtonText: "ยกเลิก",
@@ -1822,7 +1834,7 @@
 
             Swal.fire({
               icon: "success",
-              title: "ลงรับเลขกองกฎหมายและส่งเสนอสำเร็จ!",
+              title: "บันทึกและส่งเสนอสำเร็จ",
               text: `ออกเลขรับกองกฎหมายเลขที่ ${lawReceiveNo} เรียบร้อยแล้ว`,
               timer: 1800,
               showConfirmButton: false,

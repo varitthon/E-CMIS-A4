@@ -143,12 +143,6 @@
         padding: 20px;
       }
 
-      .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
       .form-group {
         display: flex;
         flex-direction: column;
@@ -162,23 +156,6 @@
         font-weight: 600;
         color: var(--text-title);
         margin-bottom: 6px;
-      }
-
-      .read-box {
-        background-color: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 0.9em;
-        color: var(--text-title);
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-      }
-      .read-box-textarea {
-        min-height: 80px;
-        align-items: flex-start;
-        line-height: 1.5;
       }
 
       /* Action Footer */
@@ -243,12 +220,7 @@
         display: none !important;
       }
 
-      @media (max-width: 1024px) {
-        .form-grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
+          </style>
   </head>
   <body>
     <!-- Sidebar Navigation -->
@@ -385,9 +357,7 @@
           <div class="stepper">
             <div class="step-item completed">
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">
-                1. บันทึกรับเรื่อง &amp; ออกเลขรับ กม.
-              </div>
+              <div class="step-label">1. บันทึกรับเรื่อง</div>
             </div>
             <div class="step-item active">
               <div class="step-circle">2</div>
@@ -470,7 +440,7 @@
             </div>
 
             <div class="form-group">
-              <label>ชื่อเรื่องกล่าวหา / สำนวนคดี</label>
+              <label>ชื่อเรื่องกล่าวหา</label>
               <div
                 class="read-box"
                 style="font-weight: 600; font-size: 0.95em"
@@ -479,12 +449,17 @@
                 -
               </div>
             </div>
-
-            <div class="form-grid-2">
+                        <div class="form-grid-2">
+              <div class="form-group">
+              <label>เลขสำนวนคดี</label>
+              <div class="read-box" id="f_caseNo">-</div>
+            </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
               </div>
+            </div>
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>ระดับศาล</label>
                 <div class="read-box" id="f_level">-</div>
@@ -500,18 +475,26 @@
                 </div>
               </div>
             </div>
-
             <div class="form-grid-2">
               <div class="form-group">
-                <label>ผู้กล่าวหา / ผู้ร้อง</label>
+                <label>ผู้กล่าวหา</label>
                 <div class="read-box" id="f_accuser">-</div>
               </div>
               <div class="form-group">
-                <label>ผู้ถูกกล่าวหา / จำเลย</label>
-                <div class="read-box" id="f_accused">-</div>
+                <label>ผู้ร้อง</label>
+                <div class="read-box" id="f_petitioner">-</div>
               </div>
             </div>
-
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>ผู้ถูกกล่าวหา</label>
+                <div class="read-box" id="f_accused">-</div>
+              </div>
+              <div class="form-group">
+                <label>จำเลย</label>
+                <div class="read-box" id="f_defendant">-</div>
+              </div>
+            </div>
             <div class="form-grid-2">
               <div class="form-group">
                 <label>หมวดหมู่งานกฎหมาย</label>
@@ -550,7 +533,7 @@
             >
           </div>
           <div class="form-card-body">
-            <div class="form-grid-2">
+                        <div class="form-grid-2">
               <div class="form-group">
                 <label>เลขรับกองกฎหมาย</label>
                 <div
@@ -572,10 +555,13 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-grid-2">
+              <div class="form-group span-2">
               <label>ผู้รับผิดชอบสำนวนปัจจุบัน</label>
               <div class="read-box" id="f_officer_display">-</div>
             </div>
+            </div>
+
           </div>
         </div>
 
@@ -679,9 +665,11 @@
                 currentCase.physicalDocDate || currentCase.dateReceived,
               )
             : currentCase.physicalDocDate || currentCase.dateReceived) ||
-            "25/08/2569",
+            "25-08-2569",
         );
         setElText("f_title", currentCase.title || "-");
+        setElText("f_petitioner", currentCase.petitioner || "-");
+        setElText("f_caseNo", currentCase.id || "-");
         setElText(
           "f_source",
           currentCase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
@@ -694,6 +682,7 @@
           currentCase.accuser || "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
         );
         setElText("f_accused", currentCase.accused || "-");
+        setElText("f_defendant", currentCase.defendant || "-");
         setElText(
           "f_categoryName",
           currentCase.categoryName ||

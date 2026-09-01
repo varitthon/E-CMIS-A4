@@ -397,18 +397,6 @@
         padding: 20px;
       }
 
-      .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
-      .form-grid-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-      }
       .form-group {
         display: flex;
         flex-direction: column;
@@ -446,23 +434,6 @@
         height: auto;
         resize: vertical;
         padding: 10px 12px;
-      }
-
-      .read-box {
-        background-color: var(--bg-body);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 0.9em;
-        color: var(--text-title);
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-      }
-      .read-box-textarea {
-        min-height: 70px;
-        align-items: flex-start;
-        line-height: 1.5;
       }
 
       /* Action Footer */
@@ -571,9 +542,6 @@
 
       @media (max-width: 1024px) {
         .form-grid-2,
-        .form-grid-3 {
-          grid-template-columns: 1fr;
-        }
       }
     </style>
   </head>
@@ -774,7 +742,7 @@
             >
           </div>
           <div class="form-card-body">
-            <div class="form-grid-3">
+                        <div class="form-grid-2">
               <div class="form-group">
                 <label>เลขรับสารบรรณกลาง</label>
                 <div
@@ -794,6 +762,8 @@
                   0014/2569
                 </div>
               </div>
+            </div>
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>ผู้ถูกกล่าวหา</label>
                 <div class="read-box fw-bold text-dark" id="f_accused">-</div>
@@ -801,7 +771,7 @@
             </div>
 
             <div class="form-group">
-              <label>เลขสำนวนคดี &amp; ชื่อเรื่องกล่าวหา</label>
+              <label>ชื่อเรื่องกล่าวหา</label>
               <div
                 class="read-box fw-bold"
                 id="f_title"
@@ -810,11 +780,17 @@
                 -
               </div>
             </div>
-            <div class="form-grid-3">
+                        <div class="form-grid-2">
+              <div class="form-group">
+              <label>เลขสำนวนคดี</label>
+              <div class="read-box" id="f_caseNo">-</div>
+            </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
               </div>
+            </div>
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>ระดับศาล</label>
                 <div class="read-box" id="f_level">-</div>
@@ -826,6 +802,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -912,7 +889,7 @@
                 />
               </div>
 
-              <div class="form-grid-2">
+                            <div class="form-grid-2">
                 <div class="form-group">
                   <label
                     >คำสั่งการตามผลมติ
@@ -1034,7 +1011,7 @@
 
       function handleLogout() {
         Swal.fire({
-          title: "ออกจากระบบ?",
+          title: "ออกจากระบบ",
           text: "คุณต้องการออกจากระบบหรือไม่",
           icon: "question",
           showCancelButton: true,
@@ -1092,6 +1069,7 @@
         );
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0014/2569");
         setElText("f_title", currentCase.title || "-");
+        setElText("f_caseNo", currentCase.id || "-");
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText("f_source", currentCase.source || "-");
         setElText("f_docNo", currentCase.docNo || "2569/0014");
@@ -1140,20 +1118,23 @@
  <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>สั่งการเรียบร้อยแล้ว</span>
  </div>
  <div class="form-card-body">
- <div class="form-grid-3">
- <div class="form-group">
+  <div class="form-grid-2">
+   <div class="form-group">
  <label>ผู้สั่งการ</label>
  <div class="read-box fw-bold text-dark">นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)</div>
  </div>
- <div class="form-group">
+   <div class="form-group">
  <label>วันที่สั่งการ</label>
  <div class="read-box font-monospace text-secondary">${currentCase.directorResolutionOrderDate || "ดำเนินการเรียบร้อยแล้ว"}</div>
  </div>
- <div class="form-group">
+ </div>
+ <div class="form-grid-2">
+   <div class="form-group span-2">
  <label>มอบหมายส่งต่อ</label>
  <div class="read-box fw-bold text-navy">${currentCase.directorResolutionTarget || "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)"}</div>
  </div>
  </div>
+
  <div class="form-group">
  <label>ข้อสั่งการถึง ผอ.กลุ่มงานความเห็นแย้ง</label>
  <div class="read-box read-box-textarea font-monospace">${currentCase.directorResolutionOrderNotes || "-"}</div>
@@ -1180,7 +1161,7 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันการสั่งการและมอบหมายงาน?",
+          title: "ยืนยันการสั่งการและมอบหมายงาน",
           html: `
  <div style="text-align: left; font-size: 0.9em; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
  <p style="margin-bottom: 4px;"><strong>คำสั่งการ:</strong> รับทราบผลมติ และมอบหมายกลุ่มงานจัดทำหนังสือตามมติ</p>
