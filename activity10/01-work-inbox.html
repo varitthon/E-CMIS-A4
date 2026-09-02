@@ -712,9 +712,10 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260823_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20260826_v43"></script>
+    <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
     <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-10-2.js?v=20260902_2"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1424,6 +1425,26 @@
  `;
         }
 
+        /* เมนูของกิจกรรม 10.2 — ต่อท้ายเมนู 10.1 ของบทบาทเดียวกัน
+           สร้างจากตาราง STEPS จึงไม่ต้องไล่เขียนทีละบทบาท */
+        if (typeof Activity102 !== "undefined") {
+          const mine = Activity102.STEPS.filter(
+            (st) => st.role === roleId && st.page.indexOf("10-2-") === 0,
+          );
+          if (mine.length) {
+            itemsHtml += `
+ <li class="menu-section-label" style="padding: 10px 16px 4px; font-size: 0.72em; letter-spacing: 0.04em; color: #94a3b8; text-transform: uppercase;">คำขอเปิดเผยข้อมูลข่าวสาร</li>
+ `;
+            itemsHtml += mine
+              .map(
+                (st) =>
+                  ` <li><a href="${st.page}"><i class="fa-solid fa-file-pen"></i> <span>${st.label}</span></a></li>
+`,
+              )
+              .join("");
+          }
+        }
+
         menuEl.innerHTML = itemsHtml;
       }
 
@@ -1497,6 +1518,20 @@
               c.statusCode === "SUBMITTED_TO_EXEC_ROUND2" ||
               c.assignedRole === "deputy_sg" ||
               (c.status && c.status.includes("ผู้บริหาร")),
+          );
+        }
+
+        /* บทบาทที่มีเฉพาะกิจกรรม 10.2 เห็นเฉพาะคำร้องเปิดเผยข้อมูลข่าวสารของตน */
+        if (
+          roleId === "sub_secretariat" ||
+          roleId === "subcommittee_screen" ||
+          roleId === "secgen"
+        ) {
+          return allCases.filter(
+            (c) =>
+              typeof Activity102 !== "undefined" &&
+              Activity102.isDisclosureCase(c) &&
+              c.assignedRole === roleId,
           );
         }
         return allCases;
@@ -1618,6 +1653,30 @@
           (item) => item.id === caseId || item.caseNo === caseId,
         ) || { id: caseId };
         const sc = c.statusCode || "";
+
+        /* กิจกรรม 10.2 มีสายงานของตัวเอง (LAW0038–LAW0047) จึงตัดสินเส้นทาง
+           จากหมวดหมู่ก่อน ไม่ให้ตกลงไปในบันไดบทบาทของ 10.1 ด้านล่าง */
+        if (
+          typeof Activity102 !== "undefined" &&
+          Activity102.isDisclosureCase(c)
+        ) {
+          const page = Activity102.ROUTES[sc];
+          if (page) {
+            window.location.href = `${page}?id=${encodeURIComponent(c.id)}`;
+          } else {
+            Swal.fire({
+              icon: "info",
+              title: "ไม่มีขั้นตอนที่ต้องดำเนินการ",
+              html:
+                '<div class="emd-summary">' +
+                `<p><strong>คำร้อง:</strong> ${c.id}</p>` +
+                `<p><strong>สถานะปัจจุบัน:</strong> ${c.status || "-"}</p>` +
+                '<p style="color:#b45309">ขั้นตอนถัดไปอยู่นอกขอบเขตของ Part 1</p></div>',
+              confirmButtonColor: "#1e3a8a",
+            });
+          }
+          return;
+        }
 
         if (roleId === "Kanda.R" || roleId === "admin_legal") {
           if (
@@ -1825,6 +1884,19 @@
       function getActionButton(item, roleId) {
         const caseId = item.id || item.caseNo;
         const statusCode = item.statusCode || "";
+
+        /* กิจกรรม 10.2 — ปุ่ม "ดำเนินการ" ขึ้นเมื่อบทบาทปัจจุบันเป็นเจ้าของขั้นตอนถัดไป */
+        if (
+          typeof Activity102 !== "undefined" &&
+          Activity102.isDisclosureCase(item)
+        ) {
+          const nextPage = Activity102.ROUTES[statusCode];
+          const nextStep = nextPage ? Activity102.stepByPage(nextPage) : null;
+          if (nextStep && nextStep.role === roleId) {
+            return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep.label}">ดำเนินการ</button>`;
+          }
+          return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคำร้อง">${svgEyeIcon}</button>`;
+        }
 
         // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
         if (roleId === "admin_legal" || roleId === "Kanda.R") {
