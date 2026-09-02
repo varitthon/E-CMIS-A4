@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260902_2" />
+    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260902_3" />
 
     <style>
       h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
@@ -176,12 +176,34 @@
           <div class="form-card">
             <div class="form-card-header">
               <span><i class="fa-solid fa-file-lines text-primary me-2"></i>บันทึกข้อความ — รายงานผลการพิจารณากลั่นกรองฯ เสนอเลขาธิการ</span>
-              <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="window.print()">
-                <i class="fa-solid fa-print me-1"></i>พิมพ์
-              </button>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="toggleMemoDoc()">
+                  <i class="fa-solid fa-chevron-down me-1" id="memoDocToggleIcon"></i><span id="memoDocToggleText">แสดงเอกสาร</span>
+                </button>
+                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="window.print()">
+                  <i class="fa-solid fa-print me-1"></i>พิมพ์
+                </button>
+              </div>
             </div>
-            <div class="form-card-body">
+            <div class="form-card-body" id="memoDocWrap" style="display: none">
               <div class="l2-doc" id="memoDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-circle-check text-success me-2"></i>เอกสารแนบ — มติคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="toggleResolutionSheet()">
+                  <i class="fa-solid fa-chevron-down me-1" id="resSheetToggleIcon"></i><span id="resSheetToggleText">แสดงเอกสาร</span>
+                </button>
+                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="window.print()">
+                  <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
+                </button>
+              </div>
+            </div>
+            <div class="form-card-body" id="resolutionSheetWrap" style="display: none">
+              <div class="l2-doc" id="resolutionSheet"></div>
             </div>
           </div>
 
@@ -195,10 +217,10 @@
           </div>
 
           <div class="form-actions">
-            <button type="button" class="btn btn-success" onclick="submitForm()">
+            <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
+            <button type="button" class="btn btn-primary" onclick="submitForm()">
               <i class="fa-solid fa-pen-nib me-1"></i>ลงนามในฐานะผู้เสนอเรื่อง
             </button>
-            <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
           </div>
 
         </div>
@@ -315,17 +337,64 @@
           section("๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง", c.l2LegalBasis) +
           section("๔. ข้อพิจารณา", c.l2Considerations) +
           '<div class="l2-doc-section"><div class="l2-doc-body">' +
-          "จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบโปรดลงนามในหนังสือถึงประธานกรรมการ ป.ป.ท. " +
-          "เพื่อพิจารณานำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป</div></div>" +
+          "จึงเรียนมาเพื่อโปรดพิจารณา และนำเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป</div></div>" +
           '<div class="l2-doc-signblock">' +
-          sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") + "</div>" +
+          sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") + "</div>";
+      }
+
+      /* เอกสารแนบ (Part 1) — แผ่นสรุปมติคณะอนุกรรมการฯ อ่านอย่างเดียว
+         สำเนาการ render เดียวกับ 10-2-07-secretariat-resolution-doc.html */
+      function renderResolutionSheet() {
+        const c = currentCase;
+        const row = (label, value) =>
+          '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+          '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+        const section = (label, value) =>
+          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+          '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
+
+        document.getElementById("resolutionSheet").innerHTML =
+          '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
+          '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
           '<hr class="l2-doc-divider" />' +
-          row("เรียน", "ประธานกรรมการ ป.ป.ท.") +
-          '<div class="l2-doc-section"><div class="l2-doc-body">' +
-          "เพื่อโปรดพิจารณานำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป</div></div>" +
-          '<div class="l2-doc-signblock">' +
-          sigBlock("approver", "ชื่อ-สกุล",
-            "รองเลขาธิการ ปฏิบัติราชการแทน<br />เลขาธิการคณะกรรมการ ป.ป.ท.") + "</div>";
+          section("๑. เรื่อง", c.title) +
+          section("๒. ข้อเท็จจริง", c.l2CommitteeOpinion) +
+          section("๓. การร้องขอข้อมูลข่าวสาร", c.requestedInfo) +
+          row("๔. ในคราวการประชุมครั้งที่", c.l2MeetingNo) +
+          row("เมื่อวันที่", ECMIS102.formatThaiDate(c.l2MeetingDate)) +
+          section("คณะอนุกรรมการพิจารณากลั่นกรองฯ เห็นว่า", c.l2CommitteeOpinion) +
+          section(
+            "มติที่ประชุม",
+            (c.l2ResolutionTypeName || "") + " — " + (c.l2ResolutionDetail || ""),
+          ) +
+          row("๕. ผู้รับผิดชอบข้อมูลข่าวสาร", c.l2DataOwner || "กองกฎหมาย สำนักงาน ป.ป.ท.");
+      }
+
+      function toggleMemoDoc() {
+        const wrap = document.getElementById("memoDocWrap");
+        const icon = document.getElementById("memoDocToggleIcon");
+        const text = document.getElementById("memoDocToggleText");
+        const showing = wrap.style.display !== "none";
+        wrap.style.display = showing ? "none" : "block";
+        icon.classList.toggle("fa-chevron-down", showing);
+        icon.classList.toggle("fa-chevron-up", !showing);
+        text.textContent = showing ? "แสดงเอกสาร" : "ซ่อนเอกสาร";
+      }
+
+      let resSheetRendered = false;
+      function toggleResolutionSheet() {
+        if (!resSheetRendered) {
+          renderResolutionSheet();
+          resSheetRendered = true;
+        }
+        const wrap = document.getElementById("resolutionSheetWrap");
+        const icon = document.getElementById("resSheetToggleIcon");
+        const text = document.getElementById("resSheetToggleText");
+        const showing = wrap.style.display !== "none";
+        wrap.style.display = showing ? "none" : "block";
+        icon.classList.toggle("fa-chevron-down", showing);
+        icon.classList.toggle("fa-chevron-up", !showing);
+        text.textContent = showing ? "แสดงเอกสาร" : "ซ่อนเอกสาร";
       }
 
       function populate() {
@@ -355,10 +424,22 @@
               position: "ผู้อำนวยการกองกฎหมาย",
             });
             Activity102.advance(currentCase.id, STEP_CODE, {
-              assignedRole: "deputy_sg",
-              officer: ECMIS102.signerLabel("deputy_sg"),
+              statusBadge: "bg-success text-white",
+              assignedRole: "secgen",
+              officer: ECMIS102.signerLabel("secgen"),
             });
-            doneAndBack("เสนอรองเลขาธิการ ป.ป.ท. พิจารณาและลงนามเรียบร้อยแล้ว");
+
+            Swal.fire({
+              icon: "success",
+              title: "ลงนามในฐานะผู้เสนอเรื่องเรียบร้อย",
+              html:
+                '<div class="emd-summary">' +
+                "<p>บันทึกข้อความผ่านการลงนามของผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
+                "<p><strong>ขั้นตอนต่อไป:</strong> เสนอมติบอร์ด (กิจกรรมที่ 7)</p>" +
+                "</div>",
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "กลับหน้าคิวงาน",
+            }).then(ECMIS102.goInbox);
           },
         );
       }

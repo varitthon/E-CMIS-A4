@@ -80,7 +80,7 @@
       officer: "นายนภัส สอนดี",
       officerPosition: "ผู้อำนวยการกองกฎหมาย",
       assignedRole: "dir_legal",
-      status: "ผอ.กอง ตรวจสอบคำวินิจฉัย อสส. & สั่งการ",
+      status: "ผอ.กอง ตรวจสอบคำวินิจฉัย อสส. และ สั่งการ",
       statusCode: "PENDING_DIRECTOR_OAG_VERDICT_REVIEW",
       statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0029/2569",
@@ -125,7 +125,7 @@
       officer: "นายอานนท์ ชินประชา",
       officerPosition: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
       assignedRole: "group_director",
-      status: "ผอ.กลุ่มงาน ตรวจสอบคำวินิจฉัย อสส. & มอบหมายนิติกร",
+      status: "ผอ.กลุ่มงาน ตรวจสอบคำวินิจฉัย อสส. และ มอบหมายนิติกร",
       statusCode: "PENDING_GROUP_OAG_VERDICT_REVIEW",
       statusBadge: "bg-info text-dark",
       lawReceiveNo: "0030/2569",
@@ -172,7 +172,7 @@
       officer: "นายณัฐพล บัวทุม",
       officerPosition: "นิติกรชำนาญการพิเศษ",
       assignedRole: "legal_officer",
-      status: "นิติกรบันทึกผล & แจ้งกองบริหารคดี",
+      status: "นิติกรบันทึกผล และ แจ้งกองบริหารคดี",
       statusCode: "PENDING_OFFICER_FINAL_NOTIFICATION",
       statusBadge: "bg-primary text-white",
       lawReceiveNo: "0031/2569",
@@ -1972,7 +1972,7 @@
       const item = cases.find((c) => c.id === id);
       if (item) {
         item.statusCode = "PENDING_OFFICER_FINAL_NOTIFICATION";
-        item.status = "รอนิติกรบันทึกผล & แจ้งกองบริหารคดี";
+        item.status = "รอนิติกรบันทึกผล และ แจ้งกองบริหารคดี";
         item.statusBadge = "bg-primary text-white";
         item.assignedRole = "legal_officer";
         item.workflowStep = 22;

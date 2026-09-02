@@ -959,6 +959,20 @@
 
               <div class="form-group">
                 <label
+                  >ชื่อเรื่อง <span style="color: #dc2626">*</span></label
+                >
+                <input
+                  type="text"
+                  id="in_disclosureTitle"
+                  class="form-control"
+                  placeholder="ระบุชื่อเรื่องคำขอเปิดเผยข้อมูลข่าวสาร"
+                  value="คำขอเปิดเผยข้อมูลข่าวสาร: สำเนารายงานการไต่สวนข้อเท็จจริง"
+                  oninput="updateLivePreview()"
+                />
+              </div>
+
+              <div class="form-group">
+                <label
                   >ข้อมูลข่าวสารที่ขอเปิดเผย
                   <span style="color: #dc2626">*</span></label
                 >
@@ -1206,6 +1220,7 @@
 
           <!-- Form Actions Footer -->
           <div class="form-actions">
+            <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
             <button
               type="button"
               class="btn btn-primary"
@@ -1214,7 +1229,6 @@
               <i class="fa-solid fa-paper-plane me-1"></i> บันทึก และ เสนอ
               ผอ.กองกฎหมาย
             </button>
-            <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
           </div>
         </div>
       </div>
@@ -1350,6 +1364,7 @@
           requesterTypeName: typeSel
             ? typeSel.options[typeSel.selectedIndex].text
             : "",
+          title: val("in_disclosureTitle"),
           requestedInfo: val("in_requestedInfo"),
           relatedCaseNo: val("in_relatedCaseNo"),
           requestChannel: chanSel ? chanSel.value : "",
@@ -1363,6 +1378,7 @@
       function validateDisclosureFields() {
         const checks = [
           ["in_requesterName", "กรุณาระบุผู้ยื่นคำขอ"],
+          ["in_disclosureTitle", "กรุณาระบุชื่อเรื่อง"],
           ["in_requestedInfo", "กรุณาระบุข้อมูลข่าวสารที่ขอเปิดเผย"],
           ["in_relatedCaseNo", "กรุณาระบุเลขสำนวนคดีที่เกี่ยวข้อง"],
         ];
@@ -1966,10 +1982,10 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยัน & เสนอ ผอ.กองกฎหมาย",
+          title: "ยืนยัน และ เสนอ ผอ.กองกฎหมาย",
           text: "บันทึกรับเรื่องและส่งต่อ ผอ.กองกฎหมาย",
           showCancelButton: true,
-          confirmButtonText: "ยืนยัน & เสนอ ผอ.กองกฎหมาย",
+          confirmButtonText: "ยืนยัน และ เสนอ ผอ.กองกฎหมาย",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#1e3a8a",
           cancelButtonColor: "#64748b",
@@ -1979,14 +1995,9 @@
                (สถานะ L2_* ให้หน้า 01-work-inbox ส่งต่อไป 10-2-01) */
             const l2Fields = isDisclosure ? collectDisclosureFields() : {};
 
-            /* ช่อง "ชื่อเรื่อง" ของงานอัยการถูกซ่อนในหมวด 10.2 จึงตั้งชื่อเรื่อง
-               จากข้อมูลข่าวสารที่ขอเปิดเผยแทน เพื่อให้หน้าถัดไปมีหัวเรื่องแสดง */
-            const l2Title = isDisclosure
-              ? "คำขอเปิดเผยข้อมูลข่าวสาร: " +
-                (l2Fields.requestedInfo.length > 90
-                  ? l2Fields.requestedInfo.slice(0, 90) + "..."
-                  : l2Fields.requestedInfo)
-              : title;
+            /* ช่อง "ชื่อเรื่อง" ของงานอัยการถูกซ่อนในหมวด 10.2 จึงใช้ค่าจาก
+               ช่อง "ชื่อเรื่อง" เฉพาะของคำขอเปิดเผยข้อมูลข่าวสารแทน */
+            const l2Title = isDisclosure ? l2Fields.title : title;
             const routing = isDisclosure
               ? {
                   status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
