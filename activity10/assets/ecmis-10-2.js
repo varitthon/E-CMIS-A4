@@ -112,21 +112,10 @@
       page: "10-2-08-legal-director-propose.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "รองเลขาธิการ ป.ป.ท. พิจารณาให้ความเห็นและลงนาม",
-      statusCode: "L2_WAIT_SIGN_APPROVER",
-      label: "ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง",
-      stepName: "ผอ.กอง ลงนามเสนอ",
-    },
-    {
-      code: "LAW0047",
-      seq: 16,
-      page: "10-2-09-deputy-sg-approve.html",
-      role: "deputy_sg",
-      roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
       status: "รอเสนอมติบอร์ด (กิจกรรมที่ 7)",
       statusCode: "L2_READY_FOR_BOARD",
-      label: "รองเลขาธิการ ป.ป.ท. พิจารณาให้ความเห็นและลงนาม",
-      stepName: "รองเลขาธิการ ลงนาม",
+      label: "ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง",
+      stepName: "ผอ.กอง ลงนามเสนอ",
     },
   ];
 
@@ -179,13 +168,6 @@
       title: "ผู้เสนอเรื่อง",
       position: "ผู้อำนวยการกองกฎหมาย",
       certId: "PACC-DIRLEGAL-2569-102",
-    },
-    {
-      slot: "approver",
-      role: "deputy_sg",
-      title: "ผู้เห็นชอบ",
-      position: "รองเลขาธิการ ปฏิบัติราชการแทน เลขาธิการคณะกรรมการ ป.ป.ท.",
-      certId: "PACC-DEPUTYSG-2569-102",
     },
   ];
 
