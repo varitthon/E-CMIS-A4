@@ -927,6 +927,18 @@
       return cases.find((c) => c.id === id) || cases[0];
     },
 
+    /* Generic patch helper. Activity 10.2 has one workflow step per page and
+       each step only ever writes its own fields, so a single merge-and-save
+       replaces the long tail of step-specific submit* methods above. */
+    updateCase(id, patch) {
+      const cases = loadCases();
+      const item = cases.find((c) => c.id === id);
+      if (!item) return null;
+      Object.assign(item, patch || {});
+      saveCases(cases);
+      return item;
+    },
+
     getTorDetails(c) {
       if (!c)
         return {
@@ -1124,16 +1136,31 @@
           newCaseData.workflowStep || (newCaseData.lawReceiveNo ? 3 : 2),
         docType: newCaseData.docType || "เอกสารแนบสำนวน",
         docNo: newCaseData.docNo || "นร 10/2569",
+        /* ข้อความตั้งต้นสองช่องนี้เป็นสำนวนของงานอัยการ (10.1) เท่านั้น
+           หมวด 10.2 ซ่อนช่องเหล่านี้ไว้ จึงต้องไม่เติมข้อความอัยการให้ */
         summary:
           newCaseData.summary ||
-          "คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี",
+          (category === "10.1"
+            ? "คณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงแล้วมีมติชี้มูลความผิดผู้ถูกกล่าวหา และส่งสำนวนให้พนักงานอัยการดำเนินคดี"
+            : ""),
         legalOpinion:
           newCaseData.legalOpinion ||
-          "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด",
+          (category === "10.1"
+            ? "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด"
+            : ""),
         centralSarabanNo: newCaseData.centralSarabanNo || "",
         signedBy: "",
         signedDate: "",
       };
+
+      /* createdCase is an explicit whitelist of the 10.1 fields. Activity 10.2
+         carries its own set (requester details, l2* workflow fields), so pass
+         through anything the whitelist did not already claim. */
+      Object.keys(newCaseData).forEach((key) => {
+        if (!(key in createdCase) && newCaseData[key] !== undefined) {
+          createdCase[key] = newCaseData[key];
+        }
+      });
 
       cases.unshift(createdCase);
       saveCases(cases);

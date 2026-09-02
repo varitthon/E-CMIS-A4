@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design System | E-CMIS</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- The system under documentation -->
+    <link rel="stylesheet" href="assets/ecmis-shell.css" />
+    <link rel="stylesheet" href="assets/ecmis-design-system.css" />
+
+    <style>
+      /* ---- Style-guide chrome only. Nothing here is part of the system. ---- */
+      body {
+        display: block;
+        height: auto;
+        overflow: auto;
+        font-family: var(--ds-font-body);
+        background: var(--ds-surface-sunken);
+        color: var(--ds-ink-700);
+      }
+      .sg-shell {
+        display: grid;
+        grid-template-columns: 232px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      /* Left rail */
+      .sg-rail {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        background: var(--ds-navy-900);
+        color: #fff;
+        padding: 26px 0 30px;
+      }
+      .sg-rail-brand {
+        padding: 0 22px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 16px;
+      }
+      .sg-rail-brand strong {
+        font-family: var(--ds-font-heading);
+        font-size: 1.15em;
+        display: block;
+        letter-spacing: -0.2px;
+      }
+      .sg-rail-brand span {
+        font-size: 0.74em;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+      .sg-rail a {
+        display: block;
+        padding: 7px 22px;
+        color: rgba(255, 255, 255, 0.62);
+        text-decoration: none;
+        font-size: 0.86em;
+        border-left: 3px solid transparent;
+      }
+      .sg-rail a:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .sg-rail a.is-here {
+        color: #fff;
+        border-left-color: var(--ds-blue-600);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .sg-rail-group {
+        padding: 18px 22px 6px;
+        font-size: 0.66em;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      /* Canvas */
+      .sg-canvas {
+        padding: 0 0 90px;
+        max-width: 1120px;
+      }
+      .sg-masthead {
+        background: var(--ds-surface);
+        border-bottom: 1px solid var(--ds-line);
+        padding: 54px 48px 40px;
+      }
+      .sg-masthead h1 {
+        font-family: var(--ds-font-heading);
+        font-size: 2.6em;
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        color: var(--ds-ink-900);
+        max-width: 15ch;
+      }
+      .sg-masthead p {
+        margin-top: 14px;
+        max-width: 62ch;
+        font-size: 1.02em;
+        line-height: 1.6;
+        color: var(--ds-ink-500);
+      }
+      .sg-stats {
+        display: flex;
+        gap: 44px;
+        margin-top: 34px;
+        flex-wrap: wrap;
+      }
+      .sg-stat strong {
+        display: block;
+        font-family: var(--ds-font-heading);
+        font-size: 1.9em;
+        font-weight: 600;
+        color: var(--ds-navy-700);
+        line-height: 1;
+      }
+      .sg-stat span {
+        font-size: 0.76em;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--ds-ink-500);
+      }
+
+      section.sg-sec {
+        padding: 46px 48px 10px;
+        scroll-margin-top: 10px;
+      }
+      .sg-sec > h2 {
+        font-family: var(--ds-font-heading);
+        font-size: 0.78em;
+        font-weight: 600;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--ds-blue-600);
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--ds-navy-700);
+        margin-bottom: 26px;
+      }
+      .sg-sec h3 {
+        font-family: var(--ds-font-heading);
+        font-size: 1.06em;
+        font-weight: 600;
+        color: var(--ds-ink-900);
+        margin: 30px 0 12px;
+      }
+      .sg-sec h3:first-of-type {
+        margin-top: 0;
+      }
+      .sg-note {
+        font-size: 0.87em;
+        line-height: 1.65;
+        color: var(--ds-ink-500);
+        max-width: 74ch;
+        margin-bottom: 18px;
+      }
+      code.sg-code {
+        font-family: var(--ds-font-mono);
+        font-size: 0.86em;
+        background: var(--ds-surface-raised);
+        border: 1px solid var(--ds-line);
+        border-radius: 4px;
+        padding: 1px 5px;
+        color: var(--ds-ink-900);
+      }
+
+      /* Specimen frame — every live example sits in one of these */
+      .sg-frame {
+        background: var(--ds-surface);
+        border: 1px solid var(--ds-line);
+        border-radius: var(--ds-radius-lg);
+        padding: 26px;
+        margin-bottom: 12px;
+      }
+      .sg-usage {
+        font-family: var(--ds-font-mono);
+        font-size: 0.78em;
+        color: var(--ds-ink-500);
+        margin-bottom: 26px;
+        padding-left: 2px;
+      }
+      .sg-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* Color swatches */
+      .sg-swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+        gap: 12px;
+        margin-bottom: 26px;
+      }
+      .sg-swatch {
+        border: 1px solid var(--ds-line);
+        border-radius: var(--ds-radius-md);
+        overflow: hidden;
+        background: var(--ds-surface);
+      }
+      .sg-swatch-chip {
+        height: 62px;
+      }
+      .sg-swatch-meta {
+        padding: 9px 11px;
+        font-family: var(--ds-font-mono);
+        font-size: 0.72em;
+        line-height: 1.55;
+      }
+      .sg-swatch-meta b {
+        display: block;
+        color: var(--ds-ink-900);
+        font-weight: 600;
+      }
+      .sg-swatch-meta span {
+        color: var(--ds-ink-500);
+        text-transform: uppercase;
+      }
+
+      /* Spec tables */
+      table.sg-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85em;
+        margin-bottom: 26px;
+        background: var(--ds-surface);
+        border: 1px solid var(--ds-line);
+        border-radius: var(--ds-radius-md);
+        overflow: hidden;
+      }
+      table.sg-tbl th {
+        text-align: left;
+        background: var(--ds-surface-raised);
+        color: var(--ds-ink-700);
+        font-weight: 600;
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--ds-line);
+        white-space: nowrap;
+      }
+      table.sg-tbl td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--ds-line);
+        vertical-align: top;
+      }
+      table.sg-tbl tr:last-child td {
+        border-bottom: 0;
+      }
+      table.sg-tbl td.sg-mono,
+      table.sg-tbl td code {
+        font-family: var(--ds-font-mono);
+        font-size: 0.94em;
+        color: var(--ds-ink-900);
+        white-space: nowrap;
+      }
+
+      /* Drift callout */
+      .sg-drift {
+        border-left: 3px solid var(--ds-warning-fill);
+        background: var(--ds-warning-bg);
+        color: var(--ds-warning-text);
+        padding: 12px 16px;
+        border-radius: 0 var(--ds-radius-md) var(--ds-radius-md) 0;
+        font-size: 0.85em;
+        line-height: 1.6;
+        max-width: 78ch;
+        margin-bottom: 22px;
+      }
+      .sg-drift b {
+        font-weight: 700;
+      }
+
+      @media (max-width: 900px) {
+        .sg-shell {
+          grid-template-columns: 1fr;
+        }
+        .sg-rail {
+          position: static;
+          height: auto;
+        }
+        .sg-masthead,
+        section.sg-sec {
+          padding-left: 22px;
+          padding-right: 22px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="sg-shell">
+      <!-- ============================= RAIL ============================= -->
+      <nav class="sg-rail">
+        <div class="sg-rail-brand">
+          <strong>E-CMIS</strong>
+          <span>Design System</span>
+        </div>
+
+        <div class="sg-rail-group">Foundations</div>
+        <a href="#sources">Source map</a>
+        <a href="#color">Color</a>
+        <a href="#type">Typography</a>
+        <a href="#space">Space &amp; radius</a>
+        <a href="#elevation">Elevation &amp; size</a>
+
+        <div class="sg-rail-group">Primitives</div>
+        <a href="#buttons">Buttons</a>
+        <a href="#badges">Badges</a>
+        <a href="#fields">Fields</a>
+        <a href="#readonly">Read-only display</a>
+
+        <div class="sg-rail-group">Components</div>
+        <a href="#card">Form card</a>
+        <a href="#stepper">Stepper</a>
+        <a href="#decision">Decision cards</a>
+        <a href="#table">Table</a>
+
+        <div class="sg-rail-group">Governance</div>
+        <a href="#drift">Drift register</a>
+        <a href="#adopt">Adoption</a>
+      </nav>
+
+      <!-- ============================ CANVAS ============================ -->
+      <main class="sg-canvas">
+        <header class="sg-masthead">
+          <h1>The E-CMIS interface, written down.</h1>
+          <p>
+            Every token and component below was extracted from the CSS already
+            shipping in <code class="sg-code">D:\Mercil\E-CMIS-A4</code> — four
+            stylesheets plus the per-page
+            <code class="sg-code">&lt;style&gt;</code> blocks in 26 HTML pages.
+            Nothing here is invented. Where the sources disagreed, the value used
+            by the most live pages won, and the loser is recorded in the
+            <a href="#drift" style="color: var(--ds-blue-600)">drift register</a>.
+          </p>
+          <div class="sg-stats">
+            <div class="sg-stat"><strong>26</strong><span>HTML pages</span></div>
+            <div class="sg-stat"><strong>4</strong><span>Source stylesheets</span></div>
+            <div class="sg-stat"><strong>~5,900</strong><span>Inline style lines</span></div>
+            <div class="sg-stat"><strong>~90</strong><span>Hard-coded badge colors</span></div>
+          </div>
+        </header>
+
+        <!-- ---------------------- SOURCE MAP ---------------------- -->
+        <section class="sg-sec" id="sources">
+          <h2>Source map</h2>
+          <p class="sg-note">
+            The repo carries three competing token sets. This system is built on
+            the one the 22 workflow pages actually load; the other two are
+            documented so nobody re-adopts them by accident.
+          </p>
+          <table class="sg-tbl">
+            <thead>
+              <tr>
+                <th>Stylesheet</th>
+                <th>Loaded by</th>
+                <th>Role in this system</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="sg-mono">ecmis-shell.css</td>
+                <td>22 pages</td>
+                <td>
+                  <b>Canonical.</b> Sidebar, topbar, dropdowns, dark mode,
+                  <code>.read-box</code> and the <code>.form-grid-*</code> width
+                  vocabulary. Keep loading it first.
+                </td>
+              </tr>
+              <tr>
+                <td class="sg-mono">ecmis-design-system.css</td>
+                <td>this page</td>
+                <td>
+                  <b>New.</b> Tokens plus the component layer that was previously
+                  copy-pasted into every page's inline block. Additive — opt in
+                  per page.
+                </td>
+              </tr>
+              <tr>
+                <td class="sg-mono">ecmis-modal.css</td>
+                <td>24 pages</td>
+                <td>
+                  <b>Canonical, scoped.</b> SweetAlert2 content only; every rule
+                  is deliberately nested under <code>.swal2-container</code> to
+                  win on specificity. Do not un-scope it.
+                </td>
+              </tr>
+              <tr>
+                <td class="sg-mono">ecmis-app.css</td>
+                <td>login.html, tests/</td>
+                <td>
+                  <b>Legacy.</b> A separate Figma-derived palette (navy
+                  <code>#0f2a62</code>, cyan <code>#16b6e6</code>, gold
+                  <code>#d0a830</code>). Not the live workflow look.
+                </td>
+              </tr>
+              <tr>
+                <td class="sg-mono">ecmis-activity10.css</td>
+                <td>login.html</td>
+                <td>
+                  <b>Legacy.</b> A third palette (gold <code>#d97706</code>, Noto
+                  Sans Thai). Superseded.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="sg-drift">
+            <b>Do not merge the legacy sheets in.</b> They define
+            <code>.card-ecmis</code>, <code>.page-head</code> and
+            <code>.sla-*</code> with different values than the live pages expect.
+            Retire them with <code>login.html</code>, don't fold them into the
+            shell.
+          </div>
+        </section>
+
+        <!-- ---------------------- COLOR ---------------------- -->
+        <section class="sg-sec" id="color">
+          <h2>Color</h2>
+
+          <h3>Brand &amp; interaction</h3>
+          <p class="sg-note">
+            Two blues do two different jobs and must not be swapped.
+            <b>Navy 700</b> is commitment — the primary action and the step you
+            are standing on. <b>Blue 600</b> is invitation — navigation, focus
+            rings, links, anything clickable that isn't the main action.
+          </p>
+          <div class="sg-swatches">
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #1a2b48"></div>
+              <div class="sg-swatch-meta"><b>--ds-navy-900</b><span>#1a2b48 · sidebar</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #1e293b"></div>
+              <div class="sg-swatch-meta"><b>--ds-navy-800</b><span>#1e293b · hover / ink</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #1e3a8a"></div>
+              <div class="sg-swatch-meta"><b>--ds-navy-700</b><span>#1e3a8a · primary</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #2563eb"></div>
+              <div class="sg-swatch-meta"><b>--ds-blue-600</b><span>#2563eb · interactive</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #93c5fd"></div>
+              <div class="sg-swatch-meta"><b>--ds-blue-300</b><span>#93c5fd · hover line</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #dbeafe"></div>
+              <div class="sg-swatch-meta"><b>--ds-blue-100</b><span>#dbeafe · info fill</span></div>
+            </div>
+          </div>
+
+          <h3>Neutrals</h3>
+          <div class="sg-swatches">
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #1e293b"></div>
+              <div class="sg-swatch-meta"><b>--ds-ink-900</b><span>#1e293b · titles</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #334155"></div>
+              <div class="sg-swatch-meta"><b>--ds-ink-700</b><span>#334155 · body</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #64748b"></div>
+              <div class="sg-swatch-meta"><b>--ds-ink-500</b><span>#64748b · muted</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #94a3b8"></div>
+              <div class="sg-swatch-meta"><b>--ds-ink-400</b><span>#94a3b8 · disabled</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #e2e8f0"></div>
+              <div class="sg-swatch-meta"><b>--ds-line</b><span>#e2e8f0 · borders</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #f1f5f9"></div>
+              <div class="sg-swatch-meta"><b>--ds-surface-raised</b><span>#f1f5f9 · th / chip</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #f0f4f8"></div>
+              <div class="sg-swatch-meta"><b>--ds-surface-sunken</b><span>#f0f4f8 · page</span></div>
+            </div>
+            <div class="sg-swatch">
+              <div class="sg-swatch-chip" style="background: #ffffff; border-bottom: 1px solid #e2e8f0"></div>
+              <div class="sg-swatch-meta"><b>--ds-surface</b><span>#ffffff · card</span></div>
+            </div>
+          </div>
+
+          <h3>Status</h3>
+          <p class="sg-note">
+            Each status carries three roles: a <b>bg</b> (tint behind a badge), a
+            <b>text</b> (label on that tint), and a <b>fill</b> (solid, for dots,
+            borders and solid badges). They are not interchangeable — the fill is
+            too light to read as text, the text too dark to read as a fill.
+          </p>
+          <table class="sg-tbl">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>bg</th>
+                <th>text</th>
+                <th>fill</th>
+                <th>Live specimen</th>
+                <th>Used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>success</b></td>
+                <td><code>#dcfce7</code></td>
+                <td><code>#166534</code></td>
+                <td><code>#16a34a</code></td>
+                <td><span class="ds-badge ds-badge-success">ลงนามแล้ว</span></td>
+                <td>Signed, approved, step complete</td>
+              </tr>
+              <tr>
+                <td><b>warning</b></td>
+                <td><code>#fef3c7</code></td>
+                <td><code>#92400e</code></td>
+                <td><code>#d97706</code></td>
+                <td><span class="ds-badge ds-badge-warning">รอดำเนินการ</span></td>
+                <td>Pending, SLA nearing breach</td>
+              </tr>
+              <tr>
+                <td><b>danger</b></td>
+                <td><code>#fee2e2</code></td>
+                <td><code>#991b1b</code></td>
+                <td><code>#dc2626</code></td>
+                <td><span class="ds-badge ds-badge-danger">ตีกลับ</span></td>
+                <td>Returned, overdue, dissent</td>
+              </tr>
+              <tr>
+                <td><b>info</b></td>
+                <td><code>#dbeafe</code></td>
+                <td><code>#1e40af</code></td>
+                <td><code>#2563eb</code></td>
+                <td><span class="ds-badge ds-badge-info">อยู่ระหว่างพิจารณา</span></td>
+                <td>In review, in progress</td>
+              </tr>
+              <tr>
+                <td><b>sky</b></td>
+                <td><code>#e0f2fe</code></td>
+                <td><code>#0369a1</code></td>
+                <td><code>#0284c7</code></td>
+                <td><span class="ds-badge ds-badge-sky">ส่งภายนอก</span></td>
+                <td>External dispatch, OAG track</td>
+              </tr>
+              <tr>
+                <td><b>neutral</b></td>
+                <td><code>#f1f5f9</code></td>
+                <td><code>#475569</code></td>
+                <td>—</td>
+                <td><span class="ds-badge ds-badge-neutral">ฉบับร่าง</span></td>
+                <td>Draft, archived, no state</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---------------------- TYPE ---------------------- -->
+        <section class="sg-sec" id="type">
+          <h2>Typography</h2>
+          <p class="sg-note">
+            Two families, no exceptions. <b>Prompt</b> carries headings, card
+            headers and app chrome; <b>Sarabun</b> carries everything a user
+            reads as content. Sizes stay in <code class="sg-code">em</code>
+            because most pages inherit the browser default rather than the
+            <code class="sg-code">--base-font-size</code> stepper (only 01 and 02
+            opt in) — hard px would break the accessibility control on those two.
+          </p>
+          <div class="sg-frame">
+            <div style="font-family: var(--ds-font-heading); font-size: 1.05em; font-weight: 700; color: var(--ds-ink-900)">
+              Prompt 700 · 1.05em — หัวการ์ด / Card header
+            </div>
+            <div style="font-family: var(--ds-font-heading); font-size: 0.95em; font-weight: 600; color: var(--ds-ink-900); margin-top: 10px">
+              Prompt 600 · 0.95em — เมนูนำทาง / Nav link
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--ds-line); margin: 16px 0" />
+            <div style="font-size: 0.9em; color: var(--ds-ink-700)">
+              Sarabun 400 · 0.9em — เนื้อความในฟอร์ม กล่องแสดงผล และปุ่ม
+            </div>
+            <div style="font-size: 0.85em; color: var(--ds-ink-700); margin-top: 8px">
+              Sarabun 400 · 0.85em — ตารางแบบแน่น / Dense table row
+            </div>
+            <div style="font-size: 0.8em; font-weight: 600; color: var(--ds-ink-500); margin-top: 8px">
+              Sarabun 600 · 0.8em — ป้ายสถานะ และป้ายกำกับขั้นตอน
+            </div>
+            <div style="font-size: 0.78em; color: var(--ds-ink-500); margin-top: 8px">
+              Sarabun 400 · 0.78em — ข้อมูลกำกับ / Meta, role, timestamp
+            </div>
+          </div>
+          <table class="sg-tbl">
+            <thead>
+              <tr><th>Token</th><th>Size</th><th>Applied to</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="sg-mono">--ds-text-xl</td><td class="sg-mono">1.05em</td><td>Card header, sidebar brand</td></tr>
+              <tr><td class="sg-mono">--ds-text-lg</td><td class="sg-mono">0.95em</td><td>Sidebar nav link</td></tr>
+              <tr><td class="sg-mono">--ds-text-base</td><td class="sg-mono">0.9em</td><td>Input, button, read-box, breadcrumb</td></tr>
+              <tr><td class="sg-mono">--ds-text-md</td><td class="sg-mono">0.85em</td><td>Table body, notification item</td></tr>
+              <tr><td class="sg-mono">--ds-text-sm</td><td class="sg-mono">0.8em</td><td>Badge, step label</td></tr>
+              <tr><td class="sg-mono">--ds-text-xs</td><td class="sg-mono">0.78em</td><td>User role, meta, caption</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---------------------- SPACE ---------------------- -->
+        <section class="sg-sec" id="space">
+          <h2>Space &amp; radius</h2>
+          <p class="sg-note">
+            The existing pages cluster tightly around a 4px base, with 6 / 10 /
+            14 / 16 / 20 / 24 doing almost all the work. Radius encodes scale:
+            the bigger the surface, the rounder the corner.
+          </p>
+          <table class="sg-tbl">
+            <thead>
+              <tr><th>Token</th><th>Value</th><th>Where it earns its place</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="sg-mono">--ds-space-1</td><td class="sg-mono">4px</td><td>Badge vertical padding</td></tr>
+              <tr><td class="sg-mono">--ds-space-2</td><td class="sg-mono">6px</td><td>Icon↔label gap, label→field</td></tr>
+              <tr><td class="sg-mono">--ds-space-3</td><td class="sg-mono">10px</td><td>Read-box padding, table cell y</td></tr>
+              <tr><td class="sg-mono">--ds-space-4</td><td class="sg-mono">14px</td><td>Card header y, grid gutter</td></tr>
+              <tr><td class="sg-mono">--ds-space-5</td><td class="sg-mono">16px</td><td>Form-group rhythm, footer y</td></tr>
+              <tr><td class="sg-mono">--ds-space-6</td><td class="sg-mono">20px</td><td>Card body, stack between cards</td></tr>
+              <tr><td class="sg-mono">--ds-space-7</td><td class="sg-mono">24px</td><td>Page gutter</td></tr>
+              <tr><td class="sg-mono">--ds-radius-sm</td><td class="sg-mono">6px</td><td>Input, button, read-box</td></tr>
+              <tr><td class="sg-mono">--ds-radius-md</td><td class="sg-mono">8px</td><td>Decision card, dropdown</td></tr>
+              <tr><td class="sg-mono">--ds-radius-lg</td><td class="sg-mono">10px</td><td>Form card, stepper card</td></tr>
+              <tr><td class="sg-mono">--ds-radius-pill</td><td class="sg-mono">12px</td><td>Badge</td></tr>
+              <tr><td class="sg-mono">--ds-radius-full</td><td class="sg-mono">50%</td><td>Avatar, step dot, mic button</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---------------------- ELEVATION ---------------------- -->
+        <section class="sg-sec" id="elevation">
+          <h2>Elevation &amp; size</h2>
+          <p class="sg-note">
+            Elevation is deliberately shallow. Cards barely lift
+            (<code class="sg-code">0.02</code> alpha) — the border does the
+            separating. Only true overlays get a real shadow.
+          </p>
+          <div class="sg-frame sg-row" style="gap: 22px">
+            <div style="background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: 10px; padding: 16px 20px; box-shadow: var(--ds-shadow-card); font-size: 0.82em">
+              --ds-shadow-card
+            </div>
+            <div style="background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: 10px; padding: 16px 20px; box-shadow: var(--ds-shadow-raised); font-size: 0.82em">
+              --ds-shadow-raised
+            </div>
+            <div style="background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: 10px; padding: 16px 20px; box-shadow: var(--ds-shadow-overlay); font-size: 0.82em">
+              --ds-shadow-overlay
+            </div>
+          </div>
+          <table class="sg-tbl">
+            <thead>
+              <tr><th>Token</th><th>Value</th><th>Rule</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="sg-mono">--ds-control-h</td><td class="sg-mono">38px</td><td>Every input, select and button. No exceptions — this is what lets a field and its button sit on one line.</td></tr>
+              <tr><td class="sg-mono">--ds-circle-btn</td><td class="sg-mono">34px</td><td>Topbar icon button and avatar</td></tr>
+              <tr><td class="sg-mono">--ds-step-dot</td><td class="sg-mono">36px</td><td>Stepper circle</td></tr>
+              <tr><td class="sg-mono">--ds-mic-btn</td><td class="sg-mono">26px</td><td>Inline speech-to-text button</td></tr>
+              <tr><td class="sg-mono">--ds-sidebar-w</td><td class="sg-mono">240px</td><td>Sidebar (0 when collapsed)</td></tr>
+              <tr><td class="sg-mono">--ds-content-max</td><td class="sg-mono">1300px</td><td>Content column</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---------------------- BUTTONS ---------------------- -->
+        <section class="sg-sec" id="buttons">
+          <h2>Buttons</h2>
+          <p class="sg-note">
+            One primary per view. Secondary is the escape hatch (back, cancel,
+            save draft). Success and danger are reserved for irreversible
+            outcomes — signing off, sending out, returning a case.
+          </p>
+          <div class="sg-frame sg-row">
+            <button class="ds-btn ds-btn-primary"><i class="fa-solid fa-paper-plane"></i> ส่งเรื่อง</button>
+            <button class="ds-btn ds-btn-secondary"><i class="fa-solid fa-arrow-left"></i> ย้อนกลับ</button>
+            <button class="ds-btn ds-btn-success"><i class="fa-solid fa-check"></i> ยืนยันและลงนาม</button>
+            <button class="ds-btn ds-btn-danger"><i class="fa-solid fa-rotate-left"></i> ตีกลับแก้ไข</button>
+            <button class="ds-btn ds-btn-primary" disabled>ไม่มีสิทธิ์</button>
+          </div>
+          <div class="sg-usage">.ds-btn + .ds-btn-primary | -secondary | -success | -danger | [disabled]</div>
+
+          <h3>Inline speech-to-text</h3>
+          <p class="sg-note">
+            Appears 54 times across the form pages, always trailing a field
+            label. <code class="sg-code">.recording</code> adds the red pulse.
+          </p>
+          <div class="sg-frame sg-row">
+            <span style="font-size: 0.88em; font-weight: 600; color: var(--ds-ink-900)">รายละเอียดความเห็น</span>
+            <button class="ds-btn-mic" title="พูดเพื่อกรอก"><i class="fa-solid fa-microphone"></i></button>
+            <span class="ds-muted" style="font-size: 0.8em">idle</span>
+            <button class="ds-btn-mic recording" title="กำลังบันทึก"><i class="fa-solid fa-microphone"></i></button>
+            <span class="ds-muted" style="font-size: 0.8em">.recording</span>
+          </div>
+          <div class="sg-usage">.ds-btn-mic · .ds-btn-mic.recording</div>
+        </section>
+
+        <!-- ---------------------- BADGES ---------------------- -->
+        <section class="sg-sec" id="badges">
+          <h2>Badges</h2>
+          <div class="sg-drift">
+            <b>This is the system's biggest win.</b> Status badges are currently
+            painted with ~90 inline
+            <code>style="background:#dcfce7;color:#166534"</code> attributes
+            spread across the pages — which is exactly how the same green ended up
+            as both <code>#166534</code> and <code>#15803d</code>. Every one of
+            them maps onto a class below.
+          </div>
+          <div class="sg-frame sg-row">
+            <span class="ds-badge ds-badge-success">อนุมัติแล้ว</span>
+            <span class="ds-badge ds-badge-warning">รอพิจารณา</span>
+            <span class="ds-badge ds-badge-danger">เกินกำหนด</span>
+            <span class="ds-badge ds-badge-info">อยู่ระหว่างดำเนินการ</span>
+            <span class="ds-badge ds-badge-sky">ส่งอัยการ</span>
+            <span class="ds-badge ds-badge-neutral">ฉบับร่าง</span>
+          </div>
+          <div class="sg-usage">.ds-badge + .ds-badge-success | -warning | -danger | -info | -sky | -neutral</div>
+
+          <h3>Solid</h3>
+          <p class="sg-note">
+            For counts and "you are here" markers, where the badge itself is the
+            emphasis rather than a label on a surface.
+          </p>
+          <div class="sg-frame sg-row">
+            <span class="ds-badge ds-badge-solid-navy">ขั้นตอนปัจจุบัน</span>
+            <span class="ds-badge ds-badge-solid-success">ครบถ้วน</span>
+            <span class="ds-badge ds-badge-solid-danger">ด่วนที่สุด</span>
+            <span class="ds-badge ds-badge-solid-sky">ภายนอก</span>
+          </div>
+          <div class="sg-usage">.ds-badge + .ds-badge-solid-navy | -solid-success | -solid-danger | -solid-sky</div>
+        </section>
+
+        <!-- ---------------------- FIELDS ---------------------- -->
+        <section class="sg-sec" id="fields">
+          <h2>Fields</h2>
+          <p class="sg-note">
+            Label above, 6px gap, 38px control, blue focus ring. The label row is
+            a flex container with <code class="sg-code">space-between</code> so a
+            mic button or a character counter can sit at its right edge without
+            new markup.
+          </p>
+          <div class="sg-frame">
+            <div class="ds-form-group">
+              <label>
+                เลขที่หนังสือ
+                <button class="ds-btn-mic"><i class="fa-solid fa-microphone"></i></button>
+              </label>
+              <input class="ds-form-control" value="ปปท. 0021/2568" />
+            </div>
+            <div class="ds-form-group">
+              <label>สถานะเรื่อง</label>
+              <select class="ds-form-control">
+                <option>อยู่ระหว่างพิจารณา</option>
+                <option>ส่งเรื่องคืน</option>
+              </select>
+            </div>
+            <div class="ds-form-group">
+              <label>ความเห็นของนิติกร</label>
+              <textarea class="ds-form-control" rows="3">พิจารณาแล้วเห็นควรให้ดำเนินการตามความเห็นของพนักงานอัยการ</textarea>
+            </div>
+            <div class="ds-form-group">
+              <label>ผู้บันทึก (ระบบกรอกให้)</label>
+              <input class="ds-form-control" value="นายสมชาย ใจดี" readonly />
+            </div>
+          </div>
+          <div class="sg-usage">.ds-form-group &gt; label + .ds-form-control · [readonly] for system-filled</div>
+        </section>
+
+        <!-- ---------------------- READ-ONLY ---------------------- -->
+        <section class="sg-sec" id="readonly">
+          <h2>Read-only display</h2>
+          <p class="sg-note">
+            The single most repeated pattern in the app: information the user must
+            read but cannot change. It is visually distinct from a disabled input
+            — a sunken panel, not a dead form field — so users stop trying to type
+            into it. Widths come from
+            <code class="sg-code">.form-grid-2</code> /
+            <code class="sg-code">.form-grid-3</code>, already canonical in
+            <code class="sg-code">ecmis-shell.css</code>; a full-width field adds
+            <code class="sg-code">.span-2</code> / <code class="sg-code">.span-3</code>.
+          </p>
+          <div class="sg-frame">
+            <div class="form-grid-2">
+              <div>
+                <label style="font-size: 0.88em; font-weight: 600; color: var(--ds-ink-900); display: block; margin-bottom: 6px">เลขที่คดี</label>
+                <div class="ds-read-box ds-mono">CASE-2568-00147</div>
+              </div>
+              <div>
+                <label style="font-size: 0.88em; font-weight: 600; color: var(--ds-ink-900); display: block; margin-bottom: 6px">วันที่รับเรื่อง</label>
+                <div class="ds-read-box">15 สิงหาคม 2568</div>
+              </div>
+              <div class="span-2">
+                <label style="font-size: 0.88em; font-weight: 600; color: var(--ds-ink-900); display: block; margin-bottom: 6px">มติที่ประชุมคณะกรรมการ</label>
+                <div class="ds-read-box ds-read-box-textarea">
+                  ที่ประชุมมีมติให้ส่งเรื่องให้พนักงานอัยการพิจารณา และให้กลุ่มงานนิติการจัดทำบันทึกความเห็นประกอบสำนวนภายใน 15 วันทำการ
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sg-usage">.form-grid-2 &gt; .ds-read-box · .span-2 to break the grid · .ds-read-box-textarea for multi-line</div>
+        </section>
+
+        <!-- ---------------------- CARD ---------------------- -->
+        <section class="sg-sec" id="card">
+          <h2>Form card</h2>
+          <p class="sg-note">
+            The container every workflow page is built from: header (title plus
+            optional status), body (fields), and an action footer whose buttons
+            split left/right — destructive and secondary on the left, the forward
+            action on the right.
+          </p>
+          <div class="sg-frame" style="background: var(--ds-surface-sunken)">
+            <div class="ds-card" style="margin-bottom: 0">
+              <div class="ds-card-header">
+                <span><i class="fa-solid fa-file-signature" style="color: var(--ds-blue-600)"></i> บันทึกความเห็นแย้ง</span>
+                <span class="ds-badge ds-badge-warning">รอลงนาม</span>
+              </div>
+              <div class="ds-card-body">
+                <div class="ds-form-group">
+                  <label>สรุปความเห็น</label>
+                  <textarea class="ds-form-control" rows="2">เห็นแย้งกับความเห็นของพนักงานอัยการ</textarea>
+                </div>
+              </div>
+              <div class="ds-card-actions">
+                <button class="ds-btn ds-btn-secondary"><i class="fa-solid fa-arrow-left"></i> ย้อนกลับ</button>
+                <button class="ds-btn ds-btn-primary">บันทึกและส่งต่อ <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="sg-usage">.ds-card &gt; .ds-card-header + .ds-card-body + .ds-card-actions</div>
+        </section>
+
+        <!-- ---------------------- STEPPER ---------------------- -->
+        <section class="sg-sec" id="stepper">
+          <h2>Stepper</h2>
+          <p class="sg-note">
+            Shows where the case sits in the 22-step flow. Three states only:
+            complete (green fill), active (navy with a halo), upcoming (hollow).
+            Completed steps stay links so a user can look back.
+          </p>
+          <div class="sg-frame" style="background: var(--ds-surface-sunken)">
+            <div class="ds-stepper-card" style="margin-bottom: 0">
+              <div class="ds-stepper">
+                <a class="ds-step is-complete" href="#stepper">
+                  <div class="ds-step-circle"><i class="fa-solid fa-check"></i></div>
+                  <div class="ds-step-label">รับเรื่อง</div>
+                </a>
+                <a class="ds-step is-complete" href="#stepper">
+                  <div class="ds-step-circle"><i class="fa-solid fa-check"></i></div>
+                  <div class="ds-step-label">ตรวจสำนวน</div>
+                </a>
+                <div class="ds-step is-active">
+                  <div class="ds-step-circle">3</div>
+                  <div class="ds-step-label">จัดทำความเห็น</div>
+                </div>
+                <div class="ds-step">
+                  <div class="ds-step-circle">4</div>
+                  <div class="ds-step-label">ผอ.กลุ่มอนุมัติ</div>
+                </div>
+                <div class="ds-step">
+                  <div class="ds-step-circle">5</div>
+                  <div class="ds-step-label">ส่งหนังสือ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sg-usage">.ds-stepper-card &gt; .ds-stepper &gt; .ds-step[.is-complete|.is-active] &gt; .ds-step-circle + .ds-step-label</div>
+        </section>
+
+        <!-- ---------------------- DECISION ---------------------- -->
+        <section class="sg-sec" id="decision">
+          <h2>Decision cards</h2>
+          <p class="sg-note">
+            A radio group with consequences. The selected card takes the border
+            and tint of what it means — agreeing is green, dissenting is red,
+            "other" is amber — so the choice stays legible after selection.
+          </p>
+          <div class="sg-frame">
+            <div class="ds-decision-grid">
+              <div class="ds-decision-card is-success">
+                <i class="fa-solid fa-circle-check fa-lg" style="color: var(--ds-success-fill)"></i>
+                <div>
+                  <div style="font-weight: 600; color: var(--ds-ink-900); font-size: 0.9em">เห็นพ้อง</div>
+                  <div class="ds-muted" style="font-size: 0.78em">ตามความเห็นอัยการ</div>
+                </div>
+              </div>
+              <div class="ds-decision-card">
+                <i class="fa-solid fa-circle-xmark fa-lg" style="color: var(--ds-ink-400)"></i>
+                <div>
+                  <div style="font-weight: 600; color: var(--ds-ink-900); font-size: 0.9em">เห็นแย้ง</div>
+                  <div class="ds-muted" style="font-size: 0.78em">ต้องระบุเหตุผล</div>
+                </div>
+              </div>
+              <div class="ds-decision-card">
+                <i class="fa-solid fa-circle-question fa-lg" style="color: var(--ds-ink-400)"></i>
+                <div>
+                  <div style="font-weight: 600; color: var(--ds-ink-900); font-size: 0.9em">อื่น ๆ</div>
+                  <div class="ds-muted" style="font-size: 0.78em">ระบุเพิ่มเติม</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sg-usage">.ds-decision-grid &gt; .ds-decision-card[.is-success|.is-danger|.is-warning]</div>
+        </section>
+
+        <!-- ---------------------- TABLE ---------------------- -->
+        <section class="sg-sec" id="table">
+          <h2>Table</h2>
+          <p class="sg-note">
+            Light header, hairline rows, hover tint. Case numbers run monospace so
+            digits align down the column; status is always a badge, never bare
+            colored text.
+          </p>
+          <div class="sg-frame">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>เลขที่คดี</th>
+                  <th>เรื่อง</th>
+                  <th>ผู้รับผิดชอบ</th>
+                  <th>สถานะ</th>
+                  <th>SLA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ds-mono">CASE-2568-00147</td>
+                  <td>กล่าวหาเจ้าหน้าที่รัฐเรียกรับทรัพย์สิน</td>
+                  <td>นายสมชาย ใจดี</td>
+                  <td><span class="ds-badge ds-badge-info">อยู่ระหว่างพิจารณา</span></td>
+                  <td><span class="ds-badge ds-badge-success">ในกำหนด</span></td>
+                </tr>
+                <tr>
+                  <td class="ds-mono">CASE-2568-00151</td>
+                  <td>ทุจริตการจัดซื้อจัดจ้าง</td>
+                  <td>นางสาวมาลี สุขใจ</td>
+                  <td><span class="ds-badge ds-badge-warning">รอลงนาม</span></td>
+                  <td><span class="ds-badge ds-badge-warning">ใกล้ครบกำหนด</span></td>
+                </tr>
+                <tr>
+                  <td class="ds-mono">CASE-2568-00160</td>
+                  <td>ละเว้นการปฏิบัติหน้าที่</td>
+                  <td>นายวิชัย มั่นคง</td>
+                  <td><span class="ds-badge ds-badge-danger">ตีกลับ</span></td>
+                  <td><span class="ds-badge ds-badge-danger">เกินกำหนด</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sg-usage">.ds-table · .ds-mono on identifier columns</div>
+        </section>
+
+        <!-- ---------------------- DRIFT ---------------------- -->
+        <section class="sg-sec" id="drift">
+          <h2>Drift register</h2>
+          <p class="sg-note">
+            Real disagreements found between pages while extracting this system.
+            Each row records what the sources said, what this system picked, and
+            why. Adopting the system resolves each one.
+          </p>
+          <table class="sg-tbl">
+            <thead>
+              <tr>
+                <th>What drifted</th>
+                <th>Found</th>
+                <th>Canonical</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Completed step color</td>
+                <td><code>#16a34a</code> on 5 pages<br /><code>#2563eb</code> on 3 pages</td>
+                <td><code>#16a34a</code></td>
+                <td>Green reads as "done"; blue is already committed to "interactive".</td>
+              </tr>
+              <tr>
+                <td>Success badge text</td>
+                <td><code>#166534</code> ×14<br /><code>#15803d</code> ×7</td>
+                <td><code>#166534</code></td>
+                <td>Majority, and the darker of the two — better contrast on <code>#dcfce7</code>.</td>
+              </tr>
+              <tr>
+                <td><code>.btn-primary</code></td>
+                <td>Navy <code>#1e3a8a</code> ×7<br />Green <code>#16a34a</code> ×1 (page 13)</td>
+                <td>Navy stays primary</td>
+                <td>Page 13's green is a <em>success</em> action, not a recolored primary — use <code>.ds-btn-success</code>.</td>
+              </tr>
+              <tr>
+                <td>Status badge colors</td>
+                <td>~90 inline <code>style=""</code> attributes</td>
+                <td>6 semantic classes</td>
+                <td>Inline hex is why the drift above happened at all.</td>
+              </tr>
+              <tr>
+                <td>Token sets</td>
+                <td>3 competing <code>:root</code> blocks</td>
+                <td>shell + this file</td>
+                <td><code>ecmis-app.css</code> and <code>ecmis-activity10.css</code> reach only <code>login.html</code>.</td>
+              </tr>
+              <tr>
+                <td>Component CSS</td>
+                <td>Duplicated in 21 inline blocks</td>
+                <td>One stylesheet</td>
+                <td>Same rule, 21 copies — every fix currently needs 21 edits.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---------------------- ADOPT ---------------------- -->
+        <section class="sg-sec" id="adopt">
+          <h2>Adoption</h2>
+          <p class="sg-note">
+            <code class="sg-code">assets/ecmis-design-system.css</code> is
+            additive — right now only this page loads it, so no existing screen
+            has changed. Migrate one page at a time, lowest-risk first.
+          </p>
+          <table class="sg-tbl">
+            <thead>
+              <tr><th>Step</th><th>Do this</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1</b></td>
+                <td>
+                  Add
+                  <code>&lt;link rel="stylesheet" href="assets/ecmis-design-system.css"&gt;</code>
+                  after <code>ecmis-shell.css</code>, before the page's own
+                  <code>&lt;style&gt;</code>. Nothing renders differently yet — the
+                  <code>ds-</code> prefix collides with nothing.
+                </td>
+              </tr>
+              <tr>
+                <td><b>2</b></td>
+                <td>
+                  Swap the inline-styled badges for classes:
+                  <code>style="background:#dcfce7;color:#166534"</code> →
+                  <code>class="ds-badge ds-badge-success"</code>. Highest value,
+                  lowest risk — start here.
+                </td>
+              </tr>
+              <tr>
+                <td><b>3</b></td>
+                <td>
+                  Rename the page's markup to the <code>ds-</code> classes
+                  (<code>.form-card</code> → <code>.ds-card</code>,
+                  <code>.step-item.completed</code> →
+                  <code>.ds-step.is-complete</code>), then delete those rules from
+                  the page's <code>&lt;style&gt;</code> block.
+                </td>
+              </tr>
+              <tr>
+                <td><b>4</b></td>
+                <td>
+                  What should remain in a page's <code>&lt;style&gt;</code>: only
+                  genuinely page-specific layout. If a rule appears on two pages,
+                  it belongs in the system.
+                </td>
+              </tr>
+              <tr>
+                <td><b>5</b></td>
+                <td>
+                  Leave <code>ecmis-modal.css</code> exactly as it is — its
+                  <code>.swal2-container</code> scoping is load-order defense, not
+                  redundancy.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="sg-note" style="margin-top: 24px">
+            Open this page beside any workflow screen to check a value, or run
+            <code class="sg-code">document.body.classList.add('dark-mode')</code>
+            in the console to verify a component in dark mode — the token layer
+            flips with the shell.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Rail highlight follows the section in view.
+      const links = [...document.querySelectorAll('.sg-rail a')];
+      const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            links.forEach((a) => a.classList.remove('is-here'));
+            byId.get(e.target.id)?.classList.add('is-here');
+          });
+        },
+        { rootMargin: '-10% 0px -75% 0px' }
+      );
+      document.querySelectorAll('section.sg-sec').forEach((s) => obs.observe(s));
+    </script>
+  </body>
+</html>

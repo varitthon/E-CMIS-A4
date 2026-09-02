@@ -804,7 +804,7 @@
                 gap: 6px;
               "
             >
-              <span>📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ</span>
+              <span id="sectionHeaderText">📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ</span>
             </div>
 
             <div class="form-grid-2">
@@ -876,7 +876,7 @@
             </div>
 
             <div class="form-grid-2">
-              <div class="form-group">
+              <div class="form-group" id="grp_docNo">
                 <label
                   >เลขที่หนังสืออัยการ
                   <span style="color: #dc2626">*</span></label
@@ -891,7 +891,7 @@
                   oninput="autoFormatYearSlashNo(this)"
                 />
               </div>
-              <div class="form-group">
+              <div class="form-group" id="grp_prosecutorLevel">
                 <label>ระดับศาล <span style="color: #dc2626">*</span></label>
                 <select
                   id="in_prosecutorLevel"
@@ -905,7 +905,7 @@
               </div>
               <div class="form-group">
                 <label
-                  >หน่วยงานอัยการต้นทาง
+                  ><span id="lbl_source">หน่วยงานอัยการต้นทาง</span>
                   <span style="color: #dc2626">*</span></label
                 >
                 <textarea
@@ -922,7 +922,93 @@
               </div>
             </div>
 
-            <div class="form-group">
+
+            <!-- ========== เฉพาะหมวด 10.2 การขอเปิดเผยข้อมูลข่าวสาร ==========
+                 แสดงแทนช่องเฉพาะงานอัยการ เมื่อเลือกหมวดหมู่ = 10.2.1 -->
+            <div id="div_disclosureRequest" style="display: none">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >ผู้ยื่นคำขอ <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_requesterName"
+                    class="form-control"
+                    placeholder="ชื่อ-สกุล หรือชื่อหน่วยงานผู้ยื่นคำขอ"
+                    value="นายสมพงษ์ ใจซื่อ"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >ประเภทผู้ยื่นคำขอ
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <select
+                    id="in_requesterType"
+                    class="form-control"
+                    onchange="updateLivePreview()"
+                  >
+                    <option value="CITIZEN">ประชาชน</option>
+                    <option value="JURISTIC">นิติบุคคล</option>
+                    <option value="AGENCY">หน่วยงานของรัฐ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >ข้อมูลข่าวสารที่ขอเปิดเผย
+                  <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_requestedInfo"
+                  class="form-control"
+                  rows="3"
+                  maxlength="2000"
+                  placeholder="ระบุรายละเอียดข้อมูลข่าวสารที่ผู้ยื่นคำขอต้องการให้เปิดเผย..."
+                  oninput="updateLivePreview()"
+                >
+สำเนารายงานการไต่สวนข้อเท็จจริงและเอกสารประกอบสำนวนคดี</textarea
+                >
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขสำนวนคดีที่เกี่ยวข้อง
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_relatedCaseNo"
+                    class="form-control font-monospace"
+                    style="font-weight: 700"
+                    placeholder="เช่น คดี-100001/2569"
+                    value="คดี-100001/2569"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >ช่องทางการยื่นคำขอ
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <select
+                    id="in_requestChannel"
+                    class="form-control"
+                    onchange="updateLivePreview()"
+                  >
+                    <option value="CENTRAL">ยื่นที่ส่วนกลาง</option>
+                    <option value="REGION">ยื่นที่สำนักงาน ป.ป.ท. เขต</option>
+                    <option value="SRR">ยื่นที่ ศรร.</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="grp_title">
               <label
                 ><span
                   >ชื่อเรื่องกล่าวหา / สำนวนคดี
@@ -954,7 +1040,7 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="grp_summary">
               <label
                 ><span
                   >สรุปสาระสำคัญ
@@ -985,7 +1071,7 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="grp_legalOpinion">
               <label
                 ><span
                   >ความเห็นของอัยการ
@@ -1017,7 +1103,7 @@
             </div>
 
             <!-- อัปโหลดเอกสาร -->
-            <div class="form-group">
+            <div class="form-group" id="grp_scannedFile">
               <label>อัปโหลดเอกสารความเห็นของอัยการ</label>
               <div class="upload-box">
                 <input
@@ -1136,8 +1222,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260820_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260822_1"></script>
+    <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -1200,10 +1286,20 @@
         }
       }
 
+      /* หมวดหมู่งานกฎหมายเป็นจุดแยกเส้นทาง — เลือก "การขอเปิดเผยข้อมูลข่าวสาร"
+         (10.2.1) แล้วฟอร์มจะสลับไปใช้ชุดฟิลด์ของกิจกรรม 10.2 และเมื่อกดบันทึก
+         เรื่องจะเดินเข้าสายงาน 10.2 (LAW0038 เป็นต้นไป) แทนสาย 10.1 */
       function toggleProsecutorCaseTypeDiv() {
         const catEl = document.getElementById("in_category");
         if (!catEl) return;
         const cat = catEl.value;
+        const isDisclosure = cat === "10.2.1";
+
+        const show = (id, visible) => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = visible ? "" : "none";
+        };
+
         const div = document.getElementById("div_prosecutorCaseType");
         if (div) {
           if (cat === "10.1") {
@@ -1213,6 +1309,77 @@
             div.style.display = "none";
           }
         }
+
+        /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร */
+        show("grp_docNo", !isDisclosure);
+        show("grp_prosecutorLevel", !isDisclosure);
+        show("grp_title", !isDisclosure);
+        show("grp_summary", !isDisclosure);
+        show("grp_legalOpinion", !isDisclosure);
+        show("grp_scannedFile", !isDisclosure);
+        show("div_disclosureRequest", isDisclosure);
+
+        const header = document.getElementById("sectionHeaderText");
+        if (header) {
+          header.innerText = isDisclosure
+            ? "📋 รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร"
+            : "📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ";
+        }
+
+        const srcLabel = document.getElementById("lbl_source");
+        if (srcLabel) {
+          srcLabel.innerText = isDisclosure
+            ? "หน่วยงานที่รับคำขอ"
+            : "หน่วยงานอัยการต้นทาง";
+        }
+
+        updateLivePreview();
+      }
+
+      /* ค่าที่กรอกในบล็อก 10.2 พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
+      function collectDisclosureFields() {
+        const typeSel = document.getElementById("in_requesterType");
+        const chanSel = document.getElementById("in_requestChannel");
+        const val = (id) => {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : "";
+        };
+        return {
+          requesterName: val("in_requesterName"),
+          requesterType: typeSel ? typeSel.value : "",
+          requesterTypeName: typeSel
+            ? typeSel.options[typeSel.selectedIndex].text
+            : "",
+          requestedInfo: val("in_requestedInfo"),
+          relatedCaseNo: val("in_relatedCaseNo"),
+          requestChannel: chanSel ? chanSel.value : "",
+          requestChannelName: chanSel
+            ? chanSel.options[chanSel.selectedIndex].text
+            : "",
+        };
+      }
+
+      /* ตรวจความครบถ้วนของบล็อก 10.2 ก่อนบันทึก */
+      function validateDisclosureFields() {
+        const checks = [
+          ["in_requesterName", "กรุณาระบุผู้ยื่นคำขอ"],
+          ["in_requestedInfo", "กรุณาระบุข้อมูลข่าวสารที่ขอเปิดเผย"],
+          ["in_relatedCaseNo", "กรุณาระบุเลขสำนวนคดีที่เกี่ยวข้อง"],
+        ];
+        for (const [id, msg] of checks) {
+          const el = document.getElementById(id);
+          if (!el || !el.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: msg,
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (el) el.focus();
+            return false;
+          }
+        }
+        return true;
       }
 
       function autoFormatYearSlashNo(input) {
@@ -1775,15 +1942,27 @@
           }
         }
 
-        if (!title || !docNo || !centralSarabanNo || !lawReceiveNo) {
+        const isDisclosure = category === "10.2.1";
+
+        /* หมวด 10.2 ซ่อนช่องของงานอัยการไว้ทั้งหมด จึงตรวจเฉพาะเลขที่ใช้ร่วมกัน
+           ส่วนชื่อเรื่องจะสร้างจากข้อมูลข่าวสารที่ขอเปิดเผยแทน */
+        const missingCore = isDisclosure
+          ? !centralSarabanNo || !lawReceiveNo
+          : !title || !docNo || !centralSarabanNo || !lawReceiveNo;
+
+        if (missingCore) {
           Swal.fire({
             icon: "warning",
             title: "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน",
-            text: "ต้องมี เลขสารบรรณกลาง, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
+            text: isDisclosure
+              ? "ต้องมี เลขสารบรรณกลาง และเลขรับกองกฎหมาย"
+              : "ต้องมี เลขสารบรรณกลาง, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
             confirmButtonColor: "#1e3a8a",
           });
           return;
         }
+
+        if (isDisclosure && !validateDisclosureFields()) return;
 
         Swal.fire({
           icon: "question",
@@ -1796,18 +1975,44 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (res.isConfirmed) {
+            /* จุดแยกเส้นทาง: 10.2.1 เข้าสายงานคำขอเปิดเผยข้อมูลข่าวสาร
+               (สถานะ L2_* ให้หน้า 01-work-inbox ส่งต่อไป 10-2-01) */
+            const l2Fields = isDisclosure ? collectDisclosureFields() : {};
+
+            /* ช่อง "ชื่อเรื่อง" ของงานอัยการถูกซ่อนในหมวด 10.2 จึงตั้งชื่อเรื่อง
+               จากข้อมูลข่าวสารที่ขอเปิดเผยแทน เพื่อให้หน้าถัดไปมีหัวเรื่องแสดง */
+            const l2Title = isDisclosure
+              ? "คำขอเปิดเผยข้อมูลข่าวสาร: " +
+                (l2Fields.requestedInfo.length > 90
+                  ? l2Fields.requestedInfo.slice(0, 90) + "..."
+                  : l2Fields.requestedInfo)
+              : title;
+            const routing = isDisclosure
+              ? {
+                  status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
+                  statusCode: "L2_PENDING_DIRECTOR_ASSIGN",
+                  l2Step: "LAW0037",
+                  l2StepSeq: 6,
+                }
+              : {
+                  status: "ผอ.กองกฎหมายพิจารณา",
+                  statusCode: "PENDING_DIRECTOR",
+                };
+
             const newCase = Activity10.addCase({
+              ...l2Fields,
+              ...routing,
               id: selectedIntakeCaseData ? selectedIntakeCaseData.id : null,
               category: category,
-              title: title,
+              title: l2Title,
               source: source,
               docNo: docNo,
               prosecutorCaseTypeNo: prosecutorCaseTypeNo,
               prosecutorCaseTypeName: prosecutorCaseTypeName,
               prosecutorLevel: prosecutorLevel,
               prosecutorLevelName: prosecutorLevelName,
-              summary: summary,
-              legalOpinion: legalOpinion,
+              summary: isDisclosure ? "" : summary,
+              legalOpinion: isDisclosure ? "" : legalOpinion,
               accuser: accuser,
               accused: accused,
               paccCaseNo: selectedIntakeCaseData
@@ -1816,8 +2021,6 @@
               lawReceiveNo: lawReceiveNo,
               centralSarabanNo: centralSarabanNo,
               physicalDocDate: physicalDocDate,
-              status: "ผอ.กองกฎหมายพิจารณา",
-              statusCode: "PENDING_DIRECTOR",
               statusBadge: "bg-primary text-white",
               assignedRole: "dir_legal",
               officer: "นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)",

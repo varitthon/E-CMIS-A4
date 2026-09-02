@@ -23,8 +23,8 @@
     'Arnon.C': { name: 'นายอานนท์ ชินประชา', role: 'ผู้อำนวยการกลุ่มงานความเห็นแย้ง', av: 'อ', intake: false },
     'legal_officer': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
     'Nattapol.B': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
-    'deputy_sg': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false },
-    'Surapong.W': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท.', av: 'ส', intake: false }
+    'deputy_sg': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'ส', intake: false },
+    'Surapong.W': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'ส', intake: false }
   };
 
   const NOTIF_BY_ROLE = {
@@ -53,6 +53,19 @@
       { title: '📨 คำร้องขอเปิดเผยข้อมูล', text: 'คำร้อง-100105/2569 เสนอผู้บริหารเห็นชอบมติ', icon: '📨', urgent: false },
       { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100206/2569 เสนอผู้บริหารลงนามคำให้การ', icon: '🏛️', urgent: false }
     ],
+    sub_secretariat: [
+      { title: '🔴 รอจัดทำรายงานความเห็นเสนอคณะอนุกรรมการฯ', text: 'คำร้อง-100301/2569 ได้รับมอบหมายจาก ผอ.กลุ่มงานความเห็นแย้ง', icon: '🔴', urgent: true },
+      { title: '📅 รอบรรจุวาระและนัดหมายประชุม', text: 'คำร้อง-100302/2569 ผ่านการตรวจความครบถ้วนแล้ว', icon: '📅', urgent: false },
+      { title: '📋 รอจัดทำผลมติคณะอนุกรรมการฯ', text: 'คำร้อง-100303/2569 คณะอนุกรรมการมีมติแล้ว', icon: '📋', urgent: false }
+    ],
+    subcommittee_screen: [
+      { title: '🔴 รอพิจารณาตามระเบียบวาระ', text: 'มีเรื่องเข้าวาระการประชุมกลั่นกรองการเปิดเผยข้อมูลข่าวสาร 3 เรื่อง', icon: '🔴', urgent: true },
+      { title: '📎 เอกสารประกอบการประชุม', text: 'ฝ่ายเลขานุการฯ จัดส่งเอกสารประกอบการประชุมแล้ว', icon: '📎', urgent: false }
+    ],
+    secgen: [
+      { title: '🔴 รอเห็นชอบและลงนามมติคณะอนุกรรมการฯ', text: 'คำร้อง-100303/2569 รองเลขาธิการ ป.ป.ท. ให้ความเห็นแล้ว', icon: '🔴', urgent: true },
+      { title: '📨 รอมอบหมายเรื่องใหม่', text: 'มีคำขอเปิดเผยข้อมูลข่าวสารรอมอบหมาย', icon: '📨', urgent: false }
+    ],
     _default: [
       { title: '📨 รายการงานใหม่', text: 'มีงานกฎหมายในทางคดีเข้าระบบ', icon: '📋', urgent: false }
     ]
@@ -63,9 +76,36 @@
   NOTIF_BY_ROLE['Napas.S'] = NOTIF_BY_ROLE.dir_legal;
   NOTIF_BY_ROLE['Arnon.C'] = NOTIF_BY_ROLE.group_director;
   NOTIF_BY_ROLE['Surapong.W'] = NOTIF_BY_ROLE.deputy_sg;
+  NOTIF_BY_ROLE['Pimchanok.T'] = NOTIF_BY_ROLE.sub_secretariat;
+  NOTIF_BY_ROLE['Kitti.P'] = NOTIF_BY_ROLE.subcommittee_screen;
+  NOTIF_BY_ROLE['Apichat.S'] = NOTIF_BY_ROLE.secgen;
 
   function getCurrentRole() {
     return sessionStorage.getItem('ecmis_role') || 'admin_legal';
+  }
+
+  /* ROLE_DISPLAY covers the 10.1 roles and stays authoritative for them so the
+     existing pages keep their exact wording. Roles that only appear in newer
+     activities (10.2 onwards) are resolved from the full ECMIS.ROLES registry
+     instead of silently falling back to "ธุรการกองกฎหมาย". */
+  function resolveRoleDisplay(roleId) {
+    if (ROLE_DISPLAY[roleId]) return ROLE_DISPLAY[roleId];
+
+    const registry = (global.ECMIS && global.ECMIS.ROLES) || null;
+    if (registry) {
+      const r = registry.find(function (x) { return x.id === roleId || x.login === roleId; });
+      if (r) {
+        const shortName = String(r.name || '').replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
+        return {
+          name: r.name,
+          role: r.title,
+          av: shortName.charAt(0) || '?',
+          org: r.org || r.group,
+          intake: false
+        };
+      }
+    }
+    return ROLE_DISPLAY['admin_legal'];
   }
 
   function updateRoleDisplay() {
@@ -75,7 +115,7 @@
     const nameEl = document.getElementById('userName');
     const roleEl = document.getElementById('userRoleTitle');
 
-    const cur = ROLE_DISPLAY[roleId] || ROLE_DISPLAY['admin_legal'];
+    const cur = resolveRoleDisplay(roleId);
     if (avatar) avatar.innerText = cur.av;
     if (nameEl) nameEl.innerText = cur.name;
     if (roleEl) roleEl.innerText = cur.role;
@@ -83,8 +123,10 @@
 
     const cardName = document.getElementById('profileCardName');
     const cardTitle = document.getElementById('profileCardTitle');
+    const cardOrg = document.getElementById('profileCardOrg');
     if (cardName) cardName.innerText = cur.name;
     if (cardTitle) cardTitle.innerText = cur.role;
+    if (cardOrg && cur.org) cardOrg.innerText = cur.org + ' · สำนักงาน ป.ป.ท.';
 
     if (typeof global.renderSidebarMenu === 'function') global.renderSidebarMenu();
     renderNotifications();
