@@ -141,6 +141,7 @@
     { value: "DISCLOSE", label: "อนุญาตเปิดเผย", color: "#16a34a" },
     { value: "PARTIAL", label: "อนุญาตเปิดเผยบางส่วน", color: "#d97706" },
     { value: "DENY", label: "ไม่อนุญาตเปิดเผย", color: "#dc2626" },
+    { value: "OTHER", label: "อื่นๆ", color: "#64748b" },
   ];
 
   const CASE_STATES = [
@@ -544,6 +545,95 @@
     isRecording = false;
   }
 
+  /* --------------------------------------------------------- RICH TEXT (Tiptap)
+     ตัวช่วยแปลง <div> ให้เป็น Tiptap editor แบบขั้นต่ำ (ตัวหนา/ตัวเอียง/บูลเลต/เลข)
+     ใช้เฉพาะฟิลด์ที่ป้อนเข้าตัวอย่างเอกสารสดของ 10-2-06 และ 10-2-07 โปรเจกต์นี้ไม่มี
+     bundler จึงโหลด Tiptap เป็น ES module จาก CDN ผ่าน dynamic import() (ใช้ได้ใน
+     classic script เช่นกัน ไม่ต้องเปลี่ยนหน้าเป็น type="module") แล้ว cache ไว้ครั้งเดียว */
+  let editorModulesPromise = null;
+  function loadEditorModules() {
+    if (!editorModulesPromise) {
+      editorModulesPromise = Promise.all([
+        import("https://esm.sh/@tiptap/core@2.9.1"),
+        import("https://esm.sh/@tiptap/starter-kit@2.9.1"),
+        import("https://esm.sh/@tiptap/extension-placeholder@2.9.1"),
+      ]);
+    }
+    return editorModulesPromise;
+  }
+
+  const richEditors = new Map();
+
+  /* opts: { placeholder, initialHTML, toolbarId, onUpdate(editor) } */
+  function mountEditor(containerId, opts) {
+    const cfg = opts || {};
+    const el = document.getElementById(containerId);
+    if (!el) return Promise.resolve(null);
+    el.classList.add("l2-tiptap");
+
+    return loadEditorModules().then(function (mods) {
+      const Core = mods[0];
+      const StarterKit = mods[1].default || mods[1].StarterKit;
+      const Placeholder = mods[2].default || mods[2].Placeholder;
+
+      const editor = new Core.Editor({
+        element: el,
+        extensions: [
+          StarterKit.configure({
+            heading: false,
+            codeBlock: false,
+            blockquote: false,
+            horizontalRule: false,
+          }),
+          Placeholder.configure({ placeholder: cfg.placeholder || "" }),
+        ],
+        content: cfg.initialHTML || "",
+        onUpdate: function () {
+          if (cfg.onUpdate) cfg.onUpdate(editor);
+        },
+      });
+
+      richEditors.set(containerId, editor);
+      if (cfg.toolbarId) bindEditorToolbar(cfg.toolbarId, editor);
+      return editor;
+    });
+  }
+
+  function bindEditorToolbar(toolbarId, editor) {
+    const bar = document.getElementById(toolbarId);
+    if (!bar) return;
+    const buttons = bar.querySelectorAll("[data-cmd]");
+    const refresh = function () {
+      buttons.forEach(function (btn) {
+        btn.classList.toggle("is-active", editor.isActive(btn.getAttribute("data-cmd")));
+      });
+    };
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const cmd = btn.getAttribute("data-cmd");
+        const chain = editor.chain().focus();
+        if (cmd === "bold") chain.toggleBold().run();
+        else if (cmd === "italic") chain.toggleItalic().run();
+        else if (cmd === "bulletList") chain.toggleBulletList().run();
+        else if (cmd === "orderedList") chain.toggleOrderedList().run();
+        refresh();
+      });
+    });
+    editor.on("selectionUpdate", refresh);
+    editor.on("transaction", refresh);
+    refresh();
+  }
+
+  function getEditorText(containerId) {
+    const editor = richEditors.get(containerId);
+    return editor ? editor.getText().trim() : "";
+  }
+
+  function getEditorHTML(containerId) {
+    const editor = richEditors.get(containerId);
+    return editor ? editor.getHTML() : "";
+  }
+
   function toggleSpeechToText(targetId, btnEl) {
     const inputEl = document.getElementById(targetId);
     if (!inputEl) return;
@@ -594,9 +684,15 @@
       recognition.onresult = function (event) {
         const transcript = event.results[0][0].transcript;
         if (!transcript) return;
-        const currentVal = inputEl.value ? inputEl.value.trim() : "";
-        inputEl.value = currentVal ? currentVal + " " + transcript : transcript;
-        inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+        const editor = richEditors.get(targetId);
+        if (editor) {
+          /* ฟิลด์ที่เป็น Tiptap editor — แทรกคำที่พูดตรงตำแหน่งเคอร์เซอร์ */
+          editor.chain().focus().insertContent(transcript + " ").run();
+        } else {
+          const currentVal = inputEl.value ? inputEl.value.trim() : "";
+          inputEl.value = currentVal ? currentVal + " " + transcript : transcript;
+          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+        }
       };
 
       recognition.onerror = function (event) {
@@ -769,6 +865,9 @@
     selectedPersonLabel: selectedPersonLabel,
     renderStepper: renderStepper,
     renderSidebarMenu: renderSidebarMenu,
+    mountEditor: mountEditor,
+    getEditorText: getEditorText,
+    getEditorHTML: getEditorHTML,
   };
 
   /* หน้าเพจเรียกตรง ๆ ผ่าน onclick="toggleSpeechToText(...)" ตามแบบเดิมของ 10.1 */
