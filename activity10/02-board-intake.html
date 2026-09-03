@@ -951,17 +951,50 @@
                   <select
                     id="in_requesterType"
                     class="form-control"
-                    onchange="updateLivePreview()"
+                    onchange="toggleRequesterTypeOtherInput(); updateLivePreview();"
                   >
                     <option value="CITIZEN">ประชาชน</option>
                     <option value="JURISTIC">นิติบุคคล</option>
                     <option value="AGENCY">หน่วยงานของรัฐ</option>
+                    <option value="OTHER">อื่นๆ</option>
                   </select>
+                  <div
+                    id="div_requesterTypeOther"
+                    style="display: none; margin-top: 8px"
+                  >
+                    <label
+                      style="
+                        font-size: 0.82em;
+                        color: var(--text-title);
+                        margin-bottom: 4px;
+                      "
+                      >ระบุประเภทผู้ยื่นคำขอ (อื่นๆ)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="in_requesterTypeOtherText"
+                      class="form-control"
+                      placeholder="โปรดระบุประเภทผู้ยื่นคำขอ..."
+                      oninput="updateLivePreview()"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label>ชื่อเรื่อง <span style="color: #dc2626">*</span></label>
+                <label
+                  ><span
+                    >ชื่อเรื่อง <span style="color: #dc2626">*</span>
+                    <button
+                      type="button"
+                      class="btn-mic"
+                      id="btnMicDisclosureTitle"
+                      onclick="toggleSpeechToText('in_disclosureTitle', this)"
+                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                    >
+                      <i class="fa-solid fa-microphone"></i></button></span
+                ></label>
                 <input
                   type="text"
                   id="in_disclosureTitle"
@@ -974,9 +1007,18 @@
 
               <div class="form-group">
                 <label
-                  >ข้อมูลข่าวสารที่ขอเปิดเผย
-                  <span style="color: #dc2626">*</span></label
-                >
+                  ><span
+                    >ข้อมูลข่าวสารที่ขอเปิดเผย
+                    <span style="color: #dc2626">*</span>
+                    <button
+                      type="button"
+                      class="btn-mic"
+                      id="btnMicRequestedInfo"
+                      onclick="toggleSpeechToText('in_requestedInfo', this)"
+                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                    >
+                      <i class="fa-solid fa-microphone"></i></button></span
+                ></label>
                 <textarea
                   id="in_requestedInfo"
                   class="form-control"
@@ -989,7 +1031,7 @@
                 >
               </div>
 
-              <div class="form-grid-2">
+              <div class="form-grid-3">
                 <div class="form-group">
                   <label
                     >เลขสำนวนคดีที่เกี่ยวข้อง
@@ -1013,12 +1055,105 @@
                   <select
                     id="in_requestChannel"
                     class="form-control"
-                    onchange="updateLivePreview()"
+                    onchange="toggleRequestChannelDetail(); updateLivePreview();"
                   >
-                    <option value="CENTRAL">ยื่นที่ส่วนกลาง</option>
+                    <option value="CENTRAL">ยื่นที่ส่วนกลาง/ศรร.</option>
                     <option value="REGION">ยื่นที่สำนักงาน ป.ป.ท. เขต</option>
-                    <option value="SRR">ยื่นที่ ศรร.</option>
+                    <option value="POST">ไปรษณีย์</option>
+                    <option value="ELECTRONIC">อิเล็กทรอนิกส์</option>
+                    <option value="OTHER">อื่นๆ</option>
                   </select>
+                  <div
+                    id="div_requestChannelRegion"
+                    style="display: none; margin-top: 8px"
+                  >
+                    <label
+                      style="
+                        font-size: 0.82em;
+                        color: var(--text-title);
+                        margin-bottom: 4px;
+                      "
+                      >เลือกเขต <span style="color: #dc2626">*</span></label
+                    >
+                    <select
+                      id="in_requestChannelRegionSelect"
+                      class="form-control"
+                      onchange="updateLivePreview()"
+                    >
+                      <option value="1">เขต 1</option>
+                      <option value="2">เขต 2</option>
+                      <option value="3">เขต 3</option>
+                      <option value="4">เขต 4</option>
+                      <option value="5">เขต 5</option>
+                      <option value="6">เขต 6</option>
+                      <option value="7">เขต 7</option>
+                      <option value="8">เขต 8</option>
+                      <option value="9">เขต 9</option>
+                    </select>
+                  </div>
+                  <div
+                    id="div_requestChannelOther"
+                    style="display: none; margin-top: 8px"
+                  >
+                    <label
+                      style="
+                        font-size: 0.82em;
+                        color: var(--text-title);
+                        margin-bottom: 4px;
+                      "
+                      >ระบุช่องทางการยื่นคำขอ (อื่นๆ)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="in_requestChannelOtherText"
+                      class="form-control"
+                      placeholder="โปรดระบุช่องทางการยื่นคำขอ..."
+                      oninput="updateLivePreview()"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันที่สำนักงาน ป.ป.ท. ได้รับคำขอ
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_requestReceivedDate"
+                    class="form-control"
+                    lang="th-TH-u-ca-buddhist"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group" id="grp_disclosureAttachments">
+                <label>เอกสารเพิ่มเติม</label>
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_disclosureAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleDisclosureAttachmentsChange(this)"
+                  />
+                </div>
+                <div
+                  id="disclosureAttachmentsList"
+                  style="margin-top: 8px"
+                ></div>
+                <div
+                  class="info-box"
+                  style="margin-top: 10px; margin-bottom: 0"
+                >
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG,
+                    JPG, JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
                 </div>
               </div>
             </div>
@@ -1262,6 +1397,10 @@
         const todayStr = new Date().toISOString().split("T")[0];
         const physicalDocDateEl = document.getElementById("in_physicalDocDate");
         if (physicalDocDateEl) physicalDocDateEl.value = todayStr;
+        const requestReceivedDateEl = document.getElementById(
+          "in_requestReceivedDate",
+        );
+        if (requestReceivedDateEl) requestReceivedDateEl.value = todayStr;
 
         // Live update preview listeners
         [
@@ -1299,6 +1438,114 @@
             otherDiv.style.display = "none";
           }
         }
+      }
+
+      /* "อื่นๆ" ในช่องประเภทผู้ยื่นคำขอ (เฉพาะบล็อกคำขอเปิดเผยข้อมูลข่าวสาร) */
+      function toggleRequesterTypeOtherInput() {
+        const select = document.getElementById("in_requesterType");
+        const otherDiv = document.getElementById("div_requesterTypeOther");
+        if (select && otherDiv) {
+          if (select.value === "OTHER") {
+            otherDiv.style.display = "block";
+            const input = document.getElementById("in_requesterTypeOtherText");
+            if (input) input.focus();
+          } else {
+            otherDiv.style.display = "none";
+          }
+        }
+      }
+
+      /* ช่องทางการยื่นคำขอ: แสดงตัวเลือกเขต เมื่อเลือก "ยื่นที่สำนักงาน ป.ป.ท. เขต"
+         และแสดงช่องระบุเมื่อเลือก "อื่นๆ" */
+      function toggleRequestChannelDetail() {
+        const select = document.getElementById("in_requestChannel");
+        const regionDiv = document.getElementById("div_requestChannelRegion");
+        const otherDiv = document.getElementById("div_requestChannelOther");
+        if (!select) return;
+        if (regionDiv) {
+          regionDiv.style.display = select.value === "REGION" ? "block" : "none";
+        }
+        if (otherDiv) {
+          if (select.value === "OTHER") {
+            otherDiv.style.display = "block";
+            const input = document.getElementById("in_requestChannelOtherText");
+            if (input) input.focus();
+          } else {
+            otherDiv.style.display = "none";
+          }
+        }
+      }
+
+      /* เอกสารเพิ่มเติม (คำขอเปิดเผยข้อมูลข่าวสาร) — แนบได้หลายไฟล์ */
+      let disclosureAttachedFiles = [];
+
+      function handleDisclosureAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          disclosureAttachedFiles.push(file);
+        });
+
+        input.value = "";
+        renderDisclosureAttachmentsList();
+      }
+
+      function removeDisclosureAttachment(index) {
+        disclosureAttachedFiles.splice(index, 1);
+        renderDisclosureAttachmentsList();
+      }
+
+      function renderDisclosureAttachmentsList() {
+        const listEl = document.getElementById("disclosureAttachmentsList");
+        if (!listEl) return;
+        if (!disclosureAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = disclosureAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${file.name} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeDisclosureAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
       }
 
       /* หมวดหมู่งานกฎหมายเป็นจุดแยกเส้นทาง — เลือก "การขอเปิดเผยข้อมูลข่าวสาร"
@@ -1355,23 +1602,42 @@
       function collectDisclosureFields() {
         const typeSel = document.getElementById("in_requesterType");
         const chanSel = document.getElementById("in_requestChannel");
+        const regionSel = document.getElementById(
+          "in_requestChannelRegionSelect",
+        );
         const val = (id) => {
           const el = document.getElementById(id);
           return el ? el.value.trim() : "";
         };
+
+        const requesterTypeName =
+          typeSel && typeSel.value === "OTHER"
+            ? `อื่นๆ (${val("in_requesterTypeOtherText")})`
+            : typeSel
+              ? typeSel.options[typeSel.selectedIndex].text
+              : "";
+
+        let requestChannelName = chanSel
+          ? chanSel.options[chanSel.selectedIndex].text
+          : "";
+        if (chanSel && chanSel.value === "REGION" && regionSel && regionSel.value) {
+          requestChannelName = `${requestChannelName} (${regionSel.options[regionSel.selectedIndex].text})`;
+        } else if (chanSel && chanSel.value === "OTHER") {
+          requestChannelName = `อื่นๆ (${val("in_requestChannelOtherText")})`;
+        }
+
         return {
           requesterName: val("in_requesterName"),
           requesterType: typeSel ? typeSel.value : "",
-          requesterTypeName: typeSel
-            ? typeSel.options[typeSel.selectedIndex].text
-            : "",
+          requesterTypeName: requesterTypeName,
           title: val("in_disclosureTitle"),
           requestedInfo: val("in_requestedInfo"),
           relatedCaseNo: val("in_relatedCaseNo"),
           requestChannel: chanSel ? chanSel.value : "",
-          requestChannelName: chanSel
-            ? chanSel.options[chanSel.selectedIndex].text
-            : "",
+          requestChannelName: requestChannelName,
+          requestChannelRegion: regionSel ? regionSel.value : "",
+          requestReceivedDate: val("in_requestReceivedDate"),
+          attachmentFileNames: disclosureAttachedFiles.map((f) => f.name),
         };
       }
 
@@ -1382,6 +1648,7 @@
           ["in_disclosureTitle", "กรุณาระบุชื่อเรื่อง"],
           ["in_requestedInfo", "กรุณาระบุข้อมูลข่าวสารที่ขอเปิดเผย"],
           ["in_relatedCaseNo", "กรุณาระบุเลขสำนวนคดีที่เกี่ยวข้อง"],
+          ["in_requestReceivedDate", "กรุณาระบุวันที่สำนักงาน ป.ป.ท. ได้รับคำขอ"],
         ];
         for (const [id, msg] of checks) {
           const el = document.getElementById(id);
@@ -1396,6 +1663,54 @@
             return false;
           }
         }
+
+        const requesterTypeSel = document.getElementById("in_requesterType");
+        if (requesterTypeSel && requesterTypeSel.value === "OTHER") {
+          const otherText = document.getElementById("in_requesterTypeOtherText");
+          if (!otherText || !otherText.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุประเภทผู้ยื่นคำขอ (อื่นๆ)",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (otherText) otherText.focus();
+            return false;
+          }
+        }
+
+        const channelSel = document.getElementById("in_requestChannel");
+        if (channelSel && channelSel.value === "REGION") {
+          const regionSel = document.getElementById(
+            "in_requestChannelRegionSelect",
+          );
+          if (!regionSel || !regionSel.value) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาเลือกเขต",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (regionSel) regionSel.focus();
+            return false;
+          }
+        }
+        if (channelSel && channelSel.value === "OTHER") {
+          const otherChannelText = document.getElementById(
+            "in_requestChannelOtherText",
+          );
+          if (!otherChannelText || !otherChannelText.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุช่องทางการยื่นคำขอ (อื่นๆ)",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (otherChannelText) otherChannelText.focus();
+            return false;
+          }
+        }
+
         return true;
       }
 
