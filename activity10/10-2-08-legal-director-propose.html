@@ -169,7 +169,37 @@
             <i class="fa-solid fa-circle-info"></i>
             <div>
               เอกสารฉบับนี้จัดทำโดยฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร และแสดงแบบ<strong>อ่านอย่างเดียว</strong>
-              บทบาทนี้ลงนามได้เฉพาะช่อง <strong>ผู้เสนอเรื่อง</strong> เท่านั้น
+              บทบาทนี้ระบุความเห็นและลงนามได้เฉพาะช่อง <strong>ผู้เสนอเรื่อง</strong> เท่านั้น
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>๕. ความเห็นผู้อำนวยการกองกฎหมาย</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>
+                  <span
+                    >ความเห็น
+                    <button
+                      type="button"
+                      class="btn-mic"
+                      id="btnMicDirOpinion"
+                      onclick="toggleSpeechToText('in_dirLegalOpinion', this)"
+                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                    >
+                      <i class="fa-solid fa-microphone"></i></button
+                  ></span>
+                </label>
+                <textarea
+                  id="in_dirLegalOpinion"
+                  class="form-control"
+                  rows="4"
+                  placeholder="ระบุความเห็นของผู้อำนวยการกองกฎหมาย..."
+                ></textarea>
+              </div>
             </div>
           </div>
 
@@ -353,6 +383,12 @@
           section("๔. ข้อพิจารณา", c.l2Considerations) +
           '<div class="l2-doc-section"><div class="l2-doc-body">' +
           "จึงเรียนมาเพื่อโปรดพิจารณา และนำเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป</div></div>" +
+          section(
+            "๕. ความเห็นผู้อำนวยการกองกฎหมาย",
+            document.getElementById("in_dirLegalOpinion")
+              ? document.getElementById("in_dirLegalOpinion").value
+              : c.l2DirLegalOpinion,
+          ) +
           '<div class="l2-doc-signblock">' +
           sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") + "</div>";
       }
@@ -413,6 +449,11 @@
       }
 
       function populate() {
+        const opinionEl = document.getElementById("in_dirLegalOpinion");
+        if (opinionEl) {
+          opinionEl.value = currentCase.l2DirLegalOpinion || "";
+          opinionEl.addEventListener("input", renderMemo);
+        }
         renderMemo();
         ECMIS102.setHtml("signChain", Activity102.renderSignChain(currentCase, "proposer"));
       }
@@ -435,10 +476,12 @@
             certId: "PACC-DIRLEGAL-2569-102",
           },
           (image) => {
+            const opinionEl = document.getElementById("in_dirLegalOpinion");
             Activity102.sign(currentCase.id, "proposer", image, {
               position: "ผู้อำนวยการกองกฎหมาย",
             });
             Activity102.advance(currentCase.id, STEP_CODE, {
+              l2DirLegalOpinion: opinionEl ? opinionEl.value.trim() : "",
               statusBadge: "bg-success text-white",
               assignedRole: "admin_legal",
               officer: ECMIS102.signerLabel("admin_legal"),

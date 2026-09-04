@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      ธุรการกองกฎหมาย ออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท. | E-CMIS กิจกรรมที่ 10.2
+    </title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260904_2" />
+
+    <style>
+      h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
+      .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
+      .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+      .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+
+      .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow-x: auto; }
+      .stepper { display: flex; justify-content: space-between; align-items: flex-start; position: relative; min-width: 900px; }
+      .stepper::before { content: ''; position: absolute; top: 18px; left: 30px; right: 30px; height: 2px; background: var(--border-color); z-index: 1; }
+      .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 1; }
+      .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+      .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+      .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+      .step-label { font-size: 0.72em; color: #64748b; text-align: center; white-space: nowrap; }
+      .step-item.active .step-label { color: var(--text-title); font-weight: 700; }
+
+      .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+      .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 1.05em; }
+      .form-card-body { padding: 20px; }
+
+      .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } }
+
+      .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+      .form-group:last-child { margin-bottom: 0; }
+      .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+
+      .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+      .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+      textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+
+      .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; margin-bottom: 20px; }
+      .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+      .btn-primary { background: #1e3a8a; color: #fff; }
+      .btn-primary:hover { background: #1e293b; color: #fff; }
+      .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+
+      .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+      .font-monospace { font-family: monospace; }
+      .d-none { display: none !important; }
+
+      .btn-mic { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #2563eb; font-size: 12px; vertical-align: middle; margin-left: 6px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+      .btn-mic:hover { background: #2563eb; color: #fff; border-color: #2563eb; transform: scale(1.08); }
+      .btn-mic.recording { background: #dc2626 !important; color: #fff !important; border-color: #b91c1c !important; animation: pulse-mic 1.2s infinite ease-in-out; }
+      @keyframes pulse-mic {
+        0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+        50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
+            <span style="color: var(--text-title); font-weight: 600">ออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.</span>
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
+          </div>
+          <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-1" style="font-size: 0.72rem; color: #64748b"></i>
+            <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle">-</span>
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+              </div>
+              <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper" id="stepper"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
+            คำร้องจะมาถึงขั้นตอนนี้หลัง ผอ.กองกฎหมายลงนามในฐานะผู้เสนอเรื่องที่หน้า
+            <a href="10-2-16-legal-director-deny-propose.html">ลงนามในฐานะผู้เสนอเรื่อง (มติไม่อนุญาตเปิดเผยข้อมูล)</a>
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div class="l2-note l2-note-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              บันทึกฉบับนี้ผ่านการลงนามของ <strong>ผู้อำนวยการกองกฎหมาย</strong> ในฐานะผู้เสนอเรื่องแล้ว
+              ธุรการกองกฎหมายมีหน้าที่ออกเลขที่หนังสือส่ง ระบุวันที่ และส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
+              เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. เต็มคณะต่อไป (กิจกรรมที่ 7)
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>บันทึกมติไม่อนุญาตเปิดเผยข้อมูล</span>
+            </div>
+            <div class="form-card-body">
+              <div class="l2-doc" id="memoDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-stamp text-primary me-2"></i
+                >แบบฟอร์มออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
+                (ธุรการกองกฎหมาย)</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-paper-plane me-1"></i
+                >ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>เจ้าหน้าที่ผู้ดำเนินการ (ธุรการกองกฎหมาย)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="f_officer"
+                  readonly
+                  style="font-weight: 600"
+                />
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขที่หนังสือส่งกองกฎหมาย (ปี พ.ศ./เลขส่ง)
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <div class="read-box font-monospace fw-bold text-primary" id="f_docNumber">
+                    ปป 0002/ — รอออกเลข
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันที่ออกหนังสือส่ง
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    class="form-control font-monospace"
+                    id="in_dispatchDate"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >ส่งเสนอต่อไปยัง <span style="color: #dc2626">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="f_dispatchTarget"
+                  value="เลขาธิการคณะกรรมการ ป.ป.ท. (เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท.)"
+                  readonly
+                  style="font-weight: 600; color: #1e3a8a"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <span
+                    >บันทึกข้อความนำส่ง / หมายเหตุเพิ่มเติม
+                    <button
+                      type="button"
+                      class="btn-mic"
+                      id="btnMicDispatch"
+                      onclick="toggleSpeechToText('in_dispatchNotes', this)"
+                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                    >
+                      <i class="fa-solid fa-microphone"></i>
+                    </button>
+                  </span>
+                </label>
+                <textarea
+                  id="in_dispatchNotes"
+                  class="form-control font-monospace"
+                  rows="2"
+                  placeholder="ระบุหมายเหตุการนำส่ง..."
+                >
+กองกฎหมายได้ตรวจพิจารณาและลงนามในฐานะผู้เสนอเรื่องเรียบร้อยแล้ว จึงกราบเรียนเสนอเพื่อโปรดพิจารณานำเข้าที่ประชุมคณะกรรมการ ป.ป.ท.</textarea
+                >
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="submitDispatch()"
+              >
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
+                ส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
+    <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-10-2.js?v=20260904_2"></script>
+
+    <script>
+      const STEP_CODE = "L2-DENY-DISPATCH-COMMITTEE";
+      const STEP = Activity102.stepByCode(STEP_CODE);
+      let currentCase = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS102.initUserProfile();
+        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
+        setDefaultDate();
+        loadCase();
+        ECMIS102.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        currentCase = Activity102.getCase(id, "L2_PENDING_DENY_DISPATCH_COMMITTEE");
+
+        if (!currentCase) {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          ECMIS102.renderStepper("stepper", STEP_CODE);
+          return;
+        }
+        ECMIS102.renderStepper("stepper", STEP_CODE, currentCase);
+        populate();
+      }
+
+      function todayISO() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function setDefaultDate() {
+        const el = document.getElementById("in_dispatchDate");
+        if (el) el.value = todayISO();
+      }
+
+      function renderMemoDoc() {
+        const c = currentCase;
+        const sigs = Activity102.signState(c);
+        const section = (label, value) =>
+          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+          '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
+        const s = sigs.denyMemoProposer;
+        const img = s && s.image
+          ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
+          : '<div class="l2-sig-placeholder">รอลงนาม</div>';
+        const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
+        const s2 = sigs.denyPropose;
+        const img2 = s2 && s2.image
+          ? '<img class="l2-sig-img" src="' + s2.image + '" alt="ลายเซ็น" />'
+          : '<div class="l2-sig-placeholder">รอลงนาม</div>';
+        const when2 = s2 && s2.signedAt ? '<div class="l2-sign-when">' + s2.signedAt + "</div>" : "";
+
+        document.getElementById("memoDoc").innerHTML =
+          '<div class="l2-doc-title">บันทึกมติไม่อนุญาตเปิดเผยข้อมูล</div>' +
+          section("เนื้อหา", c.l2DenyMemoText) +
+          '<div class="l2-doc-signblock">' +
+          '<div class="l2-sig-slot">' + img + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">อนุกรรมการและเลขานุการ</div>' + when + "</div>" +
+          '<div class="l2-sig-slot">' + img2 + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">ผู้อำนวยการกองกฎหมาย</div>' + when2 + "</div>" +
+          "</div>";
+      }
+
+      function populate() {
+        ECMIS102.setText("f_officer", ECMIS102.signerLabel("admin_legal"));
+        if (currentCase.l2DenyMemoDocNo) ECMIS102.setText("f_docNumber", currentCase.l2DenyMemoDocNo);
+        renderMemoDoc();
+      }
+
+      function submitDispatch() {
+        const dispatchDate = document.getElementById("in_dispatchDate").value;
+        if (!dispatchDate) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุวันที่ออกหนังสือส่ง",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        const notes = document.getElementById("in_dispatchNotes").value.trim();
+
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันการออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.?",
+          html:
+            '<div class="emd-summary">' +
+            "<p><strong>ส่งเสนอต่อไปยัง:</strong> เลขาธิการคณะกรรมการ ป.ป.ท.</p>" +
+            "<p><strong>ขั้นตอนต่อไป:</strong> รอผลมติจากกิจกรรมที่ 7 (การประชุมคณะกรรมการ ป.ป.ท.)</p></div>",
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันออกเลขส่ง",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+
+          Activity102.advance(currentCase.id, STEP_CODE, {
+            l2DenyCommitteeDispatchDate: dispatchDate,
+            l2DenyCommitteeDispatchNotes: notes,
+          });
+
+          Swal.fire({
+            icon: "success",
+            title: "ออกเลขส่งเรียบร้อย",
+            html:
+              '<div class="emd-summary"><p>ส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท. เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) แล้ว</p></div>',
+            confirmButtonColor: "#1e3a8a",
+            confirmButtonText: "กลับหน้าคิวงาน",
+          }).then(ECMIS102.goInbox);
+        });
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

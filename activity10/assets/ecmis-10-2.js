@@ -136,6 +136,173 @@
       label: "ธุรการกองกฎหมาย ออกเลขส่งและเสนอผู้บริหาร",
       stepName: "ธุรการ ออกเลขส่ง",
     },
+
+    /* ---------------------------------------------------------- PART 2
+       LAW0049 เป็นต้นไป — รับมติที่เลขาธิการ/คณะกรรมการ ป.ป.ท. เห็นชอบกลับมา
+       จากกิจกรรมที่ 7 แล้วแจ้งผลผู้ยื่นคำขอ ผังแยก 3 เส้นทางตามผลมติที่เลือก
+       ไว้แล้วที่ 10-2-06 (c.l2ResolutionType): DISCLOSE/PARTIAL ไปเส้นทางร่วม
+       (10-2-11 ถึง 10-2-14, ไฟล์ชื่อมีคำว่า disclose-partial ยกเว้น 10-2-12
+       ที่เป็น partial ล้วนเพราะเกิดเฉพาะ PARTIAL), DENY ไปอีกเส้นทางที่มีรอบเสนอคณะกรรมการฯ ซ้อนอยู่
+       (10-2-15 ถึง 10-2-20) เพราะไม่เปิดเผยข้อมูลต้องผ่านมติคณะกรรมการเต็มคณะ
+       ไม่ใช่แค่เลขาธิการที่ได้รับมอบอำนาจ
+
+       ตาราง ROUTES ด้านล่างสร้างจากลำดับ index ในอาเรย์นี้โดยอัตโนมัติ ซึ่งเดิน
+       ตามเส้นทางหลัก (DISCLOSE/PARTIAL) ได้พอดี ส่วนจุดที่แยกสาขา (หลัง
+       L2-RECEIVE-OUTCOME และหลัง L2-NOTICE-DRAFT) แต่ละหน้าจะกำหนด statusCode
+       จริงตอนบันทึกเอง (ไม่ใช้ค่า default ของ step) แล้วเติม ROUTES ที่ขาดไว้
+       ด้วยมือถัดจากตารางนี้ — ดูคอมเมนต์ตรง const ROUTES ด้านล่าง
+
+       includeIf: จำกัดว่าขั้นตอนนี้จะขึ้นในแถบขั้นตอน (stepper) ของคำร้องที่มี
+       l2ResolutionType อยู่ในลิสต์นี้เท่านั้น (ไม่ระบุ = ขึ้นทุกคำร้อง) */
+    {
+      code: "L2-RECEIVE-OUTCOME",
+      seq: 17,
+      page: "10-2-10-legal-admin-receive-outcome.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ",
+      statusCode: "L2_PENDING_NOTICE_DRAFT",
+      label: "ธุรการกองกฎหมาย รับมติที่เลขาธิการ/คณะกรรมการ ป.ป.ท. เห็นชอบ (กิจกรรมที่ 7)",
+      stepName: "ธุรการ รับมติ",
+    },
+    {
+      code: "L2-NOTICE-DRAFT",
+      seq: 18,
+      page: "10-2-11-secretariat-disclose-partial-notice-draft.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคล หรือเสนอ ผอ.กองกฎหมายลงนาม",
+      statusCode: "L2_PENDING_REDACTION",
+      label: "[เปิดเผย/บางส่วน] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] เลขานุการฯ ร่างหนังสือแจ้งมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+    },
+    {
+      code: "L2-REDACTION",
+      seq: 19,
+      page: "10-2-12-secretariat-partial-redaction.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ผอ.กองกฎหมายตรวจและลงนามหนังสือแจ้งมติ",
+      statusCode: "L2_PENDING_NOTICE_SIGN",
+      label: "[เปิดเผยบางส่วน] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว (กรณีอนุญาตเปิดเผยบางส่วน)",
+      stepName: "[เปิดเผยบางส่วน] เลขานุการฯ ปกปิดข้อมูล",
+      includeIf: ["PARTIAL"],
+    },
+    {
+      code: "L2-NOTICE-SIGN",
+      seq: 20,
+      page: "10-2-13-legal-director-disclose-partial-notice-sign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      statusCode: "L2_PENDING_NOTICE_DISPATCH",
+      label: "[เปิดเผย/บางส่วน] ผอ.กองกฎหมาย ตรวจและลงนามหนังสือแจ้งมติผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] ผอ.กอง ลงนามแจ้งมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+    },
+    {
+      code: "L2-NOTICE-DISPATCH",
+      seq: 21,
+      page: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "สิ้นสุด — แจ้งผลผู้ยื่นคำขอแล้ว",
+      statusCode: "L2_CASE_CLOSED_NOTICE_SENT",
+      label: "[เปิดเผย/บางส่วน] ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] ธุรการ ส่งแจ้งผล",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+    },
+    {
+      code: "L2-DENY-MEMO",
+      seq: 22,
+      page: "10-2-15-secretariat-deny-memo.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ผอ.กองกฎหมายพิจารณาเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_DENY_PROPOSE",
+      label: "[ไม่อนุญาต] ฝ่ายเลขานุการฯ จัดทำบันทึกและมติไม่อนุญาตเปิดเผยข้อมูล ลงนาม และออกเลขหนังสือส่งภายใน",
+      stepName: "[ไม่อนุญาต] เลขานุการฯ จัดทำบันทึกมติ",
+      includeIf: ["DENY"],
+    },
+    {
+      /* เดิม step นี้ทำทั้งลงนามและ "ส่ง" กิจกรรมที่ 7 ในหน้าเดียว — แก้ตามที่
+         ตรวจสอบ pattern ของ LAW0045.1/L2-DISPATCH ข้างบนแล้วพบว่าทุกจุดที่ส่ง
+         เรื่องออกไปกิจกรรมที่ 7 ธุรการกองกฎหมายจะเป็นผู้กดส่งเสมอ (ผอ.กองกฎหมาย
+         ลงนามในฐานะผู้เสนอเรื่องเท่านั้น) จึงแยกเป็น 2 ขั้นเหมือนคู่ 10-2-08/09 */
+      code: "L2-DENY-PROPOSE",
+      seq: 23,
+      page: "10-2-16-legal-director-deny-propose.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_DENY_DISPATCH_COMMITTEE",
+      label: "[ไม่อนุญาต] ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง (มติไม่อนุญาตเปิดเผยข้อมูล)",
+      stepName: "[ไม่อนุญาต] ผอ.กอง ลงนามเสนอ",
+      includeIf: ["DENY"],
+    },
+    {
+      /* คู่กับ L2-DISPATCH (10-2-09) ข้างบน — ธุรการกองกฎหมายเป็นผู้ออกเลขส่ง
+         และกดส่งเรื่องออกไปกิจกรรมที่ 7 จริง ๆ เสมอ ไม่ใช่ ผอ.กองกฎหมาย */
+      code: "L2-DENY-DISPATCH-COMMITTEE",
+      seq: 24,
+      page: "10-2-17-legal-admin-deny-dispatch-committee.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "รอเสนอคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7)",
+      statusCode: "L2_PENDING_COMMITTEE_DENY",
+      label: "[ไม่อนุญาต] ธุรการกองกฎหมาย ออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      stepName: "[ไม่อนุญาต] ธุรการ ออกเลขส่ง",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-DENY-RECEIVE",
+      seq: 25,
+      page: "10-2-18-legal-admin-deny-receive.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติไม่อนุญาตเปิดเผยข้อมูล",
+      statusCode: "L2_PENDING_DENY_NOTICE_DRAFT",
+      label: "[ไม่อนุญาต] ธุรการกองกฎหมาย รับมติคณะกรรมการ ป.ป.ท. และมอบหมายฝ่ายเลขานุการฯ",
+      stepName: "[ไม่อนุญาต] ธุรการ รับมติคกก.",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-DENY-NOTICE-DRAFT",
+      seq: 26,
+      page: "10-2-19-secretariat-deny-notice-draft.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
+      statusCode: "L2_PENDING_DENY_REDACTION",
+      label: "[ไม่อนุญาต] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติไม่อนุญาตเปิดเผยข้อมูลแก่ผู้ยื่นคำขอ",
+      stepName: "[ไม่อนุญาต] เลขานุการฯ ร่างหนังสือแจ้งมติ",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-DENY-REDACTION",
+      seq: 27,
+      page: "10-2-20-secretariat-deny-redaction.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      statusCode: "L2_PENDING_DENY_DISPATCH",
+      label: "[ไม่อนุญาต] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
+      stepName: "[ไม่อนุญาต] เลขานุการฯ ปกปิดข้อมูล",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-DENY-DISPATCH",
+      seq: 28,
+      page: "10-2-21-legal-admin-deny-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "สิ้นสุด — แจ้งผลไม่อนุญาตเปิดเผยข้อมูลแล้ว",
+      statusCode: "L2_CASE_CLOSED_DENY_NOTICE_SENT",
+      label: "ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลไม่อนุญาตเปิดเผยข้อมูลแก่ผู้ยื่นคำขอ",
+      stepName: "ธุรการ ส่งแจ้งผล",
+      includeIf: ["DENY"],
+    },
   ];
 
   /* pending statusCode -> page that clears it. Built from STEPS so the table
@@ -145,6 +312,21 @@
     if (prev) acc[prev.statusCode] = step.page;
     return acc;
   }, {});
+
+  /* เส้นทางหลังจากรับมติกลับมา (LAW0049+) แยกสาขาตาม c.l2ResolutionType ซึ่ง
+     ตาราง STEPS ข้างบน (อาเรย์เรียงเส้นเดียว) แทนไม่ได้ทั้งหมด — auto-reduce
+     ด้านบนครอบคลุมเฉพาะเส้นทาง DISCLOSE/PARTIAL (ตำแหน่งอยู่ติดกันในอาเรย์)
+     จึงเติมสาขา DENY ที่ไม่ได้อยู่ติดกันด้วยมือ 2 จุดนี้:
+       1) L2-RECEIVE-OUTCOME (10-2-10) เมื่อเลือก DENY จะข้ามไป L2-DENY-MEMO
+          (10-2-15) แทนที่จะไปตามค่า default (L2-NOTICE-DRAFT, 10-2-11)
+       2) L2-NOTICE-DISPATCH (10-2-14) เป็นสถานะปิดคำร้อง (จบสาขา DISCLOSE/
+          PARTIAL) auto-reduce จะสร้าง route เข้า L2-DENY-MEMO (10-2-15) โดย
+          บังเอิญเพราะอยู่ติดกันในอาเรย์ — ต้องลบทิ้งไม่ให้คำร้องที่ปิดแล้ว
+          ขึ้นปุ่ม "ดำเนินการ" ในคิวงานของฝ่ายเลขานุการฯ อีก
+     ทุกหน้าที่แยกสาขาเอง (10-2-10, 10-2-11) ต้องส่ง statusCode ที่ตรงกับค่า
+     เหล่านี้ตรง ๆ ใน patch ของ Activity102.advance() ไม่ใช้ค่า default ของ step */
+  ROUTES["L2_PENDING_DENY_MEMO"] = "10-2-15-secretariat-deny-memo.html";
+  delete ROUTES["L2_CASE_CLOSED_NOTICE_SENT"];
 
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
@@ -330,6 +512,23 @@
         l2InternalDocNo: docNo,
         l2InternalDocDate: formatThaiDate(new Date()),
       });
+      return docNo;
+    },
+
+    /* ออกเลขหนังสือส่งภายในของเอกสารฉบับอื่น (LAW0051/055/061/068) — เอกสาร
+       Part 2 แต่ละฉบับ (หนังสือแจ้งมติเปิดเผย/บางส่วน, บันทึกมติไม่อนุญาต,
+       หนังสือแจ้งมติไม่อนุญาต) เป็นคนละฉบับกับบันทึกเสนอเลขาธิการของ Part 1
+       จึงต้องมีเลขที่หนังสือของตัวเอง เก็บคนละฟิลด์ (docField) ทำหน้าที่เดียว
+       กับ issueInternalDocNo แต่รับชื่อฟิลด์เป็นพารามิเตอร์แทนที่จะฮาร์ดโค้ด */
+    issueDocNo: function (caseId, docField, dateField) {
+      const kase = Activity10.getCaseById(caseId);
+      if (kase && kase[docField]) return kase[docField];
+      const seq = String(4400 + Math.floor(Math.random() * 500)).padStart(4, "0");
+      const docNo = "ปป 0002/" + seq;
+      const patch = {};
+      patch[docField] = docNo;
+      patch[dateField] = formatThaiDate(new Date());
+      Activity10.updateCase(caseId, patch);
       return docNo;
     },
   };
@@ -978,12 +1177,21 @@
     return title ? name + " (" + title + ")" : name;
   }
 
-  /* แถบขั้นตอน — สร้างจากตาราง STEPS จึงไม่ต้องเขียนซ้ำในทุกหน้า */
-  function renderStepper(containerId, currentCode) {
+  /* แถบขั้นตอน — สร้างจากตาราง STEPS จึงไม่ต้องเขียนซ้ำในทุกหน้า
+     kase (ไม่บังคับ): เมื่อส่งมา จะกรองขั้นตอนที่มี includeIf ออกถ้า
+     kase.l2ResolutionType ไม่อยู่ในลิสต์นั้น — ใช้กับหน้า Part 2 (10-2-10
+     เป็นต้นไป) ที่แยกสาขา DISCLOSE/PARTIAL/DENY เพื่อไม่ให้แถบขั้นตอนของ
+     คำร้องสาขาหนึ่งไปโชว์ขั้นตอนของอีกสาขาที่คำร้องนั้นไม่มีวันผ่าน
+     หน้าเดิม (10-2-01 ถึง 10-2-09) ไม่ส่ง kase มา จึงยังเห็นครบทุกขั้นเหมือนเดิม */
+  function renderStepper(containerId, currentCode, kase) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    const curIdx = STEPS.findIndex(function (s) { return s.code === currentCode; });
-    el.innerHTML = STEPS.map(function (step, i) {
+    const branch = kase && kase.l2ResolutionType;
+    const visible = STEPS.filter(function (s) {
+      return !s.includeIf || (branch && s.includeIf.indexOf(branch) > -1);
+    });
+    const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
+    el.innerHTML = visible.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       return (
