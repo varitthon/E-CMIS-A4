@@ -10,8 +10,8 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css">
- <link rel="stylesheet" href="assets/ecmis-modal.css">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
  h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
@@ -373,15 +373,31 @@
  <textarea id="in_finalDocSummary" class="form-control font-monospace" rows="4" placeholder="กรอกสาระสำคัญแห่งเหตุผลข้อเท็จจริงและข้อกฎหมายที่จัดทำในหนังสือแจ้งผล...">จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิดตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป</textarea>
  </div>
 
+ <!-- แนบเอกสาร — ตามมติที่ประชุม นิติกรต้องแนบเอกสารมาด้วยทั้งกรณีเห็นแย้งและเห็นชอบ
+      กรณีเห็นแย้งต้องทำ 2 ฉบับ (ฉบับเสนอ อสส. และฉบับเก็บ/แจ้งอัยการ) จึงเปิดช่องที่ 2
+      ให้เฉพาะเมื่อเลือก "ทำความเห็นแย้ง" -->
  <div class="form-group">
- <label>แนบไฟล์ร่างหนังสือความเห็นฉบับสมบูรณ์ (.docx / .pdf)</label>
+ <label><mark class="wording-changed">แนบไฟล์ร่างหนังสือความเห็นฉบับสมบูรณ์ (.docx / .pdf)</mark></label>
+
+ <div style="font-size:0.8em; font-weight:600; color:var(--text-title); margin-bottom:4px;" id="lbl_finalDocFile1">ฉบับที่ 1</div>
  <div style="display:flex; align-items:center; gap:8px;">
  <input type="file" id="in_finalDocFile" class="form-control" style="padding:6px 12px;" onchange="toggleRemoveBtn('in_finalDocFile','btn_removeFinalDocFile')">
  <button type="button" id="btn_removeFinalDocFile" class="btn btn-secondary" style="display:none; padding:6px 10px;" onclick="removeSelectedFile('in_finalDocFile','btn_removeFinalDocFile')" title="ลบไฟล์ที่แนบ">
  <i class="fa-solid fa-trash-can"></i>
  </button>
  </div>
- <span style="font-size:0.75em; color:#64748b; margin-top:4px;">* ระบบจะสร้างไฟล์ร่างหนังสือความเห็นให้อัตโนมัติหากไม่ได้แนบไฟล์</span>
+
+ <div id="grp_finalDocFile2" style="display:none; margin-top:10px;">
+ <div style="font-size:0.8em; font-weight:600; color:var(--text-title); margin-bottom:4px;">ฉบับที่ 2 <span style="color:#dc2626;">*</span> <span style="font-weight:400; color:#64748b;">(กรณีเห็นแย้งต้องทำ 2 ฉบับ)</span></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+ <input type="file" id="in_finalDocFile2" class="form-control" style="padding:6px 12px;" onchange="toggleRemoveBtn('in_finalDocFile2','btn_removeFinalDocFile2')">
+ <button type="button" id="btn_removeFinalDocFile2" class="btn btn-secondary" style="display:none; padding:6px 10px;" onclick="removeSelectedFile('in_finalDocFile2','btn_removeFinalDocFile2')" title="ลบไฟล์ที่แนบ">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>
+ </div>
+
+ <span style="font-size:0.75em; color:#64748b; margin-top:6px;">* ระบบจะสร้างไฟล์ร่างหนังสือความเห็นให้อัตโนมัติหากไม่ได้แนบไฟล์</span>
  </div>
 
  </div>
@@ -411,6 +427,9 @@
  document.addEventListener('DOMContentLoaded', () => {
  initUserProfile();
  loadCaseData();
+ // ค่าเริ่มต้นของหน้านี้คือ "ทำความเห็นแย้ง" จึงต้องเปิดช่องแนบฉบับที่ 2 ตั้งแต่โหลดหน้า
+ const checked = document.querySelector('input[name="in_opinionOption"]:checked');
+ selectOpinionOption(checked ? checked.value : 'DISSENT');
  });
 
  function toggleRemoveBtn(inputId, btnId) {
@@ -539,6 +558,12 @@
  if (lblAgree) lblAgree.className = 'decision-card';
  if (lblOther) lblOther.className = 'decision-card';
 
+ // เห็นแย้ง = ต้องแนบ 2 ฉบับ · เห็นชอบ/อื่นๆ = ฉบับเดียว
+ const grpFile2 = document.getElementById('grp_finalDocFile2');
+ const lblFile1 = document.getElementById('lbl_finalDocFile1');
+ if (grpFile2) grpFile2.style.display = (t === 'DISSENT') ? 'block' : 'none';
+ if (lblFile1) lblFile1.style.display = (t === 'DISSENT') ? 'block' : 'none';
+
  if (t === 'DISSENT') {
  if (optDissent) optDissent.checked = true;
  if (lblDissent) lblDissent.className = 'decision-card active-dissent';
@@ -601,6 +626,24 @@
  return;
  }
 
+ // กรณีเห็นแย้งต้องแนบ 2 ฉบับ ถ้าเริ่มแนบมาแล้วฉบับเดียวถือว่ายังไม่ครบ
+ // (ถ้าไม่แนบเลย ระบบยังสร้างไฟล์ร่างให้อัตโนมัติเหมือนเดิม)
+ const f1 = document.getElementById('in_finalDocFile');
+ const f2 = document.getElementById('in_finalDocFile2');
+ const has1 = !!(f1 && f1.files && f1.files.length);
+ const has2 = !!(f2 && f2.files && f2.files.length);
+ const isDissent = !isAgree && !isOther;
+ if (isDissent && has1 !== has2) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'เอกสารไม่ครบ 2 ฉบับ',
+ text: 'กรณีทำความเห็นแย้งต้องแนบหนังสือ 2 ฉบับ กรุณาแนบให้ครบทั้งฉบับที่ 1 และฉบับที่ 2',
+ confirmButtonColor: '#1e3a8a'
+ });
+ (has1 ? f2 : f1).focus();
+ return;
+ }
+
  Swal.fire({
  icon: 'question',
  title: 'ยืนยันเสนอร่างหนังสือให้ ผอ.กลุ่มงาน ตรวจสอบ?',
@@ -624,7 +667,9 @@
  subject: subject,
  officialDocHeading: officialDocHeading,
  summary: summary,
- file: defaultFile,
+ file: has1 ? f1.files[0].name : defaultFile,
+ fileCopy2: has2 ? f2.files[0].name : (isDissent ? defaultFile.replace(/(\.[^.]+)$/, '_ฉบับที่2$1') : ''),
+ requiredCopies: isDissent ? 2 : 1,
  signature: signatureDataUrl
  });
  Activity10.updateCase(currentCase.id, {

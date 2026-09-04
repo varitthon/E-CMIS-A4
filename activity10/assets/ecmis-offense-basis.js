@@ -132,7 +132,7 @@ function renderOffenseBasisList() {
         "</div>" +
         '<div class="form-grid-2">' +
         '<div class="form-group" style="margin-bottom:0;">' +
-        '<label style="font-size:0.82em;">กฎหมาย</label>' +
+        '<label style="font-size:0.82em; justify-content:flex-start; gap:4px;">กฎหมาย <span style="color:#dc2626;">*</span></label>' +
         '<select id="in_offenseLaw_' +
         row.uid +
         '" class="form-control" onchange="toggleOffenseLawOther(' +
@@ -152,7 +152,7 @@ function renderOffenseBasisList() {
         '" oninput="offenseBasisNotifyChange()" />' +
         "</div></div>" +
         '<div class="form-group" style="margin-bottom:0;">' +
-        '<label style="font-size:0.82em;">มาตรา</label>' +
+        '<label style="font-size:0.82em; justify-content:flex-start; gap:4px;">มาตรา <span style="color:#dc2626;">*</span></label>' +
         '<input type="text" id="in_offenseSection_' +
         row.uid +
         '" class="form-control" placeholder="เช่น 157" value="' +
@@ -160,7 +160,7 @@ function renderOffenseBasisList() {
         '" oninput="offenseBasisNotifyChange()" />' +
         "</div></div>" +
         '<div class="form-group" style="margin-top:8px; margin-bottom:0;">' +
-        '<label style="font-size:0.82em;">ฐานความผิด</label>' +
+        '<label style="font-size:0.82em; justify-content:flex-start; gap:4px;">ฐานความผิด <span style="color:#dc2626;">*</span></label>' +
         '<input type="text" id="in_offenseBasis_' +
         row.uid +
         '" class="form-control" placeholder="เช่น เจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ" value="' +
@@ -218,6 +218,17 @@ function validateOffenseBasisRows() {
         confirmButtonColor: "#1e3a8a",
       });
       const el = document.getElementById("in_offenseSection_" + row.uid);
+      if (el) el.focus();
+      return false;
+    }
+    if (!(row.basis || "").trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "ข้อมูลไม่ครบถ้วน",
+        text: "กรุณาระบุฐานความผิด ในฐานความผิดรายการที่ " + (i + 1),
+        confirmButtonColor: "#1e3a8a",
+      });
+      const el = document.getElementById("in_offenseBasis_" + row.uid);
       if (el) el.focus();
       return false;
     }

@@ -142,6 +142,239 @@ predates this work. Completed to match the shared rule.
 
 ---
 
+# Part 1B — Batch B (items 13, 17, 18, 19, 22)
+
+Reference for the intended flow: `../../TO-BE 10.1-User-Flow-split.drawio`, especially
+**page 3 "ส่งหนังสือ - แยกตามผลมติบอร์ด"**, which is what several of these items are about.
+
+The TO-BE flow branches the dispatch on the board's resolution:
+
+```
+ผลมติจากบอร์ด (LAW0019)
+├── เห็นชอบ  → LAW0023  ส่งสำนวนทางไปรษณีย์ให้ อัยการ
+└── เห็นแย้ง  → เร่งด่วน?
+               ├── ไม่เร่งด่วน → LAW0024  ส่งสำนวนทางไปรษณีย์ให้ อัยการสูงสุด
+               └── เร่งด่วน    → LAW0025  ส่งสำนวนให้อัยการสูงสุด ด้วยตนเอง
+```
+
+Two things follow from that diagram and shaped the work below:
+
+1. **The destination is a real branch**, not a constant — which is why 17 hardcoding
+   "(ส่งถึงอัยการสูงสุด)" was wrong and the meeting asked for a chooser.
+2. **เร่งด่วน / ไม่เร่งด่วน maps onto page 18's existing two methods** (ไปรษณีย์ EMS vs
+   นำส่งด้วยตนเอง), so no new control was needed there.
+
+> ⚠ **Where the meeting departs from the TO-BE diagram.** The diagram shows the dispatch as
+> *either* อัยการ *or* อสส., never both. The meeting asked for
+> *"แจ้งทั้ง อสส และ อัยการ (จากเดิมที่กรอกเฉพาะกรณีไปยัง อสส)"*. The build follows the
+> meeting, so **the diagram is now out of date on this point** and should be updated, or the
+> requirement re-confirmed.
+
+## Item 13 — นิติกรต้องแนบเอกสาร, เห็นแย้งต้องทำ 2 ฉบับ
+
+Decision: **upload on 13, destination on 17** (split, per the working group).
+
+- The single file input became a copy-aware block: **ฉบับที่ 1 + ฉบับที่ 2** when the result
+  is **ทำความเห็นแย้ง**, collapsing to one unlabeled slot for **เห็นชอบ** and **ความเห็นอื่นๆ**.
+- Driven by the existing `selectOpinionOption()`; also called once on load, because the page
+  defaults to DISSENT and the second slot has to be visible immediately.
+- Saves `file`, `fileCopy2` and `requiredCopies` (2 for เห็นแย้ง, otherwise 1).
+- **Validation is deliberately partial:** it warns only when *one* of the two copies is
+  attached. Attaching nothing still auto-generates the draft, because the page already
+  promises that (`* ระบบจะสร้างไฟล์ร่างหนังสือความเห็นให้อัตโนมัติหากไม่ได้แนบไฟล์`) and
+  hard-blocking would break the demo walkthrough.
+
+## Item 17 — เอาที่ mark ออก + เลือกว่าจะส่งไปไหน
+
+| change | before | after |
+|---|---|---|
+| card header | ตรวจสอบความถูกต้องของหนังสือ**ความเห็นแย้งฉบับลงนามสมบูรณ์** | ตรวจสอบความถูกต้องของ**หนังสือฉบับลงนามสมบูรณ์** |
+| verify item 1 | เลขที่หนังสือส่งภายนอก **(ส่งถึงอัยการสูงสุด)** | เลขที่หนังสือส่งภายนอก |
+| destination | *did not exist* | chooser: อัยการสูงสุด (อสส.) · พนักงานอัยการเจ้าของสำนวน · + ส่งทั้งสองหน่วยงาน |
+
+Saved as `dispatchTarget` on the case so page 18 can pick up the recipient. Submitting
+without a destination is blocked.
+
+The remaining `ความเห็นแย้ง` strings on 17 are file names and references to the actual
+อสส-bound document — kept, per the อสส rule in Part 2.
+
+## Item 18 — ให้แก้ไข form ได้ + แจ้งทั้งสองหน่วยงาน
+
+**The form was never disabled.** `renderAlreadyDispatchedView()` destroys the form and
+replaces it with a read-only summary once `statusCode === 'DISPATCHED_TO_PROSECUTOR'` or
+`officerDispatchedDate` is set. So "มันปิดอยู่?" was about re-entry, not disabled inputs.
+
+- Added **แก้ไขข้อมูลการจัดส่ง** to the read-only view. It sets a `sessionStorage` flag and
+  reloads into the normal form, **pre-filled from the saved case**, with a banner warning
+  that saving overwrites. The flag clears on submit.
+- Added **ผู้รับที่ 2: พนักงานอัยการเจ้าของสำนวน** behind a checkbox — its own
+  หน่วยงานผู้รับ (defaults to the case's `source`), วันที่, ช่องทาง and เลขติดตาม. Saved as
+  `notifyProsecutor`, `prosecutorRecipientName`, `prosecutorDispatchDate`,
+  `prosecutorDispatchMethod`, `prosecutorTrackingNo`.
+
+## Item 19 — dropdown 9 choice + ⚠ judgement call
+
+Built the dropdown with **intake's 9 options verbatim** (the working group's choice),
+`9. อื่นๆ` + free text + validation, saved as `oagVerdictCaseTypeNo` / `oagVerdictCaseTypeName`.
+
+**But the two verdict cards were kept, relabelled `ผลต่อการดำเนินคดี`.** Reason:
+
+- They were the only thing writing `oagVerdictDecision` (`PROSECUTE` / `NON_PROSECUTE`).
+- That value is read by `20:460`, `21:472`, `22:515` and `22:605`
+  (`finalCaseResolutionSummary`), plus `ecmis-activity10.js:1922-26, 2020`.
+- **None of intake's 9 options expresses ฟ้อง vs ไม่ฟ้อง** — they all describe the
+  prosecutor's *original* order, which is already captured at 02 and now shown as
+  `มติอัยการ` on every page 10-22.
+
+Removing the cards would have deleted the only record of what อสส actually decided,
+duplicated data already on the page, and left three downstream pages with nothing to
+branch on. So the page now records **which case** (the 9) *and* **what it means for the
+case** (the outcome).
+
+**Open:** if the meeting truly intended the 9 to replace the outcome, then this page needs
+its own **อสส-worded** 9 options (e.g. `อสส. ชี้ขาดให้ฟ้อง`, `อสส. ชี้ขาดยืนตามคำสั่งไม่ฟ้อง`),
+not intake's list. That wording has to come from the working group.
+
+## Item 22 — ต้องมีของทั้ง อสส และ อัยการ
+
+Decision: **two sections, one per authority.** ชี้ขาด = อสส (existing), พิพากษา = อัยการ (new).
+
+New **ผลจากพนักงานอัยการ (คำพิพากษา)** block: เลขที่หนังสือ · วันที่ลงในหนังสือ ·
+วันที่กองกฎหมายลงรับ · ผลคำพิพากษา (ฟ้องคดีต่อศาลแล้ว / ศาลพิพากษาลงโทษ / ศาลพิพากษายกฟ้อง /
+ยุติการดำเนินคดี / อื่นๆ + free text) · สรุปสาระสำคัญ · แนบไฟล์. A badge mirrors the selection
+live. Saved under `prosecutorResult*`, and only when a result type is chosen, so the section
+can be left empty while waiting.
+
+## Fixes found while building Batch B
+
+**1. Decision cards rendered wrong on 15 and 17 — introduced by this work.** Those pages set
+`.form-group label { justify-content: space-between }` (specificity 0,1,1), which outranks
+the shared `.decision-card` (0,1,0); since the cards are `<label>` elements, the radio and
+text were pushed to opposite edges. Page 08 was unaffected because it has its own card CSS.
+Fixed with `.form-group label.decision-card { justify-content: flex-start }` in
+`ecmis-shell.css`.
+
+**2. Shared CSS had no cache-busting — this would have broken QA.** `ecmis-shell.css` and
+`ecmis-modal.css` were linked with no `?v=`, while the JS uses `?v=20260902_2`. Any tester
+with a cached copy would have seen **no yellow review highlights at all** and broken
+decision cards, and reported both as defects. Both links now carry `?v=20260904_1` on all
+33 pages.
+
+## Browser QA of Batch B (04/09/2026)
+
+Run against a reseeded store (`v45_meeting_01092026`, 15 cases) in Chrome at 1500×950.
+
+**Integration test.** A case was set to `prosecutorCaseTypeNo: "5"` with two ฐานความผิด
+(one using a law outside the dropdown) and `dispatchTarget` = both authorities, then the
+flow was walked:
+
+| check | result |
+|---|---|
+| 06 decision cards follow the case | ✅ both read **คำสั่งถอนอุทธรณ์**, not ไม่ฟ้อง |
+| 06 มติอัยการ box | ✅ `5. อัยการมีความเห็นสั่งถอนอุทธรณ์` |
+| ฐานความผิด 02 → 06 round-trip | ✅ 2 rows restored, มาตรา 157 / 243 |
+| custom law round-trip | ✅ `พ.ร.บ.ศุลกากร` mapped back to **อื่นๆ** with its free-text box open |
+| มติอัยการ on 10 / 13 / 17 / 22 | ✅ renders on all |
+| `undefined` / `NaN` / `[object Object]` in read-boxes | ✅ none |
+| console errors across 02, 06, 13, 15, 17, 18, 19, 22 | ✅ none |
+
+### 🐞 Found and fixed — 17's chooser was a dead end
+
+The destination picked on 17 was written to `dispatchTarget` but **page 18 ignored it
+completely**: it still showed the hardcoded อสส recipient and left ผู้รับที่ 2 unchecked,
+even when ธุรการ had explicitly chosen "ส่งทั้งสองหน่วยงาน". 18's recipient is driven by its
+demo `switchScenario()`, which knows nothing about the case field.
+
+Added `applyDispatchTargetFromCase()` on 18 (called after `loadCaseData()`, since the
+scenario overwrites the recipient): it shows what ธุรการ chose, auto-checks and expands
+ผู้รับที่ 2 when the target includes พนักงานอัยการ, and re-points the primary recipient when
+the target is พนักงานอัยการ only.
+
+### 🐞 Found and fixed — seed data had ป.ป.ท. offices as the prosecutor's office
+
+4 of the 15 seeded cases carried a **ป.ป.ท. regional office** in `source`, which every page
+displays as **หน่วยงานอัยการต้นทาง** (the originating *prosecutor's* office). Pre-existing
+demo-data error, but it also fed 18's new ผู้รับที่ 2 prefill, so demoing one of those cases
+showed ป.ป.ท. as the prosecutor being notified.
+
+**Safe to correct**, because each case already records the ป.ป.ท. office separately in
+`accuser` — nothing was lost:
+
+| case | `source` before | `source` after | `accuser` (unchanged) |
+|---|---|---|---|
+| คดี-100001/2569 | สนง. ป.ป.ท. เขต 3 | สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต**ภาค 3** | สำนักงาน ป.ป.ท. เขต 3 |
+| คดี-100002/2569 | สนง. ป.ป.ท. เขต 1 | …**ภาค 1** | สำนักงาน ป.ป.ท. เขต 1 |
+| คดี-100003/2569 | สนง. ป.ป.ท. เขต 4 | …**ภาค 4** | สำนักงาน ป.ป.ท. เขต 4 |
+| คดี-100016/2569 | สนง. ป.ป.ท. เขต 5 | …**ภาค 5** | สำนักงาน ป.ป.ท. เขต 5 |
+
+Regional cases use the **ภาค N** form of the office, matching the ป.ป.ท. เขต they came from;
+the other 11 cases keep the central form (`…ปราบปรามการทุจริต N`).
+
+**6 occurrences across 2 arrays** were corrected — `INITIAL_CASES` *and*
+`PACC_INTAKE_DATABASE` (the lookup 02 autofills from). Cases `100001` and `100002` appear in
+both arrays by design, which is why the file had 6 lines for 4 cases.
+
+`DATA_VERSION` bumped to **`v46_fix_seed_prosecutor_source`**, because seeded values changed
+and `loadCases()` prefers `localStorage` — without the bump nobody would see the correction.
+Verified: the app auto-reseeded, all 4 cases now show the prosecutor office, `accuser` intact,
+and 18's ผู้รับที่ 2 prefills correctly.
+
+> Note for testers: bumping the version leaves the **old key orphaned** in `localStorage`
+> (e.g. `…_v45_…` alongside `…_v46_…`). Harmless, but clear *all* `ecmis_act10_cases_*` keys
+> when starting a clean run, not just one.
+
+### Note on the QA plan
+
+`qa-batch-a-meeting-01092026.md` §0.1 tells the tester to clear `localStorage`. That is
+necessary but was **not sufficient** until the CSS cache-busting fix above — a cached
+`ecmis-shell.css` would have hidden every yellow highlight regardless of storage state.
+
+---
+
+# Part 1C — follow-ups after the Batch B review
+
+## ฐานความผิด — required fields now marked, ฐานความผิด enforced (`1549719`)
+
+The block's fields were validated but never marked, so nothing on screen told ธุรการ they
+were mandatory until the form was rejected on save.
+
+- **กฎหมาย, มาตรา and ฐานความผิด** all carry the red `*`.
+- **ฐานความผิด is now enforced** alongside มาตรา — a row with a section number but no offence
+  description is half-useless for the Dashboard this block exists to feed.
+- Completely blank rows are still dropped silently, so adding a row you don't fill costs nothing.
+- Applies to **02 and 06** automatically — it is the shared widget.
+
+Two things this surfaced:
+
+- `.form-group label` sets `justify-content: space-between`, which flung the asterisk to the
+  far right of each column. Fine for a full-width field, wrong for compact repeated rows where
+  it reads as belonging to the next column. These row labels are pinned to `flex-start`.
+- **The first attempt appeared to do nothing.** `ecmis-offense-basis.js` is loaded with `?v=`,
+  and editing the file without bumping it served a cached copy — the same trap as the
+  unversioned CSS. Bumped to `?v=20260904_2`. **Any edit to a `?v=`-tagged asset needs the
+  version bumped, or nobody sees it.**
+
+## 03 — duplicated ผู้ร้อง / จำเลย collapsed (`ce5ee29`)
+
+The issue the meeting raised for 02 (*"ซ้ายขวาคนเดียวกันลดเหลืออันเดียว"*) was still present
+on **03**: ผู้กล่าวหา sat beside an always-empty **ผู้ร้อง**, and ผู้ถูกกล่าวหา beside an
+always-empty **จำเลย**.
+
+The seed data settles it: `petitioner` is `""` on all 15 cases, and the single non-empty
+`defendant` in `PACC_INTAKE_DATABASE` holds the **same name** as `accused` on the same record
+(`นายสมชาย ทุจริตมั่น`). One person — the second column could never carry anything new.
+
+03 now matches 02: **ผู้กล่าวหา (ผู้ร้อง)** and **ผู้ถูกกล่าวหา (จำเลย)** in a single row, with
+the dead read-boxes and their `setElText` calls removed. Labels left unhighlighted, matching
+how 02 was already written, so the two pages read identically.
+
+Also removed 6 lines of dead code in **02** that still wrote to `f_petitioner` / `f_defendant`
+after those elements were deleted — guarded, so harmless, but misleading to the next reader.
+
+**Scope checked:** no other page carries these ids or labels. 02 and 03 were the only two.
+
+---
+
 # Part 2 — wording sweep (ความเห็นแย้ง → ความเห็น)
 
 > senior: *"แก้หมด (เช็คดีๆ ระวังทับอันที่เป็น choice ของมันอยู่แล้ว) — พวก label แก้หมดเลย"*

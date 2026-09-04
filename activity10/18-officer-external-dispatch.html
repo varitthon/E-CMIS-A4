@@ -10,8 +10,8 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css">
- <link rel="stylesheet" href="assets/ecmis-modal.css">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
  :root {
@@ -454,6 +454,8 @@
 
  <!-- Card 2: Dispatch Form (Officer Action) -->
  <div id="dispatchFormContainer">
+ <!-- แสดงปลายทางที่ธุรการเลือกไว้ที่หน้า 17 -->
+ <div class="info-box" id="dispatchTargetNote" style="display:none; margin-bottom:14px;"></div>
  <div class="form-card" style="border: 2px solid #1e3a8a;">
  <div class="form-card-header" style="background: rgba(30,58,138,0.05);">
  <span><i class="fa-solid fa-truck-fast text-primary me-2"></i>บันทึกการจัดส่งหนังสือ และติดตามสถานะ (Dispatch &amp; Tracking)</span>
@@ -544,6 +546,45 @@
    <div class="form-group">
  <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
  <input type="text" id="in_emsRecipientLabel" class="form-control" readonly style="background:var(--bg-body); font-weight:600;" value="สำนักงานอัยการสูงสุด (ศูนย์ราชการอาคารราชบุรีดิเรกฤทธิ์)">
+ </div>
+ </div>
+
+ <!-- ผู้รับที่ 2: พนักงานอัยการเจ้าของสำนวน
+      ตามมติที่ประชุม นิติกรต้องแจ้งผลทั้ง อสส. และ พนักงานอัยการ
+      ไม่ใช่เฉพาะกรณีที่ส่งไปยัง อสส. อย่างเดิม -->
+ <div class="form-group" style="margin-top:16px;">
+ <label style="font-weight:400;">
+ <input type="checkbox" id="in_notifyProsecutorToo" onchange="toggleProsecutorNotify()" style="width:15px; height:15px; vertical-align:-2px;">
+ <mark class="wording-changed">แจ้งผลให้พนักงานอัยการเจ้าของสำนวนด้วย</mark>
+ </label>
+ </div>
+ <div id="prosecutorNotifyBox" style="display:none; border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; margin-bottom:16px; background:var(--bg-body);">
+ <div style="font-weight:700; font-size:0.85em; color:#166534; margin-bottom:10px;">
+ <i class="fa-solid fa-user-tie me-1"></i>ผู้รับที่ 2: พนักงานอัยการเจ้าของสำนวน
+ </div>
+ <div class="form-grid-2">
+ <div class="form-group" style="margin-bottom:0;">
+ <label style="font-size:0.82em;">หน่วยงานอัยการผู้รับ</label>
+ <input type="text" id="in_prosecutorRecipientLabel" class="form-control" placeholder="เช่น สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1">
+ </div>
+ <div class="form-group" style="margin-bottom:0;">
+ <label style="font-size:0.82em;">วันที่จัดส่ง</label>
+ <input type="date" id="in_prosecutorDispatchDate" class="form-control">
+ </div>
+ </div>
+ <div class="form-grid-2" style="margin-top:10px; margin-bottom:0;">
+ <div class="form-group" style="margin-bottom:0;">
+ <label style="font-size:0.82em;">ช่องทางการจัดส่ง</label>
+ <select id="in_prosecutorDispatchMethod" class="form-control">
+ <option value="postal_ems">ไปรษณีย์ EMS</option>
+ <option value="hand_delivery">นำส่งด้วยตนเอง</option>
+ <option value="electronic">อิเล็กทรอนิกส์</option>
+ </select>
+ </div>
+ <div class="form-group" style="margin-bottom:0;">
+ <label style="font-size:0.82em;">เลขติดตาม / เลขรับของอัยการ</label>
+ <input type="text" id="in_prosecutorTrackingNo" class="form-control font-monospace" placeholder="เช่น ED889912346TH หรือ อส 0025/1290">
+ </div>
  </div>
  </div>
 
@@ -674,7 +715,37 @@
  initUserProfile();
  setDefaultDates();
  loadCaseData();
+ // ต้องเรียกหลัง loadCaseData/switchScenario เพราะ scenario จะเขียนทับชื่อผู้รับ
+ applyDispatchTargetFromCase();
  });
+
+ /* ปลายทางที่ธุรการเลือกไว้ที่หน้า 17 ต้องสะท้อนมาที่หน้านี้
+    มิฉะนั้นตัวเลือกที่หน้า 17 จะไม่มีผลใด ๆ กับการจัดส่งจริง */
+ function applyDispatchTargetFromCase() {
+ if (!currentCase || !currentCase.dispatchTarget) return;
+ const target = currentCase.dispatchTarget;
+ const toProsecutor = target.indexOf('พนักงานอัยการ') > -1;
+ const toOag = target.indexOf('อัยการสูงสุด') > -1;
+
+ const note = document.getElementById('dispatchTargetNote');
+ if (note) {
+ note.style.display = 'flex';
+ note.innerHTML = '<div style="font-size:1.2em">📮</div><div><b>ปลายทางที่ธุรการเลือกไว้ (หน้า 17):</b><br>' + target + '</div>';
+ }
+
+ // ธุรการเลือกให้แจ้งพนักงานอัยการด้วย จึงเปิดกล่องผู้รับที่ 2 ไว้ให้เลย
+ if (toProsecutor) {
+ const cb = document.getElementById('in_notifyProsecutorToo');
+ if (cb && !cb.checked) { cb.checked = true; toggleProsecutorNotify(); }
+ }
+ // ส่งให้พนักงานอัยการอย่างเดียว ผู้รับหลักต้องไม่ใช่ อสส.
+ if (toProsecutor && !toOag) {
+ const lbl = document.getElementById('in_emsRecipientLabel');
+ if (lbl && currentCase.source) lbl.value = currentCase.source;
+ const badge = document.getElementById('badgeRecipientTarget');
+ if (badge) badge.innerHTML = '<i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: ' + (currentCase.source || 'พนักงานอัยการเจ้าของสำนวน');
+ }
+ }
 
  function toggleRemoveBtn(inputId, btnId) {
  const input = document.getElementById(inputId);
@@ -779,9 +850,65 @@
  setElText('f_presidentName', currentCase.signedPresidentName || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
  setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf');
 
- // Check if already dispatched
+ // Check if already dispatched.
+ // ที่ประชุมขอให้กลับมาแก้ไขข้อมูลการจัดส่งได้ ปุ่ม "แก้ไข" จะตั้ง flag นี้ไว้
+ // แล้วโหลดหน้าใหม่เป็นฟอร์มปกติ พร้อมเติมค่าที่เคยบันทึกไว้กลับเข้าไป
  if (currentCase.statusCode === 'DISPATCHED_TO_PROSECUTOR' || currentCase.officerDispatchedDate) {
+ if (isDispatchEditMode()) {
+ prefillDispatchFormFromCase();
+ } else {
  renderAlreadyDispatchedView();
+ }
+ }
+ }
+
+ function dispatchEditFlagKey() {
+ return 'ecmis_dispatch_edit_' + (currentCase ? currentCase.id : '');
+ }
+
+ function isDispatchEditMode() {
+ try { return sessionStorage.getItem(dispatchEditFlagKey()) === '1'; }
+ catch (e) { return false; }
+ }
+
+ function enableDispatchEdit() {
+ try { sessionStorage.setItem(dispatchEditFlagKey(), '1'); } catch (e) {}
+ location.reload();
+ }
+
+ function clearDispatchEditMode() {
+ try { sessionStorage.removeItem(dispatchEditFlagKey()); } catch (e) {}
+ }
+
+ /* เติมค่าที่บันทึกไว้กลับเข้าฟอร์ม เพื่อให้แก้เฉพาะจุดที่ผิดได้ ไม่ต้องกรอกใหม่ทั้งหมด */
+ function prefillDispatchFormFromCase() {
+ const set = (id, val) => {
+ const el = document.getElementById(id);
+ if (el && val !== undefined && val !== null && val !== '') el.value = val;
+ };
+ if (currentCase.emsTrackingNo) {
+ selectDispatchMethod('postal_ems');
+ set('in_emsTrackingNo', currentCase.emsTrackingNo);
+ set('in_emsDate', currentCase.dispatchDate);
+ set('in_emsPostOffice', currentCase.dispatchPostOffice);
+ } else if (currentCase.oagReceiveDocNo || currentCase.dispatchTime) {
+ selectDispatchMethod('hand_delivery');
+ set('in_handDate', currentCase.dispatchDate);
+ set('in_handTime', currentCase.dispatchTime);
+ set('in_oagReceiveDocNo', currentCase.oagReceiveDocNo);
+ set('in_handLocation', currentCase.dispatchLocation);
+ set('in_handRecipient', currentCase.dispatchRecipientName);
+ }
+ set('in_dispatchNotes', currentCase.dispatchNotes);
+
+ const wrap = document.getElementById('dispatchFormContainer');
+ if (wrap && !document.getElementById('dispatchEditBanner')) {
+ const b = document.createElement('div');
+ b.id = 'dispatchEditBanner';
+ b.className = 'info-box';
+ b.style.cssText = 'margin:0 0 14px 0;';
+ b.innerHTML = '<div style="font-size:1.2em">✏️</div><div><b>กำลังแก้ไขข้อมูลการจัดส่งที่บันทึกไว้แล้ว</b><br>เมื่อบันทึกอีกครั้ง ระบบจะทับข้อมูลเดิมของสำนวนนี้</div>';
+ wrap.insertBefore(b, wrap.firstChild);
  }
  }
 
@@ -868,6 +995,22 @@
  if (document.getElementById('f_signedDocFileName')) {
  document.getElementById('f_signedDocFileName').textContent = 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf';
  }
+ }
+ }
+
+ /* เปิด/ปิดกล่องผู้รับที่ 2 (พนักงานอัยการเจ้าของสำนวน) */
+ function toggleProsecutorNotify() {
+ const cb = document.getElementById('in_notifyProsecutorToo');
+ const box = document.getElementById('prosecutorNotifyBox');
+ if (!cb || !box) return;
+ box.style.display = cb.checked ? 'block' : 'none';
+ if (cb.checked) {
+ const label = document.getElementById('in_prosecutorRecipientLabel');
+ if (label && !label.value && currentCase && currentCase.source) {
+ label.value = currentCase.source;
+ }
+ const d = document.getElementById('in_prosecutorDispatchDate');
+ if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
  }
  }
 
@@ -964,6 +1107,28 @@
  dispatchNotes: document.getElementById('in_dispatchNotes').value.trim()
  };
 
+ // ผู้รับที่ 2 (พนักงานอัยการ) — บันทึกเมื่อมีการติ๊กแจ้งผลให้อัยการด้วย
+ const notifyPro = document.getElementById('in_notifyProsecutorToo');
+ if (notifyPro && notifyPro.checked) {
+ const proRecipient = document.getElementById('in_prosecutorRecipientLabel').value.trim();
+ const proTracking = document.getElementById('in_prosecutorTrackingNo').value.trim();
+ if (!proRecipient) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'ข้อมูลไม่ครบถ้วน',
+ text: 'กรุณาระบุหน่วยงานอัยการผู้รับ สำหรับการแจ้งผลให้พนักงานอัยการ',
+ confirmButtonColor: '#1e3a8a'
+ });
+ document.getElementById('in_prosecutorRecipientLabel').focus();
+ return;
+ }
+ payload.notifyProsecutor = true;
+ payload.prosecutorRecipientName = proRecipient;
+ payload.prosecutorDispatchDate = document.getElementById('in_prosecutorDispatchDate').value;
+ payload.prosecutorDispatchMethod = document.getElementById('in_prosecutorDispatchMethod').value;
+ payload.prosecutorTrackingNo = proTracking;
+ }
+
  if (currentDispatchMethod === 'postal_ems') {
  const emsNo = document.getElementById('in_emsTrackingNo').value.trim();
  const emsDate = document.getElementById('in_emsDate').value;
@@ -1030,6 +1195,7 @@
  }).then(res => {
  if (res.isConfirmed) {
  Activity10.submitOfficerExternalDispatch(currentCase.id, payload);
+ clearDispatchEditMode();
 
  Swal.fire({
  icon: 'success',
@@ -1099,7 +1265,10 @@
  </div>
  </div>
  <div class="form-actions">
+ <div style="display:flex; gap:8px;">
  <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()"><i class="fa-solid fa-print me-1"></i>พิมพ์หลักฐานการจัดส่ง</button>
+ <button type="button" class="btn btn-secondary" onclick="enableDispatchEdit()" title="กลับไปแก้ไขข้อมูลการจัดส่งที่บันทึกไว้"><i class="fa-solid fa-pen-to-square me-1"></i>แก้ไขข้อมูลการจัดส่ง</button>
+ </div>
  <a href="01-work-inbox.html" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
  </div>
  </div>

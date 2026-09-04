@@ -11,8 +11,8 @@
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css">
- <link rel="stylesheet" href="assets/ecmis-modal.css">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
  h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
@@ -304,6 +304,58 @@
  </div>
  </div>
 
+ <!-- ผลจากพนักงานอัยการ (คำพิพากษา)
+      ตามมติที่ประชุม: ส่งไป 2 ที่ จึงต้องมีผลกลับมาทั้งสองทาง
+      ชี้ขาด = อสส. (ด้านบน) · พิพากษา = พนักงานอัยการ (ส่วนนี้) -->
+ <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px 18px; margin-top: 16px;">
+ <div style="font-weight: 700; color: #166534; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+ <i class="fa-solid fa-scale-balanced"></i>
+ <span><mark class="wording-changed">ผลจากพนักงานอัยการ (คำพิพากษา)</mark></span>
+ <span class="badge" style="background:#dcfce7; color:#166534; font-weight:600;" id="f_prosecutorResultBadge">รอผลจากพนักงานอัยการ</span>
+ </div>
+
+ <div class="form-grid-3">
+ <div class="form-group">
+ <label>เลขที่หนังสือของพนักงานอัยการ</label>
+ <input type="text" id="in_prosecutorResultNo" class="form-control font-monospace" placeholder="เช่น อส 0025/1290">
+ </div>
+ <div class="form-group">
+ <label>วันที่ลงในหนังสือ</label>
+ <input type="date" id="in_prosecutorResultDate" class="form-control">
+ </div>
+ <div class="form-group">
+ <label>วันที่กองกฎหมายลงรับ</label>
+ <input type="date" id="in_prosecutorResultReceiveDate" class="form-control">
+ </div>
+ </div>
+
+ <div class="form-group">
+ <label>ผลคำพิพากษา / ผลการดำเนินคดีของพนักงานอัยการ</label>
+ <select id="in_prosecutorResultType" class="form-control" style="font-weight:600;" onchange="toggleProsecutorResultOther()">
+ <option value="">— ยังไม่ได้รับผล —</option>
+ <option value="PROSECUTED">ฟ้องคดีต่อศาลแล้ว</option>
+ <option value="CONVICTED">ศาลพิพากษาลงโทษ</option>
+ <option value="ACQUITTED">ศาลพิพากษายกฟ้อง</option>
+ <option value="DROPPED">ยุติการดำเนินคดี</option>
+ <option value="OTHER">อื่นๆ</option>
+ </select>
+ <div id="div_prosecutorResultOther" style="display:none; margin-top:8px;">
+ <label style="font-size:0.82em; color:var(--text-title); margin-bottom:4px;">ระบุผลคำพิพากษา (อื่นๆ) <span style="color:#dc2626;">*</span></label>
+ <input type="text" id="in_prosecutorResultOtherText" class="form-control" placeholder="โปรดระบุผลการดำเนินคดี...">
+ </div>
+ </div>
+
+ <div class="form-group">
+ <label>สรุปสาระสำคัญคำพิพากษา / ผลคดี</label>
+ <textarea id="in_prosecutorResultSummary" class="form-control" rows="3" placeholder="ระบุสาระสำคัญของคำพิพากษาหรือผลการดำเนินคดีที่พนักงานอัยการแจ้งกลับมา..."></textarea>
+ </div>
+
+ <div class="form-group" style="margin-bottom: 0;">
+ <label>แนบไฟล์หนังสือ / คำพิพากษาจากพนักงานอัยการ (PDF)</label>
+ <input type="file" id="in_prosecutorResultFile" class="form-control" accept=".pdf,.doc,.docx" style="height:auto; padding:6px 12px;">
+ </div>
+ </div>
+
  <!-- Superiors Orders Summary Box -->
  <div class="form-grid-2" style="margin-bottom: 0;">
  <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px;">
@@ -549,6 +601,24 @@
  });
  }
 
+ /* "อื่นๆ" ในผลคำพิพากษาของพนักงานอัยการ */
+ function toggleProsecutorResultOther() {
+ const sel = document.getElementById('in_prosecutorResultType');
+ const box = document.getElementById('div_prosecutorResultOther');
+ const badge = document.getElementById('f_prosecutorResultBadge');
+ if (!sel || !box) return;
+ box.style.display = sel.value === 'OTHER' ? 'block' : 'none';
+ if (badge) {
+ badge.textContent = sel.value
+ ? sel.options[sel.selectedIndex].text
+ : 'รอผลจากพนักงานอัยการ';
+ }
+ if (sel.value === 'OTHER') {
+ const inp = document.getElementById('in_prosecutorResultOtherText');
+ if (inp) inp.focus();
+ }
+ }
+
  function submitOfficerFinalCaseClosedNotificationForm() {
  if (!currentCase) return;
 
@@ -605,6 +675,20 @@
  finalCaseResolutionSummary: currentCase.oagVerdictDecision === 'PROSECUTE' ? 'อสส. ชี้ขาดให้ฟ้องคดีตามความเห็นแย้งของ ป.ป.ท.' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดีตามคำสั่งเดิมของอัยการ',
  signature: signatureDataUrl
  };
+
+ // ผลจากพนักงานอัยการ (คำพิพากษา) — บันทึกเมื่อกรอกไว้
+ const proType = document.getElementById('in_prosecutorResultType');
+ if (proType && proType.value) {
+ const proOther = document.getElementById('in_prosecutorResultOtherText');
+ payload.prosecutorResultType = proType.value;
+ payload.prosecutorResultTypeName = proType.value === 'OTHER'
+ ? `อื่นๆ (${proOther ? proOther.value.trim() : ''})`
+ : proType.options[proType.selectedIndex].text;
+ payload.prosecutorResultNo = document.getElementById('in_prosecutorResultNo').value.trim();
+ payload.prosecutorResultDate = document.getElementById('in_prosecutorResultDate').value;
+ payload.prosecutorResultReceiveDate = document.getElementById('in_prosecutorResultReceiveDate').value;
+ payload.prosecutorResultSummary = document.getElementById('in_prosecutorResultSummary').value.trim();
+ }
 
  Activity10.submitOfficerFinalCaseClosedNotification(currentCase.id, payload);
 
