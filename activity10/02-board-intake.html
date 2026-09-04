@@ -685,6 +685,10 @@
                   style="background-color: var(--bg-card)"
                 ></textarea>
               </div>
+              <!-- เดิมสองช่องนี้เป็น readonly เติมได้จากปุ่ม "ค้นหาสำนวน" เท่านั้น
+                   ถ้าธุรการสร้างสำนวนเองโดยไม่ค้นหา จะไม่มีทางกรอกผู้ถูกกล่าวหาได้เลย
+                   และสำนวนนั้นจะแสดง "-" ไปตลอดทั้งกระบวนงาน จึงเปิดให้พิมพ์เองได้
+                   การค้นหาสำนวนยังเติมค่าให้อัตโนมัติเหมือนเดิม -->
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>ผู้กล่าวหา (ผู้ร้อง)</label>
@@ -692,8 +696,7 @@
                     type="text"
                     id="f_complainant"
                     class="form-control"
-                    readonly
-                    style="background-color: var(--bg-card)"
+                    placeholder="ค้นหาสำนวนเพื่อเติมอัตโนมัติ หรือพิมพ์เอง"
                   />
                 </div>
                 <div class="form-group">
@@ -702,8 +705,7 @@
                     type="text"
                     id="f_accused"
                     class="form-control"
-                    readonly
-                    style="background-color: var(--bg-card)"
+                    placeholder="ค้นหาสำนวนเพื่อเติมอัตโนมัติ หรือพิมพ์เอง"
                   />
                 </div>
               </div>
@@ -2063,9 +2065,9 @@
           document.getElementById("f_subject").value = target.title || "";
         if (document.getElementById("f_complainant"))
           document.getElementById("f_complainant").value =
-            target.accuser || "-";
+            target.accuser || "";
         if (document.getElementById("f_accused"))
-          document.getElementById("f_accused").value = target.accused || "-";
+          document.getElementById("f_accused").value = target.accused || "";
 
         // Hide search results panel after selecting
         const resultsContainer = document.getElementById("intakeSearchResults");
@@ -2382,18 +2384,23 @@
             ? document.getElementById("f_lawReceiveNo").value.trim()
             : "") || "0014/2569";
 
-        let accuser = selectedIntakeCaseData
-          ? selectedIntakeCaseData.accuser
-          : "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.";
-        let accused = selectedIntakeCaseData
-          ? selectedIntakeCaseData.accused
-          : "";
-        if (!accused) {
-          const accusedInput = document.getElementById("f_accused");
-          if (accusedInput && accusedInput.value.trim()) {
-            accused = accusedInput.value.trim();
-          }
-        }
+        /* ทั้งสองช่องพิมพ์เองได้แล้ว จึงยึดค่าที่อยู่ในช่องเป็นหลัก
+           แล้วค่อยถอยไปใช้ค่าจากการค้นหาสำนวน และค่าเริ่มต้นตามลำดับ
+           ถ้ายึดค่าจากการค้นหาก่อน สิ่งที่ธุรการแก้ไขเองจะถูกทิ้งเงียบ ๆ */
+        const readField = (id) => {
+          const el = document.getElementById(id);
+          return el && el.value.trim() ? el.value.trim() : "";
+        };
+
+        let accuser =
+          readField("f_complainant") ||
+          (selectedIntakeCaseData ? selectedIntakeCaseData.accuser : "") ||
+          "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.";
+
+        let accused =
+          readField("f_accused") ||
+          (selectedIntakeCaseData ? selectedIntakeCaseData.accused : "") ||
+          "";
 
         const isDisclosure = category === "10.2.1";
 
