@@ -571,132 +571,136 @@
     <script src="assets/ecmis-10-2.js?v=20260903_2"></script>
 
     <script>
-      const STEP_CODE = "LAW0038";
-      const STEP = Activity102.stepByCode(STEP_CODE);
-      let currentCase = null;
+            const STEP_CODE = "LAW0038";
+            const STEP = Activity102.stepByCode(STEP_CODE);
+            let currentCase = null;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        ECMIS102.initUserProfile();
-        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
-        ECMIS102.renderStepper("stepper", STEP_CODE);
-        loadCase();
-        ECMIS102.guardRole(STEP.role, STEP.roleTitle);
-      });
-
-      /* คำร้องที่รอขั้นตอนนี้ = คำร้องที่ค้าง statusCode ของขั้นก่อนหน้า */
-      function loadCase() {
-        const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity102.STEPS.findIndex((s) => s.code === STEP_CODE);
-        const prev = Activity102.STEPS[idx - 1];
-        currentCase = Activity102.getCase(id, prev ? prev.statusCode : null);
-
-        if (!currentCase) {
-          document.getElementById("noCaseNotice").classList.remove("d-none");
-          document.getElementById("pageBody").classList.add("d-none");
-          return;
-        }
-        populate();
-      }
-
-      /* ค่าอ้างอิงร่วมที่ทุกหน้าแสดงเหมือนกัน */
-      function populateCommon() {
-        const c = currentCase;
-        ECMIS102.setText("f_caseNo", c.id);
-        ECMIS102.setText("f_lawReceiveNo", c.lawReceiveNo);
-        ECMIS102.setText("f_title", c.title);
-        ECMIS102.setText("f_requesterName", c.requesterName);
-        ECMIS102.setText("f_requesterType", c.requesterTypeName);
-        ECMIS102.setText("f_requestedInfo", c.requestedInfo);
-        ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
-        ECMIS102.setText("f_requestChannel", c.requestChannelName);
-        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
-      }
-
-      function todayISO() {
-        return new Date().toISOString().split("T")[0];
-      }
-
-      function requireText(id, message) {
-        const el = document.getElementById(id);
-        const val = el ? el.value.trim() : "";
-        if (!val) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: message,
-            confirmButtonColor: "#1e3a8a",
-          });
-          if (el) el.focus();
-          return null;
-        }
-        return val;
-      }
-
-      function doneAndBack(text) {
-        Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: text,
-          timer: 1900,
-          showConfirmButton: false,
-        }).then(ECMIS102.goInbox);
-      }
-
-      /* ---- page specific ---- */
-
-      function populate() {
-        populateCommon();
-        document.getElementById("in_orderDate").value = todayISO();
-      }
-
-      function submitForm() {
-        const notes =
-          document.getElementById("in_orderNotes").value.trim() || "-";
-        const target = document.getElementById("in_assignTarget");
-        const targetName = target.options[target.selectedIndex].text;
-
-        ECMIS102.openSignatureModal(
-          {
-            title: "ลงนามคำสั่งการและมอบหมายงาน",
-            signer: ECMIS102.signerLabel("dir_legal"),
-            certId: "PACC-DIRLEGAL-2569-102",
-          },
-          (image) => {
-            Activity102.sign(currentCase.id, STEP_CODE, image);
-            Activity102.advance(currentCase.id, STEP_CODE, {
-              l2DirectorOrderNotes: notes,
-              l2DirectorOrderDate:
-                document.getElementById("in_orderDate").value,
-              l2DirectorAssignTarget: targetName,
-              assignedRole: "group_director",
-              officer: targetName,
+            document.addEventListener("DOMContentLoaded", () => {
+              ECMIS102.initUserProfile();
+              ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
+              ECMIS102.renderStepper("stepper", STEP_CODE);
+              loadCase();
+              ECMIS102.guardRole(STEP.role, STEP.roleTitle);
             });
-            doneAndBack("ส่งเรื่องให้ " + targetName + " เรียบร้อยแล้ว");
-          },
-        );
-      }
 
-      /* ---- shell chrome (theme / font size / dropdown) ---- */
-      function toggleTheme() {
-        document.body.classList.toggle("dark-mode");
-        const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
-        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
-      }
+            /* คำร้องที่รอขั้นตอนนี้ = คำร้องที่ค้าง statusCode ของขั้นก่อนหน้า */
+            function loadCase() {
+              const id = new URLSearchParams(window.location.search).get("id");
+              const idx = Activity102.STEPS.findIndex((s) => s.code === STEP_CODE);
+              const prev = Activity102.STEPS[idx - 1];
+              currentCase = Activity102.getCase(id, prev ? prev.statusCode : null);
 
-      function changeFontSize(direction) {
-        const currentSize = parseFloat(
-          window.getComputedStyle(document.body).fontSize,
-        );
-        document.body.style.fontSize =
-          direction === 0 ? "14px" : currentSize + direction + "px";
-      }
+              if (!currentCase) {
+                document.getElementById("noCaseNotice").classList.remove("d-none");
+                document.getElementById("pageBody").classList.add("d-none");
+                return;
+              }
+              populate();
+            }
 
-      document.addEventListener("click", (e) => {
-        const dropdown = document.getElementById("profileDropdown");
-        if (dropdown && !dropdown.contains(e.target))
-          dropdown.classList.remove("show");
-      });
+            /* ค่าอ้างอิงร่วมที่ทุกหน้าแสดงเหมือนกัน */
+            function populateCommon() {
+              const c = currentCase;
+              ECMIS102.setText("f_caseNo", c.id);
+              ECMIS102.setText("f_lawReceiveNo", c.lawReceiveNo);
+              ECMIS102.setText("f_title", c.title);
+              ECMIS102.setText("f_requesterName", c.requesterName);
+              ECMIS102.setText("f_requesterType", c.requesterTypeName);
+              ECMIS102.setText("f_requestedInfo", c.requestedInfo);
+              ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
+              ECMIS102.setText("f_requestChannel", c.requestChannelName);
+              ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
+            }
+
+            function todayISO() {
+              return new Date().toISOString().split("T")[0];
+            }
+
+            function requireText(id, message) {
+              const el = document.getElementById(id);
+              const val = el ? el.value.trim() : "";
+              if (!val) {
+                Swal.fire({
+                  icon: "warning",
+                  title: "ข้อมูลไม่ครบถ้วน",
+                  text: message,
+                  confirmButtonColor: "#1e3a8a",
+                });
+                if (el) el.focus();
+                return null;
+              }
+              return val;
+            }
+
+            function doneAndBack(text) {
+              Swal.fire({
+                icon: "success",
+                title: "บันทึกสำเร็จ",
+                text: text,
+                timer: 1900,
+                showConfirmButton: false,
+              }).then(ECMIS102.goInbox);
+            }
+
+            /* ---- page specific ---- */
+
+            function populate() {
+              populateCommon();
+              document.getElementById("in_orderDate").value = todayISO();
+            }
+
+            function submitForm() {
+      <<<<<<< Updated upstream
+              const notes =
+                document.getElementById("in_orderNotes").value.trim() || "-";
+      =======
+              const notes = document.getElementById("in_orderNotes").value.trim();
+      >>>>>>> Stashed changes
+              const target = document.getElementById("in_assignTarget");
+              const targetName = target.options[target.selectedIndex].text;
+
+              ECMIS102.openSignatureModal(
+                {
+                  title: "ลงนามคำสั่งการและมอบหมายงาน",
+                  signer: ECMIS102.signerLabel("dir_legal"),
+                  certId: "PACC-DIRLEGAL-2569-102",
+                },
+                (image) => {
+                  Activity102.sign(currentCase.id, STEP_CODE, image);
+                  Activity102.advance(currentCase.id, STEP_CODE, {
+                    l2DirectorOrderNotes: notes,
+                    l2DirectorOrderDate:
+                      document.getElementById("in_orderDate").value,
+                    l2DirectorAssignTarget: targetName,
+                    assignedRole: "group_director",
+                    officer: targetName,
+                  });
+                  doneAndBack("ส่งเรื่องให้ " + targetName + " เรียบร้อยแล้ว");
+                },
+              );
+            }
+
+            /* ---- shell chrome (theme / font size / dropdown) ---- */
+            function toggleTheme() {
+              document.body.classList.toggle("dark-mode");
+              const isDark = document.body.classList.contains("dark-mode");
+              document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+              localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+            }
+
+            function changeFontSize(direction) {
+              const currentSize = parseFloat(
+                window.getComputedStyle(document.body).fontSize,
+              );
+              document.body.style.fontSize =
+                direction === 0 ? "14px" : currentSize + direction + "px";
+            }
+
+            document.addEventListener("click", (e) => {
+              const dropdown = document.getElementById("profileDropdown");
+              if (dropdown && !dropdown.contains(e.target))
+                dropdown.classList.remove("show");
+            });
     </script>
   </body>
 </html>

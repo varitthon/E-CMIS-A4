@@ -575,28 +575,48 @@
           </div>
 
           <div class="l2-split">
+            <div class="l2-split-preview" id="resolutionPreviewCol">
+              <div class="form-card">
+                <div class="form-card-header">
+                  <span
+                    ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                    >ตัวอย่างเอกสารสด — มติคณะอนุกรรมการฯ</span
+                  >
+                  <button
+                    type="button"
+                    class="btn btn-secondary l2-split-toggle"
+                    style="height: 28px; padding: 0 10px; font-size: 0.8em"
+                    onclick="togglePreviewCollapse()"
+                  >
+                    <i
+                      class="fa-solid fa-chevron-down me-1"
+                      id="previewToggleIcon"
+                    ></i
+                    ><span id="previewToggleText">แสดง</span>
+                  </button>
+                </div>
+                <div class="form-card-body l2-split-preview-body">
+                  <div class="l2-doc" id="resolutionDraftPreview"></div>
+                </div>
+              </div>
+            </div>
+
             <div class="l2-split-form">
               <div class="form-card" style="border: 2px solid #1e3a8a">
                 <div
                   class="form-card-header"
-                  style="
-                    flex-direction: column;
-                    align-items: flex-start;
-                    justify-content: center;
-                    gap: 8px;
-                    min-height: 84px;
-                  "
+                  style="background: rgba(30, 58, 138, 0.05)"
                 >
-                  <span class="badge" style="background: #1e3a8a; color: #fff"
-                    ><i class="fa-solid fa-users me-1"></i
-                    >คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
-                  >
                   <span
                     ><i
                       class="fa-solid fa-gavel me-2"
                       style="color: #1e3a8a"
                     ></i
                     >มติที่ประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
+                  >
+                  <span class="badge" style="background: #1e3a8a; color: #fff"
+                    ><i class="fa-solid fa-users me-1"></i
+                    >คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
                   >
                 </div>
                 <div class="form-card-body">
@@ -738,105 +758,6 @@
                 </div>
               </div>
             </div>
-            <div class="l2-split-preview" id="resolutionPreviewCol">
-              <div class="l2-doc-viewer">
-                <div class="l2-doc-toolbar">
-                  <div class="l2-doc-toolbar-title">
-                    <i class="fa-solid fa-file-lines text-primary"></i>
-                    <span>ตัวอย่างเอกสารสด — มติคณะอนุกรรมการฯ</span>
-                  </div>
-                  <div class="l2-doc-toolbar-actions">
-                    <button
-                      type="button"
-                      class="l2-doc-btn"
-                      onclick="ECMIS102.focusFirstField('resolutionChoices')"
-                    >
-                      <i class="fa-solid fa-pen-to-square"></i>แก้ไขเอกสาร
-                    </button>
-                    <button
-                      type="button"
-                      class="l2-doc-btn"
-                      onclick="
-                        ECMIS102.exportDocx(
-                          'resolutionDraftPreview',
-                          'มติคณะอนุกรรมการพิจารณากลั่นกรองฯ',
-                        )
-                      "
-                    >
-                      <i class="fa-solid fa-download"></i>ดาวน์โหลด
-                    </button>
-                    <button
-                      type="button"
-                      class="l2-doc-btn l2-doc-btn-icon l2-split-toggle"
-                      onclick="togglePreviewCollapse()"
-                      title="ย่อ/ขยาย"
-                    >
-                      <i
-                        class="fa-solid fa-chevron-down"
-                        id="previewToggleIcon"
-                      ></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="l2-doc-controlbar">
-                  <div class="l2-doc-viewmode">
-                    <button
-                      type="button"
-                      class="is-active"
-                      onclick="ECMIS102.setDocViewMode(this)"
-                    >
-                      ดูทีละหน้า
-                    </button>
-                    <button
-                      type="button"
-                      onclick="ECMIS102.setDocViewMode(this)"
-                    >
-                      ดูทุกหน้าต่อเนื่อง
-                    </button>
-                  </div>
-                  <div class="l2-doc-pagenav">
-                    <button type="button" disabled title="หน้าแรก">
-                      <i class="fa-solid fa-angles-left"></i>
-                    </button>
-                    <button type="button" disabled title="ก่อนหน้า">
-                      <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-                    <span>1</span> / <span>1</span> หน้า
-                    <button type="button" disabled title="ถัดไป">
-                      <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                    <button type="button" disabled title="หน้าสุดท้าย">
-                      <i class="fa-solid fa-angles-right"></i>
-                    </button>
-                  </div>
-                  <div class="l2-doc-zoom">
-                    <button
-                      type="button"
-                      onclick="ECMIS102.zoomDoc('resolutionDraftPreview', -1)"
-                    >
-                      <i class="fa-solid fa-minus"></i>
-                    </button>
-                    <span
-                      class="l2-doc-zoom-val"
-                      id="resolutionDraftPreviewZoomVal"
-                      >50%</span
-                    >
-                    <button
-                      type="button"
-                      onclick="ECMIS102.zoomDoc('resolutionDraftPreview', 1)"
-                    >
-                      <i class="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="l2-doc-pageframe l2-split-preview-body">
-                  <div
-                    class="l2-doc l2-doc-page"
-                    id="resolutionDraftPreview"
-                  ></div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -911,6 +832,21 @@
         return val;
       }
 
+      /* เหมือน requireText แต่สำหรับฟิลด์ที่เป็น Tiptap editor (ไม่มี .value) */
+      function requireEditorText(containerId, message) {
+        const val = ECMIS102.getEditorText(containerId);
+        if (!val) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: message,
+            confirmButtonColor: "#1e3a8a",
+          });
+          return null;
+        }
+        return val;
+      }
+
       function doneAndBack(text) {
         Swal.fire({
           icon: "success",
@@ -958,7 +894,6 @@
         renderChoices();
         mountEditors();
         renderPreview();
-        ECMIS102.initDocZoom("resolutionDraftPreview", 0.5);
       }
 
       let committeeOpinionEditor = null;
@@ -1037,9 +972,11 @@
       function togglePreviewCollapse() {
         const col = document.getElementById("resolutionPreviewCol");
         const icon = document.getElementById("previewToggleIcon");
+        const text = document.getElementById("previewToggleText");
         const collapsed = col.classList.toggle("is-collapsed");
         icon.classList.toggle("fa-chevron-down", collapsed);
         icon.classList.toggle("fa-chevron-up", !collapsed);
+        text.textContent = collapsed ? "แสดง" : "ซ่อน";
       }
 
       function choiceHtml(list, selected, handler) {
