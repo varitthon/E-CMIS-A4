@@ -10,7 +10,14 @@ whether you skipped something.
 - Decisions and rationale: [`meeting-01092026-changes.md`](meeting-01092026-changes.md)
 - Batch A detailed test cases: [`qa-batch-a-meeting-01092026.md`](qa-batch-a-meeting-01092026.md)
 
-Commits under test: `e8ebafc` · `31c67a2` · `9dc935f` · `1549719` · `ce5ee29`
+Commits under test (7, on top of `bd2882a`):
+`0e4b14f` Batch A · `dc1bc6b` Batch B + docs · `8ce2847` three workflow defects ·
+`49e635d` อื่นๆ badge · `086e4aa` Flow 1 gaps · `be9845c` findings register ·
+`d078afd` section-B fixes
+
+**Findings we did NOT act on** are in
+[`qa-findings-register.md`](qa-findings-register.md) section C — read that before handover;
+they are decisions for the working group, not defects.
 
 > ⚠ **The LAW codes below are my mapping, not the app's.** The 10.1 pages don't carry LAW
 > codes in the markup (only the 10.2 series does). I matched them by role and step. Please
@@ -25,13 +32,30 @@ cd activity10
 run.bat            →  http://localhost:8811/index.html
 ```
 
-### 0.1 Reset — do this first, and again between full runs ⚠
+### 0.1 Start clean ⚠
 
-Two separate caches will lie to you:
+**Hard-reload first: Ctrl+F5.** Shared assets carry version queries
+(`ecmis-shell.css?v=20260904_1`, `ecmis-offense-basis.js?v=20260904_2`,
+`ecmis-activity10.js?v=20260904_6`). A stale copy shows up as:
 
-**a) Case data.** `loadCases()` prefers `localStorage` over the seed, so old data hides
-seeded changes. `DATA_VERSION` is now `v46_fix_seed_prosecutor_source`; it should reseed
-itself, but old keys linger. Clear them all:
+| symptom | cause |
+|---|---|
+| **no yellow highlights** anywhere | stale `ecmis-shell.css` |
+| decision cards with radio and text pushed to opposite edges | stale `ecmis-shell.css` |
+| **no red `*`** on the ฐานความผิด row labels | stale `ecmis-offense-basis.js` |
+| a stranded case that cannot be approved by anyone | stale `ecmis-activity10.js` |
+
+This bit us twice during development — check it before filing any of the above.
+
+**Case data.** `DATA_VERSION` is `v46_fix_seed_prosecutor_source`. You should not normally
+need to clear storage any more:
+
+- a version bump now **carries your created cases across** instead of dropping them, and
+  removes the old keys, so orphaned keys no longer pile up
+- to force a full reseed, use the **รีเซ็ต** button on the inbox — it now warns, in red,
+  that self-created cases are permanently deleted
+
+If you do want a hard wipe from the console:
 
 > F12 → Console:
 > ```js
@@ -39,18 +63,6 @@ itself, but old keys linger. Clear them all:
 >   .forEach(k => localStorage.removeItem(k));
 > location.reload();
 > ```
-
-**b) Shared CSS and JS.** These load with a version query — `ecmis-shell.css?v=20260904_1`,
-`ecmis-offense-basis.js?v=20260904_2`. A stale copy shows up as:
-
-| symptom | cause |
-|---|---|
-| **no yellow highlights** anywhere | stale `ecmis-shell.css` |
-| decision cards with radio and text pushed to opposite edges | stale `ecmis-shell.css` |
-| **no red `*`** on the ฐานความผิด row labels | stale `ecmis-offense-basis.js` |
-
-Hard-reload with **Ctrl+F5**. (This bit us during development, twice — worth checking before
-filing any of the above.)
 
 ### 0.2 Logins (no password check)
 
@@ -116,6 +128,10 @@ be typed independently. ฐานความผิด was requested for the Das
 | ระดับศาล dropdown contents | 5 options; **ศาลฎีกา still there** though nothing auto-selects it |
 | ระดับศาล = อื่นๆ, leave blank, บันทึก | `กรุณาระบุระดับศาล (อื่นๆ)` |
 | กรณีฯ = 9. อื่นๆ, leave blank, บันทึก | `กรุณาระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ)` |
+| **ผู้กล่าวหา (ผู้ร้อง) and ผู้ถูกกล่าวหา (จำเลย)** | **you can type in both** — they used to be readonly and fillable only via ค้นหาสำนวน |
+| type both, save, open 03 | the names you typed appear — previously a hand-created case lost them forever |
+| use **🔍 ค้นหาสำนวน**, then edit a name by hand, save | **your edit is kept**, not overwritten by the looked-up value |
+| pick a lookup record with a missing name | the field is **blank with a placeholder**, never a literal `-` |
 | ฐานความผิด row labels | **กฎหมาย \* · มาตรา \* · ฐานความผิด \*** — red asterisk next to each label, not flung to the right |
 | ฐานความผิด: add 3 rows, type in row 2, add a 4th | **row 2 keeps its text** |
 | delete row 2 | remaining rows renumber, other values intact |
@@ -151,7 +167,7 @@ name* as `accused` on the same record.
 | 05 labels | `ข้อสั่งการ / แนวทางการจัดทำความเห็นถึงนิติกร` and `…จัดทำความเห็น` |
 | **03 person fields** | one row: **ผู้กล่าวหา (ผู้ร้อง)** and **ผู้ถูกกล่าวหา (จำเลย)** |
 | 03 — separate ผู้ร้อง / จำเลย boxes | **gone**, along with the empty `-` they always showed |
-| 03 values still populate | ผู้กล่าวหา and ผู้ถูกกล่าวหา show real names |
+| **03 shows the names you typed at 02** | not `-` — this was previously impossible for a hand-created case |
 | compare 03 against 02 | the two pages now read **identically** for these fields |
 | **ผอ.กลุ่มงานความเห็นแย้ง** anywhere on these pages | **unchanged** — it is a real org unit |
 
@@ -203,6 +219,41 @@ are unchanged**, which is the single most important thing to verify here.
 | option 2 sub-line | still says ส่งคืน/ส่งกลับ — so the action stays obvious |
 | **pick option 2 and submit** | case goes **back for revision**, exactly as before |
 | radio and text position in the cards | together on the **left** — not pushed to opposite edges |
+
+## 07 / 08 / 09 — มติอัยการ, and the stranded-case bug ⭐ re-test these
+
+**Changed after the first QA pass.** มติอัยการ used to be missing on exactly these three
+pages — present 03-06, gone 07-09, back 10-22 — so the two approvers decided without seeing
+what the prosecutor had ordered.
+
+| check | expect |
+|---|---|
+| **มติอัยการ on 07, 08 and 09** | present, above ระดับศาล, matching the case (not `1. …ไม่ฟ้อง`) |
+| the field across 03 → 22 | **never disappears** on any page |
+
+**The stranded-case round trip** — this used to make a case unmovable by anyone:
+
+| step | expect |
+|---|---|
+| on 07, approve a case | it moves to ผอ.กอง; log in as `Napas.S` and it **is in the inbox** |
+| now send that same case **back** from 07 (or 08) | routing returns to นิติกร |
+| reopen 07 | **the approve form and button are back**, step 5 active again |
+| the case in each role's inbox | exactly one role sees it at a time — never nobody |
+
+**Stepper sanity on 06-09** (these were mislabelled):
+
+| check | expect |
+|---|---|
+| all four pages | **7 steps, numbered 1-7**, no duplicate labels |
+| the step for each page's own work | marked complete once done, next step active |
+| 07's last step | `7. ธุรการ ออกเลขส่ง` — **not 8** |
+
+**Wrong / stale case id** (used to silently show a different case):
+
+| check | expect |
+|---|---|
+| open any page with a made-up id, e.g. `?id=คดี-999999/2569` | a **yellow banner** naming both the requested and the shown case |
+| open a page with a valid id, or with no `?id` at all | **no banner** |
 
 ## 09 — ธุรการออกเลขส่งเสนอผู้บริหาร
 
@@ -406,6 +457,20 @@ case goes to both, so both results come back.
 
 ---
 
+# 01 — the work inbox
+
+Not a flow step, but every flow starts and ends here.
+
+| check | expect |
+|---|---|
+| a case whose กรณี is **9. อื่นๆ** | badge reads **`อื่นๆ *`** with the typed detail beneath it in small grey text |
+| hover that badge | tooltip shows the full `9. อื่นๆ (รายละเอียด)` |
+| rows for the other eight cases | **unchanged** — no extra line, no asterisk |
+| notification bell / SLA warnings | say `ครบกำหนดยกร่างความเห็น` — **no** `ความเห็นแย้ง` |
+| press **รีเซ็ต** | the confirm says in **red** that self-created cases are permanently deleted, and the button reads `ลบสำนวนที่สร้างเอง และรีเซ็ต` |
+| cancel that dialog | nothing is lost |
+| each role sees only their own queue | log in as each of the four users in §0.2 |
+
 # Cross-cutting checks
 
 | check | expect |
@@ -417,6 +482,36 @@ case goes to both, so both results come back.
 | Any page | **ผอ.กลุ่มงานความเห็นแย้ง** still says ความเห็นแย้ง — org unit, must not change |
 | 17 / 18 / 19 file names | still `หนังสือความเห็นแย้ง_…` — the อสส-bound document, must not change |
 | Board มติ on 10 / 11 / 12 | still `เห็นชอบให้ทำความเห็นแย้ง` — a real resolution, must not change |
+
+---
+
+# Known — do NOT file these
+
+These are already recorded in
+[`qa-findings-register.md`](qa-findings-register.md) **section C**. They are open decisions
+for the working group, not defects, and they go across at handover.
+
+| you will notice | why it is not a defect |
+|---|---|
+| **Stepper models differ between flows** — 4, 5, 7, 6 steps; numbering restarts at 1 four times; runs 7-13 / 8-13 / 9-14 elsewhere; 13-14 unnumbered. "Step 5" means different things on 03-05 vs 06-09 | needs one canonical set of step names agreed first. **C1** |
+| A page shows its own step as active even for a case that has not reached it | pages guard "already done" but not "not yet arrived". **C2** |
+| **ผู้ถูกกล่าวหา** appears on only 8 of 20 pages | scattered, so possibly deliberate — unlike มติอัยการ which was a clean range with a hole. **C3** |
+| **19** shows both a 9-choice dropdown *and* ผลต่อการดำเนินคดี | 20/21/22 branch on the outcome, and none of intake's 9 expresses ฟ้อง vs ไม่ฟ้อง. **C4** |
+| **17/18** allow sending to both อสส and อัยการ, but the TO-BE diagram shows either/or | build follows the meeting; the diagram is out of date. **C5** |
+| `กลุ่มงานความเห็นแย้ง`, board-resolution values, อสส-bound file names still say ความเห็นแย้ง | deliberately kept — org unit, choice values, real document. **C6** |
+| **ฐานความผิด** is mandatory once a row is started | our call, reversible. **C7** |
+| **13** lets you submit with no attachment | our call — the page promises the system generates the draft. **C7** |
+
+---
+
+# Handover checklist
+
+- [ ] Final manual pass of this guide complete, defects below logged
+- [ ] Yellow review highlights removed once wording is signed off — delete the `REVIEW MARKER` block at the end of `assets/ecmis-shell.css` and unwrap the `<mark class="wording-changed">` tags
+- [ ] [`qa-findings-register.md`](qa-findings-register.md) **section C** walked through with the working group
+- [ ] **C1 (stepper models)** given an owner — it blocks any further stepper work
+- [ ] TO-BE diagram updated or the dispatch requirement re-confirmed (**C5**)
+- [ ] Wording for **19**'s options confirmed (**C4**)
 
 ---
 
