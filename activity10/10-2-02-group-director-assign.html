@@ -477,6 +477,10 @@
                   -
                 </div>
               </div>
+              <div class="form-group">
+                <label>เอกสารแนบประกอบคำร้อง</label>
+                <div id="f_attachments"></div>
+              </div>
             </div>
           </div>
 
@@ -519,7 +523,6 @@
                 <label>
                   <span
                     >ประเด็นกฎหมายที่ต้องพิจารณา
-                    <span style="color: #dc2626">*</span>
                     <button
                       type="button"
                       class="btn-mic"
@@ -537,34 +540,20 @@
                   placeholder="ระบุประเด็นข้อกฎหมายที่ต้องพิจารณา..."
                 ></textarea>
               </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>
-                    <span
-                      >มอบหมายให้
-                      <span class="l2-role-hint" id="hint_assignTarget"></span
-                    ></span>
-                    <span style="color: #dc2626">*</span>
-                  </label>
-                  <!-- ตัวเลือกเติมจาก ECMIS.ROLES เฉพาะบทบาท sub_secretariat -->
-                  <select
-                    id="in_assignTarget"
-                    class="form-control l2-select"
-                    style="font-weight: 600; color: #1e3a8a"
-                  ></select>
-                </div>
-                <div class="form-group">
-                  <label
-                    >กำหนดส่งรายงานความเห็น
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="date"
-                    id="in_dueDate"
-                    class="form-control font-monospace"
-                    style="font-weight: 600"
-                  />
-                </div>
+              <div class="form-group">
+                <label>
+                  <span
+                    >มอบหมายให้
+                    <span class="l2-role-hint" id="hint_assignTarget"></span
+                  ></span>
+                  <span style="color: #dc2626">*</span>
+                </label>
+                <!-- ตัวเลือกเติมจาก ECMIS.ROLES เฉพาะบทบาท sub_secretariat -->
+                <select
+                  id="in_assignTarget"
+                  class="form-control l2-select"
+                  style="font-weight: 600; color: #1e3a8a"
+                ></select>
               </div>
             </div>
             <div class="form-actions">
@@ -628,6 +617,7 @@
         ECMIS102.setText("f_requestedInfo", c.requestedInfo);
         ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
         ECMIS102.setText("f_requestChannel", c.requestChannelName);
+        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
       }
 
       function todayISO() {
@@ -670,19 +660,12 @@
           "hint_assignTarget",
         );
         ECMIS102.setText("f_directorOrder", currentCase.l2DirectorOrderNotes);
-        const due = new Date();
-        due.setDate(due.getDate() + 10);
-        document.getElementById("in_dueDate").value = due
-          .toISOString()
-          .split("T")[0];
+        document.getElementById("in_legalIssues").value = "-";
       }
 
       function submitForm() {
-        const issues = requireText(
-          "in_legalIssues",
-          "กรุณาระบุประเด็นกฎหมายที่ต้องพิจารณา",
-        );
-        if (!issues) return;
+        const issues =
+          document.getElementById("in_legalIssues").value.trim() || "-";
         const targetName = ECMIS102.selectedPersonLabel("in_assignTarget");
 
         ECMIS102.openSignatureModal(
@@ -695,7 +678,6 @@
             Activity102.sign(currentCase.id, STEP_CODE, image);
             Activity102.advance(currentCase.id, STEP_CODE, {
               l2LegalIssues: issues,
-              l2OpinionDueDate: document.getElementById("in_dueDate").value,
               assignedRole: "sub_secretariat",
               officer: targetName,
             });

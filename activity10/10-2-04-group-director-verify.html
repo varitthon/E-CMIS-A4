@@ -514,6 +514,10 @@
                   -
                 </div>
               </div>
+              <div class="form-group">
+                <label>เอกสารแนบประกอบคำร้อง</label>
+                <div id="f_attachments"></div>
+              </div>
             </div>
           </div>
 
@@ -569,7 +573,6 @@
                 <label>
                   <span
                     >ความเห็นประกอบการตรวจสอบ
-                    <span style="color: #dc2626">*</span>
                     <button
                       type="button"
                       class="btn-mic"
@@ -649,6 +652,7 @@
         ECMIS102.setText("f_requestedInfo", c.requestedInfo);
         ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
         ECMIS102.setText("f_requestChannel", c.requestChannelName);
+        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
       }
 
       function todayISO() {
@@ -713,6 +717,7 @@
           "f_opinionFile",
           currentCase.l2SecretariatOpinionFile || "ไม่มีไฟล์แนบ",
         );
+        document.getElementById("in_verifyNotes").value = "-";
         renderVerifyChoices();
       }
 
@@ -752,11 +757,8 @@
       }
 
       function submitForm() {
-        const notes = requireText(
-          "in_verifyNotes",
-          "กรุณาระบุความเห็นประกอบการตรวจสอบ",
-        );
-        if (!notes) return;
+        const notes =
+          document.getElementById("in_verifyNotes").value.trim() || "-";
         const complete = verifyResult === "COMPLETE";
 
         ECMIS102.openSignatureModal(

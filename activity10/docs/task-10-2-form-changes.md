@@ -1,5 +1,42 @@
 # Task List — 10-2-xx Form Field Changes
 
+---
+
+## NEW TASK (added 2026-09-03) — Show attached documents on every 10-2-xx page
+
+**Status: IMPLEMENTED — verified in-browser (2026-09-03).**
+
+**Decisions (confirmed by user):** placement inside the existing case-detail card; read/download = mock toast (same convention as `07-group-director-approval.html`); scope = all 8 pages.
+
+**Implementation note — 2 of the 8 pages needed a different placement:** `10-2-07-secretariat-resolution-doc.html` and `10-2-08-legal-director-propose.html` turned out **not to have** the shared "รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร" read-only card at all (their `populateCommon()` already calls `setText("f_title", ...)` etc., but those element IDs don't exist in their markup — pre-existing dead code, not something this change introduced). For those two pages only, the attachment list was placed in its own small standalone card ("เอกสารแนบประกอบคำร้อง"), right after the page's intro note and before its first content card, instead of inside a non-existent shared card. The other 6 pages got it inside the existing shared card as originally planned.
+
+**What shipped:**
+- `ECMIS102.renderAttachments(containerId, fileNames)` and `ECMIS102.mockOpenFile(name)` added to `activity10/assets/ecmis-10-2.js` — renders a paperclip-icon + filename row per attachment with a "ดาวน์โหลด" button (mock `Swal` toast, no real file bytes exist in this static mockup), plus an "ไม่มีเอกสารแนบ" empty state.
+- `.l2-attachment-row` / `.l2-attachment-name` styles added to `activity10/assets/ecmis-10-2.css`.
+- All 8 pages (`10-2-01` through `10-2-08`) call `ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames)` inside their existing `populateCommon()`, and each has a `<div id="f_attachments">` in its markup (inside the shared card for 01–06, in a new standalone card for 07–08).
+
+**Verified:** started the local static server, seeded a synthetic case with `attachmentFileNames: ["สำเนาบัตรประชาชน.pdf", "หนังสือมอบอำนาจ.docx"]`, loaded `10-2-01`, confirmed both files render with the paperclip icon and download button, clicked download and confirmed the mock toast ("เปิดไฟล์ สำเนาบัตรประชาชน.pdf...") appears, no console errors. Confirmed via `grep` that all 8 pages have exactly one `renderAttachments` call and one `id="f_attachments"` element each. Test data was reset afterward (`Activity10.resetData()` — browser-local only, no files touched).
+
+**User's request (verbatim):** "for all 10-2-xxxx.html there is attached document files (see in 02-xxxx.html) all page must show it in detail of the page (read download) too"
+
+**Investigation so far:**
+- `02-board-intake.html` is where the officer uploads supporting files for a disclosure request (`disclosureAttachedFiles`, an upload-with-preview UI at [02-board-intake.html:1131](../02-board-intake.html) with add/remove, size-limit note, etc.). On save it writes only the **filenames** onto the case: `attachmentFileNames: disclosureAttachedFiles.map(f => f.name)` ([02-board-intake.html:1640](../02-board-intake.html)) — actual file contents/blobs are never persisted (this is a static mockup with no backend/file storage), so only names survive page reloads.
+- Confirmed via repo-wide search: **no other page reads `attachmentFileNames`** — none of the 8 `10-2-0*.html` pages display it anywhere today. So once a case moves past intake, nobody in the 10.2 flow can see what was originally attached.
+- A visual precedent for a read-only "attached file + download" row already exists elsewhere in this codebase, in `07-group-director-approval.html` (a *different* activity, 10.1) — a bordered row with a paperclip icon + filename + a "ดาวน์โหลดร่าง" button whose `onclick` just shows a `Swal.fire({icon:'info', title:'เปิดไฟล์...'})` toast, since there's nothing real to download. This is the established "mock download" convention in the codebase.
+- Separately, several 10-2-xx pages (03, 04, 05, 08) already have their **own** unrelated file-upload fields for that step's own report/draft (e.g. `#in_opinionFile` on 10-2-03) — those are NOT the original intake attachments and are out of scope here; they stay as-is.
+
+**Proposed approach (pending confirmation):**
+- Add one new shared helper to `activity10/assets/ecmis-10-2.js`, e.g. `ECMIS102.renderAttachments(containerId, fileNames)`, that renders a read-only list — paperclip icon + filename per row + a "ดาวน์โหลด" button per row (mock toast, same convention as 07's page) — plus an empty state ("ไม่มีเอกสารแนบ") when the array is empty.
+- Add one new block + one call (`ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames)`) to the shared `populateCommon()` function that's duplicated across all 8 pages, placed inside the existing "รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร" read-only card (right after "เลขสำนวนคดีที่เกี่ยวข้อง"), so it appears identically everywhere without hand-building 8 separate layouts.
+- Applies to all 8 pages: 10-2-01 through 10-2-08.
+
+**Open questions:**
+1. Placement — inside the existing "รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร" card as one more field, or as its own separate small card ("เอกสารแนบประกอบคำร้อง")?
+2. "Read/download" behavior — since no real file bytes are ever stored in this prototype (only names), should both "read" and "download" just show the same kind of mock toast as `07-group-director-approval.html` does, or do you want a mock preview modal (e.g. a fake PDF-viewer-styled popup) instead of a toast?
+3. Confirm scope is all 8 pages (10-2-01 through 10-2-08), not just the 6 already touched in this doc.
+4. Should the file list also show file type/size, or just the filename (that's genuinely all the data that exists today — size/type were never saved, only names)?
+
+
 Status: IMPLEMENTED — verified in-browser (2026-09-03). See "Verification" section at the bottom.
 Scope: `D:\Mercil\E-CMIS-A4\activity10\*.html` (prefix `10-2-`) + supporting JS in `activity10/assets/`.
 

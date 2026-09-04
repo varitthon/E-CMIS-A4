@@ -112,10 +112,29 @@
       page: "10-2-08-legal-director-propose.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "รอเสนอมติบอร์ด (กิจกรรมที่ 7)",
-      statusCode: "L2_READY_FOR_BOARD",
+      /* เดิมขั้นนี้เป็นขั้นสุดท้าย (L2_READY_FOR_BOARD) แต่หลังเพิ่มขั้นธุรการ
+         ออกเลขส่งด้านล่าง สถานะที่เกิดขึ้นหลังลงนามในหน้านี้จึงต้องเป็นสถานะ
+         รอธุรการดำเนินการต่อแทน */
+      status: "ธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร",
+      statusCode: "L2_PENDING_DISPATCH",
       label: "ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง",
       stepName: "ผอ.กอง ลงนามเสนอ",
+    },
+    {
+      /* ขั้นตอนนี้ไม่มีรหัส LAW ในผัง AS-IS10.2-swimlane-split.drawio เดิม
+         (ผังเดิมข้ามจากผู้เสนอเรื่องไปที่ LAW0047 รองเลขาธิการฯ ลงนามเห็นชอบ
+         โดยตรง) เพิ่มขั้นนี้ใหม่ตามคำขอ ให้สอดคล้องกับรูปแบบของกิจกรรม 10.1
+         ที่มีขั้นธุรการออกเลขส่งคั่นระหว่างผู้อำนวยการลงนามกับส่งเสนอผู้บริหาร
+         (ดู 09-legal-admin-dispatch.html) — ยังไม่รวมขั้นรองเลขาธิการฯ ลงนาม */
+      code: "L2-DISPATCH",
+      seq: 16,
+      page: "10-2-09-legal-admin-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "รอเสนอมติบอร์ด (กิจกรรมที่ 7)",
+      statusCode: "L2_READY_FOR_BOARD",
+      label: "ธุรการกองกฎหมาย ออกเลขส่งและเสนอผู้บริหาร",
+      stepName: "ธุรการ ออกเลขส่ง",
     },
   ];
 
@@ -145,8 +164,8 @@
   ];
 
   const CASE_STATES = [
-    { value: "CLOSED", label: "คดีเสร็จสิ้นแล้ว" },
-    { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน" },
+    { value: "CLOSED", label: "คดีเสร็จสิ้นแล้ว", color: "#1e3a8a" },
+    { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน", color: "#1e3a8a" },
   ];
 
   function labelOf(list, value) {
@@ -715,9 +734,163 @@
     if (el) el.textContent = text == null || text === "" ? "-" : text;
   }
 
+  /* เอกสารแนบประกอบคำร้อง — แนบไว้ตั้งแต่ 02-board-intake.html (attachmentFileNames)
+     เก็บแค่ชื่อไฟล์ ไม่มีไบต์ไฟล์จริงให้ดาวน์โหลด (mockup ไม่มี backend เก็บไฟล์)
+     ใช้ร่วมกันทุกหน้า 10-2-xx ผ่าน populateCommon() */
+  function renderAttachments(containerId, fileNames) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const files = fileNames || [];
+    if (!files.length) {
+      el.innerHTML = '<div class="read-box l2-optional">ไม่มีเอกสารแนบ</div>';
+      return;
+    }
+    el.innerHTML = files
+      .map(function (name) {
+        const safeName = String(name).replace(/'/g, "\\'");
+        return (
+          '<div class="l2-attachment-row">' +
+          '<div class="l2-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
+          name +
+          "</div>" +
+          '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="ECMIS102.mockOpenFile(\'' +
+          safeName +
+          "')\">" +
+          '<i class="fa-solid fa-download me-1"></i>ดาวน์โหลด</button>' +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+
+  /* เปิด/ดาวน์โหลดไฟล์จริงไม่ได้ในmockup นี้ — แสดง toast แทน (ใช้แบบเดียวกับ
+     07-group-director-approval.html ที่มีปุ่ม "ดาวน์โหลดร่าง" อยู่แล้ว) */
+  function mockOpenFile(name) {
+    Swal.fire({
+      icon: "info",
+      title: "เปิดไฟล์ " + name + "...",
+      timer: 1200,
+      showConfirmButton: false,
+    });
+  }
+
   function setHtml(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
+  }
+
+  /* ------------------------------------------------------ DOC PREVIEW VIEWER
+     ตัวช่วยของแถบเครื่องมือ "ตัวอย่างเอกสารสด" (.l2-doc-viewer) บน 10-2-06/07
+     — ซูม, สลับปุ่มดูทีละหน้า/ต่อเนื่อง (เอกสารสั้น จึงมีหน้าเดียวเสมอ ปุ่มนี้
+     เป็นภาพลักษณ์เท่านั้น), เลื่อนโฟกัสไปฟอร์ม, ส่งออก DOCX จริงฝั่งไคลเอนต์ */
+  const docZoomLevels = new Map();
+
+  function zoomDoc(pageId, direction) {
+    const el = document.getElementById(pageId);
+    if (!el) return;
+    const current = docZoomLevels.get(pageId) || 0.5;
+    const next = Math.min(1.5, Math.max(0.3, current + direction * 0.1));
+    docZoomLevels.set(pageId, next);
+    el.style.zoom = String(next);
+    const label = document.getElementById(pageId + "ZoomVal");
+    if (label) label.textContent = Math.round(next * 100) + "%";
+  }
+
+  /* เริ่มต้นค่าซูมของแผงเอกสาร (เรียกครั้งเดียวตอน DOMContentLoaded) เพื่อให้
+     หน้ากระดาษ A4 พอดีกับคอลัมน์ตัวอย่างที่ค่อนข้างแคบ (300–400px) */
+  function initDocZoom(pageId, startZoom) {
+    const el = document.getElementById(pageId);
+    if (!el) return;
+    const z = startZoom || 0.5;
+    docZoomLevels.set(pageId, z);
+    el.style.zoom = String(z);
+    const label = document.getElementById(pageId + "ZoomVal");
+    if (label) label.textContent = Math.round(z * 100) + "%";
+  }
+
+  function setDocViewMode(btnEl) {
+    const bar = btnEl.closest(".l2-doc-viewmode");
+    if (!bar) return;
+    bar.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("is-active", b === btnEl);
+    });
+  }
+
+  /* คลิก "แก้ไขเอกสาร" ในแผงตัวอย่าง → เลื่อนไปโฟกัสฟิลด์แรกของฟอร์มกรอกข้อมูล
+     (ฟอร์มยังเป็นแหล่งข้อมูลจริงหนึ่งเดียว ตัวอย่างเอกสารอ่านอย่างเดียวเสมอ) */
+  function focusFirstField(fieldId) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const focusable =
+      el.matches("input, textarea, select, [contenteditable]")
+        ? el
+        : el.querySelector("input, textarea, select, [contenteditable], .l2-choice");
+    if (focusable && typeof focusable.focus === "function") {
+      window.setTimeout(function () { focusable.focus(); }, 300);
+    }
+  }
+
+  /* ส่งออกตัวอย่างเอกสารสดเป็นไฟล์ .docx จริงฝั่งไคลเอนต์ ผ่าน html-docx-js
+     โหลดเป็น UMD <script> ธรรมดาจาก unpkg (ไม่ใช่ dynamic import ESM แบบ Tiptap
+     เพราะซอร์สของไลบรารีนี้ใช้ `with` statement ซึ่ง esm.sh/esbuild แปลงเป็น
+     ES module แบบ strict mode ไม่ได้ — ทดสอบแล้วได้ 500 จาก esm.sh) */
+  let docxScriptPromise = null;
+  function loadDocxLib() {
+    if (global.htmlDocx) return Promise.resolve(global.htmlDocx);
+    if (!docxScriptPromise) {
+      docxScriptPromise = new Promise(function (resolve, reject) {
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js";
+        script.onload = function () { resolve(global.htmlDocx); };
+        script.onerror = function () { reject(new Error("โหลดไลบรารี html-docx-js ไม่สำเร็จ")); };
+        document.head.appendChild(script);
+      });
+    }
+    return docxScriptPromise;
+  }
+
+  function exportDocx(pageId, fileName) {
+    const el = document.getElementById(pageId);
+    if (!el) return;
+
+    Swal.fire({
+      title: "กำลังสร้างไฟล์ DOCX...",
+      allowOutsideClick: false,
+      didOpen: function () { Swal.showLoading(); },
+    });
+
+    loadDocxLib()
+      .then(function (lib) {
+        const asBlob = lib && lib.asBlob;
+        if (typeof asBlob !== "function") throw new Error("html-docx-js ไม่พร้อมใช้งาน");
+
+        const html =
+          "<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>" +
+          el.innerHTML +
+          "</body></html>";
+        const blob = asBlob(html);
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = (fileName || "เอกสาร") + ".docx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        Swal.close();
+      })
+      .catch(function (err) {
+        console.error("exportDocx error:", err);
+        Swal.fire({
+          icon: "error",
+          title: "ส่งออก DOCX ไม่สำเร็จ",
+          text: "กรุณาลองใหม่อีกครั้ง หรือใช้ปุ่มพิมพ์แทน",
+          confirmButtonColor: "#1e3a8a",
+        });
+      });
   }
 
   /* หัวโปรไฟล์มุมขวาบน — ทุกหน้า 10.2 เรียกตอน DOMContentLoaded */
@@ -868,6 +1041,13 @@
     mountEditor: mountEditor,
     getEditorText: getEditorText,
     getEditorHTML: getEditorHTML,
+    renderAttachments: renderAttachments,
+    mockOpenFile: mockOpenFile,
+    zoomDoc: zoomDoc,
+    initDocZoom: initDocZoom,
+    setDocViewMode: setDocViewMode,
+    focusFirstField: focusFirstField,
+    exportDocx: exportDocx,
   };
 
   /* หน้าเพจเรียกตรง ๆ ผ่าน onclick="toggleSpeechToText(...)" ตามแบบเดิมของ 10.1 */

@@ -27,7 +27,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260902_3" />
+    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260903_1" />
 
     <style>
       h1,
@@ -53,6 +53,57 @@
         max-width: 1300px;
         margin: 0 auto;
         width: 100%;
+      }
+
+      /* หน้านี้ (10-2-06) เท่านั้นที่ต้องการคอลัมน์เอกสารตัวอย่าง/ฟอร์มความกว้าง
+         เท่ากัน — override เฉพาะหน้า ไม่แก้ .l2-split ใน ecmis-10-2.css เพราะ
+         10-2-07 ยังใช้สัดส่วน minmax(300px,400px) 1fr เดิมอยู่ */
+      .l2-split {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+      }
+      .l2-split-preview {
+        max-width: none;
+        /* ปกติคอลัมน์นี้ sticky และจำกัด max-height ไว้ที่ความสูงจอ (จาก
+           ecmis-10-2.css) แต่หน้านี้ต้องการให้สูงเท่าฟอร์มฝั่งขวาเป๊ะ ๆ จึง
+           ปลดขีดจำกัดนั้นออก แล้วปล่อยให้ align-items:stretch ของ .l2-split
+           กำหนดความสูงแทน (ยังคง overflow-y:auto ไว้กันเนื้อหายาวล้น) */
+        max-height: none;
+      }
+      /* หัวกล่อง "ตัวอย่างเอกสารสด" (ซ้าย) กับหัวกล่อง "มติที่ประชุม..." (ขวา)
+         ต้องสูงเท่ากัน — ฝั่งขวามี badge บทบาทซ้อนบนชื่อเรื่อง 2 บรรทัดจึงสูง
+         กว่าโดยธรรมชาติ (~84px) เลยยืดฝั่งซ้ายให้เท่ากันแทนที่จะบีบฝั่งขวา */
+      .l2-doc-toolbar {
+        min-height: 84px;
+      }
+      /* ทั้งสองกล่อง (ตัวอย่างเอกสารสด / ฟอร์มกรอกมติ) สูงเท่ากันเต็มคอลัมน์ —
+         ไล่ flex:1 ลงไปจนถึงส่วนเนื้อหาที่ควรยืด (pageframe ของเอกสาร /
+         form-card-body ของฟอร์ม) ไม่ใช่ยืด header หรือแถบปุ่มด้านล่าง */
+      .l2-split-preview {
+        display: flex;
+        flex-direction: column;
+      }
+      .l2-split-preview .l2-doc-viewer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .l2-split-preview .l2-doc-pageframe {
+        flex: 1;
+        max-height: none;
+      }
+      .l2-split-form {
+        display: flex;
+        flex-direction: column;
+      }
+      .l2-split-form .form-card {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .l2-split-form .form-card-body {
+        flex: 1;
       }
 
       /* Stepper — 10.2 Part 1 has ten steps so it scrolls sideways on narrow screens */
@@ -476,6 +527,10 @@
                   -
                 </div>
               </div>
+              <div class="form-group">
+                <label>เอกสารแนบประกอบคำร้อง</label>
+                <div id="f_attachments"></div>
+              </div>
             </div>
           </div>
 
@@ -519,91 +574,268 @@
             </div>
           </div>
 
-          <div class="form-card" style="border: 2px solid #1e3a8a">
-            <div
-              class="form-card-header"
-              style="background: rgba(30, 58, 138, 0.05)"
-            >
-              <span
-                ><i class="fa-solid fa-gavel me-2" style="color: #1e3a8a"></i
-                >มติที่ประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
-              >
-              <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-users me-1"></i
-                >คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
-              >
-            </div>
-            <div class="form-card-body">
-              <div class="form-group">
-                <label
-                  >มติที่ประชุม <span style="color: #dc2626">*</span></label
+          <div class="l2-split">
+            <div class="l2-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div
+                  class="form-card-header"
+                  style="
+                    flex-direction: column;
+                    align-items: flex-start;
+                    justify-content: center;
+                    gap: 8px;
+                    min-height: 84px;
+                  "
                 >
-                <div class="l2-choice-grid" id="resolutionChoices"></div>
-              </div>
-
-              <div class="form-group">
-                <label
-                  >สถานะคดีที่เกี่ยวข้อง
-                  <span style="color: #dc2626">*</span></label
-                >
-                <div class="l2-choice-grid" id="caseStateChoices"></div>
-              </div>
-
-              <div class="form-group">
-                <label>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"
+                    ><i class="fa-solid fa-users me-1"></i
+                    >คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
+                  >
                   <span
-                    >ความเห็นคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร
-                    <span style="color: #dc2626">*</span>
+                    ><i
+                      class="fa-solid fa-gavel me-2"
+                      style="color: #1e3a8a"
+                    ></i
+                    >มติที่ประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
+                  >
+                </div>
+                <div class="form-card-body">
+                  <div class="form-group">
+                    <label
+                      >มติที่ประชุม <span style="color: #dc2626">*</span></label
+                    >
+                    <div class="l2-choice-grid" id="resolutionChoices"></div>
+                    <div
+                      class="l2-choice-other-detail d-none"
+                      id="otherDetailWrap"
+                    >
+                      <label>โปรดระบุ</label>
+                      <input
+                        type="text"
+                        id="in_resolutionOther"
+                        class="form-control"
+                        placeholder="ระบุมติที่ประชุม (กรณีอื่นๆ)"
+                        oninput="renderPreview()"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label
+                      >สถานะคดีที่เกี่ยวข้อง
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <div class="l2-choice-grid" id="caseStateChoices"></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>
+                      <span
+                        >ความเห็นคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร
+                        <span style="color: #dc2626">*</span>
+                        <button
+                          type="button"
+                          class="btn-mic"
+                          id="btnMicCommittee"
+                          onclick="
+                            toggleSpeechToText('in_committeeOpinion', this)
+                          "
+                          title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                        >
+                          <i class="fa-solid fa-microphone"></i></button
+                      ></span>
+                    </label>
+                    <div class="l2-tiptap-wrap">
+                      <div class="l2-tiptap-toolbar" id="tbCommitteeOpinion">
+                        <button type="button" data-cmd="bold" title="ตัวหนา">
+                          <i class="fa-solid fa-bold"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="italic"
+                          title="ตัวเอียง"
+                        >
+                          <i class="fa-solid fa-italic"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="bulletList"
+                          title="รายการหัวข้อ"
+                        >
+                          <i class="fa-solid fa-list-ul"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="orderedList"
+                          title="รายการลำดับเลข"
+                        >
+                          <i class="fa-solid fa-list-ol"></i>
+                        </button>
+                      </div>
+                      <div id="in_committeeOpinion"></div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>
+                      <span
+                        >รายละเอียดมติที่ประชุม
+                        <span style="color: #dc2626">*</span>
+                        <button
+                          type="button"
+                          class="btn-mic"
+                          id="btnMicResolution"
+                          onclick="
+                            toggleSpeechToText('in_resolutionDetail', this)
+                          "
+                          title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                        >
+                          <i class="fa-solid fa-microphone"></i></button
+                      ></span>
+                    </label>
+                    <div class="l2-tiptap-wrap">
+                      <div class="l2-tiptap-toolbar" id="tbResolutionDetail">
+                        <button type="button" data-cmd="bold" title="ตัวหนา">
+                          <i class="fa-solid fa-bold"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="italic"
+                          title="ตัวเอียง"
+                        >
+                          <i class="fa-solid fa-italic"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="bulletList"
+                          title="รายการหัวข้อ"
+                        >
+                          <i class="fa-solid fa-list-ul"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="orderedList"
+                          title="รายการลำดับเลข"
+                        >
+                          <i class="fa-solid fa-list-ol"></i>
+                        </button>
+                      </div>
+                      <div id="in_resolutionDetail"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <a href="01-work-inbox.html" class="btn btn-secondary"
+                    >ยกเลิก</a
+                  >
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="submitForm()"
+                  >
+                    <i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ บันทึกมติ
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="l2-split-preview" id="resolutionPreviewCol">
+              <div class="l2-doc-viewer">
+                <div class="l2-doc-toolbar">
+                  <div class="l2-doc-toolbar-title">
+                    <i class="fa-solid fa-file-lines text-primary"></i>
+                    <span>ตัวอย่างเอกสารสด — มติคณะอนุกรรมการฯ</span>
+                  </div>
+                  <div class="l2-doc-toolbar-actions">
                     <button
                       type="button"
-                      class="btn-mic"
-                      id="btnMicCommittee"
-                      onclick="toggleSpeechToText('in_committeeOpinion', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                      class="l2-doc-btn"
+                      onclick="ECMIS102.focusFirstField('resolutionChoices')"
                     >
-                      <i class="fa-solid fa-microphone"></i></button
-                  ></span>
-                </label>
-                <textarea
-                  id="in_committeeOpinion"
-                  class="form-control"
-                  rows="4"
-                  placeholder="ระบุความเห็นของคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร..."
-                ></textarea>
-              </div>
-
-              <div class="form-group">
-                <label>
-                  <span
-                    >รายละเอียดมติที่ประชุม
-                    <span style="color: #dc2626">*</span>
+                      <i class="fa-solid fa-pen-to-square"></i>แก้ไขเอกสาร
+                    </button>
                     <button
                       type="button"
-                      class="btn-mic"
-                      id="btnMicResolution"
-                      onclick="toggleSpeechToText('in_resolutionDetail', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                      class="l2-doc-btn"
+                      onclick="
+                        ECMIS102.exportDocx(
+                          'resolutionDraftPreview',
+                          'มติคณะอนุกรรมการพิจารณากลั่นกรองฯ',
+                        )
+                      "
                     >
-                      <i class="fa-solid fa-microphone"></i></button
-                  ></span>
-                </label>
-                <textarea
-                  id="in_resolutionDetail"
-                  class="form-control"
-                  rows="4"
-                  placeholder="ระบุรายละเอียดมติที่ประชุม..."
-                ></textarea>
+                      <i class="fa-solid fa-download"></i>ดาวน์โหลด
+                    </button>
+                    <button
+                      type="button"
+                      class="l2-doc-btn l2-doc-btn-icon l2-split-toggle"
+                      onclick="togglePreviewCollapse()"
+                      title="ย่อ/ขยาย"
+                    >
+                      <i
+                        class="fa-solid fa-chevron-down"
+                        id="previewToggleIcon"
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="l2-doc-controlbar">
+                  <div class="l2-doc-viewmode">
+                    <button
+                      type="button"
+                      class="is-active"
+                      onclick="ECMIS102.setDocViewMode(this)"
+                    >
+                      ดูทีละหน้า
+                    </button>
+                    <button
+                      type="button"
+                      onclick="ECMIS102.setDocViewMode(this)"
+                    >
+                      ดูทุกหน้าต่อเนื่อง
+                    </button>
+                  </div>
+                  <div class="l2-doc-pagenav">
+                    <button type="button" disabled title="หน้าแรก">
+                      <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button type="button" disabled title="ก่อนหน้า">
+                      <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span>1</span> / <span>1</span> หน้า
+                    <button type="button" disabled title="ถัดไป">
+                      <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <button type="button" disabled title="หน้าสุดท้าย">
+                      <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                  </div>
+                  <div class="l2-doc-zoom">
+                    <button
+                      type="button"
+                      onclick="ECMIS102.zoomDoc('resolutionDraftPreview', -1)"
+                    >
+                      <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <span
+                      class="l2-doc-zoom-val"
+                      id="resolutionDraftPreviewZoomVal"
+                      >50%</span
+                    >
+                    <button
+                      type="button"
+                      onclick="ECMIS102.zoomDoc('resolutionDraftPreview', 1)"
+                    >
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="l2-doc-pageframe l2-split-preview-body">
+                  <div
+                    class="l2-doc l2-doc-page"
+                    id="resolutionDraftPreview"
+                  ></div>
+                </div>
               </div>
-            </div>
-            <div class="form-actions">
-              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ บันทึกมติ
-              </button>
             </div>
           </div>
         </div>
@@ -615,7 +847,7 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260902_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20260903_1"></script>
 
     <script>
       const STEP_CODE = "LAW0044";
@@ -656,6 +888,7 @@
         ECMIS102.setText("f_requestedInfo", c.requestedInfo);
         ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
         ECMIS102.setText("f_requestChannel", c.requestChannelName);
+        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
       }
 
       function todayISO() {
@@ -688,6 +921,21 @@
         }).then(ECMIS102.goInbox);
       }
 
+      /* เหมือน requireText แต่สำหรับฟิลด์ที่เป็น Tiptap editor (ไม่มี .value) */
+      function requireEditorText(containerId, message) {
+        const val = ECMIS102.getEditorText(containerId);
+        if (!val) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: message,
+            confirmButtonColor: "#1e3a8a",
+          });
+          return null;
+        }
+        return val;
+      }
+
       /* ---- page specific ---- */
 
       /* select ที่ 1 = มติ, select ที่ 2 = สถานะคดี — แยกกันคนละช่อง แสดงพร้อมกัน */
@@ -708,6 +956,90 @@
           currentCase.l2SecretariatOpinion,
         );
         renderChoices();
+        mountEditors();
+        renderPreview();
+        ECMIS102.initDocZoom("resolutionDraftPreview", 0.5);
+      }
+
+      let committeeOpinionEditor = null;
+      let resolutionDetailEditor = null;
+
+      function mountEditors() {
+        ECMIS102.mountEditor("in_committeeOpinion", {
+          placeholder:
+            "ระบุความเห็นของคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร...",
+          toolbarId: "tbCommitteeOpinion",
+          onUpdate: renderPreview,
+        }).then(function (editor) {
+          committeeOpinionEditor = editor;
+          renderPreview();
+        });
+
+        ECMIS102.mountEditor("in_resolutionDetail", {
+          placeholder: "ระบุรายละเอียดมติที่ประชุม...",
+          toolbarId: "tbResolutionDetail",
+          onUpdate: renderPreview,
+        }).then(function (editor) {
+          resolutionDetailEditor = editor;
+          renderPreview();
+        });
+      }
+
+      /* ตัวอย่างเอกสารสด — อัปเดตทุกครั้งที่เลือกตัวเลือกหรือพิมพ์ในฟิลด์ Tiptap
+         อ้างอิงโครงจาก docs/10.2 mockup/Part 1 (มติคณะอนุกรรมการกลั่นกรอง) */
+      function renderPreview() {
+        const el = document.getElementById("resolutionDraftPreview");
+        if (!el || !currentCase) return;
+        const c = currentCase;
+        const resolutionLabel =
+          resolutionType === "OTHER"
+            ? "อื่นๆ — " +
+              (document.getElementById("in_resolutionOther").value.trim() ||
+                "…")
+            : Activity102.labelOf(Activity102.RESOLUTION_TYPES, resolutionType);
+        const caseStateLabel = Activity102.labelOf(
+          Activity102.CASE_STATES,
+          caseState,
+        );
+        const opinionHtml = committeeOpinionEditor
+          ? committeeOpinionEditor.getHTML()
+          : "";
+        const detailHtml = resolutionDetailEditor
+          ? resolutionDetailEditor.getHTML()
+          : "";
+
+        const row = (label, value) =>
+          '<div class="l2-doc-row"><span class="l2-doc-label">' +
+          label +
+          '</span><span class="l2-doc-value">' +
+          (value || "") +
+          "</span></div>";
+        const section = (label, html) =>
+          '<div class="l2-doc-section"><span class="l2-doc-label">' +
+          label +
+          '</span><div class="l2-doc-body">' +
+          (html || "-") +
+          "</div></div>";
+
+        el.innerHTML =
+          '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
+          '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
+          '<hr class="l2-doc-divider" />' +
+          section("เรื่อง", c.title) +
+          row("การประชุมครั้งที่", c.l2MeetingNo) +
+          row("เมื่อวันที่", ECMIS102.formatThaiDate(c.l2MeetingDate)) +
+          row("มติที่ประชุม", resolutionLabel) +
+          row("สถานะคดีที่เกี่ยวข้อง", caseStateLabel) +
+          section("ความเห็นคณะอนุกรรมการฯ", opinionHtml) +
+          section("รายละเอียดมติที่ประชุม", detailHtml);
+      }
+
+      function togglePreviewCollapse() {
+        const col = document.getElementById("resolutionPreviewCol");
+        const icon = document.getElementById("previewToggleIcon");
+        const collapsed = col.classList.toggle("is-collapsed");
+        icon.classList.toggle("fa-chevron-down", collapsed);
+        icon.classList.toggle("fa-chevron-up", !collapsed);
       }
 
       function choiceHtml(list, selected, handler) {
@@ -729,6 +1061,7 @@
               o.value +
               '"' +
               (o.value === selected ? " checked" : "") +
+              (o.color ? ' style="accent-color:' + o.color + '"' : "") +
               " />" +
               '<span class="l2-choice-label"' +
               (o.color ? ' style="color:' + o.color + '"' : "") +
@@ -750,29 +1083,42 @@
           caseState,
           "selectCaseState",
         );
+        document
+          .getElementById("otherDetailWrap")
+          .classList.toggle("d-none", resolutionType !== "OTHER");
       }
 
       function selectResolution(value) {
         resolutionType = value;
         renderChoices();
+        renderPreview();
       }
 
       function selectCaseState(value) {
         caseState = value;
         renderChoices();
+        renderPreview();
       }
 
       function submitForm() {
-        const opinion = requireText(
+        const opinion = requireEditorText(
           "in_committeeOpinion",
           "กรุณาระบุความเห็นของคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
         );
         if (!opinion) return;
-        const detail = requireText(
+        const detail = requireEditorText(
           "in_resolutionDetail",
           "กรุณาระบุรายละเอียดมติที่ประชุม",
         );
         if (!detail) return;
+        let otherDetail = "";
+        if (resolutionType === "OTHER") {
+          otherDetail = requireText(
+            "in_resolutionOther",
+            "กรุณาระบุมติที่ประชุม (กรณีอื่นๆ)",
+          );
+          if (!otherDetail) return;
+        }
 
         ECMIS102.openSignatureModal(
           {
@@ -793,6 +1139,7 @@
                 Activity102.CASE_STATES,
                 caseState,
               ),
+              l2ResolutionOtherDetail: otherDetail,
               l2CommitteeOpinion: opinion,
               l2ResolutionDetail: detail,
               assignedRole: "sub_secretariat",

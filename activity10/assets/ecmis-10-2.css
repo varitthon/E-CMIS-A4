@@ -171,6 +171,202 @@ body.dark-mode .l2-doc {
   margin: 22px 0;
 }
 
+/* ------------------------------------------------------ DOC PREVIEW VIEWER
+   กรอบ "ตัวอย่างเอกสารสด" แบบหน้ากระดาษ A4 พร้อมแถบเครื่องมือ (แก้ไข/ส่งออก
+   DOCX/พิมพ์/ซูม/เลื่อนหน้า) อ้างอิงหน้าตาจากตัวอย่างเอกสารของระบบ E-CMIS จริง
+   ใช้ที่ 10-2-06 และ 10-2-07 เท่านั้น หน้าอื่นที่ใช้ .l2-doc เฉย ๆ
+   (เช่น 10-2-08) ไม่เกี่ยวข้องและไม่ถูกกระทบ */
+.l2-doc-viewer {
+  background: #ffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.l2-doc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.l2-doc-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  color: var(--text-title);
+}
+
+.l2-doc-toolbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.l2-doc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.l2-doc-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-title);
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.l2-doc-btn:hover {
+  background: var(--border-color);
+}
+
+.l2-doc-btn-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.l2-doc-controlbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  font-size: 0.8em;
+  color: var(--text-title);
+}
+
+.l2-doc-viewmode {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.l2-doc-viewmode button {
+  height: 26px;
+  padding: 0 9px;
+  border: none;
+  background: var(--bg-card);
+  color: #64748b;
+  font-size: 0.92em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.l2-doc-viewmode button.is-active {
+  background: #1e3a8a;
+  color: #fff;
+}
+
+.l2-doc-pagenav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.l2-doc-pagenav button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: not-allowed;
+  opacity: 0.45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+}
+
+.l2-doc-pagenav span {
+  font-weight: 600;
+}
+
+.l2-doc-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.l2-doc-zoom button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: pointer;
+  font-size: 0.8em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.l2-doc-zoom button:hover {
+  background: var(--border-color);
+}
+
+.l2-doc-zoom-val {
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.l2-doc-pageframe {
+  background: #334155;
+  padding: 22px 14px;
+  height: 550px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.l2-doc-page {
+  /* border-box สำคัญ — ถ้าไม่ตั้ง padding จะบวกเพิ่มนอก width/min-height ทำให้
+     กล่องจริงกลายเป็น ~246mm x 337mm (สัดส่วน 0.73) แทนที่จะเป็น A4 แท้ ๆ
+     210mm x 297mm (สัดส่วน 0.707) */
+  box-sizing: border-box;
+  background: #fff;
+  color: #0f172a;
+  width: 210mm;
+  max-width: none;
+  /* ขนาดคงที่เท่า A4 จริง — ไม่ยืดตามเนื้อหา (สอดคล้องกับการตัดสินใจ "หน้าเดียว
+     ไม่แบ่งหน้าจริง") เนื้อหาที่ยาวเกินหนึ่งหน้าเลื่อนดูภายในกล่องนี้แทน */
+  height: 297mm;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20mm 18mm;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.92em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
 /* -------------------------------------------------------------- DECISIONS
    การ์ดตัวเลือกมติ ใช้โครงเดียวกับ .decision-card ของกิจกรรม 10.1 */
 .l2-choice-grid {
@@ -277,10 +473,15 @@ body.dark-mode .l2-note-warn {
 select.l2-select {
   appearance: none;
   -webkit-appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: calc(100% - 16px) center, calc(100% - 11px) center;
-  background-size: 5px 5px, 5px 5px;
+  background-position:
+    calc(100% - 16px) center,
+    calc(100% - 11px) center;
+  background-size:
+    5px 5px,
+    5px 5px;
   background-repeat: no-repeat;
   padding-right: 32px;
   text-overflow: ellipsis;
@@ -319,6 +520,7 @@ select.l2-select:disabled {
 
 .l2-split-form {
   min-width: 0;
+  width: 100%;
 }
 
 .l2-split-toggle {
@@ -327,7 +529,7 @@ select.l2-select:disabled {
 
 @media (max-width: 1024px) {
   .l2-split {
-    grid-template-columns: 1fr;
+    grid-template-columns: 2;
   }
   .l2-split-preview {
     position: static;
@@ -354,7 +556,7 @@ select.l2-select:disabled {
 
 .l2-tiptap-wrap:focus-within {
   border-color: #1e3a8a;
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+  /* box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); */
 }
 
 .l2-tiptap-toolbar {
@@ -400,6 +602,13 @@ select.l2-select:disabled {
   outline: none;
 }
 
+/* Tiptap สร้าง .ProseMirror (contenteditable จริง) เป็นลูกของ .l2-tiptap
+   ไม่ใช่ .l2-tiptap เอง — outline:none ด้านบนจึงไม่ผล ทำให้เบราว์เซอร์
+   วาดกรอบโฟกัสสีดำทับซ้อนกับกรอบฟ้าของ .l2-tiptap-wrap ตอนคลิก/พิมพ์ */
+.l2-tiptap .ProseMirror {
+  outline: none;
+}
+
 .l2-tiptap p {
   margin: 0 0 0.5em;
 }
@@ -425,6 +634,32 @@ select.l2-select:disabled {
 /* ---- ฟิลด์ "โปรดระบุ" ที่โผล่มาเมื่อเลือกตัวเลือก "อื่นๆ" ---- */
 .l2-choice-other-detail {
   margin-top: 10px;
+}
+
+/* ------------------------------------------------------- ATTACHMENT LIST
+   รายการเอกสารแนบประกอบคำร้อง (มาจาก 02-board-intake.html) แสดงแบบอ่านอย่างเดียว
+   ทุกหน้า 10-2-xx — โครงเดียวกับแถวไฟล์แนบใน 07-group-director-approval.html */
+.l2-attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.l2-attachment-row:last-child {
+  margin-bottom: 0;
+}
+
+.l2-attachment-name {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
 }
 
 /* ------------------------------------------------------ SIGNATURE MODAL

@@ -173,6 +173,20 @@
             </div>
           </div>
 
+          <!-- เอกสารแนบประกอบคำร้อง (มาจาก 02-board-intake.html) หน้านี้ไม่มีการ์ด
+               รายละเอียดคำขอร่วม จึงแสดงเป็นการ์ดของตัวเอง -->
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-paperclip text-primary me-2"></i
+                >เอกสารแนบประกอบคำร้อง</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div id="f_attachments"></div>
+            </div>
+          </div>
+
           <div class="form-card">
             <div class="form-card-header">
               <span><i class="fa-solid fa-file-lines text-primary me-2"></i>บันทึกข้อความ — รายงานผลการพิจารณากลั่นกรองฯ เสนอเลขาธิการ</span>
@@ -197,7 +211,7 @@
                 <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="toggleResolutionSheet()">
                   <i class="fa-solid fa-chevron-down me-1" id="resSheetToggleIcon"></i><span id="resSheetToggleText">แสดงเอกสาร</span>
                 </button>
-                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="window.print()">
+                <button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 12px; font-size: 0.82em" onclick="ECMIS102.exportDocx('resolutionSheet', 'มติคณะอนุกรรมการพิจารณากลั่นกรองฯ')">
                   <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
                 </button>
               </div>
@@ -232,7 +246,7 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260902_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20260903_1"></script>
 
     <script>
       const STEP_CODE = "LAW0045.1";
@@ -273,6 +287,7 @@
         ECMIS102.setText("f_requestedInfo", c.requestedInfo);
         ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
         ECMIS102.setText("f_requestChannel", c.requestChannelName);
+        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
       }
 
       function todayISO() {
@@ -425,8 +440,8 @@
             });
             Activity102.advance(currentCase.id, STEP_CODE, {
               statusBadge: "bg-success text-white",
-              assignedRole: "secgen",
-              officer: ECMIS102.signerLabel("secgen"),
+              assignedRole: "admin_legal",
+              officer: ECMIS102.signerLabel("admin_legal"),
             });
 
             Swal.fire({
@@ -435,7 +450,7 @@
               html:
                 '<div class="emd-summary">' +
                 "<p>บันทึกข้อความผ่านการลงนามของผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
-                "<p><strong>ขั้นตอนต่อไป:</strong> เสนอมติบอร์ด (กิจกรรมที่ 7)</p>" +
+                "<p><strong>ขั้นตอนต่อไป:</strong> ธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร</p>" +
                 "</div>",
               confirmButtonColor: "#1e3a8a",
               confirmButtonText: "กลับหน้าคิวงาน",
