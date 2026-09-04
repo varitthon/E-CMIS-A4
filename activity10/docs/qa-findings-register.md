@@ -34,9 +34,9 @@ Related: [`meeting-01092026-changes.md`](meeting-01092026-changes.md) ·
 
 ---
 
-# B. Needs a fix
+# B. Needs a fix — ALL FIXED (see below)
 
-## B1 — Notification wording is inconsistent with the page it appears on
+## B1 — Notification wording inconsistent with its own page ✅ FIXED
 
 `01-work-inbox.html:465` was changed to `ครบกำหนดยกร่างความเห็น`, but the same notification
 is **generated at runtime** from:
@@ -44,11 +44,10 @@ is **generated at runtime** from:
 - `assets/ecmis-app.js:2039, 2066, 2073`
 - `assets/ecmis-shell.js:37`
 
-which still say `ครบกำหนดยกร่างความเห็นแย้ง`. If the JS overwrites the static markup, the
-page shows the old wording. **Four strings.** Left alone earlier only because the shared JS
-was out of scope at the time.
+**Fixed:** all three occurrences now read `ครบกำหนดยกร่างความเห็น`, matching the page they
+render into. (Three, not four — `ecmis-shell.js:37` shares the same string.)
 
-## B2 — The รีเซ็ต button destroys created cases with no warning
+## B2 — รีเซ็ต destroyed created cases with no warning ✅ FIXED
 
 `01-work-inbox.html` has a **รีเซ็ต** button on the toolbar calling `Activity10.resetData()`,
 which restores the 15 seeded cases and **discards everything created through the UI**. Its
@@ -57,17 +56,21 @@ confirm dialog does not say that.
 It sits next to ordinary controls, and it has already cost one test case during this work.
 For the 4-flow QA — where testers build cases up over several steps — this is a live hazard.
 
-**Suggested:** spell out the consequence in the confirm text, and/or move it out of the main
-toolbar.
+**Fixed:** the confirm now states *สำนวนที่สร้างหรือแก้ไขเองทั้งหมดจะถูกลบถาวร และไม่สามารถกู้คืนได้*
+in red, and the confirm button reads **ลบสำนวนที่สร้างเอง และรีเซ็ต** on a red background instead
+of a neutral blue "ตกลงรีเซ็ต".
 
-## B3 — `DATA_VERSION` bumps silently discard user-created cases
+## B3 — `DATA_VERSION` bumps silently discarded user-created cases ✅ FIXED
 
 `loadCases()` keys storage on `DATA_VERSION`. Bumping it (necessary whenever seeded values
 change) starts a fresh store, so any case a tester created is gone. This happened twice
 during this work.
 
-Not wrong in itself, but nothing warns anyone. **Suggested:** note it in the QA docs as a
-release step, or migrate non-seeded cases across a bump.
+**Fixed:** `loadCases()` now carries user-created cases across the bump. On seeding it scans
+older `ecmis_act10_cases_*` keys, keeps every case whose id is not in the seed, appends them to
+the fresh data, and deletes the old keys — which also clears the orphaned-key build-up noted
+for testers. Verified: a case in an old store survived a version change, all 15 seeded cases
+stayed intact, and only the current key remained.
 
 ---
 

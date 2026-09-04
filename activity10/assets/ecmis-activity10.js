@@ -945,6 +945,44 @@
     }
   }
 
+  /* ย้ายสำนวนที่ผู้ใช้สร้างเองข้ามการเปลี่ยน DATA_VERSION
+     คีย์ของ localStorage ผูกกับ DATA_VERSION ทุกครั้งที่ขึ้นเวอร์ชัน (ซึ่งจำเป็น
+     เมื่อแก้ข้อมูลตัวอย่าง) ระบบจะเริ่มคลังใหม่ทั้งหมด สำนวนที่ทดสอบไว้จึงหายเงียบ ๆ
+     จึงเก็บเฉพาะสำนวนที่ไม่ได้มาจากข้อมูลตัวอย่างติดมาด้วย แล้วลบคีย์เก่าทิ้ง
+     เพื่อไม่ให้คีย์ค้างสะสมไปเรื่อย ๆ */
+  function migrateUserCasesFromOlderVersions(seed) {
+    const seededIds = new Set(seed.map((c) => c.id));
+    const carried = [];
+    const oldKeys = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || key === STORAGE_KEY) continue;
+        if (key.indexOf("ecmis_act10_cases_") !== 0) continue;
+        oldKeys.push(key);
+        const parsed = JSON.parse(localStorage.getItem(key) || "[]");
+        if (!Array.isArray(parsed)) continue;
+        parsed.forEach((c) => {
+          if (c && c.id && !seededIds.has(c.id)) {
+            seededIds.add(c.id);
+            carried.push(c);
+          }
+        });
+      }
+      oldKeys.forEach((k) => localStorage.removeItem(k));
+    } catch (e) {
+      console.warn("Failed to migrate cases from an older store", e);
+    }
+    if (carried.length) {
+      console.info(
+        "[E-CMIS] ย้ายสำนวนที่สร้างเอง " +
+          carried.length +
+          " รายการ มายังข้อมูลชุดใหม่",
+      );
+    }
+    return seed.concat(carried);
+  }
+
   function loadCases() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -955,8 +993,9 @@
     } catch (e) {
       console.warn("Failed to parse cases from localStorage", e);
     }
-    saveCases(INITIAL_CASES);
-    return INITIAL_CASES;
+    const seeded = migrateUserCasesFromOlderVersions(INITIAL_CASES);
+    saveCases(seeded);
+    return seeded;
   }
 
   function saveCases(cases) {
