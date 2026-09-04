@@ -93,7 +93,9 @@
  .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.88em; margin-bottom: 6px; }
  .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
  .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
- .step-label { font-size: 0.78em; color: #64748b; text-align: center; white-space: nowrap; max-width: 130px; }
+ .step-label { font-size: 0.78em; color: #64748b; text-align: center; white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35; max-width: 130px; }
  .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
  /* Form Card */
@@ -174,7 +176,7 @@
  <ul class="menu" id="sidebarMenu">
  <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
  <li><a href="05-group-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายนิติกร</span></a></li>
- <li><a href="07-group-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจร่างความเห็นแย้ง</span></a></li>
+ <li><a href="07-group-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span><mark class="wording-changed">ตรวจร่างความเห็น</mark></span></a></li>
  <li><a href="12-group-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติ และ มอบหมาย</span></a></li>
  <li><a href="14-group-director-final-review.html"><i class="fa-solid fa-file-signature"></i> <span>ตรวจร่างหนังสือตามมติ</span></a></li>
  <li><a href="21-group-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
@@ -309,6 +311,10 @@
  </div>
  </div>
  <div class="form-grid-2">
+   <div class="form-group">
+     <label><mark class="wording-changed">มติอัยการ</mark></label>
+     <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+   </div>
    <div class="form-group">
  <label>ระดับศาล</label>
  <div class="read-box" id="f_level">-</div>
@@ -515,6 +521,7 @@
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0014/2569');
  setElText('f_title', currentCase.title || '-');
  setElText('f_caseNo', currentCase.id || '-');
+ setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '1. อัยการมีความเห็นสั่งไม่ฟ้อง');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || '-');
  setElText('f_docNo', currentCase.docNo || '2569/0014');

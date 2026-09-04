@@ -93,7 +93,9 @@
         font-size: 0.8em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 140px;
       }
       .step-item.active .step-label {
@@ -372,6 +374,9 @@
 
       @media (max-width: 1024px) {
         .form-grid-2,
+        .form-grid-3 {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -682,7 +687,7 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้กล่าวหา</label>
+                  <label>ผู้กล่าวหา (ผู้ร้อง)</label>
                   <input
                     type="text"
                     id="f_complainant"
@@ -692,30 +697,10 @@
                   />
                 </div>
                 <div class="form-group">
-                  <label>ผู้ร้อง</label>
-                  <input
-                    type="text"
-                    id="f_petitioner"
-                    class="form-control"
-                    readonly
-                    style="background-color: var(--bg-card)"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>ผู้ถูกกล่าวหา</label>
+                  <label>ผู้ถูกกล่าวหา (จำเลย)</label>
                   <input
                     type="text"
                     id="f_accused"
-                    class="form-control"
-                    readonly
-                    style="background-color: var(--bg-card)"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>จำเลย</label>
-                  <input
-                    type="text"
-                    id="f_defendant"
                     class="form-control"
                     readonly
                     style="background-color: var(--bg-card)"
@@ -835,7 +820,7 @@
                 <select
                   id="in_prosecutorCaseType"
                   class="form-control"
-                  onchange="toggleProsecutorOtherInput()"
+                  onchange="toggleProsecutorOtherInput(); syncProsecutorLevel(); updateLivePreview();"
                 >
                   <option value="1">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
                   <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
@@ -900,12 +885,35 @@
                 <select
                   id="in_prosecutorLevel"
                   class="form-control"
-                  onchange="updateLivePreview()"
+                  onchange="toggleProsecutorLevelOtherInput(); updateLivePreview();"
                 >
+                  <option value="0">ยังไม่มีศาลระบุ</option>
                   <option value="1">ศาลชั้นต้น</option>
-                  <option value="2">ศาลอุธรณ์</option>
+                  <option value="2">ศาลอุทธรณ์</option>
                   <option value="3">ศาลฎีกา</option>
+                  <option value="9">อื่นๆ</option>
                 </select>
+                <div
+                  id="div_prosecutorLevelOther"
+                  style="display: none; margin-top: 8px"
+                >
+                  <label
+                    style="
+                      font-size: 0.82em;
+                      color: var(--text-title);
+                      margin-bottom: 4px;
+                    "
+                    >ระบุระดับศาล (อื่นๆ)
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_prosecutorLevelOtherText"
+                    class="form-control"
+                    placeholder="โปรดระบุระดับศาล..."
+                    oninput="updateLivePreview()"
+                  />
+                </div>
               </div>
               <div class="form-group">
                 <label
@@ -924,6 +932,26 @@
 สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1</textarea
                 >
               </div>
+            </div>
+
+            <!-- ฐานความผิด (มาตรา) — กรอกได้หลายรายการ เพื่อนำไปใช้ทำ Dashboard
+                 พบมากสุดประมาณ 6-7 มาตราต่อสำนวน · เฉพาะสายงาน 10.1 -->
+            <div class="form-group" id="grp_offenseBasis">
+              <label
+                >ฐานความผิด (มาตรา)
+                <span style="font-weight: 400; color: #64748b"
+                  >— เพิ่มได้หลายรายการ</span
+                ></label
+              >
+              <div id="offenseBasisList"></div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                style="margin-top: 6px"
+                onclick="addOffenseBasisRow()"
+              >
+                <i class="fa-solid fa-plus"></i> เพิ่มมาตรา
+              </button>
             </div>
 
             <!-- ========== เฉพาะหมวด 10.2 การขอเปิดเผยข้อมูลข่าวสาร ==========
@@ -1374,6 +1402,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
+    <script src="assets/ecmis-offense-basis.js?v=20260903_1"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -1401,6 +1430,7 @@
           "in_requestReceivedDate",
         );
         if (requestReceivedDateEl) requestReceivedDateEl.value = todayStr;
+        renderOffenseBasisList();
 
         // Live update preview listeners
         [
@@ -1438,6 +1468,51 @@
             otherDiv.style.display = "none";
           }
         }
+      }
+
+      /* "อื่นๆ" ในช่องระดับศาล — เปิดช่องให้ผู้ใช้พิมพ์ระดับศาลเอง */
+      function toggleProsecutorLevelOtherInput() {
+        const select = document.getElementById("in_prosecutorLevel");
+        const otherDiv = document.getElementById("div_prosecutorLevelOther");
+        if (select && otherDiv) {
+          if (select.value === "9") {
+            otherDiv.style.display = "block";
+            const input = document.getElementById(
+              "in_prosecutorLevelOtherText",
+            );
+            if (input) input.focus();
+          } else {
+            otherDiv.style.display = "none";
+          }
+        }
+      }
+
+      /* กรณีความเห็น/คำสั่งพนักงานอัยการเป็นตัวบอกว่าศาลใดตัดสินไปแล้ว
+         1-2 (ไม่ฟ้อง/ถอนฟ้อง)            -> ยังไม่มีศาลระบุ
+         3-5 (ไม่อุทธรณ์/ถอนอุทธรณ์)      -> ศาลชั้นต้น
+         6-8 (ไม่ฎีกา/ถอนฎีกา)            -> ศาลอุทธรณ์
+         9   (อื่นๆ)                       -> อื่นๆ
+         ตั้งค่าให้อัตโนมัติ แต่ผู้ใช้ยังแก้ไขเองได้ */
+      const PROSECUTOR_LEVEL_BY_CASE = {
+        1: "0",
+        2: "0",
+        3: "1",
+        4: "1",
+        5: "1",
+        6: "2",
+        7: "2",
+        8: "2",
+        9: "9",
+      };
+
+      function syncProsecutorLevel() {
+        const caseSelect = document.getElementById("in_prosecutorCaseType");
+        const levelSelect = document.getElementById("in_prosecutorLevel");
+        if (!caseSelect || !levelSelect) return;
+        const mapped = PROSECUTOR_LEVEL_BY_CASE[caseSelect.value];
+        if (mapped === undefined) return;
+        levelSelect.value = mapped;
+        toggleProsecutorLevelOtherInput();
       }
 
       /* "อื่นๆ" ในช่องประเภทผู้ยื่นคำขอ (เฉพาะบล็อกคำขอเปิดเผยข้อมูลข่าวสาร) */
@@ -1575,6 +1650,7 @@
         /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร */
         show("grp_docNo", !isDisclosure);
         show("grp_prosecutorLevel", !isDisclosure);
+        show("grp_offenseBasis", !isDisclosure);
         show("grp_title", !isDisclosure);
         show("grp_summary", !isDisclosure);
         show("grp_legalOpinion", !isDisclosure);
@@ -2189,6 +2265,50 @@
         }
       }
 
+      /* ตรวจช่อง "อื่นๆ" ของสายงาน 10.1 (คดีศาลยุติธรรม)
+         — กรณีความเห็น/คำสั่งพนักงานอัยการ และ ระดับศาล
+         ทั้งสองช่องมีเครื่องหมาย * จึงต้องบังคับกรอกเมื่อเลือก "อื่นๆ" */
+      function validateProsecutorFields() {
+        const caseTypeSel = document.getElementById("in_prosecutorCaseType");
+        if (
+          caseTypeSel &&
+          (caseTypeSel.value === "9" || caseTypeSel.value === "11")
+        ) {
+          const otherText = document.getElementById("in_prosecutorOtherText");
+          if (!otherText || !otherText.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ)",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (otherText) otherText.focus();
+            return false;
+          }
+        }
+
+        if (!validateOffenseBasisRows()) return false;
+
+        const levelSel = document.getElementById("in_prosecutorLevel");
+        if (levelSel && levelSel.value === "9") {
+          const levelOtherText = document.getElementById(
+            "in_prosecutorLevelOtherText",
+          );
+          if (!levelOtherText || !levelOtherText.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุระดับศาล (อื่นๆ)",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (levelOtherText) levelOtherText.focus();
+            return false;
+          }
+        }
+
+        return true;
+      }
+
       function submitReceiveAndForward() {
         submitBoardIntakeForm();
       }
@@ -2220,14 +2340,21 @@
         const prosecutorLevel = prosecutorLevelSelect
           ? prosecutorLevelSelect.value
           : "1";
+        const prosecutorLevelOtherInput = document.getElementById(
+          "in_prosecutorLevelOtherText",
+        );
         const prosecutorLevelName =
-          prosecutorLevel === "1"
-            ? "ศาลชั้นต้น"
-            : prosecutorLevel === "2"
-              ? "ศาลอุธรณ์"
-              : prosecutorLevel === "3"
-                ? "ศาลฎีกา"
-                : "ไม่ระบุ";
+          prosecutorLevel === "0"
+            ? "ยังไม่มีศาลระบุ"
+            : prosecutorLevel === "1"
+              ? "ศาลชั้นต้น"
+              : prosecutorLevel === "2"
+                ? "ศาลอุทธรณ์"
+                : prosecutorLevel === "3"
+                  ? "ศาลฎีกา"
+                  : prosecutorLevel === "9"
+                    ? `อื่นๆ (${prosecutorLevelOtherInput ? prosecutorLevelOtherInput.value.trim() : ""})`
+                    : "ไม่ระบุ";
         let prosecutorCaseTypeName = "";
         if (
           category === "10.1" &&
@@ -2295,6 +2422,7 @@
         }
 
         if (isDisclosure && !validateDisclosureFields()) return;
+        if (!isDisclosure && !validateProsecutorFields()) return;
 
         Swal.fire({
           icon: "question",
@@ -2338,6 +2466,7 @@
               prosecutorCaseTypeName: prosecutorCaseTypeName,
               prosecutorLevel: prosecutorLevel,
               prosecutorLevelName: prosecutorLevelName,
+          offenseBases: isDisclosure ? [] : collectOffenseBases(),
               summary: isDisclosure ? "" : summary,
               legalOpinion: isDisclosure ? "" : legalOpinion,
               accuser: accuser,

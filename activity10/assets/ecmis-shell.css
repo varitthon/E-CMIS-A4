@@ -116,3 +116,38 @@ body { background-color: var(--bg-body); color: var(--text-main); display: flex;
 @media (max-width: 1024px) {
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   REVIEW MARKER - wording changes from the 01/09/2026 meeting
+   (ความเห็นแย้ง -> ความเห็น). Highlights every changed label in yellow so the
+   reviewer can spot them. To finalise: delete this block and unwrap the
+   <mark class="wording-changed"> tags. See docs/wording-change-log.md
+   ========================================================================== */
+mark.wording-changed {
+  background-color: #fde047;
+  color: #713f12;
+  border-radius: 3px;
+  padding: 0 3px;
+  font-weight: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ==========================================================================
+   Decision choice cards — การ์ดตัวเลือกผลการพิจารณา (เห็นชอบ / เห็นแย้ง)
+   เดิมสไตล์นี้ถูกประกาศซ้ำไว้ในแต่ละหน้า (06/07/08) จึงย้ายมาไว้ที่ส่วนกลาง
+   หน้าไหนที่ยังมีสไตล์ของตัวเองจะทับค่าตรงนี้ได้ตามปกติ
+   ========================================================================== */
+.decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.decision-card {
+  border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px;
+  background: var(--bg-card); cursor: pointer; transition: all 0.2s ease;
+  display: flex; flex-direction: row; align-items: center; gap: 12px;
+}
+.decision-card:hover { border-color: #93c5fd; background: rgba(37, 99, 235, 0.02); }
+.decision-card.active-approve { border-color: #1e3a8a; background: rgba(30, 58, 138, 0.05); }
+.decision-card.active-return { border-color: #dc2626; background: rgba(220, 38, 38, 0.05); }
+
+@media (max-width: 1024px) {
+  .decision-grid { grid-template-columns: 1fr; }
+}

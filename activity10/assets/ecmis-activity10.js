@@ -7,7 +7,7 @@
   "use strict";
 
   // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v44_fix_prosecutor_case_type_wording";
+  const DATA_VERSION = "v45_meeting_01092026";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -1364,7 +1364,7 @@
           item.assignedRole = "dir_legal";
           item.workflowStep = 7;
           item.groupDirectorEndorsement =
-            "เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย";
+            "เห็นชอบตามคำร่างที่เสนอ และเสนอ ผอ.กองกฎหมาย";
           item.groupDirectorNotes = notes || "";
           item.groupDirectorApprovedDate = formatDisplayDate(new Date());
         } else {
@@ -1394,7 +1394,7 @@
           item.assignedRole = "admin_legal";
           item.workflowStep = 8;
           item.legalDirectorEndorsement =
-            "เห็นชอบตามร่างความเห็นแย้ง และมอบหมายธุรการส่งเสนอผู้บริหาร";
+            "เห็นชอบตามความเห็นที่เสนอ และมอบหมายธุรการส่งเสนอผู้บริหาร";
           item.legalDirectorApprovalNotes =
             notes || "ได้ตรวจพิจารณาแล้ว เห็นชอบตามร่างความเห็นแย้ง";
           item.legalDirectorForwardTarget =

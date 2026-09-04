@@ -31,7 +31,9 @@
  .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
  .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
  .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
- .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: nowrap; max-width: 180px; }
+ .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35; max-width: 180px; }
  .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
  /* Form Card */
@@ -111,7 +113,7 @@
  </a>
  <ul class="menu" id="sidebarMenu">
  <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
- <li><a href="06-officer-opinion.html"><i class="fa-solid fa-file-pen"></i> <span>ยกร่างความเห็นแย้ง</span></a></li>
+ <li><a href="06-officer-opinion.html"><i class="fa-solid fa-file-pen"></i> <span><mark class="wording-changed">ยกร่างความเห็น</mark></span></a></li>
  <li><a href="13-officer-final-doc.html"><i class="fa-solid fa-file-signature"></i> <span>จัดทำหนังสือตามมติ</span></a></li>
  <li><a href="18-officer-external-dispatch.html"><i class="fa-solid fa-truck-fast"></i> <span>จัดส่งหนังสือให้อัยการ/อสส.</span></a></li>
  <li><a href="22-officer-case-closed-notify.html"><i class="fa-solid fa-file-circle-check"></i> <span>บันทึกผล และ แจ้งกองบริหารคดี</span></a></li>
@@ -239,6 +241,10 @@
  </div>
  </div>
  <div class="form-grid-2">
+   <div class="form-group">
+     <label><mark class="wording-changed">มติอัยการ</mark></label>
+     <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+   </div>
    <div class="form-group">
  <label>ระดับศาล</label>
  <div class="read-box" id="f_level">-</div>
@@ -494,6 +500,7 @@
  setElText('f_accusedPosition', currentCase.accusedPosition || '-');
  setElText('f_caseNo', currentCase.id || '-');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
+ setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '1. อัยการมีความเห็นสั่งไม่ฟ้อง');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
 
