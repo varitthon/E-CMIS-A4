@@ -243,64 +243,23 @@
     },
     {
       /* คู่กับ L2-DISPATCH (10-2-09) ข้างบน — ธุรการกองกฎหมายเป็นผู้ออกเลขส่ง
-         และกดส่งเรื่องออกไปกิจกรรมที่ 7 จริง ๆ เสมอ ไม่ใช่ ผอ.กองกฎหมาย */
+         เดิมขั้นนี้ส่งเรื่องต่อไปกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท. เต็มคณะ) อีกรอบ
+         แต่แก้ให้ตรงกับผังเดิม (drawio หน้า 3, LAW0049–LAW0052) ซึ่งไม่มีรอบเสนอ
+         คณะกรรมการซ้ำ — ธุรการกองกฎหมายออกเลขส่งหนังสือแจ้งมติแล้วมอบหมายให้
+         กอง/สำนักเจ้าของสำนวนไปดำเนินการแจ้งผู้ยื่นคำขอและแจ้งสิทธิ์อุทธรณ์เอง
+         (LAW0052) เป็นขั้นตอนสุดท้ายของ flow นี้ — เดิมมี L2-DENY-RECEIVE/
+         L2-DENY-NOTICE-DRAFT/L2-DENY-REDACTION/L2-DENY-DISPATCH ต่อจากนี้อีก 4
+         ขั้น (10-2-18 ถึง 21) ซึ่งสร้างขึ้นสำหรับรอบเสนอคณะกรรมการซ้ำที่ตัดออกแล้ว
+         จึงลบทั้ง 4 ขั้นและไฟล์ที่เกี่ยวข้องออกจากระบบ */
       code: "L2-DENY-DISPATCH-COMMITTEE",
       seq: 24,
       page: "10-2-17-legal-admin-deny-dispatch-committee.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "รอเสนอคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7)",
-      statusCode: "L2_PENDING_COMMITTEE_DENY",
-      label: "[ไม่อนุญาต] ธุรการกองกฎหมาย ออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
-      stepName: "[ไม่อนุญาต] ธุรการ ออกเลขส่ง",
-      includeIf: ["DENY"],
-    },
-    {
-      code: "L2-DENY-RECEIVE",
-      seq: 25,
-      page: "10-2-18-legal-admin-deny-receive.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติไม่อนุญาตเปิดเผยข้อมูล",
-      statusCode: "L2_PENDING_DENY_NOTICE_DRAFT",
-      label: "[ไม่อนุญาต] ธุรการกองกฎหมาย รับมติคณะกรรมการ ป.ป.ท. และมอบหมายฝ่ายเลขานุการฯ",
-      stepName: "[ไม่อนุญาต] ธุรการ รับมติคกก.",
-      includeIf: ["DENY"],
-    },
-    {
-      code: "L2-DENY-NOTICE-DRAFT",
-      seq: 26,
-      page: "10-2-19-secretariat-deny-notice-draft.html",
-      role: "sub_secretariat",
-      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
-      statusCode: "L2_PENDING_DENY_REDACTION",
-      label: "[ไม่อนุญาต] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติไม่อนุญาตเปิดเผยข้อมูลแก่ผู้ยื่นคำขอ",
-      stepName: "[ไม่อนุญาต] เลขานุการฯ ร่างหนังสือแจ้งมติ",
-      includeIf: ["DENY"],
-    },
-    {
-      code: "L2-DENY-REDACTION",
-      seq: 27,
-      page: "10-2-20-secretariat-deny-redaction.html",
-      role: "sub_secretariat",
-      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
-      statusCode: "L2_PENDING_DENY_DISPATCH",
-      label: "[ไม่อนุญาต] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
-      stepName: "[ไม่อนุญาต] เลขานุการฯ ปกปิดข้อมูล",
-      includeIf: ["DENY"],
-    },
-    {
-      code: "L2-DENY-DISPATCH",
-      seq: 28,
-      page: "10-2-21-legal-admin-deny-dispatch.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "สิ้นสุด — แจ้งผลไม่อนุญาตเปิดเผยข้อมูลแล้ว",
-      statusCode: "L2_CASE_CLOSED_DENY_NOTICE_SENT",
-      label: "ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลไม่อนุญาตเปิดเผยข้อมูลแก่ผู้ยื่นคำขอ",
-      stepName: "ธุรการ ส่งแจ้งผล",
+      status: "สิ้นสุด — มอบหมายกอง/สำนักเจ้าของสำนวนแล้ว",
+      statusCode: "L2_CASE_CLOSED_DENY_ASSIGNED",
+      label: "[ไม่อนุญาต] ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวนดำเนินการแจ้งผล",
+      stepName: "[ไม่อนุญาต] ธุรการ ส่งมอบกอง",
       includeIf: ["DENY"],
     },
   ];
@@ -327,6 +286,16 @@
      เหล่านี้ตรง ๆ ใน patch ของ Activity102.advance() ไม่ใช้ค่า default ของ step */
   ROUTES["L2_PENDING_DENY_MEMO"] = "10-2-15-secretariat-deny-memo.html";
   delete ROUTES["L2_CASE_CLOSED_NOTICE_SENT"];
+
+  /* L2_BOARD_RESOLVED — สถานะกลางระหว่าง L2_READY_FOR_BOARD (L2-DISPATCH,
+     10-2-09: เพิ่งออกเลขส่งเสนอกิจกรรมที่ 7 ยังไม่รู้ผล) กับสถานะที่
+     L2-RECEIVE-OUTCOME (10-2-10) เขียนทับหลังธุรการกดรับมติ ใช้เมื่อกิจกรรมที่ 7
+     (เลขาธิการ/คณะกรรมการ ป.ป.ท.) ตอบกลับมติมาแล้ว (ทราบผลใน 3 ทาง — เปิดเผย/
+     เปิดเผยบางส่วน/ไม่อนุญาตเปิดเผย ผ่าน c.l2ResolutionType ที่บันทึกไว้ตั้งแต่
+     10-2-06) แต่ธุรการยังไม่ได้เข้าไปกดรับทราบ/ยืนยันในหน้า 10-2-10 — เข้าคิวงาน
+     ของธุรการเหมือน L2_READY_FOR_BOARD ทุกประการ (เปิดหน้าเดียวกัน เพราะกิจกรรมที่ 7
+     ไม่มีหน้าของตัวเองในระบบนี้) ต่างกันแค่ข้อความสถานะที่แสดงใน 01-work-inbox.html */
+  ROUTES["L2_BOARD_RESOLVED"] = "10-2-10-legal-admin-receive-outcome.html";
 
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
@@ -1186,9 +1155,22 @@
   function renderStepper(containerId, currentCode, kase) {
     const el = document.getElementById(containerId);
     if (!el) return;
+    /* หน้า Part 1 (10-2-01 ถึง 10-2-10, ขั้นตอนที่ไม่มี includeIf) ยังไม่ทราบ
+       ว่าจะไปเส้นทางไหนของ Part 2 (หรือทราบแล้วจาก l2ResolutionType แต่ยังไม่
+       ควรโชว์ล่วงหน้า) จึงตัดขั้นตอน Part 2 ทั้งหมด (มี includeIf) ออกจากแถบ
+       เสมอ ไม่ว่าคำร้องจะมีมติแล้วหรือไม่ — โชว์ตามสาขาจริงเฉพาะตอนอยู่ในหน้า
+       Part 2 เอง (currentCode มี includeIf) เท่านั้น */
+    const curStep = stepByCode(currentCode);
+    const onPart1 = !curStep || !curStep.includeIf;
     const branch = kase && kase.l2ResolutionType;
     const visible = STEPS.filter(function (s) {
-      return !s.includeIf || (branch && s.includeIf.indexOf(branch) > -1);
+      /* ตัด L2-RECEIVE-OUTCOME (10-2-10, "ธุรการ รับมติ") ออกจากแถบขั้นตอน
+         ของหน้า Part 1 ทั้งหมดตามที่ขอ — เหลือแถบสิ้นสุดที่ L2-DISPATCH
+         (10-2-09, "ธุรการ ออกเลขส่ง") */
+      if (onPart1 && s.code === "L2-RECEIVE-OUTCOME") return false;
+      if (!s.includeIf) return true;
+      if (onPart1) return false;
+      return branch && s.includeIf.indexOf(branch) > -1;
     });
     const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
     el.innerHTML = visible.map(function (step, i) {
@@ -1203,13 +1185,19 @@
     }).join("");
   }
 
-  /* เมนูข้างซ้ายของงาน 10.2 — แสดงเฉพาะขั้นตอนที่บทบาทนั้นรับผิดชอบ */
-  function renderSidebarMenu(containerId, activePage) {
+  /* เมนูข้างซ้ายของงาน 10.2 — แสดงเฉพาะขั้นตอนที่บทบาทนั้นรับผิดชอบ
+     ถ้าส่ง kase มา (ทราบ l2ResolutionType ของคำร้องที่กำลังเปิดอยู่แล้ว) จะตัด
+     ขั้นตอนของสาขาอื่นออกด้วย เหมือนที่ renderStepper ทำ — กันไม่ให้เมนูโชว์ทั้ง
+     เส้นทาง [เปิดเผย/บางส่วน] และ [ไม่อนุญาต] ปนกันสำหรับคำร้องที่มีมติแล้ว */
+  function renderSidebarMenu(containerId, activePage, kase) {
     const el = document.getElementById(containerId);
     if (!el) return;
     const roleId = currentRoleId();
+    const branch = kase && kase.l2ResolutionType;
     const mine = STEPS.filter(function (s) {
-      return s.role === roleId && s.page.indexOf("10-2-") === 0;
+      if (s.role !== roleId || s.page.indexOf("10-2-") !== 0) return false;
+      if (!s.includeIf) return true;
+      return !branch || s.includeIf.indexOf(branch) > -1;
     });
     const items = [
       '<li' + (activePage === "01-work-inbox.html" ? ' class="active"' : "") +

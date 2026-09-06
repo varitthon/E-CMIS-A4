@@ -713,7 +713,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-10-2.js?v=20260902_2"></script>
     <script>
@@ -1881,6 +1881,15 @@
         });
       }
 
+      function resolutionBadge(item) {
+        const kase = item && item.raw;
+        const resType = kase && kase.l2ResolutionType;
+        if (!resType || typeof Activity102 === "undefined") return "";
+        const label = Activity102.labelOf(Activity102.RESOLUTION_TYPES, resType);
+        const color = Activity102.colorOf(Activity102.RESOLUTION_TYPES, resType);
+        return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="มติบอร์ด">${label}</span>`;
+      }
+
       function getActionButton(item, roleId) {
         const caseId = item.id || item.caseNo;
         const statusCode = item.statusCode || "";
@@ -2113,7 +2122,7 @@
  <td>${item.accuser}</td>
  <td>${item.accused}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span></td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}</td>
  <td><span class="badge-danger-sla">${item.slaText}</span></td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
@@ -2148,7 +2157,7 @@
  <td style="max-width:220px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.reqUser || item.accuser || "-"}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span></td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}</td>
  <td><span class="badge-danger-sla">${item.slaText}</span></td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
@@ -2181,7 +2190,7 @@
  <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.level}</span></td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span></td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}</td>
  <td><span class="badge-danger-sla">${item.slaText}</span></td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
@@ -2218,7 +2227,7 @@
  <td>${item.accuser || item.reqUser || "-"}</td>
  <td>${item.accused || "-"}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span></td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}</td>
  <td><span class="badge-danger-sla">${item.slaText}</span></td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,

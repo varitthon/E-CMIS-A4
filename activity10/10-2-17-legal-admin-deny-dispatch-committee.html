@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ธุรการกองกฎหมาย ออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท. | E-CMIS กิจกรรมที่ 10.2
+      ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,13 +36,13 @@
       .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
 
       .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow-x: auto; }
-      .stepper { display: flex; justify-content: space-between; align-items: flex-start; position: relative; min-width: 900px; }
+      .stepper { display: flex; justify-content: flex-start; align-items: flex-start; position: relative; min-width: 900px; gap: 2px; }
       .stepper::before { content: ''; position: absolute; top: 18px; left: 30px; right: 30px; height: 2px; background: var(--border-color); z-index: 1; }
-      .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 1; }
+      .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 0 0 92px; }
       .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
       .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
       .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
-      .step-label { font-size: 0.72em; color: #64748b; text-align: center; white-space: nowrap; }
+      .step-label { font-size: 0.72em; color: #64748b; text-align: center; white-space: normal; word-break: break-word; line-height: 1.3; padding: 0 2px; }
       .step-item.active .step-label { color: var(--text-title); font-weight: 700; }
 
       .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
@@ -104,7 +104,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.</span>
+            <span style="color: var(--text-title); font-weight: 600">ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน</span>
           </div>
         </div>
 
@@ -163,17 +163,17 @@
             <i class="fa-solid fa-circle-info"></i>
             <div>
               บันทึกฉบับนี้ผ่านการลงนามของ <strong>ผู้อำนวยการกองกฎหมาย</strong> ในฐานะผู้เสนอเรื่องแล้ว
-              ธุรการกองกฎหมายมีหน้าที่ออกเลขที่หนังสือส่ง ระบุวันที่ และส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
-              เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. เต็มคณะต่อไป (กิจกรรมที่ 7)
+              ธุรการกองกฎหมายมีหน้าที่ออกเลขที่หนังสือส่ง ระบุวันที่ และมอบหมายให้กอง/สำนักเจ้าของสำนวน
+              ดำเนินการแจ้งผลผู้ยื่นคำขอและแจ้งสิทธิ์ขออุทธรณ์ต่อไป เมื่อดำเนินการเสร็จแล้ว คำร้องนี้จะสิ้นสุดขั้นตอน
             </div>
           </div>
 
           <div class="form-card">
             <div class="form-card-header">
-              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>บันทึกมติไม่อนุญาตเปิดเผยข้อมูล</span>
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>หนังสือแจ้งมติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองฯ</span>
             </div>
             <div class="form-card-body">
-              <div class="l2-doc" id="memoDoc"></div>
+              <div class="l2-doc" id="noticeDoc"></div>
             </div>
           </div>
 
@@ -184,7 +184,7 @@
             >
               <span
                 ><i class="fa-solid fa-stamp text-primary me-2"></i
-                >แบบฟอร์มออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
+                >แบบฟอร์มออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน
                 (ธุรการกองกฎหมาย)</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
@@ -229,16 +229,45 @@
 
               <div class="form-group">
                 <label
-                  >ส่งเสนอต่อไปยัง <span style="color: #dc2626">*</span></label
+                  >มอบหมายให้กอง/สำนักเจ้าของสำนวน <span style="color: #dc2626">*</span></label
                 >
-                <input
-                  type="text"
+                <select
                   class="form-control"
-                  id="f_dispatchTarget"
-                  value="เลขาธิการคณะกรรมการ ป.ป.ท. (เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท.)"
-                  readonly
-                  style="font-weight: 600; color: #1e3a8a"
-                />
+                  id="in_assignDept"
+                  onchange="toggleAssignDeptOtherInput()"
+                >
+                  <option value="">-- เลือกกอง/สำนัก --</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 1">กองปราบปรามการทุจริตในภาครัฐ 1</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 2">กองปราบปรามการทุจริตในภาครัฐ 2</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 3">กองปราบปรามการทุจริตในภาครัฐ 3</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 4">กองปราบปรามการทุจริตในภาครัฐ 4</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 5">กองปราบปรามการทุจริตในภาครัฐ 5</option>
+                  <option value="กองปราบปรามการทุจริตในภาครัฐ 6">กองปราบปรามการทุจริตในภาครัฐ 6</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 1">สำนักงาน ป.ป.ท. เขต 1</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 2">สำนักงาน ป.ป.ท. เขต 2</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 3">สำนักงาน ป.ป.ท. เขต 3</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 4">สำนักงาน ป.ป.ท. เขต 4</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 5">สำนักงาน ป.ป.ท. เขต 5</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 6">สำนักงาน ป.ป.ท. เขต 6</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 7">สำนักงาน ป.ป.ท. เขต 7</option>
+                  <option value="สำนักงาน ป.ป.ท. เขต 8">สำนักงาน ป.ป.ท. เขต 8</option>
+                  <option value="กองบริหารคดี">กองบริหารคดี</option>
+                  <option value="ศูนย์ปฏิบัติการต่อต้านการทุจริต (ศปท.)">ศูนย์ปฏิบัติการต่อต้านการทุจริต (ศปท.)</option>
+                  <option value="OTHER">อื่นๆ</option>
+                </select>
+                <div id="div_assignDeptOther" style="display: none; margin-top: 8px">
+                  <label style="font-size: 0.82em; color: var(--text-title); margin-bottom: 4px"
+                    >ระบุกอง/สำนักเจ้าของสำนวน (อื่นๆ)
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_assignDeptOtherText"
+                    class="form-control"
+                    placeholder="โปรดระบุชื่อกอง/สำนัก..."
+                    oninput="updateNoticeRecipientPreview()"
+                  />
+                </div>
               </div>
 
               <div class="form-group">
@@ -262,7 +291,7 @@
                   rows="2"
                   placeholder="ระบุหมายเหตุการนำส่ง..."
                 >
-กองกฎหมายได้ตรวจพิจารณาและลงนามในฐานะผู้เสนอเรื่องเรียบร้อยแล้ว จึงกราบเรียนเสนอเพื่อโปรดพิจารณานำเข้าที่ประชุมคณะกรรมการ ป.ป.ท.</textarea
+ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป</textarea
                 >
               </div>
             </div>
@@ -274,8 +303,8 @@
                 class="btn btn-primary"
                 onclick="submitDispatch()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
-                ส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.
+                <i class="fa-solid fa-paper-plane me-1"></i>ออกเลข และ
+                มอบหมายกอง/สำนักเจ้าของสำนวน
               </button>
             </div>
           </div>
@@ -285,7 +314,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260902_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-10-2.js?v=20260904_2"></script>
 
@@ -305,6 +334,7 @@
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
         currentCase = Activity102.getCase(id, "L2_PENDING_DENY_DISPATCH_COMMITTEE");
+        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
 
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
@@ -325,28 +355,64 @@
         if (el) el.value = todayISO();
       }
 
-      function renderMemoDoc() {
+      /* "อื่นๆ" ในช่องกอง/สำนักเจ้าของสำนวน — ตาม pattern เดียวกับ
+         toggleRequesterTypeOtherInput() ใน 02-board-intake.html */
+      function toggleAssignDeptOtherInput() {
+        const select = document.getElementById("in_assignDept");
+        const otherDiv = document.getElementById("div_assignDeptOther");
+        if (select && otherDiv) {
+          if (select.value === "OTHER") {
+            otherDiv.style.display = "block";
+            const input = document.getElementById("in_assignDeptOtherText");
+            if (input) input.focus();
+          } else {
+            otherDiv.style.display = "none";
+          }
+        }
+        updateNoticeRecipientPreview();
+      }
+
+      /* ชื่อกอง/สำนักเจ้าของสำนวนที่เลือกจริง (รวมกรณี "อื่นๆ" ที่พิมพ์เอง) */
+      function resolveAssignDeptName() {
+        const select = document.getElementById("in_assignDept");
+        if (!select || !select.value) return "";
+        if (select.value === "OTHER") {
+          return document.getElementById("in_assignDeptOtherText").value.trim();
+        }
+        return select.value;
+      }
+
+      /* อัปเดตบรรทัด "เรียน" ในเอกสารตัวอย่างแบบสด เมื่อเปลี่ยนกอง/สำนักที่เลือก */
+      function updateNoticeRecipientPreview() {
+        const el = document.getElementById("noticeDocRecipient");
+        if (el) el.textContent = resolveAssignDeptName() || "..............................";
+      }
+
+      function renderNoticeDoc() {
         const c = currentCase;
         const sigs = Activity102.signState(c);
+        const row = (label, value, id) =>
+          '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+          '</span><span class="l2-doc-value"' + (id ? ' id="' + id + '"' : "") + ">" +
+          (value || "") + "</span></div>";
         const section = (label, value) =>
           '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
           '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
-        const s = sigs.denyMemoProposer;
-        const img = s && s.image
-          ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
-          : '<div class="l2-sig-placeholder">รอลงนาม</div>';
-        const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
         const s2 = sigs.denyPropose;
         const img2 = s2 && s2.image
           ? '<img class="l2-sig-img" src="' + s2.image + '" alt="ลายเซ็น" />'
           : '<div class="l2-sig-placeholder">รอลงนาม</div>';
         const when2 = s2 && s2.signedAt ? '<div class="l2-sign-when">' + s2.signedAt + "</div>" : "";
 
-        document.getElementById("memoDoc").innerHTML =
-          '<div class="l2-doc-title">บันทึกมติไม่อนุญาตเปิดเผยข้อมูล</div>' +
-          section("เนื้อหา", c.l2DenyMemoText) +
+        document.getElementById("noticeDoc").innerHTML =
+          '<div class="l2-doc-title">แจ้งมติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารฯ' +
+          (c.l2MeetingNo ? " ครั้งที่ " + c.l2MeetingNo : "") + "</div>" +
+          row("เลขที่หนังสือ", c.l2DenyMemoDocNo || "รอออกเลข") +
+          row("เรียน", resolveAssignDeptName() || "..............................", "noticeDocRecipient") +
+          section("ความเห็นคณะอนุกรรมการฯ", c.l2CommitteeOpinion) +
+          section("มติที่ประชุม", c.l2DenyMemoText) +
+          section("หมายเหตุ", "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป") +
           '<div class="l2-doc-signblock">' +
-          '<div class="l2-sig-slot">' + img + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">อนุกรรมการและเลขานุการ</div>' + when + "</div>" +
           '<div class="l2-sig-slot">' + img2 + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">ผู้อำนวยการกองกฎหมาย</div>' + when2 + "</div>" +
           "</div>";
       }
@@ -354,10 +420,30 @@
       function populate() {
         ECMIS102.setText("f_officer", ECMIS102.signerLabel("admin_legal"));
         if (currentCase.l2DenyMemoDocNo) ECMIS102.setText("f_docNumber", currentCase.l2DenyMemoDocNo);
-        renderMemoDoc();
+        renderNoticeDoc();
       }
 
       function submitDispatch() {
+        const deptSelect = document.getElementById("in_assignDept");
+        if (!deptSelect.value) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกกอง/สำนักเจ้าของสำนวนที่จะมอบหมาย",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        if (deptSelect.value === "OTHER" && !document.getElementById("in_assignDeptOtherText").value.trim()) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุชื่อกอง/สำนักเจ้าของสำนวน (อื่นๆ)",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_assignDeptOtherText").focus();
+          return;
+        }
         const dispatchDate = document.getElementById("in_dispatchDate").value;
         if (!dispatchDate) {
           Swal.fire({
@@ -369,14 +455,15 @@
           return;
         }
         const notes = document.getElementById("in_dispatchNotes").value.trim();
+        const deptName = resolveAssignDeptName();
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันการออกเลขส่งและเสนอเลขาธิการคณะกรรมการ ป.ป.ท.?",
+          title: "ยืนยันการออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน?",
           html:
             '<div class="emd-summary">' +
-            "<p><strong>ส่งเสนอต่อไปยัง:</strong> เลขาธิการคณะกรรมการ ป.ป.ท.</p>" +
-            "<p><strong>ขั้นตอนต่อไป:</strong> รอผลมติจากกิจกรรมที่ 7 (การประชุมคณะกรรมการ ป.ป.ท.)</p></div>",
+            "<p><strong>มอบหมายให้:</strong> " + deptName + "</p>" +
+            "<p><strong>คำร้องนี้จะสิ้นสุดขั้นตอนหลังยืนยัน</strong></p></div>",
           showCancelButton: true,
           confirmButtonText: "ยืนยันออกเลขส่ง",
           cancelButtonText: "ยกเลิก",
@@ -386,15 +473,17 @@
           if (!res.isConfirmed) return;
 
           Activity102.advance(currentCase.id, STEP_CODE, {
-            l2DenyCommitteeDispatchDate: dispatchDate,
-            l2DenyCommitteeDispatchNotes: notes,
+            l2DenyAssignedDept: deptName,
+            l2DenyAssignDate: dispatchDate,
+            l2DenyAssignNotes: notes,
           });
 
           Swal.fire({
             icon: "success",
-            title: "ออกเลขส่งเรียบร้อย",
+            title: "มอบหมายกอง/สำนักเจ้าของสำนวนเรียบร้อย",
             html:
-              '<div class="emd-summary"><p>ส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท. เพื่อนำเข้าที่ประชุมคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) แล้ว</p></div>',
+              '<div class="emd-summary"><p><strong>มอบหมายให้:</strong> ' + deptName + "</p>" +
+              "<p>คำร้องนี้สิ้นสุดขั้นตอนแล้ว</p></div>",
             confirmButtonColor: "#1e3a8a",
             confirmButtonText: "กลับหน้าคิวงาน",
           }).then(ECMIS102.goInbox);
