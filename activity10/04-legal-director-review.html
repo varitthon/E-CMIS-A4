@@ -20,8 +20,8 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="assets/ecmis-shell.css" />
-    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       h1,
       h2,
@@ -112,7 +112,9 @@
         font-size: 0.8em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 140px;
       }
       .step-item.active .step-label {
@@ -241,8 +243,7 @@
       .d-none {
         display: none !important;
       }
-
-          </style>
+    </style>
   </head>
   <body>
     <!-- Sidebar Navigation -->
@@ -391,7 +392,9 @@
             </div>
             <div class="step-item">
               <div class="step-circle">4</div>
-              <div class="step-label">4. นิติกร จัดทำความเห็นแย้ง</div>
+              <div class="step-label">
+                4. นิติกร <mark class="wording-changed">จัดทำความเห็น</mark>
+              </div>
             </div>
             <div class="step-item">
               <div class="step-circle">5</div>
@@ -472,21 +475,21 @@
                 -
               </div>
             </div>
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
-              <label>เลขสำนวนคดี</label>
-              <div class="read-box" id="f_caseNo">-</div>
-            </div>
-              <div class="form-group">
-              <label>ระดับศาล</label>
-              <div
-                class="read-box"
-                style="font-weight: 600; font-size: 0.95em"
-                id="f_level"
-              >
-                -
+                <label>เลขสำนวนคดี</label>
+                <div class="read-box" id="f_caseNo">-</div>
               </div>
-            </div>
+              <div class="form-group">
+                <label>ระดับศาล</label>
+                <div
+                  class="read-box"
+                  style="font-weight: 600; font-size: 0.95em"
+                  id="f_level"
+                >
+                  -
+                </div>
+              </div>
             </div>
             <div class="form-grid-2">
               <div class="form-group">
@@ -541,8 +544,7 @@
             >
               <span
                 ><i class="fa-solid fa-user-check text-primary me-2"></i
-                >แบบฟอร์มพิจารณาสั่งการ และ มอบหมายกลุ่มงาน
-                (ผอ.กองกฎหมาย)</span
+                >แบบฟอร์มพิจารณาสั่งการ และ มอบหมายกลุ่มงาน (ผอ.กองกฎหมาย)</span
               >
               <span class="badge" style="background: #dbeafe; color: #1e40af"
                 >ขั้นตอนการปฏิบัติงาน</span
@@ -606,8 +608,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
 
-    <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script>
       let currentCase = null;
 
@@ -700,7 +704,7 @@
           "f_categoryName",
           currentCase.categoryName ||
             (currentCase.category === "10.1"
-              ? "10.1 ความเห็นแย้ง (คำสั่งไม่ฟ้อง/ฟ้องไม่หมด)"
+              ? "10.1 ความเห็นอัยการ"
               : currentCase.category === "10.2"
                 ? "10.2 ขอเปิดเผยข้อมูลข่าวสาร"
                 : "10.3 คดีศาลปกครอง"),

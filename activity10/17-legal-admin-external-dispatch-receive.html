@@ -22,8 +22,8 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css" />
-    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
       h1,
@@ -107,7 +107,9 @@
         font-size: 0.8em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 150px;
       }
       .step-item.active .step-label {
@@ -297,8 +299,7 @@
         border-color: #86efac;
         background: #f0fdf4;
       }
-
-          </style>
+    </style>
   </head>
   <body>
     <!-- Sidebar Navigation -->
@@ -530,17 +531,21 @@
                 -
               </div>
             </div>
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
-              <label>เลขสำนวนคดี</label>
-              <div class="read-box" id="f_caseNo">-</div>
-            </div>
+                <label>เลขสำนวนคดี</label>
+                <div class="read-box" id="f_caseNo">-</div>
+              </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
               </div>
             </div>
             <div class="form-grid-2">
+              <div class="form-group">
+                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+              </div>
               <div class="form-group">
                 <label>ระดับศาล</label>
                 <div class="read-box" id="f_level">-</div>
@@ -577,7 +582,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -589,7 +593,9 @@
           >
             <span
               ><i class="fa-solid fa-stamp text-success me-2"></i
-              >ตรวจสอบความถูกต้องของหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์</span
+              >ตรวจสอบความถูกต้องของ<mark class="wording-changed"
+                >หนังสือฉบับลงนามสมบูรณ์</mark
+              ></span
             >
             <span class="badge" style="background: #dcfce7; color: #166534"
               >ประธานลงนามเรียบร้อย</span
@@ -609,7 +615,7 @@
                   "
                 >
                   <i class="fa-solid fa-barcode text-success me-1"></i>1.
-                  เลขที่หนังสือส่งภายนอก (ส่งถึงอัยการสูงสุด)
+                  <mark class="wording-changed">เลขที่หนังสือส่งภายนอก</mark>
                 </span>
                 <span
                   class="font-monospace"
@@ -713,7 +719,7 @@
               >
             </div>
             <div class="form-card-body">
-                            <div class="form-grid-2">
+              <div class="form-grid-2">
                 <div class="form-group">
                   <label>ผู้รับมอบหมาย (นิติกรเจ้าของสำนวน)</label>
                   <input
@@ -733,6 +739,89 @@
                     style="font-weight: 600"
                   />
                 </div>
+              </div>
+
+              <!-- ปลายทางการจัดส่ง — เดิมหน้านี้ hardcode ว่าส่งถึงอัยการสูงสุด
+                   ตามมติที่ประชุมให้ธุรการเลือกปลายทางตรงนี้ แล้วส่งต่อให้นิติกรไปดำเนินการ -->
+              <div class="form-group">
+                <label
+                  >ส่งหนังสือไปที่ <span style="color: #dc2626">*</span></label
+                >
+                <div class="decision-grid" id="dispatchTargetGrid">
+                  <label
+                    class="decision-card active-approve"
+                    id="label_target_oag"
+                    onclick="selectDispatchTarget('OAG')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_dispatchTarget"
+                      id="target_oag"
+                      value="อัยการสูงสุด (อสส.)"
+                      checked
+                      style="accent-color: #1e3a8a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #1e3a8a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-scale-balanced me-1"></i>
+                        อัยการสูงสุด (อสส.)
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (เสนอให้ชี้ขาดกรณีความเห็นแย้ง)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_target_prosecutor"
+                    onclick="selectDispatchTarget('PROSECUTOR')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_dispatchTarget"
+                      id="target_prosecutor"
+                      value="พนักงานอัยการเจ้าของสำนวน"
+                      style="accent-color: #16a34a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #16a34a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-user-tie me-1"></i>
+                        พนักงานอัยการเจ้าของสำนวน
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (แจ้งผลกรณีเห็นชอบตามคำสั่งอัยการ)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+                <label
+                  style="
+                    margin-top: 8px;
+                    font-weight: 400;
+                    font-size: 0.85em;
+                    color: var(--text-title);
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    id="in_dispatchTargetBoth"
+                    onchange="selectDispatchTarget('BOTH')"
+                    style="width: 15px; height: 15px; vertical-align: -2px"
+                  />
+                  ส่งทั้งสองหน่วยงาน (อสส. และ พนักงานอัยการ)
+                </label>
               </div>
 
               <div class="form-group">
@@ -781,6 +870,9 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
     <script>
       let currentCase = null;
@@ -867,6 +959,11 @@
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0019/2569");
         setElText("f_title", currentCase.title || "-");
         setElText("f_caseNo", currentCase.id || "-");
+        setElText(
+          "f_prosecutorCaseTypeName",
+          currentCase.prosecutorCaseTypeName ||
+            "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
+        );
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText(
           "f_source",
@@ -939,6 +1036,51 @@
         }
       }
 
+      /* ปลายทางการจัดส่ง — ธุรการเลือกที่หน้านี้ แล้วนิติกรนำไปจัดส่งจริงที่หน้า 18 */
+      function selectDispatchTarget(target) {
+        const oagCard = document.getElementById("label_target_oag");
+        const proCard = document.getElementById("label_target_prosecutor");
+        const both = document.getElementById("in_dispatchTargetBoth");
+
+        if (target === "BOTH") {
+          /* ติ๊ก "ส่งทั้งสองหน่วยงาน" แล้วไม่ต้องเลือกการ์ดใบใดใบหนึ่ง */
+          const on = both && both.checked;
+          if (oagCard)
+            oagCard.className = on
+              ? "decision-card active-approve"
+              : "decision-card active-approve";
+          if (proCard)
+            proCard.className = on
+              ? "decision-card active-approve"
+              : "decision-card";
+          return;
+        }
+
+        if (both) both.checked = false;
+        if (target === "OAG") {
+          const r = document.getElementById("target_oag");
+          if (r) r.checked = true;
+          if (oagCard) oagCard.className = "decision-card active-approve";
+          if (proCard) proCard.className = "decision-card";
+        } else {
+          const r = document.getElementById("target_prosecutor");
+          if (r) r.checked = true;
+          if (oagCard) oagCard.className = "decision-card";
+          if (proCard) proCard.className = "decision-card active-approve";
+        }
+      }
+
+      /* คืนชื่อปลายทางที่เลือกไว้ เป็นข้อความสำหรับบันทึกและแสดงผล */
+      function getDispatchTargetName() {
+        const both = document.getElementById("in_dispatchTargetBoth");
+        if (both && both.checked)
+          return "อัยการสูงสุด (อสส.) และ พนักงานอัยการเจ้าของสำนวน";
+        const picked = document.querySelector(
+          'input[name="in_dispatchTarget"]:checked',
+        );
+        return picked ? picked.value : "";
+      }
+
       function submitLegalAdminSignedDocReceiveForm() {
         if (!currentCase) return;
 
@@ -946,6 +1088,17 @@
         const notes = document
           .getElementById("in_adminVerifyNotes")
           .value.trim();
+        const dispatchTarget = getDispatchTargetName();
+
+        if (!dispatchTarget) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกปลายทางที่จะส่งหนังสือ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
 
         Swal.fire({
           icon: "question",
@@ -954,6 +1107,7 @@
  <div class="emd-summary">
  <p><strong>เลขหนังสือส่งภายนอก:</strong> ที่ ปปท 0014/1245</p>
  <p><strong>สถานะการลงนาม:</strong> ประธานลงนามแล้ว</p>
+ <p><strong>ส่งหนังสือไปที่:</strong> ${dispatchTarget}</p>
  <p><strong>ส่งต่อนิติกร:</strong> นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</p>
  </div>
  `,
@@ -972,6 +1126,10 @@
               signedDocFile:
                 "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
               notes: notes,
+            });
+            /* ปลายทางที่เลือก ส่งต่อให้หน้า 18 ใช้ตั้งค่าผู้รับ */
+            Activity10.updateCase(currentCase.id, {
+              dispatchTarget: dispatchTarget,
             });
 
             Swal.fire({

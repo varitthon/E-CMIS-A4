@@ -7,7 +7,7 @@
   "use strict";
 
   // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v44_fix_prosecutor_case_type_wording";
+  const DATA_VERSION = "v46_fix_seed_prosecutor_source";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -504,7 +504,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       prosecutorCaseTypeNo: "1",
       prosecutorCaseTypeName: "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-      source: "สนง. ป.ป.ท. เขต 5",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 5",
       accuser: "สำนักงาน ป.ป.ท. เขต 5",
       accused: "นายเกียรติศักดิ์ ชัยชนะ",
       accusedPosition: "อดีตนายช่างโยธาอาวุโส",
@@ -555,7 +555,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       prosecutorCaseTypeNo: "1",
       prosecutorCaseTypeName: "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-      source: "สนง. ป.ป.ท. เขต 4",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 4",
       accuser: "สำนักงาน ป.ป.ท. เขต 4",
       accused: "นายอำนาจ พิทักษ์ธรรม",
       accusedPosition: "อดีตหัวหน้าฝ่ายพัฒนาชุมชน",
@@ -591,7 +591,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       prosecutorCaseTypeNo: "1",
       prosecutorCaseTypeName: "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-      source: "สนง. ป.ป.ท. เขต 1",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 1",
       accuser: "สำนักงาน ป.ป.ท. เขต 1",
       accused: "นายธีระ วัฒนกุล",
       accusedPosition: "อดีตเจ้าพนักงานวิทยาศาสตร์",
@@ -673,7 +673,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       prosecutorCaseTypeNo: "1",
       prosecutorCaseTypeName: "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-      source: "สนง. ป.ป.ท. เขต 3",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 3",
       accuser: "สำนักงาน ป.ป.ท. เขต 3",
       accused: "นายวิชัย การกุศล",
       accusedPosition: "เจ้าพนักงานจัดเก็บรายได้",
@@ -1114,7 +1114,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       title:
         "พิจารณาความเห็นแย้งคดีเบิกจ่ายเงินงบประมาณอุดหนุนโครงการฝึกอบรมเท็จ",
-      source: "สนง. ป.ป.ท. เขต 3",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 3",
       accuser: "สำนักงาน ป.ป.ท. เขต 3",
       accused: "นายวิชัย การกุศล",
       accusedPosition: "เจ้าพนักงานจัดเก็บรายได้",
@@ -1133,7 +1133,7 @@
       categoryName: "คดีอาญาทุจริตและคดีประพฤติมิชอบ",
       title:
         "ความเห็นแย้งคดีเจ้าหน้าที่เรียกรับผลประโยชน์ในการออกใบอนุญาตสีก่อสร้าง",
-      source: "สนง. ป.ป.ท. เขต 1",
+      source: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริตภาค 1",
       accuser: "สำนักงาน ป.ป.ท. เขต 1",
       accused: "นายศิริโชค มีอำนาจ",
       accusedPosition: "หัวหน้าฝ่ายโยธา",
@@ -1272,6 +1272,99 @@
     return dd + "-" + mm + "-" + (d.getFullYear() + 543);
   }
 
+  /* แถบเตือนเมื่อระบบสลับไปแสดงสำนวนอื่นแทนสำนวนที่ร้องขอ
+     แจ้งเฉพาะกรณีที่ระบุ ?id มาใน URL จริง ๆ เพราะค่า default ของแต่ละหน้า
+     เป็นค่าสมมติที่ไม่มีอยู่จริงอยู่แล้ว ถ้าเตือนทุกครั้งจะกลายเป็นเสียงรบกวน */
+  function notifyCaseFallback(requestedId, shownCase) {
+    try {
+      const requestedFromUrl = new URLSearchParams(
+        window.location.search,
+      ).get("id");
+      if (!requestedFromUrl || requestedFromUrl !== requestedId) return;
+      if (window.__ecmisCaseFallbackWarned) return;
+      window.__ecmisCaseFallbackWarned = true;
+
+      console.warn(
+        "[E-CMIS] ไม่พบสำนวน " +
+          requestedId +
+          " จึงแสดงสำนวน " +
+          (shownCase && shownCase.id) +
+          " แทน",
+      );
+
+      const render = function () {
+        /* body ของทุกหน้าเป็น flex row (sidebar + main) การแทรกที่ body โดยตรง
+           จะกลายเป็นคอลัมน์ที่สามและดันทั้งหน้าไปด้านข้าง จึงแทรกไว้ใน .main
+           ซึ่งเป็น flex column แทน และถอยไปใช้ position:fixed ถ้าไม่มี .main */
+        const host = document.querySelector(".main");
+        if (!host && !document.body) return;
+
+        const bar = document.createElement("div");
+        bar.id = "ecmisCaseFallbackBar";
+        bar.style.cssText =
+          "background:#fef3c7; color:#92400e; border-bottom:2px solid #f59e0b;" +
+          "padding:10px 16px; font-size:0.88em; font-weight:600;" +
+          "display:flex; align-items:center; gap:10px; flex-shrink:0;" +
+          (host ? "" : "position:fixed; top:0; left:0; right:0; z-index:3000;");
+        bar.innerHTML =
+          '<span style="font-size:1.1em">⚠️</span><span>ไม่พบสำนวน <b>' +
+          requestedId +
+          "</b> ในระบบ — กำลังแสดงสำนวน <b>" +
+          (shownCase && shownCase.id) +
+          "</b> แทน ข้อมูลและขั้นตอนที่เห็นจึงไม่ใช่ของสำนวนที่ร้องขอ</span>";
+
+        if (host) host.insertBefore(bar, host.firstChild);
+        else document.body.insertBefore(bar, document.body.firstChild);
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", render);
+      } else {
+        render();
+      }
+    } catch (e) {
+      /* ไม่ให้การแจ้งเตือนไปทำให้หน้าพัง */
+    }
+  }
+
+  /* ย้ายสำนวนที่ผู้ใช้สร้างเองข้ามการเปลี่ยน DATA_VERSION
+     คีย์ของ localStorage ผูกกับ DATA_VERSION ทุกครั้งที่ขึ้นเวอร์ชัน (ซึ่งจำเป็น
+     เมื่อแก้ข้อมูลตัวอย่าง) ระบบจะเริ่มคลังใหม่ทั้งหมด สำนวนที่ทดสอบไว้จึงหายเงียบ ๆ
+     จึงเก็บเฉพาะสำนวนที่ไม่ได้มาจากข้อมูลตัวอย่างติดมาด้วย แล้วลบคีย์เก่าทิ้ง
+     เพื่อไม่ให้คีย์ค้างสะสมไปเรื่อย ๆ */
+  function migrateUserCasesFromOlderVersions(seed) {
+    const seededIds = new Set(seed.map((c) => c.id));
+    const carried = [];
+    const oldKeys = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || key === STORAGE_KEY) continue;
+        if (key.indexOf("ecmis_act10_cases_") !== 0) continue;
+        oldKeys.push(key);
+        const parsed = JSON.parse(localStorage.getItem(key) || "[]");
+        if (!Array.isArray(parsed)) continue;
+        parsed.forEach((c) => {
+          if (c && c.id && !seededIds.has(c.id)) {
+            seededIds.add(c.id);
+            carried.push(c);
+          }
+        });
+      }
+      oldKeys.forEach((k) => localStorage.removeItem(k));
+    } catch (e) {
+      console.warn("Failed to migrate cases from an older store", e);
+    }
+    if (carried.length) {
+      console.info(
+        "[E-CMIS] ย้ายสำนวนที่สร้างเอง " +
+          carried.length +
+          " รายการ มายังข้อมูลชุดใหม่",
+      );
+    }
+    return seed.concat(carried);
+  }
+
   function loadCases() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -1282,8 +1375,9 @@
     } catch (e) {
       console.warn("Failed to parse cases from localStorage", e);
     }
-    saveCases(INITIAL_CASES);
-    return INITIAL_CASES;
+    const seeded = migrateUserCasesFromOlderVersions(INITIAL_CASES);
+    saveCases(seeded);
+    return seeded;
   }
 
   function saveCases(cases) {
@@ -1303,10 +1397,52 @@
       return PACC_INTAKE_DATABASE;
     },
 
+    /* หมายเหตุ: ถ้าหาสำนวนตาม id ไม่เจอ จะ fallback เป็นสำนวนแรกในระบบ
+       เพราะทุกหน้าตั้ง id เริ่มต้นเป็นค่าสมมติไว้ ทำให้เปิดหน้าตรง ๆ แล้วยังมีข้อมูลให้ดู
+       แต่เดิม fallback นี้เงียบสนิท ผู้ใช้จึงเห็นสำนวนอื่นโดยไม่รู้ตัว
+       (เช่นเปิดหน้า 07 ด้วยสำนวนที่ถูกลบไปแล้ว จะได้สำนวนที่เดินไปถึงขั้นตอน 19
+        ซึ่งไม่มีปุ่มให้อนุมัติ และ stepper ก็ไม่ตรงกับสำนวนที่แสดง)
+       จึงแจ้งเตือนให้เห็นชัดเมื่อเกิดการสลับสำนวน */
     getCaseById(id) {
       const cases = loadCases();
       if (!cases || cases.length === 0) return null;
-      return cases.find((c) => c.id === id) || cases[0];
+      const found = cases.find((c) => c.id === id);
+      if (found) return found;
+      notifyCaseFallback(id, cases[0]);
+      return cases[0];
+    },
+
+    /* ทำเครื่องหมายว่าขั้นตอนนั้นเสร็จแล้ว โดย "ไม่แตะป้ายชื่อขั้นตอน"
+       เดิมแต่ละหน้าเขียนทับ innerHTML ทั้งก้อน จึงต้องพิมพ์ชื่อขั้นตอนซ้ำลงไปเอง
+       และพิมพ์ผิดกันหลายหน้า (หน้า 07 เอาชื่อของขั้นตอน ผอ.กลุ่มงาน ไปทับขั้นตอน ผอ.กอง
+       หน้า 08 เอาชื่อ ผอ.กอง ไปทับขั้นตอนธุรการ หน้า 06 เปลี่ยนเลขขั้นตอนจาก 4 เป็น 5)
+       การแก้เฉพาะข้อความจะพลาดซ้ำได้อีก จึงเปลี่ยนมาแตะเฉพาะสถานะกับวงกลมแทน */
+    markStepCompleted(stepId) {
+      const el =
+        typeof stepId === "string" ? document.getElementById(stepId) : stepId;
+      if (!el) return false;
+      el.classList.remove("active");
+      el.classList.add("completed");
+      const circle = el.querySelector(".step-circle");
+      if (circle) circle.innerHTML = '<i class="fa-solid fa-check"></i>';
+      return true;
+    },
+
+    /* ทำให้ขั้นตอนถัดไปเป็นขั้นที่กำลังดำเนินการ */
+    markStepActive(stepId) {
+      const el =
+        typeof stepId === "string" ? document.getElementById(stepId) : stepId;
+      if (!el) return false;
+      el.classList.remove("completed");
+      el.classList.add("active");
+      return true;
+    },
+
+    /* ค้นแบบเข้มงวด — ไม่เจอคือ null ใช้เมื่อผู้เรียกต้องการตรวจเองว่ามีสำนวนหรือไม่ */
+    findCaseById(id) {
+      const cases = loadCases();
+      if (!cases || !cases.length) return null;
+      return cases.find((c) => c.id === id) || null;
     },
 
     /* Generic patch helper. Activity 10.2 has one workflow step per page and
@@ -1746,7 +1882,7 @@
           item.assignedRole = "dir_legal";
           item.workflowStep = 7;
           item.groupDirectorEndorsement =
-            "เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย";
+            "เห็นชอบตามคำร่างที่เสนอ และเสนอ ผอ.กองกฎหมาย";
           item.groupDirectorNotes = notes || "";
           item.groupDirectorApprovedDate = formatDisplayDate(new Date());
         } else {
@@ -1758,6 +1894,11 @@
           item.groupDirectorReturnNotes =
             notes || "ขอให้ตรวจสอบข้อเท็จจริงเพิ่มเติม";
           item.groupDirectorReturnedDate = formatDisplayDate(new Date());
+          /* ล้างร่องรอยการเห็นชอบครั้งก่อน มิฉะนั้นสำนวนจะค้าง: หน้าอนุมัติจะถือว่า
+             "อนุมัติไปแล้ว" จากวันที่ที่ยังค้างอยู่ จึงซ่อนปุ่มอนุมัติ ขณะที่การจ่ายงาน
+             ถูกส่งกลับไปที่นิติกรแล้ว ผู้อนุมัติขั้นถัดไปจึงไม่เห็นสำนวนเช่นกัน */
+          item.groupDirectorApprovedDate = null;
+          item.groupDirectorEndorsement = null;
         }
         item.groupDirectorApprovalSignature = signature || null;
         saveCases(cases);
@@ -1776,7 +1917,7 @@
           item.assignedRole = "admin_legal";
           item.workflowStep = 8;
           item.legalDirectorEndorsement =
-            "เห็นชอบตามร่างความเห็นแย้ง และมอบหมายธุรการส่งเสนอผู้บริหาร";
+            "เห็นชอบตามความเห็นที่เสนอ และมอบหมายธุรการส่งเสนอผู้บริหาร";
           item.legalDirectorApprovalNotes =
             notes || "ได้ตรวจพิจารณาแล้ว เห็นชอบตามร่างความเห็นแย้ง";
           item.legalDirectorForwardTarget =
@@ -1793,6 +1934,14 @@
           item.workflowStep = 5;
           item.directorReturnNotes = notes || "แก้ไขข้อกฎหมายเพิ่มเติม";
           item.directorReturnedDate = formatDisplayDate(new Date());
+          /* ล้างร่องรอยการเห็นชอบครั้งก่อน มิฉะนั้นสำนวนจะค้าง: หน้าอนุมัติจะถือว่า
+             "อนุมัติไปแล้ว" จากวันที่ที่ยังค้างอยู่ จึงซ่อนปุ่มอนุมัติ ขณะที่การจ่ายงาน
+             ถูกส่งกลับไปที่นิติกรแล้ว ผู้อนุมัติขั้นถัดไปจึงไม่เห็นสำนวนเช่นกัน */
+          item.legalDirectorApprovedDate = null;
+          item.directorApprovedDate = null;
+          item.legalDirectorEndorsement = null;
+          item.groupDirectorApprovedDate = null;
+          item.groupDirectorEndorsement = null;
         }
         item.legalDirectorApprovalSignature = signature || null;
         saveCases(cases);
@@ -1910,6 +2059,11 @@
           item.groupDirectorReturnNotes =
             reviewNotes || "ขอให้ตรวจสอบข้อเท็จจริงเพิ่มเติม";
           item.groupDirectorReturnedDate = formatDisplayDate(new Date());
+          /* ล้างร่องรอยการเห็นชอบครั้งก่อน มิฉะนั้นสำนวนจะค้าง: หน้าอนุมัติจะถือว่า
+             "อนุมัติไปแล้ว" จากวันที่ที่ยังค้างอยู่ จึงซ่อนปุ่มอนุมัติ ขณะที่การจ่ายงาน
+             ถูกส่งกลับไปที่นิติกรแล้ว ผู้อนุมัติขั้นถัดไปจึงไม่เห็นสำนวนเช่นกัน */
+          item.groupDirectorApprovedDate = null;
+          item.groupDirectorEndorsement = null;
         }
         saveCases(cases);
       }

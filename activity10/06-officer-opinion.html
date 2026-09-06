@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร จัดทำบันทึกความเห็นแย้ง | E-CMIS กิจกรรมที่ 10</title>
+    <title>นิติกร จัดทำบันทึกความเห็น | E-CMIS กิจกรรมที่ 10</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,8 +24,8 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="assets/ecmis-shell.css" />
-    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       h1,
       h2,
@@ -117,7 +117,9 @@
         font-size: 0.78em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 130px;
       }
       .step-item.active .step-label {
@@ -328,7 +330,8 @@
         }
       }
 
-      @media (max-width: 1024px) {.decision-grid {
+      @media (max-width: 1024px) {
+        .decision-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -355,7 +358,9 @@
           <li>
             <a href="06-officer-opinion.html"
               ><i class="fa-solid fa-file-pen"></i>
-              <span>ยกร่างความเห็นแย้ง</span></a
+              <span
+                ><mark class="wording-changed">ยกร่างความเห็น</mark></span
+              ></a
             >
           </li>
           <li>
@@ -399,7 +404,7 @@
           <div class="breadcrumb">
             <i class="fa-solid fa-house me-1"></i> หน้าแรก / งานกฎหมายในทางคดี /
             <strong style="color: var(--text-title)"
-              >จัดทำบันทึกความเห็นแย้ง</strong
+              ><mark class="wording-changed">จัดทำบันทึกความเห็น</mark></strong
             >
           </div>
         </div>
@@ -529,7 +534,7 @@
             >
           </div>
           <div class="form-card-body">
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>เลขรับสารบรรณกลาง</label>
                 <div
@@ -573,11 +578,11 @@
                 -
               </div>
             </div>
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
-              <label>เลขสำนวนคดี</label>
-              <div class="read-box" id="f_caseNo">-</div>
-            </div>
+                <label>เลขสำนวนคดี</label>
+                <div class="read-box" id="f_caseNo">-</div>
+              </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
@@ -757,7 +762,9 @@
                         "
                       >
                         <i class="fa-solid fa-triangle-exclamation me-1"></i>
-                        เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
+                        <span id="lbl_op_dissent_title"
+                          >เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ</span
+                        >
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (เสนอเลขาธิการ ป.ป.ท. ส่ง อสส. ชี้ขาด)
@@ -786,7 +793,9 @@
                         "
                       >
                         <i class="fa-solid fa-circle-check me-1"></i>
-                        เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ
+                        <span id="lbl_op_agree_title"
+                          >เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ</span
+                        >
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ยุติสำนวนและแจ้งผลตามขั้นตอน)
@@ -863,8 +872,10 @@
                 <label>
                   <span>
                     <span id="lbl_opinionDraft"
-                      >สาระสำคัญ /
-                      ข้อเท็จจริงและข้อกฎหมายประกอบความเห็นแย้ง</span
+                      >สาระสำคัญ / ข้อเท็จจริงและข้อกฎหมาย<mark
+                        class="wording-changed"
+                        >ประกอบความเห็น</mark
+                      ></span
                     >
                     <span style="color: #dc2626">*</span>
                     <button
@@ -888,10 +899,30 @@
                 >
               </div>
 
+              <!-- ฐานความผิด (มาตรา) — ธุรการกรอกมาจากหน้า 02
+                   นิติกรแก้ไข/เพิ่มเติมได้ที่นี่ ใช้วิดเจ็ตร่วมกับหน้า 02 -->
+              <div class="form-group" id="grp_offenseBasis">
+                <label
+                  >ฐานความผิด (มาตรา)
+                  <span style="font-weight: 400; color: #64748b"
+                    >— แก้ไข/เพิ่มเติมจากที่ธุรการบันทึกไว้ได้</span
+                  ></label
+                >
+                <div id="offenseBasisList"></div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  style="margin-top: 6px"
+                  onclick="addOffenseBasisRow()"
+                >
+                  <i class="fa-solid fa-plus"></i> เพิ่มมาตรา
+                </button>
+              </div>
+
               <div class="form-group">
                 <label
-                  >แนบไฟล์ร่างบันทึกความเห็นแย้งฉบับสมบูรณ์ (.docx /
-                  .pdf)</label
+                  >แนบไฟล์<mark class="wording-changed">ร่างบันทึกความเห็น</mark
+                  >ฉบับสมบูรณ์ (.docx / .pdf)</label
                 >
                 <div style="display: flex; align-items: center; gap: 8px">
                   <input
@@ -949,8 +980,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
 
-    <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script>
       let currentCase = null;
       let activeRecognition = null;
@@ -1059,10 +1093,13 @@
           if (otherContainer) otherContainer.classList.add("d-none");
           if (lblOpinion)
             lblOpinion.textContent =
-              "สาระสำคัญ / เหตุผลประกอบการเห็นชอบตามคำสั่งไม่ฟ้อง";
+              "สาระสำคัญ / เหตุผลประกอบการเห็นชอบตาม" +
+              getProsecutorOrderPhrase();
           if (textareaEl)
             textareaEl.placeholder =
-              "ระบุเหตุผลและข้อกฎหมายที่เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ...";
+              "ระบุเหตุผลและข้อกฎหมายที่เห็นชอบตาม" +
+              getProsecutorOrderPhrase() +
+              "ของพนักงานอัยการ...";
         } else if (t === "OTHER") {
           document.getElementById("op_other").checked = true;
           if (otherCard) otherCard.className = "decision-card active-other";
@@ -1080,6 +1117,40 @@
             textareaEl.placeholder =
               "ระบุรายละเอียดข้อเท็จจริง ข้อกฎหมาย หรือแนวทางการดำเนินการอื่นๆ...";
         }
+      }
+
+      /* ========== ถ้อยคำตามกรณีความเห็น/คำสั่งพนักงานอัยการ ==========
+         เดิมหน้านี้ hardcode คำว่า "ไม่ฟ้อง" ไว้ทุกจุด ทำให้ผิดเมื่อธุรการ
+         เลือกกรณีอื่นตอนรับเรื่อง (เช่น 5. ถอนอุทธรณ์) จึงดึงถ้อยคำจาก
+         prosecutorCaseTypeNo ที่บันทึกมาจากหน้า 02 แทน
+         กรณีที่ 9 (อื่นๆ) ใช้คำกลางว่า "คำสั่ง" */
+      const PROSECUTOR_ORDER_PHRASE = {
+        1: "คำสั่งไม่ฟ้อง",
+        2: "คำสั่งถอนฟ้อง",
+        3: "คำสั่งไม่อุทธรณ์(ลงโทษ)",
+        4: "คำสั่งไม่อุทธรณ์(ยกฟ้อง)",
+        5: "คำสั่งถอนอุทธรณ์",
+        6: "คำสั่งไม่ฎีกา(ลงโทษ)",
+        7: "คำสั่งไม่ฎีกา(ยกฟ้อง)",
+        8: "คำสั่งถอนฎีกา",
+        9: "คำสั่ง",
+      };
+
+      function getProsecutorOrderPhrase() {
+        const no = currentCase && currentCase.prosecutorCaseTypeNo;
+        return PROSECUTOR_ORDER_PHRASE[no] || PROSECUTOR_ORDER_PHRASE[1];
+      }
+
+      /* เขียนถ้อยคำลงหัวข้อการ์ดตัวเลือกทั้งสองใบ */
+      function applyProsecutorOrderWording() {
+        const phrase = getProsecutorOrderPhrase();
+        const dissentTitle = document.getElementById("lbl_op_dissent_title");
+        if (dissentTitle)
+          dissentTitle.textContent =
+            "เสนอทำความเห็นแย้ง" + phrase + "ของพนักงานอัยการ";
+        const agreeTitle = document.getElementById("lbl_op_agree_title");
+        if (agreeTitle)
+          agreeTitle.textContent = "เห็นชอบตาม" + phrase + "ของพนักงานอัยการ";
       }
 
       function loadCaseData() {
@@ -1140,6 +1211,11 @@
               ? "1. อัยการมีความเห็นสั่งไม่ฟ้อง"
               : "-"),
         );
+        /* หัวข้อการ์ดตัวเลือกต้องเปลี่ยนตามกรณีที่ธุรการเลือกไว้ตอนรับเรื่อง */
+        applyProsecutorOrderWording();
+        /* ฐานความผิดที่ธุรการกรอกมาจากหน้า 02 — นิติกรแก้ไขเพิ่มเติมได้ */
+        setOffenseBasisRows(currentCase.offenseBases);
+        renderOffenseBasisList();
         setElText(
           "f_opinion",
           currentCase.legalOpinion ||
@@ -1164,13 +1240,8 @@
           currentCase.officerSubmittedDate;
 
         if (isAlreadySubmitted) {
-          const step5El = document.getElementById("step5");
-          if (step5El) {
-            step5El.className = "step-item completed";
-            step5El.innerHTML =
-              '<div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">5. นิติกร ยกร่างความเห็น</div>';
-          }
-
+          Activity10.markStepCompleted("step5");
+          Activity10.markStepActive("step6");
           let opinionColor = "#dc2626";
           let opinionIcon = "fa-triangle-exclamation";
           if (
@@ -1215,7 +1286,7 @@
  </div>
 
  <div class="form-group">
- <label>สาระสำคัญ / เหตุผลความเห็นแย้ง</label>
+ <label>สาระสำคัญ / <mark class="wording-changed">เหตุผลความเห็น</mark></label>
  <div class="read-box read-box-textarea font-monospace">${currentCase.legalOpinionDraft || currentCase.legalOpinion || "-"}</div>
  </div>
  <div class="form-group">
@@ -1239,18 +1310,23 @@
         const isAgree = document.getElementById("op_agree")?.checked;
         const isOther = document.getElementById("op_other")?.checked;
 
+        /* ถ้อยคำต้องตรงกับกรณีที่ธุรการเลือกไว้ตอนรับเรื่อง ไม่ใช่ "ไม่ฟ้อง" เสมอ */
+        const orderPhrase = getProsecutorOrderPhrase();
+
         let opinionCode = "DISSENT";
         let opinionType =
-          "เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ (Dissenting Opinion)";
+          "เสนอทำความเห็นแย้ง" +
+          orderPhrase +
+          "ของพนักงานอัยการ (Dissenting Opinion)";
         let defaultFile = "ร่างบันทึกความเห็นแย้ง_สมบูรณ์.docx";
-        let summaryHtml = `<span style="color: #dc2626; font-weight: 700;">เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ</span>`;
+        let summaryHtml = `<span style="color: #dc2626; font-weight: 700;">เสนอทำความเห็นแย้ง${orderPhrase}ของพนักงานอัยการ</span>`;
 
         if (isAgree) {
           opinionCode = "AGREE";
           opinionType =
-            "เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (No Objection)";
-          defaultFile = "ร่างบันทึกเห็นชอบคำสั่งไม่ฟ้อง.docx";
-          summaryHtml = `<span style="color: #16a34a; font-weight: 700;">เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ</span>`;
+            "เห็นชอบตาม" + orderPhrase + "ของพนักงานอัยการ (No Objection)";
+          defaultFile = "ร่างบันทึกเห็นชอบ" + orderPhrase + ".docx";
+          summaryHtml = `<span style="color: #16a34a; font-weight: 700;">เห็นชอบตาม${orderPhrase}ของพนักงานอัยการ</span>`;
         } else if (isOther) {
           opinionCode = "OTHER";
           const otherSpecify = document
@@ -1285,6 +1361,8 @@
           return;
         }
 
+        if (!validateOffenseBasisRows()) return;
+
         const fileInput = document.getElementById("in_opinionFile");
         const fileName =
           fileInput && fileInput.files && fileInput.files[0]
@@ -1308,6 +1386,10 @@
         }).then((res) => {
           if (res.isConfirmed) {
             openSignatureModal(function (signatureDataUrl) {
+              /* บันทึกฐานความผิดที่นิติกรแก้ไข/เพิ่มเติมกลับเข้าสำนวนก่อนส่งต่อ */
+              Activity10.updateCase(currentCase.id, {
+                offenseBases: collectOffenseBases(),
+              });
               Activity10.submitOpinionToGroupDirector(
                 currentCase.id,
                 opinionType,
@@ -1361,7 +1443,8 @@
               ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
               : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
         }
-        if (boxCanvas) boxCanvas.classList.toggle("is-visible", mode === "hand");
+        if (boxCanvas)
+          boxCanvas.classList.toggle("is-visible", mode === "hand");
         if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
       }
 

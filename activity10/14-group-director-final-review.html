@@ -25,8 +25,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css" />
-    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
       h1,
@@ -110,7 +110,9 @@
         font-size: 0.8em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 150px;
       }
       .step-item.active .step-label {
@@ -317,7 +319,8 @@
         }
       }
 
-      @media (max-width: 1024px) {.decision-grid {
+      @media (max-width: 1024px) {
+        .decision-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -555,17 +558,21 @@
                 -
               </div>
             </div>
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
-              <label>เลขสำนวนคดี</label>
-              <div class="read-box" id="f_caseNo">-</div>
-            </div>
+                <label>เลขสำนวนคดี</label>
+                <div class="read-box" id="f_caseNo">-</div>
+              </div>
               <div class="form-group">
                 <label>หน่วยงานอัยการต้นทาง</label>
                 <div class="read-box" id="f_source">-</div>
               </div>
             </div>
             <div class="form-grid-2">
+              <div class="form-group">
+                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+              </div>
               <div class="form-group">
                 <label>ระดับศาล</label>
                 <div class="read-box" id="f_level">-</div>
@@ -679,7 +686,7 @@
             >
           </div>
           <div class="form-card-body">
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>นิติกรผู้รับผิดชอบจัดทำหนังสือ</label>
                 <div
@@ -925,6 +932,9 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script>
       let currentCase = null;
       let isRecording = false;
@@ -996,6 +1006,11 @@
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0014/2569");
         setElText("f_title", currentCase.title);
         setElText("f_caseNo", currentCase.id || "-");
+        setElText(
+          "f_prosecutorCaseTypeName",
+          currentCase.prosecutorCaseTypeName ||
+            "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
+        );
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText(
           "f_source",
@@ -1179,7 +1194,8 @@
               ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
               : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
         }
-        if (boxCanvas) boxCanvas.classList.toggle("is-visible", mode === "hand");
+        if (boxCanvas)
+          boxCanvas.classList.toggle("is-visible", mode === "hand");
         if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
       }
 

@@ -24,8 +24,8 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="assets/ecmis-shell.css" />
-    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       h1,
       h2,
@@ -117,7 +117,9 @@
         font-size: 0.78em;
         color: #64748b;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
         max-width: 130px;
       }
       .step-item.active .step-label {
@@ -324,7 +326,8 @@
         }
       }
 
-      @media (max-width: 1024px) {.decision-grid {
+      @media (max-width: 1024px) {
+        .decision-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -516,9 +519,9 @@
               <div class="step-circle">6</div>
               <div class="step-label">6. ผอ.กอง ตรวจพิจารณา</div>
             </div>
-            <div class="step-item" id="step8">
-              <div class="step-circle">8</div>
-              <div class="step-label">8. ธุรการ ออกเลขส่ง</div>
+            <div class="step-item" id="step7">
+              <div class="step-circle">7</div>
+              <div class="step-label">7. ธุรการ ออกเลขส่ง</div>
             </div>
           </div>
         </div>
@@ -535,7 +538,7 @@
             >
           </div>
           <div class="form-card-body">
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
                 <label>เลขรับสารบรรณกลาง</label>
                 <div
@@ -578,15 +581,19 @@
                 -
               </div>
             </div>
-                        <div class="form-grid-2">
+            <div class="form-grid-2">
               <div class="form-group">
-              <label>เลขสำนวนคดี</label>
-              <div class="read-box" id="f_caseNo">-</div>
-            </div>
+                <label>เลขสำนวนคดี</label>
+                <div class="read-box" id="f_caseNo">-</div>
+              </div>
               <div class="form-group">
-              <label>ระดับศาล</label>
-              <div class="read-box" id="f_level">-</div>
-            </div>
+                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
+              </div>
+              <div class="form-group">
+                <label>ระดับศาล</label>
+                <div class="read-box" id="f_level">-</div>
+              </div>
             </div>
             <div class="form-grid-2">
               <div class="form-group">
@@ -736,7 +743,9 @@
                         <i
                           class="fa-solid fa-circle-check text-success me-1"
                         ></i>
-                        เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย
+                        <mark class="wording-changed"
+                          >เห็นชอบตามคำร่างที่เสนอ</mark
+                        >
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ส่งเรื่องให้ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ)
@@ -765,7 +774,9 @@
                         "
                       >
                         <i class="fa-solid fa-rotate-left text-danger me-1"></i>
-                        ส่งเรื่องกลับให้นิติกรแก้ไขเพิ่มเติม
+                        <mark class="wording-changed"
+                          >เห็นแย้งตามคำร่างที่เสนอ</mark
+                        >
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ส่งคืนให้นิติกรเจ้าของสำนวนปรับปรุงเนื้อหา)
@@ -813,8 +824,8 @@
                 class="btn btn-primary"
                 onclick="submitGroupDirectorApproval()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>ยืนยันผลการตรวจ
-                และ เสนอ ผอ.กองกฎหมาย
+                <i class="fa-solid fa-paper-plane me-1"></i>ยืนยันผลการตรวจ และ
+                เสนอ ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -826,8 +837,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
 
-    <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script>
       let currentCase = null;
       let activeRecognition = null;
@@ -937,6 +950,11 @@
         setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0142/2569");
         setElText("f_title", currentCase.title || "-");
         setElText("f_caseNo", currentCase.id || "-");
+        setElText(
+          "f_prosecutorCaseTypeName",
+          currentCase.prosecutorCaseTypeName ||
+            "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
+        );
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
         setElText(
           "f_officerName",
@@ -999,13 +1017,8 @@
           currentCase.groupDirectorApprovedDate;
 
         if (isAlreadyApproved) {
-          const step6El = document.getElementById("step6");
-          if (step6El) {
-            step6El.className = "step-item completed";
-            step6El.innerHTML =
-              '<div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">6. ผอ.กลุ่มงาน ตรวจร่าง</div>';
-          }
-
+          Activity10.markStepCompleted("step5");
+          Activity10.markStepActive("step6");
           const cardContainer = document.getElementById(
             "approvalCardContainer",
           );
@@ -1030,7 +1043,7 @@
  <div class="form-grid-2">
    <div class="form-group span-2">
  <label>ผลการกลั่นกรอง / ตรวจพิจารณา</label>
- <div class="read-box fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>${currentCase.groupDirectorEndorsement || "เห็นชอบตามร่างความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ"}</div>
+ <div class="read-box fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>${currentCase.groupDirectorEndorsement || "เห็นชอบตามคำร่างที่เสนอ และเสนอ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ"}</div>
  </div>
  </div>
 
@@ -1072,7 +1085,7 @@
             : "ยืนยันการส่งกลับแก้ไข",
           html: `
  <div class="emd-summary">
- <p><strong>ผลการตรวจ:</strong> ${isApproved ? "เห็นชอบตามร่างความเห็นแย้ง" : "ส่งกลับแก้ไข"}</p>
+ <p><strong>ผลการตรวจ:</strong> ${isApproved ? "เห็นชอบตามคำร่างที่เสนอ" : "เห็นแย้งตามคำร่างที่เสนอ"}</p>
  <p><strong>การดำเนินการ:</strong> ${actionText}</p>
  </div>
  `,
@@ -1140,7 +1153,8 @@
               ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
               : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
         }
-        if (boxCanvas) boxCanvas.classList.toggle("is-visible", mode === "hand");
+        if (boxCanvas)
+          boxCanvas.classList.toggle("is-visible", mode === "hand");
         if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
       }
 
