@@ -166,58 +166,6 @@
       stepName: "ธุรการ รับมติ",
     },
     {
-      code: "L2-NOTICE-DRAFT",
-      seq: 18,
-      page: "10-2-11-secretariat-disclose-partial-notice-draft.html",
-      role: "sub_secretariat",
-      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคล หรือเสนอ ผอ.กองกฎหมายลงนาม",
-      statusCode: "L2_PENDING_REDACTION",
-      label: "[เปิดเผย/บางส่วน] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
-      stepName: "[เปิดเผย/บางส่วน] เลขานุการฯ ร่างหนังสือแจ้งมติ",
-      includeIf: ["DISCLOSE", "PARTIAL"],
-      caseState: ["INVESTIGATING"],
-    },
-    {
-      code: "L2-REDACTION",
-      seq: 19,
-      page: "10-2-12-secretariat-partial-redaction.html",
-      role: "sub_secretariat",
-      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "ผอ.กองกฎหมายตรวจและลงนามหนังสือแจ้งมติ",
-      statusCode: "L2_PENDING_NOTICE_SIGN",
-      label: "[เปิดเผยบางส่วน] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว (กรณีอนุญาตเปิดเผยบางส่วน)",
-      stepName: "[เปิดเผยบางส่วน] เลขานุการฯ ปกปิดข้อมูล",
-      includeIf: ["PARTIAL"],
-      caseState: ["INVESTIGATING"],
-    },
-    {
-      code: "L2-NOTICE-SIGN",
-      seq: 20,
-      page: "10-2-13-legal-director-disclose-partial-notice-sign.html",
-      role: "dir_legal",
-      roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
-      statusCode: "L2_PENDING_NOTICE_DISPATCH",
-      label: "[เปิดเผย/บางส่วน] ผอ.กองกฎหมาย ตรวจและลงนามหนังสือแจ้งมติผู้ยื่นคำขอ",
-      stepName: "[เปิดเผย/บางส่วน] ผอ.กอง ลงนามแจ้งมติ",
-      includeIf: ["DISCLOSE", "PARTIAL"],
-      caseState: ["INVESTIGATING"],
-    },
-    {
-      code: "L2-NOTICE-DISPATCH",
-      seq: 21,
-      page: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "สิ้นสุด — แจ้งผลผู้ยื่นคำขอแล้ว",
-      statusCode: "L2_CASE_CLOSED_NOTICE_SENT",
-      label: "[เปิดเผย/บางส่วน] ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
-      stepName: "[เปิดเผย/บางส่วน] ธุรการ ส่งแจ้งผล",
-      includeIf: ["DISCLOSE", "PARTIAL"],
-      caseState: ["INVESTIGATING"],
-    },
-    {
       code: "L2-DENY-MEMO",
       seq: 22,
       page: "10-2-15-secretariat-deny-memo.html",
@@ -314,6 +262,135 @@
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["CLOSED"],
     },
+
+    /* ---------------------------------------------------------- FLOW 2 PART 1
+       DISCLOSE/PARTIAL + อยู่ระหว่างไต่สวน (l2CaseState === "INVESTIGATING") —
+       เดิม 10-2-10 ส่งตรงไป L2-NOTICE-DRAFT (10-2-11) เลย ตอนนี้เพิ่มรอบเสนอ
+       กิจกรรมที่ 7 อีกครั้งก่อน (บันทึกเสนอเลขาธิการ + ผอ.กองกฎหมายให้ความเห็น
+       แล้วธุรการกองกฎหมายออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท. ต่อทันที — ตัดขั้นตอน
+       รองเลขาธิการฯ/เลขาธิการฯ ให้ความเห็นแยกออกแล้ว ดูเหตุผลที่
+       docs/10-2-flow2-part1-committee-referral.md) ตามเอกสารต้นแบบใน
+       docs/10.2 mockup/Part 1 - new 2/ และ Part 2 - new 1/ ผ่าน
+       L2_READY_FOR_BOARD_ROUND2 (holding, รอผลจริงจากกิจกรรมที่ 7) แล้วจบที่
+       L2-RECEIVE-BOARD-ROUND2 (10-2-30) ซึ่งส่งต่อเข้า L2-NOTICE-DRAFT (10-2-11)
+       ที่ใช้ร่วมกับทุกสาย DISCLOSE/PARTIAL อยู่แล้ว */
+    {
+      code: "L2-COMMITTEE-MEMO-DRAFT",
+      seq: 28,
+      page: "10-2-25-secretariat-committee-memo-draft.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
+      statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
+      label: "[อยู่ระหว่างไต่สวน] ฝ่ายเลขานุการฯ จัดทำมติคณะอนุกรรมการกลั่นกรองและบันทึกเสนอเลขาธิการ ลงนามในฐานะผู้เสนอเรื่อง",
+      stepName: "[อยู่ระหว่างไต่สวน] เลขานุการฯ จัดทำมติ+บันทึก",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-COMMITTEE-DIRECTOR-OPINION",
+      seq: 29,
+      page: "10-2-26-legal-director-committee-opinion.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.",
+      statusCode: "L2_PENDING_COMMITTEE_DISPATCH",
+      label: "[อยู่ระหว่างไต่สวน] ผอ.กองกฎหมาย พิจารณาและให้ความเห็นในบันทึกเสนอเลขาธิการ",
+      stepName: "[อยู่ระหว่างไต่สวน] ผอ.กอง ให้ความเห็น",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-COMMITTEE-DISPATCH",
+      seq: 32,
+      page: "10-2-29-legal-admin-committee-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "รอเสนอมติบอร์ด รอบ 2 (กิจกรรมที่ 7)",
+      statusCode: "L2_READY_FOR_BOARD_ROUND2",
+      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.",
+      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ ส่งกิจกรรมที่7",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      /* Part 2 ของรอบเสนอกิจกรรมที่ 7 ครั้งที่ 2 (เดิมทำเครื่องหมายว่ายังไม่ได้
+         สร้าง — ดู docs/10-2-flow2-part1-committee-referral.md) เพิ่มเข้ามาเป็น
+         ขั้นสุดท้ายของรอบนี้ ก่อนส่งต่อเข้า L2-NOTICE-DRAFT (10-2-11) ที่ใช้ร่วมกัน
+         ทุกสาย DISCLOSE/PARTIAL อยู่แล้ว — mirrors L2-RECEIVE-OUTCOME (10-2-10) แต่
+         ตัดการเลือก resolution/case state ออกเพราะค่าล็อกไว้ตั้งแต่ 10-2-06 แล้ว
+         ไม่มีการแยกสาขาใหม่ที่ขั้นนี้ */
+      code: "L2-RECEIVE-BOARD-ROUND2",
+      seq: 33,
+      page: "10-2-30-legal-admin-receive-board-round2.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ",
+      statusCode: "L2_PENDING_NOTICE_DRAFT",
+      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย รับมติจากกิจกรรมที่ 7 รอบ 2",
+      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ รับมติรอบ 2",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+
+    /* ย้ายมาจากตำแหน่งเดิม (ติดกับ 10-2-10 โดยตรง) มาไว้ท้าย FLOW 2 PART 1
+       ด้านบน — ตามลำดับเวลาจริงตอนนี้ INVESTIGATING ต้องผ่านรอบเสนอกิจกรรมที่ 7
+       (10-2-25 ถึง 10-2-30) ก่อน แล้วจึงมาถึงหน้าแจ้งมติชุดนี้ทีหลัง การจัดลำดับใน
+       STEPS มีผลต่อลำดับที่แสดงในแถบขั้นตอน (renderStepperV2 ใช้ตำแหน่งในอาเรย์
+       กำหนดว่าอันไหน "เสร็จแล้ว/กำลังทำ/รอ") จึงต้องย้ายมาไว้ท้ายให้ตรงกับลำดับ
+       เวลาจริง แม้ routing (ROUTES) จะยังทำงานถูกต้องอยู่แล้วก็ตาม */
+    {
+      code: "L2-NOTICE-DRAFT",
+      seq: 18,
+      page: "10-2-11-secretariat-disclose-partial-notice-draft.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคล หรือเสนอ ผอ.กองกฎหมายลงนาม",
+      statusCode: "L2_PENDING_REDACTION",
+      label: "[เปิดเผย/บางส่วน] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] เลขานุการฯ ร่างหนังสือแจ้งมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-REDACTION",
+      seq: 19,
+      page: "10-2-12-secretariat-partial-redaction.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ผอ.กองกฎหมายตรวจและลงนามหนังสือแจ้งมติ",
+      statusCode: "L2_PENDING_NOTICE_SIGN",
+      label: "[เปิดเผยบางส่วน] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว (กรณีอนุญาตเปิดเผยบางส่วน)",
+      stepName: "[เปิดเผยบางส่วน] เลขานุการฯ ปกปิดข้อมูล",
+      includeIf: ["PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-NOTICE-SIGN",
+      seq: 20,
+      page: "10-2-13-legal-director-disclose-partial-notice-sign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      statusCode: "L2_PENDING_NOTICE_DISPATCH",
+      label: "[เปิดเผย/บางส่วน] ผอ.กองกฎหมาย ตรวจและลงนามหนังสือแจ้งมติผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] ผอ.กอง ลงนามแจ้งมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-NOTICE-DISPATCH",
+      seq: 21,
+      page: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "สิ้นสุด — แจ้งผลผู้ยื่นคำขอแล้ว",
+      statusCode: "L2_CASE_CLOSED_NOTICE_SENT",
+      label: "[เปิดเผย/บางส่วน] ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      stepName: "[เปิดเผย/บางส่วน] ธุรการ ส่งแจ้งผล",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
   ];
 
   /* pending statusCode -> page that clears it. Built from STEPS so the table
@@ -346,6 +423,20 @@
   ROUTES["L2_PENDING_CLOSE_MEMO"] = "10-2-22-secretariat-close-memo.html";
   delete ROUTES["L2_CASE_CLOSED_DENY_ASSIGNED"];
 
+  /* สาย DISCLOSE/PARTIAL + อยู่ระหว่างไต่สวน รอบ 2 (Flow 2 Part 1, ใหม่) ไม่ได้
+     อยู่ติดกับสาย CLOSED ใน STEPS (คั่นด้วยสาย DENY/CLOSED ทั้งหมด) เติม route
+     เข้าเองแบบเดียวกับด้านบน และลบ route ที่ auto-reduce สร้างผิดจากตำแหน่ง
+     ติดกันบังเอิญระหว่างขั้นสุดท้ายของสาย CLOSE กับขั้นแรกของรอบนี้ */
+  ROUTES["L2_PENDING_COMMITTEE_MEMO_DRAFT"] = "10-2-25-secretariat-committee-memo-draft.html";
+  delete ROUTES["L2_CASE_CLOSED_DISCLOSE_ASSIGNED"];
+
+  /* L2-NOTICE-DRAFT (10-2-11 ถึง 10-2-14) ย้ายไปอยู่ท้ายอาเรย์ STEPS แล้ว
+     (ดูเหตุผลที่คอมเมนต์ตรงนั้น) — ตอนนี้ตำแหน่งจริงในอาเรย์คือต่อจาก
+     L2-RECEIVE-BOARD-ROUND2 (10-2-30) พอดี ทำให้ auto-reduce สร้าง route
+     "L2_PENDING_NOTICE_DRAFT" → 10-2-11 ให้ถูกต้องเองแล้ว ไม่ต้องเติมด้วยมืออีก
+     (เดิมตอนที่ 10-2-30 ยังไม่มี ต้องเติม/ลบ route ตรงนี้ด้วยมือเพราะ 10-2-29 กับ
+     10-2-11 อยู่ติดกันในอาเรย์บังเอิญ — ดูประวัติการแก้ไขถ้าต้องย้อนดู) */
+
   /* L2_BOARD_RESOLVED — สถานะกลางระหว่าง L2_READY_FOR_BOARD (L2-DISPATCH,
      10-2-09: เพิ่งออกเลขส่งเสนอกิจกรรมที่ 7 ยังไม่รู้ผล) กับสถานะที่
      L2-RECEIVE-OUTCOME (10-2-10) เขียนทับหลังธุรการกดรับมติ ใช้เมื่อกิจกรรมที่ 7
@@ -355,6 +446,13 @@
      ของธุรการเหมือน L2_READY_FOR_BOARD ทุกประการ (เปิดหน้าเดียวกัน เพราะกิจกรรมที่ 7
      ไม่มีหน้าของตัวเองในระบบนี้) ต่างกันแค่ข้อความสถานะที่แสดงใน 01-work-inbox.html */
   ROUTES["L2_BOARD_RESOLVED"] = "10-2-10-legal-admin-receive-outcome.html";
+
+  /* L2_BOARD_RESOLVED_ROUND2 — เหมือน L2_BOARD_RESOLVED ข้างบนทุกประการ แต่เป็น
+     รอบเสนอกิจกรรมที่ 7 ครั้งที่ 2 (Flow 2 Part 1 ใหม่): L2_READY_FOR_BOARD_ROUND2
+     (L2-COMMITTEE-DISPATCH, 10-2-29 — เพิ่งออกเลขส่งยังไม่รู้ผล) เข้าคิวงานเดียวกัน
+     กับ L2_BOARD_RESOLVED_ROUND2 นี้โดยอัตโนมัติอยู่แล้ว (auto-reduce จากตำแหน่ง
+     ติดกันในอาเรย์ STEPS ระหว่าง 10-2-29 กับ 10-2-30) ต่างกันแค่ข้อความสถานะ */
+  ROUTES["L2_BOARD_RESOLVED_ROUND2"] = "10-2-30-legal-admin-receive-board-round2.html";
 
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
