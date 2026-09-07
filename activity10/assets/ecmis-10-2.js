@@ -176,6 +176,7 @@
       label: "[เปิดเผย/บางส่วน] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
       stepName: "[เปิดเผย/บางส่วน] เลขานุการฯ ร่างหนังสือแจ้งมติ",
       includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
     },
     {
       code: "L2-REDACTION",
@@ -188,6 +189,7 @@
       label: "[เปิดเผยบางส่วน] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว (กรณีอนุญาตเปิดเผยบางส่วน)",
       stepName: "[เปิดเผยบางส่วน] เลขานุการฯ ปกปิดข้อมูล",
       includeIf: ["PARTIAL"],
+      caseState: ["INVESTIGATING"],
     },
     {
       code: "L2-NOTICE-SIGN",
@@ -200,6 +202,7 @@
       label: "[เปิดเผย/บางส่วน] ผอ.กองกฎหมาย ตรวจและลงนามหนังสือแจ้งมติผู้ยื่นคำขอ",
       stepName: "[เปิดเผย/บางส่วน] ผอ.กอง ลงนามแจ้งมติ",
       includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
     },
     {
       code: "L2-NOTICE-DISPATCH",
@@ -212,6 +215,7 @@
       label: "[เปิดเผย/บางส่วน] ธุรการกองกฎหมาย ออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
       stepName: "[เปิดเผย/บางส่วน] ธุรการ ส่งแจ้งผล",
       includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
     },
     {
       code: "L2-DENY-MEMO",
@@ -262,6 +266,54 @@
       stepName: "[ไม่อนุญาต] ธุรการ ส่งมอบกอง",
       includeIf: ["DENY"],
     },
+
+    /* ---------------------------------------------------------- FLOW 3
+       DISCLOSE/PARTIAL + คดีเสร็จสิ้นแล้ว (l2CaseState === "CLOSED") — เดิมไม่มี
+       ไฟล์ของสายนี้เลย (ดู docs/10-2-flow-by-board-resolution.md) ทุกคำร้อง
+       DISCLOSE/PARTIAL เดินสาย "อยู่ระหว่างไต่สวน" (L2-NOTICE-DRAFT ฯลฯ ด้านบน)
+       เหมือนกันหมด — เพิ่มสายนี้แบบย่อ (จบด้วยมอบหมายกอง/สำนักเจ้าของสำนวน) ตาม
+       รูปแบบเดียวกับสาย DENY ด้านบน แทนที่จะสร้างครบ 11 ขั้นของผังเดิม
+       (LAW0058–LAW0068) เพราะมีรอบเสนอคณะกรรมการฯ ซ้ำแบบเดียวกับที่สาย DENY
+       ตัดออกไปแล้ว */
+    {
+      code: "L2-CLOSE-MEMO",
+      seq: 25,
+      page: "10-2-22-secretariat-close-memo.html",
+      role: "sub_secretariat",
+      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      status: "ผอ.กองกฎหมายพิจารณาเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_CLOSE_PROPOSE",
+      label: "[คดีเสร็จสิ้นแล้ว] ฝ่ายเลขานุการฯ จัดทำบันทึกและมติเปิดเผยข้อมูล ลงนาม และออกเลขหนังสือส่งภายใน",
+      stepName: "[คดีเสร็จสิ้นแล้ว] เลขานุการฯ จัดทำบันทึกมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["CLOSED"],
+    },
+    {
+      code: "L2-CLOSE-PROPOSE",
+      seq: 26,
+      page: "10-2-23-legal-director-close-propose.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_CLOSE_DISPATCH_COMMITTEE",
+      label: "[คดีเสร็จสิ้นแล้ว] ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง",
+      stepName: "[คดีเสร็จสิ้นแล้ว] ผอ.กอง ลงนามเสนอ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["CLOSED"],
+    },
+    {
+      code: "L2-CLOSE-DISPATCH-COMMITTEE",
+      seq: 27,
+      page: "10-2-24-legal-admin-close-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "สิ้นสุด — มอบหมายกอง/สำนักเจ้าของสำนวนแล้ว",
+      statusCode: "L2_CASE_CLOSED_DISCLOSE_ASSIGNED",
+      label: "[คดีเสร็จสิ้นแล้ว] ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวนดำเนินการแจ้งผล",
+      stepName: "[คดีเสร็จสิ้นแล้ว] ธุรการ ส่งมอบกอง",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["CLOSED"],
+    },
   ];
 
   /* pending statusCode -> page that clears it. Built from STEPS so the table
@@ -286,6 +338,13 @@
      เหล่านี้ตรง ๆ ใน patch ของ Activity102.advance() ไม่ใช้ค่า default ของ step */
   ROUTES["L2_PENDING_DENY_MEMO"] = "10-2-15-secretariat-deny-memo.html";
   delete ROUTES["L2_CASE_CLOSED_NOTICE_SENT"];
+
+  /* สาย DISCLOSE/PARTIAL + คดีเสร็จสิ้นแล้ว (Flow 3) ไม่ได้อยู่ติดกับ Flow 2 ใน
+     อาเรย์ (คั่นด้วยสาย DENY ทั้งหมด) จึงต้องเติม route เข้าเองแบบเดียวกับ
+     L2_PENDING_DENY_MEMO ด้านบน — และลบ route ที่ auto-reduce สร้างผิดจาก
+     ตำแหน่งติดกันบังเอิญระหว่างขั้นสุดท้ายของสาย DENY กับขั้นแรกของสาย CLOSE */
+  ROUTES["L2_PENDING_CLOSE_MEMO"] = "10-2-22-secretariat-close-memo.html";
+  delete ROUTES["L2_CASE_CLOSED_DENY_ASSIGNED"];
 
   /* L2_BOARD_RESOLVED — สถานะกลางระหว่าง L2_READY_FOR_BOARD (L2-DISPATCH,
      10-2-09: เพิ่งออกเลขส่งเสนอกิจกรรมที่ 7 ยังไม่รู้ผล) กับสถานะที่
@@ -318,6 +377,15 @@
     { value: "CLOSED", label: "คดีเสร็จสิ้นแล้ว", color: "#1e3a8a" },
     { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน", color: "#1e3a8a" },
   ];
+
+  /* ป้ายกำกับ node แรกของแถบขั้นตอน "หลังบอร์ดมีมติ" (renderStepperV2) — ไม่ใช่
+     ขั้นตอนจริงใน STEPS (ไม่มีหน้าของตัวเอง เป็นแค่ผล l2ResolutionType ที่ทราบ
+     ตั้งแต่ 10-2-06 และย้อนกลับมาแสดงผลที่ 10-2-10) จึงแยกมาเป็นค่าคงที่ต่างหาก */
+  const BOARD_DECISION_LABEL = {
+    DISCLOSE: "บอร์ดมีมติอนุญาตเปิดเผย",
+    PARTIAL: "บอร์ดมีมติอนุญาตเปิดเผยบางส่วน",
+    DENY: "บอร์ดมีมติไม่อนุญาตเปิดเผย",
+  };
 
   function labelOf(list, value) {
     const hit = list.find(function (x) { return x.value === value; });
@@ -1163,6 +1231,9 @@
     const curStep = stepByCode(currentCode);
     const onPart1 = !curStep || !curStep.includeIf;
     const branch = kase && kase.l2ResolutionType;
+    /* คำร้องเก่าก่อนเพิ่มฟีเจอร์สถานะคดี (100010-100016 เป็นต้น) ไม่มี l2CaseState
+       เลย — ให้ถือว่าเป็น "อยู่ระหว่างไต่สวน" (พฤติกรรมเดิมก่อนแยกสาย Flow 3) */
+    const caseState = (kase && kase.l2CaseState) || "INVESTIGATING";
     const visible = STEPS.filter(function (s) {
       /* ตัด L2-RECEIVE-OUTCOME (10-2-10, "ธุรการ รับมติ") ออกจากแถบขั้นตอน
          ของหน้า Part 1 ทั้งหมดตามที่ขอ — เหลือแถบสิ้นสุดที่ L2-DISPATCH
@@ -1170,6 +1241,7 @@
       if (onPart1 && s.code === "L2-RECEIVE-OUTCOME") return false;
       if (!s.includeIf) return true;
       if (onPart1) return false;
+      if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
       return branch && s.includeIf.indexOf(branch) > -1;
     });
     const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
@@ -1185,6 +1257,87 @@
     }).join("");
   }
 
+  /* Part 1 (แถวบน, ขั้นตอนที่ 1-10 ก่อนถึงมติบอร์ด) กับ Part 2 (10-2-10 เป็นต้นไป,
+     แยกสาขาตาม l2ResolutionType) — ตัดจาก STEPS เส้นเดียวตามจุดแบ่งที่คอมเมนต์
+     "PART 2" ด้านบนกำกับไว้ (index 0-9 = Part 1, index 10 เป็นต้นไป = Part 2) */
+  const PART1_STEPS = STEPS.slice(0, 10);
+  const PART2_STEPS = STEPS.slice(10);
+
+  /* แถบขั้นตอนแบบ 2 แถวสำหรับหน้า 10-2-10 ถึง 10-2-17 — แถวบนคงที่ (Part 1
+     ส่งเสนอกิจกรรมที่ 7 เสร็จสิ้นเสมอ เพราะถึงหน้านี้ได้แปลว่าผ่าน Part 1 มาแล้ว)
+     แถวล่างเริ่มที่ node "บอร์ดมีมติ..." (ไม่ใช่ step จริงใน STEPS ดู
+     BOARD_DECISION_LABEL) ตามด้วยขั้นตอน Part 2 เฉพาะสาขาของคำร้องนี้ และปิดท้าย
+     ด้วยสถานะคดี (l2CaseState ที่บันทึกไว้ตั้งแต่ 10-2-06) ถ้ามีค่า */
+  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
+    const el1 = document.getElementById(part1ContainerId);
+    const el2 = document.getElementById(part2ContainerId);
+    if (!el1 || !el2) return;
+
+    el1.innerHTML = PART1_STEPS.map(function (step) {
+      return (
+        '<div class="step-item completed" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
+        '<div class="step-label">' + step.stepName + "</div>" +
+        "</div>"
+      );
+    }).join("");
+
+    const branch = kase && kase.l2ResolutionType;
+    /* คำร้องเก่าก่อนเพิ่มฟีเจอร์สถานะคดีไม่มี l2CaseState — ถือว่าเป็น
+       "อยู่ระหว่างไต่สวน" (พฤติกรรมเดิมก่อนแยกสาย Flow 3) เหมือนกับที่
+       renderStepper (แถบเดี่ยวเดิม) ทำไว้ด้านบน */
+    const caseState = (kase && kase.l2CaseState) || "INVESTIGATING";
+    const visible = PART2_STEPS.filter(function (s) {
+      if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
+      if (!s.includeIf) return true;
+      return branch && s.includeIf.indexOf(branch) > -1;
+    });
+    const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
+    const boardNode =
+      '<div class="step-item completed" title="มติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7)">' +
+      '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
+      '<div class="step-label">' + (BOARD_DECISION_LABEL[branch] || "บอร์ดมีมติ") + "</div>" +
+      "</div>";
+    const stepsHtml = visible.map(function (step, i) {
+      const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
+      const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      /* ตัด prefix "[เปิดเผย/บางส่วน]"/"[ไม่อนุญาต]" ฯลฯ ออกจากป้ายที่แสดงในแถบนี้
+         เท่านั้น (แถวนี้แยกสาขาอยู่แล้วด้วย visible ข้างบน จึงไม่จำเป็นต้องย้ำ) —
+         ไม่แตะ step.stepName ที่ renderStepper (แถบเดี่ยวเดิม) ยังใช้ค่าดิบอยู่ */
+      const shortLabel = step.stepName.replace(/^\[[^\]]*\]\s*/, "");
+      return (
+        '<div class="step-item ' + cls + '" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-circle">' + inner + "</div>" +
+        '<div class="step-label">' + shortLabel + "</div>" +
+        "</div>"
+      );
+    }).join("");
+    const endNode = kase && kase.l2CaseState
+      ? '<div class="step-item completed" title="สถานะคดีที่เกี่ยวข้อง">' +
+        '<div class="step-circle"><i class="fa-solid fa-flag-checkered"></i></div>' +
+        '<div class="step-label">สถานะคดี: ' + labelOf(CASE_STATES, kase.l2CaseState) + "</div>" +
+        "</div>"
+      : "";
+    el2.innerHTML = boardNode + stepsHtml + endNode;
+  }
+
+  /* แบดจ์คู่ "มติ" + "สถานะคดี" — โชว์ให้ชัดว่าคำร้องนี้เป็นสาย/สถานะไหน
+     (l2ResolutionType จาก 10-2-06, l2CaseState จาก 10-2-06 เบื้องต้นแล้วยืนยัน/
+     แก้ไขจริงที่ 10-2-10 เมื่อรับมติจากกิจกรรมที่ 7) ใช้ร่วมกันทุกหน้า Part 2 */
+  function renderStatusBadges(containerId, kase) {
+    const el = document.getElementById(containerId);
+    if (!el || !kase) return;
+    const resValue = kase.l2ResolutionType;
+    const caseStateValue = kase.l2CaseState || "INVESTIGATING";
+    const resLabel = labelOf(RESOLUTION_TYPES, resValue);
+    const resColor = colorOf(RESOLUTION_TYPES, resValue);
+    const csLabel = labelOf(CASE_STATES, caseStateValue);
+    const csColor = colorOf(CASE_STATES, caseStateValue);
+    const chip = (label, color) =>
+      '<span class="badge" style="background:' + color + ';color:#fff">' + label + "</span>";
+    el.innerHTML = resValue ? chip(resLabel, resColor) + chip(csLabel, csColor) : "";
+  }
+
   /* เมนูข้างซ้ายของงาน 10.2 — แสดงเฉพาะขั้นตอนที่บทบาทนั้นรับผิดชอบ
      ถ้าส่ง kase มา (ทราบ l2ResolutionType ของคำร้องที่กำลังเปิดอยู่แล้ว) จะตัด
      ขั้นตอนของสาขาอื่นออกด้วย เหมือนที่ renderStepper ทำ — กันไม่ให้เมนูโชว์ทั้ง
@@ -1194,8 +1347,10 @@
     if (!el) return;
     const roleId = currentRoleId();
     const branch = kase && kase.l2ResolutionType;
+    const caseState = (kase && kase.l2CaseState) || "INVESTIGATING";
     const mine = STEPS.filter(function (s) {
       if (s.role !== roleId || s.page.indexOf("10-2-") !== 0) return false;
+      if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
       if (!s.includeIf) return true;
       return !branch || s.includeIf.indexOf(branch) > -1;
     });
@@ -1233,6 +1388,8 @@
     fillRoleSelect: fillRoleSelect,
     selectedPersonLabel: selectedPersonLabel,
     renderStepper: renderStepper,
+    renderStepperV2: renderStepperV2,
+    renderStatusBadges: renderStatusBadges,
     renderSidebarMenu: renderSidebarMenu,
     mountEditor: mountEditor,
     getEditorText: getEditorText,

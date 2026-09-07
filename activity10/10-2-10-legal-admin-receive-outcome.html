@@ -82,6 +82,20 @@
         background: var(--border-color);
         z-index: 1;
       }
+      .stepper-row-label {
+        font-size: 0.78em;
+        font-weight: 700;
+        color: var(--text-title);
+        margin: 0 0 10px 2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .stepper-row-label:not(:first-child) {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px dashed var(--border-color);
+      }
       .step-item {
         display: flex;
         flex-direction: column;
@@ -412,8 +426,12 @@
       </div>
 
       <div class="content">
+        <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper" id="stepper"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
+          <div class="stepper" id="stepperPart2"></div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
@@ -611,6 +629,13 @@
                   />
                 </div>
               </div>
+              <div class="form-group" id="caseStateConfirmWrap">
+                <label
+                  >สถานะคดีที่เกี่ยวข้อง (ยืนยัน/แก้ไขตามผลจากกิจกรรมที่ 7)
+                  <span style="color: #dc2626">*</span></label
+                >
+                <div class="l2-choice-grid" id="caseStateChoices"></div>
+              </div>
               <div class="form-group">
                 <label>
                   <span
@@ -652,9 +677,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
+    <script src="assets/ecmis-activity10.js?v=20260907_1"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260904_4"></script>
+    <script src="assets/ecmis-10-2.js?v=20260907_3"></script>
 
     <script>
       const STEP_CODE = "L2-RECEIVE-OUTCOME";
@@ -680,10 +705,10 @@
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
-          ECMIS102.renderStepper("stepper", STEP_CODE);
+          ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE);
           return;
         }
-        ECMIS102.renderStepper("stepper", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
         populate();
       }
 
@@ -696,6 +721,11 @@
         if (el) el.value = todayISO();
       }
 
+      /* สถานะคดี (CLOSED/INVESTIGATING) — เลือกไว้ครั้งแรกที่ 10-2-06 (ยังไม่รู้ผล
+         จริงจากกิจกรรมที่ 7) หน้านี้คือจุดที่ธุรการรับผลจากกิจกรรมที่ 7 กลับมา
+         จริง จึงให้ยืนยัน/แก้ไขค่านี้ได้ที่นี่แทนที่จะเชื่อค่าเดิมเฉยๆ */
+      let caseStateChoice = "INVESTIGATING";
+
       function populate() {
         const c = currentCase;
         ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
@@ -704,6 +734,42 @@
         ECMIS102.setText("f_requesterName", c.requesterName);
         ECMIS102.setText("f_resolutionType", c.l2ResolutionTypeName);
         ECMIS102.setText("f_resolutionDetail", c.l2ResolutionDetail);
+        ECMIS102.renderStatusBadges("statusBadges", c);
+
+        const isDeny = c.l2ResolutionType === "DENY";
+        document.getElementById("caseStateConfirmWrap").classList.toggle("d-none", isDeny);
+        if (!isDeny) {
+          caseStateChoice = c.l2CaseState || "INVESTIGATING";
+          renderCaseStateChoices();
+        }
+      }
+
+      function choiceHtml(list, selected, handler) {
+        return list
+          .map(
+            (o) =>
+              '<label class="l2-choice' + (o.value === selected ? " is-active" : "") +
+              '" style="' + (o.value === selected && o.color ? "border-color:" + o.color + ";" : "") +
+              ' justify-content: start;" onclick="' + handler + "('" + o.value + "')\">" +
+              '<input type="radio" value="' + o.value + '"' + (o.value === selected ? " checked" : "") +
+              (o.color ? ' style="accent-color:' + o.color + '"' : "") + " />" +
+              '<span class="l2-choice-label"' + (o.color ? ' style="color:' + o.color + '"' : "") + ">" +
+              o.label + "</span></label>",
+          )
+          .join("");
+      }
+
+      function renderCaseStateChoices() {
+        document.getElementById("caseStateChoices").innerHTML = choiceHtml(
+          Activity102.CASE_STATES,
+          caseStateChoice,
+          "selectCaseState",
+        );
+      }
+
+      function selectCaseState(value) {
+        caseStateChoice = value;
+        renderCaseStateChoices();
       }
 
       /* บันทึกข้อความ (Part 1-A) แบบอ่านอย่างเดียว — สำเนาการ render เดียวกับ
@@ -913,9 +979,11 @@
       }
 
       function nextBranchLabel() {
-        return currentCase.l2ResolutionType === "DENY"
-          ? "ฝ่ายเลขานุการฯ จัดทำบันทึกและมติไม่อนุญาตเปิดเผยข้อมูล"
-          : "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ";
+        if (currentCase.l2ResolutionType === "DENY")
+          return "ฝ่ายเลขานุการฯ จัดทำบันทึกและมติไม่อนุญาตเปิดเผยข้อมูล";
+        if (caseStateChoice === "CLOSED")
+          return "ฝ่ายเลขานุการฯ จัดทำบันทึกและมติ (คดีเสร็จสิ้นแล้ว)";
+        return "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ";
       }
 
       function submitReceive() {
@@ -941,6 +1009,10 @@
         }
         const notes = document.getElementById("in_receiveNotes").value.trim();
         const isDeny = currentCase.l2ResolutionType === "DENY";
+        if (!isDeny && !caseStateChoice) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณายืนยันสถานะคดีที่เกี่ยวข้อง", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
 
         Swal.fire({
           icon: "question",
@@ -965,9 +1037,15 @@
             l2BoardApprovalRef: ref,
             l2BoardApprovalDate: date,
             l2ReceiveNotes: notes,
+            l2CaseState: isDeny ? currentCase.l2CaseState : caseStateChoice,
+            l2CaseStateName: isDeny
+              ? currentCase.l2CaseStateName
+              : Activity102.labelOf(Activity102.CASE_STATES, caseStateChoice),
             statusCode: isDeny
               ? "L2_PENDING_DENY_MEMO"
-              : "L2_PENDING_NOTICE_DRAFT",
+              : caseStateChoice === "CLOSED"
+                ? "L2_PENDING_CLOSE_MEMO"
+                : "L2_PENDING_NOTICE_DRAFT",
             status: nextBranchLabel(),
             assignedRole: "sub_secretariat",
             officer: ECMIS102.signerLabel("sub_secretariat"),

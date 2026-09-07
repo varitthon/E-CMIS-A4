@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน | E-CMIS กิจกรรมที่ 10.2
+      ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน (คดีเสร็จสิ้นแล้ว) | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,7 +106,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน</span>
+            <span style="color: var(--text-title); font-weight: 600">ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน (คดีเสร็จสิ้นแล้ว)</span>
           </div>
         </div>
 
@@ -160,7 +160,7 @@
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
             คำร้องจะมาถึงขั้นตอนนี้หลัง ผอ.กองกฎหมายลงนามในฐานะผู้เสนอเรื่องที่หน้า
-            <a href="10-2-16-legal-director-deny-propose.html">ลงนามในฐานะผู้เสนอเรื่อง (มติไม่อนุญาตเปิดเผยข้อมูล)</a>
+            <a href="10-2-23-legal-director-close-propose.html">เสนอเลขาธิการคณะกรรมการ ป.ป.ท. (คดีเสร็จสิ้นแล้ว)</a>
           </div>
         </div>
 
@@ -170,7 +170,7 @@
             <div>
               บันทึกฉบับนี้ผ่านการลงนามของ <strong>ผู้อำนวยการกองกฎหมาย</strong> ในฐานะผู้เสนอเรื่องแล้ว
               ธุรการกองกฎหมายมีหน้าที่ออกเลขที่หนังสือส่ง ระบุวันที่ และมอบหมายให้กอง/สำนักเจ้าของสำนวน
-              ดำเนินการแจ้งผลผู้ยื่นคำขอและแจ้งสิทธิ์ขออุทธรณ์ต่อไป เมื่อดำเนินการเสร็จแล้ว คำร้องนี้จะสิ้นสุดขั้นตอน
+              ดำเนินการแจ้งผลผู้ยื่นคำขอต่อไป เมื่อดำเนินการเสร็จแล้ว คำร้องนี้จะสิ้นสุดขั้นตอน
             </div>
           </div>
 
@@ -320,12 +320,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
+    <script src="assets/ecmis-activity10.js?v=20260907_1"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_3"></script>
 
     <script>
-      const STEP_CODE = "L2-DENY-DISPATCH-COMMITTEE";
+      const STEP_CODE = "L2-CLOSE-DISPATCH-COMMITTEE";
       const STEP = Activity102.stepByCode(STEP_CODE);
       let currentCase = null;
 
@@ -339,7 +339,7 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        currentCase = Activity102.getCase(id, "L2_PENDING_DENY_DISPATCH_COMMITTEE");
+        currentCase = Activity102.getCase(id, "L2_PENDING_CLOSE_DISPATCH_COMMITTEE");
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
 
         if (!currentCase) {
@@ -349,7 +349,6 @@
           return;
         }
         ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
-        ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
 
@@ -362,8 +361,6 @@
         if (el) el.value = todayISO();
       }
 
-      /* "อื่นๆ" ในช่องกอง/สำนักเจ้าของสำนวน — ตาม pattern เดียวกับ
-         toggleRequesterTypeOtherInput() ใน 02-board-intake.html */
       function toggleAssignDeptOtherInput() {
         const select = document.getElementById("in_assignDept");
         const otherDiv = document.getElementById("div_assignDeptOther");
@@ -379,7 +376,6 @@
         updateNoticeRecipientPreview();
       }
 
-      /* ชื่อกอง/สำนักเจ้าของสำนวนที่เลือกจริง (รวมกรณี "อื่นๆ" ที่พิมพ์เอง) */
       function resolveAssignDeptName() {
         const select = document.getElementById("in_assignDept");
         if (!select || !select.value) return "";
@@ -389,7 +385,6 @@
         return select.value;
       }
 
-      /* อัปเดตบรรทัด "เรียน" ในเอกสารตัวอย่างแบบสด เมื่อเปลี่ยนกอง/สำนักที่เลือก */
       function updateNoticeRecipientPreview() {
         const el = document.getElementById("noticeDocRecipient");
         if (el) el.textContent = resolveAssignDeptName() || "..............................";
@@ -405,7 +400,7 @@
         const section = (label, value) =>
           '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
           '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
-        const s2 = sigs.denyPropose;
+        const s2 = sigs.closePropose;
         const img2 = s2 && s2.image
           ? '<img class="l2-sig-img" src="' + s2.image + '" alt="ลายเซ็น" />'
           : '<div class="l2-sig-placeholder">รอลงนาม</div>';
@@ -414,10 +409,10 @@
         document.getElementById("noticeDoc").innerHTML =
           '<div class="l2-doc-title">แจ้งมติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารฯ' +
           (c.l2MeetingNo ? " ครั้งที่ " + c.l2MeetingNo : "") + "</div>" +
-          row("เลขที่หนังสือ", c.l2DenyMemoDocNo || "รอออกเลข") +
+          row("เลขที่หนังสือ", c.l2CloseMemoDocNo || "รอออกเลข") +
           row("เรียน", resolveAssignDeptName() || "..............................", "noticeDocRecipient") +
           section("ความเห็นคณะอนุกรรมการฯ", c.l2CommitteeOpinion) +
-          section("มติที่ประชุม", c.l2DenyMemoText) +
+          section("มติที่ประชุม", c.l2CloseMemoText) +
           section("หมายเหตุ", "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป") +
           '<div class="l2-doc-signblock">' +
           '<div class="l2-sig-slot">' + img2 + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">ผู้อำนวยการกองกฎหมาย</div>' + when2 + "</div>" +
@@ -425,8 +420,9 @@
       }
 
       function populate() {
+        ECMIS102.renderStatusBadges("statusBadges", currentCase);
         document.getElementById("f_officer").value = ECMIS102.signerLabel("admin_legal");
-        if (currentCase.l2DenyMemoDocNo) ECMIS102.setText("f_docNumber", currentCase.l2DenyMemoDocNo);
+        if (currentCase.l2CloseMemoDocNo) ECMIS102.setText("f_docNumber", currentCase.l2CloseMemoDocNo);
         renderNoticeDoc();
       }
 
@@ -480,9 +476,9 @@
           if (!res.isConfirmed) return;
 
           Activity102.advance(currentCase.id, STEP_CODE, {
-            l2DenyAssignedDept: deptName,
-            l2DenyAssignDate: dispatchDate,
-            l2DenyAssignNotes: notes,
+            l2CloseAssignedDept: deptName,
+            l2CloseAssignDate: dispatchDate,
+            l2CloseAssignNotes: notes,
           });
 
           Swal.fire({

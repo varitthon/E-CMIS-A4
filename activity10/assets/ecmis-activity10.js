@@ -7,7 +7,7 @@
   "use strict";
 
   // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v46_fix_seed_prosecutor_source";
+  const DATA_VERSION = "v49_add_board_resolved_casestate_matrix";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -796,6 +796,133 @@
       statusCode: "L2_BOARD_RESOLVED",
       status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
     },
+    /* ---- L2_BOARD_RESOLVED x 4 — มติ DISCLOSE/PARTIAL ที่มาพร้อมสถานะคดี
+       (l2CaseState) ที่ 10-2-06 เดาไว้แล้วตั้งแต่ก่อนถึงธุรการ ต่างจาก
+       100010/100011 ด้านบนที่ไม่มี l2CaseState เลย (fallback เป็น
+       "อยู่ระหว่างไต่สวน" เฉยๆ เวลาแสดงผล) — ชุดนี้ทำให้เปิด 10-2-10 แล้ว
+       เห็น radio สถานะคดี pre-fill เป็นค่าที่ตั้งใจระบุจริง ครบทั้ง 4
+       ช่อง (เปิดเผย/เปิดเผยบางส่วน x คดีเสร็จสิ้นแล้ว/อยู่ระหว่างไต่สวน)
+       ก่อนธุรการจะกดยืนยัน/แก้ไขที่ 10-2-10 */
+    {
+      id: "คำร้อง-100025/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานความคืบหน้าการไต่สวนโครงการก่อสร้างสะพานข้ามคลอง",
+      requesterName: "นายอนุชา มั่นคง",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานความคืบหน้าการไต่สวนโครงการก่อสร้างสะพานข้ามคลอง",
+      relatedCaseNo: "คดี-100025/2569",
+      requestChannelName: "ยื่นด้วยตนเอง",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "DISCLOSE",
+      l2ResolutionTypeName: "อนุญาตเปิดเผย",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน แต่ข้อมูลที่ขอไม่กระทบต่อการไต่สวนดังกล่าว",
+      l2CaseState: "INVESTIGATING",
+      l2CaseStateName: "อยู่ระหว่างไต่สวน",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-6),
+      l2InternalDocNo: "ปป 0002/4520",
+      l2Signatures: {
+        proposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      statusCode: "L2_BOARD_RESOLVED",
+      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+    },
+    {
+      id: "คำร้อง-100026/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่ยุติแล้ว",
+      requesterName: "นางสาวธัญญา ค้ำจุน",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่คดียุติแล้ว",
+      relatedCaseNo: "คดี-100026/2569",
+      requestChannelName: "ยื่นด้วยตนเอง",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "DISCLOSE",
+      l2ResolutionTypeName: "อนุญาตเปิดเผย",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-6),
+      l2InternalDocNo: "ปป 0002/4521",
+      l2Signatures: {
+        proposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      statusCode: "L2_BOARD_RESOLVED",
+      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+    },
+    {
+      id: "คำร้อง-100027/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยเอกสารการไต่สวนกรณีทุจริตเบิกจ่ายค่าล่วงเวลา",
+      requesterName: "นายพิชิต แน่วแน่",
+      requesterTypeName: "ทนายความ",
+      requestedInfo: "เอกสารการไต่สวนกรณีทุจริตเบิกจ่ายค่าล่วงเวลาเจ้าหน้าที่",
+      relatedCaseNo: "คดี-100027/2569",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือมอบอำนาจ.pdf"],
+      l2ResolutionType: "PARTIAL",
+      l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว เนื่องจากอยู่ระหว่างการไต่สวน",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน ข้อมูลบางส่วนต้องปกปิดเพื่อไม่ให้กระทบการไต่สวน",
+      l2CaseState: "INVESTIGATING",
+      l2CaseStateName: "อยู่ระหว่างไต่สวน",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-6),
+      l2InternalDocNo: "ปป 0002/4522",
+      l2Signatures: {
+        proposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      statusCode: "L2_BOARD_RESOLVED",
+      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+    },
+    {
+      id: "คำร้อง-100028/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่สิ้นสุดแล้ว",
+      requesterName: "นางสมศรี เอื้อเฟื้อ",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่คดียุติแล้ว",
+      relatedCaseNo: "คดี-100028/2569",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "PARTIAL",
+      l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม แม้คดีจะเสร็จสิ้นแล้ว",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-6),
+      l2InternalDocNo: "ปป 0002/4523",
+      l2Signatures: {
+        proposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      statusCode: "L2_BOARD_RESOLVED",
+      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+    },
     /* ---- คำร้องระหว่างทาง Part 2 (10-2-11 ถึง 10-2-21) --------------------
        ทุกสถานะที่เหลือของ Part 2 ยังไม่มีคำร้องทดสอบเลยแม้แต่รายการเดียว —
        ธุรการ (10-2-10) มีคำร้อง 3 รายการข้างบนให้ทดสอบอยู่แล้ว แต่เลขานุการฯ
@@ -1084,6 +1211,154 @@
       status: "สิ้นสุด — มอบหมายกอง/สำนักเจ้าของสำนวนแล้ว",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
+    },
+
+    /* --------------------------------------------------- FLOW 3 (ตัวอย่าง)
+       DISCLOSE/PARTIAL + คดีเสร็จสิ้นแล้ว (l2CaseState: "CLOSED") — ทดสอบหน้า
+       10-2-22 ถึง 10-2-24 ที่เพิ่มใหม่ (statusCode/status ของแต่ละคำร้องคือคู่ที่
+       STEPS "ก่อนหน้า" เขียนไว้ ตามรูปแบบเดียวกับตัวอย่างสาย DENY ด้านบน) */
+    {
+      id: "คำร้อง-100021/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานการตรวจสอบการจัดซื้อวัสดุครุภัณฑ์สำนักงาน",
+      requesterName: "นางสาวอรวรรณ ใจตรง",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานการตรวจสอบการจัดซื้อวัสดุครุภัณฑ์สำนักงาน",
+      relatedCaseNo: "-",
+      requestChannelName: "ยื่นด้วยตนเอง",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "DISCLOSE",
+      l2ResolutionTypeName: "อนุญาตเปิดเผย",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผย",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "8/2569",
+      l2MeetingDate: getDateWithOffset(-9),
+      l2BoardApprovalRef: "ปป 0001/ว.138",
+      l2BoardApprovalDate: getDateWithOffset(-4),
+      l2ReceiveNotes: "",
+      statusCode: "L2_PENDING_CLOSE_MEMO",
+      status: "ฝ่ายเลขานุการฯ จัดทำบันทึกและมติ (คดีเสร็จสิ้นแล้ว)",
+      assignedRole: "sub_secretariat",
+      officer: "นางสาวพิมพ์ชนก ธรรมรักษ์",
+    },
+    {
+      id: "คำร้อง-100022/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยเอกสารสรุปผลการไต่สวนข้อเท็จจริงเบื้องต้น",
+      requesterName: "นายสุเมธ พากเพียร",
+      requesterTypeName: "ทนายความ",
+      requestedInfo: "เอกสารสรุปผลการไต่สวนข้อเท็จจริงเบื้องต้น",
+      relatedCaseNo: "คดี-100022/2569",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือมอบอำนาจ.pdf"],
+      l2ResolutionType: "PARTIAL",
+      l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว จึงเห็นควรอนุญาตให้เปิดเผยบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "8/2569",
+      l2MeetingDate: getDateWithOffset(-9),
+      l2InternalDocNo: "ปป 0002/4512",
+      l2CloseMemoText: "ตามที่ นายสุเมธ พากเพียร ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยเอกสารสรุปผลการไต่สวนข้อเท็จจริงเบื้องต้น นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยบางส่วน และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2Signatures: {
+        closeMemoProposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ",
+        },
+      },
+      l2CloseMemoDocNo: "ปป 0002/4512",
+      statusCode: "L2_PENDING_CLOSE_PROPOSE",
+      status: "ผอ.กองกฎหมายพิจารณาเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      assignedRole: "dir_legal",
+      officer: "นายนภัส สอนดี",
+    },
+    {
+      id: "คำร้อง-100023/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจรับพัสดุ",
+      requesterName: "นางวิไลลักษณ์ ศรีสุข",
+      requesterTypeName: "สื่อมวลชน",
+      requestedInfo: "รายงานการประชุมคณะกรรมการตรวจรับพัสดุ",
+      relatedCaseNo: "-",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือรับรองสื่อมวลชน.pdf"],
+      l2ResolutionType: "DISCLOSE",
+      l2ResolutionTypeName: "อนุญาตเปิดเผย",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยทั้งหมด",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว และเป็นข้อมูลข่าวสารทั่วไป",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "7/2569",
+      l2MeetingDate: getDateWithOffset(-16),
+      l2InternalDocNo: "ปป 0002/4508",
+      l2CloseMemoText: "ตามที่ นางวิไลลักษณ์ ศรีสุข ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจรับพัสดุ นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยข้อมูล และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2Signatures: {
+        closeMemoProposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-10),
+          position: "อนุกรรมการและเลขานุการ",
+        },
+        closePropose: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-9),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      l2CloseMemoDocNo: "ปป 0002/4508",
+      statusCode: "L2_PENDING_CLOSE_DISPATCH_COMMITTEE",
+      status: "ธุรการกองกฎหมายออกเลขส่งเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
+      assignedRole: "admin_legal",
+      officer: "นางกานดา รักษ์ธรรม",
+    },
+    /* ---- เติมคำร้องเดียวที่ยังขาดในตาราง 3 มติ x 2 สถานะคดี ------------------
+       DENY ไม่มีขั้นตอนที่แยกตาม l2CaseState เลย (สาย DENY เดินหน้าเดียวกันหมด
+       ไม่ว่าสถานะคดีจะเป็นอะไร — ดู STEPS ใน ecmis-10-2.js) แต่ 01-work-inbox.html
+       ยังอ่าน l2CaseState มาขึ้นแบดจ์คู่กับมติบอร์ดเสมอ (fallback เป็น
+       "อยู่ระหว่างไต่สวน" ถ้าไม่ระบุ) คำร้อง 100012/100017-100020 ทั้งหมดไม่มี
+       l2CaseState เลยขึ้นแบดจ์ INVESTIGATING โดย fallback อยู่แล้ว ส่วนคำร้องนี้
+       ระบุ CLOSED ตรงๆ เพื่อให้เห็นครบทั้ง 6 ช่องของตาราง (DISCLOSE/PARTIAL/DENY
+       x INVESTIGATING/CLOSED) ในคิวงาน */
+    {
+      id: "คำร้อง-100024/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่สิ้นสุดแล้ว",
+      requesterName: "นางสาวกมลชนก ยืนหยัด",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่คณะกรรมการ ป.ป.ท. มีมติชี้มูลแล้ว",
+      relatedCaseNo: "คดี-100024/2569",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "DENY",
+      l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
+      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าแม้คดีจะเสร็จสิ้นแล้ว แต่รายงานผลการไต่สวนมีข้อมูลส่วนบุคคลและพยานหลักฐานที่อ่อนไหวเข้าข้อยกเว้นตามมาตรา 15 จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยรายงานผลการไต่สวนแม้คดีจะยุติแล้วก็อาจกระทบสิทธิของบุคคลที่เกี่ยวข้อง",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "8/2569",
+      l2MeetingDate: getDateWithOffset(-10),
+      l2InternalDocNo: "ปป 0002/4515",
+      l2Signatures: {
+        proposer: {
+          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      l2BoardApprovalRef: "ปป 0001/ว.140",
+      l2BoardApprovalDate: getDateWithOffset(-3),
+      l2ReceiveNotes: "",
+      statusCode: "L2_PENDING_DENY_MEMO",
+      status: "ฝ่ายเลขานุการฯ จัดทำบันทึกและมติไม่อนุญาตเปิดเผยข้อมูล",
+      assignedRole: "sub_secretariat",
+      officer: "น.ส.พิมพ์ชนก ทองดี",
     },
   ];
 

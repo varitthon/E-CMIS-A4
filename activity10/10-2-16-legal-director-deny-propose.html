@@ -38,6 +38,8 @@
       .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow-x: auto; }
       .stepper { display: flex; justify-content: flex-start; align-items: flex-start; position: relative; min-width: 900px; gap: 2px; }
       .stepper::before { content: ''; position: absolute; top: 18px; left: 30px; right: 30px; height: 2px; background: var(--border-color); z-index: 1; }
+      .stepper-row-label { font-size: 0.78em; font-weight: 700; color: var(--text-title); margin: 0 0 10px 2px; display: flex; align-items: center; gap: 6px; }
+      .stepper-row-label:not(:first-child) { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--border-color); }
       .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 0 0 92px; }
       .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
       .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
@@ -124,8 +126,12 @@
       </div>
 
       <div class="content">
+        <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper" id="stepper"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
+          <div class="stepper" id="stepperPart2"></div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
@@ -170,7 +176,7 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260904_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20260907_3"></script>
 
     <script>
       const STEP_CODE = "L2-DENY-PROPOSE";
@@ -192,10 +198,11 @@
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
-          ECMIS102.renderStepper("stepper", STEP_CODE);
+          ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE);
           return;
         }
-        ECMIS102.renderStepper("stepper", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
 
