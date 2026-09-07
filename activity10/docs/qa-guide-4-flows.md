@@ -9,6 +9,9 @@ whether you skipped something.
 
 - Decisions and rationale: [`meeting-01092026-changes.md`](meeting-01092026-changes.md)
 - Batch A detailed test cases: [`qa-batch-a-meeting-01092026.md`](qa-batch-a-meeting-01092026.md)
+- Later work on `07`/`08`/`15` (signature blocks + a wording defect, 07/09/2026):
+  [`session-07092026-attestation-and-labels.md`](session-07092026-attestation-and-labels.md)
+  — **not yet covered by the steps below**, and it carries 2 items needing a ruling
 
 Commits under test (7, on top of `bd2882a`):
 `0e4b14f` Batch A · `dc1bc6b` Batch B + docs · `8ce2847` three workflow defects ·
@@ -35,8 +38,8 @@ run.bat            →  http://localhost:8811/index.html
 ### 0.1 Start clean ⚠
 
 **Hard-reload first: Ctrl+F5.** Shared assets carry version queries
-(`ecmis-shell.css?v=20260904_1`, `ecmis-offense-basis.js?v=20260904_2`,
-`ecmis-activity10.js?v=20260904_6`). A stale copy shows up as:
+(`ecmis-shell.css?v=20260907_1`, `ecmis-offense-basis.js?v=20260904_2`,
+`ecmis-activity10.js?v=20260907_1`). A stale copy shows up as:
 
 | symptom | cause |
 |---|---|
@@ -72,6 +75,16 @@ If you do want a hard wipe from the console:
 | นิติกร | `Nattapol.B` |
 | ผอ.กลุ่มงานความเห็นแย้ง | `Arnon.C` |
 | ผอ.กองกฎหมาย | `Napas.S` |
+| **รองเลขาธิการ ป.ป.ท.** | **`Surapong.W`** |
+
+⚠ **`Surapong.W` is not optional.** The executive signs twice, and both times the case is
+parked with that role until it does — nobody else can move it on. Miss it and the flow looks
+stuck with no button anywhere:
+
+| after | case waits at | until `Surapong.W` presses |
+|---|---|---|
+| **09** (เสนอผู้บริหาร, round 1) | `PENDING_DEPUTY_SG` | **ลงนาม** → back to ธุรการ at **10** |
+| **16** (เสนอผู้บริหาร, round 2) | `SUBMITTED_TO_EXEC_ROUND2` | **ลงนาม** → back to ธุรการ at **17** — [entry to Flow 3](#-how-to-get-into-flow-3-from-the-ธุรการ-ui) |
 
 ### 0.3 Two things that look like bugs but are not
 
@@ -355,6 +368,80 @@ Diagram page 3 · `LAW0020`-`LAW0025`. **This is the flow Batch B changed most.*
              └── เร่งด่วน    → LAW0025  ด้วยตนเอง → อสส.
 ```
 
+## 🚪 How to get into Flow 3 from the ธุรการ UI
+
+Flow 3 opens at **17**, which needs a case at `PENDING_ADMIN_SIGNED_RECEIVE`. There are two
+ways in. **Take route A unless you are specifically testing the hand-off.**
+
+### Route A — the seeded case (one click)
+
+The demo data ships with a case already parked at 17.
+
+1. Log in as **`Kanda.R`** → **01 work inbox**
+2. Find the row whose status is **`ผู้บริหารลงนามแล้ว (รอธุรการตรวจรับ)`**
+   — it is **`0022/2569`** (`คดี-100007/2569`), on page 1 of the table
+3. Press **ดำเนินการ** → lands on **17**
+
+Two more cases are seeded one step further, at **18**, one per branch of the diagram —
+useful for testing 18 without walking 17 first:
+
+| doc no. | case | branch |
+|---|---|---|
+| `0024/2569` | `คดี-100008/2569` | → **อสส.** |
+| `0025/2569` | `คดี-100009/2569` | → **อัยการต้นทาง (ไปรษณีย์ EMS)** |
+
+> The table's first column is the **document number**, not the case id. Search by the status
+> text, not by `คดี-1000xx`.
+
+### Route B — walk a case in from Flow 2
+
+⚠ **This is where people get stuck.** Submitting **16** does *not* send the case to 17 —
+it sends it to **รองเลขาธิการ ป.ป.ท. to sign**, and ธุรการ cannot do that step.
+
+1. As `Kanda.R`, take a case through **16** and submit
+   → status becomes `SUBMITTED_TO_EXEC_ROUND2`, assigned to `deputy_sg`
+2. **The case stays visible in ธุรการ's inbox but the button becomes a view-only 👁 icon.**
+   That is correct, not a bug — it is parked with the executive
+3. **Log out and back in as `Surapong.W`** (รองเลขาธิการ — *see the note under §0.2*)
+4. Find the case (status `เสนอผู้บริหารลงนามหนังสือความเห็น`) → press the green **ลงนาม**
+   → confirm **ลงนามสมบูรณ์และส่งคืนกองกฎหมาย**
+   → status becomes `PENDING_ADMIN_SIGNED_RECEIVE`, back to `admin_legal`, step 17
+5. **Back to `Kanda.R`** → the row now shows **ดำเนินการ** → **17**
+
+```
+16 ธุรการ ──submit──▶ SUBMITTED_TO_EXEC_ROUND2 ──╮
+                                                 │  ⚠ role switch required
+                     Surapong.W ──ลงนาม──────────╯
+                          │
+                          ▼
+        PENDING_ADMIN_SIGNED_RECEIVE ──▶ 17 ธุรการ  ← Flow 3 starts
+```
+
+### If the inbox looks wrong
+
+Press **รีเซ็ต** (top right of **01**) → *ลบสำนวนที่สร้างเอง และรีเซ็ต*. This restores the
+seeded statuses above, including the case at 17. **It permanently deletes any case you created
+yourself**, including the ถอนอุทธรณ์ case from §0.4 — recreate it afterwards if you still
+need it.
+
+### Which axis actually needs testing here
+
+**Not มติอัยการ.** `17` and `18` only *display* it — neither branches on it, and neither uses
+`PROSECUTOR_ORDER_PHRASE`. One spot-check with a non-`1` case is enough to confirm the value
+carries through; nine runs tell you nothing extra.
+
+**Test เห็นชอบ vs เห็นแย้ง instead** — that is what `18:823` branches on, and what the meeting
+note (*เห็นชอบก็ต้องแจ้ง, เห็นแย้งก็แจ้งทั้ง อสส และ อัยการ*) is about. One seeded case each:
+
+| doc no. | case | `finalOpinionType` | branch |
+|---|---|---|---|
+| `0024/2569` | `คดี-100008/2569` | เห็นควรทำความเห็นแย้ง… | เห็นแย้ง → อสส. |
+| `0025/2569` | `คดี-100009/2569` | เห็นชอบตามคำสั่งไม่ฟ้อง… | เห็นชอบ → อัยการต้นทาง |
+
+⚠ The branch falls back to `title.includes('เห็นชอบ')` when `finalOpinionType` is missing, so a
+case whose **title** contains เห็นชอบ takes the agreed branch whatever its real opinion.
+Pre-existing — worth knowing if a case behaves unexpectedly.
+
 ## 17 — ธุรการตรวจรับหนังสือลงนาม `Kanda.R`
 
 **Changed:** two marked phrases removed; **destination chooser added**; stepper labels reflow.
@@ -366,13 +453,17 @@ Diagram page 3 · `LAW0020`-`LAW0025`. **This is the flow Batch B changed most.*
 |---|---|
 | card header | `ตรวจสอบความถูกต้องของหนังสือฉบับลงนามสมบูรณ์` — **no** ความเห็นแย้ง |
 | verify item 1 | `เลขที่หนังสือส่งภายนอก` — **no** `(ส่งถึงอัยการสูงสุด)` |
-| ส่งหนังสือไปที่ | two cards + a **ส่งทั้งสองหน่วยงาน** checkbox |
+| ส่งหนังสือไปที่ | **two checkboxes** — not radios. Tick both = ส่งทั้งสองหน่วยงาน; the separate "both" checkbox is gone (07/09/2569) |
+| tick one, then the other | **each card's border follows its own checkbox.** The old build highlighted both cards while only one radio was filled — that state is now impossible |
+| tick both | hint turns green: *ส่งทั้งสองหน่วยงาน — นิติกรจะเห็นผู้รับที่ 2 เปิดไว้แล้ว* |
+| untick both | hint turns amber: *ยังไม่ได้เลือกปลายทาง* |
 | submit with no destination | blocked: `กรุณาเลือกปลายทางที่จะส่งหนังสือ` |
 | stepper labels | wrap onto two lines, **never overlap** — try a narrow window too |
 
-⚠ **The diagram shows either/or, never both.** The `ส่งทั้งสองหน่วยงาน` option comes from the
-meeting (*"แจ้งทั้ง อสส และ อัยการ"*), so **the diagram is out of date here** — confirm which
-is authoritative.
+⚠ **The diagram shows either/or, never both.** Sending to both comes from the meeting
+(*"แจ้งทั้ง อสส และ อัยการ"*), so **the diagram is out of date here** — confirm which is
+authoritative. As of 07/09/2569 the UI treats both-recipients as a normal choice, not an
+exception: two checkboxes rather than radios plus a "both" toggle.
 
 ## 18 — นิติกรจัดส่งหนังสือ `Nattapol.B`
 
@@ -511,7 +602,9 @@ for the working group, not defects, and they go across at handover.
 - [ ] [`qa-findings-register.md`](qa-findings-register.md) **section C** walked through with the working group
 - [ ] **C1 (stepper models)** given an owner — it blocks any further stepper work
 - [ ] TO-BE diagram updated or the dispatch requirement re-confirmed (**C5**)
-- [ ] Wording for **19**'s options confirmed (**C4**)
+- [ ] 🚨 **`19`'s 9 อสส-ruling labels signed off by a lawyer (C4)** — implementer-authored, and
+      they now decide whether `20`/`21`/`22` treat the case as proceeding or closed. **Check
+      options 3 and 4 (the `ถอนฟ้อง` pair) first.** Highest-priority item in section C.
 
 ---
 

@@ -1489,7 +1489,7 @@
       return item;
     },
 
-    submitGroupDirectorApproval(id, reviewDecision, notes, signature) {
+    submitGroupDirectorApproval(id, reviewDecision, notes, signature, reviewerName) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
       if (item) {
@@ -1519,6 +1519,9 @@
           item.groupDirectorEndorsement = null;
         }
         item.groupDirectorApprovalSignature = signature || null;
+        /* เก็บชื่อผู้กลั่นกรองไว้คู่กับลายมือชื่อ หน้าถัดไปจะได้แสดงว่าใครเป็นผู้ลงนาม
+           ไม่ใช่แสดงแต่ภาพลายเซ็นลอย ๆ โดยไม่รู้ว่าเป็นของ ผอ.กลุ่มงานท่านใด */
+        if (reviewerName) item.groupDirectorName = reviewerName;
         saveCases(cases);
       }
       return item;
@@ -2073,6 +2076,13 @@
           item.oagVerdictReceiveDate =
             verdictData.oagVerdictReceiveDate ||
             new Date().toISOString().split("T")[0];
+          /* กรณีคำวินิจฉัยชี้ขาด 9 ตัวเลือกของหน้า 19 เดิมถูกส่งมาใน payload
+             แต่ไม่เคยถูกบันทึก ทำให้ตัวเลือกที่ธุรการเลือกหายไปทั้งหมด
+             ตั้งแต่ 07/09/2569 รายการนี้เป็นตัวเลือกเดียวของหน้าและเป็นที่มาของ
+             oagVerdictDecision จึงต้องเก็บไว้ */
+          item.oagVerdictCaseTypeNo = verdictData.oagVerdictCaseTypeNo || "";
+          item.oagVerdictCaseTypeName =
+            verdictData.oagVerdictCaseTypeName || "";
           item.oagVerdictDecision =
             verdictData.oagVerdictDecision || "PROSECUTE"; // 'PROSECUTE' | 'NON_PROSECUTE'
           item.oagVerdictDecisionText =

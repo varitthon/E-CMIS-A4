@@ -10,7 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -84,59 +84,6 @@
  textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
 
  /* Decision Selector Cards */
- .verdict-selector-grid {
- display: grid;
- grid-template-columns: 1fr 1fr;
- gap: 14px;
- margin-bottom: 18px;
- }
- .verdict-card {
- border: 2px solid var(--border-color);
- border-radius: 8px;
- padding: 16px 18px;
- background: var(--bg-card);
- cursor: pointer;
- transition: all 0.2s ease;
- display: flex;
- align-items: flex-start;
- gap: 14px;
- }
- .verdict-card:hover {
- border-color: #93c5fd;
- background: rgba(37,99,235,0.02);
- }
- .verdict-card.active-prosecute {
- border-color: #16a34a;
- background: rgba(22,163,74,0.05);
- box-shadow: 0 0 0 2px rgba(22,163,74,0.2);
- }
- .verdict-card.active-non-prosecute {
- border-color: #dc2626;
- background: rgba(220,38,38,0.05);
- box-shadow: 0 0 0 2px rgba(220,38,38,0.2);
- }
- .verdict-icon {
- width: 42px;
- height: 42px;
- border-radius: 8px;
- background: #e2e8f0;
- color: #334155;
- display: flex;
- align-items: center;
- justify-content: center;
- font-size: 1.3em;
- flex-shrink: 0;
- }
- .verdict-card.active-prosecute .verdict-icon {
- background: #16a34a;
- color: #fff;
- }
- .verdict-card.active-non-prosecute .verdict-icon {
- background: #dc2626;
- color: #fff;
- }
-
- /* Action Footer */
  .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
  .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
  .btn-primary { background: #1e3a8a; color: #fff; }
@@ -187,8 +134,20 @@
  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
  }
 
- @media (max-width: 1024px) {.verdict-selector-grid { grid-template-columns: 1fr; }
+ /* แถบสรุปผลต่อการดำเนินคดีที่อนุมานจากตัวเลือก — แทนการ์ด 2 ใบเดิม */
+ .verdict-outcome-hint {
+ margin-top: 8px;
+ padding: 8px 12px;
+ border-radius: 6px;
+ font-size: 0.88em;
+ border: 1px solid var(--border-color);
+ background: var(--bg-body);
+ color: var(--text-title);
  }
+ .verdict-outcome-hint.prosecute { border-color: #86efac; background: rgba(22,163,74,0.08); color: #166534; }
+ .verdict-outcome-hint.non-prosecute { border-color: #fecaca; background: rgba(220,38,38,0.06); color: #991b1b; }
+ .verdict-outcome-hint.pending { border-color: #fde68a; background: rgba(217,119,6,0.08); color: #92400e; }
+
  </style>
 </head>
 <body>
@@ -398,49 +357,42 @@
  </div>
  </div>
 
- <!-- กรณีคำวินิจฉัยชี้ขาด — เปลี่ยนจากการ์ด 2 ใบเป็น dropdown 9 ตัวเลือก
-      ใช้รายการเดียวกับตอนรับเรื่อง (หน้า 02) ตามมติที่ประชุม -->
+ <!-- กรณีคำวินิจฉัยชี้ขาด — ตัวเลือกเดียวของหน้านี้ (มติที่ประชุม 07/09/2569)
+      เดิมมี 2 ส่วน: dropdown 9 ข้อ (คำเดียวกับหน้า 02) + การ์ด ฟ้อง/ยุติ 2 ใบ
+      ผู้บังคับบัญชาระบุว่าเป็นเรื่องเดียวกัน และต้องการ 9 ตัวเลือก จึงยุบเหลือรายการเดียว
+      โดยเปลี่ยนถ้อยคำเป็นมุมของ อสส. เพราะรายการของหน้า 02 เป็นคำสั่งของพนักงานอัยการ
+      ไม่มีข้อใดหมายถึง "อสส. ชี้ขาดให้ฟ้อง" ซึ่งเป็นผลเมื่อความเห็นแย้งของ ป.ป.ท. สำเร็จ
+      ผล ฟ้อง/ยุติ (oagVerdictDecision) อนุมานจากตัวเลือกผ่าน OAG_VERDICT_OUTCOME
+      หน้า 20/21/22 ใช้ค่านี้ตัดสินการแสดงผล -->
  <div class="form-group">
  <label>
  <span><mark class="wording-changed">กรณีคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)</mark> <span style="color:#dc2626;">*</span></span>
  </label>
- <select id="in_oagVerdictCaseType" class="form-control" style="font-weight:600;" onchange="toggleOagVerdictOtherInput()">
- <option value="1">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
- <option value="2">2. อัยการมีความเห็นถอนฟ้อง</option>
- <option value="3">3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)</option>
- <option value="4">4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)</option>
- <option value="5">5. อัยการมีความเห็นสั่งถอนอุทธรณ์</option>
- <option value="6">6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)</option>
- <option value="7">7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)</option>
- <option value="8">8. อัยการมีความเห็นสั่งถอนฎีกา</option>
+ <select id="in_oagVerdictCaseType" class="form-control" style="font-weight:600;" onchange="onVerdictCaseTypeChange()">
+ <option value="1">1. อสส. ชี้ขาดให้ฟ้องคดี</option>
+ <option value="2">2. อสส. ชี้ขาดยืนตามคำสั่งไม่ฟ้อง</option>
+ <option value="3">3. อสส. ชี้ขาดไม่ให้ถอนฟ้อง (ให้ดำเนินคดีต่อ)</option>
+ <option value="4">4. อสส. ชี้ขาดยืนตามการถอนฟ้อง</option>
+ <option value="5">5. อสส. ชี้ขาดให้อุทธรณ์</option>
+ <option value="6">6. อสส. ชี้ขาดยืนตามคำสั่งไม่อุทธรณ์/ถอนอุทธรณ์</option>
+ <option value="7">7. อสส. ชี้ขาดให้ฎีกา</option>
+ <option value="8">8. อสส. ชี้ขาดยืนตามคำสั่งไม่ฎีกา/ถอนฎีกา</option>
  <option value="9">9. อื่นๆ</option>
  </select>
+
+ <!-- ผลต่อการดำเนินคดีที่อนุมานได้ แสดงให้ธุรการเห็นว่าเลือกแล้วระบบตีความเป็นอะไร -->
+ <div id="div_verdictOutcomeHint" class="verdict-outcome-hint"></div>
+
  <div id="div_oagVerdictOther" style="display:none; margin-top:8px;">
  <label style="font-size:0.82em; color:var(--text-title); margin-bottom:4px;">ระบุกรณีคำวินิจฉัยชี้ขาด (อื่นๆ) <span style="color:#dc2626;">*</span></label>
  <input type="text" id="in_oagVerdictOtherText" class="form-control" placeholder="โปรดระบุรายละเอียดกรณีอื่นๆ...">
- </div>
- </div>
-
- <!-- ผลต่อการดำเนินคดี — ยังต้องเก็บไว้ เพราะหน้า 20/21/22 ใช้ค่านี้
-      ตัดสินว่าจะแสดงผลเป็น "ให้ฟ้องคดี" หรือ "ยุติคดี" และรายการ 9 ข้อ
-      ข้างบนไม่ได้บอกผลฟ้อง/ไม่ฟ้อง -->
- <div class="form-group">
- <label><span>ผลต่อการดำเนินคดี <span style="color:#dc2626;">*</span></span></label>
- <div class="verdict-selector-grid">
- <div class="verdict-card active-prosecute" id="cardVerdictProsecute" onclick="selectVerdictDecision('PROSECUTE')">
- <div class="verdict-icon"><i class="fa-solid fa-gavel"></i></div>
- <div>
- <div style="font-weight: 700; color: #16a34a; font-size: 1.02em;">อสส. ชี้ขาด "ให้ฟ้องคดี"</div>
- <div style="font-size: 0.84em; color: #64748b; margin-top: 3px;">เห็นพ้องตามความเห็นแย้งของคณะกรรมการ ป.ป.ท. ให้ดำเนินคดีอาญาฟ้องผู้ถูกกล่าวหาต่อศาล</div>
- </div>
- </div>
- <div class="verdict-card" id="cardVerdictNonProsecute" onclick="selectVerdictDecision('NON_PROSECUTE')">
- <div class="verdict-icon"><i class="fa-solid fa-ban"></i></div>
- <div>
- <div style="font-weight: 700; color: #dc2626; font-size: 1.02em;">อสส. ชี้ขาด "ไม่ฟ้อง/ยุติคดี"</div>
- <div style="font-size: 0.84em; color: #64748b; margin-top: 3px;">ชี้ขาดไม่ฟ้องตามคำสั่งเดิมของพนักงานอัยการ ให้ยุติการดำเนินคดีอาญา</div>
- </div>
- </div>
+ <!-- "อื่นๆ" อนุมานผลไม่ได้ จึงต้องให้เลือกเอง -->
+ <label style="font-size:0.82em; color:var(--text-title); margin:10px 0 4px;">ผลต่อการดำเนินคดี <span style="color:#dc2626;">*</span></label>
+ <select id="in_oagVerdictOtherOutcome" class="form-control" onchange="renderVerdictOutcomeHint(true)">
+ <option value="">— เลือกผลต่อการดำเนินคดี —</option>
+ <option value="PROSECUTE">อสส. ชี้ขาดให้ฟ้องคดี</option>
+ <option value="NON_PROSECUTE">อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี</option>
+ </select>
  </div>
  </div>
 
@@ -510,12 +462,14 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+ <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
  let currentCase = null;
- let selectedDecision = 'PROSECUTE'; // 'PROSECUTE' | 'NON_PROSECUTE'
+ /* อนุมานจาก dropdown เสมอ (ดู resolveVerdictDecision) — null = ยังไม่ระบุ
+    เดิมตั้งเป็น 'PROSECUTE' ตายตัว ซึ่งเป็นค่าที่การ์ด 2 ใบเคยเป็นผู้กำหนด */
+ let selectedDecision = null; // 'PROSECUTE' | 'NON_PROSECUTE' | null
  let activeRecognition = null;
  let isRecording = false;
 
@@ -523,6 +477,7 @@
  initUserProfile();
  setDefaultDates();
  loadCaseData();
+ renderVerdictOutcomeHint(false);
  });
 
  function toggleRemoveBtn(inputId, btnId) {
@@ -642,43 +597,70 @@
  }
  }
 
- function selectVerdictDecision(decision) {
- selectedDecision = decision;
- const cardProsecute = document.getElementById('cardVerdictProsecute');
- const cardNonProsecute = document.getElementById('cardVerdictNonProsecute');
+ /* ผลต่อการดำเนินคดีของแต่ละตัวเลือก — จุดเดียวที่กำหนดการอนุมาน
+    แก้ถ้อยคำตัวเลือกใน <select> เมื่อใด ให้แก้ตารางนี้ให้ตรงกันด้วย
+    "9" (อื่นๆ) อนุมานไม่ได้ ธุรการต้องเลือกผลเอง */
+ const OAG_VERDICT_OUTCOME = {
+ '1': 'PROSECUTE',      // ชี้ขาดให้ฟ้องคดี
+ '2': 'NON_PROSECUTE',  // ยืนตามคำสั่งไม่ฟ้อง
+ '3': 'PROSECUTE',      // ไม่ให้ถอนฟ้อง — ดำเนินคดีต่อ
+ '4': 'NON_PROSECUTE',  // ยืนตามการถอนฟ้อง
+ '5': 'PROSECUTE',      // ชี้ขาดให้อุทธรณ์
+ '6': 'NON_PROSECUTE',  // ยืนตามไม่อุทธรณ์/ถอนอุทธรณ์
+ '7': 'PROSECUTE',      // ชี้ขาดให้ฎีกา
+ '8': 'NON_PROSECUTE'   // ยืนตามไม่ฎีกา/ถอนฎีกา
+ };
+
+ /* คืนค่าผลต่อการดำเนินคดีจากตัวเลือกปัจจุบัน หรือ null ถ้าเป็น "อื่นๆ" ที่ยังไม่ได้เลือกผล */
+ function resolveVerdictDecision() {
+ const sel = document.getElementById('in_oagVerdictCaseType');
+ if (!sel) return null;
+ if (sel.value === '9') {
+ const o = document.getElementById('in_oagVerdictOtherOutcome');
+ return (o && o.value) ? o.value : null;
+ }
+ return OAG_VERDICT_OUTCOME[sel.value] || null;
+ }
+
+ /* userInitiated = ธุรการเปลี่ยนตัวเลือกเอง จึงเขียนทับข้อความสรุป/ชื่อไฟล์ได้
+    (การ์ด 2 ใบเดิมก็เขียนทับเฉพาะตอนถูกคลิก) ตอนโหลดหน้าเรียกแบบ false
+    เพื่อไม่ให้ทับข้อมูลจริงที่ loadCaseData เติมมาจากสำนวน */
+ function renderVerdictOutcomeHint(userInitiated) {
+ selectedDecision = resolveVerdictDecision();
+ const hint = document.getElementById('div_verdictOutcomeHint');
  const txtSummary = document.getElementById('in_oagVerdictSummary');
  const lblFile = document.getElementById('lblVerdictFileName');
+ if (!hint) return;
 
- if (decision === 'PROSECUTE') {
- if (cardProsecute) cardProsecute.className = 'verdict-card active-prosecute';
- if (cardNonProsecute) cardNonProsecute.className = 'verdict-card';
- if (txtSummary) {
- txtSummary.value = 'อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" นายพิชัย เทคโนโลยี ผู้ถูกกล่าวหา ในความผิดฐานเป็นเจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ ตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.';
- }
- if (lblFile) lblFile.textContent = 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ให้ฟ้องคดี_อส0001_6789.pdf';
- } else {
- if (cardProsecute) cardProsecute.className = 'verdict-card';
- if (cardNonProsecute) cardNonProsecute.className = 'verdict-card active-non-prosecute';
- if (txtSummary) {
- txtSummary.value = 'อัยการสูงสุดได้พิจารณาพยานหลักฐานในสำนวนคดีแล้ว เห็นพ้องกับคำสั่งไม่ฟ้องเดิมของพนักงานอัยการ โดยเห็นว่าพยานหลักฐานยังไม่เพียงพอจะรับฟังได้ว่าผู้ถูกกล่าวหากระทำความผิด จึงมีคำวินิจฉัยชี้ขาด "ไม่ฟ้องคดี" และให้ยุติการดำเนินคดีอาญากับผู้ถูกกล่าวหา';
- }
- if (lblFile) lblFile.textContent = 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ไม่ฟ้องคดี_อส0001_6790.pdf';
- }
+ if (!selectedDecision) {
+ hint.className = 'verdict-outcome-hint pending';
+ hint.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>ผลต่อการดำเนินคดี: <b>ยังไม่ระบุ</b> — กรุณาเลือกผลในช่อง "อื่นๆ"';
+ return;
  }
 
- function switchScenario(scenarioKey) {
- const btnProsecute = document.getElementById('btnScenarioProsecute');
- const btnNonProsecute = document.getElementById('btnScenarioNonProsecute');
+ const isProsecute = selectedDecision === 'PROSECUTE';
+ hint.className = 'verdict-outcome-hint ' + (isProsecute ? 'prosecute' : 'non-prosecute');
+ hint.innerHTML = '<i class="fa-solid ' + (isProsecute ? 'fa-gavel' : 'fa-ban') + ' me-1"></i>ผลต่อการดำเนินคดี: <b>'
+ + (isProsecute ? 'อสส. ชี้ขาดให้ฟ้องคดี' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี') + '</b>';
 
- if (scenarioKey === 'prosecute') {
- btnProsecute.classList.add('active');
- btnNonProsecute.classList.remove('active');
- selectVerdictDecision('PROSECUTE');
- } else {
- btnProsecute.classList.remove('active');
- btnNonProsecute.classList.add('active');
- selectVerdictDecision('NON_PROSECUTE');
+ /* ข้อความสรุปและชื่อไฟล์ตัวอย่างเคยผูกกับการ์ด 2 ใบ ย้ายมาผูกกับผลที่อนุมานได้
+    เขียนทับเฉพาะข้อความที่ระบบเติมเอง จะได้ไม่ลบสิ่งที่ธุรการพิมพ์ */
+ if (txtSummary && (userInitiated || !txtSummary.value.trim())) {
+ txtSummary.value = isProsecute
+ ? 'อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหา ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.'
+ : 'อัยการสูงสุดได้พิจารณาพยานหลักฐานในสำนวนคดีแล้ว เห็นพ้องกับคำสั่งเดิมของพนักงานอัยการ โดยเห็นว่าพยานหลักฐานยังไม่เพียงพอจะรับฟังได้ว่าผู้ถูกกล่าวหากระทำความผิด จึงมีคำวินิจฉัยชี้ขาด "ไม่ฟ้องคดี" และให้ยุติการดำเนินคดีอาญากับผู้ถูกกล่าวหา';
  }
+ if (lblFile && (userInitiated || !lblFile.textContent.trim())) {
+ lblFile.textContent = isProsecute
+ ? 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ให้ฟ้องคดี_อส0001_6789.pdf'
+ : 'หนังสือคำวินิจฉัยชี้ขาด_อสส_ไม่ฟ้องคดี_อส0001_6790.pdf';
+ }
+ }
+
+ /* onchange ของ dropdown: สลับช่อง "อื่นๆ" แล้วคำนวณผลใหม่ */
+ function onVerdictCaseTypeChange() {
+ toggleOagVerdictOtherInput();
+ renderVerdictOutcomeHint(true);
  }
 
  function viewSampleVerdictPdf() {
@@ -731,6 +713,29 @@
  if (vOther) vOther.focus();
  return;
  }
+ const vOutcome = document.getElementById('in_oagVerdictOtherOutcome');
+ if (!vOutcome || !vOutcome.value) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'ข้อมูลไม่ครบถ้วน',
+ text: 'กรณีอื่นๆ ระบบอนุมานผลต่อการดำเนินคดีไม่ได้ กรุณาเลือกผล ฟ้องคดี หรือ ยุติคดี',
+ confirmButtonColor: '#1e3a8a'
+ });
+ vOutcome && vOutcome.focus();
+ return;
+ }
+ }
+
+ /* กันไว้อีกชั้น: หน้า 20/21/22 ตัดสินการแสดงผลจากค่านี้ ปล่อยว่างไปไม่ได้ */
+ selectedDecision = resolveVerdictDecision();
+ if (!selectedDecision) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'ยังไม่ได้ระบุผลต่อการดำเนินคดี',
+ text: 'กรุณาเลือกกรณีคำวินิจฉัยชี้ขาดของ อสส. ให้ครบถ้วน',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
  }
 
  const decisionText = selectedDecision === 'PROSECUTE'
@@ -767,7 +772,9 @@
  oagVerdictCaseTypeNo: caseTypeSel ? caseTypeSel.value : '',
  oagVerdictCaseTypeName: caseTypeName,
  oagVerdictDecision: selectedDecision,
- oagVerdictDecisionText: selectedDecision === 'PROSECUTE' ? 'อสส. ชี้ขาดให้ฟ้องคดีตามความเห็นแย้งของ ป.ป.ท.' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดีตามคำสั่งเดิมของอัยการ',
+ /* บรรยายตามตัวเลือกที่เลือกจริง เพราะตัวเลือกครอบคลุมอุทธรณ์/ฎีกา/ถอนฟ้อง
+    ไม่ใช่แค่ ฟ้อง/ไม่ฟ้อง หน้า 20/21/22 นำข้อความนี้ไปแสดง */
+ oagVerdictDecisionText: caseTypeName.replace(/^\d+\.\s*/, '') || (selectedDecision === 'PROSECUTE' ? 'อสส. ชี้ขาดให้ฟ้องคดีตามความเห็นแย้งของ ป.ป.ท.' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดีตามคำสั่งเดิมของอัยการ'),
  oagVerdictSummary: summary,
  oagVerdictFile: document.getElementById('lblVerdictFileName').textContent,
  adminVerdictNotes: notes

@@ -10,7 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -321,22 +321,22 @@
  <div class="form-group">
  <label>แนวทางจัดทำหนังสือตามมติ <span style="color:#dc2626;">*</span></label>
  <div class="decision-grid">
- <label class="decision-card active-dissent" style="display: flex; justify-content: start;" id="label_op_dissent" onclick="selectOpinionOption('DISSENT')">
- <input type="radio" name="in_opinionOption" id="op_dissent" value="DISSENT" checked style="accent-color:#dc2626; width:18px; height:18px;">
- <div style="display: flex; flex-direction: column;">
- <div style="font-weight:700; color:#dc2626; font-size:0.92em;">
- <i class="fa-solid fa-triangle-exclamation me-1"></i> ทำหนังสือความเห็นแย้งมติอัยการ (เสนอ อสส. ชี้ขาด)
- </div>
- <div style="font-size:0.78em; color:#64748b;">(จัดทำหนังสือส่งถึงอัยการสูงสุด เพื่อพิจารณาชี้ขาดตาม ป.วิ.อ. มาตรา 145/1)</div>
- </div>
- </label>
- <label class="decision-card" style="display: flex; justify-content: start;" id="label_op_agree" onclick="selectOpinionOption('AGREE')">
- <input type="radio" name="in_opinionOption" id="op_agree" value="AGREE" style="accent-color:#16a34a; width:18px; height:18px;">
+ <label class="decision-card active-agree" style="display: flex; justify-content: start;" id="label_op_agree" onclick="selectOpinionOption('AGREE')">
+ <input type="radio" name="in_opinionOption" id="op_agree" value="AGREE" checked style="accent-color:#16a34a; width:18px; height:18px;">
  <div style="display: flex; flex-direction: column;">
  <div style="font-weight:700; color:#16a34a; font-size:0.92em;">
  <i class="fa-solid fa-circle-check me-1"></i> ทำหนังสือเห็นชอบตามมติอัยการ (ยุติเรื่อง)
  </div>
  <div style="font-size:0.78em; color:#64748b;">(จัดทำหนังสือแจ้งพนักงานอัยการเจ้าของสำนวนว่าไม่มีความเห็นแย้ง)</div>
+ </div>
+ </label>
+ <label class="decision-card" style="display: flex; justify-content: start;" id="label_op_dissent" onclick="selectOpinionOption('DISSENT')">
+ <input type="radio" name="in_opinionOption" id="op_dissent" value="DISSENT" style="accent-color:#dc2626; width:18px; height:18px;">
+ <div style="display: flex; flex-direction: column;">
+ <div style="font-weight:700; color:#dc2626; font-size:0.92em;">
+ <i class="fa-solid fa-triangle-exclamation me-1"></i> ทำหนังสือความเห็นแย้งมติอัยการ (เสนอ อสส. ชี้ขาด)
+ </div>
+ <div style="font-size:0.78em; color:#64748b;">(จัดทำหนังสือส่งถึงอัยการสูงสุด เพื่อพิจารณาชี้ขาดตาม ป.วิ.อ. มาตรา 145/1)</div>
  </div>
  </label>
  <label class="decision-card" style="display: flex; justify-content: start;" id="label_op_other" onclick="selectOpinionOption('OTHER')">
@@ -416,7 +416,7 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+ <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
@@ -588,14 +588,16 @@
  function submitOfficerFinalDocForm() {
  if (!currentCase) return;
 
- const isAgree = document.getElementById('op_agree')?.checked;
+ const isDissent = document.getElementById('op_dissent')?.checked;
  const isOther = document.getElementById('op_other')?.checked;
 
- let opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
- let defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
- if (isAgree) {
- opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
- defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
+ /* ค่าตั้งต้นคือ "เห็นชอบ" (ยุติเรื่อง) ให้ตรงกับตัวเลือกแรกที่ถูกเลือกไว้ในฟอร์ม
+    การไม่แตะปุ่มเลยจึงไม่กลายเป็นการทำหนังสือความเห็นแย้งเสนอ อสส. โดยไม่ได้เลือกเอง */
+ let opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
+ let defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
+ if (isDissent) {
+ opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
+ defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
  } else if (isOther) {
  const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();
  if (!otherSpecify) {
@@ -632,7 +634,9 @@
  const f2 = document.getElementById('in_finalDocFile2');
  const has1 = !!(f1 && f1.files && f1.files.length);
  const has2 = !!(f2 && f2.files && f2.files.length);
- const isDissent = !isAgree && !isOther;
+ /* isDissent อ่านจากปุ่มโดยตรงที่ต้นฟังก์ชันแล้ว เดิมอนุมานจาก !isAgree && !isOther
+    ซึ่งใช้ได้เพราะความเห็นแย้งเคยเป็นค่าตั้งต้น พอย้ายค่าตั้งต้นไปเป็น "เห็นชอบ"
+    การอนุมานแบบนั้นจะกลายเป็นจริงในกรณีเห็นชอบด้วย */
  if (isDissent && has1 !== has2) {
  Swal.fire({
  icon: 'warning',

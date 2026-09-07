@@ -91,12 +91,17 @@ copies would drift.
 
 ## Items 07 / 08 — decision-card wording
 
+> ⚠ **Option 2 was superseded on 07/09/2026** — see
+> [Part 1D](#part-1d--follow-ups-07092026). The `เห็นแย้งตาม…` wording recorded below
+> was self-contradictory and has been replaced by `ไม่เห็นชอบตาม…`. **This reverses half
+> of a meeting decision and needs a ruling.** Option 1 is unchanged.
+
 Decision: **rename only — no routing change.** Option 2 still sends the case back for revision.
 
-| page | option 1 | option 2 |
+| page | option 1 | option 2 (as decided — now superseded) |
 |---|---|---|
-| `07-group-director-approval.html` | `เห็นชอบตามคำร่างที่เสนอ` | `เห็นแย้งตามคำร่างที่เสนอ` |
-| `08-legal-director-approval.html` | `เห็นชอบตามความเห็นที่เสนอ` | `เห็นแย้งตามความเห็นที่เสนอ` |
+| `07-group-director-approval.html` | `เห็นชอบตามคำร่างที่เสนอ` | ~~`เห็นแย้งตามคำร่างที่เสนอ`~~ |
+| `08-legal-director-approval.html` | `เห็นชอบตามความเห็นที่เสนอ` | ~~`เห็นแย้งตามความเห็นที่เสนอ`~~ |
 
 The explanatory sub-lines (`ส่งคืนให้นิติกรเจ้าของสำนวนปรับปรุงเนื้อหา`,
 `ส่งสำนวนกลับไปยังกลุ่มงานความเห็นแย้งเพื่อทบทวน`) were kept, so it stays clear what
@@ -231,9 +236,14 @@ duplicated data already on the page, and left three downstream pages with nothin
 branch on. So the page now records **which case** (the 9) *and* **what it means for the
 case** (the outcome).
 
-**Open:** if the meeting truly intended the 9 to replace the outcome, then this page needs
-its own **อสส-worded** 9 options (e.g. `อสส. ชี้ขาดให้ฟ้อง`, `อสส. ชี้ขาดยืนตามคำสั่งไม่ฟ้อง`),
-not intake's list. That wording has to come from the working group.
+~~**Open:**~~ **RESOLVED 07/09/2569 — the meeting did intend the 9 to replace the outcome.**
+Senior: *"both the selector is the same thing, but the pre-existing one only have 2 options,
+we need the 9 options."* The cards are gone and the dropdown now carries อสส-worded options,
+exactly as this note predicted would be necessary. See
+[Part 1D §4](#4-19--one-selector-9-options-outcome-derived).
+
+⚠ **The wording of those 9 options was written by the implementer, not the working group,
+and still needs a lawyer's sign-off** — see the ⚠ box in Part 1D §4.
 
 ## Item 22 — ต้องมีของทั้ง อสส และ อัยการ
 
@@ -375,6 +385,292 @@ after those elements were deleted — guarded, so harmless, but misleading to th
 
 ---
 
+# Part 1D — follow-ups 07/09/2026
+
+Triggered by a review of `08-legal-director-approval.html`: the นิติกร had signed the
+opinion but `08` never showed it. Fixing that exposed three further inconsistencies on
+the same card, and then a wording defect that traces back to Items 07/08 above.
+
+Full write-up: [`session-07092026-attestation-and-labels.md`](session-07092026-attestation-and-labels.md).
+
+## 1. ⚠ `เห็นแย้งตาม…` → `ไม่เห็นชอบตาม…` — NEEDS A RULING
+
+**This reverses half of the [Items 07 / 08](#items-07--08--decision-card-wording) decision.**
+Recorded here because the meeting chose that wording; it should be confirmed or overturned
+by whoever set it, not left to the implementer.
+
+The rename produced a self-contradictory label. `ตาม` means *in accordance with*;
+`เห็นแย้ง` means *to dissent* — so `เห็นแย้งตามความเห็นที่เสนอ` reads "dissent in
+accordance with the proposed opinion". Option 1 works precisely because `เห็นชอบ` and
+`ตาม` point the same way; option 2 inherited the frame and inverted only half of it.
+
+Worse, `ความเห็นแย้ง` is the term of art for the document being approved on these screens,
+so the label is readable as **"file the dissent as proposed"** — the opposite of what the
+option does. Both radio options could then be read as "proceed", and it was the rework
+path that was ambiguous.
+
+The label was also the *only* thing on that path saying it. Everything else already said
+"send back":
+
+| | `08` said |
+|---|---|
+| caption | `(ส่งสำนวนกลับไปยังกลุ่มงานความเห็นแย้งเพื่อทบทวน)` |
+| radio value | `RETURN` |
+| confirm dialog | `ยืนยันการส่งกลับแก้ไข` / `ส่งเรื่องกลับให้กลุ่มงานความเห็นแย้งแก้ไข` |
+| store branch | `statusCode = "DRAFTING_OPINION"`, back to `legal_officer` |
+
+| page | before | after |
+|---|---|---|
+| `07-group-director-approval.html` (card label + confirm-dialog summary, 2 places) | `เห็นแย้งตามคำร่างที่เสนอ` | `ไม่เห็นชอบตามคำร่างที่เสนอ` |
+| `08-legal-director-approval.html` | `เห็นแย้งตามความเห็นที่เสนอ` | `ไม่เห็นชอบตามความเห็นที่เสนอ` |
+| `15-legal-director-final-review.html` | `เห็นแย้งตามความเห็นที่เสนอ` | `ไม่เห็นชอบตามความเห็นที่เสนอ` |
+
+`ไม่เห็นชอบตาม…` is the direct antonym of option 1, structurally parallel, and avoids the
+`เห็นแย้ง` term-of-art collision. **No routing, values or captions changed** — the meeting's
+"rename only, no routing change" constraint still holds.
+
+`15` was carrying the same broken label **unmarked** — `0e4b14f` rewrote its `<select>` into
+two decision cards and introduced both labels without wrapping either in
+`<mark class="wording-changed">`, so a reviewer scanning for yellow would have walked past
+both. Both are now marked.
+
+**Left alone (correct Thai, different construction):** `ยกร่างความเห็นแย้งตามขั้นตอนกฎหมาย`
+/ `…ตามกรอบเวลา` / `ชี้ขาดความเห็นแย้งตามกฎหมาย` on `04`, `05`, `06`, `18` — there
+`ความเห็นแย้ง` is the noun and `ตาม` attaches to what follows.
+
+## 2. Wording sweep continued on `08` (3 labels)
+
+Same CHANGE rule as Part 2 — headings and field labels written before the reader decides.
+Logged here rather than in the Part 2 tally, which is scoped to the 01/09 sweep.
+
+| `08-legal-director-approval.html` | before | after |
+|---|---|---|
+| card header | `บันทึกความเห็นแย้ง (นิติกร) และผลการกลั่นกรอง (ผอ.กลุ่มงาน)` | `บันทึกความเห็น (นิติกร) และ…` |
+| block title | `ความเห็นแย้งที่นิติกรเจ้าของสำนวนจัดทำ:` | `ความเห็นที่นิติกรเจ้าของสำนวนจัดทำ:` |
+| field label | `สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมายที่เห็นแย้ง` | `…ข้อกฎหมายที่เห็น` |
+
+⚠ **The third one dangles.** `ที่เห็นแย้ง` is the verb *to dissent*, so removing only
+`แย้ง` leaves "…that [one] sees". The literal removal was applied as instructed;
+`สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมาย` is the cleaner cut if the intent was a label
+that reads naturally. **Open — one-token change either way.**
+
+`07` still says `…ที่เห็นแย้ง` on the same field. The two pages now differ; left as-is
+because the instruction scoped the removal to `08`.
+
+## 3. `06` / `13` — เห็นชอบ moved first, and is now the default
+
+**Behaviour change, approved 07/09/2026.** Not a meeting item, but it changes which option
+a นิติกร submits by doing nothing, so it belongs in this register.
+
+`06` and `13` are the two นิติกร authoring screens. Both carried the same three options in
+the same order, with the same ids, and both **defaulted to the escalating one**:
+
+```
+เสนอทำความเห็นแย้ง… (checked)  |  เห็นชอบตาม…  |  ความเห็นอื่นๆ
+```
+
+The default was doubled — the submit handler *also* fell through to dissent:
+
+```js
+let opinionCode = "DISSENT";              // ← fall-through
+if (isAgree) { … } else if (isOther) { … }
+```
+
+So a นิติกร who never touched the radio filed a **ความเห็นแย้ง**, which routes to
+เลขาธิการ ป.ป.ท. and on to อสส. — the most consequential path in the flow, reached by
+inaction.
+
+**Now, on both pages:**
+
+| | before | after |
+|---|---|---|
+| order | เห็นแย้ง · เห็นชอบ · อื่นๆ | **เห็นชอบ · เห็นแย้ง · อื่นๆ** |
+| `checked` | `op_dissent` | **`op_agree`** |
+| initial card highlight | `active-dissent` | **`active-agree`** |
+| submit fall-through | `DISSENT` | **`AGREE`**, with an explicit `if (isDissent)` branch |
+
+`อื่นๆ` stays last — catch-all last is right either way. The grid is `repeat(3, 1fr)`, so
+เห็นแย้ง sits in the middle, not on the right.
+
+This also aligns `06`/`13` with `07`, `08`, `14`, `15`, which all put เห็นชอบ first **and**
+default to it. The rule now holds across every decision screen: **the checked default is the
+first option, and it is the non-escalating one.**
+
+### Audit of the other `decision-card` screens
+
+| page | verdict |
+|---|---|
+| `07`, `08`, `14`, `15` | already approve-first and approve-checked — **no change** |
+| `10-2-04-group-director-verify` | options rendered from data (`o.value === verifyResult`), not a fixed agree/reject pair — **N/A** |
+| `17-legal-admin-external-dispatch-receive` | `target_oag` / `target_prosecutor` is a routing choice, not agree/reject — **N/A** |
+| `design-system` | sample markup only |
+
+### 🐞 Found and fixed — `13` had a derived `isDissent` that the new default would have broken
+
+`13` computed, ~50 lines below the branch:
+
+```js
+const isDissent = !isAgree && !isOther;   // gates the "ความเห็นแย้ง needs 2 files" rule
+```
+
+That was only ever correct **because dissent was the fall-through default**. It now reads
+the radio directly (`op_dissent.checked`), which is what the guard and `requiredCopies`
+actually mean.
+
+Caught because the first edit produced `SyntaxError: Identifier 'isDissent' has already
+been declared` — the whole page's script failed to parse and every button was dead. Worth
+noting: `13`'s form is hidden unless the case is at `PENDING_OFFICER_FINAL_DOC`, so a
+casual look at the page would not have shown the breakage.
+
+## 4. `19` — one selector, 9 options, outcome derived
+
+Closes the **Open** question on [Item 19](#item-19--dropdown-9-choice---judgement-call).
+Senior's ruling: the two selectors are the same question, and the 9-option version wins.
+
+`ผลต่อการดำเนินคดี` (the 2 cards) is gone. `กรณีคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)` is now
+the only control, and `oagVerdictDecision` is **derived** from it via a single table,
+`OAG_VERDICT_OUTCOME`, declared directly above the logic in `19`.
+
+| # | option | → |
+|---|---|---|
+| 1 | อสส. ชี้ขาดให้ฟ้องคดี | `PROSECUTE` |
+| 2 | อสส. ชี้ขาดยืนตามคำสั่งไม่ฟ้อง | `NON_PROSECUTE` |
+| 3 | อสส. ชี้ขาดไม่ให้ถอนฟ้อง (ให้ดำเนินคดีต่อ) | `PROSECUTE` |
+| 4 | อสส. ชี้ขาดยืนตามการถอนฟ้อง | `NON_PROSECUTE` |
+| 5 | อสส. ชี้ขาดให้อุทธรณ์ | `PROSECUTE` |
+| 6 | อสส. ชี้ขาดยืนตามคำสั่งไม่อุทธรณ์/ถอนอุทธรณ์ | `NON_PROSECUTE` |
+| 7 | อสส. ชี้ขาดให้ฎีกา | `PROSECUTE` |
+| 8 | อสส. ชี้ขาดยืนตามคำสั่งไม่ฎีกา/ถอนฎีกา | `NON_PROSECUTE` |
+| 9 | อื่นๆ | **cannot be derived — ธุรการ picks the outcome in a sub-field** |
+
+A coloured strip under the dropdown shows which way the system read the choice, so the
+derivation is never invisible. Submitting is blocked if `9` is chosen without both the free
+text and an explicit outcome, and again by a final guard if the outcome is unresolved for
+any reason — `20`/`21`/`22` must never receive a blank.
+
+### ⚠⚠ THE 9 LABELS ARE NOT AUTHORITATIVE — a lawyer must sign them off
+
+**These are the implementer's words, not the working group's, and not from any source
+document.** Nothing in the repo, the meeting PDF or the mockups contains an อสส-worded list;
+it was written from the shape of intake's 1–9. It is a *plausible* pairing, not a verified one.
+
+**Why this is not cosmetic.** The label is no longer just text on a screen — it now decides
+`oagVerdictDecision`, which is the branch `20`, `21` and `22` use to say whether the case
+proceeds or is closed. **A wrong label is a wrong routing decision on a criminal case file.**
+
+**The two to check first — 3 and 4, the ถอนฟ้อง pair.** These are the least certain:
+
+- Withdrawal (`ถอนฟ้อง`) happens *after* charges are already filed, unlike the other eight,
+  which are all decisions not to start or not to escalate. So "the case proceeds" here means
+  *an existing prosecution continues*, not that a new one begins.
+- `3. ชี้ขาดไม่ให้ถอนฟ้อง` is therefore mapped `PROSECUTE` on the reading "case proceeds."
+  If ป.ป.ท. reads `PROSECUTE` strictly as "อสส. orders charges to be filed," **this mapping
+  is wrong** and 3 belongs somewhere else entirely.
+- Whether อสส can even refuse a withdrawal in this posture is a question of ป.วิ.อ. practice
+  that the implementer is not qualified to answer. **If it cannot, option 3 should not exist.**
+
+**Also worth a lawyer's eye:** 5 and 7 fold `ไม่อุทธรณ์` together with `ถอนอุทธรณ์` (and
+`ไม่ฎีกา` with `ถอนฎีกา`) into single "ยืนตาม" options, collapsing intake's separate 3/4/5
+and 6/7/8. That was done to keep the list at nine. If the distinction matters legally, the
+list needs to be longer.
+
+**To change the wording:** edit the `<option>` labels in `19` and the matching key in
+`OAG_VERDICT_OUTCOME` in the same file. Two edits, one file, nothing else depends on the text.
+
+### 🐞 Found and fixed — the store was silently discarding the 9-option choice
+
+`submitLegalAdminOAGVerdictIntake` (`assets/ecmis-activity10.js`) **never copied
+`oagVerdictCaseTypeNo` / `oagVerdictCaseTypeName` out of the payload.** `19` has been
+building both since Batch B and throwing them away ever since; nobody noticed because the
+cards carried the outcome separately. With the cards removed this would have discarded the
+entire field. Both are now persisted.
+
+### 🐞 Found and fixed — `20`/`21`/`22` hardcoded "ให้ฟ้องคดี" for every `PROSECUTE`
+
+All three printed a fixed badge, `อสส. ชี้ขาดให้ฟ้องคดี`, whenever the decision was not
+`NON_PROSECUTE`. That was accurate while the only two choices were ฟ้อง / ไม่ฟ้อง. **Widening
+the list to nine broke it**: choosing `5. ชี้ขาดให้อุทธรณ์` displayed *"ให้ฟ้องคดี"* on all
+three downstream pages — describing the ruling as something it was not.
+
+The badge text now comes from `oagVerdictCaseTypeName` (the option actually chosen), while
+colour and icon still come from `oagVerdictDecision`, which is what genuinely means
+"proceeds vs closed". `oagVerdictDecisionText` and `22`'s `finalCaseResolutionSummary` follow
+the same rule. Cases saved before 07/09/2569 have no `oagVerdictCaseTypeName`, so all four
+sites fall back to the old binary wording.
+
+### Other cleanup on `19`
+
+- The two orphaned `</div>` left by commenting the cards out had been closing the card early
+  — everything from สรุปสาระสำคัญ down had fallen outside it. Repaired.
+- `selectedDecision` no longer initialises to `'PROSECUTE'`; it starts `null` and is always
+  derived. The old initialiser was the value the cards used to overwrite.
+- `switchScenario` deleted — dead since its scenario-bar buttons were removed earlier, and it
+  was the last other writer of `selectedDecision`.
+- Dead `.verdict-card` / `.verdict-selector-grid` / `.verdict-icon` CSS removed. ⚠ While doing
+  this the neighbouring `.form-actions`, `.btn*`, `.badge`, `.font-monospace`, `.d-none` and
+  `.btn-mic` rules were deleted by accident and had to be restored — they shared the block.
+
+## 5. `17` — recipients are checkboxes now, not radio + a "both" box
+
+Reported as *"the ui is visually bad… when the radio only ticked for อสส but both is bordered."*
+Correct, and it was a real defect.
+
+### 🐞 The bug
+
+`selectDispatchTarget('BOTH')` had a ternary that returned the same value on both branches:
+
+```js
+if (oagCard) oagCard.className = on ? "decision-card active-approve"
+                                    : "decision-card active-approve";   // ← identical
+```
+
+So the อสส card **stayed highlighted even after unticking "both"**. And ticking it added a
+highlight to both cards without touching the radios — so อสส's radio stayed filled and
+พนักงานอัยการ's stayed empty. Two bordered cards, one filled radio.
+
+### The fix — the model was wrong, not just the CSS
+
+The meeting requires *เห็นแย้งก็แจ้งทั้ง อสส และ อัยการ*, so **sending to both is a normal
+outcome, not an exception.** Radios say "pick exactly one", which is false here; the separate
+`ส่งทั้งสองหน่วยงาน` checkbox existed only to work around that, and created a second source of
+truth that could disagree with the radios.
+
+Both recipients are now **checkboxes**, and the standalone "both" box is gone — ticking both
+*is* both. Each card's highlight is driven by its own checkbox, so the contradictory state is
+now unrepresentable. A hint line under the pair reports what is selected, including a warning
+when nothing is.
+
+**Nothing downstream changed.** `18` parses the saved string by substring
+(`indexOf('อัยการสูงสุด')` / `indexOf('พนักงานอัยการ')`), and `getDispatchTargetName()` still
+emits `อัยการสูงสุด (อสส.) และ พนักงานอัยการเจ้าของสำนวน` byte-for-byte for the both case.
+
+Verified: all four states (neither / อสส only / อัยการ only / both) keep card, checkbox and
+saved string in agreement; submit is blocked when neither is ticked; `17` → `18` still
+auto-opens ผู้รับที่ 2 and still switches the primary recipient for the อัยการ-only branch.
+
+## 6. Flow 3 does **not** branch on มติอัยการ
+
+Asked whether Flow 3 needs testing across the nine มติอัยการ values. **It does not** — and the
+distinction matters for how the QA time is spent.
+
+| axis | does Flow 3 branch on it? |
+|---|---|
+| **มติอัยการ (1–9)** — the prosecutor's original order | **No.** `17`/`18` only *display* `prosecutorCaseTypeName`. Neither file references `PROSECUTOR_ORDER_PHRASE` or `prosecutorCaseTypeNo`; the only `ไม่ฟ้อง` strings are fallbacks for a missing value |
+| **เห็นชอบ vs เห็นแย้ง** — the นิติกร's opinion | **Yes** — `18:823`, and this is what the meeting note is actually about |
+
+Verified by forcing a case to `5. อัยการมีความเห็นสั่งถอนอุทธรณ์` and walking it through `18`:
+the value displayed correctly and no hardcoded ไม่ฟ้อง leaked. **One spot-check with a non-`1`
+case is sufficient; nine runs add nothing.**
+
+Both เห็นชอบ/เห็นแย้ง branches are already seeded, one case each — see the QA guide's Flow 3
+entry section.
+
+⚠ **Fragility noted, not fixed:** the branch falls back to `title.includes('เห็นชอบ')` when
+`finalOpinionType` is absent, so a case whose *title* happens to contain เห็นชอบ takes the
+agreed branch regardless of its real opinion. Pre-existing.
+
+---
+
 # Part 2 — wording sweep (ความเห็นแย้ง → ความเห็น)
 
 > senior: *"แก้หมด (เช็คดีๆ ระวังทับอันที่เป็น choice ของมันอยู่แล้ว) — พวก label แก้หมดเลย"*
@@ -391,7 +687,11 @@ after those elements were deleted — guarded, so harmless, but misleading to th
 ## Review highlighting
 
 Every changed label is wrapped in `<mark class="wording-changed">`, styled yellow in
-`assets/ecmis-shell.css` (all 31 pages link it).
+`assets/ecmis-shell.css` (all 32 pages link it).
+
+⚠ **`ecmis-shell.css` and `ecmis-activity10.js` are both `?v=`-pinned. Bump the version on
+every page after editing either, or the change is invisible behind a warm cache** — this
+has now cost time three separate times (see Part 1C and Part 1D).
 
 **To finalise:** delete the `REVIEW MARKER` block at the end of `assets/ecmis-shell.css`
 and unwrap the `<mark class="wording-changed">` tags.
@@ -463,10 +763,17 @@ and unwrap the `<mark class="wording-changed">` tags.
 
 **Total: 17 changed, 15 highlighted** (2 cannot be — a `<title>` and a `title=""` attribute).
 
+> Counts above are the 01/09 sweep only. `08` gained **3 more** changed labels on 07/09/2026
+> — see [Part 1D](#part-1d--follow-ups-07092026).
+
 ## Files needing NO change
 
 `02` · `09` · `10` · `11` · `13` · `15` · `16` · `17` · `18` · `19` · `20` · `21` ·
 `10-2-01/02/03/04`
+
+> **`15` now carries `wording-changed` marks anyway.** Not from this sweep — `0e4b14f`
+> introduced both of its decision-card labels unmarked, and 07/09/2026 marked them while
+> fixing the `เห็นแย้งตาม…` defect. See [Part 1D](#part-1d--follow-ups-07092026).
 
 These sit **after the board's มติ**, so every occurrence is one of: the org name, the
 board-resolution value (`เห็นชอบให้ทำความเห็นแย้ง`), the นิติกร's choice
@@ -519,12 +826,17 @@ some are **status strings compared with `===`** (e.g.
 `05-group-director-review.html:745`). Changing those silently breaks page logic, so
 nothing there was touched.
 
-## 5. `07` / `08` — RESOLVED
+## 5. `07` / `08` — RESOLVED, then partly REOPENED
 
 Decided as **rename only**; see [Items 07 / 08](#items-07--08--decision-card-wording) in
 Part 1. Two related strings remain untouched on purpose: `14-group-director-final-review.html`
 (`เห็นชอบร่างหนังสือความเห็นแย้ง และเสนอ ผอ.กองกฎหมาย`) and `08:926` — both refer to the
 อสส-bound document rather than being the result label, so the อสส rule keeps them.
+
+⚠ **Reopened 07/09/2026:** the option-2 label the rename produced (`เห็นแย้งตาม…`) was
+self-contradictory and has been replaced by `ไม่เห็นชอบตาม…` on `07`, `08` and `15`.
+That reverses half of this decision, so it **needs a ruling** — see
+[Part 1D](#part-1d--follow-ups-07092026).
 
 
 ---

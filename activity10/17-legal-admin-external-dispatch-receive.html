@@ -22,7 +22,7 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1" />
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -750,18 +750,22 @@
                   >ส่งหนังสือไปที่
                   <span style="color: #dc2626">*</span></label
                 >
+                <!-- ผู้รับเป็น checkbox ไม่ใช่ radio: ตามมติที่ประชุม กรณีเห็นแย้งต้องแจ้ง
+                     ทั้ง อสส. และพนักงานอัยการ การส่งสองหน่วยงานจึงเป็นกรณีปกติ ไม่ใช่ข้อยกเว้น
+                     เดิมใช้ radio + checkbox "ส่งทั้งสองหน่วยงาน" แยกอีกช่อง ทำให้เกิดสภาพขัดแย้ง
+                     คือการ์ดขึ้นกรอบทั้งสองใบ แต่ radio ติ๊กได้ใบเดียว -->
                 <div class="decision-grid" id="dispatchTargetGrid">
                   <label
                     class="decision-card active-approve"
                     id="label_target_oag"
-                    onclick="selectDispatchTarget('OAG')"
                   >
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="in_dispatchTarget"
                       id="target_oag"
                       value="อัยการสูงสุด (อสส.)"
                       checked
+                      onchange="syncDispatchTargetCards()"
                       style="accent-color: #1e3a8a; width: 18px; height: 18px"
                     />
                     <div style="display: flex; flex-direction: column">
@@ -779,13 +783,13 @@
                   <label
                     class="decision-card"
                     id="label_target_prosecutor"
-                    onclick="selectDispatchTarget('PROSECUTOR')"
                   >
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="in_dispatchTarget"
                       id="target_prosecutor"
                       value="พนักงานอัยการเจ้าของสำนวน"
+                      onchange="syncDispatchTargetCards()"
                       style="accent-color: #16a34a; width: 18px; height: 18px"
                     />
                     <div style="display: flex; flex-direction: column">
@@ -801,23 +805,15 @@
                     </div>
                   </label>
                 </div>
-                <label
+                <div
+                  id="dispatchTargetHint"
                   style="
+                    font-size: 0.82em;
+                    color: #64748b;
                     margin-top: 8px;
-                    font-weight: 400;
-                    font-size: 0.85em;
-                    color: var(--text-title);
+                    margin-bottom: 16px;
                   "
-                >
-                  <input
-                    type="checkbox"
-                    id="in_dispatchTargetBoth"
-                    onchange="selectDispatchTarget('BOTH')"
-                    style="width: 15px; height: 15px; vertical-align: -2px"
-                  />
-                  ส่งทั้งสองหน่วยงาน (อสส. และ พนักงานอัยการ)
-                </label>
-              </div>
+                ></div>
 
               <div class="form-group">
                 <label>
@@ -863,7 +859,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
     <script>
@@ -875,6 +871,7 @@
         initUserProfile();
         setDefaultVerifyDate();
         loadCaseData();
+        syncDispatchTargetCards();
       });
 
       function changeFontSize(direction) {
@@ -1024,47 +1021,50 @@
         }
       }
 
-      /* ปลายทางการจัดส่ง — ธุรการเลือกที่หน้านี้ แล้วนิติกรนำไปจัดส่งจริงที่หน้า 18 */
-      function selectDispatchTarget(target) {
+      /* ปลายทางการจัดส่ง — ธุรการเลือกที่หน้านี้ แล้วนิติกรนำไปจัดส่งจริงที่หน้า 18
+         เลือกได้มากกว่าหนึ่งหน่วยงาน กรอบการ์ดผูกกับ checkbox ของตัวเองโดยตรง
+         จึงไม่มีทางเกิดสภาพที่การ์ดขึ้นกรอบแต่ช่องไม่ได้ติ๊ก */
+      function syncDispatchTargetCards() {
+        const oag = document.getElementById("target_oag");
+        const pro = document.getElementById("target_prosecutor");
         const oagCard = document.getElementById("label_target_oag");
         const proCard = document.getElementById("label_target_prosecutor");
-        const both = document.getElementById("in_dispatchTargetBoth");
+        const hint = document.getElementById("dispatchTargetHint");
 
-        if (target === "BOTH") {
-          /* ติ๊ก "ส่งทั้งสองหน่วยงาน" แล้วไม่ต้องเลือกการ์ดใบใดใบหนึ่ง */
-          const on = both && both.checked;
-          if (oagCard)
-            oagCard.className = on
-              ? "decision-card active-approve"
-              : "decision-card active-approve";
-          if (proCard)
-            proCard.className = on ? "decision-card active-approve" : "decision-card";
-          return;
-        }
+        if (oagCard)
+          oagCard.className =
+            oag && oag.checked ? "decision-card active-approve" : "decision-card";
+        if (proCard)
+          proCard.className =
+            pro && pro.checked ? "decision-card active-approve" : "decision-card";
 
-        if (both) both.checked = false;
-        if (target === "OAG") {
-          const r = document.getElementById("target_oag");
-          if (r) r.checked = true;
-          if (oagCard) oagCard.className = "decision-card active-approve";
-          if (proCard) proCard.className = "decision-card";
+        if (!hint) return;
+        const n = (oag && oag.checked ? 1 : 0) + (pro && pro.checked ? 1 : 0);
+        if (n === 2) {
+          hint.style.color = "#166534";
+          hint.innerHTML =
+            '<i class="fa-solid fa-circle-check me-1"></i>ส่งทั้งสองหน่วยงาน — นิติกรจะเห็นผู้รับที่ 2 เปิดไว้ให้แล้วที่หน้าถัดไป';
+        } else if (n === 1) {
+          hint.style.color = "#64748b";
+          hint.innerHTML =
+            '<i class="fa-solid fa-circle-info me-1"></i>เลือกได้มากกว่า 1 หน่วยงาน — กรณีเห็นแย้งตามมติที่ประชุมต้องแจ้งทั้ง อสส. และพนักงานอัยการ';
         } else {
-          const r = document.getElementById("target_prosecutor");
-          if (r) r.checked = true;
-          if (oagCard) oagCard.className = "decision-card";
-          if (proCard) proCard.className = "decision-card active-approve";
+          hint.style.color = "#b45309";
+          hint.innerHTML =
+            '<i class="fa-solid fa-triangle-exclamation me-1"></i>ยังไม่ได้เลือกปลายทาง — ต้องเลือกอย่างน้อย 1 หน่วยงาน';
         }
       }
 
-      /* คืนชื่อปลายทางที่เลือกไว้ เป็นข้อความสำหรับบันทึกและแสดงผล */
+      /* คืนชื่อปลายทางที่เลือกไว้ เป็นข้อความสำหรับบันทึกและแสดงผล
+         หน้า 18 อ่านค่านี้ด้วย indexOf('อัยการสูงสุด') / indexOf('พนักงานอัยการ')
+         ข้อความกรณีสองหน่วยงานจึงต้องคงรูปเดิมไว้ทุกตัวอักษร */
       function getDispatchTargetName() {
-        const both = document.getElementById("in_dispatchTargetBoth");
-        if (both && both.checked)
+        const picked = [
+          ...document.querySelectorAll('input[name="in_dispatchTarget"]:checked'),
+        ].map((el) => el.value);
+        if (picked.length === 2)
           return "อัยการสูงสุด (อสส.) และ พนักงานอัยการเจ้าของสำนวน";
-        const picked = document.querySelector(
-          'input[name="in_dispatchTarget"]:checked',
-        );
-        return picked ? picked.value : "";
+        return picked[0] || "";
       }
 
       function submitLegalAdminSignedDocReceiveForm() {

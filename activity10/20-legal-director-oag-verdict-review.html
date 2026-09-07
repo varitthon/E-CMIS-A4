@@ -10,7 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -358,7 +358,7 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+ <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
@@ -462,9 +462,14 @@
  if (badge) {
  badge.style.background = isProsecute ? '#dcfce7' : '#fee2e2';
  badge.style.color = isProsecute ? '#166534' : '#991b1b';
- badge.innerHTML = isProsecute
- ? '<i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี'
- : '<i class="fa-solid fa-ban me-1"></i>อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี';
+ /* ใช้ชื่อกรณีที่ธุรการเลือกไว้จริงที่หน้า 19 ไม่ใช่ข้อความคู่ ฟ้อง/ไม่ฟ้อง
+    ตั้งแต่ 07/09/2569 ตัวเลือกครอบคลุมอุทธรณ์/ฎีกา/ถอนฟ้องด้วย การเขียนตายตัวว่า
+    "ให้ฟ้องคดี" จะบรรยายคำวินิจฉัยผิดสำหรับกรณีเหล่านั้น
+    สีและไอคอนยังมาจาก oagVerdictDecision เพราะเป็นตัวบอกว่าคดีเดินต่อหรือยุติ
+    (|| ไว้รองรับสำนวนเก่าที่บันทึกก่อนวันดังกล่าว ซึ่งยังไม่มี oagVerdictCaseTypeName) */
+ const verdictLabel = (currentCase.oagVerdictCaseTypeName || '').replace(/^\d+\.\s*/, '')
+ || (isProsecute ? 'อสส. ชี้ขาดให้ฟ้องคดี' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี');
+ badge.innerHTML = '<i class="fa-solid ' + (isProsecute ? 'fa-gavel' : 'fa-ban') + ' me-1"></i>' + verdictLabel;
  }
  }
 

@@ -10,7 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -701,7 +701,7 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+ <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
@@ -819,13 +819,20 @@
 
  if (!currentCase) return;
 
- // Detect initial scenario from case data
- const isAgreed = (currentCase.finalOpinionType && currentCase.finalOpinionType.includes('เห็นชอบ')) || (currentCase.title && currentCase.title.includes('เห็นชอบ'));
+ /* ผลการพิจารณาต้องอ่านจาก finalOpinionType เท่านั้น (หน้า 13 เป็นผู้บันทึก)
+    เดิมมี fallback ไปดู title ด้วย ซึ่งใช้ไม่ได้ เพราะ title เป็นชื่อกระบวนงาน
+    เช่น "พิจารณาความเห็นแย้ง..." ไม่ใช่ผลการพิจารณา สำนวนที่ชื่อเรื่องบังเอิญมีคำว่า
+    "เห็นชอบ" จะถูกตีความผิดเป็นเห็นชอบ ทั้งที่ผลจริงเป็นเห็นแย้ง
+    เมื่อไม่มีค่า ให้ถือเป็น "เห็นแย้ง" ไว้ก่อน เพราะการส่งเกินยังแก้ได้
+    แต่การไม่ได้ส่งให้ อสส. ทำให้สำนวนไปไม่ถึงผู้มีอำนาจชี้ขาด */
+ const hasOpinion = Boolean(currentCase.finalOpinionType);
+ const isAgreed = String(currentCase.finalOpinionType || '').includes('เห็นชอบ');
  if (isAgreed) {
  switchScenario('agreed_ems', false);
  } else {
  switchScenario('disagreed_ems', false);
  }
+ if (!hasOpinion) showMissingOpinionWarning();
 
  populateCaseView();
  }
@@ -910,6 +917,24 @@
  b.innerHTML = '<div style="font-size:1.2em">✏️</div><div><b>กำลังแก้ไขข้อมูลการจัดส่งที่บันทึกไว้แล้ว</b><br>เมื่อบันทึกอีกครั้ง ระบบจะทับข้อมูลเดิมของสำนวนนี้</div>';
  wrap.insertBefore(b, wrap.firstChild);
  }
+ }
+
+ /* สำนวนที่ไม่มี finalOpinionType แปลว่ายังไม่ผ่านหน้า 13 หรือข้อมูลไม่ครบ
+    ระบบเลือกเส้นทาง "เห็นแย้ง" ไว้ให้เป็นค่าปลอดภัย แต่ต้องบอกให้เห็น
+    ไม่ใช่เดาแล้วแสดงผลอย่างมั่นใจเหมือนเดิม */
+ function showMissingOpinionWarning() {
+ const wrap = document.getElementById('dispatchFormContainer');
+ if (!wrap || document.getElementById('missingOpinionWarning')) return;
+ const b = document.createElement('div');
+ b.id = 'missingOpinionWarning';
+ b.style.cssText = 'display:flex; gap:10px; align-items:flex-start; margin:0 0 14px 0;'
+ + 'padding:12px 14px; border:1px solid #fde68a; background:rgba(217,119,6,0.08);'
+ + 'border-radius:8px; color:#92400e; font-size:0.88em;';
+ b.innerHTML = '<div style="font-size:1.2em">⚠️</div><div>'
+ + '<b>ไม่พบผลการพิจารณาของนิติกรในสำนวนนี้</b><br>'
+ + 'ระบบตั้งค่าเป็น <b>เห็นแย้ง</b> ไว้ก่อนเพื่อความปลอดภัย (ส่งถึงอัยการสูงสุด) '
+ + 'กรุณาตรวจสอบที่หน้า 13 ว่าบันทึกผลการพิจารณาครบถ้วนแล้ว ก่อนยืนยันการจัดส่ง</div>';
+ wrap.insertBefore(b, wrap.firstChild);
  }
 
  function switchScenario(scenarioKey, triggerPopulate = true) {

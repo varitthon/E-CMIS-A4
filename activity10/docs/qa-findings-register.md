@@ -126,16 +126,42 @@ Unlike มติอัยการ (a clean range with a hole, so clearly a gap)
 well be deliberate, with some pages carrying a fuller detail card. **Decision needed:**
 is the accused's name part of the standard case-detail block or not?
 
-## C4 — Item 19: intake's 9 options, or อสส-worded ones?
+## C4 — 🚨 Item 19: the 9 อสส-ruling labels need a lawyer's sign-off
 
-19 now uses **intake's 9 verbatim** (the working group's choice), and the two verdict cards
-were **kept** as `ผลต่อการดำเนินคดี` because 20, 21 and 22 all branch on
-`oagVerdictDecision`, and none of intake's 9 expresses ฟ้อง vs ไม่ฟ้อง — they describe the
-prosecutor's *original* order.
+> **Status changed 07/09/2569 — this went from a wording question to a routing question.
+> It is now the highest-priority item in section C.**
 
-**Decision needed:** if this page should have its own **อสส-worded** nine
-(`อสส. ชี้ขาดให้ฟ้อง`, `อสส. ชี้ขาดยืนตามคำสั่งไม่ฟ้อง`, …), the extra outcome field can be
-dropped. That wording has to come from the working group.
+**Answered:** the senior confirmed the two selectors were the same question and the 9-option
+version wins. The `ผลต่อการดำเนินคดี` cards are removed; `กรณีคำวินิจฉัยชี้ขาดของอัยการสูงสุด
+(อสส.)` is the only control on the page.
+
+**What that changed:** `oagVerdictDecision` is now **derived from the chosen label**. The
+label is no longer text on a screen — it decides whether `20`, `21` and `22` treat the case
+as proceeding or closed. **A wrong label is a wrong routing decision on a criminal file.**
+
+**Still needed, and now blocking:** the nine labels were **written by the implementer**, not
+the working group. Nothing in the repo, the meeting PDF or the mockups contains an อสส-worded
+list; they were derived from the shape of intake's 1–9. Plausible, not verified.
+
+**Check first — options 3 and 4, the `ถอนฟ้อง` pair:**
+
+- Withdrawal happens *after* charges are filed; the other eight are decisions not to start or
+  not to escalate. "Proceeds" here means an existing prosecution continues, not that a new
+  one begins.
+- `3. ชี้ขาดไม่ให้ถอนฟ้อง` is mapped `PROSECUTE` on a "case proceeds" reading. If ป.ป.ท. reads
+  `PROSECUTE` strictly as *"อสส. orders charges filed"*, **the mapping is wrong.**
+- Whether อสส can refuse a withdrawal in this posture is a ป.วิ.อ. question the implementer
+  cannot answer. **If it cannot, option 3 should not exist.**
+
+**Also confirm:** options 6 and 8 each merge `ไม่อุทธรณ์`+`ถอนอุทธรณ์` and
+`ไม่ฎีกา`+`ถอนฎีกา` into one entry, collapsing intake's separate 3/4/5 and 6/7/8, purely to
+keep the list at nine. If that distinction is legally material, the list must grow.
+
+**Cost to change:** two edits in one file — the `<option>` labels in
+`19-legal-admin-oag-verdict-intake.html` and the matching key in `OAG_VERDICT_OUTCOME`
+directly above the logic in the same file. Nothing else reads the text.
+
+Detail: [`meeting-01092026-changes.md` Part 1D §4](meeting-01092026-changes.md#4-19--one-selector-9-options-outcome-derived).
 
 ## C5 — The diagram and the meeting disagree on the dispatch
 
