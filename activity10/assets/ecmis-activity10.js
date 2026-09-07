@@ -221,9 +221,12 @@
       officer: "นายณัฐพล บัวทุม",
       officerPosition: "นิติกรชำนาญการพิเศษ",
       assignedRole: "legal_officer",
-      status: "นิติกรเตรียมจัดส่งหนังสือให้อัยการสูงสุด (อสส.)",
+      /* เห็นแย้ง ต้องแจ้งทั้ง อสส. และอัยการต้นทาง (2 หน่วยงาน) ยังไม่มีใครบันทึกจัดส่งเลย
+         ข้อความและสีต้องตรงกับที่ saveDispatchRecipient() เขียนจริงตอน 0/2 เพื่อให้สำนวนที่ยังไม่แตะ
+         กับสำนวนที่บันทึกไปแล้วบางส่วนอ่านบนสเกลเดียวกัน */
+      status: "นิติกรจัดส่งหนังสือ (บันทึกแล้ว 0/2)",
       statusCode: "PENDING_OFFICER_EXTERNAL_DISPATCH",
-      statusBadge: "bg-primary text-white",
+      statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0024/2569",
       paccCaseNo: "0058/2568",
       blackNo: "อ. 142/2569",
@@ -268,9 +271,11 @@
       officer: "นายณัฐพล บัวทุม",
       officerPosition: "นิติกรชำนาญการพิเศษ",
       assignedRole: "legal_officer",
-      status: "นิติกรเตรียมจัดส่งหนังสือให้อัยการต้นทาง (ไปรษณีย์ EMS)",
+      /* เห็นชอบ ต้องแจ้งอัยการต้นทางหน่วยงานเดียว (1 หน่วยงาน) วิธีจัดส่งเลือกได้อิสระตอนบันทึกจริง
+         จึงห้ามฝัง EMS มาก่อนในสถานะที่ยังไม่มีใครบันทึกอะไรเลย */
+      status: "นิติกรจัดส่งหนังสือ (บันทึกแล้ว 0/1)",
       statusCode: "PENDING_OFFICER_EXTERNAL_DISPATCH",
-      statusBadge: "bg-info text-dark",
+      statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0025/2569",
       paccCaseNo: "0060/2568",
       blackNo: "อ. 145/2569",
@@ -719,20 +724,24 @@
       title: "คำร้องขอเปิดเผยรายงานผลการตรวจสอบข้อเท็จจริงโครงการก่อสร้างถนน",
       requesterName: "นายประเสริฐ ใจซื่อ",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "รายงานผลการตรวจสอบข้อเท็จจริงโครงการก่อสร้างถนนสายบ้านโนนสูง",
+      requestedInfo:
+        "รายงานผลการตรวจสอบข้อเท็จจริงโครงการก่อสร้างถนนสายบ้านโนนสูง",
       relatedCaseNo: "-",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเปิดเผยเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อความมั่นคงหรือประโยชน์สาธารณะ",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเปิดเผยเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อความมั่นคงหรือประโยชน์สาธารณะ",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4501",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -744,23 +753,31 @@
       id: "คำร้อง-100011/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยสำนวนการสอบข้อเท็จจริงเจ้าหน้าที่ทุจริตจัดซื้อจัดจ้าง",
+      title:
+        "คำร้องขอเปิดเผยสำนวนการสอบข้อเท็จจริงเจ้าหน้าที่ทุจริตจัดซื้อจัดจ้าง",
       requesterName: "นางสาวอรทัย เที่ยงธรรม",
       requesterTypeName: "สื่อมวลชน",
-      requestedInfo: "สำนวนการสอบข้อเท็จจริงกรณีเจ้าหน้าที่ถูกกล่าวหาทุจริตจัดซื้อจัดจ้างวัสดุครุภัณฑ์",
+      requestedInfo:
+        "สำนวนการสอบข้อเท็จจริงกรณีเจ้าหน้าที่ถูกกล่าวหาทุจริตจัดซื้อจัดจ้างวัสดุครุภัณฑ์",
       relatedCaseNo: "คดี-100012/2569",
       requestChannelName: "ยื่นทางไปรษณีย์",
-      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือรับรองสื่อมวลชน.pdf"],
+      attachmentFileNames: [
+        "คำร้องขอเปิดเผยข้อมูล.pdf",
+        "หนังสือรับรองสื่อมวลชน.pdf",
+      ],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะส่วนสรุปผลการสอบข้อเท็จจริง โดยให้ปกปิดชื่อและข้อมูลระบุตัวพยานเนื่องจากอยู่ระหว่างกระบวนการทางวินัย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลบางส่วนเป็นข้อมูลส่วนบุคคลของพยานที่ยังอยู่ระหว่างการคุ้มครอง จึงเปิดเผยได้เพียงบางส่วน",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะส่วนสรุปผลการสอบข้อเท็จจริง โดยให้ปกปิดชื่อและข้อมูลระบุตัวพยานเนื่องจากอยู่ระหว่างกระบวนการทางวินัย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลบางส่วนเป็นข้อมูลส่วนบุคคลของพยานที่ยังอยู่ระหว่างการคุ้มครอง จึงเปิดเผยได้เพียงบางส่วน",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4502",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -775,20 +792,24 @@
       title: "คำร้องขอเปิดเผยแผนปฏิบัติการสืบสวนกรณีทุจริตจัดซื้อยาและเวชภัณฑ์",
       requesterName: "นายวิชัย ตรงประเด็น",
       requesterTypeName: "ผู้เสียหาย",
-      requestedInfo: "แผนปฏิบัติการสืบสวนและรายชื่อเจ้าหน้าที่ผู้เกี่ยวข้องในคดีทุจริตจัดซื้อยาและเวชภัณฑ์",
+      requestedInfo:
+        "แผนปฏิบัติการสืบสวนและรายชื่อเจ้าหน้าที่ผู้เกี่ยวข้องในคดีทุจริตจัดซื้อยาและเวชภัณฑ์",
       relatedCaseNo: "คดี-100013/2569",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นแผนปฏิบัติการสืบสวนที่ยังดำเนินการอยู่ หากเปิดเผยจะก่อให้เกิดความเสียหายต่อการบังคับใช้กฎหมายตามมาตรา 15(2) จึงไม่อนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยแผนปฏิบัติการสืบสวนที่ยังไม่เสร็จสิ้นจะกระทบต่อการสืบสวนสอบสวนคดีทุจริตที่เกี่ยวข้อง",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นแผนปฏิบัติการสืบสวนที่ยังดำเนินการอยู่ หากเปิดเผยจะก่อให้เกิดความเสียหายต่อการบังคับใช้กฎหมายตามมาตรา 15(2) จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยแผนปฏิบัติการสืบสวนที่ยังไม่เสร็จสิ้นจะกระทบต่อการสืบสวนสอบสวนคดีทุจริตที่เกี่ยวข้อง",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4503",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -807,7 +828,8 @@
       id: "คำร้อง-100025/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานความคืบหน้าการไต่สวนโครงการก่อสร้างสะพานข้ามคลอง",
+      title:
+        "คำร้องขอเปิดเผยรายงานความคืบหน้าการไต่สวนโครงการก่อสร้างสะพานข้ามคลอง",
       requesterName: "นายอนุชา มั่นคง",
       requesterTypeName: "ประชาชนทั่วไป",
       requestedInfo: "รายงานความคืบหน้าการไต่สวนโครงการก่อสร้างสะพานข้ามคลอง",
@@ -816,8 +838,10 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน แต่ข้อมูลที่ขอไม่กระทบต่อการไต่สวนดังกล่าว",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน แต่ข้อมูลที่ขอไม่กระทบต่อการไต่สวนดังกล่าว",
       l2CaseState: "INVESTIGATING",
       l2CaseStateName: "อยู่ระหว่างไต่สวน",
       l2MeetingNo: "9/2569",
@@ -825,7 +849,8 @@
       l2InternalDocNo: "ปป 0002/4520",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -837,17 +862,21 @@
       id: "คำร้อง-100026/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่ยุติแล้ว",
+      title:
+        "คำร้องขอเปิดเผยรายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่ยุติแล้ว",
       requesterName: "นางสาวธัญญา ค้ำจุน",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "รายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่คดียุติแล้ว",
+      requestedInfo:
+        "รายงานผลการไต่สวนโครงการจัดซื้อครุภัณฑ์การแพทย์ที่คดียุติแล้ว",
       relatedCaseNo: "คดี-100026/2569",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "9/2569",
@@ -855,7 +884,8 @@
       l2InternalDocNo: "ปป 0002/4521",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -876,8 +906,10 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือมอบอำนาจ.pdf"],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว เนื่องจากอยู่ระหว่างการไต่สวน",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน ข้อมูลบางส่วนต้องปกปิดเพื่อไม่ให้กระทบการไต่สวน",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว เนื่องจากอยู่ระหว่างการไต่สวน",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องยังอยู่ระหว่างการไต่สวน ข้อมูลบางส่วนต้องปกปิดเพื่อไม่ให้กระทบการไต่สวน",
       l2CaseState: "INVESTIGATING",
       l2CaseStateName: "อยู่ระหว่างไต่สวน",
       l2MeetingNo: "9/2569",
@@ -885,7 +917,8 @@
       l2InternalDocNo: "ปป 0002/4522",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -897,17 +930,21 @@
       id: "คำร้อง-100028/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่สิ้นสุดแล้ว",
+      title:
+        "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่สิ้นสุดแล้ว",
       requesterName: "นางสมศรี เอื้อเฟื้อ",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "รายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่คดียุติแล้ว",
+      requestedInfo:
+        "รายงานผลการไต่สวนคดีทุจริตเบิกจ่ายเงินสวัสดิการที่คดียุติแล้ว",
       relatedCaseNo: "คดี-100028/2569",
       requestChannelName: "ยื่นทางไปรษณีย์",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม แม้คดีจะเสร็จสิ้นแล้ว",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะบางส่วน โดยปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม แม้คดีจะเสร็จสิ้นแล้ว",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "9/2569",
@@ -915,7 +952,8 @@
       l2InternalDocNo: "ปป 0002/4523",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -934,7 +972,8 @@
       id: "คำร้อง-100013/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานผลการตรวจสอบโครงการปรับปรุงไฟฟ้าส่องสว่างสาธารณะ",
+      title:
+        "คำร้องขอเปิดเผยรายงานผลการตรวจสอบโครงการปรับปรุงไฟฟ้าส่องสว่างสาธารณะ",
       requesterName: "นายสมพงษ์ รักชาติ",
       requesterTypeName: "ประชาชนทั่วไป",
       requestedInfo: "รายงานผลการตรวจสอบโครงการปรับปรุงไฟฟ้าส่องสว่างสาธารณะ",
@@ -943,14 +982,17 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อประโยชน์สาธารณะ",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อประโยชน์สาธารณะ",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4504",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -967,7 +1009,8 @@
       id: "คำร้อง-100014/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยสำนวนการสอบข้อเท็จจริงกรณีร้องเรียนเจ้าหน้าที่รับสินบน",
+      title:
+        "คำร้องขอเปิดเผยสำนวนการสอบข้อเท็จจริงกรณีร้องเรียนเจ้าหน้าที่รับสินบน",
       requesterName: "นางสาวชุติมา แจ่มใส",
       requesterTypeName: "สื่อมวลชน",
       requestedInfo: "สำนวนการสอบข้อเท็จจริงกรณีร้องเรียนเจ้าหน้าที่รับสินบน",
@@ -976,14 +1019,17 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะส่วนสรุปผล โดยปกปิดชื่อพยานเนื่องจากอยู่ระหว่างกระบวนการทางวินัย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลบางส่วนเป็นข้อมูลส่วนบุคคลของพยานที่ยังอยู่ระหว่างการคุ้มครอง",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะส่วนสรุปผล โดยปกปิดชื่อพยานเนื่องจากอยู่ระหว่างกระบวนการทางวินัย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลบางส่วนเป็นข้อมูลส่วนบุคคลของพยานที่ยังอยู่ระหว่างการคุ้มครอง",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4505",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -992,7 +1038,8 @@
       l2BoardApprovalDate: getDateWithOffset(-4),
       l2ReceiveNotes: "",
       l2NoticeRecipient: "นางสาวชุติมา แจ่มใส",
-      l2NoticeBody: "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผยบางส่วน",
+      l2NoticeBody:
+        "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผยบางส่วน",
       l2NoticeAppointmentDate: getDateWithOffset(7),
       statusCode: "L2_PENDING_REDACTION",
       status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคล หรือเสนอ ผอ.กองกฎหมายลงนาม",
@@ -1012,14 +1059,17 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะเอกสารสรุปผลการจัดซื้อจัดจ้าง โดยปกปิดข้อมูลราคากลางบางส่วน",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลราคากลางบางส่วนอาจกระทบต่อการแข่งขันที่เป็นธรรมในการจัดซื้อจัดจ้างครั้งต่อไป",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นควรอนุญาตเปิดเผยเฉพาะเอกสารสรุปผลการจัดซื้อจัดจ้าง โดยปกปิดข้อมูลราคากลางบางส่วน",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลราคากลางบางส่วนอาจกระทบต่อการแข่งขันที่เป็นธรรมในการจัดซื้อจัดจ้างครั้งต่อไป",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4506",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1028,7 +1078,8 @@
       l2BoardApprovalDate: getDateWithOffset(-5),
       l2ReceiveNotes: "",
       l2NoticeRecipient: "นายอนุชา พากเพียร",
-      l2NoticeBody: "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผยบางส่วน",
+      l2NoticeBody:
+        "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผยบางส่วน",
       l2NoticeAppointmentDate: getDateWithOffset(5),
       l2RedactionNotes: "ปกปิดข้อมูลราคากลางในเอกสารแนบหน้า 3-4 เรียบร้อยแล้ว",
       l2RedactionDone: true,
@@ -1041,7 +1092,8 @@
       id: "คำร้อง-100016/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจสอบข้อเท็จจริงเบื้องต้น",
+      title:
+        "คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจสอบข้อเท็จจริงเบื้องต้น",
       requesterName: "นายธีรพล ยุติธรรม",
       requesterTypeName: "ทนายความ",
       requestedInfo: "รายงานการประชุมคณะกรรมการตรวจสอบข้อเท็จจริงเบื้องต้น",
@@ -1050,14 +1102,17 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือมอบอำนาจ.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อประโยชน์สาธารณะ",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยข้อมูลทั้งหมดตามคำร้อง",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นข้อมูลข่าวสารทั่วไป ไม่กระทบต่อประโยชน์สาธารณะ",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4507",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1066,7 +1121,8 @@
       l2BoardApprovalDate: getDateWithOffset(-6),
       l2ReceiveNotes: "",
       l2NoticeRecipient: "นายธีรพล ยุติธรรม",
-      l2NoticeBody: "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผย",
+      l2NoticeBody:
+        "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผย",
       statusCode: "L2_PENDING_NOTICE_DISPATCH",
       status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
       assignedRole: "admin_legal",
@@ -1076,23 +1132,28 @@
       id: "คำร้อง-100017/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยข้อมูลบัญชีทรัพย์สินเจ้าหน้าที่รัฐระหว่างการไต่สวน",
+      title:
+        "คำร้องขอเปิดเผยข้อมูลบัญชีทรัพย์สินเจ้าหน้าที่รัฐระหว่างการไต่สวน",
       requesterName: "นายกิตติศักดิ์ ค้นหา",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "ข้อมูลบัญชีทรัพย์สินและหนี้สินของเจ้าหน้าที่รัฐที่อยู่ระหว่างการไต่สวน",
+      requestedInfo:
+        "ข้อมูลบัญชีทรัพย์สินและหนี้สินของเจ้าหน้าที่รัฐที่อยู่ระหว่างการไต่สวน",
       relatedCaseNo: "คดี-100016/2569",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าข้อมูลบัญชีทรัพย์สินที่อยู่ระหว่างการไต่สวนเป็นข้อมูลที่ต้องรักษาความลับ หากเปิดเผยจะกระทบต่อการไต่สวน จึงไม่อนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยข้อมูลระหว่างการไต่สวนอาจก่อให้เกิดการยักย้ายถ่ายเททรัพย์สิน",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลบัญชีทรัพย์สินที่อยู่ระหว่างการไต่สวนเป็นข้อมูลที่ต้องรักษาความลับ หากเปิดเผยจะกระทบต่อการไต่สวน จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยข้อมูลระหว่างการไต่สวนอาจก่อให้เกิดการยักย้ายถ่ายเททรัพย์สิน",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4508",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1112,20 +1173,24 @@
       title: "คำร้องขอเปิดเผยแผนที่ตำแหน่งพยานผู้ให้เบาะแสในคดีทุจริตจัดซื้อยา",
       requesterName: "นายประยุทธ ไม่ย่อท้อ",
       requesterTypeName: "ผู้เสียหาย",
-      requestedInfo: "ข้อมูลตำแหน่งและรายชื่อพยานผู้ให้เบาะแสในคดีทุจริตจัดซื้อยา",
+      requestedInfo:
+        "ข้อมูลตำแหน่งและรายชื่อพยานผู้ให้เบาะแสในคดีทุจริตจัดซื้อยา",
       relatedCaseNo: "คดี-100017/2569",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าข้อมูลตำแหน่งพยานเป็นข้อมูลที่หากเปิดเผยจะเป็นอันตรายต่อความปลอดภัยของพยาน จึงไม่อนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยข้อมูลพยานจะกระทบต่อความปลอดภัยของบุคคลและกระบวนการยุติธรรม",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลตำแหน่งพยานเป็นข้อมูลที่หากเปิดเผยจะเป็นอันตรายต่อความปลอดภัยของพยาน จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยข้อมูลพยานจะกระทบต่อความปลอดภัยของบุคคลและกระบวนการยุติธรรม",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4509",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1133,7 +1198,8 @@
       l2BoardApprovalRef: "ปป 0001/ว.135",
       l2BoardApprovalDate: getDateWithOffset(-7),
       l2ReceiveNotes: "",
-      l2DenyMemoText: "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าข้อมูลตำแหน่งพยานเป็นข้อมูลที่หากเปิดเผยจะเป็นอันตรายต่อความปลอดภัยของพยาน จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2DenyMemoText:
+        "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าข้อมูลตำแหน่งพยานเป็นข้อมูลที่หากเปิดเผยจะเป็นอันตรายต่อความปลอดภัยของพยาน จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
       statusCode: "L2_PENDING_DENY_PROPOSE",
       status: "ผอ.กองกฎหมายพิจารณาเสนอเลขาธิการคณะกรรมการ ป.ป.ท.",
       assignedRole: "dir_legal",
@@ -1149,17 +1215,23 @@
       requestedInfo: "รายงานผลการสอบสวนวินัยร้ายแรงของเจ้าหน้าที่ระดับสูง",
       relatedCaseNo: "คดี-100018/2569",
       requestChannelName: "ยื่นทางไปรษณีย์",
-      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือรับรองสื่อมวลชน.pdf"],
+      attachmentFileNames: [
+        "คำร้องขอเปิดเผยข้อมูล.pdf",
+        "หนังสือรับรองสื่อมวลชน.pdf",
+      ],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าการสอบสวนวินัยยังไม่ถึงที่สุด หากเปิดเผยจะกระทบต่อสิทธิของผู้ถูกกล่าวหาและกระบวนการทางวินัย จึงไม่อนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการสอบสวนวินัยที่ยังไม่ถึงที่สุดต้องได้รับการคุ้มครองตามหลักการพิจารณาที่เป็นธรรม",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าการสอบสวนวินัยยังไม่ถึงที่สุด หากเปิดเผยจะกระทบต่อสิทธิของผู้ถูกกล่าวหาและกระบวนการทางวินัย จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าการสอบสวนวินัยที่ยังไม่ถึงที่สุดต้องได้รับการคุ้มครองตามหลักการพิจารณาที่เป็นธรรม",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4510",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1167,7 +1239,8 @@
       l2BoardApprovalRef: "ปป 0001/ว.136",
       l2BoardApprovalDate: getDateWithOffset(-9),
       l2ReceiveNotes: "",
-      l2DenyMemoText: "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าการสอบสวนวินัยยังไม่ถึงที่สุด จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2DenyMemoText:
+        "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าการสอบสวนวินัยยังไม่ถึงที่สุด จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
       l2DenyCommitteeDispatchDate: getDateWithOffset(-6),
       l2DenyCommitteeDispatchNotes: "",
       statusCode: "L2_PENDING_DENY_DISPATCH_COMMITTEE",
@@ -1179,23 +1252,28 @@
       id: "คำร้อง-100020/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยเอกสารการเบิกจ่ายงบประมาณโครงการฝึกอบรมเยาวชนต่อต้านทุจริต",
+      title:
+        "คำร้องขอเปิดเผยเอกสารการเบิกจ่ายงบประมาณโครงการฝึกอบรมเยาวชนต่อต้านทุจริต",
       requesterName: "นายวรพล มั่นคง",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "เอกสารการเบิกจ่ายงบประมาณโครงการฝึกอบรมเยาวชนต่อต้านทุจริต",
+      requestedInfo:
+        "เอกสารการเบิกจ่ายงบประมาณโครงการฝึกอบรมเยาวชนต่อต้านทุจริต",
       relatedCaseNo: "-",
       requestChannelName: "ยื่นด้วยตนเอง",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าเอกสารดังกล่าวเกี่ยวข้องกับคดีที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น จึงไม่อนุญาตให้เปิดเผยในชั้นนี้",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าเอกสารดังกล่าวเป็นส่วนหนึ่งของสำนวนที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าเอกสารดังกล่าวเกี่ยวข้องกับคดีที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น จึงไม่อนุญาตให้เปิดเผยในชั้นนี้",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าเอกสารดังกล่าวเป็นส่วนหนึ่งของสำนวนที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4511",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1203,10 +1281,12 @@
       l2BoardApprovalRef: "ปป 0001/ว.137",
       l2BoardApprovalDate: getDateWithOffset(-11),
       l2ReceiveNotes: "",
-      l2DenyMemoText: "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าเอกสารดังกล่าวเกี่ยวข้องกับคดีที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2DenyMemoText:
+        "ด้วยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารได้พิจารณาคำร้องแล้วเห็นว่าเอกสารดังกล่าวเกี่ยวข้องกับคดีที่อยู่ระหว่างการไต่สวนของหน่วยงานอื่น จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
       l2DenyAssignedDept: "กองปราบปรามการทุจริตในภาครัฐ 3",
       l2DenyAssignDate: getDateWithOffset(-8),
-      l2DenyAssignNotes: "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป",
+      l2DenyAssignNotes:
+        "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป",
       statusCode: "L2_CASE_CLOSED_DENY_ASSIGNED",
       status: "สิ้นสุด — มอบหมายกอง/สำนักเจ้าของสำนวนแล้ว",
       assignedRole: "admin_legal",
@@ -1230,8 +1310,10 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว การเปิดเผยข้อมูลจึงไม่กระทบต่อการไต่สวนอีกต่อไป",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "8/2569",
@@ -1257,17 +1339,21 @@
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือมอบอำนาจ.pdf"],
       l2ResolutionType: "PARTIAL",
       l2ResolutionTypeName: "อนุญาตเปิดเผยบางส่วน",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว จึงเห็นควรอนุญาตให้เปิดเผยบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว จึงเห็นควรอนุญาตให้เปิดเผยบางส่วน โดยปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว แต่ยังต้องปกปิดข้อมูลส่วนบุคคลของบุคคลที่สาม",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-9),
       l2InternalDocNo: "ปป 0002/4512",
-      l2CloseMemoText: "ตามที่ นายสุเมธ พากเพียร ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยเอกสารสรุปผลการไต่สวนข้อเท็จจริงเบื้องต้น นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยบางส่วน และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2CloseMemoText:
+        "ตามที่ นายสุเมธ พากเพียร ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยเอกสารสรุปผลการไต่สวนข้อเท็จจริงเบื้องต้น นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยบางส่วน และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
       l2Signatures: {
         closeMemoProposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-3),
           position: "อนุกรรมการและเลขานุการ",
         },
@@ -1288,25 +1374,33 @@
       requestedInfo: "รายงานการประชุมคณะกรรมการตรวจรับพัสดุ",
       relatedCaseNo: "-",
       requestChannelName: "ยื่นทางไปรษณีย์",
-      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสือรับรองสื่อมวลชน.pdf"],
+      attachmentFileNames: [
+        "คำร้องขอเปิดเผยข้อมูล.pdf",
+        "หนังสือรับรองสื่อมวลชน.pdf",
+      ],
       l2ResolutionType: "DISCLOSE",
       l2ResolutionTypeName: "อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยทั้งหมด",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว และเป็นข้อมูลข่าวสารทั่วไป",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ พิจารณาแล้วเห็นว่าคดีนี้เสร็จสิ้นแล้ว และข้อมูลที่ขอไม่เข้าข้อยกเว้นตามมาตรา 15 จึงเห็นควรอนุญาตให้เปิดเผยทั้งหมด",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว และเป็นข้อมูลข่าวสารทั่วไป",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "7/2569",
       l2MeetingDate: getDateWithOffset(-16),
       l2InternalDocNo: "ปป 0002/4508",
-      l2CloseMemoText: "ตามที่ นางวิไลลักษณ์ ศรีสุข ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจรับพัสดุ นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยข้อมูล และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
+      l2CloseMemoText:
+        "ตามที่ นางวิไลลักษณ์ ศรีสุข ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง คำร้องขอเปิดเผยรายงานการประชุมคณะกรรมการตรวจรับพัสดุ นั้น คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารมีมติอนุญาตเปิดเผยข้อมูล และคดีที่เกี่ยวข้องเสร็จสิ้นแล้ว จึงเรียนมาเพื่อโปรดพิจารณาเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป",
       l2Signatures: {
         closeMemoProposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-10),
           position: "อนุกรรมการและเลขานุการ",
         },
         closePropose: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-9),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1329,17 +1423,21 @@
       id: "คำร้อง-100024/2569",
       category: "10.2.1",
       categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
-      title: "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่สิ้นสุดแล้ว",
+      title:
+        "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่สิ้นสุดแล้ว",
       requesterName: "นางสาวกมลชนก ยืนหยัด",
       requesterTypeName: "ประชาชนทั่วไป",
-      requestedInfo: "รายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่คณะกรรมการ ป.ป.ท. มีมติชี้มูลแล้ว",
+      requestedInfo:
+        "รายงานผลการไต่สวนคดีทุจริตจัดซื้อจัดจ้างที่คณะกรรมการ ป.ป.ท. มีมติชี้มูลแล้ว",
       relatedCaseNo: "คดี-100024/2569",
       requestChannelName: "ยื่นทางไปรษณีย์",
       attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
-      l2ResolutionDetail: "คณะอนุกรรมการฯ เห็นว่าแม้คดีจะเสร็จสิ้นแล้ว แต่รายงานผลการไต่สวนมีข้อมูลส่วนบุคคลและพยานหลักฐานที่อ่อนไหวเข้าข้อยกเว้นตามมาตรา 15 จึงไม่อนุญาตให้เปิดเผย",
-      l2CommitteeOpinion: "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยรายงานผลการไต่สวนแม้คดีจะยุติแล้วก็อาจกระทบสิทธิของบุคคลที่เกี่ยวข้อง",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าแม้คดีจะเสร็จสิ้นแล้ว แต่รายงานผลการไต่สวนมีข้อมูลส่วนบุคคลและพยานหลักฐานที่อ่อนไหวเข้าข้อยกเว้นตามมาตรา 15 จึงไม่อนุญาตให้เปิดเผย",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าการเปิดเผยรายงานผลการไต่สวนแม้คดีจะยุติแล้วก็อาจกระทบสิทธิของบุคคลที่เกี่ยวข้อง",
       l2CaseState: "CLOSED",
       l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
       l2MeetingNo: "8/2569",
@@ -1347,7 +1445,8 @@
       l2InternalDocNo: "ปป 0002/4515",
       l2Signatures: {
         proposer: {
-          image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1536,7 +1635,8 @@
       d = value;
     } else if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}$/.test(String(value))) {
       const parts = String(value).split(/[-/]/);
-      const year = Number(parts[2]) > 2400 ? Number(parts[2]) - 543 : Number(parts[2]);
+      const year =
+        Number(parts[2]) > 2400 ? Number(parts[2]) - 543 : Number(parts[2]);
       d = new Date(year, Number(parts[1]) - 1, Number(parts[0]));
     } else {
       return value;
@@ -1552,9 +1652,9 @@
      เป็นค่าสมมติที่ไม่มีอยู่จริงอยู่แล้ว ถ้าเตือนทุกครั้งจะกลายเป็นเสียงรบกวน */
   function notifyCaseFallback(requestedId, shownCase) {
     try {
-      const requestedFromUrl = new URLSearchParams(
-        window.location.search,
-      ).get("id");
+      const requestedFromUrl = new URLSearchParams(window.location.search).get(
+        "id",
+      );
       if (!requestedFromUrl || requestedFromUrl !== requestedId) return;
       if (window.__ecmisCaseFallbackWarned) return;
       window.__ecmisCaseFallbackWarned = true;
@@ -1668,8 +1768,128 @@
     fullName,
     formatDisplayDate,
     getCases: loadCases,
+    saveCases,
     getPaccIntakeDatabase() {
       return PACC_INTAKE_DATABASE;
+    },
+
+    /* หน่วยงานผู้รับหนังสือ กำหนดจากผลการพิจารณาของนิติกร ไม่ใช่ให้ธุรการเลือก
+       ตามมติที่ประชุม 01/09/2569: เห็นชอบแจ้งอัยการต้นทาง เห็นแย้งแจ้งทั้ง อสส. และอัยการ
+       ไม่มีผลการพิจารณา ให้ถือเป็นเห็นแย้งไว้ก่อน เพราะการส่งเกินยังแก้ได้
+       แต่การไม่ได้ส่งให้ อสส. ทำให้สำนวนไปไม่ถึงผู้มีอำนาจชี้ขาด
+       opinionOverride ใช้เฉพาะปุ่มทดสอบที่หน้า 18 */
+    getRequiredRecipients(caseItem, opinionOverride) {
+      const item = caseItem || {};
+      const prosecutor = {
+        key: "prosecutor",
+        name: item.source || "สำนักงานอัยการเจ้าของสำนวน",
+      };
+      const oag = { key: "oag", name: "สำนักงานอัยการสูงสุด (อสส.)" };
+
+      let agreed;
+      if (opinionOverride === "AGREED") agreed = true;
+      else if (opinionOverride === "DISAGREED") agreed = false;
+      else agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+
+      return agreed ? [prosecutor] : [oag, prosecutor];
+    },
+
+    /* หน้า 20/21/22: บรรทัดเปรียบเทียบ "มติอัยการเดิม" (การ์ดพับ) กับ "ผลการชี้ขาดล่าสุด
+       ของ อสส." อ่านจาก oagVerdictDecision อย่างเดียว ซึ่งเป็นค่าเดียวกับที่ทั้งสามหน้า
+       ใช้ตัดสิน badge/สีอยู่แล้ว จึงไม่เพิ่มการอนุมานทางกฎหมายใหม่
+       มติอัยการเดิมทั้ง 8 ข้อ (ไม่นับ 9. อื่นๆ) ล้วนเป็น "ไม่ดำเนินคดีต่อ" อยู่แล้ว
+       (เป็นเงื่อนไขที่ทำให้ Flow 10.1 เกิดขึ้น) ดังนั้น PROSECUTE จึงแปลว่าต่างจากเดิมเสมอ
+       และ NON_PROSECUTE แปลว่ายืนตามเดิมเสมอ — ยกเว้นมติอัยการเดิมเป็น 9. อื่นๆ ซึ่งไม่ทราบ
+       ทิศทางเดิม จึงอนุมานความสัมพันธ์ไม่ได้ */
+    describeVerdictComparison(caseItem) {
+      const item = caseItem || {};
+      const hasKnownProsecutorType = /^[1-8]$/.test(
+        String(item.prosecutorCaseTypeNo),
+      );
+      const decision = item.oagVerdictDecision;
+      const verdictLabel =
+        String(item.oagVerdictCaseTypeName || "")
+          .replace(/^\d+\.\s*/, "")
+          .trim() ||
+        (decision === "PROSECUTE"
+          ? "อสส. ชี้ขาดให้ฟ้องคดี"
+          : decision === "NON_PROSECUTE"
+            ? "อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี"
+            : "ยังไม่มีข้อมูลผลการชี้ขาดล่าสุด");
+
+      if (
+        !hasKnownProsecutorType ||
+        (decision !== "PROSECUTE" && decision !== "NON_PROSECUTE")
+      ) {
+        return {
+          verdictLabel,
+          relation: "UNKNOWN",
+          tone: "unknown",
+          headline:
+            'เทียบกับมติอัยการเดิมไม่ได้ — โปรดเปิดดู "ข้อมูลเดิม" เพื่อเปรียบเทียบเอง',
+        };
+      }
+
+      if (decision === "PROSECUTE") {
+        return {
+          verdictLabel,
+          relation: "DIFFERS",
+          tone: "differs",
+          headline: "ต่างจากมติอัยการเดิม — เห็นพ้องตามความเห็นแย้งของ ป.ป.ท.",
+        };
+      }
+
+      return {
+        relation: "UPHOLDS",
+        verdictLabel,
+        tone: "upholds",
+        headline: "ยืนตามมติอัยการเดิม — ไม่เป็นไปตามความเห็นแย้งของ ป.ป.ท.",
+      };
+    },
+
+    /* หน้า 19: ข้อความสรุปสาระสำคัญ + ชื่อไฟล์ตัวอย่างที่เติมให้อัตโนมัติเมื่อธุรการเลือก
+       "กรณีคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)" เดิมเติมข้อความคงที่ตาม isProsecute
+       (ฟ้อง/ไม่ฟ้อง) เพียง 2 แบบ ไม่ว่าจะเลือกข้อใดใน 9 ตัวเลือก ทำให้เลือก "7. ให้ฎีกา"
+       แล้วสรุป/ชื่อไฟล์ยังพูดถึง "ฟ้องคดี" อยู่ ไม่ตรงกับหัวข้อคำวินิจฉัยล่าสุดที่หน้า 20/21/22
+       อ่านจาก oagVerdictCaseTypeName (ถูกต้องอยู่แล้ว) จึงต้องอ่านตัวเลือกที่เลือกจริงด้วยเช่นกัน
+       ไม่มีตัวเลือกที่บันทึกไว้ (สำนวนเก่าก่อน 07/09/2569) → ใช้ข้อความทั่วไปตาม decision เดิม */
+    buildVerdictAutofill({
+      caseTypeNo,
+      caseTypeOptionText,
+      otherText,
+      decision,
+    }) {
+      const isProsecute = decision === "PROSECUTE";
+      const isOther = String(caseTypeNo) === "9";
+
+      const actionPhrase = isOther
+        ? `ตามที่ระบุ (อื่นๆ): "${(otherText || "").trim() || "ไม่ได้ระบุรายละเอียด"}"`
+        : String(caseTypeOptionText || "")
+            .replace(/^\d+\.\s*อสส\.\s*ชี้ขาด/, "")
+            .trim();
+
+      const hasSpecificOption = !!actionPhrase;
+      const effectivePhrase = hasSpecificOption
+        ? actionPhrase
+        : isProsecute
+          ? "ให้ฟ้องคดี"
+          : "ไม่ฟ้อง/ยุติคดี";
+
+      const summary = isProsecute
+        ? `อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาด${effectivePhrase} ผู้ถูกกล่าวหา ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.`
+        : `อัยการสูงสุดได้พิจารณาพยานหลักฐานในสำนวนคดีแล้ว มีคำวินิจฉัยชี้ขาด${effectivePhrase} และให้ยุติการดำเนินคดีอาญากับผู้ถูกกล่าวหาตามคำสั่งเดิมของพนักงานอัยการ`;
+
+      const fileTag = isOther
+        ? "อื่นๆ"
+        : hasSpecificOption
+          ? actionPhrase.replace(/[\s()\/"]+/g, "").slice(0, 24)
+          : isProsecute
+            ? "ให้ฟ้องคดี"
+            : "ไม่ฟ้องคดี";
+
+      const fileName = `หนังสือคำวินิจฉัยชี้ขาด_อสส_${fileTag}_อส0001_${isProsecute ? "6789" : "6790"}.pdf`;
+
+      return { summary, fileName };
     },
 
     /* หมายเหตุ: ถ้าหาสำนวนตาม id ไม่เจอ จะ fallback เป็นสำนวนแรกในระบบ
@@ -1898,7 +2118,8 @@
                 : "การขอเปิดเผยข้อมูลข่าวสาร"),
         prosecutorCaseTypeNo: newCaseData.prosecutorCaseTypeNo || "1",
         prosecutorCaseTypeName:
-          newCaseData.prosecutorCaseTypeName || "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
+          newCaseData.prosecutorCaseTypeName ||
+          "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
         prosecutorLevel: newCaseData.prosecutorLevel || "1",
         prosecutorLevelName: newCaseData.prosecutorLevelName || "ศาลชั้นต้น",
         source:
@@ -2146,7 +2367,13 @@
       return item;
     },
 
-    submitGroupDirectorApproval(id, reviewDecision, notes, signature) {
+    submitGroupDirectorApproval(
+      id,
+      reviewDecision,
+      notes,
+      signature,
+      reviewerName,
+    ) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
       if (item) {
@@ -2176,6 +2403,9 @@
           item.groupDirectorEndorsement = null;
         }
         item.groupDirectorApprovalSignature = signature || null;
+        /* เก็บชื่อผู้กลั่นกรองไว้คู่กับลายมือชื่อ หน้าถัดไปจะได้แสดงว่าใครเป็นผู้ลงนาม
+           ไม่ใช่แสดงแต่ภาพลายเซ็นลอย ๆ โดยไม่รู้ว่าเป็นของ ผอ.กลุ่มงานท่านใด */
+        if (reviewerName) item.groupDirectorName = reviewerName;
         saveCases(cases);
       }
       return item;
@@ -2498,7 +2728,8 @@
             "เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
           item.finalDocNo = docData.docNo || "ปปท. 0014/พิเศษ/2569";
           item.finalDocSubject = docData.subject || item.title;
-          item.officialDocHeading = docData.officialDocHeading || item.officialDocHeading || "";
+          item.officialDocHeading =
+            docData.officialDocHeading || item.officialDocHeading || "";
           item.finalDocSummary = docData.summary || "";
           item.finalDocFile =
             docData.file || "ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf";
@@ -2524,8 +2755,7 @@
           item.groupDirectorFinalReviewAction =
             reviewData.action || "เห็นชอบร่างหนังสือ";
           item.groupDirectorFinalReviewNotes = reviewData.notes || "";
-          item.groupDirectorFinalReviewSignature =
-            reviewData.signature || null;
+          item.groupDirectorFinalReviewSignature = reviewData.signature || null;
         }
         item.groupDirectorFinalReviewedDate = formatDisplayDate(new Date());
         saveCases(cases);
@@ -2547,8 +2777,7 @@
           item.legalDirectorFinalReviewAction =
             reviewData.action || "เห็นชอบและมอบหมายธุรการออกเลขส่ง";
           item.legalDirectorFinalReviewNotes = reviewData.notes || "";
-          item.legalDirectorFinalReviewSignature =
-            reviewData.signature || null;
+          item.legalDirectorFinalReviewSignature = reviewData.signature || null;
         }
         item.legalDirectorFinalReviewedDate = formatDisplayDate(new Date());
         saveCases(cases);
@@ -2662,53 +2891,92 @@
       return item;
     },
 
-    // S18: นิติกรจัดส่งหนังสือให้อัยการ/อสส. (ทางไปรษณีย์ EMS หรือนำส่งด้วยตนเอง)
-    submitOfficerExternalDispatch(id, dispatchData) {
+    /* ความคืบหน้าการบันทึกข้อมูลจัดส่ง ใช้ทั้งที่หน้า 18 และในคิวงานหน้า 01
+       opinionOverride เป็นพารามิเตอร์เสริม ไม่ใส่ก็ได้ (undefined) เพื่อให้ผู้เรียกเดิมทำงาน
+       เหมือนเดิมทุกจุด — ใส่เมื่อต้องให้ตัวเลือกจำลองความเห็น (หน้า 18) กำหนดจำนวนหน่วยงานที่ต้องส่ง */
+    getDispatchProgress(caseItem, opinionOverride) {
+      const required = this.getRequiredRecipients(caseItem, opinionOverride);
+      const saved = (caseItem.dispatchRecipients || []).filter(
+        (r) => r.savedAt && required.some((q) => q.key === r.key),
+      ).length;
+      return {
+        saved,
+        total: required.length,
+        complete: saved >= required.length,
+      };
+    },
+
+    /* บันทึกข้อมูลจัดส่งทีละหน่วยงาน นิติกรอาจส่ง อสส. วันนี้ และส่งอัยการวันถัดไป
+       สำนวนจะยังอยู่ที่หน้า 18 จนกว่าจะบันทึกครบทุกหน่วยงานที่ต้องแจ้ง
+       opinionOverride เป็นพารามิเตอร์เสริมเช่นเดียวกับ getDispatchProgress ด้านบน */
+    saveDispatchRecipient(id, recipientKey, record, opinionOverride) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
-      if (item) {
-        const isPostal =
-          dispatchData && dispatchData.dispatchMethod === "postal_ems";
+      if (!item) return null;
+
+      if (!Array.isArray(item.dispatchRecipients)) item.dispatchRecipients = [];
+      const entry = Object.assign({}, record, {
+        key: recipientKey,
+        savedAt: formatDisplayDate(new Date()),
+      });
+      const at = item.dispatchRecipients.findIndex(
+        (r) => r.key === recipientKey,
+      );
+      if (at >= 0) item.dispatchRecipients[at] = entry;
+      else item.dispatchRecipients.push(entry);
+
+      /* ค่าที่ Flow 4 ใช้ตัดสินเส้นทาง ต้องคงรูปเดิมทุกประการ */
+      const agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+      item.dispatchScenario = agreed ? "case_agreed" : "case_disagreed";
+      item.dispatchRecipientType = agreed
+        ? "prosecutor_origin"
+        : "attorney_general";
+
+      /* ฉายระเบียนของ อสส. (หรือหน่วยงานเดียวกรณีเห็นชอบ) ลงฟิลด์เดิม
+         หน้า 19 บรรทัด 578-580 อ่านฟิลด์ชุดนี้ จึงต้องเขียนต่อไปแม้โครงสร้างจะเปลี่ยน */
+      const primary =
+        item.dispatchRecipients.find((r) => r.key === "oag") ||
+        item.dispatchRecipients[0];
+      if (primary) {
+        item.dispatchMethod = primary.method || "postal_ems";
+        item.emsTrackingNo = primary.trackingNo || "";
+        item.dispatchPostOffice = primary.postOffice || "";
+        item.dispatchDate = primary.sentDate || item.dispatchDate || "";
+        item.dispatchTime = primary.sentTime || "";
+        item.dispatchLocation = primary.location || "";
+        item.handDeliveryRecipient = primary.receiverName || "";
+        item.oagReceiveDocNo = primary.receiveDocNo || "";
+        item.dispatchRecipientName = primary.name || "";
+      }
+
+      const progress = this.getDispatchProgress(item, opinionOverride);
+      if (progress.complete) {
         item.statusCode = "DISPATCHED_TO_PROSECUTOR";
-        item.status = isPostal
-          ? `จัดส่งทางไปรษณีย์ EMS แล้ว (${dispatchData.emsTrackingNo || "ติดตาม EMS"})`
-          : "นำส่งให้อัยการสูงสุดด้วยตนเองเรียบร้อยแล้ว";
+        /* ข้อความสรุปต้องดูจากทุกหน่วยงาน ไม่ใช่แค่หน่วยงานหลักที่ฉายลงฟิลด์แบน
+           เพราะแต่ละหน่วยงานเลือกวิธีส่งได้อิสระ ส่ง EMS หน่วยหนึ่งและนำส่งเองอีกหน่วยหนึ่งได้
+           การอ่านจาก dispatchMethod เดี่ยวๆ จะรายงานว่าเป็น EMS ทั้งหมดซึ่งไม่จริง */
+        const savedMethods = (item.dispatchRecipients || [])
+          .filter((r) => r.savedAt)
+          .map((r) => r.method);
+        const allEms =
+          savedMethods.length > 0 &&
+          savedMethods.every((m) => m === "postal_ems");
+        item.status =
+          allEms && item.emsTrackingNo
+            ? `จัดส่งครบทุกหน่วยงานแล้ว (EMS ${item.emsTrackingNo})`
+            : `จัดส่งครบทุกหน่วยงานแล้ว (${progress.total} หน่วยงาน)`;
         item.statusBadge = "bg-success text-white";
         item.assignedRole = "legal_officer";
         item.workflowStep = 16;
-        if (dispatchData) {
-          item.dispatchScenario =
-            dispatchData.dispatchScenario ||
-            (item.finalOpinionType && item.finalOpinionType.includes("เห็นชอบ")
-              ? "case_agreed"
-              : "case_disagreed");
-          item.dispatchMethod = dispatchData.dispatchMethod || "postal_ems"; // 'postal_ems' | 'hand_delivery'
-          item.dispatchRecipientType =
-            dispatchData.dispatchRecipientType ||
-            (item.dispatchScenario === "case_agreed"
-              ? "prosecutor_origin"
-              : "attorney_general");
-          item.dispatchRecipientName =
-            dispatchData.dispatchRecipientName ||
-            (item.dispatchScenario === "case_agreed"
-              ? item.source || "สำนักงานอัยการเจ้าของสำนวน"
-              : "สำนักงานอัยการสูงสุด (อสส.)");
-          item.emsTrackingNo = dispatchData.emsTrackingNo || "";
-          item.dispatchPostOffice = dispatchData.dispatchPostOffice || "";
-          item.dispatchDate =
-            dispatchData.dispatchDate || new Date().toISOString().split("T")[0];
-          item.dispatchTime = dispatchData.dispatchTime || "";
-          item.dispatchLocation = dispatchData.dispatchLocation || "";
-          item.handDeliveryRecipient = dispatchData.handDeliveryRecipient || "";
-          item.handDeliveryRecipientPosition =
-            dispatchData.handDeliveryRecipientPosition || "";
-          item.oagReceiveDocNo = dispatchData.oagReceiveDocNo || "";
-          item.dispatchReceiptFile = dispatchData.dispatchReceiptFile || "";
-          item.dispatchNotes = dispatchData.dispatchNotes || "";
-        }
         item.officerDispatchedDate = formatDisplayDate(new Date());
-        saveCases(cases);
+      } else {
+        item.statusCode = "PENDING_OFFICER_EXTERNAL_DISPATCH";
+        item.status = `นิติกรจัดส่งหนังสือ (บันทึกแล้ว ${progress.saved}/${progress.total})`;
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
       }
+
+      saveCases(cases);
       return item;
     },
 
@@ -2730,6 +2998,13 @@
           item.oagVerdictReceiveDate =
             verdictData.oagVerdictReceiveDate ||
             new Date().toISOString().split("T")[0];
+          /* กรณีคำวินิจฉัยชี้ขาด 9 ตัวเลือกของหน้า 19 เดิมถูกส่งมาใน payload
+             แต่ไม่เคยถูกบันทึก ทำให้ตัวเลือกที่ธุรการเลือกหายไปทั้งหมด
+             ตั้งแต่ 07/09/2569 รายการนี้เป็นตัวเลือกเดียวของหน้าและเป็นที่มาของ
+             oagVerdictDecision จึงต้องเก็บไว้ */
+          item.oagVerdictCaseTypeNo = verdictData.oagVerdictCaseTypeNo || "";
+          item.oagVerdictCaseTypeName =
+            verdictData.oagVerdictCaseTypeName || "";
           item.oagVerdictDecision =
             verdictData.oagVerdictDecision || "PROSECUTE"; // 'PROSECUTE' | 'NON_PROSECUTE'
           item.oagVerdictDecisionText =
@@ -2797,7 +3072,9 @@
             groupData.assignedOfficer ||
             "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
         }
-        item.groupDirectorOagVerdictReviewedDate = formatDisplayDate(new Date());
+        item.groupDirectorOagVerdictReviewedDate = formatDisplayDate(
+          new Date(),
+        );
         saveCases(cases);
       }
       return item;

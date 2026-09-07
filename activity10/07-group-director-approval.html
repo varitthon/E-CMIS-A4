@@ -24,7 +24,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       h1,
@@ -587,7 +587,7 @@
                 <div class="read-box" id="f_caseNo">-</div>
               </div>
               <div class="form-group">
-                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <label>มติอัยการ</label>
                 <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
               </div>
               <div class="form-group">
@@ -595,53 +595,58 @@
                 <div class="read-box" id="f_level">-</div>
               </div>
             </div>
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label>นิติกรเจ้าของสำนวน</label>
-                <div class="read-box fw-bold text-dark" id="f_officerName">
-                  นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)
+            <!-- บล็อกรับรองของผู้จัดทำ (นิติกรเจ้าของสำนวน) โครงเดียวกับหน้า 08 -->
+            <div class="attest-block">
+              <div class="attest-block-head">
+                <div class="attest-block-title">
+                  <i class="fa-solid fa-user-pen me-1" style="color: #64748b"></i
+                  >ความเห็นแย้งที่นิติกรเจ้าของสำนวนจัดทำ:
                 </div>
               </div>
-              <div class="form-group">
-                <label>ผลการตรวจพิจารณาที่นิติกรเสนอ</label>
-                <div class="read-box fw-bold text-danger" id="f_opinionType">
-                  <i class="fa-solid fa-triangle-exclamation me-1"></i
-                  >เสนอทำความเห็นแย้งมติของพนักงานอัยการ
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>นิติกรเจ้าของสำนวน</label>
+                  <div class="read-box fw-bold text-dark" id="f_officerName">
+                    นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ผลการตรวจพิจารณาที่นิติกรเสนอ</label>
+                  <div class="read-box fw-bold text-danger" id="f_opinionType">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i
+                    >เสนอทำความเห็นแย้งมติของพนักงานอัยการ
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="form-group">
-              <label
-                >สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมายที่เห็นแย้ง</label
-              >
-              <div
-                class="read-box read-box-textarea font-monospace"
-                id="f_opinionDraftText"
-              >
-                -
-              </div>
-              <div
-                id="f_officerOpinionSignatureBox"
-                style="display: none; margin-top: 8px"
-              >
-                <div
-                  style="font-size: 0.78em; color: #64748b; margin-bottom: 4px"
+              <div class="form-group">
+                <label
+                  >สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมายที่เห็นแย้ง</label
                 >
+                <div
+                  class="read-box read-box-textarea font-monospace"
+                  id="f_opinionDraftText"
+                >
+                  -
+                </div>
+              </div>
+
+              <div
+                class="sign-strip"
+                id="f_officerOpinionSignatureBox"
+                style="display: none"
+              >
+                <div class="sign-strip-label">
                   ลายมือชื่ออิเล็กทรอนิกส์ (นิติกรเจ้าของสำนวน):
                 </div>
-                <img
-                  id="f_officerOpinionSignatureImg"
-                  src=""
-                  alt="ลายมือชื่อนิติกรเจ้าของสำนวน"
-                  style="
-                    max-height: 60px;
-                    border: 1px solid var(--border-color);
-                    border-radius: 6px;
-                    background: #fff;
-                    padding: 4px;
-                  "
-                />
+                <div class="sign-strip-row">
+                  <img
+                    id="f_officerOpinionSignatureImg"
+                    src=""
+                    alt="ลายมือชื่อนิติกรเจ้าของสำนวน"
+                  />
+                  <div class="sign-strip-date" id="f_officerSignedDate"></div>
+                </div>
               </div>
             </div>
 
@@ -707,6 +712,7 @@
                   type="text"
                   class="form-control"
                   readonly
+                  id="in_groupDirectorName"
                   value="นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)"
                   style="font-weight: 600"
                 />
@@ -743,9 +749,7 @@
                         <i
                           class="fa-solid fa-circle-check text-success me-1"
                         ></i>
-                        <mark class="wording-changed"
-                          >เห็นชอบตามคำร่างที่เสนอ</mark
-                        >
+                        เห็นชอบตามคำร่างที่เสนอ
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ส่งเรื่องให้ ผอ.กองกฎหมาย พิจารณาให้ความเห็นชอบ)
@@ -774,9 +778,7 @@
                         "
                       >
                         <i class="fa-solid fa-rotate-left text-danger me-1"></i>
-                        <mark class="wording-changed"
-                          >เห็นแย้งตามคำร่างที่เสนอ</mark
-                        >
+                        ไม่เห็นชอบตามคำร่างที่เสนอ
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ส่งคืนให้นิติกรเจ้าของสำนวนปรับปรุงเนื้อหา)
@@ -838,7 +840,7 @@
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
 
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script>
@@ -943,6 +945,18 @@
           if (el) el.textContent = text;
         };
 
+        /* แสดงแถบลายมือชื่อเมื่อมีภาพลายเซ็นเท่านั้น ถ้าไม่มีก็ซ่อนทั้งแถบ
+           ไม่ให้เหลือหัวข้อ "ลายมือชื่ออิเล็กทรอนิกส์:" ลอยโดยไม่มีลายเซ็น */
+        const showSignature = (boxId, imgId, dateId, signature, signedDate) => {
+          const box = document.getElementById(boxId);
+          const img = document.getElementById(imgId);
+          if (!box || !img || !signature) return;
+          img.src = signature;
+          box.style.display = "flex";
+          const dateEl = document.getElementById(dateId);
+          if (dateEl && signedDate) dateEl.textContent = `ลงนามเมื่อ ${signedDate}`;
+        };
+
         setElText(
           "f_centralSarabanNo",
           currentCase.centralSarabanNo || "2569/4410",
@@ -994,18 +1008,13 @@
             currentCase.legalOpinion ||
             "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริงของ ป.ป.ท. พบว่าพยานหลักฐานและเส้นทางการเงินมีความเชื่อมโยงชัดเจน จึงเห็นควรทำความเห็นแย้งเสนอเลขาธิการ ป.ป.ท. เพื่อส่งอัยการสูงสุดชี้ขาด",
         );
-        if (currentCase.officerOpinionSignature) {
-          const sigBox = document.getElementById(
-            "f_officerOpinionSignatureBox",
-          );
-          const sigImg = document.getElementById(
-            "f_officerOpinionSignatureImg",
-          );
-          if (sigBox && sigImg) {
-            sigImg.src = currentCase.officerOpinionSignature;
-            sigBox.style.display = "block";
-          }
-        }
+        showSignature(
+          "f_officerOpinionSignatureBox",
+          "f_officerOpinionSignatureImg",
+          "f_officerSignedDate",
+          currentCase.officerOpinionSignature,
+          currentCase.officerSubmittedDate,
+        );
         setElText(
           "f_opinionDraftFile",
           currentCase.opinionDraftFile || "ร่างบันทึกความเห็นแย้ง_สมบูรณ์.docx",
@@ -1085,7 +1094,7 @@
             : "ยืนยันการส่งกลับแก้ไข",
           html: `
  <div class="emd-summary">
- <p><strong>ผลการตรวจ:</strong> ${isApproved ? "เห็นชอบตามคำร่างที่เสนอ" : "เห็นแย้งตามคำร่างที่เสนอ"}</p>
+ <p><strong>ผลการตรวจ:</strong> ${isApproved ? "เห็นชอบตามคำร่างที่เสนอ" : "ไม่เห็นชอบตามคำร่างที่เสนอ"}</p>
  <p><strong>การดำเนินการ:</strong> ${actionText}</p>
  </div>
  `,
@@ -1102,6 +1111,7 @@
                 reviewDecision,
                 notes,
                 signatureDataUrl,
+                document.getElementById("in_groupDirectorName").value.trim(),
               );
 
               Swal.fire({

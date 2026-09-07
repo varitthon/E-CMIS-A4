@@ -23,7 +23,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -837,7 +837,7 @@
             </div>
             <div class="form-grid-2">
               <div class="form-group">
-                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <label>มติอัยการ</label>
                 <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
               </div>
               <div class="form-group">
@@ -859,100 +859,130 @@
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
-              >บันทึกความเห็นแย้ง (นิติกร) และผลการกลั่นกรอง (ผอ.กลุ่มงาน)</span
+              >บันทึกความเห็น (นิติกร) และผลการกลั่นกรอง (ผอ.กลุ่มงาน)</span
             >
             <span class="badge" style="background: #dcfce7; color: #166534"
               ><i class="fa-solid fa-check me-1"></i>ผ่านการกลั่นกรองแล้ว</span
             >
           </div>
           <div class="form-card-body">
-            <div class="form-grid-2">
-              <div class="form-group">
-                <label>นิติกรเจ้าของสำนวน</label>
-                <div class="read-box fw-bold text-dark" id="f_officerName">
-                  นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)
+            <!-- บล็อก 1: ผู้ร่าง (นิติกรเจ้าของสำนวน) -->
+            <div class="attest-block">
+              <div class="attest-block-head">
+                <div class="attest-block-title">
+                  <i
+                    class="fa-solid fa-user-pen me-1"
+                    style="color: #64748b"
+                  ></i
+                  >ความเห็นที่นิติกรเจ้าของสำนวนจัดทำ:
                 </div>
               </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>นิติกรเจ้าของสำนวน</label>
+                  <div class="read-box fw-bold text-dark" id="f_officerName">
+                    นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ผลการตรวจพิจารณาที่นิติกรเสนอ</label>
+                  <div class="read-box fw-bold text-danger" id="f_opinionType">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i
+                    >เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
+                  </div>
+                </div>
+              </div>
+
               <div class="form-group">
-                <label>ผลการตรวจพิจารณาที่นิติกรเสนอ</label>
-                <div class="read-box fw-bold text-danger" id="f_opinionType">
-                  <i class="fa-solid fa-triangle-exclamation me-1"></i
-                  >เสนอทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
+                <label>สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมาย</label>
+                <div
+                  class="read-box read-box-textarea font-monospace"
+                  id="f_opinionDraftText"
+                >
+                  -
+                </div>
+              </div>
+
+              <div
+                class="sign-strip"
+                id="f_officerOpinionSignatureBox"
+                style="display: none"
+              >
+                <div class="sign-strip-label">
+                  ลายมือชื่ออิเล็กทรอนิกส์ (นิติกรเจ้าของสำนวน):
+                </div>
+                <div class="sign-strip-row">
+                  <img
+                    id="f_officerOpinionSignatureImg"
+                    src=""
+                    alt="ลายมือชื่อนิติกรเจ้าของสำนวน"
+                  />
+                  <div class="sign-strip-date" id="f_officerSignedDate"></div>
                 </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label
-                >สาระสำคัญ / เหตุผลข้อเท็จจริงและข้อกฎหมายที่เห็นแย้ง</label
-              >
-              <div
-                class="read-box read-box-textarea font-monospace"
-                id="f_opinionDraftText"
-              >
-                -
-              </div>
-            </div>
-
-            <!-- Group Director Box -->
-            <div
-              style="
-                background: rgba(37, 99, 235, 0.04);
-                border: 1px solid #bfdbfe;
-                border-radius: 8px;
-                padding: 14px 16px;
-                margin-top: 10px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 8px;
-                "
-              >
-                <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9em">
+            <!-- บล็อก 2: ผู้กลั่นกรอง (ผอ.กลุ่มงานความเห็นแย้ง) -->
+            <div class="attest-block attest-block--screening">
+              <div class="attest-block-head">
+                <div class="attest-block-title">
                   <i class="fa-solid fa-user-gear me-1 text-primary"></i
                   >ผลการกลั่นกรองของ ผอ.กลุ่มงานความเห็นแย้ง:
                 </div>
-                <span
-                  class="badge"
-                  style="background: #16a34a; color: #fff"
-                  id="f_groupDirectorEndorsement"
-                  >เห็นชอบร่างความเห็นแย้ง</span
-                >
               </div>
-              <div
-                class="font-monospace"
-                style="font-size: 0.88em; color: #334155"
-                id="f_groupDirectorReviewNotes"
-              >
-                ได้ตรวจพิจารณาร่างความเห็นแย้งและข้อเท็จจริงในสำนวนการไต่สวนแล้ว
-                เห็นชอบตามร่างความเห็นแย้งของนิติกรเจ้าของสำนวน จึงกราบเรียนเสนอ
-                ผอ.กองกฎหมาย เพื่อโปรดพิจารณาให้ความเห็นชอบและสั่งการต่อไป
-              </div>
-              <div
-                id="f_groupDirectorSignatureBox"
-                style="display: none; margin-top: 8px"
-              >
-                <div
-                  style="font-size: 0.78em; color: #64748b; margin-bottom: 4px"
-                >
-                  ลายมือชื่ออิเล็กทรอนิกส์:
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผอ.กลุ่มงานความเห็นแย้ง</label>
+                  <div
+                    class="read-box fw-bold text-dark"
+                    id="f_groupDirectorName"
+                  >
+                    นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)
+                  </div>
                 </div>
-                <img
-                  id="f_groupDirectorSignatureImg"
-                  src=""
-                  alt="ลายมือชื่อ ผอ.กลุ่มงานความเห็นแย้ง"
-                  style="
-                    max-height: 60px;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 6px;
-                    background: #fff;
-                    padding: 4px;
-                  "
-                />
+                <div class="form-group">
+                  <label>ผลการกลั่นกรอง</label>
+                  <div
+                    class="read-box fw-bold text-success"
+                    id="f_groupDirectorEndorsement"
+                  >
+                    <i class="fa-solid fa-circle-check me-1"></i
+                    >เห็นชอบตามคำร่างที่เสนอ และเสนอ ผอ.กองกฎหมาย
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>บันทึกการกลั่นกรอง</label>
+                <div
+                  class="read-box read-box-textarea font-monospace"
+                  id="f_groupDirectorReviewNotes"
+                >
+                  ได้ตรวจพิจารณาร่างความเห็นแย้งและข้อเท็จจริงในสำนวนการไต่สวนแล้ว
+                  เห็นชอบตามร่างความเห็นแย้งของนิติกรเจ้าของสำนวน
+                  จึงกราบเรียนเสนอ ผอ.กองกฎหมาย
+                  เพื่อโปรดพิจารณาให้ความเห็นชอบและสั่งการต่อไป
+                </div>
+              </div>
+              <div
+                class="sign-strip"
+                id="f_groupDirectorSignatureBox"
+                style="display: none"
+              >
+                <div class="sign-strip-label">
+                  ลายมือชื่ออิเล็กทรอนิกส์ (ผอ.กลุ่มงานความเห็นแย้ง):
+                </div>
+                <div class="sign-strip-row">
+                  <img
+                    id="f_groupDirectorSignatureImg"
+                    src=""
+                    alt="ลายมือชื่อ ผอ.กลุ่มงานความเห็นแย้ง"
+                  />
+                  <div
+                    class="sign-strip-date"
+                    id="f_groupDirectorSignedDate"
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1016,9 +1046,7 @@
                         <i
                           class="fa-solid fa-circle-check text-success me-1"
                         ></i>
-                        <mark class="wording-changed"
-                          >เห็นชอบตามความเห็นที่เสนอ</mark
-                        >
+                        เห็นชอบตามความเห็นที่เสนอ
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (มอบหมายธุรการออกเลขส่งและส่งเสนอผู้บริหารตามลำดับชั้น)
@@ -1047,9 +1075,7 @@
                         "
                       >
                         <i class="fa-solid fa-rotate-left text-danger me-1"></i>
-                        <mark class="wording-changed"
-                          >เห็นแย้งตามความเห็นที่เสนอ</mark
-                        >
+                        ไม่เห็นชอบตามความเห็นที่เสนอ
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ส่งสำนวนกลับไปยังกลุ่มงานความเห็นแย้งเพื่อทบทวน)
@@ -1129,7 +1155,7 @@
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
     <script>
@@ -1247,6 +1273,19 @@
           if (el) el.textContent = text;
         };
 
+        /* แสดงแถบลายมือชื่อเมื่อมีภาพลายเซ็นเท่านั้น ถ้าไม่มีก็ซ่อนทั้งแถบ
+                 ไม่ให้เหลือหัวข้อ "ลายมือชื่ออิเล็กทรอนิกส์:" ลอยโดยไม่มีลายเซ็น */
+        const showSignature = (boxId, imgId, dateId, signature, signedDate) => {
+          const box = document.getElementById(boxId);
+          const img = document.getElementById(imgId);
+          if (!box || !img || !signature) return;
+          img.src = signature;
+          box.style.display = "flex";
+          const dateEl = document.getElementById(dateId);
+          if (dateEl && signedDate)
+            dateEl.textContent = `ลงนามเมื่อ ${signedDate}`;
+        };
+
         setElText(
           "f_centralSarabanNo",
           currentCase.centralSarabanNo || "2569/4410",
@@ -1297,23 +1336,56 @@
             "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริงของ ป.ป.ท. พบว่าพยานหลักฐานและเส้นทางการเงินมีความเชื่อมโยงชัดเจน จึงเห็นควรทำความเห็นแย้งเสนอเลขาธิการ ป.ป.ท. เพื่อส่งอัยการสูงสุดชี้ขาด",
         );
 
-        setElText(
-          "f_groupDirectorEndorsement",
-          currentCase.groupDirectorEndorsement || "เห็นชอบตามคำร่างที่เสนอ",
+        showSignature(
+          "f_officerOpinionSignatureBox",
+          "f_officerOpinionSignatureImg",
+          "f_officerSignedDate",
+          currentCase.officerOpinionSignature,
+          currentCase.officerSubmittedDate,
         );
+
+        /* ชื่อ ผอ.กลุ่มงานยังไม่ถูกบันทึกลง store (หน้า 07 ตรึงค่าไว้ในฟอร์ม)
+                 จึงใช้ค่าตรึงเดียวกันเป็นค่าตั้งต้น เช่นเดียวกับ f_officerName */
+        setElText(
+          "f_groupDirectorName",
+          currentCase.groupDirectorName ||
+            "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)",
+        );
+
+        /* ใช้ innerHTML เพื่อคงไอคอนไว้ ถ้าใช้ setElText (textContent) ไอคอนจะหาย */
+        const endorseEl = document.getElementById("f_groupDirectorEndorsement");
+        if (endorseEl) {
+          /* ส่งกลับแก้ไข = ยังไม่ผ่านการกลั่นกรอง ต้องไม่แสดงเป็นสีเขียว
+                   groupDirectorReturnNotes ไม่ถูกล้างเมื่อเห็นชอบภายหลัง สำนวนที่เคย
+                   ถูกส่งกลับแล้วผ่านในรอบถัดมาจึงมีทั้งสองค่า ต้องดู approvedDate ประกอบ */
+          const isReturn = currentCase.groupDirectorEndorsement
+            ? /ส่งกลับ|ไม่เห็นชอบ/.test(currentCase.groupDirectorEndorsement)
+            : Boolean(currentCase.groupDirectorReturnNotes) &&
+              !currentCase.groupDirectorApprovedDate;
+          const endorseText =
+            currentCase.groupDirectorEndorsement ||
+            (isReturn
+              ? "ส่งกลับให้นิติกรเจ้าของสำนวนแก้ไข"
+              : "เห็นชอบตามคำร่างที่เสนอ");
+          endorseEl.className = `read-box fw-bold ${
+            isReturn ? "text-warning" : "text-success"
+          }`;
+          endorseEl.innerHTML = `<i class="fa-solid ${
+            isReturn ? "fa-rotate-left" : "fa-circle-check"
+          } me-1"></i>${endorseText}`;
+        }
         setElText(
           "f_groupDirectorReviewNotes",
           currentCase.groupDirectorNotes ||
             "ได้ตรวจพิจารณาร่างความเห็นแย้งและข้อเท็จจริงในสำนวนการไต่สวนแล้ว เห็นชอบตามร่างความเห็นแย้งของนิติกรเจ้าของสำนวน จึงกราบเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาให้ความเห็นชอบและสั่งการต่อไป",
         );
-        if (currentCase.groupDirectorApprovalSignature) {
-          const sigBox = document.getElementById("f_groupDirectorSignatureBox");
-          const sigImg = document.getElementById("f_groupDirectorSignatureImg");
-          if (sigBox && sigImg) {
-            sigImg.src = currentCase.groupDirectorApprovalSignature;
-            sigBox.style.display = "block";
-          }
-        }
+        showSignature(
+          "f_groupDirectorSignatureBox",
+          "f_groupDirectorSignatureImg",
+          "f_groupDirectorSignedDate",
+          currentCase.groupDirectorApprovalSignature,
+          currentCase.groupDirectorApprovedDate,
+        );
 
         // Check if Director has already approved
         const isAlreadyApproved =
@@ -1328,43 +1400,43 @@
           );
           if (cardContainer) {
             cardContainer.innerHTML = `
- <div class="form-card" style="border: 2px solid #16a34a;">
- <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
- <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการสั่งการ (ผอ.กองกฎหมาย)</span>
- <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>สั่งการแล้ว</span>
- </div>
- <div class="form-card-body">
-  <div class="form-grid-2">
-   <div class="form-group">
- <label>ผู้ตรวจพิจารณาและสั่งการ</label>
- <div class="read-box fw-bold text-dark">นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)</div>
- </div>
-   <div class="form-group">
- <label>วันที่สั่งการ</label>
- <div class="read-box font-monospace text-secondary">${currentCase.legalDirectorApprovedDate || "ดำเนินการเรียบร้อยแล้ว"}</div>
- </div>
- </div>
- <div class="form-grid-2">
-   <div class="form-group span-2">
- <label>ผลการพิจารณา / คำสั่งการ</label>
- <div class="read-box fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>${currentCase.legalDirectorEndorsement || "เห็นชอบตามความเห็นที่เสนอ และมอบหมายธุรการส่งเสนอผู้บริหาร"}</div>
- </div>
- </div>
+       <div class="form-card" style="border: 2px solid #16a34a;">
+       <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
+       <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการสั่งการ (ผอ.กองกฎหมาย)</span>
+       <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>สั่งการแล้ว</span>
+       </div>
+       <div class="form-card-body">
+        <div class="form-grid-2">
+         <div class="form-group">
+       <label>ผู้ตรวจพิจารณาและสั่งการ</label>
+       <div class="read-box fw-bold text-dark">นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)</div>
+       </div>
+         <div class="form-group">
+       <label>วันที่สั่งการ</label>
+       <div class="read-box font-monospace text-secondary">${currentCase.legalDirectorApprovedDate || "ดำเนินการเรียบร้อยแล้ว"}</div>
+       </div>
+       </div>
+       <div class="form-grid-2">
+         <div class="form-group span-2">
+       <label>ผลการพิจารณา / คำสั่งการ</label>
+       <div class="read-box fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>${currentCase.legalDirectorEndorsement || "เห็นชอบตามความเห็นที่เสนอ และมอบหมายธุรการส่งเสนอผู้บริหาร"}</div>
+       </div>
+       </div>
 
- <div class="form-group">
- <label>ข้อสั่งการถึงธุรการกองกฎหมาย</label>
- <div class="read-box read-box-textarea font-monospace">${currentCase.legalDirectorApprovalNotes || "-"}</div>
- </div>
- <div class="form-group">
- <label>สถานะปัจจุบัน</label>
- <div><span class="badge bg-primary text-white" style="font-size:0.9em; padding:6px 12px;">${currentCase.status}</span></div>
- </div>
- </div>
- <div class="form-actions">
- <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
- </div>
- </div>
- `;
+       <div class="form-group">
+       <label>ข้อสั่งการถึงธุรการกองกฎหมาย</label>
+       <div class="read-box read-box-textarea font-monospace">${currentCase.legalDirectorApprovalNotes || "-"}</div>
+       </div>
+       <div class="form-group">
+       <label>สถานะปัจจุบัน</label>
+       <div><span class="badge bg-primary text-white" style="font-size:0.9em; padding:6px 12px;">${currentCase.status}</span></div>
+       </div>
+       </div>
+       <div class="form-actions">
+       <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+       </div>
+       </div>
+       `;
           }
         }
       }
@@ -1389,11 +1461,11 @@
             ? "ยืนยันการเห็นชอบและสั่งการ"
             : "ยืนยันการส่งกลับแก้ไข",
           html: `
- <div class="emd-summary">
- <p><strong>ผลการพิจารณา:</strong> ${isApproved ? "เห็นชอบร่างความเห็นแย้ง" : "ส่งกลับแก้ไข"}</p>
- <p><strong>การดำเนินการ:</strong> ${actionText}</p>
- </div>
- `,
+       <div class="emd-summary">
+       <p><strong>ผลการพิจารณา:</strong> ${isApproved ? "เห็นชอบร่างความเห็นแย้ง" : "ส่งกลับแก้ไข"}</p>
+       <p><strong>การดำเนินการ:</strong> ${actionText}</p>
+       </div>
+       `,
           showCancelButton: true,
           confirmButtonText: "ยืนยันดำเนินการ",
           cancelButtonText: "ยกเลิก",
@@ -1555,72 +1627,72 @@
         Swal.fire({
           width: "720px",
           html: `
- <div class="text-start emd-body">
- <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
- <i class="fa-solid fa-pen-nib text-primary fa-lg"></i>
- <h5 class="m-0 fw-bold emd-sig-title">${title}</h5>
- </div>
- <div class="p-3 mb-3 rounded-3 d-flex align-items-center gap-2 emd-sig-signer">
- <i class="fa-solid fa-user me-1"></i>
- <span>ผู้ลงนามคือ <strong>${signerFull}</strong></span>
- </div>
- <div class="d-flex align-items-center justify-content-between mb-2">
- <div>
- <div class="fw-bold emd-sig-label">เลือกวิธีลงนาม <span class="text-danger">*</span></div>
- <div class="text-muted emd-fs-sm">เลือกได้เพียง 1 วิธีต่อการอนุมัติหนึ่งครั้ง</div>
- </div>
- <div id="swal-sig-mode-badge" class="badge rounded-pill bg-light text-primary border px-2 py-1 emd-fs-sm">
- <i class="fa-solid fa-check me-1"></i> เซ็นมือ
- </div>
- </div>
- <div class="row g-3 mb-3">
- <div class="col-6">
- <div id="swal-card-hand" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card is-active">
- <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico is-primary">
- <i class="fa-solid fa-pen fa-lg"></i>
- </div>
- <div>
- <div class="fw-bold text-dark emd-sig-card-title">1. เซ็นมือ</div>
- <div class="text-muted emd-sig-card-desc">ใช้เมาส์หรือทัชแพดลากลายเซ็น</div>
- </div>
- </div>
- </div>
- <div class="col-6">
- <div id="swal-card-cert" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card">
- <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico">
- <i class="fa-solid fa-shield-halved fa-lg"></i>
- </div>
- <div>
- <div class="fw-bold text-dark emd-sig-card-title">2. ลายเซ็นดิจิทัล</div>
- <div class="text-muted emd-sig-card-desc">ประทับลายเซ็นอัตโนมัติด้วยใบรับรองอิเล็กทรอนิกส์ที่มีอยู่</div>
- </div>
- </div>
- </div>
- </div>
- <div id="swal-box-canvas" class="border rounded-3 p-3 mb-3 bg-white emd-sig-panel is-visible">
- <div class="d-flex align-items-center justify-content-between mb-2">
- <div>
- <div class="fw-bold emd-sig-label">เซ็นชื่อในกรอบด้านล่าง</div>
- <div class="text-muted emd-fs-sm">กดเมาส์ค้างแล้วลาก หรือใช้นิ้วบนอุปกรณ์ระบบสัมผัส</div>
- </div>
- <button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2" id="swal-sig-clear" class="emd-fs-sm">
- <i class="fa-solid fa-eraser me-1"></i> ล้างลายเซ็น
- </button>
- </div>
- <div class="sig-canvas-wrapper emd-sig-pad">
- <canvas id="swal-sig-canvas" width="640" height="170" class="emd-sig-canvas"></canvas>
- </div>
- </div>
- <div id="swal-box-cert" class="p-3 rounded-3 emd-sig-panel emd-sig-cert">
- <div class="d-flex align-items-center gap-2 mb-1">
- <i class="fa-solid fa-circle-check text-success fa-lg"></i>
- <strong>Certificate: ${certId}</strong>
- </div>
- <div>ผู้ถือใบรับรอง: <strong>${signerFull}</strong></div>
- <div class="mt-1 text-success emd-fs-sm">ระบบจะประทับลายเซ็นอิเล็กทรอนิกส์ลงในเอกสารโดยอัตโนมัติ</div>
- </div>
- </div>
- `,
+       <div class="text-start emd-body">
+       <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+       <i class="fa-solid fa-pen-nib text-primary fa-lg"></i>
+       <h5 class="m-0 fw-bold emd-sig-title">${title}</h5>
+       </div>
+       <div class="p-3 mb-3 rounded-3 d-flex align-items-center gap-2 emd-sig-signer">
+       <i class="fa-solid fa-user me-1"></i>
+       <span>ผู้ลงนามคือ <strong>${signerFull}</strong></span>
+       </div>
+       <div class="d-flex align-items-center justify-content-between mb-2">
+       <div>
+       <div class="fw-bold emd-sig-label">เลือกวิธีลงนาม <span class="text-danger">*</span></div>
+       <div class="text-muted emd-fs-sm">เลือกได้เพียง 1 วิธีต่อการอนุมัติหนึ่งครั้ง</div>
+       </div>
+       <div id="swal-sig-mode-badge" class="badge rounded-pill bg-light text-primary border px-2 py-1 emd-fs-sm">
+       <i class="fa-solid fa-check me-1"></i> เซ็นมือ
+       </div>
+       </div>
+       <div class="row g-3 mb-3">
+       <div class="col-6">
+       <div id="swal-card-hand" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card is-active">
+       <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico is-primary">
+       <i class="fa-solid fa-pen fa-lg"></i>
+       </div>
+       <div>
+       <div class="fw-bold text-dark emd-sig-card-title">1. เซ็นมือ</div>
+       <div class="text-muted emd-sig-card-desc">ใช้เมาส์หรือทัชแพดลากลายเซ็น</div>
+       </div>
+       </div>
+       </div>
+       <div class="col-6">
+       <div id="swal-card-cert" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card">
+       <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico">
+       <i class="fa-solid fa-shield-halved fa-lg"></i>
+       </div>
+       <div>
+       <div class="fw-bold text-dark emd-sig-card-title">2. ลายเซ็นดิจิทัล</div>
+       <div class="text-muted emd-sig-card-desc">ประทับลายเซ็นอัตโนมัติด้วยใบรับรองอิเล็กทรอนิกส์ที่มีอยู่</div>
+       </div>
+       </div>
+       </div>
+       </div>
+       <div id="swal-box-canvas" class="border rounded-3 p-3 mb-3 bg-white emd-sig-panel is-visible">
+       <div class="d-flex align-items-center justify-content-between mb-2">
+       <div>
+       <div class="fw-bold emd-sig-label">เซ็นชื่อในกรอบด้านล่าง</div>
+       <div class="text-muted emd-fs-sm">กดเมาส์ค้างแล้วลาก หรือใช้นิ้วบนอุปกรณ์ระบบสัมผัส</div>
+       </div>
+       <button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2" id="swal-sig-clear" class="emd-fs-sm">
+       <i class="fa-solid fa-eraser me-1"></i> ล้างลายเซ็น
+       </button>
+       </div>
+       <div class="sig-canvas-wrapper emd-sig-pad">
+       <canvas id="swal-sig-canvas" width="640" height="170" class="emd-sig-canvas"></canvas>
+       </div>
+       </div>
+       <div id="swal-box-cert" class="p-3 rounded-3 emd-sig-panel emd-sig-cert">
+       <div class="d-flex align-items-center gap-2 mb-1">
+       <i class="fa-solid fa-circle-check text-success fa-lg"></i>
+       <strong>Certificate: ${certId}</strong>
+       </div>
+       <div>ผู้ถือใบรับรอง: <strong>${signerFull}</strong></div>
+       <div class="mt-1 text-success emd-fs-sm">ระบบจะประทับลายเซ็นอิเล็กทรอนิกส์ลงในเอกสารโดยอัตโนมัติ</div>
+       </div>
+       </div>
+       `,
           showCancelButton: true,
           confirmButtonText: '<i class="fa-solid fa-pen me-1"></i> ลงนาม',
           cancelButtonText: "ยกเลิก",

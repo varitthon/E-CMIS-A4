@@ -264,11 +264,13 @@ showing the case chosen at intake:
 
 ### TC-W.3 — removing the review highlights (at sign-off)
 
-Yellow markers are intentional. To remove:
-1. delete the `REVIEW MARKER` block at the end of `assets/ecmis-shell.css`
-2. unwrap every `<mark class="wording-changed">…</mark>`
+✅ **Done 07/09/2569.** The `REVIEW MARKER` block was deleted from `assets/ecmis-shell.css` and
+all 46 `<mark class="wording-changed">…</mark>` wrappers across 22 pages were unwrapped.
 
-**Expected:** text identical, no yellow. ☐
+**Expected:** text identical, no yellow. ☑ — verified mechanically: all tags were stripped from
+each file before and after the unwrap and the resulting text compared; every file matched. Note
+for anyone repeating this on another branch: 11 of the tags were prettier-wrapped across two
+lines, so a line-based `sed` corrupts them — use a multi-line-aware pass.
 
 ---
 
