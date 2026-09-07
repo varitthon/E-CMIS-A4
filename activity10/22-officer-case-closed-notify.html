@@ -11,7 +11,7 @@
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -113,7 +113,7 @@
  </a>
  <ul class="menu" id="sidebarMenu">
  <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
- <li><a href="06-officer-opinion.html"><i class="fa-solid fa-file-pen"></i> <span><mark class="wording-changed">ยกร่างความเห็น</mark></span></a></li>
+ <li><a href="06-officer-opinion.html"><i class="fa-solid fa-file-pen"></i> <span>ยกร่างความเห็น</span></a></li>
  <li><a href="13-officer-final-doc.html"><i class="fa-solid fa-file-signature"></i> <span>จัดทำหนังสือตามมติ</span></a></li>
  <li><a href="18-officer-external-dispatch.html"><i class="fa-solid fa-truck-fast"></i> <span>จัดส่งหนังสือให้อัยการ/อสส.</span></a></li>
  <li><a href="22-officer-case-closed-notify.html"><i class="fa-solid fa-file-circle-check"></i> <span>บันทึกผล และ แจ้งกองบริหารคดี</span></a></li>
@@ -203,14 +203,11 @@
  <div class="form-card">
  <div class="form-card-header">
  <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>สรุปผลคำวินิจฉัยชี้ขาดของ อสส. และคำสั่งการของผู้บังคับบัญชา</span>
- <span class="badge" id="badgeVerdictDecision" style="background:#dcfce7; color:#166534;">
- <i class="fa-solid fa-gavel me-1"></i>อสส. ชี้ขาดให้ฟ้องคดี
- </span>
  </div>
  <div class="form-card-body">
  
  <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
- <div class="form-grid-3" style="margin-bottom: 0;">
+ <div class="form-grid-2" style="margin-bottom: 0;">
  <div>
  <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง ป.ป.ท.:</span>
  <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/5102</span>
@@ -218,10 +215,6 @@
  <div>
  <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
  <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0028/2569</span>
- </div>
- <div>
- <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขที่หนังสือส่งความเห็นแย้งเดิม:</span>
- <span class="font-monospace" style="font-weight: 700; color: #166534; font-size: 1.05em;" id="f_externalDispatchNo">ที่ ปปท 0014/1150</span>
  </div>
  </div>
  </div>
@@ -236,13 +229,32 @@
    <div class="read-box" id="f_caseNo">-</div>
  </div>
    <div class="form-group">
+ <label>ผู้ถูกกล่าวหา</label>
+ <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
+ </div>
+ </div>
+
+ <!-- ข้อมูลเดิม: เรื่องที่ ป.ป.ท. ส่งให้ อสส. ชี้ขาด ก่อนมีคำวินิจฉัย
+      พับเก็บโดยปริยายเพื่อไม่ให้ปนกับผลชี้ขาดล่าสุดด้านล่าง (ข้อเสนอแนะจากพี่เลี้ยง 07/09/2569) -->
+ <details class="record-accordion" id="oldRecordAccordion">
+ <summary>
+ <span>ข้อมูลเดิม — เรื่องที่ ป.ป.ท. เสนอ อสส. ชี้ขาด (ก่อนมีคำวินิจฉัย)</span>
+ <span class="record-accordion-tag">ข้อมูลประกอบ · ไม่ใช่ผลชี้ขาด</span>
+ </summary>
+ <div class="record-accordion-body">
+ <div class="form-grid-2">
+   <div class="form-group">
  <label>หน่วยงานอัยการเจ้าของสำนวนเดิม</label>
  <div class="read-box" id="f_source">สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3</div>
+ </div>
+   <div class="form-group">
+ <label>เลขที่หนังสือส่งความเห็นแย้งเดิม</label>
+ <div class="read-box font-monospace" id="f_externalDispatchNo">ที่ ปปท 0014/1150</div>
  </div>
  </div>
  <div class="form-grid-2">
    <div class="form-group">
-     <label><mark class="wording-changed">มติอัยการ</mark></label>
+     <label>มติอัยการ (เดิม)</label>
      <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
    </div>
    <div class="form-group">
@@ -250,23 +262,40 @@
  <div class="read-box" id="f_level">-</div>
  </div>
    <div class="form-group">
- <label>ผู้ถูกกล่าวหา</label>
- <div class="read-box" id="f_accused">นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)</div>
+ <label>ตำแหน่งผู้ถูกกล่าวหา</label>
+ <div class="read-box" id="f_accusedPosition">-</div>
  </div>
  </div>
  <div class="form-grid-2">
-   <div class="form-group">
-   <label>ตำแหน่ง</label>
-   <div class="read-box" id="f_accusedPosition">-</div>
+ <div class="form-group">
+ <label>วันที่หนังสือส่งความเห็นแย้งเดิม</label>
+ <div class="read-box font-monospace" id="f_externalDispatchDate">-</div>
+ </div>
+ <div class="form-group">
+ <label>วันที่จัดส่งถึง อสส.</label>
+ <div class="read-box font-monospace" id="f_dispatchDate">-</div>
  </div>
  </div>
+ <div class="form-group">
+ <label>มติคณะกรรมการ ป.ป.ท. ที่เสนอ อสส.</label>
+ <div class="read-box" id="f_boardResolution">-</div>
+ <div class="read-box read-box-textarea" id="f_boardResolutionDetail" hidden></div>
+ </div>
+ <div class="form-group">
+ <label>หลักฐานการจัดส่งถึง อสส.</label>
+ <div class="read-box" id="f_dispatchProof">-</div>
+ </div>
+ </div>
+ </details>
 
- <!-- OAG Verdict Detailed Box -->
- <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-top: 6px; margin-bottom: 16px;">
- <div style="font-weight: 700; color: #1e3a8a; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+ <!-- ผลชี้ขาดล่าสุด: จุดเดียวที่บอกผลว่าคดีเดินต่อหรือยุติ แยกกรอบเข้มจากข้อมูลเดิมด้านบน -->
+ <div class="verdict-final" style="margin-bottom: 16px;">
+ <div class="verdict-final-title">
  <i class="fa-solid fa-gavel"></i>
- <span>ข้อมูลคำวินิจฉัยชี้ขาดจากสำนักงานอัยการสูงสุด</span>
+ <span>คำวินิจฉัยชี้ขาดของอัยการสูงสุด (ผลการชี้ขาดล่าสุด)</span>
  </div>
+ <div class="verdict-final-headline" id="f_verdictHeadline">ยังไม่มีข้อมูลผลการชี้ขาดล่าสุด</div>
+ <div class="verdict-compare-line" id="verdictCompareLine"></div>
 
  <div class="form-grid-3">
  <div class="form-group">
@@ -310,7 +339,7 @@
  <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px 18px; margin-top: 16px;">
  <div style="font-weight: 700; color: #166534; font-size: 0.95em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
  <i class="fa-solid fa-scale-balanced"></i>
- <span><mark class="wording-changed">ผลจากพนักงานอัยการ (คำพิพากษา)</mark></span>
+ <span>ผลจากพนักงานอัยการ (คำพิพากษา)</span>
  <span class="badge" style="background:#dcfce7; color:#166534; font-weight:600;" id="f_prosecutorResultBadge">รอผลจากพนักงานอัยการ</span>
  </div>
 
@@ -463,7 +492,7 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
+ <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
@@ -545,48 +574,51 @@
  if (el) el.textContent = text;
  };
 
- setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/5102');
- setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0028/2569');
- setElText('f_externalDispatchNo', currentCase.externalDispatchNo || 'ที่ ปปท 0014/1150');
+ setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '-');
+ setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '-');
+ setElText('f_externalDispatchNo', currentCase.externalDispatchNo || '-');
  setElText('f_title', currentCase.title || '-');
  setElText('f_accusedPosition', currentCase.accusedPosition || '-');
  setElText('f_caseNo', currentCase.id || '-');
- setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 3');
- setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '1. อัยการมีความเห็นสั่งไม่ฟ้อง');
- setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
- setElText('f_accused', currentCase.accused || 'นายพิชัย เทคโนโลยี (อดีตผู้อำนวยการสำนักสารสนเทศ)');
+ setElText('f_source', currentCase.source || '-');
+ setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '-');
+ setElText('f_level', currentCase.prosecutorLevelName || '-');
+ setElText('f_accused', currentCase.accused || '-');
 
- setElText('f_oagVerdictNo', currentCase.oagVerdictNo || 'อส 0001/6789');
- setElText('f_oagVerdictDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictDate) : currentCase.oagVerdictDate) || '25-08-2569');
- setElText('f_oagVerdictReceiveDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictReceiveDate) : currentCase.oagVerdictReceiveDate) || '25-08-2569');
- setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ "ฟ้องคดี" ผู้ถูกกล่าวหาตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.');
- setElText('f_oagVerdictFile', currentCase.oagVerdictFile || 'หนังสือคำวินิจฉัยชี้ขาด_อสส_อส0001_6789.pdf');
+ setElText('f_oagVerdictNo', currentCase.oagVerdictNo || '-');
+ setElText('f_oagVerdictDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictDate) : currentCase.oagVerdictDate) || '-');
+ setElText('f_oagVerdictReceiveDate', (window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.oagVerdictReceiveDate) : currentCase.oagVerdictReceiveDate) || '-');
+ setElText('f_oagVerdictSummary', currentCase.oagVerdictSummary || 'ยังไม่มีข้อมูลสรุปคำวินิจฉัย');
+ setElText('f_oagVerdictFile', currentCase.oagVerdictFile || '-');
  setElText('f_directorNotes', currentCase.directorOagVerdictNotes || 'รับทราบคำวินิจฉัยชี้ขาดของอัยการสูงสุด มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง เพื่อมอบหมายนิติกรเจ้าของสำนวนสรุปผลคดีและทำหนังสือแจ้งกองบริหารคดีดำเนินการในส่วนที่เกี่ยวข้องต่อไป');
  setElText('f_groupDirectorNotes', currentCase.groupDirectorOagVerdictNotes || 'มอบหมายนิติกรเจ้าของสำนวน ดำเนินการสรุปผลคำวินิจฉัยชี้ขาดของอัยการสูงสุด และจัดทำหนังสือแจ้งกองบริหารคดีเพื่อดำเนินการตามขั้นตอนต่อไป');
 
- const isProsecute = currentCase.oagVerdictDecision !== 'NON_PROSECUTE';
- const badge = document.getElementById('badgeVerdictDecision');
- if (badge) {
- badge.style.background = isProsecute ? '#dcfce7' : '#fee2e2';
- badge.style.color = isProsecute ? '#166534' : '#991b1b';
- /* ใช้ชื่อกรณีที่ธุรการเลือกไว้จริงที่หน้า 19 ไม่ใช่ข้อความคู่ ฟ้อง/ไม่ฟ้อง
-    ตั้งแต่ 07/09/2569 ตัวเลือกครอบคลุมอุทธรณ์/ฎีกา/ถอนฟ้องด้วย การเขียนตายตัวว่า
-    "ให้ฟ้องคดี" จะบรรยายคำวินิจฉัยผิดสำหรับกรณีเหล่านั้น
-    สีและไอคอนยังมาจาก oagVerdictDecision เพราะเป็นตัวบอกว่าคดีเดินต่อหรือยุติ
-    (|| ไว้รองรับสำนวนเก่าที่บันทึกก่อนวันดังกล่าว ซึ่งยังไม่มี oagVerdictCaseTypeName) */
- const verdictLabel = (currentCase.oagVerdictCaseTypeName || '').replace(/^\d+\.\s*/, '')
- || (isProsecute ? 'อสส. ชี้ขาดให้ฟ้องคดี' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี');
- badge.innerHTML = '<i class="fa-solid ' + (isProsecute ? 'fa-gavel' : 'fa-ban') + ' me-1"></i>' + verdictLabel;
- }
+ const cmp = Activity10.describeVerdictComparison(currentCase);
+ setElText('f_verdictHeadline', cmp.verdictLabel);
+ const headline = document.getElementById('f_verdictHeadline');
+ headline.className = 'verdict-final-headline ' + (currentCase.oagVerdictDecision === 'PROSECUTE' ? 'prosecute' : currentCase.oagVerdictDecision === 'NON_PROSECUTE' ? 'non-prosecute' : 'unknown');
+ const compareLine = document.getElementById('verdictCompareLine');
+ compareLine.className = 'verdict-compare-line ' + cmp.tone;
+ compareLine.textContent = cmp.headline;
 
- const summaryBox = document.getElementById('f_finalVerdictSummaryBox');
- if (summaryBox) {
- if (isProsecute) {
- summaryBox.innerHTML = `อัยการสูงสุดมีคำวินิจฉัยชี้ขาดให้ <strong>"ฟ้องคดี"</strong> ${currentCase.accused || 'ผู้ถูกกล่าวหา'} ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.`;
- } else {
- summaryBox.innerHTML = `อัยการสูงสุดมีคำวินิจฉัยชี้ขาด <strong>"ไม่ฟ้อง/ยุติคดี"</strong> ${currentCase.accused || 'ผู้ถูกกล่าวหา'} ตามคำสั่งเดิมของพนักงานอัยการ`;
- }
- }
+ const displayDate = value => value ? Activity10.formatDisplayDate(value) : '-';
+ setElText('f_externalDispatchDate', displayDate(currentCase.externalDispatchDate));
+ setElText('f_boardResolution', currentCase.boardResolution || 'ยังไม่มีข้อมูลมติคณะกรรมการ ป.ป.ท.');
+ setElText('f_boardResolutionDetail', currentCase.boardResolutionDetail || '');
+ document.getElementById('f_boardResolutionDetail').hidden = !currentCase.boardResolutionDetail;
+ // Use the OAG recipient record when present; retain support for older cases.
+ const oagDispatch = (currentCase.dispatchRecipients || []).find(r => r.key === 'oag');
+ const method = oagDispatch ? oagDispatch.method : currentCase.dispatchMethod;
+ const trackingNo = oagDispatch ? oagDispatch.trackingNo : currentCase.emsTrackingNo;
+ const receiveNo = oagDispatch ? oagDispatch.receiveDocNo : currentCase.oagReceiveDocNo;
+ setElText('f_dispatchDate', displayDate(oagDispatch ? oagDispatch.sentDate : currentCase.dispatchDate));
+ setElText('f_dispatchProof', method === 'postal_ems'
+ ? 'ส่งทางไปรษณีย์ EMS (หมายเลข ' + (trackingNo || 'ยังไม่มีข้อมูล') + ')'
+ : method === 'hand_delivery' ? 'ส่งถึง อสส. ด้วยตนเอง (เลขรับ ' + (receiveNo || 'ยังไม่มีข้อมูล') + ')'
+ : 'ยังไม่มีข้อมูลหลักฐานการจัดส่ง');
+ setElText('f_finalVerdictSummaryBox', cmp.verdictLabel);
+ document.getElementById('in_officerNotes').value = currentCase.officerCaseClosedNotes ||
+ 'สำนักงานอัยการสูงสุดได้แจ้งผลการชี้ขาดล่าสุด: ' + cmp.verdictLabel + ' กองกฎหมายจึงขอส่งผลคำวินิจฉัยชี้ขาดดังกล่าวมายังกองบริหารคดี เพื่อโปรดทราบและดำเนินการในส่วนที่เกี่ยวข้องต่อไป';
  }
 
  function viewVerdictPdfFile() {
@@ -597,7 +629,7 @@
  <div class="emd-summary">
  <p><strong>เลขที่หนังสือ อสส.:</strong> ${document.getElementById('f_oagVerdictNo').textContent}</p>
  <p><strong>วันที่ในหนังสือ:</strong> ${document.getElementById('f_oagVerdictDate').textContent}</p>
- <p><strong>ผลคำวินิจฉัย:</strong> ${document.getElementById('badgeVerdictDecision').innerText}</p>
+ <p><strong>ผลคำวินิจฉัย:</strong> ${document.getElementById('f_verdictHeadline').innerText}</p>
  <p><strong>สถานะ:</strong> ลายมือชื่ออัยการสูงสุดสมบูรณ์</p>
  </div>
  `,
@@ -677,7 +709,7 @@
  caseClosedNotifyDate: notifyDate,
  caseClosedNotifyTarget: notifyTarget,
  caseClosedNotifyFile: document.getElementById('f_notifyFileName').textContent,
- finalCaseResolutionSummary: currentCase.oagVerdictDecisionText || (currentCase.oagVerdictDecision === 'PROSECUTE' ? 'อสส. ชี้ขาดให้ฟ้องคดีตามความเห็นแย้งของ ป.ป.ท.' : 'อสส. ชี้ขาดไม่ฟ้อง/ยุติคดีตามคำสั่งเดิมของอัยการ'),
+ finalCaseResolutionSummary: Activity10.describeVerdictComparison(currentCase).verdictLabel,
  signature: signatureDataUrl
  };
 

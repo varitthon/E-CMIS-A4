@@ -234,6 +234,11 @@ took `.form-actions`, `.btn*`, `.badge`, `.font-monospace`, `.d-none` and `.btn-
 
 ## 8. `17` — recipients became checkboxes
 
+> ⚠ **SUPERSEDED the same day.** The checkbox pair below was replaced a few hours later by a
+> derived, read-only recipient panel — see
+> [`meeting-01092026-changes.md` Part 1D §7](meeting-01092026-changes.md#7-recipients-reworked-again--per-recipient-dispatch-derived-not-picked).
+> Kept here for the record of the bug that prompted it.
+
 Reported: *"the ui is visually bad… when the radio only ticked for อสส but both is bordered."*
 
 **The bug was real.** `selectDispatchTarget('BOTH')` had a ternary returning the same value on

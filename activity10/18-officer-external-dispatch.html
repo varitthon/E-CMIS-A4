@@ -10,7 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
  <style>
@@ -144,6 +144,37 @@
  50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
  }
+
+ /* Recipient Tabs — หนึ่งแท็บต่อหนึ่งหน่วยงานผู้รับ
+    ทรงเป็นแท็บแบบ "แฟ้ม" ที่เชื่อมกับเนื้อหาด้านล่าง ไม่ใช่ปุ่มลอยเหมือนเดิม */
+ .recipient-tabs {
+ display: flex; gap: 4px; flex-wrap: wrap;
+ margin-bottom: 18px; padding: 0 2px;
+ border-bottom: 2px solid #1e3a8a;
+ }
+ .recipient-tab {
+ display: flex; align-items: center; gap: 8px; cursor: pointer;
+ border: 2px solid var(--border-color); border-bottom: 2px solid #1e3a8a;
+ border-radius: 8px 8px 0 0;
+ margin-bottom: -2px;              /* ให้ขอบล่างของแท็บทับเส้นของแถบพอดี */
+ padding: 10px 16px; font-size: 0.9em;
+ background: var(--bg-body); color: var(--text-muted, #6b7280);
+ font-weight: 500;
+ transition: background 0.15s, color 0.15s;
+ }
+ .recipient-tab:hover:not(.active) { background: var(--bg-card); }
+ /* แท็บที่เลือกอยู่ "เปิด" ลงไปยังเนื้อหาด้านล่าง จึงไม่มีขอบล่าง
+    เป็นสัญญาณว่าแท็บกับฟอร์มข้างล่างคือพื้นผิวเดียวกัน ไม่ใช่ปุ่มสองปุ่ม */
+ .recipient-tab.active {
+ background: var(--bg-card);
+ border-color: #1e3a8a;
+ border-bottom-color: var(--bg-card);
+ color: #1e3a8a; font-weight: 700;
+ }
+ .recipient-tab:focus-visible { outline: 2px solid #1e3a8a; outline-offset: 2px; }
+ .recipient-tab .rt-chip { font-size: 0.78em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+ .recipient-tab .rt-chip.saved { background: #dcfce7; color: #166534; }
+ .recipient-tab .rt-chip.pending { background: #fef3c7; color: #92400e; }
 
  /* Dispatch Method Selector Cards */
  .method-selector-grid {
@@ -363,14 +394,11 @@
  <span style="font-size:0.88em; font-weight:600;">เลือกเงื่อนไขการส่งหนังสือ (Interactive Test Scenarios):</span>
  </div>
  <div class="scenario-btn-group">
- <button type="button" class="scenario-btn active" id="btnScenarioDisagreedEMS" onclick="switchScenario('disagreed_ems')">
- <i class="fa-solid fa-envelope-open-text me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ทางไปรษณีย์ (EMS)
+ <button type="button" class="scenario-btn" id="btnScenarioAgreed" onclick="switchScenario('AGREED')">
+ <i class="fa-solid fa-check-double me-1"></i>เห็นชอบ ➔ แจ้งอัยการต้นทาง
  </button>
- <button type="button" class="scenario-btn" id="btnScenarioDisagreedHand" onclick="switchScenario('disagreed_hand')">
- <i class="fa-solid fa-person-walking-arrow-right me-1"></i>กรณี 2: เห็นแย้ง ➔ ส่ง อสส. ด้วยตนเอง
- </button>
- <button type="button" class="scenario-btn" id="btnScenarioAgreedEMS" onclick="switchScenario('agreed_ems')">
- <i class="fa-solid fa-check-double me-1"></i>กรณี 1: เห็นชอบ ➔ ส่งอัยการต้นทาง (EMS)
+ <button type="button" class="scenario-btn active" id="btnScenarioDisagreed" onclick="switchScenario('DISAGREED')">
+ <i class="fa-solid fa-triangle-exclamation me-1"></i>เห็นแย้ง ➔ แจ้ง อสส. และอัยการต้นทาง
  </button>
  </div>
  </div>
@@ -418,7 +446,7 @@
  </div>
  <div class="form-grid-2">
    <div class="form-group">
-     <label><mark class="wording-changed">มติอัยการ</mark></label>
+     <label>มติอัยการ</label>
      <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
    </div>
    <div class="form-group">
@@ -479,6 +507,10 @@
  ตาม ป.วิ.อ. ม.145/1 / พ.ร.บ. ป.ป.ท.
  </span>
  </div>
+
+ <!-- หนึ่งแท็บต่อหนึ่งหน่วยงานผู้รับ แต่ละหน่วยงานกรอกและบันทึกแยกกันได้
+      เพราะการส่งจริงเกิดคนละวัน แล้วค่อยมาบันทึกย้อนหลัง -->
+ <div id="recipientTabs" class="recipient-tabs" role="tablist"></div>
 
  <!-- Dispatch Method Selector (Visible when Scenario 2: Disagreed) -->
  <div id="methodSelectorWrap">
@@ -549,45 +581,6 @@
  </div>
  </div>
 
- <!-- ผู้รับที่ 2: พนักงานอัยการเจ้าของสำนวน
-      ตามมติที่ประชุม นิติกรต้องแจ้งผลทั้ง อสส. และ พนักงานอัยการ
-      ไม่ใช่เฉพาะกรณีที่ส่งไปยัง อสส. อย่างเดิม -->
- <div class="form-group" style="margin-top:16px;">
- <label style="font-weight:400;">
- <input type="checkbox" id="in_notifyProsecutorToo" onchange="toggleProsecutorNotify()" style="width:15px; height:15px; vertical-align:-2px;">
- <mark class="wording-changed">แจ้งผลให้พนักงานอัยการเจ้าของสำนวนด้วย</mark>
- </label>
- </div>
- <div id="prosecutorNotifyBox" style="display:none; border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; margin-bottom:16px; background:var(--bg-body);">
- <div style="font-weight:700; font-size:0.85em; color:#166534; margin-bottom:10px;">
- <i class="fa-solid fa-user-tie me-1"></i>ผู้รับที่ 2: พนักงานอัยการเจ้าของสำนวน
- </div>
- <div class="form-grid-2">
- <div class="form-group" style="margin-bottom:0;">
- <label style="font-size:0.82em;">หน่วยงานอัยการผู้รับ</label>
- <input type="text" id="in_prosecutorRecipientLabel" class="form-control" placeholder="เช่น สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1">
- </div>
- <div class="form-group" style="margin-bottom:0;">
- <label style="font-size:0.82em;">วันที่จัดส่ง</label>
- <input type="date" id="in_prosecutorDispatchDate" class="form-control">
- </div>
- </div>
- <div class="form-grid-2" style="margin-top:10px; margin-bottom:0;">
- <div class="form-group" style="margin-bottom:0;">
- <label style="font-size:0.82em;">ช่องทางการจัดส่ง</label>
- <select id="in_prosecutorDispatchMethod" class="form-control">
- <option value="postal_ems">ไปรษณีย์ EMS</option>
- <option value="hand_delivery">นำส่งด้วยตนเอง</option>
- <option value="electronic">อิเล็กทรอนิกส์</option>
- </select>
- </div>
- <div class="form-group" style="margin-bottom:0;">
- <label style="font-size:0.82em;">เลขติดตาม / เลขรับของอัยการ</label>
- <input type="text" id="in_prosecutorTrackingNo" class="form-control font-monospace" placeholder="เช่น ED889912346TH หรือ อส 0025/1290">
- </div>
- </div>
- </div>
-
  <!-- EMS Live Tracking Simulation Box -->
  <div class="tracking-box" id="emsTrackingResultBox">
  <div class="tracking-header">
@@ -639,7 +632,7 @@
  </div>
  <div class="form-grid-2">
    <div class="form-group">
- <label>เลขที่รับสำนักงานอัยการสูงสุด (เลขรับ อสส.) <span style="color:#dc2626;">*</span></label>
+ <label id="lblReceiveDocNo">เลขที่รับสำนักงานอัยการสูงสุด (เลขรับ อสส.) <span style="color:#dc2626;">*</span></label>
  <input type="text" id="in_oagReceiveDocNo" class="form-control font-monospace" placeholder="เช่น อส 0001/4588" value="อส 0001/4588" style="font-weight:700; color:#166534;">
  </div>
    <div class="form-group">
@@ -685,7 +678,7 @@
  <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
  <div style="display:flex; gap:10px;">
  <button type="button" class="btn btn-primary" onclick="submitOfficerExternalDispatchForm()">
- <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+ <i class="fa-solid fa-paper-plane me-1"></i>บันทึกการจัดส่งหน่วยงานนี้
  </button>
  <button type="button" class="btn btn-secondary" onclick="printDispatchSlip()">
  <i class="fa-solid fa-print me-1"></i>พิมพ์ใบนำส่งเอกสาร
@@ -701,49 +694,40 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
+ <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
  <script>
  let currentCase = null;
- let currentScenario = 'disagreed_ems'; // 'disagreed_ems' | 'disagreed_hand' | 'agreed_ems'
  let currentDispatchMethod = 'postal_ems'; // 'postal_ems' | 'hand_delivery'
  let activeRecognition = null;
  let isRecording = false;
+ let activeRecipientKey = null;
+
+ /* ปุ่มทดสอบนี้ทับผลการพิจารณาไว้ทั้งรอบการใช้งาน ไม่ใช่แค่เปลี่ยนหน้าตา
+    มิฉะนั้นผู้ทดสอบอาจสลับไปเห็นชอบ กรอกแท็บเดียว แล้วบันทึกลงสำนวน
+    ที่จริงต้องแจ้งสองหน่วยงาน */
+ let opinionOverride = null;
+ function getOpinionOverride() { return opinionOverride || undefined; }
 
  document.addEventListener('DOMContentLoaded', () => {
  initUserProfile();
  setDefaultDates();
  loadCaseData();
- // ต้องเรียกหลัง loadCaseData/switchScenario เพราะ scenario จะเขียนทับชื่อผู้รับ
+ // เรียกหลัง loadCaseData เพื่อแสดงข้อมูลอ้างอิงปลายทางจากหน้า 17 เท่านั้น
  applyDispatchTargetFromCase();
  });
 
- /* ปลายทางที่ธุรการเลือกไว้ที่หน้า 17 ต้องสะท้อนมาที่หน้านี้
-    มิฉะนั้นตัวเลือกที่หน้า 17 จะไม่มีผลใด ๆ กับการจัดส่งจริง */
+ /* แสดงปลายทางที่ธุรการเลือกไว้ที่หน้า 17 เป็นข้อมูลอ้างอิงเท่านั้น
+    ชื่อผู้รับและป้ายสถานะปลายทางถูกควบคุมโดย prefillActiveRecipientForm() และ renderOpinionBadges() ตามลำดับ */
  function applyDispatchTargetFromCase() {
  if (!currentCase || !currentCase.dispatchTarget) return;
  const target = currentCase.dispatchTarget;
- const toProsecutor = target.indexOf('พนักงานอัยการ') > -1;
- const toOag = target.indexOf('อัยการสูงสุด') > -1;
 
  const note = document.getElementById('dispatchTargetNote');
  if (note) {
  note.style.display = 'flex';
  note.innerHTML = '<div style="font-size:1.2em">📮</div><div><b>ปลายทางที่ธุรการเลือกไว้ (หน้า 17):</b><br>' + target + '</div>';
- }
-
- // ธุรการเลือกให้แจ้งพนักงานอัยการด้วย จึงเปิดกล่องผู้รับที่ 2 ไว้ให้เลย
- if (toProsecutor) {
- const cb = document.getElementById('in_notifyProsecutorToo');
- if (cb && !cb.checked) { cb.checked = true; toggleProsecutorNotify(); }
- }
- // ส่งให้พนักงานอัยการอย่างเดียว ผู้รับหลักต้องไม่ใช่ อสส.
- if (toProsecutor && !toOag) {
- const lbl = document.getElementById('in_emsRecipientLabel');
- if (lbl && currentCase.source) lbl.value = currentCase.source;
- const badge = document.getElementById('badgeRecipientTarget');
- if (badge) badge.innerHTML = '<i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: ' + (currentCase.source || 'พนักงานอัยการเจ้าของสำนวน');
  }
  }
 
@@ -827,11 +811,13 @@
     แต่การไม่ได้ส่งให้ อสส. ทำให้สำนวนไปไม่ถึงผู้มีอำนาจชี้ขาด */
  const hasOpinion = Boolean(currentCase.finalOpinionType);
  const isAgreed = String(currentCase.finalOpinionType || '').includes('เห็นชอบ');
- if (isAgreed) {
- switchScenario('agreed_ems', false);
- } else {
- switchScenario('disagreed_ems', false);
- }
+ // ตั้งหน้าตาปุ่มทดสอบให้ตรงกับผลจริงของสำนวน แต่ไม่แตะ opinionOverride
+ // เพื่อให้ระบบยังใช้ผลการพิจารณาจริงจนกว่าผู้ทดสอบจะกดปุ่มเปลี่ยนเอง
+ const btnAgreed = document.getElementById('btnScenarioAgreed');
+ const btnDisagreed = document.getElementById('btnScenarioDisagreed');
+ if (btnAgreed) btnAgreed.classList.toggle('active', isAgreed);
+ if (btnDisagreed) btnDisagreed.classList.toggle('active', !isAgreed);
+ renderOpinionBadges();
  if (!hasOpinion) showMissingOpinionWarning();
 
  populateCaseView();
@@ -855,17 +841,25 @@
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_docNo', currentCase.docNo || 'อส 0038/2569');
  setElText('f_presidentName', currentCase.signedPresidentName || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
- setElText('f_signedDocFileName', currentCase.signedDocFile || 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf');
+ // f_signedDocFileName ไม่เขียนที่นี่แล้ว — renderOpinionBadges() เป็นผู้เขียนค่านี้แต่ผู้เดียว
+ // (ต้องอิงชื่อไฟล์ตามผลมติจริง ไม่ใช่ค่า currentCase.signedDocFile ที่นี่ ซึ่งเขียนสองที่แล้วค่าชนกัน)
 
  // Check if already dispatched.
  // ที่ประชุมขอให้กลับมาแก้ไขข้อมูลการจัดส่งได้ ปุ่ม "แก้ไข" จะตั้ง flag นี้ไว้
  // แล้วโหลดหน้าใหม่เป็นฟอร์มปกติ พร้อมเติมค่าที่เคยบันทึกไว้กลับเข้าไป
  if (currentCase.statusCode === 'DISPATCHED_TO_PROSECUTOR' || currentCase.officerDispatchedDate) {
  if (isDispatchEditMode()) {
- prefillDispatchFormFromCase();
+ // เติมค่าจากข้อมูลรายหน่วยงานใน dispatchRecipients โดยตรง (ไม่ผ่านฟิลด์แบนอีกต่อไป
+ // เพราะฟิลด์แบนเป็นแค่ภาพฉายเพื่อความเข้ากันได้กับหน้า 19 เท่านั้น)
+ renderRecipientTabs();
+ prefillActiveRecipientForm();
  } else {
  renderAlreadyDispatchedView();
  }
+ } else {
+ // สำนวนยังจัดส่งไม่ครบ (หรือยังไม่ได้เริ่ม) แสดงแท็บผู้รับตามปกติ
+ renderRecipientTabs();
+ prefillActiveRecipientForm();
  }
  }
 
@@ -887,38 +881,6 @@
  try { sessionStorage.removeItem(dispatchEditFlagKey()); } catch (e) {}
  }
 
- /* เติมค่าที่บันทึกไว้กลับเข้าฟอร์ม เพื่อให้แก้เฉพาะจุดที่ผิดได้ ไม่ต้องกรอกใหม่ทั้งหมด */
- function prefillDispatchFormFromCase() {
- const set = (id, val) => {
- const el = document.getElementById(id);
- if (el && val !== undefined && val !== null && val !== '') el.value = val;
- };
- if (currentCase.emsTrackingNo) {
- selectDispatchMethod('postal_ems');
- set('in_emsTrackingNo', currentCase.emsTrackingNo);
- set('in_emsDate', currentCase.dispatchDate);
- set('in_emsPostOffice', currentCase.dispatchPostOffice);
- } else if (currentCase.oagReceiveDocNo || currentCase.dispatchTime) {
- selectDispatchMethod('hand_delivery');
- set('in_handDate', currentCase.dispatchDate);
- set('in_handTime', currentCase.dispatchTime);
- set('in_oagReceiveDocNo', currentCase.oagReceiveDocNo);
- set('in_handLocation', currentCase.dispatchLocation);
- set('in_handRecipient', currentCase.dispatchRecipientName);
- }
- set('in_dispatchNotes', currentCase.dispatchNotes);
-
- const wrap = document.getElementById('dispatchFormContainer');
- if (wrap && !document.getElementById('dispatchEditBanner')) {
- const b = document.createElement('div');
- b.id = 'dispatchEditBanner';
- b.className = 'info-box';
- b.style.cssText = 'margin:0 0 14px 0;';
- b.innerHTML = '<div style="font-size:1.2em">✏️</div><div><b>กำลังแก้ไขข้อมูลการจัดส่งที่บันทึกไว้แล้ว</b><br>เมื่อบันทึกอีกครั้ง ระบบจะทับข้อมูลเดิมของสำนวนนี้</div>';
- wrap.insertBefore(b, wrap.firstChild);
- }
- }
-
  /* สำนวนที่ไม่มี finalOpinionType แปลว่ายังไม่ผ่านหน้า 13 หรือข้อมูลไม่ครบ
     ระบบเลือกเส้นทาง "เห็นแย้ง" ไว้ให้เป็นค่าปลอดภัย แต่ต้องบอกให้เห็น
     ไม่ใช่เดาแล้วแสดงผลอย่างมั่นใจเหมือนเดิม */
@@ -930,113 +892,176 @@
  b.style.cssText = 'display:flex; gap:10px; align-items:flex-start; margin:0 0 14px 0;'
  + 'padding:12px 14px; border:1px solid #fde68a; background:rgba(217,119,6,0.08);'
  + 'border-radius:8px; color:#92400e; font-size:0.88em;';
- b.innerHTML = '<div style="font-size:1.2em">⚠️</div><div>'
+ b.innerHTML = '<div style="font-size:1.2em"><i class="fa-solid fa-triangle-exclamation"></i></div><div>'
  + '<b>ไม่พบผลการพิจารณาของนิติกรในสำนวนนี้</b><br>'
  + 'ระบบตั้งค่าเป็น <b>เห็นแย้ง</b> ไว้ก่อนเพื่อความปลอดภัย (ส่งถึงอัยการสูงสุด) '
  + 'กรุณาตรวจสอบที่หน้า 13 ว่าบันทึกผลการพิจารณาครบถ้วนแล้ว ก่อนยืนยันการจัดส่ง</div>';
  wrap.insertBefore(b, wrap.firstChild);
  }
 
- function switchScenario(scenarioKey, triggerPopulate = true) {
- currentScenario = scenarioKey;
-
- // Update button styles
- document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
- if (scenarioKey === 'disagreed_ems') document.getElementById('btnScenarioDisagreedEMS').classList.add('active');
- if (scenarioKey === 'disagreed_hand') document.getElementById('btnScenarioDisagreedHand').classList.add('active');
- if (scenarioKey === 'agreed_ems') document.getElementById('btnScenarioAgreedEMS').classList.add('active');
+ /* ป้ายสถานะทั้งหมดต้องมาจากผลการพิจารณาที่มีผลจริง ไม่ใช่จากปุ่มทดสอบโดยตรง
+    และต้องแสดง "ทุก" หน่วยงานที่ต้องแจ้ง เพราะกรณีเห็นแย้งมีสองหน่วยงาน
+    เดิมโค้ดเขียนชื่อ อสส. ไว้ตายตัว ทำให้อัยการต้นทางหายไปจากหน้าจอ */
+ function renderOpinionBadges() {
+ if (!currentCase) return;
+ const required = Activity10.getRequiredRecipients(currentCase, getOpinionOverride());
+ const agreed = required.length === 1;
 
  const badgeRes = document.getElementById('badgeCaseResolution');
+ if (badgeRes) {
+ badgeRes.className = 'badge';
+ badgeRes.style.background = agreed ? '#dcfce7' : '#fee2e2';
+ badgeRes.style.color = agreed ? '#166534' : '#991b1b';
+ badgeRes.innerHTML = agreed
+ ? '<i class="fa-solid fa-circle-check me-1"></i>มติเห็นชอบตามคำสั่งอัยการ'
+ : '<i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง';
+ }
+
  const badgeTarget = document.getElementById('badgeRecipientTarget');
+ if (badgeTarget) {
+ badgeTarget.style.background = agreed ? '#0284c7' : '#1e3a8a';
+ badgeTarget.innerHTML =
+ '<i class="fa-solid ' + (agreed ? 'fa-building' : 'fa-building-columns') + ' me-1"></i>' +
+ 'ส่งถึง: ' + required.map((r) => r.name).join(' และ ');
+ }
+
  const txtRecipient = document.getElementById('txtTargetRecipient');
- const methodSelectorWrap = document.getElementById('methodSelectorWrap');
- const inRecipientLabel = document.getElementById('in_emsRecipientLabel');
-
- if (scenarioKey === 'agreed_ems') {
- // Scenario 1: Agreed -> Send to Origin Prosecutor via EMS
- if (badgeRes) {
- badgeRes.className = 'badge';
- badgeRes.style.background = '#dcfce7';
- badgeRes.style.color = '#166534';
- badgeRes.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>มติเห็นชอบตามคำสั่งอัยการ';
- }
- if (badgeTarget) {
- badgeTarget.style.background = '#0284c7';
- badgeTarget.innerHTML = '<i class="fa-solid fa-building me-1"></i>ส่งถึง: พนักงานอัยการเจ้าของสำนวน (ต้นทาง)';
- }
  if (txtRecipient) {
- txtRecipient.textContent = `${currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2'} — เพื่อแจ้งผลมติเห็นชอบตามมติอัยการ`;
- }
- if (inRecipientLabel) {
- inRecipientLabel.value = currentCase ? currentCase.source : 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2';
- }
-
- // Hide Hand delivery option (strictly EMS for Agreed case)
- if (methodSelectorWrap) methodSelectorWrap.classList.add('d-none');
- selectDispatchMethod('postal_ems');
-
- // Update sample files
- if (document.getElementById('f_signedDocFileName')) {
- document.getElementById('f_signedDocFileName').textContent = 'หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1290.pdf';
- }
- if (document.getElementById('in_dispatchNotes')) {
- document.getElementById('in_dispatchNotes').value = 'ดำเนินการส่งหนังสือแจ้งมติเห็นชอบตามมติอัยการให้พนักงานอัยการเจ้าของสำนวนทางไปรษณีย์ด่วนพิเศษ (EMS) เรียบร้อยแล้ว';
+ txtRecipient.textContent = agreed
+ ? required[0].name + ' — เพื่อแจ้งผลมติเห็นชอบตามมติอัยการ'
+ : required.map((r) => r.name).join(' และ ') +
+ ' — เพื่อพิจารณาชี้ขาดความเห็นแย้งตามกฎหมาย และแจ้งผลให้อัยการเจ้าของสำนวนทราบ';
  }
 
- } else {
- // Scenario 2: Disagreed -> Send to Attorney General (OAG)
- if (badgeRes) {
- badgeRes.className = 'badge';
- badgeRes.style.background = '#fee2e2';
- badgeRes.style.color = '#991b1b';
- badgeRes.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>มติเห็นควรทำความเห็นแย้ง';
- }
- if (badgeTarget) {
- badgeTarget.style.background = '#1e3a8a';
- badgeTarget.innerHTML = '<i class="fa-solid fa-building-columns me-1"></i>ส่งถึง: สำนักงานอัยการสูงสุด (อสส.)';
- }
- if (txtRecipient) {
- txtRecipient.textContent = 'สำนักงานอัยการสูงสุด (อสส.) — เพื่อพิจารณาชี้ขาดความเห็นแย้งตามกฎหมาย';
- }
- if (inRecipientLabel) {
- inRecipientLabel.value = 'สำนักงานอัยการสูงสุด (ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์)';
- }
-
- // Show method selector
- if (methodSelectorWrap) methodSelectorWrap.classList.remove('d-none');
-
- if (scenarioKey === 'disagreed_ems') {
- selectDispatchMethod('postal_ems');
- if (document.getElementById('in_dispatchNotes')) {
- document.getElementById('in_dispatchNotes').value = 'ดำเนินการจัดส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ เลขที่ ที่ ปปท 0014/1288 ให้สำนักงานอัยการสูงสุด (อสส.) ทางไปรษณีย์ EMS เรียบร้อยแล้ว';
- }
- } else if (scenarioKey === 'disagreed_hand') {
- selectDispatchMethod('hand_delivery');
- if (document.getElementById('in_dispatchNotes')) {
- document.getElementById('in_dispatchNotes').value = 'นิติกรเจ้าของสำนวนเดินทางไปนำส่งหนังสือความเห็นแย้งฉบับลงนามสมบูรณ์ ให้สำนักงานอัยการสูงสุด (อสส.) ด้วยตนเอง และได้รับเลขรับเรื่อง อส 0001/4588 เรียบร้อยแล้ว';
+ const docName = document.getElementById('f_signedDocFileName');
+ if (docName) {
+ docName.textContent = agreed
+ ? 'หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1290.pdf'
+ : 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf';
  }
  }
 
- if (document.getElementById('f_signedDocFileName')) {
- document.getElementById('f_signedDocFileName').textContent = 'หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1288.pdf';
+ function switchScenario(which) {
+ opinionOverride = which;
+ const a = document.getElementById("btnScenarioAgreed");
+ const d = document.getElementById("btnScenarioDisagreed");
+ if (a) a.classList.toggle("active", which === "AGREED");
+ if (d) d.classList.toggle("active", which === "DISAGREED");
+ renderOpinionBadges();
+ renderRecipientTabs();
+ prefillActiveRecipientForm();
  }
+
+ /* วาดแท็บจากหน่วยงานที่สำนวนนี้ต้องแจ้ง สถานะมาจาก savedAt ของแต่ละระเบียน
+    จึงไม่มีทางที่ป้ายสถานะกับข้อมูลจะไม่ตรงกัน */
+ function renderRecipientTabs() {
+ const host = document.getElementById('recipientTabs');
+ if (!host || !currentCase) return;
+ const required = Activity10.getRequiredRecipients(currentCase, getOpinionOverride());
+ const saved = currentCase.dispatchRecipients || [];
+ if (!required.some((r) => r.key === activeRecipientKey)) {
+ activeRecipientKey = required[0].key;
+ }
+ host.innerHTML = required
+ .map((r) => {
+ const rec = saved.find((x) => x.key === r.key);
+ const done = Boolean(rec && rec.savedAt);
+ const active = r.key === activeRecipientKey;
+ return (
+ '<div class="recipient-tab' +
+ (active ? ' active' : '') +
+ '" role="tab" tabindex="' + (active ? '0' : '-1') + '" aria-selected="' + (active ? 'true' : 'false') + '"' +
+ ' onclick="selectRecipientTab(\'' + r.key + '\')"' +
+ ' onkeydown="handleRecipientTabKeydown(event, \'' + r.key + '\')">' +
+ '<i class="fa-solid ' + (r.key === 'oag' ? 'fa-scale-balanced' : 'fa-user-tie') + '"></i>' +
+ '<span>' + r.name + '</span>' +
+ '<span class="rt-chip ' + (done ? 'saved' : 'pending') + '">' +
+ /* ใช้ไอคอน Font Awesome ชุดเดียวกับป้ายมติด้านบน (fa-circle-check / fa-triangle-exclamation)
+    ไม่ใช้อีโมจิ เพราะอีโมจิมีสีตายตัวจึงขัดกับสีของชิป แต่ละระบบปฏิบัติการวาดไม่เหมือนกัน
+    และโปรแกรมอ่านหน้าจอจะอ่านชื่ออีโมจิเป็นเสียงรบกวนก่อนข้อความจริง */
+ (done
+ ? '<i class="fa-solid fa-circle-check me-1"></i>บันทึกแล้ว ' + rec.savedAt
+ : '<i class="fa-solid fa-triangle-exclamation me-1"></i>ยังไม่ได้กรอก') +
+ '</span></div>'
+ );
+ })
+ .join('');
+ }
+
+ function selectRecipientTab(key) {
+ activeRecipientKey = key;
+ renderRecipientTabs();
+ prefillActiveRecipientForm();
+ }
+
+ /* แท็บผู้รับต้องใช้งานด้วยคีย์บอร์ดได้ (ARIA tab pattern แบบ manual activation):
+    ลูกศรซ้าย/ขวาเลื่อนโฟกัสไปมาระหว่างแท็บโดยยังไม่เปลี่ยนแท็บที่ใช้งานอยู่
+    Enter/Space จึงจะยืนยันเลือกแท็บที่โฟกัสอยู่ */
+ function handleRecipientTabKeydown(e, key) {
+ const tabs = Array.from(document.querySelectorAll('#recipientTabs .recipient-tab'));
+ const idx = tabs.indexOf(e.currentTarget);
+
+ if (e.key === 'Enter' || e.key === ' ') {
+ e.preventDefault();
+ selectRecipientTab(key);
+ const el = document.querySelector('#recipientTabs .recipient-tab.active');
+ if (el) el.focus();
+ return;
+ }
+
+ if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+ e.preventDefault();
+ if (tabs.length === 0 || idx === -1) return;
+ const dir = e.key === 'ArrowRight' ? 1 : -1;
+ const nextIdx = (idx + dir + tabs.length) % tabs.length;
+ tabs[idx].setAttribute('tabindex', '-1');
+ tabs[nextIdx].setAttribute('tabindex', '0');
+ tabs[nextIdx].focus();
  }
  }
 
- /* เปิด/ปิดกล่องผู้รับที่ 2 (พนักงานอัยการเจ้าของสำนวน) */
- function toggleProsecutorNotify() {
- const cb = document.getElementById('in_notifyProsecutorToo');
- const box = document.getElementById('prosecutorNotifyBox');
- if (!cb || !box) return;
- box.style.display = cb.checked ? 'block' : 'none';
- if (cb.checked) {
- const label = document.getElementById('in_prosecutorRecipientLabel');
- if (label && !label.value && currentCase && currentCase.source) {
- label.value = currentCase.source;
- }
- const d = document.getElementById('in_prosecutorDispatchDate');
- if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
- }
+ /* เติมฟอร์มด้วยระเบียนของหน่วยงานที่เลือก หรือคืนค่าเริ่มต้นถ้ายังไม่เคยบันทึก
+    ห้ามล้างฟิลด์วันที่/เวลาเป็นค่าว่างเปล่า เพราะไม่มีการตรวจสอบภายหลังว่าฟิลด์เหล่านี้
+    ต้องมีค่า ค่าว่างจะถูกบันทึกลงสำนวนจริง ๆ (dispatchDate เป็น "" ที่หน้า 19/renderAlready
+    DispatchedView จะกลายเป็น "-") จึงคืนค่าเริ่มต้นเดิมของฟอร์ม (setDefaultDates + markup)
+    แทน ส่วนเลขติดตาม EMS ไม่มีค่าเริ่มต้นที่สมเหตุผล จึงยังคงล้างเป็นค่าว่างตามเดิม */
+ function prefillActiveRecipientForm() {
+ const rec = (currentCase.dispatchRecipients || []).find(
+ (r) => r.key === activeRecipientKey,
+ );
+ const required = Activity10.getRequiredRecipients(currentCase, getOpinionOverride());
+ const meta = required.find((r) => r.key === activeRecipientKey);
+ const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+ const setOrDefault = (id, v, dflt) => { const el = document.getElementById(id); if (el) el.value = v || dflt; };
+ const today = new Date().toISOString().split('T')[0];
+
+ selectDispatchMethod(rec ? rec.method : 'postal_ems');
+ set('in_emsRecipientLabel', meta ? meta.name : '');
+ set('in_emsTrackingNo', rec ? rec.trackingNo : '');
+ setOrDefault('in_emsDate', rec ? rec.sentDate : '', today);
+ setOrDefault('in_emsPostOffice', rec ? rec.postOffice : '', 'ไปรษณีย์ไทย สาขาศูนย์ราชการเฉลิมพระเกียรติฯ (แจ้งวัฒนะ)');
+ setOrDefault('in_handDate', rec ? rec.sentDate : '', today);
+ setOrDefault('in_handTime', rec ? rec.sentTime : '', '10:30');
+ // ฟิลด์วันที่/เวลา/ที่ทำการไปรษณีย์ข้างบนเป็นค่าฝั่งผู้ส่ง (นิติกร) จึงคืนค่าเริ่มต้นได้เหมือนกันทุกหน่วยงาน
+ // แต่เลขรับ/ผู้รับ/สถานที่รับด้านล่างเป็นข้อมูลของ "ผู้รับ" โดยตรง ค่าคงที่ของอสส. (เสมียนสารบรรณ,
+ // ที่อยู่อสส.) ใช้ได้เฉพาะแท็บอสส. เท่านั้น ถ้าปล่อยให้เป็นค่าเริ่มต้นของทุกแท็บ การกดบันทึกแท็บ
+ // อัยการต้นทางโดยไม่แก้ไขจะบันทึกเท็จว่าอัยการต้นทางรับเอกสารที่สำนักงานอสส. — จึงต้อง default เป็น
+ // ค่าว่างสำหรับหน่วยงานอื่น บังคับให้นิติกรกรอกสิ่งที่เกิดขึ้นจริง (submitOfficerExternalDispatchForm
+ // ปฏิเสธ receiveDocNo ว่างอยู่แล้ว)
+ const isOag = activeRecipientKey === 'oag';
+ setOrDefault('in_oagReceiveDocNo', rec ? rec.receiveDocNo : '', isOag ? 'อส 0001/4588' : '');
+ setOrDefault('in_handRecipient', rec ? rec.receiverName : '', isOag ? 'นางสาวพรพิมล รัตนสาร (เจ้าหน้าที่ธุรการ สารบรรณกลาง อสส.)' : '');
+ setOrDefault('in_handLocation', rec ? rec.location : '', isOag ? 'สำนักงานอัยการสูงสุด ศูนย์ราชการเฉลิมพระเกียรติฯ อาคารราชบุรีดิเรกฤทธิ์ ชั้น 2' : '');
+ // หมายเหตุเป็นข้อมูลรายหน่วยงาน ไม่ใช่ฟิลด์แบนรวม ต้องเปลี่ยนตามแท็บที่เลือกด้วย
+ // (ห้ามฉายไปที่ dispatchNotes แบนตามที่ควบคุมมา — Task 6 จะอ่านจาก dispatchRecipients[].notes)
+ set('in_dispatchNotes', rec ? rec.notes : '');
+ // ไฟล์แนบเป็นข้อมูล UI เท่านั้น (ไม่ถูกบันทึกลงสำนวน) แต่ต้องล้างเมื่อเปลี่ยนแท็บ ไม่เช่นนั้นไฟล์ที่
+ // เลือกไว้ในแท็บหนึ่งจะค้างแสดงเป็นไฟล์แนบของอีกแท็บหนึ่ง ทำให้เข้าใจผิดว่ามีการแนบสลิปแล้ว
+ removeSelectedFile('in_emsReceiptFile', 'btn_removeEmsReceiptFile');
+ removeSelectedFile('in_handReceiptFile', 'btn_removeHandReceiptFile');
+
+ const lbl = document.getElementById('lblReceiveDocNo');
+ if (lbl && meta) lbl.innerHTML = 'เลขรับของ' + meta.name + ' <span style="color:#dc2626;">*</span>';
  }
 
  function selectDispatchMethod(method) {
@@ -1124,113 +1149,61 @@
  }
 
  function submitOfficerExternalDispatchForm() {
- if (!currentCase) return;
-
- let payload = {
- dispatchScenario: currentScenario,
- dispatchMethod: currentDispatchMethod,
- dispatchNotes: document.getElementById('in_dispatchNotes').value.trim()
+ if (!currentCase || !activeRecipientKey) return;
+ const required = Activity10.getRequiredRecipients(currentCase, getOpinionOverride());
+ const meta = required.find((r) => r.key === activeRecipientKey);
+ const val = (id) => (document.getElementById(id) || {}).value || '';
+ const warn = (title, text, focusId) => {
+ Swal.fire({ icon: 'warning', title, text, confirmButtonColor: '#1e3a8a' });
+ const el = document.getElementById(focusId);
+ if (el) el.focus();
  };
 
- // ผู้รับที่ 2 (พนักงานอัยการ) — บันทึกเมื่อมีการติ๊กแจ้งผลให้อัยการด้วย
- const notifyPro = document.getElementById('in_notifyProsecutorToo');
- if (notifyPro && notifyPro.checked) {
- const proRecipient = document.getElementById('in_prosecutorRecipientLabel').value.trim();
- const proTracking = document.getElementById('in_prosecutorTrackingNo').value.trim();
- if (!proRecipient) {
- Swal.fire({
- icon: 'warning',
- title: 'ข้อมูลไม่ครบถ้วน',
- text: 'กรุณาระบุหน่วยงานอัยการผู้รับ สำหรับการแจ้งผลให้พนักงานอัยการ',
- confirmButtonColor: '#1e3a8a'
- });
- document.getElementById('in_prosecutorRecipientLabel').focus();
- return;
- }
- payload.notifyProsecutor = true;
- payload.prosecutorRecipientName = proRecipient;
- payload.prosecutorDispatchDate = document.getElementById('in_prosecutorDispatchDate').value;
- payload.prosecutorDispatchMethod = document.getElementById('in_prosecutorDispatchMethod').value;
- payload.prosecutorTrackingNo = proTracking;
- }
-
+ const record = { name: meta.name, method: currentDispatchMethod };
  if (currentDispatchMethod === 'postal_ems') {
- const emsNo = document.getElementById('in_emsTrackingNo').value.trim();
- const emsDate = document.getElementById('in_emsDate').value;
- const postOffice = document.getElementById('in_emsPostOffice').value.trim();
-
- if (!emsNo || emsNo.length < 10) {
- Swal.fire({
- icon: 'warning',
- title: 'กรุณากรอกเลขติดตาม EMS',
- text: 'กรุณากรอกเลขติดตามพัสดุไปรษณีย์ EMS 13 หลักที่ได้จากไปรษณีย์ไทย เพื่อใช้ติดตามสถานะ',
- confirmButtonColor: '#1e3a8a'
- });
- return;
+ const t = val('in_emsTrackingNo').trim();
+ if (!t || t.length < 10) {
+ return warn('กรุณากรอกเลขติดตาม EMS',
+ 'กรุณากรอกเลขติดตามพัสดุไปรษณีย์ EMS 13 หลักที่ได้จากไปรษณีย์ไทย', 'in_emsTrackingNo');
  }
-
- payload.emsTrackingNo = emsNo;
- payload.dispatchDate = emsDate;
- payload.dispatchPostOffice = postOffice;
- payload.dispatchRecipientName = document.getElementById('in_emsRecipientLabel').value;
+ record.trackingNo = t;
+ record.sentDate = val('in_emsDate');
+ record.postOffice = val('in_emsPostOffice').trim();
  } else {
- const handDate = document.getElementById('in_handDate').value;
- const handTime = document.getElementById('in_handTime').value;
- const oagDocNo = document.getElementById('in_oagReceiveDocNo').value.trim();
- const handRecipient = document.getElementById('in_handRecipient').value.trim();
- const location = document.getElementById('in_handLocation').value.trim();
-
- if (!oagDocNo) {
- Swal.fire({
- icon: 'warning',
- title: 'กรุณาระบุเลขรับ อสส.',
- text: 'กรุณากรอกเลขรับเอกสารที่ได้รับจากสำนักงานอัยการสูงสุด',
- confirmButtonColor: '#1e3a8a'
- });
- return;
+ const d = val('in_oagReceiveDocNo').trim();
+ if (!d) {
+ return warn('กรุณาระบุเลขรับเอกสาร',
+ 'กรุณากรอกเลขรับเอกสารที่ได้รับจาก' + meta.name, 'in_oagReceiveDocNo');
  }
-
- payload.dispatchDate = handDate;
- payload.dispatchTime = handTime;
- payload.oagReceiveDocNo = oagDocNo;
- payload.handDeliveryRecipient = handRecipient;
- payload.dispatchLocation = location;
- payload.dispatchRecipientName = 'สำนักงานอัยการสูงสุด (อสส.)';
+ record.receiveDocNo = d;
+ record.sentDate = val('in_handDate');
+ record.sentTime = val('in_handTime');
+ record.receiverName = val('in_handRecipient').trim();
+ record.location = val('in_handLocation').trim();
  }
+ record.notes = val('in_dispatchNotes').trim();
 
- const methodText = currentDispatchMethod === 'postal_ems'
- ? `ไปรษณีย์ด่วนพิเศษ (EMS หมายเลข <strong>${payload.emsTrackingNo}</strong>)`
- : `นิติกรนำส่งด้วยตนเอง (เลขรับ อสส. <strong>${payload.oagReceiveDocNo}</strong>)`;
-
- Swal.fire({
- icon: 'question',
- title: 'ยืนยันการบันทึกจัดส่งหนังสือ?',
- html: `
- <div class="emd-summary">
- <p><strong>เลขที่หนังสือส่ง:</strong> ${document.getElementById('f_externalDispatchNo').textContent}</p>
- <p><strong>ปลายทาง:</strong> ${document.getElementById('txtTargetRecipient').textContent}</p>
- <p><strong>วิธีการจัดส่ง:</strong> ${methodText}</p>
- </div>
- `,
- showCancelButton: true,
- confirmButtonText: 'ยืนยันการจัดส่ง',
- cancelButtonText: 'ยกเลิก',
- confirmButtonColor: '#16a34a',
- cancelButtonColor: '#64748b'
- }).then(res => {
- if (res.isConfirmed) {
- Activity10.submitOfficerExternalDispatch(currentCase.id, payload);
- clearDispatchEditMode();
+ const updated = Activity10.saveDispatchRecipient(currentCase.id, activeRecipientKey, record, getOpinionOverride());
+ currentCase = updated;
+ const p = Activity10.getDispatchProgress(updated, getOpinionOverride());
 
  Swal.fire({
  icon: 'success',
- title: 'บันทึกการจัดส่งหนังสือเรียบร้อยแล้ว!',
- text: 'ระบบได้บันทึกข้อมูลการจัดส่งและปิดขั้นตอน S18 เรียบร้อยแล้ว',
+ title: p.complete ? 'บันทึกครบทุกหน่วยงานแล้ว!' : 'บันทึกหน่วยงานนี้แล้ว',
+ text: p.complete
+ ? 'จัดส่งหนังสือครบตามที่กำหนด สิ้นสุดขั้นตอนการจัดส่ง'
+ : `บันทึกแล้ว ${p.saved}/${p.total} หน่วยงาน — กรุณากรอกหน่วยงานที่เหลือ`,
  timer: 1800,
- showConfirmButton: false
+ showConfirmButton: false,
  }).then(() => {
+ if (p.complete) {
+ // สำนวนเสร็จสมบูรณ์แล้ว ล้าง flag แก้ไข ไม่เช่นนั้นเปิดหน้านี้ครั้งถัดไปในเซสชันเดิม
+ // จะเจอฟอร์มแก้ไขค้างอยู่ตลอด ไปไม่ถึงหน้าสรุป "จัดส่งเสร็จสมบูรณ์" อีกเลย
+ clearDispatchEditMode();
  window.location.href = '01-work-inbox.html';
- });
+ } else {
+ renderRecipientTabs();
+ prefillActiveRecipientForm();
  }
  });
  }
@@ -1239,55 +1212,38 @@
  const container = document.getElementById('dispatchFormContainer');
  if (!container) return;
 
- const isPostal = currentCase.dispatchMethod === 'postal_ems';
- const detailHtml = isPostal ? `
- <div class="form-grid-3">
- <div class="form-group">
- <label>เลขติดตามพัสดุ EMS</label>
- <div class="read-box font-monospace" style="font-weight:700; color:var(--ems-red);">${currentCase.emsTrackingNo || 'ED889912345TH'}</div>
- </div>
- <div class="form-group">
- <label>วันที่ฝากส่งไปรษณีย์</label>
- <div class="read-box font-monospace">${(window.Activity10 && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(currentCase.dispatchDate) : currentCase.dispatchDate) || '-'}</div>
- </div>
- <div class="form-group">
- <label>ที่ทำการไปรษณีย์ต้นทาง</label>
- <div class="read-box">${currentCase.dispatchPostOffice || 'ไปรษณีย์ไทย สาขาศูนย์ราชการฯ'}</div>
- </div>
- </div>
- ` : `
- <div class="form-grid-3">
- <div class="form-group">
- <label>เลขที่รับ อสส.</label>
- <div class="read-box font-monospace" style="font-weight:700; color:#166534;">${currentCase.oagReceiveDocNo || 'อส 0001/4588'}</div>
- </div>
- <div class="form-group">
- <label>วันที่และเวลานำส่ง</label>
- <div class="read-box font-monospace">${currentCase.dispatchDate || '-'} ${currentCase.dispatchTime || ''}</div>
- </div>
- <div class="form-group">
- <label>ผู้รับมอบเอกสารที่ อสส.</label>
- <div class="read-box">${currentCase.handDeliveryRecipient || 'เจ้าหน้าที่ธุรการ สารบรรณ อสส.'}</div>
- </div>
- </div>
- `;
+ // แต่ละผู้รับเลือกวิธีจัดส่งเป็นอิสระจากกัน (mixed-method เป็นเรื่องปกติ)
+ // จึงต้องวนแสดงทีละ record จาก dispatchRecipients แทนที่จะอ่านฟิลด์แบนตัวเดียว
+ const rows = (currentCase.dispatchRecipients || [])
+ .map((r) => {
+ const detail =
+ r.method === "postal_ems"
+ ? "ไปรษณีย์ EMS " + (r.trackingNo || "-") +
+ (r.postOffice ? " · " + r.postOffice : "")
+ : "นำส่งด้วยตนเอง · เลขรับ " + (r.receiveDocNo || "-") +
+ (r.receiverName ? " · ผู้รับ " + r.receiverName : "");
+ return (
+ '<div style="padding:10px 12px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:8px;">' +
+ '<div style="font-weight:700;">' + r.name + "</div>" +
+ '<div style="font-size:0.85em; color:#64748b;">' + detail +
+ " · บันทึกเมื่อ " + (r.savedAt || "-") + "</div>" +
+ (r.notes
+ ? '<div style="font-size:0.85em; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color);">' +
+ r.notes + "</div>"
+ : "") +
+ "</div>"
+ );
+ })
+ .join("");
 
  container.innerHTML = `
  <div class="form-card" style="border: 2px solid #16a34a;">
  <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
  <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดส่งหนังสือเสร็จสมบูรณ์</span>
- <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ส่งเรียบร้อยแล้ว</span>
+ <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ส่งเรียบร้อยแล้ว ${(currentCase.dispatchRecipients || []).length} หน่วยงาน</span>
  </div>
  <div class="form-card-body">
- <div class="form-group">
- <label>หน่วยงานปลายทางที่จัดส่ง</label>
- <div class="read-box" style="font-weight:700; color:#1e3a8a;">${currentCase.dispatchRecipientName || 'สำนักงานอัยการสูงสุด (อสส.)'}</div>
- </div>
- ${detailHtml}
- <div class="form-group">
- <label>บันทึกการจัดส่งของนิติกร</label>
- <div class="read-box read-box-textarea">${currentCase.dispatchNotes || 'จัดส่งหนังสือฉบับลงนามสมบูรณ์เรียบร้อยแล้ว'}</div>
- </div>
+ ${rows}
  </div>
  <div class="form-actions">
  <div style="display:flex; gap:8px;">

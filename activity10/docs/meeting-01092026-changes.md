@@ -612,6 +612,13 @@ sites fall back to the old binary wording.
 
 ## 5. `17` — recipients are checkboxes now, not radio + a "both" box
 
+> ⚠ **SUPERSEDED 07/09/2026.** The checkbox pair described in this section is gone. `17`'s
+> recipient UI is now a **derived, read-only panel** — the นิติกร's opinion at `06`/`13`
+> (เห็นชอบ/เห็นแย้ง) decides the recipient set by itself, with no manual picker at all. See
+> [§7 below](#7-recipients-reworked-again--per-recipient-dispatch-derived-not-picked) for the
+> rework and why the checkbox model (still correct in isolation) turned out to be the wrong
+> layer entirely.
+
 Reported as *"the ui is visually bad… when the radio only ticked for อสส but both is bordered."*
 Correct, and it was a real defect.
 
@@ -669,6 +676,72 @@ entry section.
 `finalOpinionType` is absent, so a case whose *title* happens to contain เห็นชอบ takes the
 agreed branch regardless of its real opinion. Pre-existing.
 
+## 7. Recipients reworked again — per-recipient dispatch, derived not picked
+
+Later the same day (07/09/2026), §5's checkbox pair was replaced outright. The checkboxes fixed
+the *representation* bug (contradictory card/radio state) but kept the wrong *model*: a นิติกร
+picking recipients by hand, when the recipients are never actually a free choice — they are
+fully determined by the opinion already recorded at `06`/`13`.
+
+`17`'s recipient UI is now a **derived, read-only panel**: เห็นชอบ shows อัยการต้นทางเท่านั้น;
+เห็นแย้ง shows both อสส. **and** อัยการต้นทาง. Nothing to tick, nothing to get wrong. `18` then
+gives each derived recipient its **own tab** with its own delivery record
+(`dispatchRecipients[]`), and each tab picks EMS or hand-delivery **independently** — one
+recipient can go by EMS while the other is hand-delivered on a different day.
+
+Knock-on changes worth recording here:
+
+- The delivery **method is chosen freely per recipient.** เห็นชอบ is no longer EMS-only, and the
+  method selector is never hidden — this reverses the earlier behaviour (§3/§4 era) where a
+  เห็นชอบ case was forced onto EMS.
+- The work-inbox status text now carries progress (`บันทึกแล้ว n/m`) while a recipient's tab is
+  still unsaved, and the completion text names the number of agencies notified — claiming
+  "ส่งทาง EMS" only when **every** recipient actually went by EMS, not just the first one saved.
+- The recipient tabs are keyboard-navigable (`role="tab"` / `aria-selected`, arrow keys). The
+  §5 checkboxes/cards were `<div onclick>` with no keyboard access at all.
+- The flat fields (`dispatchMethod`, `emsTrackingNo`, `oagReceiveDocNo`, `dispatchRecipientName`,
+  `dispatchScenario`, `dispatchRecipientType`) that `19` and Flow 4 read are preserved
+  byte-for-byte — they are now a **projection** of the อสส. recipient's record (or the sole
+  recipient's, for เห็นชอบ), written by `saveDispatchRecipient()` each time a tab is saved.
+
+The nine อสส-ruling labels' lawyer sign-off item in `qa-findings-register.md` **C4** is
+unaffected by this rework and remains open — see that file.
+
+## 8. Presentation clean-up at sign-off (07/09/2569)
+
+Three small changes made once the wording was settled. None of them alters data or logic.
+
+**Yellow review highlights removed — the sweep is signed off.** All 46
+`<mark class="wording-changed">` wrappers across 22 pages were unwrapped and the
+`REVIEW MARKER` block deleted from `assets/ecmis-shell.css`. The text inside every marker
+was preserved exactly; this was verified mechanically by stripping all tags from each file
+before and after and comparing the result. Eleven of the tags were prettier-wrapped across
+two lines (`<mark class="wording-changed"` with the `>` on the next line), so a line-based
+`sed` would have corrupted them — the unwrap was done with a multi-line-aware pass.
+Part 2's "To finalise" instruction below is now **done**, not pending.
+
+**Tab status chips use Font Awesome, not emoji** (`18-officer-external-dispatch.html`).
+The chips read `✅ บันทึกแล้ว` / `⚠ ยังไม่ได้กรอก`. Three problems: the two emoji were written
+inconsistently — the warning in the chip had no variation selector while the one in the
+missing-opinion strip had `U+FE0F` — so they rendered as different glyph styles on the same
+page; emoji carry fixed colours that fight the chip's own green/amber palette; and screen
+readers announce the emoji name before the Thai label. Both now use the icons the opinion
+badges on the same page already use, `fa-circle-check` and `fa-triangle-exclamation`, which
+inherit `currentColor`. There are now no emoji in any `activity10/*.html`.
+
+> Font Awesome loads from `cdnjs.cloudflare.com`, so **every icon in the mockup is blank
+> when a page is opened over `file://` with no internet.** That predates this change and is
+> not made worse by it, but it matters for any offline demo. Fixing it means inlining the
+> SVGs — a whole-mockup migration, not a swap, and deliberately not attempted here.
+
+**`19`'s historical card carries a read-only marker, not a redundant one.** Its header pill
+read `เคยส่ง อสส. ชี้ขาดแล้ว` — which restated the card's own title (`…ถึง อสส. (เดิม)`) and the
+field inside it (`ช่องทางและหลักฐานการจัดส่งให้ อสส. (เดิม)`), three statements of one fact. The
+wording was also off: `เคย…แล้ว` stacks two completion markers, and `ส่ง อสส. ชี้ขาด` is missing
+`ให้`, so it parses as sending อสส. rather than sending *to* อสส. Replaced with
+`ข้อมูลเดิม (อ่านอย่างเดียว)` in muted grey, which says what the title does not — that this card,
+unlike the form below it, cannot be edited.
+
 ---
 
 # Part 2 — wording sweep (ความเห็นแย้ง → ความเห็น)
@@ -686,15 +759,19 @@ agreed branch regardless of its real opinion. Pre-existing.
 
 ## Review highlighting
 
-Every changed label is wrapped in `<mark class="wording-changed">`, styled yellow in
-`assets/ecmis-shell.css` (all 32 pages link it).
+> ✅ **Removed 07/09/2569 at sign-off.** This section describes how the sweep was reviewed;
+> the highlighting itself no longer exists. See [Part 1D §8](#8-presentation-clean-up-at-sign-off-07092569).
+
+While under review, every changed label was wrapped in `<mark class="wording-changed">`, styled
+yellow in `assets/ecmis-shell.css` (all 32 pages link it).
 
 ⚠ **`ecmis-shell.css` and `ecmis-activity10.js` are both `?v=`-pinned. Bump the version on
 every page after editing either, or the change is invisible behind a warm cache** — this
 has now cost time three separate times (see Part 1C and Part 1D).
 
-**To finalise:** delete the `REVIEW MARKER` block at the end of `assets/ecmis-shell.css`
-and unwrap the `<mark class="wording-changed">` tags.
+**Finalised 07/09/2569:** the `REVIEW MARKER` block was deleted from `assets/ecmis-shell.css`
+and all 46 `<mark class="wording-changed">` tags across 22 pages were unwrapped, text
+preserved. Nothing in the repo references `wording-changed` any more.
 
 ---
 
@@ -771,9 +848,10 @@ and unwrap the `<mark class="wording-changed">` tags.
 `02` · `09` · `10` · `11` · `13` · `15` · `16` · `17` · `18` · `19` · `20` · `21` ·
 `10-2-01/02/03/04`
 
-> **`15` now carries `wording-changed` marks anyway.** Not from this sweep — `0e4b14f`
+> **`15` carried `wording-changed` marks anyway.** Not from this sweep — `0e4b14f`
 > introduced both of its decision-card labels unmarked, and 07/09/2026 marked them while
-> fixing the `เห็นแย้งตาม…` defect. See [Part 1D](#part-1d--follow-ups-07092026).
+> fixing the `เห็นแย้งตาม…` defect. See [Part 1D](#part-1d--follow-ups-07092026). Those marks
+> were unwrapped with all the others at sign-off; the label text itself is unchanged.
 
 These sit **after the board's มติ**, so every occurrence is one of: the org name, the
 board-resolution value (`เห็นชอบให้ทำความเห็นแย้ง`), the นิติกร's choice

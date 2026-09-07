@@ -6,8 +6,10 @@
 (function (global) {
   "use strict";
 
-  // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v46_fix_seed_prosecutor_source";
+  // Data Version Key for LocalStorage Sync (v47: เปลี่ยนโครงสร้างข้อมูลจัดส่งเป็น dispatchRecipients[]
+  // รายหน่วยงาน แทนฟิลด์ notifyProsecutor/prosecutor* เดิม และแก้ข้อความ seed status ใหม่ —
+  // ข้อมูลเก่าที่ยังใช้ key เดิมจะไม่มี dispatchRecipients ทำให้หน้าที่จัดส่งแล้วแสดงผลว่างเปล่า)
+  const DATA_VERSION = "v47_flow3_per_recipient_dispatch";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -221,9 +223,12 @@
       officer: "นายณัฐพล บัวทุม",
       officerPosition: "นิติกรชำนาญการพิเศษ",
       assignedRole: "legal_officer",
-      status: "นิติกรเตรียมจัดส่งหนังสือให้อัยการสูงสุด (อสส.)",
+      /* เห็นแย้ง ต้องแจ้งทั้ง อสส. และอัยการต้นทาง (2 หน่วยงาน) ยังไม่มีใครบันทึกจัดส่งเลย
+         ข้อความและสีต้องตรงกับที่ saveDispatchRecipient() เขียนจริงตอน 0/2 เพื่อให้สำนวนที่ยังไม่แตะ
+         กับสำนวนที่บันทึกไปแล้วบางส่วนอ่านบนสเกลเดียวกัน */
+      status: "นิติกรจัดส่งหนังสือ (บันทึกแล้ว 0/2)",
       statusCode: "PENDING_OFFICER_EXTERNAL_DISPATCH",
-      statusBadge: "bg-primary text-white",
+      statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0024/2569",
       paccCaseNo: "0058/2568",
       blackNo: "อ. 142/2569",
@@ -268,9 +273,11 @@
       officer: "นายณัฐพล บัวทุม",
       officerPosition: "นิติกรชำนาญการพิเศษ",
       assignedRole: "legal_officer",
-      status: "นิติกรเตรียมจัดส่งหนังสือให้อัยการต้นทาง (ไปรษณีย์ EMS)",
+      /* เห็นชอบ ต้องแจ้งอัยการต้นทางหน่วยงานเดียว (1 หน่วยงาน) วิธีจัดส่งเลือกได้อิสระตอนบันทึกจริง
+         จึงห้ามฝัง EMS มาก่อนในสถานะที่ยังไม่มีใครบันทึกอะไรเลย */
+      status: "นิติกรจัดส่งหนังสือ (บันทึกแล้ว 0/1)",
       statusCode: "PENDING_OFFICER_EXTERNAL_DISPATCH",
-      statusBadge: "bg-info text-dark",
+      statusBadge: "bg-warning text-dark",
       lawReceiveNo: "0025/2569",
       paccCaseNo: "0060/2568",
       blackNo: "อ. 145/2569",
@@ -1011,8 +1018,108 @@
     fullName,
     formatDisplayDate,
     getCases: loadCases,
+    saveCases,
     getPaccIntakeDatabase() {
       return PACC_INTAKE_DATABASE;
+    },
+
+    /* หน่วยงานผู้รับหนังสือ กำหนดจากผลการพิจารณาของนิติกร ไม่ใช่ให้ธุรการเลือก
+       ตามมติที่ประชุม 01/09/2569: เห็นชอบแจ้งอัยการต้นทาง เห็นแย้งแจ้งทั้ง อสส. และอัยการ
+       ไม่มีผลการพิจารณา ให้ถือเป็นเห็นแย้งไว้ก่อน เพราะการส่งเกินยังแก้ได้
+       แต่การไม่ได้ส่งให้ อสส. ทำให้สำนวนไปไม่ถึงผู้มีอำนาจชี้ขาด
+       opinionOverride ใช้เฉพาะปุ่มทดสอบที่หน้า 18 */
+    getRequiredRecipients(caseItem, opinionOverride) {
+      const item = caseItem || {};
+      const prosecutor = {
+        key: "prosecutor",
+        name: item.source || "สำนักงานอัยการเจ้าของสำนวน",
+      };
+      const oag = { key: "oag", name: "สำนักงานอัยการสูงสุด (อสส.)" };
+
+      let agreed;
+      if (opinionOverride === "AGREED") agreed = true;
+      else if (opinionOverride === "DISAGREED") agreed = false;
+      else agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+
+      return agreed ? [prosecutor] : [oag, prosecutor];
+    },
+
+    /* หน้า 20/21/22: บรรทัดเปรียบเทียบ "มติอัยการเดิม" (การ์ดพับ) กับ "ผลการชี้ขาดล่าสุด
+       ของ อสส." อ่านจาก oagVerdictDecision อย่างเดียว ซึ่งเป็นค่าเดียวกับที่ทั้งสามหน้า
+       ใช้ตัดสิน badge/สีอยู่แล้ว จึงไม่เพิ่มการอนุมานทางกฎหมายใหม่
+       มติอัยการเดิมทั้ง 8 ข้อ (ไม่นับ 9. อื่นๆ) ล้วนเป็น "ไม่ดำเนินคดีต่อ" อยู่แล้ว
+       (เป็นเงื่อนไขที่ทำให้ Flow 10.1 เกิดขึ้น) ดังนั้น PROSECUTE จึงแปลว่าต่างจากเดิมเสมอ
+       และ NON_PROSECUTE แปลว่ายืนตามเดิมเสมอ — ยกเว้นมติอัยการเดิมเป็น 9. อื่นๆ ซึ่งไม่ทราบ
+       ทิศทางเดิม จึงอนุมานความสัมพันธ์ไม่ได้ */
+    describeVerdictComparison(caseItem) {
+      const item = caseItem || {};
+      const hasKnownProsecutorType = /^[1-8]$/.test(String(item.prosecutorCaseTypeNo));
+      const decision = item.oagVerdictDecision;
+      const verdictLabel = String(item.oagVerdictCaseTypeName || "").replace(/^\d+\.\s*/, "").trim()
+        || (decision === "PROSECUTE" ? "อสส. ชี้ขาดให้ฟ้องคดี"
+          : decision === "NON_PROSECUTE" ? "อสส. ชี้ขาดไม่ฟ้อง/ยุติคดี"
+          : "ยังไม่มีข้อมูลผลการชี้ขาดล่าสุด");
+
+      if (!hasKnownProsecutorType || (decision !== "PROSECUTE" && decision !== "NON_PROSECUTE")) {
+        return {
+          verdictLabel,
+          relation: "UNKNOWN",
+          tone: "unknown",
+          headline: "เทียบกับมติอัยการเดิมไม่ได้ — โปรดเปิดดู \"ข้อมูลเดิม\" เพื่อเปรียบเทียบเอง",
+        };
+      }
+
+      if (decision === "PROSECUTE") {
+        return {
+          verdictLabel,
+          relation: "DIFFERS",
+          tone: "differs",
+          headline: "ต่างจากมติอัยการเดิม — เห็นพ้องตามความเห็นแย้งของ ป.ป.ท.",
+        };
+      }
+
+      return {
+        relation: "UPHOLDS",
+        verdictLabel,
+        tone: "upholds",
+        headline: "ยืนตามมติอัยการเดิม — ไม่เป็นไปตามความเห็นแย้งของ ป.ป.ท.",
+      };
+    },
+
+    /* หน้า 19: ข้อความสรุปสาระสำคัญ + ชื่อไฟล์ตัวอย่างที่เติมให้อัตโนมัติเมื่อธุรการเลือก
+       "กรณีคำวินิจฉัยชี้ขาดของอัยการสูงสุด (อสส.)" เดิมเติมข้อความคงที่ตาม isProsecute
+       (ฟ้อง/ไม่ฟ้อง) เพียง 2 แบบ ไม่ว่าจะเลือกข้อใดใน 9 ตัวเลือก ทำให้เลือก "7. ให้ฎีกา"
+       แล้วสรุป/ชื่อไฟล์ยังพูดถึง "ฟ้องคดี" อยู่ ไม่ตรงกับหัวข้อคำวินิจฉัยล่าสุดที่หน้า 20/21/22
+       อ่านจาก oagVerdictCaseTypeName (ถูกต้องอยู่แล้ว) จึงต้องอ่านตัวเลือกที่เลือกจริงด้วยเช่นกัน
+       ไม่มีตัวเลือกที่บันทึกไว้ (สำนวนเก่าก่อน 07/09/2569) → ใช้ข้อความทั่วไปตาม decision เดิม */
+    buildVerdictAutofill({ caseTypeNo, caseTypeOptionText, otherText, decision }) {
+      const isProsecute = decision === "PROSECUTE";
+      const isOther = String(caseTypeNo) === "9";
+
+      const actionPhrase = isOther
+        ? `ตามที่ระบุ (อื่นๆ): "${(otherText || "").trim() || "ไม่ได้ระบุรายละเอียด"}"`
+        : String(caseTypeOptionText || "")
+            .replace(/^\d+\.\s*อสส\.\s*ชี้ขาด/, "")
+            .trim();
+
+      const hasSpecificOption = !!actionPhrase;
+      const effectivePhrase = hasSpecificOption
+        ? actionPhrase
+        : (isProsecute ? "ให้ฟ้องคดี" : "ไม่ฟ้อง/ยุติคดี");
+
+      const summary = isProsecute
+        ? `อัยการสูงสุดได้พิจารณาข้อเท็จจริง พยานหลักฐาน และเหตุผลในหนังสือความเห็นแย้งของคณะกรรมการ ป.ป.ท. แล้ว มีคำวินิจฉัยชี้ขาด${effectivePhrase} ผู้ถูกกล่าวหา ตามความเห็นแย้งของคณะกรรมการ ป.ป.ท.`
+        : `อัยการสูงสุดได้พิจารณาพยานหลักฐานในสำนวนคดีแล้ว มีคำวินิจฉัยชี้ขาด${effectivePhrase} และให้ยุติการดำเนินคดีอาญากับผู้ถูกกล่าวหาตามคำสั่งเดิมของพนักงานอัยการ`;
+
+      const fileTag = isOther
+        ? "อื่นๆ"
+        : (hasSpecificOption
+          ? actionPhrase.replace(/[\s()\/"]+/g, "").slice(0, 24)
+          : (isProsecute ? "ให้ฟ้องคดี" : "ไม่ฟ้องคดี"));
+
+      const fileName = `หนังสือคำวินิจฉัยชี้ขาด_อสส_${fileTag}_อส0001_${isProsecute ? "6789" : "6790"}.pdf`;
+
+      return { summary, fileName };
     },
 
     /* หมายเหตุ: ถ้าหาสำนวนตาม id ไม่เจอ จะ fallback เป็นสำนวนแรกในระบบ
@@ -2008,53 +2115,81 @@
       return item;
     },
 
-    // S18: นิติกรจัดส่งหนังสือให้อัยการ/อสส. (ทางไปรษณีย์ EMS หรือนำส่งด้วยตนเอง)
-    submitOfficerExternalDispatch(id, dispatchData) {
+    /* ความคืบหน้าการบันทึกข้อมูลจัดส่ง ใช้ทั้งที่หน้า 18 และในคิวงานหน้า 01
+       opinionOverride เป็นพารามิเตอร์เสริม ไม่ใส่ก็ได้ (undefined) เพื่อให้ผู้เรียกเดิมทำงาน
+       เหมือนเดิมทุกจุด — ใส่เมื่อต้องให้ตัวเลือกจำลองความเห็น (หน้า 18) กำหนดจำนวนหน่วยงานที่ต้องส่ง */
+    getDispatchProgress(caseItem, opinionOverride) {
+      const required = this.getRequiredRecipients(caseItem, opinionOverride);
+      const saved = (caseItem.dispatchRecipients || []).filter(
+        (r) => r.savedAt && required.some((q) => q.key === r.key),
+      ).length;
+      return { saved, total: required.length, complete: saved >= required.length };
+    },
+
+    /* บันทึกข้อมูลจัดส่งทีละหน่วยงาน นิติกรอาจส่ง อสส. วันนี้ และส่งอัยการวันถัดไป
+       สำนวนจะยังอยู่ที่หน้า 18 จนกว่าจะบันทึกครบทุกหน่วยงานที่ต้องแจ้ง
+       opinionOverride เป็นพารามิเตอร์เสริมเช่นเดียวกับ getDispatchProgress ด้านบน */
+    saveDispatchRecipient(id, recipientKey, record, opinionOverride) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
-      if (item) {
-        const isPostal =
-          dispatchData && dispatchData.dispatchMethod === "postal_ems";
+      if (!item) return null;
+
+      if (!Array.isArray(item.dispatchRecipients)) item.dispatchRecipients = [];
+      const entry = Object.assign({}, record, {
+        key: recipientKey,
+        savedAt: formatDisplayDate(new Date()),
+      });
+      const at = item.dispatchRecipients.findIndex((r) => r.key === recipientKey);
+      if (at >= 0) item.dispatchRecipients[at] = entry;
+      else item.dispatchRecipients.push(entry);
+
+      /* ค่าที่ Flow 4 ใช้ตัดสินเส้นทาง ต้องคงรูปเดิมทุกประการ */
+      const agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+      item.dispatchScenario = agreed ? "case_agreed" : "case_disagreed";
+      item.dispatchRecipientType = agreed ? "prosecutor_origin" : "attorney_general";
+
+      /* ฉายระเบียนของ อสส. (หรือหน่วยงานเดียวกรณีเห็นชอบ) ลงฟิลด์เดิม
+         หน้า 19 บรรทัด 578-580 อ่านฟิลด์ชุดนี้ จึงต้องเขียนต่อไปแม้โครงสร้างจะเปลี่ยน */
+      const primary =
+        item.dispatchRecipients.find((r) => r.key === "oag") ||
+        item.dispatchRecipients[0];
+      if (primary) {
+        item.dispatchMethod = primary.method || "postal_ems";
+        item.emsTrackingNo = primary.trackingNo || "";
+        item.dispatchPostOffice = primary.postOffice || "";
+        item.dispatchDate = primary.sentDate || item.dispatchDate || "";
+        item.dispatchTime = primary.sentTime || "";
+        item.dispatchLocation = primary.location || "";
+        item.handDeliveryRecipient = primary.receiverName || "";
+        item.oagReceiveDocNo = primary.receiveDocNo || "";
+        item.dispatchRecipientName = primary.name || "";
+      }
+
+      const progress = this.getDispatchProgress(item, opinionOverride);
+      if (progress.complete) {
         item.statusCode = "DISPATCHED_TO_PROSECUTOR";
-        item.status = isPostal
-          ? `จัดส่งทางไปรษณีย์ EMS แล้ว (${dispatchData.emsTrackingNo || "ติดตาม EMS"})`
-          : "นำส่งให้อัยการสูงสุดด้วยตนเองเรียบร้อยแล้ว";
+        /* ข้อความสรุปต้องดูจากทุกหน่วยงาน ไม่ใช่แค่หน่วยงานหลักที่ฉายลงฟิลด์แบน
+           เพราะแต่ละหน่วยงานเลือกวิธีส่งได้อิสระ ส่ง EMS หน่วยหนึ่งและนำส่งเองอีกหน่วยหนึ่งได้
+           การอ่านจาก dispatchMethod เดี่ยวๆ จะรายงานว่าเป็น EMS ทั้งหมดซึ่งไม่จริง */
+        const savedMethods = (item.dispatchRecipients || [])
+          .filter((r) => r.savedAt)
+          .map((r) => r.method);
+        const allEms = savedMethods.length > 0 && savedMethods.every((m) => m === "postal_ems");
+        item.status = allEms && item.emsTrackingNo
+          ? `จัดส่งครบทุกหน่วยงานแล้ว (EMS ${item.emsTrackingNo})`
+          : `จัดส่งครบทุกหน่วยงานแล้ว (${progress.total} หน่วยงาน)`;
         item.statusBadge = "bg-success text-white";
         item.assignedRole = "legal_officer";
         item.workflowStep = 16;
-        if (dispatchData) {
-          item.dispatchScenario =
-            dispatchData.dispatchScenario ||
-            (item.finalOpinionType && item.finalOpinionType.includes("เห็นชอบ")
-              ? "case_agreed"
-              : "case_disagreed");
-          item.dispatchMethod = dispatchData.dispatchMethod || "postal_ems"; // 'postal_ems' | 'hand_delivery'
-          item.dispatchRecipientType =
-            dispatchData.dispatchRecipientType ||
-            (item.dispatchScenario === "case_agreed"
-              ? "prosecutor_origin"
-              : "attorney_general");
-          item.dispatchRecipientName =
-            dispatchData.dispatchRecipientName ||
-            (item.dispatchScenario === "case_agreed"
-              ? item.source || "สำนักงานอัยการเจ้าของสำนวน"
-              : "สำนักงานอัยการสูงสุด (อสส.)");
-          item.emsTrackingNo = dispatchData.emsTrackingNo || "";
-          item.dispatchPostOffice = dispatchData.dispatchPostOffice || "";
-          item.dispatchDate =
-            dispatchData.dispatchDate || new Date().toISOString().split("T")[0];
-          item.dispatchTime = dispatchData.dispatchTime || "";
-          item.dispatchLocation = dispatchData.dispatchLocation || "";
-          item.handDeliveryRecipient = dispatchData.handDeliveryRecipient || "";
-          item.handDeliveryRecipientPosition =
-            dispatchData.handDeliveryRecipientPosition || "";
-          item.oagReceiveDocNo = dispatchData.oagReceiveDocNo || "";
-          item.dispatchReceiptFile = dispatchData.dispatchReceiptFile || "";
-          item.dispatchNotes = dispatchData.dispatchNotes || "";
-        }
         item.officerDispatchedDate = formatDisplayDate(new Date());
-        saveCases(cases);
+      } else {
+        item.statusCode = "PENDING_OFFICER_EXTERNAL_DISPATCH";
+        item.status = `นิติกรจัดส่งหนังสือ (บันทึกแล้ว ${progress.saved}/${progress.total})`;
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
       }
+
+      saveCases(cases);
       return item;
     },
 

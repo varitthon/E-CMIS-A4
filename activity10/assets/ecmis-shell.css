@@ -117,117 +117,79 @@ body { background-color: var(--bg-body); color: var(--text-main); display: flex;
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
 }
 
-/* ==========================================================================
-   REVIEW MARKER - wording changes from the 01/09/2026 meeting
-   (ความเห็นแย้ง -> ความเห็น). Highlights every changed label in yellow so the
-   reviewer can spot them. To finalise: delete this block and unwrap the
-   <mark class="wording-changed"> tags.
-   See docs/meeting-01092026-changes.md (Part 2 - wording sweep) for the
-   file-by-file log and the CHANGE/KEEP rules.
-   ========================================================================== */
-mark.wording-changed {
-  background-color: #fde047;
-  color: #713f12;
-  border-radius: 3px;
-  padding: 0 3px;
-  font-weight: inherit;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+.record-accordion > summary > span:first-of-type { flex: 1; min-width: 0; }
+.record-accordion > summary::before {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 0.8em;
+  color: #64748b;
+  transition: transform 0.15s ease;
 }
-
-/* ==========================================================================
-   Decision choice cards — การ์ดตัวเลือกผลการพิจารณา (เห็นชอบ / เห็นแย้ง)
-   เดิมสไตล์นี้ถูกประกาศซ้ำไว้ในแต่ละหน้า (06/07/08) จึงย้ายมาไว้ที่ส่วนกลาง
-   หน้าไหนที่ยังมีสไตล์ของตัวเองจะทับค่าตรงนี้ได้ตามปกติ
-   ========================================================================== */
-.decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.decision-card {
-  border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px;
-  background: var(--bg-card); cursor: pointer; transition: all 0.2s ease;
-  display: flex; flex-direction: row; align-items: center; gap: 12px;
+.record-accordion[open] > summary::before {
+  transform: rotate(180deg);
 }
-.decision-card:hover { border-color: #93c5fd; background: rgba(37, 99, 235, 0.02); }
-/* หน้าเหล่านี้ตั้ง .form-group label { justify-content: space-between } ไว้เอง
-   ซึ่ง specificity สูงกว่า .decision-card ทำให้ radio กับข้อความถูกดันแยกคนละฝั่ง
-   จึงต้องระบุให้เจาะจงกว่าเพื่อทับค่าเดิม */
-.form-group label.decision-card { justify-content: flex-start; }
-.decision-card.active-approve { border-color: #1e3a8a; background: rgba(30, 58, 138, 0.05); }
-.decision-card.active-return { border-color: #dc2626; background: rgba(220, 38, 38, 0.05); }
-
-@media (max-width: 1024px) {
-  .decision-grid { grid-template-columns: 1fr; }
+.record-accordion-tag {
+  margin-left: auto;
+  font-size: 0.78em;
+  font-weight: 600;
+  color: #64748b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 2px 10px;
 }
+.record-accordion-body {
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--border-color);
+}
+.record-accordion-body [hidden] { display: none; }
 
-/* ==========================================================================
-   ATTESTATION BLOCK - บล็อกลงนามของผู้รับรองแต่ละคน (ใช้ในหน้า 07 และ 08)
-   ทุกบล็อกมีโครงเดียวกัน: เจ้าของ | ผลการพิจารณา -> เนื้อความ -> ลายมือชื่อ + วันที่
-   สีบอกบทบาท: เทา = ผู้จัดทำ (นิติกร), น้ำเงิน = ผู้กลั่นกรอง (ผอ.กลุ่มงาน)
-   ========================================================================== */
-/* บล็อกลงนาม 2 ชั้นในการ์ดความเห็นแย้ง: สีเทา = นิติกรเจ้าของสำนวน (ผู้ร่าง),
-   สีน้ำเงิน = ผอ.กลุ่มงาน (ผู้กลั่นกรอง) สีจึงบอกได้ทันทีว่ากำลังอ่านบล็อกของใคร */
-.attest-block {
+.verdict-final {
+  border: 2px solid #1e3a8a;
   border-radius: 8px;
-  padding: 14px 16px;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #94a3b8;
-  background: rgba(100, 116, 139, 0.04);
+  background: rgba(30, 58, 138, 0.04);
+  padding: 16px 18px;
 }
-.attest-block + .attest-block {
-  margin-top: 12px;
-}
-.attest-block--screening {
-  border-color: #bfdbfe;
-  border-left-color: #2563eb;
-  background: rgba(37, 99, 235, 0.04);
-}
-/* .read-box ปกติใช้ --bg-body ซึ่งเป็นสีเทาอ่อน ทับกับพื้นบล็อกแล้วขอบจะจม
-   จึงบังคับเป็นสีขาวเฉพาะที่อยู่ในบล็อก */
-.attest-block .read-box {
-  background-color: #fff;
-}
-.attest-block-title {
+.verdict-final-title {
   font-weight: 700;
-  font-size: 0.9em;
-  color: #334155;
-}
-.attest-block--screening .attest-block-title {
   color: #1e3a8a;
-}
-.attest-block-head {
+  font-size: 0.95em;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-.sign-strip {
+.verdict-final-headline {
+  font-weight: 700;
+  font-size: 1.35em;
+  color: var(--text-title);
+  margin-bottom: 6px;
+}
+.verdict-compare-line {
+  font-size: 0.86em;
+  font-weight: 600;
+  margin-bottom: 14px;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  margin-top: 10px;
+  gap: 6px;
 }
-/* วันที่ต้องอยู่ติดกับภาพลายเซ็น จึงแยกหัวข้อขึ้นบรรทัดบน
-   ถ้าวางหัวข้อไว้ในแถวเดียวกัน ความกว้างของหัวข้อจะดันวันที่ออกไปไกลจากลายเซ็น */
-.sign-strip-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.sign-strip-label {
-  font-size: 0.78em;
-  color: #64748b;
-  margin-bottom: 4px;
-}
-.sign-strip img {
-  max-height: 60px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background: #fff;
-  padding: 4px;
-}
-.sign-strip-date {
-  font-size: 0.78em;
-  color: #64748b;
-  padding-bottom: 6px;
+.verdict-compare-line.differs { color: #166534; }
+.verdict-compare-line.upholds { color: #991b1b; }
+.verdict-compare-line.unknown { color: #64748b; font-weight: 500; font-style: italic; }
+.verdict-final-headline.prosecute { color: #166534; }
+.verdict-final-headline.non-prosecute { color: #991b1b; }
+body.dark-mode .verdict-final { border-color: #93c5fd; background: rgba(147, 197, 253, 0.06); }
+body.dark-mode .verdict-final-title { color: #93c5fd; }
+body.dark-mode .verdict-final-headline.prosecute,
+body.dark-mode .verdict-compare-line.differs { color: #86efac; }
+body.dark-mode .verdict-final-headline.non-prosecute,
+body.dark-mode .verdict-compare-line.upholds { color: #fca5a5; }
+body.dark-mode .record-accordion-tag,
+body.dark-mode .record-accordion > summary::before,
+body.dark-mode .verdict-compare-line.unknown { color: #cbd5e1; }
+@media (max-width: 768px) {
+  .record-accordion > summary { flex-wrap: wrap; }
+  .record-accordion-tag { margin-left: 20px; }
+  .verdict-final { padding: 14px; }
 }

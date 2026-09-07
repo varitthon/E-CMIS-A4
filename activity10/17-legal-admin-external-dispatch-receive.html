@@ -22,7 +22,7 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260907_1" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -284,6 +284,18 @@
         }
       }
 
+      .derived-target-box {
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #1e3a8a;
+        border-radius: 8px;
+        padding: 12px 14px;
+        background: rgba(30, 58, 138, 0.03);
+        font-size: 0.9em;
+      }
+      .derived-target-box .dt-reason { font-weight: 700; color: #1e3a8a; margin-bottom: 6px; }
+      .derived-target-box .dt-item { margin: 3px 0 0 8px; color: var(--text-title); }
+      .derived-target-box .dt-note { font-size: 0.82em; color: #64748b; margin-top: 8px; }
+
       /* Verification Status Item Box */
       .verify-item {
         background: #ffffff;
@@ -544,7 +556,7 @@
             </div>
             <div class="form-grid-2">
               <div class="form-group">
-                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <label>มติอัยการ</label>
                 <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
               </div>
               <div class="form-group">
@@ -595,9 +607,7 @@
           >
             <span
               ><i class="fa-solid fa-stamp text-success me-2"></i
-              >ตรวจสอบความถูกต้องของ<mark class="wording-changed"
-                >หนังสือฉบับลงนามสมบูรณ์</mark
-              ></span
+              >ตรวจสอบความถูกต้องของหนังสือฉบับลงนามสมบูรณ์</span
             >
             <span class="badge" style="background: #dcfce7; color: #166534"
               >ประธานลงนามเรียบร้อย</span
@@ -617,7 +627,7 @@
                   "
                 >
                   <i class="fa-solid fa-barcode text-success me-1"></i>1.
-                  <mark class="wording-changed">เลขที่หนังสือส่งภายนอก</mark>
+                  เลขที่หนังสือส่งภายนอก
                 </span>
                 <span
                   class="font-monospace"
@@ -743,77 +753,15 @@
                 </div>
               </div>
 
-              <!-- ปลายทางการจัดส่ง — เดิมหน้านี้ hardcode ว่าส่งถึงอัยการสูงสุด
-                   ตามมติที่ประชุมให้ธุรการเลือกปลายทางตรงนี้ แล้วส่งต่อให้นิติกรไปดำเนินการ -->
+              <!-- ธุรการไม่ได้เลือกปลายทางอีกต่อไป ระบบกำหนดจากผลการพิจารณาของนิติกร
+                   ตามมติที่ประชุม 01/09/2569 แสดงไว้ให้เห็นก่อนส่งต่อ เพื่อไม่ให้ส่งผิดหน่วยงาน -->
               <div class="form-group">
                 <label
                   >ส่งหนังสือไปที่
                   <span style="color: #dc2626">*</span></label
                 >
-                <!-- ผู้รับเป็น checkbox ไม่ใช่ radio: ตามมติที่ประชุม กรณีเห็นแย้งต้องแจ้ง
-                     ทั้ง อสส. และพนักงานอัยการ การส่งสองหน่วยงานจึงเป็นกรณีปกติ ไม่ใช่ข้อยกเว้น
-                     เดิมใช้ radio + checkbox "ส่งทั้งสองหน่วยงาน" แยกอีกช่อง ทำให้เกิดสภาพขัดแย้ง
-                     คือการ์ดขึ้นกรอบทั้งสองใบ แต่ radio ติ๊กได้ใบเดียว -->
-                <div class="decision-grid" id="dispatchTargetGrid">
-                  <label
-                    class="decision-card active-approve"
-                    id="label_target_oag"
-                  >
-                    <input
-                      type="checkbox"
-                      name="in_dispatchTarget"
-                      id="target_oag"
-                      value="อัยการสูงสุด (อสส.)"
-                      checked
-                      onchange="syncDispatchTargetCards()"
-                      style="accent-color: #1e3a8a; width: 18px; height: 18px"
-                    />
-                    <div style="display: flex; flex-direction: column">
-                      <div
-                        style="font-weight: 700; color: #1e3a8a; font-size: 0.92em"
-                      >
-                        <i class="fa-solid fa-scale-balanced me-1"></i>
-                        อัยการสูงสุด (อสส.)
-                      </div>
-                      <div style="font-size: 0.78em; color: #64748b">
-                        (เสนอให้ชี้ขาดกรณีความเห็นแย้ง)
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    class="decision-card"
-                    id="label_target_prosecutor"
-                  >
-                    <input
-                      type="checkbox"
-                      name="in_dispatchTarget"
-                      id="target_prosecutor"
-                      value="พนักงานอัยการเจ้าของสำนวน"
-                      onchange="syncDispatchTargetCards()"
-                      style="accent-color: #16a34a; width: 18px; height: 18px"
-                    />
-                    <div style="display: flex; flex-direction: column">
-                      <div
-                        style="font-weight: 700; color: #16a34a; font-size: 0.92em"
-                      >
-                        <i class="fa-solid fa-user-tie me-1"></i>
-                        พนักงานอัยการเจ้าของสำนวน
-                      </div>
-                      <div style="font-size: 0.78em; color: #64748b">
-                        (แจ้งผลกรณีเห็นชอบตามคำสั่งอัยการ)
-                      </div>
-                    </div>
-                  </label>
-                </div>
-                <div
-                  id="dispatchTargetHint"
-                  style="
-                    font-size: 0.82em;
-                    color: #64748b;
-                    margin-top: 8px;
-                    margin-bottom: 16px;
-                  "
-                ></div>
+                <div id="dispatchTargetDerived" class="derived-target-box"></div>
+              </div>
 
               <div class="form-group">
                 <label>
@@ -859,7 +807,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
     <script>
@@ -871,7 +819,7 @@
         initUserProfile();
         setDefaultVerifyDate();
         loadCaseData();
-        syncDispatchTargetCards();
+        renderDerivedTargets();
       });
 
       function changeFontSize(direction) {
@@ -1021,50 +969,40 @@
         }
       }
 
-      /* ปลายทางการจัดส่ง — ธุรการเลือกที่หน้านี้ แล้วนิติกรนำไปจัดส่งจริงที่หน้า 18
-         เลือกได้มากกว่าหนึ่งหน่วยงาน กรอบการ์ดผูกกับ checkbox ของตัวเองโดยตรง
-         จึงไม่มีทางเกิดสภาพที่การ์ดขึ้นกรอบแต่ช่องไม่ได้ติ๊ก */
-      function syncDispatchTargetCards() {
-        const oag = document.getElementById("target_oag");
-        const pro = document.getElementById("target_prosecutor");
-        const oagCard = document.getElementById("label_target_oag");
-        const proCard = document.getElementById("label_target_prosecutor");
-        const hint = document.getElementById("dispatchTargetHint");
-
-        if (oagCard)
-          oagCard.className =
-            oag && oag.checked ? "decision-card active-approve" : "decision-card";
-        if (proCard)
-          proCard.className =
-            pro && pro.checked ? "decision-card active-approve" : "decision-card";
-
-        if (!hint) return;
-        const n = (oag && oag.checked ? 1 : 0) + (pro && pro.checked ? 1 : 0);
-        if (n === 2) {
-          hint.style.color = "#166534";
-          hint.innerHTML =
-            '<i class="fa-solid fa-circle-check me-1"></i>ส่งทั้งสองหน่วยงาน — นิติกรจะเห็นผู้รับที่ 2 เปิดไว้ให้แล้วที่หน้าถัดไป';
-        } else if (n === 1) {
-          hint.style.color = "#64748b";
-          hint.innerHTML =
-            '<i class="fa-solid fa-circle-info me-1"></i>เลือกได้มากกว่า 1 หน่วยงาน — กรณีเห็นแย้งตามมติที่ประชุมต้องแจ้งทั้ง อสส. และพนักงานอัยการ';
-        } else {
-          hint.style.color = "#b45309";
-          hint.innerHTML =
-            '<i class="fa-solid fa-triangle-exclamation me-1"></i>ยังไม่ได้เลือกปลายทาง — ต้องเลือกอย่างน้อย 1 หน่วยงาน';
-        }
+      /* ปลายทางมาจากกฎเดียวกับหน้า 18 ไม่ใช่ตัวเลือกของธุรการ */
+      function renderDerivedTargets() {
+        const box = document.getElementById("dispatchTargetDerived");
+        if (!box || !currentCase) return;
+        const list = Activity10.getRequiredRecipients(currentCase);
+        const agreed = list.length === 1;
+        const icon = (k) => (k === "oag" ? "fa-scale-balanced" : "fa-user-tie");
+        box.innerHTML =
+          '<div class="dt-reason"><i class="fa-solid ' +
+          (agreed ? "fa-circle-check" : "fa-triangle-exclamation") +
+          ' me-1"></i>' +
+          (agreed
+            ? "นิติกรเห็นชอบตามคำสั่งอัยการ"
+            : "นิติกรเห็นแย้งคำสั่งอัยการ") +
+          "</div>" +
+          list
+            .map(
+              (r) =>
+                '<div class="dt-item"><i class="fa-solid ' +
+                icon(r.key) +
+                ' me-1"></i>' +
+                r.name +
+                "</div>",
+            )
+            .join("") +
+          '<div class="dt-note">ระบบกำหนดปลายทางจากผลการพิจารณา ตามมติที่ประชุม 01/09/2569</div>';
       }
 
-      /* คืนชื่อปลายทางที่เลือกไว้ เป็นข้อความสำหรับบันทึกและแสดงผล
-         หน้า 18 อ่านค่านี้ด้วย indexOf('อัยการสูงสุด') / indexOf('พนักงานอัยการ')
-         ข้อความกรณีสองหน่วยงานจึงต้องคงรูปเดิมไว้ทุกตัวอักษร */
+      /* getRequiredRecipients คืนอย่างน้อยหนึ่งหน่วยงานเสมอ จึงต่อชื่อจริงจาก r.name ทุกตัว
+         แทนสตริงตายตัวเดิม ไม่เช่นนั้นชื่อผู้รับที่แจ้งไว้ที่นี่กับชื่อในแท็บหน้า 18 จะไม่ตรงกัน */
       function getDispatchTargetName() {
-        const picked = [
-          ...document.querySelectorAll('input[name="in_dispatchTarget"]:checked'),
-        ].map((el) => el.value);
-        if (picked.length === 2)
-          return "อัยการสูงสุด (อสส.) และ พนักงานอัยการเจ้าของสำนวน";
-        return picked[0] || "";
+        if (!currentCase) return "";
+        const list = Activity10.getRequiredRecipients(currentCase);
+        return list.map((r) => r.name).join(" และ ");
       }
 
       function submitLegalAdminSignedDocReceiveForm() {
@@ -1075,16 +1013,6 @@
           .getElementById("in_adminVerifyNotes")
           .value.trim();
         const dispatchTarget = getDispatchTargetName();
-
-        if (!dispatchTarget) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาเลือกปลายทางที่จะส่งหนังสือ",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
 
         Swal.fire({
           icon: "question",
@@ -1104,13 +1032,19 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (res.isConfirmed) {
+            /* ชื่อไฟล์ต้องตรงกับผลการพิจารณาจริงของสำนวน (เห็นชอบ/เห็นแย้ง) เหมือนที่ใช้อนุมาน
+               ปลายทางด้านบน ไม่ใช่ค่าตายตัว "ความเห็นแย้ง" — เดิมเขียนค่าเดียวให้ทุกสำนวน ทำให้
+               คดีเห็นชอบมีชื่อไฟล์เป็น "หนังสือความเห็นแย้ง..." ซึ่งผิดตั้งแต่ต้นทาง */
+            const agreed =
+              Activity10.getRequiredRecipients(currentCase).length === 1;
             Activity10.submitLegalAdminSignedDocReceive(currentCase.id, {
               externalDispatchNo: "ที่ ปปท 0014/1245",
               externalDispatchDate: verifyDate,
               signedPresidentName:
                 "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
-              signedDocFile:
-                "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
+              signedDocFile: agreed
+                ? "หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf"
+                : "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
               notes: notes,
             });
             /* ปลายทางที่เลือก ส่งต่อให้หน้า 18 ใช้ตั้งค่าผู้รับ */

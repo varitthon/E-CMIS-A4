@@ -453,37 +453,45 @@ Pre-existing — worth knowing if a case behaves unexpectedly.
 |---|---|
 | card header | `ตรวจสอบความถูกต้องของหนังสือฉบับลงนามสมบูรณ์` — **no** ความเห็นแย้ง |
 | verify item 1 | `เลขที่หนังสือส่งภายนอก` — **no** `(ส่งถึงอัยการสูงสุด)` |
-| ส่งหนังสือไปที่ | **two checkboxes** — not radios. Tick both = ส่งทั้งสองหน่วยงาน; the separate "both" checkbox is gone (07/09/2569) |
-| tick one, then the other | **each card's border follows its own checkbox.** The old build highlighted both cards while only one radio was filled — that state is now impossible |
-| tick both | hint turns green: *ส่งทั้งสองหน่วยงาน — นิติกรจะเห็นผู้รับที่ 2 เปิดไว้แล้ว* |
-| untick both | hint turns amber: *ยังไม่ได้เลือกปลายทาง* |
-| submit with no destination | blocked: `กรุณาเลือกปลายทางที่จะส่งหนังสือ` |
+| ส่งหนังสือไปที่ | **derived, read-only panel** (`#dispatchTargetDerived`) — **no checkboxes, no picker of any kind.** ธุรการ cannot choose or override this |
+| open a เห็นชอบ case | panel shows one line: `✓ นิติกรเห็นชอบตามคำสั่งอัยการ` + one recipient row (พนักงานอัยการเจ้าของสำนวน) |
+| open a เห็นแย้ง case | panel shows `⚠ นิติกรเห็นแย้งคำสั่งอัยการ` + **two** recipient rows (อสส. and พนักงานอัยการเจ้าของสำนวน) |
+| either case | footer note reads `ระบบกำหนดปลายทางจากผลการพิจารณา ตามมติที่ประชุม 01/09/2569` |
+| submit | no destination-related blocking message — there is nothing left to choose, so nothing to validate |
 | stepper labels | wrap onto two lines, **never overlap** — try a narrow window too |
 
 ⚠ **The diagram shows either/or, never both.** Sending to both comes from the meeting
-(*"แจ้งทั้ง อสส และ อัยการ"*), so **the diagram is out of date here** — confirm which is
-authoritative. As of 07/09/2569 the UI treats both-recipients as a normal choice, not an
-exception: two checkboxes rather than radios plus a "both" toggle.
+(*"แจ้งทั้ง อสส และ อัยการ"*). As of 07/09/2569 (later the same day) this is no longer a UI
+choice at all — the recipient set is **derived** from the นิติกร's เห็นชอบ/เห็นแย้ง opinion via
+`Activity10.getRequiredRecipients()`, the same function `18` uses. See
+[`meeting-01092026-changes.md` Part 1D §7](meeting-01092026-changes.md#7-recipients-reworked-again--per-recipient-dispatch-derived-not-picked).
 
 ## 18 — นิติกรจัดส่งหนังสือ `Nattapol.B`
 
-**Changed:** re-editing enabled; **ผู้รับที่ 2 (พนักงานอัยการ)** added; now **reflects 17's
-destination**.
+**Changed (07/09/2569, later rework):** the single delivery form is gone. Recipients are
+**derived** the same way as `17` (เห็นชอบ → อัยการต้นทางเท่านั้น; เห็นแย้ง → อสส. **and**
+อัยการต้นทาง), each recipient gets its **own tab** with its **own** delivery record
+(`dispatchRecipients[]`), and each tab picks EMS or hand-delivery **independently**.
 
-**Why:** the form was never actually disabled — `renderAlreadyDispatchedView()` replaces it
-once dispatched, so "มันปิดอยู่?" was about re-entry. The second recipient implements
-*"แจ้งทั้ง อสส และ อัยการ"*.
+**Why:** a นิติกร may send to อสส. today and to the origin prosecutor tomorrow — one flat form
+per case couldn't represent that, and forced both recipients onto the same method.
 
 | check | expect |
 |---|---|
-| open a case where 17 chose **both** | banner **ปลายทางที่ธุรการเลือกไว้ (หน้า 17)** shows the choice |
-| same case | **ผู้รับที่ 2 auto-checked and expanded**, หน่วยงานผู้รับ pre-filled |
-| 17 chose **พนักงานอัยการ only** | primary recipient and the badge switch away from อสส |
-| tick ผู้รับที่ 2, leave หน่วยงานผู้รับ blank, submit | `กรุณาระบุหน่วยงานอัยการผู้รับ…` |
-| ไปรษณีย์ EMS vs นำส่งด้วยตนเอง | matches ไม่เร่งด่วน / เร่งด่วน in the diagram |
+| open a เห็นชอบ case | **one tab**, no tab strip needed (or a single, non-interactive tab) — no ผู้รับที่ 2 concept exists any more |
+| open a เห็นแย้ง case | **two tabs**, one per recipient (`role="tab"`, `aria-selected`) |
+| each tab's badge | `⚠ ยังไม่ได้กรอก` until saved, then `✅ บันทึกแล้ว <วันที่>` |
+| click a tab | switches the active recipient's form; **no cross-contamination** — notes/fields typed for one recipient must not appear when switching to the other and back |
+| keyboard: focus a tab, press ←/→ | moves focus and activates the adjacent tab (`handleRecipientTabKeydown`) — mouse is not required |
+| save recipient 1 only | work-inbox status shows **`บันทึกแล้ว 1/2 หน่วยงาน — กรุณากรอกหน่วยงานที่เหลือ`**, case stays at `18` |
+| save recipient 2 too | case status flips to dispatched; if **both** recipients chose EMS, text names the tracking number; if **any** recipient used hand-delivery, text says `จัดส่งครบทุกหน่วยงานแล้ว (n หน่วยงาน)` instead of claiming EMS |
+| เห็นชอบ case, method selector | **never hidden or forced to EMS** — a เห็นชอบ recipient can be hand-delivered too (reverses the old "เห็นชอบ = EMS-only" rule) |
+| tick หน่วยงานผู้รับ blank on hand-delivery, submit | still blocked: `กรุณาระบุหน่วยงานอัยการผู้รับ…` |
+| ไปรษณีย์ EMS vs นำส่งด้วยตนเอง | matches ไม่เร่งด่วน / เร่งด่วน in the diagram, per recipient |
 | **open an already-dispatched case** | read-only summary + **แก้ไขข้อมูลการจัดส่ง** button |
-| press แก้ไข | form returns **pre-filled**, with a banner warning it will overwrite |
+| press แก้ไข | tabs return **pre-filled per recipient** from `dispatchRecipients[]` (not from the old flat fields), with a banner warning it will overwrite |
 | save again | overwrites cleanly, banner gone next time |
+| flat fields for `19`/Flow 4 | `dispatchMethod`/`emsTrackingNo`/`oagReceiveDocNo`/`dispatchRecipientName` still get written — projected from the อสส. recipient's record (or the sole recipient's, for เห็นชอบ) |
 
 ---
 
@@ -598,7 +606,7 @@ for the working group, not defects, and they go across at handover.
 # Handover checklist
 
 - [ ] Final manual pass of this guide complete, defects below logged
-- [ ] Yellow review highlights removed once wording is signed off — delete the `REVIEW MARKER` block at the end of `assets/ecmis-shell.css` and unwrap the `<mark class="wording-changed">` tags
+- [x] Yellow review highlights removed at sign-off (07/09/2569) — the `REVIEW MARKER` block was deleted from `assets/ecmis-shell.css` and all 46 `<mark class="wording-changed">` tags across 22 pages unwrapped, text preserved
 - [ ] [`qa-findings-register.md`](qa-findings-register.md) **section C** walked through with the working group
 - [ ] **C1 (stepper models)** given an owner — it blocks any further stepper work
 - [ ] TO-BE diagram updated or the dispatch requirement re-confirmed (**C5**)
