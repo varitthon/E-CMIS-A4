@@ -825,138 +825,138 @@
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
     <script>
-            let currentCase = null;
-            let activeRecognition = null;
-            let isRecording = false;
+      let currentCase = null;
+      let activeRecognition = null;
+      let isRecording = false;
 
-            document.addEventListener("DOMContentLoaded", () => {
-              initUserProfile();
-              setDefaultVerifyDate();
-              loadCaseData();
-              renderDerivedTargets();
-            });
+      document.addEventListener("DOMContentLoaded", () => {
+        initUserProfile();
+        setDefaultVerifyDate();
+        loadCaseData();
+        renderDerivedTargets();
+      });
 
-            function changeFontSize(direction) {
-              const currentSize = parseFloat(
-                window.getComputedStyle(document.body).fontSize,
-              );
-              document.body.style.fontSize = currentSize + direction * 1 + "px";
-            }
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize = currentSize + direction * 1 + "px";
+      }
 
-            document.addEventListener("click", (e) => {
-              const dropdown = document.getElementById("profileDropdown");
-              if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove("show");
-              }
-            });
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target)) {
+          dropdown.classList.remove("show");
+        }
+      });
 
-            function initUserProfile() {
-              const roleId = sessionStorage.getItem("ecmis_role") || "admin_legal";
-              if (typeof ECMIS !== "undefined" && ECMIS.ROLES) {
-                const role =
-                  ECMIS.ROLES.find((r) => r.id === roleId) || ECMIS.ROLES[1];
-                if (role) {
-                  const shortName = role.name
-                    .replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, "")
-                    .trim();
-                  const initial = shortName.charAt(0);
-                  if (document.getElementById("userAvatar"))
-                    document.getElementById("userAvatar").innerText = initial;
-                  if (document.getElementById("userName"))
-                    document.getElementById("userName").innerText = role.name;
-                  if (document.getElementById("userRoleTitle"))
-                    document.getElementById("userRoleTitle").innerText = role.title;
-                  if (document.getElementById("profileCardName"))
-                    document.getElementById("profileCardName").innerText = role.name;
-                  if (document.getElementById("profileCardTitle"))
-                    document.getElementById("profileCardTitle").innerText =
-                      role.title;
-                  if (document.getElementById("profileCardOrg"))
-                    document.getElementById("profileCardOrg").innerText =
-                      (role.group || "กองกฎหมาย") + " · สำนักงาน ป.ป.ท.";
-                }
-              }
-            }
+      function initUserProfile() {
+        const roleId = sessionStorage.getItem("ecmis_role") || "admin_legal";
+        if (typeof ECMIS !== "undefined" && ECMIS.ROLES) {
+          const role =
+            ECMIS.ROLES.find((r) => r.id === roleId) || ECMIS.ROLES[1];
+          if (role) {
+            const shortName = role.name
+              .replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, "")
+              .trim();
+            const initial = shortName.charAt(0);
+            if (document.getElementById("userAvatar"))
+              document.getElementById("userAvatar").innerText = initial;
+            if (document.getElementById("userName"))
+              document.getElementById("userName").innerText = role.name;
+            if (document.getElementById("userRoleTitle"))
+              document.getElementById("userRoleTitle").innerText = role.title;
+            if (document.getElementById("profileCardName"))
+              document.getElementById("profileCardName").innerText = role.name;
+            if (document.getElementById("profileCardTitle"))
+              document.getElementById("profileCardTitle").innerText =
+                role.title;
+            if (document.getElementById("profileCardOrg"))
+              document.getElementById("profileCardOrg").innerText =
+                (role.group || "กองกฎหมาย") + " · สำนักงาน ป.ป.ท.";
+          }
+        }
+      }
 
-            function setDefaultVerifyDate() {
-              const dateInput = document.getElementById("in_verifyDate");
-              if (dateInput) {
-                const today = new Date().toISOString().split("T")[0];
-                dateInput.value = today;
-              }
-            }
+      function setDefaultVerifyDate() {
+        const dateInput = document.getElementById("in_verifyDate");
+        if (dateInput) {
+          const today = new Date().toISOString().split("T")[0];
+          dateInput.value = today;
+        }
+      }
 
-            function loadCaseData() {
-              const urlParams = new URLSearchParams(window.location.search);
-              const caseId = urlParams.get("id") || "คดี-100005/2569";
-              currentCase = Activity10.getCaseById(caseId);
+      function loadCaseData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get("id") || "คดี-100005/2569";
+        currentCase = Activity10.getCaseById(caseId);
 
-              if (!currentCase) {
-                const allCases = Activity10.getCases ? Activity10.getCases() : [];
-                currentCase = allCases.length > 0 ? allCases[0] : null;
-              }
+        if (!currentCase) {
+          const allCases = Activity10.getCases ? Activity10.getCases() : [];
+          currentCase = allCases.length > 0 ? allCases[0] : null;
+        }
 
-              if (!currentCase) return;
+        if (!currentCase) return;
 
-              const setElText = (id, text) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = text;
-              };
+        const setElText = (id, text) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = text;
+        };
 
-              setElText(
-                "f_centralSarabanNo",
-                currentCase.centralSarabanNo || "2569/4502",
-              );
-              setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0019/2569");
-              setElText("f_title", currentCase.title || "-");
-              setElText("f_caseNo", currentCase.id || "-");
-              setElText(
-                "f_prosecutorCaseTypeName",
-                currentCase.prosecutorCaseTypeName ||
-                  "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-              );
-              setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
-              setElText(
-                "f_source",
-                currentCase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2",
-              );
-              setElText("f_docNo", currentCase.docNo || "อส 0025/2569");
-              setElText(
-                "f_finalDispatchRound2No",
-                currentCase.finalDispatchRound2No || "0088/2569",
-              );
-              setElText(
-                "f_finalDispatchRound2Date",
-                (window.Activity10 && Activity10.formatDisplayDate
-                  ? Activity10.formatDisplayDate(currentCase.finalDispatchRound2Date)
-                  : currentCase.finalDispatchRound2Date) || "24-08-2569",
-              );
-              setElText(
-                "f_externalDispatchNo",
-                currentCase.externalDispatchNo || "ที่ ปปท 0014/1245",
-              );
-              setElText(
-                "f_presidentName",
-                currentCase.signedPresidentName ||
-                  "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
-              );
-              setElText(
-                "f_signedDocFileName",
-                currentCase.signedDocFile ||
-                  "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
-              );
+        setElText(
+          "f_centralSarabanNo",
+          currentCase.centralSarabanNo || "2569/4502",
+        );
+        setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0019/2569");
+        setElText("f_title", currentCase.title || "-");
+        setElText("f_caseNo", currentCase.id || "-");
+        setElText(
+          "f_prosecutorCaseTypeName",
+          currentCase.prosecutorCaseTypeName ||
+            "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
+        );
+        setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
+        setElText(
+          "f_source",
+          currentCase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2",
+        );
+        setElText("f_docNo", currentCase.docNo || "อส 0025/2569");
+        setElText(
+          "f_finalDispatchRound2No",
+          currentCase.finalDispatchRound2No || "0088/2569",
+        );
+        setElText(
+          "f_finalDispatchRound2Date",
+          (window.Activity10 && Activity10.formatDisplayDate
+            ? Activity10.formatDisplayDate(currentCase.finalDispatchRound2Date)
+            : currentCase.finalDispatchRound2Date) || "24-08-2569",
+        );
+        setElText(
+          "f_externalDispatchNo",
+          currentCase.externalDispatchNo || "ที่ ปปท 0014/1245",
+        );
+        setElText(
+          "f_presidentName",
+          currentCase.signedPresidentName ||
+            "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
+        );
+        setElText(
+          "f_signedDocFileName",
+          currentCase.signedDocFile ||
+            "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
+        );
 
-              // Check if already verified & forwarded by Admin (Read-Only)
-              const isAlreadySubmitted =
-                currentCase.statusCode !== "SUBMITTED_TO_EXEC_ROUND2" &&
-                currentCase.statusCode !== "PENDING_ADMIN_SIGNED_RECEIVE" &&
-                (currentCase.adminVerifiedDate ||
-                  (currentCase.workflowStep && currentCase.workflowStep > 17));
-              const container = document.getElementById(
-                "adminSignedDocReceiveContainer",
-              );
-              if (container && isAlreadySubmitted) {
-                container.innerHTML = `
+        // Check if already verified & forwarded by Admin (Read-Only)
+        const isAlreadySubmitted =
+          currentCase.statusCode !== "SUBMITTED_TO_EXEC_ROUND2" &&
+          currentCase.statusCode !== "PENDING_ADMIN_SIGNED_RECEIVE" &&
+          (currentCase.adminVerifiedDate ||
+            (currentCase.workflowStep && currentCase.workflowStep > 17));
+        const container = document.getElementById(
+          "adminSignedDocReceiveContainer",
+        );
+        if (container && isAlreadySubmitted) {
+          container.innerHTML = `
        <div class="form-card" style="border: 1px solid #16a34a;">
        <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
        <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการตรวจสอบ และ ส่งต่อนิติกร</span>
@@ -984,93 +984,58 @@
        </div>
        </div>
        `;
-              }
-            }
+        }
+      }
 
-      <<<<<<< HEAD
-            /* ปลายทางการจัดส่ง — ธุรการเลือกที่หน้านี้ แล้วนิติกรนำไปจัดส่งจริงที่หน้า 18 */
-            function selectDispatchTarget(target) {
-              const oagCard = document.getElementById("label_target_oag");
-              const proCard = document.getElementById("label_target_prosecutor");
-              const both = document.getElementById("in_dispatchTargetBoth");
-
-              if (target === "BOTH") {
-                /* ติ๊ก "ส่งทั้งสองหน่วยงาน" แล้วไม่ต้องเลือกการ์ดใบใดใบหนึ่ง */
-                const on = both && both.checked;
-                if (oagCard)
-                  oagCard.className = on
-                    ? "decision-card active-approve"
-                    : "decision-card active-approve";
-                if (proCard)
-                  proCard.className = on
-                    ? "decision-card active-approve"
-                    : "decision-card";
-                return;
-              }
-
-              if (both) both.checked = false;
-              if (target === "OAG") {
-                const r = document.getElementById("target_oag");
-                if (r) r.checked = true;
-                if (oagCard) oagCard.className = "decision-card active-approve";
-                if (proCard) proCard.className = "decision-card";
-              } else {
-                const r = document.getElementById("target_prosecutor");
-                if (r) r.checked = true;
-                if (oagCard) oagCard.className = "decision-card";
-                if (proCard) proCard.className = "decision-card active-approve";
-              }
-      =======
-            /* ปลายทางมาจากกฎเดียวกับหน้า 18 ไม่ใช่ตัวเลือกของธุรการ */
-            function renderDerivedTargets() {
-              const box = document.getElementById("dispatchTargetDerived");
-              if (!box || !currentCase) return;
-              const list = Activity10.getRequiredRecipients(currentCase);
-              const agreed = list.length === 1;
-              const icon = (k) => (k === "oag" ? "fa-scale-balanced" : "fa-user-tie");
-              box.innerHTML =
-                '<div class="dt-reason"><i class="fa-solid ' +
-                (agreed ? "fa-circle-check" : "fa-triangle-exclamation") +
+      /* ปลายทางมาจากกฎเดียวกับหน้า 18 ไม่ใช่ตัวเลือกของธุรการ */
+      function renderDerivedTargets() {
+        const box = document.getElementById("dispatchTargetDerived");
+        if (!box || !currentCase) return;
+        const list = Activity10.getRequiredRecipients(currentCase);
+        const agreed = list.length === 1;
+        const icon = (k) => (k === "oag" ? "fa-scale-balanced" : "fa-user-tie");
+        box.innerHTML =
+          '<div class="dt-reason"><i class="fa-solid ' +
+          (agreed ? "fa-circle-check" : "fa-triangle-exclamation") +
+          ' me-1"></i>' +
+          (agreed
+            ? "นิติกรเห็นชอบตามคำสั่งอัยการ"
+            : "นิติกรเห็นแย้งคำสั่งอัยการ") +
+          "</div>" +
+          list
+            .map(
+              (r) =>
+                '<div class="dt-item"><i class="fa-solid ' +
+                icon(r.key) +
                 ' me-1"></i>' +
-                (agreed
-                  ? "นิติกรเห็นชอบตามคำสั่งอัยการ"
-                  : "นิติกรเห็นแย้งคำสั่งอัยการ") +
-                "</div>" +
-                list
-                  .map(
-                    (r) =>
-                      '<div class="dt-item"><i class="fa-solid ' +
-                      icon(r.key) +
-                      ' me-1"></i>' +
-                      r.name +
-                      "</div>",
-                  )
-                  .join("") +
-                '<div class="dt-note">ระบบกำหนดปลายทางจากผลการพิจารณา ตามมติที่ประชุม 01/09/2569</div>';
-      >>>>>>> Mock-up-10.1/taro
-            }
+                r.name +
+                "</div>",
+            )
+            .join("") +
+          '<div class="dt-note">ระบบกำหนดปลายทางจากผลการพิจารณา ตามมติที่ประชุม 01/09/2569</div>';
+      }
 
-            /* getRequiredRecipients คืนอย่างน้อยหนึ่งหน่วยงานเสมอ จึงต่อชื่อจริงจาก r.name ทุกตัว
+      /* getRequiredRecipients คืนอย่างน้อยหนึ่งหน่วยงานเสมอ จึงต่อชื่อจริงจาก r.name ทุกตัว
                แทนสตริงตายตัวเดิม ไม่เช่นนั้นชื่อผู้รับที่แจ้งไว้ที่นี่กับชื่อในแท็บหน้า 18 จะไม่ตรงกัน */
-            function getDispatchTargetName() {
-              if (!currentCase) return "";
-              const list = Activity10.getRequiredRecipients(currentCase);
-              return list.map((r) => r.name).join(" และ ");
-            }
+      function getDispatchTargetName() {
+        if (!currentCase) return "";
+        const list = Activity10.getRequiredRecipients(currentCase);
+        return list.map((r) => r.name).join(" และ ");
+      }
 
-            function submitLegalAdminSignedDocReceiveForm() {
-              if (!currentCase) return;
+      function submitLegalAdminSignedDocReceiveForm() {
+        if (!currentCase) return;
 
-              const verifyDate = document.getElementById("in_verifyDate").value;
-              const notes = document
-                .getElementById("in_adminVerifyNotes")
-                .value.trim();
-              const dispatchTarget = getDispatchTargetName();
+        const verifyDate = document.getElementById("in_verifyDate").value;
+        const notes = document
+          .getElementById("in_adminVerifyNotes")
+          .value.trim();
+        const dispatchTarget = getDispatchTargetName();
 
-              Swal.fire({
-                icon: "question",
-                title: "ยืนยันส่งต่อนิติกรเจ้าของสำนวน",
-                html: `
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันส่งต่อนิติกรเจ้าของสำนวน",
+          html: `
        <div class="emd-summary">
        <p><strong>เลขหนังสือส่งภายนอก:</strong> ที่ ปปท 0014/1245</p>
        <p><strong>สถานะการลงนาม:</strong> ประธานลงนามแล้ว</p>
@@ -1078,136 +1043,136 @@
        <p><strong>ส่งต่อนิติกร:</strong> นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)</p>
        </div>
        `,
-                showCancelButton: true,
-                confirmButtonText: "ยืนยันส่งต่อนิติกร",
-                cancelButtonText: "ยกเลิก",
-                confirmButtonColor: "#1e3a8a",
-                cancelButtonColor: "#64748b",
-              }).then((res) => {
-                if (res.isConfirmed) {
-                  /* ชื่อไฟล์ต้องตรงกับผลการพิจารณาจริงของสำนวน (เห็นชอบ/เห็นแย้ง) เหมือนที่ใช้อนุมาน
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันส่งต่อนิติกร",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            /* ชื่อไฟล์ต้องตรงกับผลการพิจารณาจริงของสำนวน (เห็นชอบ/เห็นแย้ง) เหมือนที่ใช้อนุมาน
                      ปลายทางด้านบน ไม่ใช่ค่าตายตัว "ความเห็นแย้ง" — เดิมเขียนค่าเดียวให้ทุกสำนวน ทำให้
                      คดีเห็นชอบมีชื่อไฟล์เป็น "หนังสือความเห็นแย้ง..." ซึ่งผิดตั้งแต่ต้นทาง */
-                  const agreed =
-                    Activity10.getRequiredRecipients(currentCase).length === 1;
-                  Activity10.submitLegalAdminSignedDocReceive(currentCase.id, {
-                    externalDispatchNo: "ที่ ปปท 0014/1245",
-                    externalDispatchDate: verifyDate,
-                    signedPresidentName:
-                      "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
-                    signedDocFile: agreed
-                      ? "หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf"
-                      : "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
-                    notes: notes,
-                  });
-                  /* ปลายทางที่เลือก ส่งต่อให้หน้า 18 ใช้ตั้งค่าผู้รับ */
-                  Activity10.updateCase(currentCase.id, {
-                    dispatchTarget: dispatchTarget,
-                  });
+            const agreed =
+              Activity10.getRequiredRecipients(currentCase).length === 1;
+            Activity10.submitLegalAdminSignedDocReceive(currentCase.id, {
+              externalDispatchNo: "ที่ ปปท 0014/1245",
+              externalDispatchDate: verifyDate,
+              signedPresidentName:
+                "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
+              signedDocFile: agreed
+                ? "หนังสือแจ้งมติเห็นชอบ_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf"
+                : "หนังสือความเห็นแย้ง_ฉบับลงนามสมบูรณ์_ปปท0014_1245.pdf",
+              notes: notes,
+            });
+            /* ปลายทางที่เลือก ส่งต่อให้หน้า 18 ใช้ตั้งค่าผู้รับ */
+            Activity10.updateCase(currentCase.id, {
+              dispatchTarget: dispatchTarget,
+            });
 
-                  Swal.fire({
-                    icon: "success",
-                    title: "ส่งต่อนิติกรสำเร็จ!",
-                    text: "ส่งมอบสำนวนพร้อมหนังสือฉบับลงนามให้นิติกรเจ้าของสำนวนเรียบร้อยแล้ว",
-                    timer: 1600,
-                    showConfirmButton: false,
-                  }).then(() => {
-                    window.location.href = "01-work-inbox.html";
-                  });
-                }
-              });
+            Swal.fire({
+              icon: "success",
+              title: "ส่งต่อนิติกรสำเร็จ!",
+              text: "ส่งมอบสำนวนพร้อมหนังสือฉบับลงนามให้นิติกรเจ้าของสำนวนเรียบร้อยแล้ว",
+              timer: 1600,
+              showConfirmButton: false,
+            }).then(() => {
+              window.location.href = "01-work-inbox.html";
+            });
+          }
+        });
+      }
+
+      // Speech-to-Text Web API (Same as 02-board-intake.html)
+      function startRecordingUI(btnEl) {
+        if (!btnEl) return;
+        btnEl.classList.add("recording");
+        btnEl.title = "กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)";
+      }
+
+      function stopRecordingUI(btnEl) {
+        if (!btnEl) return;
+        btnEl.classList.remove("recording");
+        btnEl.title = "คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)";
+        isRecording = false;
+      }
+
+      function toggleSpeechToText(targetId, btnEl) {
+        const inputEl = document.getElementById(targetId);
+        if (!inputEl) return;
+
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (isRecording) {
+          if (activeRecognition) {
+            try {
+              activeRecognition.stop();
+            } catch (e) {}
+          }
+          stopRecordingUI(btnEl);
+          return;
+        }
+
+        if (!SpeechRecognition) {
+          Swal.fire({
+            icon: "info",
+            title: "พิมพ์ด้วยเสียง",
+            text: "เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.lang = "th-TH";
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+          recognition.continuous = false;
+
+          recognition.onstart = function () {
+            isRecording = true;
+            activeRecognition = recognition;
+            startRecordingUI(btnEl);
+            const toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+            });
+            toast.fire({
+              icon: "info",
+              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+            });
+          };
+
+          recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+              const currentVal = inputEl.value ? inputEl.value.trim() : "";
+              inputEl.value = currentVal
+                ? currentVal + " " + transcript
+                : transcript;
             }
+          };
 
-            // Speech-to-Text Web API (Same as 02-board-intake.html)
-            function startRecordingUI(btnEl) {
-              if (!btnEl) return;
-              btnEl.classList.add("recording");
-              btnEl.title = "กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)";
-            }
+          recognition.onerror = function (event) {
+            console.error("Speech recognition error:", event.error);
+            stopRecordingUI(btnEl);
+          };
 
-            function stopRecordingUI(btnEl) {
-              if (!btnEl) return;
-              btnEl.classList.remove("recording");
-              btnEl.title = "คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)";
-              isRecording = false;
-            }
+          recognition.onend = function () {
+            stopRecordingUI(btnEl);
+          };
 
-            function toggleSpeechToText(targetId, btnEl) {
-              const inputEl = document.getElementById(targetId);
-              if (!inputEl) return;
-
-              const SpeechRecognition =
-                window.SpeechRecognition || window.webkitSpeechRecognition;
-
-              if (isRecording) {
-                if (activeRecognition) {
-                  try {
-                    activeRecognition.stop();
-                  } catch (e) {}
-                }
-                stopRecordingUI(btnEl);
-                return;
-              }
-
-              if (!SpeechRecognition) {
-                Swal.fire({
-                  icon: "info",
-                  title: "พิมพ์ด้วยเสียง",
-                  text: "เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge",
-                  confirmButtonColor: "#1e3a8a",
-                });
-                return;
-              }
-
-              try {
-                const recognition = new SpeechRecognition();
-                recognition.lang = "th-TH";
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
-                recognition.continuous = false;
-
-                recognition.onstart = function () {
-                  isRecording = true;
-                  activeRecognition = recognition;
-                  startRecordingUI(btnEl);
-                  const toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                  });
-                  toast.fire({
-                    icon: "info",
-                    title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
-                  });
-                };
-
-                recognition.onresult = function (event) {
-                  const transcript = event.results[0][0].transcript;
-                  if (transcript) {
-                    const currentVal = inputEl.value ? inputEl.value.trim() : "";
-                    inputEl.value = currentVal
-                      ? currentVal + " " + transcript
-                      : transcript;
-                  }
-                };
-
-                recognition.onerror = function (event) {
-                  console.error("Speech recognition error:", event.error);
-                  stopRecordingUI(btnEl);
-                };
-
-                recognition.onend = function () {
-                  stopRecordingUI(btnEl);
-                };
-
-                recognition.start();
-              } catch (err) {
-                console.error("Recognition start error:", err);
-                stopRecordingUI(btnEl);
-              }
-            }
+          recognition.start();
+        } catch (err) {
+          console.error("Recognition start error:", err);
+          stopRecordingUI(btnEl);
+        }
+      }
     </script>
   </body>
 </html>
