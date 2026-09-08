@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
  <meta charset="UTF-8">
@@ -13,533 +13,226 @@
  <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
-    <style>
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6,
-      .brand,
-      .topbar {
-        font-family: "Prompt", sans-serif;
-      }
+ <style>
+ h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
 
-      .content {
-        padding: 20px 24px;
-        max-width: 1300px;
-        margin: 0 auto;
-        width: 100%;
-      }
-
-      /* Stepper Header */
-      .stepper-card {
-        background: var(--bg-card);
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        padding: 18px 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-      }
-      .stepper {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        max-width: 950px;
-        margin: 0 auto;
-      }
-      .stepper::before {
-        content: "";
-        position: absolute;
-        top: 18px;
-        left: 40px;
-        right: 40px;
-        height: 2px;
-        background: var(--border-color);
-        z-index: 1;
-      }
-      .step-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 2;
-        text-decoration: none;
-      }
-      .step-circle {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: var(--bg-body);
-        border: 2px solid var(--border-color);
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.9em;
-        margin-bottom: 6px;
-      }
-      .step-item.active .step-circle {
-        background: #1e3a8a;
-        border-color: #1e3a8a;
-        color: #fff;
-      }
-      .step-item.completed .step-circle {
-        background: #2563eb;
-        border-color: #2563eb;
-        color: #fff;
-      }
-      .step-label {
-        font-size: 0.8em;
-        color: #64748b;
-        text-align: center;
-        white-space: normal;
+ .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+ 
+ /* Stepper Header */
+ .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+ .stepper { display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 950px; margin: 0 auto; }
+ .stepper::before { content: ''; position: absolute; top: 18px; left: 40px; right: 40px; height: 2px; background: var(--border-color); z-index: 1; }
+ .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; text-decoration: none; }
+ .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+ .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
+ .step-item.completed .step-circle { background: #2563eb; border-color: #2563eb; color: #fff; }
+ .step-label { font-size: 0.8em; color: #64748b; text-align: center; white-space: normal;
         overflow-wrap: break-word;
-        line-height: 1.35;
-        max-width: 150px;
-      }
-      .step-item.active .step-label {
-        color: var(--text-title);
-        font-weight: 600;
-      }
+        line-height: 1.35; max-width: 150px; }
+ .step-item.active .step-label { color: var(--text-title); font-weight: 600; }
 
-      /* Form Card */
-      .form-card {
-        background: var(--bg-card);
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-        overflow: hidden;
-      }
-      .form-card-header {
-        padding: 14px 20px;
-        background: var(--bg-card);
-        border-bottom: 1px solid var(--border-color);
-        font-weight: 700;
-        color: var(--text-title);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 1.05em;
-      }
-      .form-card-body {
-        padding: 20px;
-      }
+ /* Form Card */
+ .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+ .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; font-size: 1.05em; }
+ .form-card-body { padding: 20px; }
 
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-      }
-      .form-group:last-child {
-        margin-bottom: 0;
-      }
-      .form-group label {
-        font-size: 0.88em;
-        font-weight: 600;
-        color: var(--text-title);
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+ .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+ .form-group:last-child { margin-bottom: 0; }
+ .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+ 
+ .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+ .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+ textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
 
-      .form-control {
-        width: 100%;
-        padding: 8px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        outline: none;
-        font-size: 0.9em;
-        background-color: var(--bg-card);
-        color: var(--text-title);
-        height: 38px;
-      }
-      .form-control:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-      }
-      textarea.form-control {
-        height: auto;
-        resize: vertical;
-        padding: 10px 12px;
-      }
+ /* Action Footer */
+ .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; }
+ .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+ .btn-primary { background: #1e3a8a; color: #fff; }
+ .btn-primary:hover { background: #1e293b; color: #fff; }
+ .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+ .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
 
-      /* Action Footer */
-      .form-actions {
-        padding: 16px 20px;
-        background: var(--bg-card);
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-radius: 10px;
-      }
-      .btn {
-        padding: 0 20px;
-        border-radius: 6px;
-        border: none;
-        font-size: 0.9em;
-        font-weight: 500;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        height: 38px;
-        white-space: nowrap;
-        text-decoration: none;
-      }
-      .btn-primary {
-        background: #1e3a8a;
-        color: #fff;
-      }
-      .btn-primary:hover {
-        background: #1e293b;
-        color: #fff;
-      }
-      .btn-secondary {
-        background: var(--bg-body);
-        color: var(--text-title);
-        border: 1px solid var(--border-color);
-      }
-      .btn-secondary:hover {
-        background: var(--border-color);
-        color: var(--text-title);
-      }
+ .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+ .font-monospace { font-family: monospace; }
+ .d-none { display: none !important; }
 
-      .badge {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.8em;
-        font-weight: 600;
-        display: inline-block;
-        white-space: nowrap;
-      }
-      .font-monospace {
-        font-family: monospace;
-      }
-      .d-none {
-        display: none !important;
-      }
+ /* Decision Choice Cards */
+ .decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+ .decision-card { border: 2px solid var(--border-color); border-radius: 8px; padding: 14px 16px; background: var(--bg-card); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: row; align-items: center; gap: 12px; }
+ .decision-card:hover { border-color: #93c5fd; background: rgba(37,99,235,0.02); }
+ .decision-card.active-dissent { border-color: #dc2626; background: rgba(220,38,38,0.05); }
+ .decision-card.active-agree { border-color: #16a34a; background: rgba(22,163,74,0.05); }
+ .decision-card.active-other { border-color: #d97706; background: rgba(217,119,6,0.05); }
 
-      /* Decision Choice Cards */
-      .decision-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-        margin-bottom: 14px;
-      }
-      .decision-card {
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        padding: 14px 16px;
-        background: var(--bg-card);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 12px;
-      }
-      .decision-card:hover {
-        border-color: #93c5fd;
-        background: rgba(37, 99, 235, 0.02);
-      }
-      .decision-card.active-dissent {
-        border-color: #dc2626;
-        background: rgba(220, 38, 38, 0.05);
-      }
-      .decision-card.active-agree {
-        border-color: #16a34a;
-        background: rgba(22, 163, 74, 0.05);
-      }
-      .decision-card.active-other {
-        border-color: #d97706;
-        background: rgba(217, 119, 6, 0.05);
-      }
+ /* Speech to Text Microphone Button */
+ .btn-mic {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 50%;
+ width: 26px;
+ height: 26px;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ color: #2563eb;
+ font-size: 12px;
+ vertical-align: middle;
+ margin-left: 6px;
+ transition: all 0.2s ease;
+ box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+ position: relative;
+ }
+ .btn-mic:hover {
+ background: #2563eb;
+ color: #fff;
+ border-color: #2563eb;
+ transform: scale(1.08);
+ }
+ .btn-mic.recording {
+ background: #dc2626 !important;
+ color: #fff !important;
+ border-color: #b91c1c !important;
+ animation: pulse-mic 1.2s infinite ease-in-out;
+ }
+ @keyframes pulse-mic {
+ 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+ 50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+ 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+ }
 
-      /* Speech to Text Microphone Button */
-      .btn-mic {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 50%;
-        width: 26px;
-        height: 26px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: #2563eb;
-        font-size: 12px;
-        vertical-align: middle;
-        margin-left: 6px;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        position: relative;
-      }
-      .btn-mic:hover {
-        background: #2563eb;
-        color: #fff;
-        border-color: #2563eb;
-        transform: scale(1.08);
-      }
-      .btn-mic.recording {
-        background: #dc2626 !important;
-        color: #fff !important;
-        border-color: #b91c1c !important;
-        animation: pulse-mic 1.2s infinite ease-in-out;
-      }
-      @keyframes pulse-mic {
-        0% {
-          box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
-          transform: scale(1);
-        }
-        50% {
-          box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
-          transform: scale(1.1);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-          transform: scale(1);
-        }
-      }
+ @media (max-width: 1024px) {.decision-grid { grid-template-columns: 1fr; }
+ }
+ </style>
+</head>
+<body>
 
-      @media (max-width: 1024px) {
-        .decision-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span
-            >E-CMIS
-            <small>ระบบกฎหมายในทางคดี</small>
-          </span>
-        </a>
-        <ul class="menu" id="sidebarMenu">
-          <li class="active">
-            <a href="01-work-inbox.html"
-              ><i class="fa-solid fa-scale-balanced"></i>
-              <span>งานกฎหมายในทางคดี</span></a
-            >
-          </li>
-          <li>
-            <a href="02-board-intake.html"
-              ><i class="fa-solid fa-inbox"></i>
-              <span>บันทึกรับเรื่องเข้าระบบ</span></a
-            >
-          </li>
-        </ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          ระบบงานคดี กิจกรรมที่ 10
-        </div>
-      </div>
-    </div>
+ <!-- Sidebar Navigation -->
+ <div class="sidebar" id="sidebar">
+ <div>
+ <a href="01-work-inbox.html" class="brand">
+ <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
+ <span>E-CMIS
+ <small>ระบบกฎหมายในทางคดี</small>
+ </span>
+ </a>
+ <ul class="menu" id="sidebarMenu">
+ <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
+ <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+ </ul>
+ </div>
+ <div class="sidebar-bottom">
+ <div>สำนักงาน ป.ป.ท.</div>
+ <div style="font-size: 0.9em; opacity: 0.7;">ระบบงานคดี กิจกรรมที่ 10</div>
+ </div>
+ </div>
 
-    <!-- Main Content Area -->
-    <div class="main">
-      <!-- Topbar -->
-      <div class="topbar">
-        <div class="topbar-left">
-          <button
-            class="btn-toggle-menu"
-            onclick="toggleSidebar()"
-            title="ซ่อน/แสดงเมนู"
-          >
-            ☰
-          </button>
-          <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> /
-            <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร จัดทำหนังสือความเห็นตามผลมติ</span
-            >
-          </div>
-        </div>
+ <!-- Main Content Area -->
+ <div class="main">
+ <!-- Topbar -->
+ <div class="topbar">
+ <div class="topbar-left">
+ <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+ <div class="breadcrumb">
+ <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> / <span style="color:var(--text-title); font-weight:600;">นิติกร จัดทำหนังสือความเห็นตามผลมติ</span>
+ </div>
+ </div>
+ 
+ <div class="top-controls">
+ <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+ <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+ <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+ <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+ </div>
+ <div class="icon-btn-group">
+ <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+ <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">3</span></div>
+ </div>
+ <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+ <div class="avatar" id="userAvatar">ณ</div>
+ <div class="user-info">
+ <span class="user-name" id="userName">นายณัฐพล บัวทุม</span>
+ <span class="user-role" id="userRoleTitle">นิติกรชำนาญการพิเศษ</span>
+ </div>
+ <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.72rem; color:#64748b;"></i>
 
-        <div class="top-controls">
-          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
-            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
-            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
-            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
-          </div>
-          <div class="icon-btn-group">
-            <button
-              class="circle-icon-btn"
-              onclick="toggleTheme()"
-              id="themeBtn"
-              title="สลับโหมดสี"
-            >
-              🌙
-            </button>
-            <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">3</span>
-            </div>
-          </div>
-          <div
-            class="user-profile-top"
-            onclick="toggleProfileDropdown(event)"
-            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
-          >
-            <div class="avatar" id="userAvatar">ณ</div>
-            <div class="user-info">
-              <span class="user-name" id="userName">นายณัฐพล บัวทุม</span>
-              <span class="user-role" id="userRoleTitle"
-                >นิติกรชำนาญการพิเศษ</span
-              >
-            </div>
-            <i
-              class="fa-solid fa-chevron-down ms-1"
-              style="font-size: 0.72rem; color: #64748b"
-            ></i>
+ <!-- Profile & Logout Dropdown -->
+ <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+ <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+ <div class="profile-dropdown-body">
+ <div class="profile-card">
+ <span class="profile-card-name" id="profileCardName">นายณัฐพล บัวทุม</span>
+ <span class="profile-card-title" id="profileCardTitle">นิติกรชำนาญการพิเศษ</span>
+ <span class="profile-card-org" id="profileCardOrg">กลุ่มงานความเห็นแย้ง · กองกฎหมาย (กอท.)</span>
+ </div>
+ <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+ </div>
+ <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+ <i class="fa-solid fa-right-from-bracket"></i>
+ <span>ออกจากระบบ</span>
+ </a>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <!-- Profile & Logout Dropdown -->
-            <div
-              class="profile-dropdown-menu"
-              id="profileDropdown"
-              onclick="event.stopPropagation()"
-            >
-              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
-              <div class="profile-dropdown-body">
-                <div class="profile-card">
-                  <span class="profile-card-name" id="profileCardName"
-                    >นายณัฐพล บัวทุม</span
-                  >
-                  <span class="profile-card-title" id="profileCardTitle"
-                    >นิติกรชำนาญการพิเศษ</span
-                  >
-                  <span class="profile-card-org" id="profileCardOrg"
-                    >กลุ่มงานความเห็นแย้ง · กองกฎหมาย (กอท.)</span
-                  >
-                </div>
-                <span class="profile-note"
-                  ><i class="fa-solid fa-circle-info me-1"></i
-                  >หากต้องการเปลี่ยนบทบาท
-                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
-                >
-              </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+ <!-- Content Body -->
+ <div class="content">
 
-      <!-- Content Body -->
-      <div class="content">
-        <!-- Stepper Progress Header (Phase 2: หลังมีผลมติ) -->
-        <div class="stepper-card">
-          <div class="stepper" id="stepper">
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">รับผลมติ</div>
-            </div>
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">ผอ.กอง สั่งการ</div>
-            </div>
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">ผอ.กลุ่ม มอบหมาย</div>
-            </div>
-            <div class="step-item active">
-              <div class="step-circle">13</div>
-              <div class="step-label">นิติกร ยกร่างหนังสือ</div>
-            </div>
-            <div class="step-item">
-              <div class="step-circle">14</div>
-              <div class="step-label">ผอ.กลุ่ม ตรวจร่าง</div>
-            </div>
-            <div class="step-item">
-              <div class="step-circle">15</div>
-              <div class="step-label">ผอ.กอง ตรวจพิจารณา</div>
-            </div>
-            <div class="step-item">
-              <div class="step-circle">16</div>
-              <div class="step-label">ออกเลขส่งลงนาม</div>
-            </div>
-          </div>
-        </div>
+ <!-- Stepper Progress Header (Phase 2: หลังมีผลมติ) -->
+ <div class="stepper-card">
+ <div class="stepper" id="stepper">
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">รับผลมติ</div>
+ </div>
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">ผอ.กอง สั่งการ</div>
+ </div>
+ <div class="step-item completed">
+ <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+ <div class="step-label">ผอ.กลุ่ม มอบหมาย</div>
+ </div>
+ <div class="step-item active">
+ <div class="step-circle">13</div>
+ <div class="step-label">นิติกร ยกร่างหนังสือ</div>
+ </div>
+ <div class="step-item">
+ <div class="step-circle">14</div>
+ <div class="step-label">ผอ.กลุ่ม ตรวจร่าง</div>
+ </div>
+ <div class="step-item">
+ <div class="step-circle">15</div>
+ <div class="step-label">ผอ.กอง ตรวจพิจารณา</div>
+ </div>
+ <div class="step-item">
+ <div class="step-circle">16</div>
+ <div class="step-label">ออกเลขส่งลงนาม</div>
+ </div>
+ </div>
+ </div>
 
-        <!-- Card 1: Read-Only Case Details & Executive Resolution -->
-        <div class="form-card">
-          <div class="form-card-header">
-            <span
-              ><i class="fa-solid fa-file-invoice text-primary me-2"></i
-              >รายละเอียดสำนวนและผลมติจากผู้บริหาร</span
-            >
-            <span class="badge" style="background: #fef3c7; color: #92400e"
-              ><i class="fa-solid fa-lock me-1"></i>ข้อมูลมติชี้ขาด</span
-            >
-          </div>
-          <div class="form-card-body">
-            <!-- Central Saraban & Law Receive Badge Box -->
-            <div
-              style="
-                background: var(--bg-body);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                padding: 14px 18px;
-                margin-bottom: 18px;
-              "
-            >
-              <div class="form-grid-2" style="margin-bottom: 0">
-                <div>
-                  <span
-                    style="
-                      font-size: 0.82em;
-                      color: #64748b;
-                      font-weight: 600;
-                      display: block;
-                      margin-bottom: 2px;
-                    "
-                    >เลขรับสารบรรณกลาง:</span
-                  >
-                  <span
-                    class="font-monospace"
-                    style="font-weight: 700; color: #2563eb; font-size: 1.05em"
-                    id="f_centralSarabanNo"
-                    >2569/4410</span
-                  >
-                </div>
-                <div>
-                  <span
-                    style="
-                      font-size: 0.82em;
-                      color: #64748b;
-                      font-weight: 600;
-                      display: block;
-                      margin-bottom: 2px;
-                    "
-                    >เลขรับกองกฎหมาย:</span
-                  >
-                  <span
-                    class="font-monospace"
-                    style="font-weight: 700; color: #1e3a8a; font-size: 1.05em"
-                    id="f_lawReceiveNo"
-                    >0014/2569</span
-                  >
-                </div>
-              </div>
-            </div>
+ <!-- Card 1: Read-Only Case Details & Executive Resolution -->
+ <div class="form-card">
+ <div class="form-card-header">
+ <span><i class="fa-solid fa-file-invoice text-primary me-2"></i>รายละเอียดสำนวนและผลมติจากผู้บริหาร</span>
+ <span class="badge" style="background:#fef3c7; color:#92400e;"><i class="fa-solid fa-lock me-1"></i>ข้อมูลมติชี้ขาด</span>
+ </div>
+ <div class="form-card-body">
+ <!-- Central Saraban & Law Receive Badge Box -->
+ <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;">
+ <div class="form-grid-2" style="margin-bottom: 0;">
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับสารบรรณกลาง:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #2563eb; font-size: 1.05em;" id="f_centralSarabanNo">2569/4410</span>
+ </div>
+ <div>
+ <span style="font-size: 0.82em; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">เลขรับกองกฎหมาย:</span>
+ <span class="font-monospace" style="font-weight: 700; color: #1e3a8a; font-size: 1.05em;" id="f_lawReceiveNo">0014/2569</span>
+ </div>
+ </div>
+ </div>
 
  <div class="form-group">
  <label>ชื่อเรื่องกล่าวหา</label>
@@ -570,179 +263,60 @@
  </div>
  </div>
 
-            <!-- Resolution & Decision Box from Executive -->
-            <div
-              style="
-                background: #f0fdf4;
-                border: 1px solid #86efac;
-                border-radius: 8px;
-                padding: 14px 16px;
-                margin-bottom: 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  margin-bottom: 8px;
-                "
-              >
-                <span
-                  style="font-weight: 700; color: #166534; font-size: 0.95em"
-                >
-                  <i class="fa-solid fa-stamp me-2 text-success"></i
-                  >ผลมติคำวินิจฉัยของผู้บริหาร / คณะกรรมการ ป.ป.ท.
-                </span>
-                <span class="badge" style="background: #dcfce7; color: #15803d"
-                  ><i class="fa-solid fa-check me-1"></i>มีผลมติแล้ว</span
-                >
-              </div>
-              <div class="form-grid-2" style="margin-bottom: 8px">
-                <div>
-                  <span
-                    style="
-                      font-size: 0.8em;
-                      color: #64748b;
-                      font-weight: 600;
-                      display: block;
-                    "
-                    >ผู้ลงนามผลมติ:</span
-                  >
-                  <span style="font-weight: 600; color: #1e293b" id="f_signedBy"
-                    >นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.
-                    ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</span
-                  >
-                </div>
-                <div>
-                  <span
-                    style="
-                      font-size: 0.8em;
-                      color: #64748b;
-                      font-weight: 600;
-                      display: block;
-                    "
-                    >ผลการชี้ขาด:</span
-                  >
-                  <span
-                    class="badge"
-                    style="
-                      background: #dcfce7;
-                      color: #15803d;
-                      font-size: 0.9em;
-                    "
-                    id="f_signedOrder"
-                    >เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง</span
-                  >
-                </div>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  background: #fff;
-                  border: 1px solid #bbf7d0;
-                  border-radius: 6px;
-                  padding: 8px 12px;
-                "
-              >
-                <div style="display: flex; align-items: center; gap: 8px">
-                  <i
-                    class="fa-solid fa-file-pdf text-danger"
-                    style="font-size: 1.2rem"
-                  ></i>
-                  <span
-                    style="font-weight: 600; font-size: 0.88em; color: #1e293b"
-                    id="f_signedDocFile"
-                    >หนังสือผลมติ_2569_006.pdf</span
-                  >
-                </div>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  style="height: 28px; padding: 0 10px; font-size: 0.78em"
-                  onclick="
-                    Swal.fire({
-                      icon: 'info',
-                      title: 'ไฟล์หนังสือผลมติ',
-                      text: 'เปิดไฟล์เอกสารคำสั่งชี้ขาดเรียบร้อยแล้ว',
-                      timer: 1500,
-                      showConfirmButton: false,
-                    })
-                  "
-                >
-                  <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
-                </button>
-              </div>
-            </div>
+ <!-- Resolution & Decision Box from Executive -->
+ <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
+ <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+ <span style="font-weight: 700; color: #166534; font-size: 0.95em;">
+ <i class="fa-solid fa-stamp me-2 text-success"></i>ผลมติคำวินิจฉัยของผู้บริหาร / คณะกรรมการ ป.ป.ท.
+ </span>
+ <span class="badge" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-check me-1"></i>มีผลมติแล้ว</span>
+ </div>
+ <div class="form-grid-2" style="margin-bottom: 8px;">
+ <div>
+ <span style="font-size: 0.8em; color: #64748b; font-weight: 600; display: block;">ผู้ลงนามผลมติ:</span>
+ <span style="font-weight: 600; color: #1e293b;" id="f_signedBy">นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)</span>
+ </div>
+ <div>
+ <span style="font-size: 0.8em; color: #64748b; font-weight: 600; display: block;">ผลการชี้ขาด:</span>
+ <span class="badge" style="background:#dcfce7; color:#15803d; font-size:0.9em;" id="f_signedOrder">เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง</span>
+ </div>
+ </div>
+ <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px 12px;">
+ <div style="display: flex; align-items: center; gap: 8px;">
+ <i class="fa-solid fa-file-pdf text-danger" style="font-size: 1.2rem;"></i>
+ <span style="font-weight: 600; font-size: 0.88em; color: #1e293b;" id="f_signedDocFile">หนังสือผลมติ_2569_006.pdf</span>
+ </div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.78em;" onclick="Swal.fire({icon:'info', title:'ไฟล์หนังสือผลมติ', text:'เปิดไฟล์เอกสารคำสั่งชี้ขาดเรียบร้อยแล้ว', timer:1500, showConfirmButton:false})">
+ <i class="fa-solid fa-eye me-1"></i>ดูเอกสาร
+ </button>
+ </div>
+ </div>
 
-            <!-- Directives from Group Director -->
-            <div
-              style="
-                background: #eff6ff;
-                border: 1px solid #bfdbfe;
-                border-radius: 8px;
-                padding: 14px 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  margin-bottom: 6px;
-                "
-              >
-                <span
-                  style="font-weight: 700; color: #1e3a8a; font-size: 0.9em"
-                >
-                  <i class="fa-solid fa-user-gear me-2 text-primary"></i
-                  >ข้อสั่งการจาก ผอ.กลุ่มงานความเห็นแย้ง (นายอานนท์ ชินประชา)
-                </span>
-                <span class="badge" style="background: #dbeafe; color: #1e40af"
-                  >ข้อสั่งการ</span
-                >
-              </div>
-              <div
-                class="read-box font-monospace"
-                style="background: #fff; font-size: 0.88em"
-                id="f_groupDirectorResolutionNotes"
-              >
-                โปรดดำเนินการจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป
-              </div>
-            </div>
-          </div>
-        </div>
+ <!-- Directives from Group Director -->
+ <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 16px;">
+ <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+ <span style="font-weight: 700; color: #1e3a8a; font-size: 0.9em;">
+ <i class="fa-solid fa-user-gear me-2 text-primary"></i>ข้อสั่งการจาก ผอ.กลุ่มงานความเห็นแย้ง (นายอานนท์ ชินประชา)
+ </span>
+ <span class="badge" style="background:#dbeafe; color:#1e40af;">ข้อสั่งการ</span>
+ </div>
+ <div class="read-box font-monospace" style="background:#fff; font-size:0.88em;" id="f_groupDirectorResolutionNotes">โปรดดำเนินการจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป</div>
+ </div>
+ </div>
+ </div>
 
-        <!-- Card 2: Form for Legal Officer to draft final opinion letter -->
-        <div id="officerFormContainer">
-          <div class="form-card" style="border: 2px solid #2563eb">
-            <div
-              class="form-card-header"
-              style="background: rgba(37, 99, 235, 0.05)"
-            >
-              <span
-                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >แบบฟอร์มจัดทำหนังสือความเห็นทางการ
-                (นิติกรผู้รับผิดชอบสำนวน)</span
-              >
-              <span class="badge" style="background: #dbeafe; color: #1e40af"
-                ><i class="fa-solid fa-user-pen me-1"></i
-                >ขั้นตอนนิติกรยกร่างหนังสือ</span
-              >
-            </div>
-            <div class="form-card-body">
-              <div class="form-group">
-                <label>นิติกรผู้จัดทำหนังสือ</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  style="font-weight: 600; background: var(--bg-body)"
-                  readonly
-                  value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)"
-                />
-              </div>
+ <!-- Card 2: Form for Legal Officer to draft final opinion letter -->
+ <div id="officerFormContainer">
+ <div class="form-card" style="border: 2px solid #2563eb;">
+ <div class="form-card-header" style="background: rgba(37,99,235,0.05);">
+ <span><i class="fa-solid fa-pen-to-square text-primary me-2"></i>แบบฟอร์มจัดทำหนังสือความเห็นทางการ (นิติกรผู้รับผิดชอบสำนวน)</span>
+ <span class="badge" style="background:#dbeafe; color:#1e40af;"><i class="fa-solid fa-user-pen me-1"></i>ขั้นตอนนิติกรยกร่างหนังสือ</span>
+ </div>
+ <div class="form-card-body">
+ <div class="form-group">
+ <label>นิติกรผู้จัดทำหนังสือ</label>
+ <input type="text" class="form-control" style="font-weight: 600; background: var(--bg-body);" readonly value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">
+ </div>
 
  <div class="form-group">
  <label>แนวทางจัดทำหนังสือตามมติ <span style="color:#dc2626;">*</span></label>
@@ -776,229 +350,68 @@
  </label>
  </div>
 
-                <!-- Other opinion specify field -->
-                <div
-                  id="otherReasonContainer"
-                  class="d-none"
-                  style="
-                    margin-top: 10px;
-                    background: rgba(217, 119, 6, 0.05);
-                    border: 1px solid #fde68a;
-                    border-radius: 8px;
-                    padding: 12px 14px;
-                  "
-                >
-                  <label
-                    for="in_opinionOtherSpecify"
-                    style="
-                      color: #b45309;
-                      font-weight: 600;
-                      font-size: 0.88em;
-                      margin-bottom: 6px;
-                      display: block;
-                    "
-                  >
-                    <i class="fa-solid fa-circle-info me-1"></i
-                    >ระบุหัวข้อ/ประเภทความเห็นอื่นๆ
-                    <span style="color: #dc2626">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="in_opinionOtherSpecify"
-                    class="form-control"
-                    placeholder="เช่น ขอเอกสารพยานหลักฐานเพิ่มเติม, ชะลอการพิจารณาเพื่อรอผลคดีอื่น..."
-                  />
-                </div>
-              </div>
+ <!-- Other opinion specify field -->
+ <div id="otherReasonContainer" class="d-none" style="margin-top: 10px; background: rgba(217,119,6,0.05); border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px;">
+ <label for="in_opinionOtherSpecify" style="color:#b45309; font-weight:600; font-size:0.88em; margin-bottom:6px; display:block;">
+ <i class="fa-solid fa-circle-info me-1"></i>ระบุหัวข้อ/ประเภทความเห็นอื่นๆ <span style="color:#dc2626;">*</span>
+ </label>
+ <input type="text" id="in_opinionOtherSpecify" class="form-control" placeholder="เช่น ขอเอกสารพยานหลักฐานเพิ่มเติม, ชะลอการพิจารณาเพื่อรอผลคดีอื่น...">
+ </div>
+ </div>
 
-              <div class="form-group">
-                <label
-                  ><span
-                    >ชื่อเรื่อง <span style="color: #dc2626">*</span>
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicSubject"
-                      onclick="toggleSpeechToText('in_finalDocSubject', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i></button></span
-                ></label>
-                <input
-                  type="text"
-                  id="in_finalDocSubject"
-                  class="form-control"
-                  style="font-weight: 600"
-                  placeholder="ระบุชื่อเรื่อง เช่น ความเห็นแย้งมติของพนักงานอัยการ ในคดี..."
-                  value="ความเห็นแย้งมติของพนักงานอัยการ คดีทุจริตโครงการก่อสร้างเขื่อนป้องกันตลิ่ง"
-                />
-              </div>
-              <div class="form-group">
-                <label>หัวข้อในหนังสือราชการ</label>
-                <input
-                  type="text"
-                  id="in_officialDocHeading"
-                  class="form-control"
-                  placeholder="ระบุหัวข้อในหนังสือราชการ"
-                />
-              </div>
+ <div class="form-group">
+ <label><span>ชื่อเรื่อง <span style="color:#dc2626;">*</span> <button type="button" class="btn-mic" id="btnMicSubject" onclick="toggleSpeechToText('in_finalDocSubject', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
+ <input type="text" id="in_finalDocSubject" class="form-control" style="font-weight: 600;" placeholder="ระบุชื่อเรื่อง เช่น ความเห็นแย้งมติของพนักงานอัยการ ในคดี..." value="ความเห็นแย้งมติของพนักงานอัยการ คดีทุจริตโครงการก่อสร้างเขื่อนป้องกันตลิ่ง">
+ </div>
+ <div class="form-group">
+ <label>หัวข้อในหนังสือราชการ</label>
+ <input type="text" id="in_officialDocHeading" class="form-control" placeholder="ระบุหัวข้อในหนังสือราชการ">
+ </div>
 
-              <div class="form-group">
-                <label
-                  ><span
-                    >สรุปประเด็นข้อเท็จจริง ข้อกฎหมาย และเหตุผลในหนังสือแจ้งผล
-                    <span style="color: #dc2626">*</span>
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicSummary"
-                      onclick="toggleSpeechToText('in_finalDocSummary', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i></button></span
-                ></label>
-                <textarea
-                  id="in_finalDocSummary"
-                  class="form-control font-monospace"
-                  rows="4"
-                  placeholder="กรอกสาระสำคัญแห่งเหตุผลข้อเท็จจริงและข้อกฎหมายที่จัดทำในหนังสือแจ้งผล..."
-                >
-จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิดตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป</textarea
-                >
-              </div>
+ <div class="form-group">
+ <label><span>สรุปประเด็นข้อเท็จจริง ข้อกฎหมาย และเหตุผลในหนังสือแจ้งผล <span style="color:#dc2626;">*</span> <button type="button" class="btn-mic" id="btnMicSummary" onclick="toggleSpeechToText('in_finalDocSummary', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
+ <textarea id="in_finalDocSummary" class="form-control font-monospace" rows="4" placeholder="กรอกสาระสำคัญแห่งเหตุผลข้อเท็จจริงและข้อกฎหมายที่จัดทำในหนังสือแจ้งผล...">จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิดตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป</textarea>
+ </div>
 
-              <!-- แนบเอกสาร — ตามมติที่ประชุม นิติกรต้องแนบเอกสารมาด้วยทั้งกรณีเห็นแย้งและเห็นชอบ
+ <!-- แนบเอกสาร — ตามมติที่ประชุม นิติกรต้องแนบเอกสารมาด้วยทั้งกรณีเห็นแย้งและเห็นชอบ
       กรณีเห็นแย้งต้องทำ 2 ฉบับ (ฉบับเสนอ อสส. และฉบับเก็บ/แจ้งอัยการ) จึงเปิดช่องที่ 2
       ให้เฉพาะเมื่อเลือก "ทำความเห็นแย้ง" -->
  <div class="form-group">
  <label>แนบไฟล์ร่างหนังสือความเห็นฉบับสมบูรณ์ (.docx / .pdf)</label>
 
-                <div
-                  style="
-                    font-size: 0.8em;
-                    font-weight: 600;
-                    color: var(--text-title);
-                    margin-bottom: 4px;
-                  "
-                  id="lbl_finalDocFile1"
-                >
-                  ฉบับที่ 1
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px">
-                  <input
-                    type="file"
-                    id="in_finalDocFile"
-                    class="form-control"
-                    style="padding: 6px 12px"
-                    onchange="
-                      toggleRemoveBtn(
-                        'in_finalDocFile',
-                        'btn_removeFinalDocFile',
-                      )
-                    "
-                  />
-                  <button
-                    type="button"
-                    id="btn_removeFinalDocFile"
-                    class="btn btn-secondary"
-                    style="display: none; padding: 6px 10px"
-                    onclick="
-                      removeSelectedFile(
-                        'in_finalDocFile',
-                        'btn_removeFinalDocFile',
-                      )
-                    "
-                    title="ลบไฟล์ที่แนบ"
-                  >
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
+ <div style="font-size:0.8em; font-weight:600; color:var(--text-title); margin-bottom:4px;" id="lbl_finalDocFile1">ฉบับที่ 1</div>
+ <div style="display:flex; align-items:center; gap:8px;">
+ <input type="file" id="in_finalDocFile" class="form-control" style="padding:6px 12px;" onchange="toggleRemoveBtn('in_finalDocFile','btn_removeFinalDocFile')">
+ <button type="button" id="btn_removeFinalDocFile" class="btn btn-secondary" style="display:none; padding:6px 10px;" onclick="removeSelectedFile('in_finalDocFile','btn_removeFinalDocFile')" title="ลบไฟล์ที่แนบ">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>
 
-                <div
-                  id="grp_finalDocFile2"
-                  style="display: none; margin-top: 10px"
-                >
-                  <div
-                    style="
-                      font-size: 0.8em;
-                      font-weight: 600;
-                      color: var(--text-title);
-                      margin-bottom: 4px;
-                    "
-                  >
-                    ฉบับที่ 2 <span style="color: #dc2626">*</span>
-                    <span style="font-weight: 400; color: #64748b"
-                      >(กรณีเห็นแย้งต้องทำ 2 ฉบับ)</span
-                    >
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 8px">
-                    <input
-                      type="file"
-                      id="in_finalDocFile2"
-                      class="form-control"
-                      style="padding: 6px 12px"
-                      onchange="
-                        toggleRemoveBtn(
-                          'in_finalDocFile2',
-                          'btn_removeFinalDocFile2',
-                        )
-                      "
-                    />
-                    <button
-                      type="button"
-                      id="btn_removeFinalDocFile2"
-                      class="btn btn-secondary"
-                      style="display: none; padding: 6px 10px"
-                      onclick="
-                        removeSelectedFile(
-                          'in_finalDocFile2',
-                          'btn_removeFinalDocFile2',
-                        )
-                      "
-                      title="ลบไฟล์ที่แนบ"
-                    >
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </div>
+ <div id="grp_finalDocFile2" style="display:none; margin-top:10px;">
+ <div style="font-size:0.8em; font-weight:600; color:var(--text-title); margin-bottom:4px;">ฉบับที่ 2 <span style="color:#dc2626;">*</span> <span style="font-weight:400; color:#64748b;">(กรณีเห็นแย้งต้องทำ 2 ฉบับ)</span></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+ <input type="file" id="in_finalDocFile2" class="form-control" style="padding:6px 12px;" onchange="toggleRemoveBtn('in_finalDocFile2','btn_removeFinalDocFile2')">
+ <button type="button" id="btn_removeFinalDocFile2" class="btn btn-secondary" style="display:none; padding:6px 10px;" onclick="removeSelectedFile('in_finalDocFile2','btn_removeFinalDocFile2')" title="ลบไฟล์ที่แนบ">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>
+ </div>
 
-                <span style="font-size: 0.75em; color: #64748b; margin-top: 6px"
-                  >*
-                  ระบบจะสร้างไฟล์ร่างหนังสือความเห็นให้อัตโนมัติหากไม่ได้แนบไฟล์</span
-                >
-              </div>
-            </div>
-            <div class="form-actions">
-              <a href="01-work-inbox.html" class="btn btn-secondary"
-                ><i class="fa-solid fa-arrow-left me-1"></i>ยกเลิก</a
-              >
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitOfficerFinalDocForm()"
-              >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ เสนอ
-                ผอ.กลุ่มงานความเห็นแย้ง
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+ <span style="font-size:0.75em; color:#64748b; margin-top:6px;">* ระบบจะสร้างไฟล์ร่างหนังสือความเห็นให้อัตโนมัติหากไม่ได้แนบไฟล์</span>
+ </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
-    <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260904_6"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+ </div>
+ <div class="form-actions">
+ <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>ยกเลิก</a>
+ <button type="button" class="btn btn-primary" onclick="submitOfficerFinalDocForm()">
+ <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ เสนอ ผอ.กลุ่มงานความเห็นแย้ง
+ </button>
+ </div>
+ </div>
+ </div>
 
-    <script>
-      let currentCase = null;
-      let activeRecognition = null;
-      let isRecording = false;
+ </div>
+ </div>
 
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -1006,136 +419,104 @@
  <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
  <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
-      function toggleRemoveBtn(inputId, btnId) {
-        const input = document.getElementById(inputId);
-        const btn = document.getElementById(btnId);
-        if (btn) {
-          btn.style.display =
-            input && input.files && input.files.length > 0
-              ? "inline-flex"
-              : "none";
-        }
-      }
+ <script>
+ let currentCase = null;
+ let activeRecognition = null;
+ let isRecording = false;
 
-      function removeSelectedFile(inputId, btnId) {
-        const input = document.getElementById(inputId);
-        if (input) input.value = "";
-        toggleRemoveBtn(inputId, btnId);
-      }
+  document.addEventListener('DOMContentLoaded', () => {
+    initUserProfile();
+    loadCaseData();
+    // ค่าเริ่มต้นของหน้านี้คือ "เห็นชอบ" ตามตัวเลือกแรกที่กำหนดไว้ในฟอร์ม
+    const checked = document.querySelector('input[name="in_opinionOption"]:checked');
+    if (checked) {
+      selectOpinionOption(checked.value);
+    }
+  });
 
-      function changeFontSize(direction) {
-        const currentSize = parseFloat(
-          window.getComputedStyle(document.body).fontSize,
-        );
-        document.body.style.fontSize = currentSize + direction * 1 + "px";
-      }
+ function toggleRemoveBtn(inputId, btnId) {
+ const input = document.getElementById(inputId);
+ const btn = document.getElementById(btnId);
+ if (btn) {
+ btn.style.display = (input && input.files && input.files.length > 0) ? 'inline-flex' : 'none';
+ }
+ }
 
-      document.addEventListener("click", (e) => {
-        const dropdown = document.getElementById("profileDropdown");
-        if (dropdown && !dropdown.contains(e.target)) {
-          dropdown.classList.remove("show");
-        }
-      });
+ function removeSelectedFile(inputId, btnId) {
+ const input = document.getElementById(inputId);
+ if (input) input.value = '';
+ toggleRemoveBtn(inputId, btnId);
+ }
 
-      function initUserProfile() {
-        const roleId = sessionStorage.getItem("ecmis_role") || "legal_officer";
-        if (typeof ECMIS !== "undefined" && ECMIS.ROLES) {
-          const role =
-            ECMIS.ROLES.find((r) => r.id === roleId) || ECMIS.ROLES[4];
-          if (role) {
-            const shortName = role.name
-              .replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, "")
-              .trim();
-            const initial = shortName.charAt(0);
-            if (document.getElementById("userAvatar"))
-              document.getElementById("userAvatar").innerText = initial;
-            if (document.getElementById("userName"))
-              document.getElementById("userName").innerText = role.name;
-            if (document.getElementById("userRoleTitle"))
-              document.getElementById("userRoleTitle").innerText = role.title;
-            if (document.getElementById("profileCardName"))
-              document.getElementById("profileCardName").innerText = role.name;
-            if (document.getElementById("profileCardTitle"))
-              document.getElementById("profileCardTitle").innerText =
-                role.title;
-            if (document.getElementById("profileCardOrg"))
-              document.getElementById("profileCardOrg").innerText =
-                (role.group || "กองกฎหมาย") + " · สำนักงาน ป.ป.ท.";
-          }
-        }
-      }
+ function changeFontSize(direction) {
+ const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+ document.body.style.fontSize = (currentSize + direction * 1) + 'px';
+ }
 
-      function loadCaseData() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const caseId = urlParams.get("id") || "คดี-100005/2569";
-        currentCase = Activity10.getCaseById(caseId);
+ document.addEventListener('click', (e) => {
+ const dropdown = document.getElementById('profileDropdown');
+ if (dropdown && !dropdown.contains(e.target)) {
+ dropdown.classList.remove('show');
+ }
+ });
 
-        if (!currentCase) {
-          const allCases = Activity10.getCases ? Activity10.getCases() : [];
-          currentCase = allCases.length > 0 ? allCases[0] : null;
-        }
+ function initUserProfile() {
+ const roleId = sessionStorage.getItem('ecmis_role') || 'legal_officer';
+ if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
+ const role = ECMIS.ROLES.find(r => r.id === roleId) || ECMIS.ROLES[4];
+ if (role) {
+ const shortName = role.name.replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim();
+ const initial = shortName.charAt(0);
+ if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerText = initial;
+ if (document.getElementById('userName')) document.getElementById('userName').innerText = role.name;
+ if (document.getElementById('userRoleTitle')) document.getElementById('userRoleTitle').innerText = role.title;
+ if (document.getElementById('profileCardName')) document.getElementById('profileCardName').innerText = role.name;
+ if (document.getElementById('profileCardTitle')) document.getElementById('profileCardTitle').innerText = role.title;
+ if (document.getElementById('profileCardOrg')) document.getElementById('profileCardOrg').innerText = (role.group || 'กองกฎหมาย') + ' · สำนักงาน ป.ป.ท.';
+ }
+ }
+ }
 
-        if (!currentCase) return;
+ function loadCaseData() {
+ const urlParams = new URLSearchParams(window.location.search);
+ const caseId = urlParams.get('id') || 'คดี-100005/2569';
+ currentCase = Activity10.getCaseById(caseId);
 
-        const setElText = (id, text) => {
-          const el = document.getElementById(id);
-          if (el) el.textContent = text;
-        };
+ if (!currentCase) {
+ const allCases = Activity10.getCases ? Activity10.getCases() : [];
+ currentCase = allCases.length > 0 ? allCases[0] : null;
+ }
 
-        setElText(
-          "f_centralSarabanNo",
-          currentCase.centralSarabanNo || "2569/4502",
-        );
-        setElText("f_lawReceiveNo", currentCase.lawReceiveNo || "0019/2569");
-        setElText("f_title", currentCase.title || "-");
-        setElText("f_caseNo", currentCase.id || "-");
-        setElText(
-          "f_prosecutorCaseTypeName",
-          currentCase.prosecutorCaseTypeName ||
-            "1. อัยการมีความเห็นสั่งไม่ฟ้อง",
-        );
-        setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
-        setElText(
-          "f_source",
-          currentCase.source || "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2",
-        );
-        setElText("f_docNo", currentCase.docNo || "อส 0025/2569");
-        setElText(
-          "f_signedBy",
-          currentCase.signedBy ||
-            "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
-        );
-        setElText(
-          "f_signedOrder",
-          currentCase.signedExecutiveOrder
-            ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง`
-            : "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง",
-        );
-        setElText(
-          "f_signedDocFile",
-          currentCase.signedDocFile || "หนังสือผลมติ_2569_006.pdf",
-        );
-        setElText(
-          "f_groupDirectorResolutionNotes",
-          currentCase.groupDirectorResolutionNotes ||
-            currentCase.directorResolutionNotes ||
-            "มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป",
-        );
+ if (!currentCase) return;
 
-        const subjInput = document.getElementById("in_finalDocSubject");
-        if (subjInput && currentCase.title) {
-          subjInput.value =
-            "ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ " + currentCase.title;
-        }
+ const setElText = (id, text) => {
+ const el = document.getElementById(id);
+ if (el) el.textContent = text;
+ };
 
-        // Check if already forwarded (Read-Only)
-        const isAlreadySubmitted =
-          currentCase.statusCode !== "PENDING_OFFICER_FINAL_DOC" &&
-          (currentCase.finalDocSubmittedDate ||
-            (currentCase.workflowStep && currentCase.workflowStep > 13));
-        const container = document.getElementById("officerFormContainer");
-        if (container && isAlreadySubmitted) {
-          container.innerHTML = `
+ setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
+ setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0019/2569');
+ setElText('f_title', currentCase.title || '-');
+ setElText('f_caseNo', currentCase.id || '-');
+ setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '1. อัยการมีความเห็นสั่งไม่ฟ้อง');
+ setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
+ setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2');
+ setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
+ setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
+ setElText('f_signedOrder', currentCase.signedExecutiveOrder ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง` : 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง');
+ setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
+ setElText('f_groupDirectorResolutionNotes', currentCase.groupDirectorResolutionNotes || currentCase.directorResolutionNotes || 'มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป');
+
+ const subjInput = document.getElementById('in_finalDocSubject');
+ if (subjInput && currentCase.title) {
+   subjInput.value = 'ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ ' + currentCase.title;
+ }
+
+ // Check if already forwarded (Read-Only)
+ const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_OFFICER_FINAL_DOC' && (currentCase.finalDocSubmittedDate || (currentCase.workflowStep && currentCase.workflowStep > 13));
+ const container = document.getElementById('officerFormContainer');
+ if (container && isAlreadySubmitted) {
+ container.innerHTML = `
  <div class="form-card" style="border: 1px solid #16a34a;">
  <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
  <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดทำหนังสือความเห็นทางการ (นิติกร)</span>
@@ -1144,7 +525,7 @@
  <div class="form-card-body">
  <div class="form-group">
  <label>แนวทางความเห็นตามผลมติ</label>
- <div class="read-box" style="font-weight:600; color:#166534;"><i class="fa-solid fa-scale-unbalanced text-danger me-2"></i>${currentCase.finalOpinionType || "เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ"}</div>
+ <div class="read-box" style="font-weight:600; color:#166534;"><i class="fa-solid fa-scale-unbalanced text-danger me-2"></i>${currentCase.finalOpinionType || 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ'}</div>
  </div>
  <div class="form-group">
  <label>ชื่อเรื่องหนังสือ</label>
@@ -1152,7 +533,7 @@
  </div>
  <div class="form-group">
  <label>สาระสำคัญและเหตุผลในหนังสือแจ้งผล</label>
- <div class="read-box read-box-textarea">${currentCase.finalDocSummary || "จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป"}</div>
+ <div class="read-box read-box-textarea">${currentCase.finalDocSummary || 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป'}</div>
  </div>
  </div>
  <div class="form-actions">
@@ -1160,60 +541,54 @@
  </div>
  </div>
  `;
-        }
-      }
+ }
+ }
 
-      function selectOpinionOption(type) {
-        const optDissent = document.getElementById("op_dissent");
-        const optAgree = document.getElementById("op_agree");
-        const optOther = document.getElementById("op_other");
-        const lblDissent = document.getElementById("label_op_dissent");
-        const lblAgree = document.getElementById("label_op_agree");
-        const lblOther = document.getElementById("label_op_other");
-        const otherContainer = document.getElementById("otherReasonContainer");
-        const subj = document.getElementById("in_finalDocSubject");
+ function selectOpinionOption(type) {
+ const optDissent = document.getElementById('op_dissent');
+ const optAgree = document.getElementById('op_agree');
+ const optOther = document.getElementById('op_other');
+ const lblDissent = document.getElementById('label_op_dissent');
+ const lblAgree = document.getElementById('label_op_agree');
+ const lblOther = document.getElementById('label_op_other');
+ const otherContainer = document.getElementById('otherReasonContainer');
+ const subj = document.getElementById('in_finalDocSubject');
 
-        const t = (type || "").toUpperCase();
+ const t = (type || '').toUpperCase();
 
-        if (lblDissent) lblDissent.className = "decision-card";
-        if (lblAgree) lblAgree.className = "decision-card";
-        if (lblOther) lblOther.className = "decision-card";
+ if (lblDissent) lblDissent.className = 'decision-card';
+ if (lblAgree) lblAgree.className = 'decision-card';
+ if (lblOther) lblOther.className = 'decision-card';
 
-        // เห็นแย้ง = ต้องแนบ 2 ฉบับ · เห็นชอบ/อื่นๆ = ฉบับเดียว
-        const grpFile2 = document.getElementById("grp_finalDocFile2");
-        const lblFile1 = document.getElementById("lbl_finalDocFile1");
-        if (grpFile2)
-          grpFile2.style.display = t === "DISSENT" ? "block" : "none";
-        if (lblFile1)
-          lblFile1.style.display = t === "DISSENT" ? "block" : "none";
+ // เห็นแย้ง = ต้องแนบ 2 ฉบับ · เห็นชอบ/อื่นๆ = ฉบับเดียว
+ const grpFile2 = document.getElementById('grp_finalDocFile2');
+ const lblFile1 = document.getElementById('lbl_finalDocFile1');
+ if (grpFile2) grpFile2.style.display = (t === 'DISSENT') ? 'block' : 'none';
+ if (lblFile1) lblFile1.style.display = (t === 'DISSENT') ? 'block' : 'none';
 
-        if (t === "DISSENT") {
-          if (optDissent) optDissent.checked = true;
-          if (lblDissent) lblDissent.className = "decision-card active-dissent";
-          if (otherContainer) otherContainer.classList.add("d-none");
-          if (subj && currentCase)
-            subj.value =
-              "ความเห็นแย้งมติของพนักงานอัยการ " + (currentCase.title || "");
-        } else if (t === "AGREE") {
-          if (optAgree) optAgree.checked = true;
-          if (lblAgree) lblAgree.className = "decision-card active-agree";
-          if (otherContainer) otherContainer.classList.add("d-none");
-          if (subj && currentCase)
-            subj.value =
-              "หนังสือแจ้งผลไม่ทำความเห็นแย้ง " + (currentCase.title || "");
-        } else if (t === "OTHER") {
-          if (optOther) optOther.checked = true;
-          if (lblOther) lblOther.className = "decision-card active-other";
-          if (otherContainer) {
-            otherContainer.classList.remove("d-none");
-            document.getElementById("in_opinionOtherSpecify")?.focus();
-          }
-          if (subj && currentCase)
-            subj.value =
-              "หนังสือแจ้งผลการพิจารณา (ความเห็นอื่นๆ) " +
-              (currentCase.title || "");
-        }
-      }
+ if (t === 'DISSENT') {
+ if (optDissent) optDissent.checked = true;
+ if (lblDissent) lblDissent.className = 'decision-card active-dissent';
+ if (otherContainer) otherContainer.classList.add('d-none');
+ if (subj && currentCase) subj.value = 'ความเห็นแย้งมติของพนักงานอัยการ ' + (currentCase.title || '');
+ } else if (t === 'AGREE') {
+ if (optAgree) optAgree.checked = true;
+ if (lblAgree) lblAgree.className = 'decision-card active-agree';
+ if (otherContainer) otherContainer.classList.add('d-none');
+ if (subj && currentCase) subj.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + (currentCase.title || '');
+ } else if (t === 'OTHER') {
+ if (optOther) optOther.checked = true;
+ if (lblOther) lblOther.className = 'decision-card active-other';
+ if (otherContainer) {
+ otherContainer.classList.remove('d-none');
+ document.getElementById('in_opinionOtherSpecify')?.focus();
+ }
+ if (subj && currentCase) subj.value = 'หนังสือแจ้งผลการพิจารณา (ความเห็นอื่นๆ) ' + (currentCase.title || '');
+ }
+ }
+ 
+ function submitOfficerFinalDocForm() {
+ if (!currentCase) return;
 
  const isDissent = document.getElementById('op_dissent')?.checked;
  const isOther = document.getElementById('op_other')?.checked;
@@ -1241,42 +616,19 @@
  defaultFile = 'ร่างหนังสือความเห็นอื่นๆ.pdf';
  }
 
-        let opinionType =
-          currentCase && currentCase.signedExecutiveOrder
-            ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ`
-            : "เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
-        let defaultFile = "ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf";
-        if (isAgree) {
-          opinionType = "เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)";
-          defaultFile = "ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf";
-        } else if (isOther) {
-          const otherSpecify = document
-            .getElementById("in_opinionOtherSpecify")
-            ?.value.trim();
-          if (!otherSpecify) {
-            Swal.fire({
-              icon: "warning",
-              title: "กรุณาระบุหัวข้อความเห็นอื่นๆ",
-              text: "โปรดระบุหัวข้อหรือประเภทของความเห็นอื่นๆ ในช่องที่กำหนด",
-              confirmButtonColor: "#1e3a8a",
-            });
-            document.getElementById("in_opinionOtherSpecify")?.focus();
-            return;
-          }
-          opinionType = `ความเห็นอื่นๆ: ${otherSpecify}`;
-          defaultFile = "ร่างหนังสือความเห็นอื่นๆ.pdf";
-        }
+ const subject = document.getElementById('in_finalDocSubject').value.trim();
+ const officialDocHeading = (document.getElementById('in_officialDocHeading') || {}).value?.trim() || '';
+ const summary = document.getElementById('in_finalDocSummary').value.trim();
 
-        const subject = document
-          .getElementById("in_finalDocSubject")
-          .value.trim();
-        const officialDocHeading =
-          (
-            document.getElementById("in_officialDocHeading") || {}
-          ).value?.trim() || "";
-        const summary = document
-          .getElementById("in_finalDocSummary")
-          .value.trim();
+ if (!subject || !summary) {
+ Swal.fire({
+ icon: 'warning',
+ title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+ text: 'กรุณาระบุชื่อเรื่อง และสาระสำคัญในหนังสือ',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
 
  // กรณีเห็นแย้งต้องแนบ 2 ฉบับ ถ้าเริ่มแนบมาแล้วฉบับเดียวถือว่ายังไม่ครบ
  // (ถ้าไม่แนบเลย ระบบยังสร้างไฟล์ร่างให้อัตโนมัติเหมือนเดิม)
@@ -1298,293 +650,265 @@
  return;
  }
 
-        // กรณีเห็นแย้งต้องแนบ 2 ฉบับ ถ้าเริ่มแนบมาแล้วฉบับเดียวถือว่ายังไม่ครบ
-        // (ถ้าไม่แนบเลย ระบบยังสร้างไฟล์ร่างให้อัตโนมัติเหมือนเดิม)
-        const f1 = document.getElementById("in_finalDocFile");
-        const f2 = document.getElementById("in_finalDocFile2");
-        const has1 = !!(f1 && f1.files && f1.files.length);
-        const has2 = !!(f2 && f2.files && f2.files.length);
-        const isDissent = !isAgree && !isOther;
-        if (isDissent && has1 !== has2) {
-          Swal.fire({
-            icon: "warning",
-            title: "เอกสารไม่ครบ 2 ฉบับ",
-            text: "กรณีทำความเห็นแย้งต้องแนบหนังสือ 2 ฉบับ กรุณาแนบให้ครบทั้งฉบับที่ 1 และฉบับที่ 2",
-            confirmButtonColor: "#1e3a8a",
-          });
-          (has1 ? f2 : f1).focus();
-          return;
-        }
-
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันเสนอร่างหนังสือให้ ผอ.กลุ่มงาน ตรวจสอบ?",
-          html: `
+ Swal.fire({
+ icon: 'question',
+ title: 'ยืนยันเสนอร่างหนังสือให้ ผอ.กลุ่มงาน ตรวจสอบ?',
+ html: `
  <div class="emd-summary">
  <p><strong>ความเห็น:</strong> ${opinionType}</p>
  <p><strong>ส่งเสนอ:</strong> ผอ.กลุ่มงานความเห็นแย้ง (นายอานนท์ ชินประชา)</p>
  </div>
  `,
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันเสนอร่างหนังสือ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (res.isConfirmed) {
-            // ต้องลงลายมือชื่ออิเล็กทรอนิกส์ก่อนส่งต่อ (ใช้ pattern เดียวกับหน้า 06/14/15)
-            openSignatureModal(function (signatureDataUrl) {
-              Activity10.submitOfficerFinalDoc(currentCase.id, {
-                opinionType: opinionType,
-                subject: subject,
-                officialDocHeading: officialDocHeading,
-                summary: summary,
-                file: has1 ? f1.files[0].name : defaultFile,
-                fileCopy2: has2
-                  ? f2.files[0].name
-                  : isDissent
-                    ? defaultFile.replace(/(\.[^.]+)$/, "_ฉบับที่2$1")
-                    : "",
-                requiredCopies: isDissent ? 2 : 1,
-                signature: signatureDataUrl,
-              });
-              Activity10.updateCase(currentCase.id, {
-                officerFinalDocSignature: signatureDataUrl,
-              });
+ showCancelButton: true,
+ confirmButtonText: 'ยืนยันเสนอร่างหนังสือ',
+ cancelButtonText: 'ยกเลิก',
+ confirmButtonColor: '#1e3a8a',
+ cancelButtonColor: '#64748b'
+ }).then(res => {
+ if (res.isConfirmed) {
+ // ต้องลงลายมือชื่ออิเล็กทรอนิกส์ก่อนส่งต่อ (ใช้ pattern เดียวกับหน้า 06/14/15)
+ openSignatureModal(function (signatureDataUrl) {
+ Activity10.submitOfficerFinalDoc(currentCase.id, {
+ opinionType: opinionType,
+ subject: subject,
+ officialDocHeading: officialDocHeading,
+ summary: summary,
+ file: has1 ? f1.files[0].name : defaultFile,
+ fileCopy2: has2 ? f2.files[0].name : (isDissent ? defaultFile.replace(/(\.[^.]+)$/, '_ฉบับที่2$1') : ''),
+ requiredCopies: isDissent ? 2 : 1,
+ signature: signatureDataUrl
+ });
+ Activity10.updateCase(currentCase.id, {
+ officerFinalDocSignature: signatureDataUrl
+ });
 
-              Swal.fire({
-                icon: "success",
-                title: "เสนอร่างหนังสือสำเร็จ!",
-                text: "ส่งต่อให้ ผอ.กลุ่มงานความเห็นแย้ง ตรวจสอบเรียบร้อยแล้ว",
-                timer: 1600,
-                showConfirmButton: false,
-              }).then(() => {
-                window.location.href = "01-work-inbox.html";
-              });
-            });
-          }
-        });
-      }
+ Swal.fire({
+ icon: 'success',
+ title: 'เสนอร่างหนังสือสำเร็จ!',
+ text: 'ส่งต่อให้ ผอ.กลุ่มงานความเห็นแย้ง ตรวจสอบเรียบร้อยแล้ว',
+ timer: 1600,
+ showConfirmButton: false
+ }).then(() => {
+ window.location.href = '01-work-inbox.html';
+ });
+ });
+ }
+ });
+ }
 
-      // Speech-to-Text Web API (Same as 02-board-intake.html)
-      function startRecordingUI(btnEl) {
-        if (!btnEl) return;
-        btnEl.classList.add("recording");
-        btnEl.title = "กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)";
-      }
+ // Speech-to-Text Web API (Same as 02-board-intake.html)
+ function startRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.add('recording');
+ btnEl.title = 'กำลังฟังเสียง... (คลิกอีกครั้งเพื่อหยุด)';
+ }
 
-      function stopRecordingUI(btnEl) {
-        if (!btnEl) return;
-        btnEl.classList.remove("recording");
-        btnEl.title = "คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)";
-        isRecording = false;
-      }
+ function stopRecordingUI(btnEl) {
+ if (!btnEl) return;
+ btnEl.classList.remove('recording');
+ btnEl.title = 'คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)';
+ isRecording = false;
+ }
 
-      function toggleSpeechToText(targetId, btnEl) {
-        const inputEl = document.getElementById(targetId);
-        if (!inputEl) return;
+ function toggleSpeechToText(targetId, btnEl) {
+ const inputEl = document.getElementById(targetId);
+ if (!inputEl) return;
 
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        if (isRecording) {
-          if (activeRecognition) {
-            try {
-              activeRecognition.stop();
-            } catch (e) {}
-          }
-          stopRecordingUI(btnEl);
-          return;
-        }
+ if (isRecording) {
+ if (activeRecognition) {
+ try { activeRecognition.stop(); } catch(e) {}
+ }
+ stopRecordingUI(btnEl);
+ return;
+ }
 
-        if (!SpeechRecognition) {
-          Swal.fire({
-            icon: "info",
-            title: "พิมพ์ด้วยเสียง",
-            text: "เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
+ if (!SpeechRecognition) {
+ Swal.fire({
+ icon: 'info',
+ title: 'พิมพ์ด้วยเสียง',
+ text: 'เบราว์เซอร์นี้ยังไม่รองรับ Web Speech API โดยตรง กรุณาใช้งานผ่าน Google Chrome หรือ Microsoft Edge',
+ confirmButtonColor: '#1e3a8a'
+ });
+ return;
+ }
 
-        try {
-          const recognition = new SpeechRecognition();
-          recognition.lang = "th-TH";
-          recognition.interimResults = false;
-          recognition.maxAlternatives = 1;
-          recognition.continuous = false;
+ try {
+ const recognition = new SpeechRecognition();
+ recognition.lang = 'th-TH';
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 1;
+ recognition.continuous = false;
 
-          recognition.onstart = function () {
-            isRecording = true;
-            activeRecognition = recognition;
-            startRecordingUI(btnEl);
-            const toast = Swal.mixin({
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-            });
-            toast.fire({
-              icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
-            });
-          };
+ recognition.onstart = function() {
+ isRecording = true;
+ activeRecognition = recognition;
+ startRecordingUI(btnEl);
+ const toast = Swal.mixin({
+ toast: true,
+ position: 'top-end',
+ showConfirmButton: false,
+ timer: 3000,
+ timerProgressBar: true
+ });
+ toast.fire({
+ icon: 'info',
+ title: '🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ'
+ });
+ };
 
-          recognition.onresult = function (event) {
-            const transcript = event.results[0][0].transcript;
-            if (transcript) {
-              const currentVal = inputEl.value ? inputEl.value.trim() : "";
-              inputEl.value = currentVal
-                ? currentVal + " " + transcript
-                : transcript;
-            }
-          };
+ recognition.onresult = function(event) {
+ const transcript = event.results[0][0].transcript;
+ if (transcript) {
+ const currentVal = inputEl.value ? inputEl.value.trim() : '';
+ inputEl.value = currentVal ? (currentVal + ' ' + transcript) : transcript;
+ }
+ };
 
-          recognition.onerror = function (event) {
-            console.error("Speech recognition error:", event.error);
-            stopRecordingUI(btnEl);
-          };
+ recognition.onerror = function(event) {
+ console.error('Speech recognition error:', event.error);
+ stopRecordingUI(btnEl);
+ };
 
-          recognition.onend = function () {
-            stopRecordingUI(btnEl);
-          };
+ recognition.onend = function() {
+ stopRecordingUI(btnEl);
+ };
 
-          recognition.start();
-        } catch (err) {
-          console.error("Recognition start error:", err);
-          stopRecordingUI(btnEl);
-        }
-      }
-      // Electronic signature pad (shared pattern across 06/07/08/13/14/15/22)
-      let sigPadCtx = null;
-      let sigPadDrawing = false;
-      let sigPadHasDrawing = false;
-      let sigMode = "hand";
+ recognition.start();
+ } catch (err) {
+ console.error('Recognition start error:', err);
+ stopRecordingUI(btnEl);
+ }
+ }
+ // Electronic signature pad (shared pattern across 06/07/08/13/14/15/22)
+ let sigPadCtx = null;
+ let sigPadDrawing = false;
+ let sigPadHasDrawing = false;
+ let sigMode = "hand";
 
-      function getSigPadPos(canvas, evt) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-        return {
-          x: (clientX - rect.left) * (canvas.width / rect.width),
-          y: (clientY - rect.top) * (canvas.height / rect.height),
-        };
-      }
+ function getSigPadPos(canvas, evt) {
+   const rect = canvas.getBoundingClientRect();
+   const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+   const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+   return {
+     x: (clientX - rect.left) * (canvas.width / rect.width),
+     y: (clientY - rect.top) * (canvas.height / rect.height),
+   };
+ }
 
-      function selectSignatureMode(mode) {
-        sigMode = mode;
-        const cardHand = document.getElementById("swal-card-hand");
-        const cardCert = document.getElementById("swal-card-cert");
-        const badge = document.getElementById("swal-sig-mode-badge");
-        const boxCanvas = document.getElementById("swal-box-canvas");
-        const boxCert = document.getElementById("swal-box-cert");
-        if (cardHand) cardHand.classList.toggle("is-active", mode === "hand");
-        if (cardCert) cardCert.classList.toggle("is-active", mode === "cert");
-        if (badge) {
-          badge.innerHTML =
-            mode === "hand"
-              ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
-              : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
-        }
-        if (boxCanvas)
-          boxCanvas.classList.toggle("is-visible", mode === "hand");
-        if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
-      }
+ function selectSignatureMode(mode) {
+   sigMode = mode;
+   const cardHand = document.getElementById("swal-card-hand");
+   const cardCert = document.getElementById("swal-card-cert");
+   const badge = document.getElementById("swal-sig-mode-badge");
+   const boxCanvas = document.getElementById("swal-box-canvas");
+   const boxCert = document.getElementById("swal-box-cert");
+   if (cardHand) cardHand.classList.toggle("is-active", mode === "hand");
+   if (cardCert) cardCert.classList.toggle("is-active", mode === "cert");
+   if (badge) {
+     badge.innerHTML =
+       mode === "hand"
+         ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
+         : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
+   }
+   if (boxCanvas) boxCanvas.classList.toggle("is-visible", mode === "hand");
+   if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
+ }
 
-      function bindSignaturePad() {
-        const canvas = document.getElementById("swal-sig-canvas");
-        if (!canvas) return;
-        sigPadCtx = canvas.getContext("2d");
-        sigPadCtx.lineWidth = 2.4;
-        sigPadCtx.lineCap = "round";
-        sigPadCtx.strokeStyle = "#0F172A";
-        sigPadHasDrawing = false;
-        sigPadDrawing = false;
-        sigMode = "hand";
+ function bindSignaturePad() {
+   const canvas = document.getElementById("swal-sig-canvas");
+   if (!canvas) return;
+   sigPadCtx = canvas.getContext("2d");
+   sigPadCtx.lineWidth = 2.4;
+   sigPadCtx.lineCap = "round";
+   sigPadCtx.strokeStyle = "#0F172A";
+   sigPadHasDrawing = false;
+   sigPadDrawing = false;
+   sigMode = "hand";
 
-        const startDraw = (evt) => {
-          evt.preventDefault();
-          sigPadDrawing = true;
-          const pos = getSigPadPos(canvas, evt);
-          sigPadCtx.beginPath();
-          sigPadCtx.moveTo(pos.x, pos.y);
-        };
-        const moveDraw = (evt) => {
-          if (!sigPadDrawing) return;
-          evt.preventDefault();
-          const pos = getSigPadPos(canvas, evt);
-          sigPadCtx.lineTo(pos.x, pos.y);
-          sigPadCtx.stroke();
-          sigPadHasDrawing = true;
-        };
-        const endDraw = () => {
-          sigPadDrawing = false;
-        };
+   const startDraw = (evt) => {
+     evt.preventDefault();
+     sigPadDrawing = true;
+     const pos = getSigPadPos(canvas, evt);
+     sigPadCtx.beginPath();
+     sigPadCtx.moveTo(pos.x, pos.y);
+   };
+   const moveDraw = (evt) => {
+     if (!sigPadDrawing) return;
+     evt.preventDefault();
+     const pos = getSigPadPos(canvas, evt);
+     sigPadCtx.lineTo(pos.x, pos.y);
+     sigPadCtx.stroke();
+     sigPadHasDrawing = true;
+   };
+   const endDraw = () => {
+     sigPadDrawing = false;
+   };
 
-        canvas.addEventListener("mousedown", startDraw);
-        canvas.addEventListener("mousemove", moveDraw);
-        window.addEventListener("mouseup", endDraw);
-        canvas.addEventListener("touchstart", startDraw, { passive: false });
-        canvas.addEventListener("touchmove", moveDraw, { passive: false });
-        canvas.addEventListener("touchend", endDraw);
+   canvas.addEventListener("mousedown", startDraw);
+   canvas.addEventListener("mousemove", moveDraw);
+   window.addEventListener("mouseup", endDraw);
+   canvas.addEventListener("touchstart", startDraw, { passive: false });
+   canvas.addEventListener("touchmove", moveDraw, { passive: false });
+   canvas.addEventListener("touchend", endDraw);
 
-        const clearBtn = document.getElementById("swal-sig-clear");
-        if (clearBtn) clearBtn.addEventListener("click", clearSignaturePad);
-        const cardHand = document.getElementById("swal-card-hand");
-        const cardCert = document.getElementById("swal-card-cert");
-        if (cardHand)
-          cardHand.addEventListener("click", () => selectSignatureMode("hand"));
-        if (cardCert)
-          cardCert.addEventListener("click", () => selectSignatureMode("cert"));
-      }
+   const clearBtn = document.getElementById("swal-sig-clear");
+   if (clearBtn) clearBtn.addEventListener("click", clearSignaturePad);
+   const cardHand = document.getElementById("swal-card-hand");
+   const cardCert = document.getElementById("swal-card-cert");
+   if (cardHand)
+     cardHand.addEventListener("click", () => selectSignatureMode("hand"));
+   if (cardCert)
+     cardCert.addEventListener("click", () => selectSignatureMode("cert"));
+ }
 
-      function clearSignaturePad() {
-        const canvas = document.getElementById("swal-sig-canvas");
-        if (!canvas || !sigPadCtx) return;
-        sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
-        sigPadHasDrawing = false;
-      }
+ function clearSignaturePad() {
+   const canvas = document.getElementById("swal-sig-canvas");
+   if (!canvas || !sigPadCtx) return;
+   sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
+   sigPadHasDrawing = false;
+ }
 
-      function generateCertificateStampImage(signerFull, certId) {
-        const canvas = document.createElement("canvas");
-        canvas.width = 440;
-        canvas.height = 180;
-        const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "#ECFDF5";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "#A7F3D0";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-        ctx.fillStyle = "#065F46";
-        ctx.font = "bold 16px sans-serif";
-        ctx.fillText("ลงนามด้วยใบรับรองอิเล็กทรอนิกส์", 20, 40);
-        ctx.font = "13px sans-serif";
-        ctx.fillText("Certificate: " + certId, 20, 68);
-        const parenIdx = signerFull.indexOf("(");
-        const namePart =
-          parenIdx > -1 ? signerFull.slice(0, parenIdx).trim() : signerFull;
-        const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "";
-        ctx.font = "bold 14px sans-serif";
-        ctx.fillText(namePart, 20, 100);
-        ctx.font = "12px sans-serif";
-        ctx.fillText(rolePart, 20, 122);
-        ctx.font = "11px sans-serif";
-        ctx.fillStyle = "#16A34A";
-        ctx.fillText(new Date().toLocaleString("th-TH"), 20, 150);
-        return canvas.toDataURL("image/png");
-      }
+ function generateCertificateStampImage(signerFull, certId) {
+   const canvas = document.createElement("canvas");
+   canvas.width = 440;
+   canvas.height = 180;
+   const ctx = canvas.getContext("2d");
+   ctx.fillStyle = "#ECFDF5";
+   ctx.fillRect(0, 0, canvas.width, canvas.height);
+   ctx.strokeStyle = "#A7F3D0";
+   ctx.lineWidth = 2;
+   ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+   ctx.fillStyle = "#065F46";
+   ctx.font = "bold 16px sans-serif";
+   ctx.fillText("ลงนามด้วยใบรับรองอิเล็กทรอนิกส์", 20, 40);
+   ctx.font = "13px sans-serif";
+   ctx.fillText("Certificate: " + certId, 20, 68);
+   const parenIdx = signerFull.indexOf("(");
+   const namePart =
+     parenIdx > -1 ? signerFull.slice(0, parenIdx).trim() : signerFull;
+   const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "";
+   ctx.font = "bold 14px sans-serif";
+   ctx.fillText(namePart, 20, 100);
+   ctx.font = "12px sans-serif";
+   ctx.fillText(rolePart, 20, 122);
+   ctx.font = "11px sans-serif";
+   ctx.fillStyle = "#16A34A";
+   ctx.fillText(new Date().toLocaleString("th-TH"), 20, 150);
+   return canvas.toDataURL("image/png");
+ }
 
-      function openSignatureModal(onConfirm) {
-        const title = "ลงนามหนังสือและเสนอ ผอ.กลุ่มงานความเห็นแย้ง";
-        const signerFull =
-          (currentCase && currentCase.officer) ||
-          "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
-        const certId = "PACC-LEGALOFFICER-2569-013";
+ function openSignatureModal(onConfirm) {
+   const title = "ลงนามหนังสือและเสนอ ผอ.กลุ่มงานความเห็นแย้ง";
+   const signerFull =
+     (currentCase && currentCase.officer) ||
+     "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+   const certId = "PACC-LEGALOFFICER-2569-013";
 
-        Swal.fire({
-          width: "720px",
-          html: `
+   Swal.fire({
+     width: "720px",
+     html: `
  <div class="text-start emd-body">
  <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
  <i class="fa-solid fa-pen-nib text-primary fa-lg"></i>
@@ -1651,34 +975,34 @@
  </div>
  </div>
  `,
-          showCancelButton: true,
-          confirmButtonText: '<i class="fa-solid fa-pen me-1"></i> ลงนาม',
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#16A34A",
-          cancelButtonColor: "#7C8CA3",
-          allowOutsideClick: false,
-          didOpen: bindSignaturePad,
-          preConfirm: () => {
-            if (sigMode === "hand") {
-              if (!sigPadHasDrawing) {
-                Swal.showValidationMessage(
-                  "กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการลงนาม",
-                );
-                return false;
-              }
-              const canvas = document.getElementById("swal-sig-canvas");
-              return canvas.toDataURL("image/png");
-            }
-            return generateCertificateStampImage(signerFull, certId);
-          },
-        }).then((result) => {
-          if (result.isConfirmed && typeof onConfirm === "function") {
-            onConfirm(result.value);
-          }
-        });
-      }
+     showCancelButton: true,
+     confirmButtonText: '<i class="fa-solid fa-pen me-1"></i> ลงนาม',
+     cancelButtonText: "ยกเลิก",
+     confirmButtonColor: "#16A34A",
+     cancelButtonColor: "#7C8CA3",
+     allowOutsideClick: false,
+     didOpen: bindSignaturePad,
+     preConfirm: () => {
+       if (sigMode === "hand") {
+         if (!sigPadHasDrawing) {
+           Swal.showValidationMessage(
+             "กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการลงนาม",
+           );
+           return false;
+         }
+         const canvas = document.getElementById("swal-sig-canvas");
+         return canvas.toDataURL("image/png");
+       }
+       return generateCertificateStampImage(signerFull, certId);
+     },
+   }).then((result) => {
+     if (result.isConfirmed && typeof onConfirm === "function") {
+       onConfirm(result.value);
+     }
+   });
+ }
 
-      // Speech-to-Text Web API
-    </script>
-  </body>
+ // Speech-to-Text Web API
+ </script>
+</body>
 </html>
