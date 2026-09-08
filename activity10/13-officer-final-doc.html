@@ -318,7 +318,7 @@
  <div class="form-card-body">
  <div class="form-group">
  <label>นิติกรผู้จัดทำหนังสือ</label>
- <input type="text" class="form-control" style="font-weight: 600; background: var(--bg-body);" readonly value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">
+ <input type="text" class="form-control" id="f_officerName" style="font-weight: 600; background: var(--bg-body);" readonly value="นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)">
  </div>
 
  <div class="form-group">
@@ -514,6 +514,11 @@ setElText('f_title', currentCase.title || '-');
   setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
   setElText('f_groupDirectorResolutionNotes', currentCase.groupDirectorResolutionNotes || currentCase.directorResolutionNotes || 'มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป');
 
+  const officerInput = document.getElementById('f_officerName');
+  if (officerInput) {
+    officerInput.value = getLegalOfficerSigner(currentCase);
+  }
+
   const subjInput = document.getElementById('in_finalDocSubject');
   if (subjInput && currentCase.title) {
     subjInput.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + currentCase.title;
@@ -553,6 +558,10 @@ setElText('f_title', currentCase.title || '-');
         <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-lock me-1"></i>ส่งร่างหนังสือแล้ว</span>
       </div>
       <div class="form-card-body">
+        <div class="form-group">
+          <label>นิติกรผู้จัดทำหนังสือ</label>
+          <div class="read-box" style="font-weight:600;"><i class="fa-solid fa-user-pen me-2 text-primary"></i>${getLegalOfficerSigner(currentCase)}</div>
+        </div>
         <div class="form-group">
           <label>แนวทางความเห็นตามผลมติ</label>
           <div class="read-box" style="font-weight:600; color:${badgeColor};"><i class="${iconClass} me-2"></i>${currentCase.finalOpinionType || 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)'}</div>
@@ -711,6 +720,7 @@ setElText('f_title', currentCase.title || '-');
  }).then(res => {
  if (res.isConfirmed) {
  // ต้องลงลายมือชื่ออิเล็กทรอนิกส์ก่อนส่งต่อ (ใช้ pattern เดียวกับหน้า 06/14/15)
+  const signerFull = getLegalOfficerSigner(currentCase);
  openSignatureModal(function (signatureDataUrl) {
  Activity10.submitOfficerFinalDoc(currentCase.id, {
  opinionType: opinionType,
@@ -720,10 +730,13 @@ setElText('f_title', currentCase.title || '-');
  file: has1 ? f1.files[0].name : defaultFile,
  fileCopy2: isDissent ? (has2 ? f2.files[0].name : defaultFile.replace(/(\.[^.]+)$/, '_ฉบับที่2$1')) : '',
  requiredCopies: isDissent ? 2 : 1,
+  officer: signerFull,
  signature: signatureDataUrl
  });
  Activity10.updateCase(currentCase.id, {
- officerFinalDocSignature: signatureDataUrl
+ officerFinalDocSignature: signatureDataUrl,
+  officer: signerFull.replace(/\s*\(.*?\)\s*/g, '').trim(),
+  officerPosition: 'นิติกรชำนาญการพิเศษ'
  });
 
  Swal.fire({
@@ -914,6 +927,19 @@ setElText('f_title', currentCase.title || '-');
    sigPadHasDrawing = false;
  }
 
+  function getLegalOfficerSigner(c) {
+    if (!c) return "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+    const fromAssign = c.groupDirectorResolutionOfficer || c.groupDirectorResolutionTarget;
+    if (fromAssign && !fromAssign.includes("กานดา") && !fromAssign.includes("ธุรการ")) {
+      return fromAssign.includes("(") ? fromAssign : `${fromAssign} (นิติกรชำนาญการพิเศษ)`;
+    }
+    if (c.officer && !c.officer.includes("กานดา") && !c.officer.includes("ธุรการ")) {
+      const pos = c.officerPosition || "นิติกรชำนาญการพิเศษ";
+      return c.officer.includes("(") ? c.officer : `${c.officer} (${pos})`;
+    }
+    return "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+  }
+
  function generateCertificateStampImage(signerFull, certId) {
    const canvas = document.createElement("canvas");
    canvas.width = 440;
@@ -932,7 +958,7 @@ setElText('f_title', currentCase.title || '-');
    const parenIdx = signerFull.indexOf("(");
    const namePart =
      parenIdx > -1 ? signerFull.slice(0, parenIdx).trim() : signerFull;
-   const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "";
+    const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "(นิติกรชำนาญการพิเศษ)";
    ctx.font = "bold 14px sans-serif";
    ctx.fillText(namePart, 20, 100);
    ctx.font = "12px sans-serif";
@@ -945,9 +971,7 @@ setElText('f_title', currentCase.title || '-');
 
  function openSignatureModal(onConfirm) {
    const title = "ลงนามหนังสือและเสนอ ผอ.กลุ่มงานความเห็นแย้ง";
-   const signerFull =
-     (currentCase && currentCase.officer) ||
-     "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+    const signerFull = getLegalOfficerSigner(currentCase);
    const certId = "PACC-LEGALOFFICER-2569-013";
 
    Swal.fire({

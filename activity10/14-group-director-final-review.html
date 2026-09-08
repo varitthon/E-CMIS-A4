@@ -1030,9 +1030,13 @@
             : "เห็นชอบให้ทำความเห็นแย้ง",
         );
 
+        const officerDisplay =
+          (currentCase && currentCase.groupDirectorResolutionOfficer) ||
+          (currentCase && currentCase.officer && !currentCase.officer.includes("กานดา") && !currentCase.officer.includes("ธุรการ") ? currentCase.officer : "") ||
+          "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
         setElText(
           "f_officerName",
-          currentCase.officer || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
+          officerDisplay.includes("(") ? officerDisplay : `${officerDisplay} (นิติกรชำนาญการพิเศษ)`,
         );
         setElText(
           "f_finalOpinionType",

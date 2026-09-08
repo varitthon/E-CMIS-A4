@@ -455,7 +455,10 @@
  setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
  setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
  setElText('f_signedOrder', currentCase.signedExecutiveOrder ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง` : 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง');
- setElText('f_officerName', currentCase.officer || 'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)');
+ const officerDisplay = (currentCase && currentCase.groupDirectorResolutionOfficer) ||
+    (currentCase && currentCase.officer && !currentCase.officer.includes('กานดา') && !currentCase.officer.includes('ธุรการ') ? currentCase.officer : '') ||
+    'นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)';
+  setElText('f_officerName', officerDisplay.includes('(') ? officerDisplay : `${officerDisplay} (นิติกรชำนาญการพิเศษ)`);
  setElText('f_finalOpinionType', currentCase.finalOpinionType || 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ');
  setElText('f_finalDocSubject', currentCase.finalDocSubject || currentCase.title);
  setElText('f_finalDocSummary', currentCase.finalDocSummary || 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป');
