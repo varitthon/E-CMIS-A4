@@ -118,7 +118,10 @@
  </a>
  <ul class="menu" id="sidebarMenu">
  <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
- <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
+ <li><a href="06-officer-opinion.html"><i class="fa-solid fa-file-pen"></i> <span>ยกร่างความเห็น</span></a></li>
+ <li><a href="13-officer-final-doc.html"><i class="fa-solid fa-file-signature"></i> <span>จัดทำหนังสือตามมติ</span></a></li>
+ <li><a href="18-officer-external-dispatch.html"><i class="fa-solid fa-truck-fast"></i> <span>จัดส่งหนังสือให้อัยการ/อสส.</span></a></li>
+ <li><a href="22-officer-case-closed-notify.html"><i class="fa-solid fa-file-circle-check"></i> <span>บันทึกผล และ แจ้งกองบริหารคดี</span></a></li>
  </ul>
  </div>
  <div class="sidebar-bottom">
@@ -248,7 +251,7 @@
  <div class="read-box" id="f_source">-</div>
  </div>
  </div>
- <div class="form-grid-2">
+ <div class="form-grid-3">
    <div class="form-group">
      <label>มติอัยการ</label>
      <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
@@ -361,7 +364,7 @@
 
  <div class="form-group">
  <label><span>ชื่อเรื่อง <span style="color:#dc2626;">*</span> <button type="button" class="btn-mic" id="btnMicSubject" onclick="toggleSpeechToText('in_finalDocSubject', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
- <input type="text" id="in_finalDocSubject" class="form-control" style="font-weight: 600;" placeholder="ระบุชื่อเรื่อง เช่น ความเห็นแย้งมติของพนักงานอัยการ ในคดี..." value="ความเห็นแย้งมติของพนักงานอัยการ คดีทุจริตโครงการก่อสร้างเขื่อนป้องกันตลิ่ง">
+ <input type="text" id="in_finalDocSubject" class="form-control" style="font-weight: 600;" placeholder="ระบุชื่อเรื่อง เช่น หนังสือแจ้งผลไม่ทำความเห็นแย้ง..." value="หนังสือแจ้งผลไม่ทำความเห็นแย้ง คดีทุจริตโครงการก่อสร้างเขื่อนป้องกันตลิ่ง">
  </div>
  <div class="form-group">
  <label>หัวข้อในหนังสือราชการ</label>
@@ -370,7 +373,7 @@
 
  <div class="form-group">
  <label><span>สรุปประเด็นข้อเท็จจริง ข้อกฎหมาย และเหตุผลในหนังสือแจ้งผล <span style="color:#dc2626;">*</span> <button type="button" class="btn-mic" id="btnMicSummary" onclick="toggleSpeechToText('in_finalDocSummary', this)" title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"><i class="fa-solid fa-microphone"></i></button></span></label>
- <textarea id="in_finalDocSummary" class="form-control font-monospace" rows="4" placeholder="กรอกสาระสำคัญแห่งเหตุผลข้อเท็จจริงและข้อกฎหมายที่จัดทำในหนังสือแจ้งผล...">จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิดตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป</textarea>
+ <textarea id="in_finalDocSummary" class="form-control font-monospace" rows="4" placeholder="กรอกสาระสำคัญแห่งเหตุผลข้อเท็จจริงและข้อกฎหมายที่จัดทำในหนังสือแจ้งผล...">จากการพิจารณาข้อเท็จจริงและพยานหลักฐานในสำนวนการไต่สวนข้อเท็จจริง เห็นพ้องด้วยกับความเห็นและคำสั่งไม่ฟ้องของพนักงานอัยการ จึงเห็นชอบตามมติของพนักงานอัยการและยุติเรื่อง</textarea>
  </div>
 
  <!-- แนบเอกสาร — ตามมติที่ประชุม นิติกรต้องแนบเอกสารมาด้วยทั้งกรณีเห็นแย้งและเห็นชอบ
@@ -496,125 +499,166 @@
 
  setElText('f_centralSarabanNo', currentCase.centralSarabanNo || '2569/4502');
  setElText('f_lawReceiveNo', currentCase.lawReceiveNo || '0019/2569');
- setElText('f_title', currentCase.title || '-');
+setElText('f_title', currentCase.title || '-');
  setElText('f_caseNo', currentCase.id || '-');
  setElText('f_prosecutorCaseTypeName', currentCase.prosecutorCaseTypeName || '1. อัยการมีความเห็นสั่งไม่ฟ้อง');
  setElText('f_level', currentCase.prosecutorLevelName || 'ศาลชั้นต้น');
  setElText('f_source', currentCase.source || 'สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 2');
- setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
- setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
- setElText('f_signedOrder', currentCase.signedExecutiveOrder ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง` : 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง');
- setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
- setElText('f_groupDirectorResolutionNotes', currentCase.groupDirectorResolutionNotes || currentCase.directorResolutionNotes || 'มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป');
+  setElText('f_docNo', currentCase.docNo || 'อส 0025/2569');
+  setElText('f_signedBy', currentCase.signedBy || 'นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)');
+  const rawOrder = currentCase.signedExecutiveOrder || '';
+  const orderText = rawOrder.includes('ให้ทำความเห็นแย้ง')
+    ? rawOrder
+    : (rawOrder ? `${rawOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง` : 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง');
+  setElText('f_signedOrder', orderText);
+  setElText('f_signedDocFile', currentCase.signedDocFile || 'หนังสือผลมติ_2569_006.pdf');
+  setElText('f_groupDirectorResolutionNotes', currentCase.groupDirectorResolutionNotes || currentCase.directorResolutionNotes || 'มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป');
 
- const subjInput = document.getElementById('in_finalDocSubject');
- if (subjInput && currentCase.title) {
-   subjInput.value = 'ความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ ' + currentCase.title;
- }
+  const subjInput = document.getElementById('in_finalDocSubject');
+  if (subjInput && currentCase.title) {
+    subjInput.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + currentCase.title;
+  }
+  if (currentCase.finalDocSubject && subjInput) {
+    subjInput.value = currentCase.finalDocSubject;
+  }
+  if (currentCase.finalDocSummary) {
+    const sumEl = document.getElementById('in_finalDocSummary');
+    if (sumEl) sumEl.value = currentCase.finalDocSummary;
+  }
 
- // Check if already forwarded (Read-Only)
- const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_OFFICER_FINAL_DOC' && (currentCase.finalDocSubmittedDate || (currentCase.workflowStep && currentCase.workflowStep > 13));
- const container = document.getElementById('officerFormContainer');
- if (container && isAlreadySubmitted) {
- container.innerHTML = `
- <div class="form-card" style="border: 1px solid #16a34a;">
- <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
- <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดทำหนังสือความเห็นทางการ (นิติกร)</span>
- <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-lock me-1"></i>ส่งร่างหนังสือแล้ว</span>
- </div>
- <div class="form-card-body">
- <div class="form-group">
- <label>แนวทางความเห็นตามผลมติ</label>
- <div class="read-box" style="font-weight:600; color:#166534;"><i class="fa-solid fa-scale-unbalanced text-danger me-2"></i>${currentCase.finalOpinionType || 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ'}</div>
- </div>
- <div class="form-group">
- <label>ชื่อเรื่องหนังสือ</label>
- <div class="read-box" style="font-weight:600;">${currentCase.finalDocSubject || currentCase.title}</div>
- </div>
- <div class="form-group">
- <label>สาระสำคัญและเหตุผลในหนังสือแจ้งผล</label>
- <div class="read-box read-box-textarea">${currentCase.finalDocSummary || 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป'}</div>
- </div>
- </div>
- <div class="form-actions">
- <a href="01-work-inbox.html" class="btn btn-secondary">กลับหน้าคิวงาน</a>
- </div>
- </div>
- `;
- }
- }
+  // Check if already forwarded (Read-Only)
+  const isAlreadySubmitted = currentCase.statusCode !== 'PENDING_OFFICER_FINAL_DOC' && (currentCase.finalDocSubmittedDate || (currentCase.workflowStep && currentCase.workflowStep > 13));
+  const container = document.getElementById('officerFormContainer');
+  if (container && isAlreadySubmitted) {
+    const isAgree = (currentCase.finalOpinionType || '').includes('เห็นชอบ');
+    const badgeColor = isAgree ? '#166534' : '#991b1b';
+    const iconClass = isAgree ? 'fa-solid fa-circle-check text-success' : 'fa-solid fa-triangle-exclamation text-danger';
+    const defaultSummary = isAgree
+      ? 'จากการพิจารณาข้อเท็จจริงและพยานหลักฐานในสำนวนการไต่สวนข้อเท็จจริง เห็นพ้องด้วยกับความเห็นและคำสั่งไม่ฟ้องของพนักงานอัยการ จึงเห็นชอบตามมติของพนักงานอัยการและยุติเรื่อง'
+      : 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิด จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป';
 
- function selectOpinionOption(type) {
- const optDissent = document.getElementById('op_dissent');
- const optAgree = document.getElementById('op_agree');
- const optOther = document.getElementById('op_other');
- const lblDissent = document.getElementById('label_op_dissent');
- const lblAgree = document.getElementById('label_op_agree');
- const lblOther = document.getElementById('label_op_other');
- const otherContainer = document.getElementById('otherReasonContainer');
- const subj = document.getElementById('in_finalDocSubject');
+    const sigHtml = currentCase.officerFinalDocSignature ? `
+    <div class="form-group" style="margin-top:14px;">
+      <label>ลายมือชื่ออิเล็กทรอนิกส์ผู้จัดทำ</label>
+      <div style="background:#fff; border:1px solid #bfdbfe; border-radius:6px; padding:8px; display:inline-block;">
+        <img src="${currentCase.officerFinalDocSignature}" alt="ลายมือชื่อนิติกร" style="max-height:60px; max-width:240px; display:block;">
+      </div>
+    </div>
+    ` : '';
 
- const t = (type || '').toUpperCase();
+    container.innerHTML = `
+    <div class="form-card" style="border: 1px solid #16a34a;">
+      <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
+        <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการจัดทำหนังสือความเห็นทางการ (นิติกร)</span>
+        <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-lock me-1"></i>ส่งร่างหนังสือแล้ว</span>
+      </div>
+      <div class="form-card-body">
+        <div class="form-group">
+          <label>แนวทางความเห็นตามผลมติ</label>
+          <div class="read-box" style="font-weight:600; color:${badgeColor};"><i class="${iconClass} me-2"></i>${currentCase.finalOpinionType || 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)'}</div>
+        </div>
+        <div class="form-group">
+          <label>ชื่อเรื่องหนังสือ</label>
+          <div class="read-box" style="font-weight:600;">${currentCase.finalDocSubject || currentCase.title}</div>
+        </div>
+        <div class="form-group">
+          <label>สาระสำคัญและเหตุผลในหนังสือแจ้งผล</label>
+          <div class="read-box read-box-textarea">${currentCase.finalDocSummary || defaultSummary}</div>
+        </div>
+        ${sigHtml}
+      </div>
+      <div class="form-actions">
+        <a href="01-work-inbox.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left me-1"></i>กลับหน้าคิวงาน</a>
+      </div>
+    </div>
+    `;
+  }
+  }
 
- if (lblDissent) lblDissent.className = 'decision-card';
- if (lblAgree) lblAgree.className = 'decision-card';
- if (lblOther) lblOther.className = 'decision-card';
+  function selectOpinionOption(type) {
+  const optDissent = document.getElementById('op_dissent');
+  const optAgree = document.getElementById('op_agree');
+  const optOther = document.getElementById('op_other');
+  const lblDissent = document.getElementById('label_op_dissent');
+  const lblAgree = document.getElementById('label_op_agree');
+  const lblOther = document.getElementById('label_op_other');
+  const otherContainer = document.getElementById('otherReasonContainer');
+  const subj = document.getElementById('in_finalDocSubject');
 
- // เห็นแย้ง = ต้องแนบ 2 ฉบับ · เห็นชอบ/อื่นๆ = ฉบับเดียว
- const grpFile2 = document.getElementById('grp_finalDocFile2');
- const lblFile1 = document.getElementById('lbl_finalDocFile1');
- if (grpFile2) grpFile2.style.display = (t === 'DISSENT') ? 'block' : 'none';
- if (lblFile1) lblFile1.style.display = (t === 'DISSENT') ? 'block' : 'none';
+  const t = (type || '').toUpperCase();
 
- if (t === 'DISSENT') {
- if (optDissent) optDissent.checked = true;
- if (lblDissent) lblDissent.className = 'decision-card active-dissent';
- if (otherContainer) otherContainer.classList.add('d-none');
- if (subj && currentCase) subj.value = 'ความเห็นแย้งมติของพนักงานอัยการ ' + (currentCase.title || '');
- } else if (t === 'AGREE') {
- if (optAgree) optAgree.checked = true;
- if (lblAgree) lblAgree.className = 'decision-card active-agree';
- if (otherContainer) otherContainer.classList.add('d-none');
- if (subj && currentCase) subj.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + (currentCase.title || '');
- } else if (t === 'OTHER') {
- if (optOther) optOther.checked = true;
- if (lblOther) lblOther.className = 'decision-card active-other';
- if (otherContainer) {
- otherContainer.classList.remove('d-none');
- document.getElementById('in_opinionOtherSpecify')?.focus();
- }
- if (subj && currentCase) subj.value = 'หนังสือแจ้งผลการพิจารณา (ความเห็นอื่นๆ) ' + (currentCase.title || '');
- }
- }
- 
- function submitOfficerFinalDocForm() {
- if (!currentCase) return;
+  if (lblDissent) lblDissent.className = 'decision-card';
+  if (lblAgree) lblAgree.className = 'decision-card';
+  if (lblOther) lblOther.className = 'decision-card';
 
- const isDissent = document.getElementById('op_dissent')?.checked;
- const isOther = document.getElementById('op_other')?.checked;
+  // เห็นแย้ง = ต้องแนบ 2 ฉบับ · เห็นชอบ/อื่นๆ = ฉบับเดียว
+  const grpFile2 = document.getElementById('grp_finalDocFile2');
+  const lblFile1 = document.getElementById('lbl_finalDocFile1');
+  if (grpFile2) grpFile2.style.display = (t === 'DISSENT') ? 'block' : 'none';
+  if (lblFile1) lblFile1.style.display = (t === 'DISSENT') ? 'block' : 'none';
 
- /* ค่าตั้งต้นคือ "เห็นชอบ" (ยุติเรื่อง) ให้ตรงกับตัวเลือกแรกที่ถูกเลือกไว้ในฟอร์ม
-    การไม่แตะปุ่มเลยจึงไม่กลายเป็นการทำหนังสือความเห็นแย้งเสนอ อสส. โดยไม่ได้เลือกเอง */
- let opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
- let defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
- if (isDissent) {
- opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
- defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
- } else if (isOther) {
- const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();
- if (!otherSpecify) {
- Swal.fire({
- icon: 'warning',
- title: 'กรุณาระบุหัวข้อความเห็นอื่นๆ',
- text: 'โปรดระบุหัวข้อหรือประเภทของความเห็นอื่นๆ ในช่องที่กำหนด',
- confirmButtonColor: '#1e3a8a'
- });
- document.getElementById('in_opinionOtherSpecify')?.focus();
- return;
- }
- opinionType = `ความเห็นอื่นๆ: ${otherSpecify}`;
- defaultFile = 'ร่างหนังสือความเห็นอื่นๆ.pdf';
- }
+  const agreeSummary = 'จากการพิจารณาข้อเท็จจริงและพยานหลักฐานในสำนวนการไต่สวนข้อเท็จจริง เห็นพ้องด้วยกับความเห็นและคำสั่งไม่ฟ้องของพนักงานอัยการ จึงเห็นชอบตามมติของพนักงานอัยการและยุติเรื่อง';
+  const dissentSummary = 'จากการไต่สวนข้อเท็จจริงปรากฏพยานหลักฐานเพียงพอที่จะรับฟังได้ว่า ผู้ถูกกล่าวหามีพฤติการณ์ร่วมกันกระทำความผิดตามประมวลกฎหมายอาญา มาตรา 157 และ พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 จึงเห็นควรทำความเห็นแย้งมติของพนักงานอัยการเสนอต่ออัยการสูงสุดเพื่อพิจารณาชี้ขาดต่อไป';
+  const summaryEl = document.getElementById('in_finalDocSummary');
+
+  if (t === 'DISSENT') {
+    if (optDissent) optDissent.checked = true;
+    if (lblDissent) lblDissent.className = 'decision-card active-dissent';
+    if (otherContainer) otherContainer.classList.add('d-none');
+    if (subj && currentCase) subj.value = 'ความเห็นแย้งมติของพนักงานอัยการ ' + (currentCase.title || '');
+    if (summaryEl && (!summaryEl.value.trim() || summaryEl.value.trim() === agreeSummary)) {
+      summaryEl.value = dissentSummary;
+    }
+  } else if (t === 'AGREE') {
+    if (optAgree) optAgree.checked = true;
+    if (lblAgree) lblAgree.className = 'decision-card active-agree';
+    if (otherContainer) otherContainer.classList.add('d-none');
+    if (subj && currentCase) subj.value = 'หนังสือแจ้งผลไม่ทำความเห็นแย้ง ' + (currentCase.title || '');
+    if (summaryEl && (!summaryEl.value.trim() || summaryEl.value.trim() === dissentSummary)) {
+      summaryEl.value = agreeSummary;
+    }
+  } else if (t === 'OTHER') {
+    if (optOther) optOther.checked = true;
+    if (lblOther) lblOther.className = 'decision-card active-other';
+    if (otherContainer) {
+      otherContainer.classList.remove('d-none');
+      document.getElementById('in_opinionOtherSpecify')?.focus();
+    }
+    if (subj && currentCase) subj.value = 'หนังสือแจ้งผลการพิจารณา (ความเห็นอื่นๆ) ' + (currentCase.title || '');
+  }
+  }
+
+  function submitOfficerFinalDocForm() {
+  if (!currentCase) return;
+
+  const isDissent = document.getElementById('op_dissent')?.checked;
+  const isOther = document.getElementById('op_other')?.checked;
+
+  /* ค่าตั้งต้นคือ "เห็นชอบ" (ยุติเรื่อง) ให้ตรงกับตัวเลือกแรกที่ถูกเลือกไว้ในฟอร์ม
+     การไม่แตะปุ่มเลยจึงไม่กลายเป็นการทำหนังสือความเห็นแย้งเสนอ อสส. โดยไม่ได้เลือกเอง */
+  let opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
+  let defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
+  if (isDissent) {
+    const rawOrder = currentCase && currentCase.signedExecutiveOrder;
+    opinionType = (rawOrder && !rawOrder.includes('ให้ทำความเห็นแย้ง'))
+      ? `${rawOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ`
+      : (rawOrder || 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ');
+    defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
+  } else if (isOther) {
+    const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();
+    if (!otherSpecify) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณาระบุหัวข้อความเห็นอื่นๆ',
+        text: 'โปรดระบุหัวข้อหรือประเภทของความเห็นอื่นๆ ในช่องที่กำหนด',
+        confirmButtonColor: '#1e3a8a'
+      });
+      document.getElementById('in_opinionOtherSpecify')?.focus();
+      return;
+    }
+    opinionType = `ความเห็นอื่นๆ: ${otherSpecify}`;
+    defaultFile = 'ร่างหนังสือความเห็นอื่นๆ.pdf';
+  }
 
  const subject = document.getElementById('in_finalDocSubject').value.trim();
  const officialDocHeading = (document.getElementById('in_officialDocHeading') || {}).value?.trim() || '';
@@ -674,7 +718,7 @@
  officialDocHeading: officialDocHeading,
  summary: summary,
  file: has1 ? f1.files[0].name : defaultFile,
- fileCopy2: has2 ? f2.files[0].name : (isDissent ? defaultFile.replace(/(\.[^.]+)$/, '_ฉบับที่2$1') : ''),
+ fileCopy2: isDissent ? (has2 ? f2.files[0].name : defaultFile.replace(/(\.[^.]+)$/, '_ฉบับที่2$1')) : '',
  requiredCopies: isDissent ? 2 : 1,
  signature: signatureDataUrl
  });
@@ -999,10 +1043,8 @@
      if (result.isConfirmed && typeof onConfirm === "function") {
        onConfirm(result.value);
      }
-   });
- }
-
- // Speech-to-Text Web API
- </script>
+    });
+  }
+  </script>
 </body>
 </html>
