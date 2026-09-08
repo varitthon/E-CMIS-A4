@@ -25,8 +25,8 @@
     'Nattapol.B': { name: 'นายณัฐพล บัวทุม', role: 'นิติกรชำนาญการพิเศษ', av: 'ณ', intake: false },
     'deputy_sg': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'ส', intake: false },
     'Surapong.W': { name: 'นายสุรพงษ์ วัฒนา', role: 'รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'ส', intake: false },
-    'secgen': { name: 'นายอภิชาติ สุจริตกุล', role: 'เลขาธิการ ป.ป.ท.', av: 'อ', intake: false },
-    'Apichat.S': { name: 'นายอภิชาติ สุจริตกุล', role: 'เลขาธิการ ป.ป.ท.', av: 'อ', intake: false }
+    'secgen': { name: 'นายอภิชาติ สุจริตกุล', role: 'เลขาธิการ คณะกรรมการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'อ', intake: false },
+    'Apichat.S': { name: 'นายอภิชาติ สุจริตกุล', role: 'เลขาธิการ คณะกรรมการ ป.ป.ท. ผู้ดูแลกองกฎหมาย', av: 'อ', intake: false }
   };
 
   const NOTIF_BY_ROLE = {

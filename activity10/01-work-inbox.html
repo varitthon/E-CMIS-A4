@@ -75,6 +75,14 @@
         border-color: #2563eb;
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
       }
+      /* กล่องสรุปคดีทั้งหมดในระบบ — แสดงตัวเลขอย่างเดียว ไม่คลิกได้ ไม่มีตาราง */
+      .card.card-static {
+        cursor: default;
+      }
+      .card.card-static:hover {
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
       .card-icon {
         width: 40px;
         height: 40px;
@@ -358,6 +366,19 @@
         cursor: not-allowed;
       }
 
+      .empty-state-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px dashed var(--border-color);
+        padding: 60px 20px;
+        text-align: center;
+        color: #94a3b8;
+      }
+      .empty-state-card i {
+        display: block;
+        margin-bottom: 10px;
+      }
+
       @media (max-width: 992px) {
         .cards-grid {
           grid-template-columns: repeat(2, 1fr);
@@ -421,7 +442,8 @@
             ☰
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> /
+            <span><i class="fa-solid fa-house"></i> หน้าแรก</span> /
+            <span>งานกฎหมายในทางคดี</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >รายการงานกฎหมายและสำนวนคดี</span
             >
@@ -440,14 +462,15 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon"></i>
             </button>
             <div
               class="circle-icon-btn"
               onclick="toggleNotifDropdown()"
               title="การแจ้งเตือน"
             >
-              🔔<span class="noti-badge" id="topbarNotiBadge">3</span>
+              <i class="fa-solid fa-bell"></i
+              ><span class="noti-badge" id="topbarNotiBadge">3</span>
             </div>
           </div>
 
@@ -460,16 +483,23 @@
             <div id="notifListContainer">
               <div class="notif-item">
                 <strong style="color: #dc2626"
-                  >🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 2 วัน)</strong
+                  ><i class="fa-solid fa-triangle-exclamation me-1"></i
+                  >เตือนกรอบเวลาเร่งด่วน (เหลือ 2 วัน)</strong
                 >
                 <span>สำนวน คดี-100001/2569 ครบกำหนดยกร่างความเห็น</span>
               </div>
               <div class="notif-item">
-                <strong>📋 มอบหมายสำนวนใหม่</strong>
+                <strong
+                  ><i class="fa-solid fa-clipboard-list me-1"></i
+                  >มอบหมายสำนวนใหม่</strong
+                >
                 <span>สำนวน คดี-100002/2569 รอ ผอ.กลุ่มงาน มอบหมายนิติกร</span>
               </div>
               <div class="notif-item">
-                <strong>📨 คำร้องขอเปิดเผยข้อมูลข่าวสาร</strong>
+                <strong
+                  ><i class="fa-solid fa-envelope me-1"></i
+                  >คำร้องขอเปิดเผยข้อมูลข่าวสาร</strong
+                >
                 <span>คำร้อง 100101/2569 เข้าสู่ระบบแล้ว</span>
               </div>
             </div>
@@ -533,7 +563,10 @@
       <!-- Main Content -->
       <div class="content">
         <div class="page-header-bar">
-          <div class="page-title">📁 รายการงานกฎหมายและสำนวนคดี</div>
+          <div class="page-title">
+            <i class="fa-solid fa-folder-open"></i>
+            รายการงานกฎหมายและสำนวนคดี
+          </div>
           <div class="page-actions">
             <button
               class="btn btn-outline"
@@ -554,22 +587,18 @@
 
         <!-- KPI Cards Grid -->
         <div class="cards-grid">
-          <div
-            class="card active"
-            id="card-all"
-            onclick="selectCategory('ALL')"
-          >
+          <div class="card card-static" id="card-total-system">
             <div class="card-icon" style="background: #e2e8f0; color: #334155">
-              📁
+              <i class="fa-solid fa-database"></i>
             </div>
             <div>
-              <div class="card-num" id="count-all">0</div>
-              <div class="card-label">งานทั้งหมด</div>
+              <div class="card-num" id="count-total-system">0</div>
+              <div class="card-label">คดีทั้งหมดในระบบ</div>
             </div>
           </div>
           <div class="card" id="card-101" onclick="selectCategory('10.1')">
             <div class="card-icon" style="background: #dbeafe; color: #2563eb">
-              ⚖️
+              <i class="fa-solid fa-scale-balanced"></i>
             </div>
             <div>
               <div class="card-num" style="color: #2563eb" id="count-101">
@@ -580,7 +609,7 @@
           </div>
           <div class="card" id="card-102" onclick="selectCategory('10.2')">
             <div class="card-icon" style="background: #fef3c7; color: #d97706">
-              📨
+              <i class="fa-solid fa-envelope-open-text"></i>
             </div>
             <div>
               <div class="card-num" style="color: #d97706" id="count-102">
@@ -591,7 +620,7 @@
           </div>
           <div class="card" id="card-103" onclick="selectCategory('10.3')">
             <div class="card-icon" style="background: #e0e7ff; color: #4f46e5">
-              🏛️
+              <i class="fa-solid fa-landmark"></i>
             </div>
             <div>
               <div class="card-num" style="color: #4f46e5" id="count-103">
@@ -602,108 +631,83 @@
           </div>
         </div>
 
-        <!-- Filter & Search Card -->
-        <div class="filter-card">
-          <div class="filter-grid">
-            <div class="form-group" style="flex: 2">
-              <label>ค้นหาข้อมูล</label>
-              <input
-                type="text"
-                id="searchInput"
-                class="form-control"
-                onkeyup="onSearchChange()"
-                placeholder="ค้นหาเลขสำนวน/เลขรับ กกม./ผู้กล่าวหา/ผู้ถูกกล่าวหา/นิติกร..."
-              />
-            </div>
-
-            <div class="form-group" style="flex: 1.5">
-              <label>มติอัยการ</label>
-              <select
-                id="prosecutorFilterSelect"
-                class="form-control"
-                onchange="onProsecutorFilterChange()"
-              >
-                <option value="ALL">เลือกทั้งหมด</option>
-                <option value="สั่งไม่ฟ้อง">
-                  1. อัยการมีความเห็นสั่งไม่ฟ้อง
-                </option>
-                <option value="ถอนฟ้อง">2. อัยการมีความเห็นถอนฟ้อง</option>
-                <option value="ไม่อุทธรณ์ (ลงโทษ)">
-                  3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)
-                </option>
-                <option value="ไม่อุทธรณ์ (ยกฟ้อง)">
-                  4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)
-                </option>
-                <option value="ถอนอุทธรณ์">
-                  5. อัยการมีความเห็นสั่งถอนอุทธรณ์
-                </option>
-                <option value="ไม่ฎีกา (ลงโทษ)">
-                  6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)
-                </option>
-                <option value="ไม่ฎีกา (ยกฟ้อง)">
-                  7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)
-                </option>
-                <option value="ถอนฎีกา">8. อัยการมีความเห็นสั่งถอนฎีกา</option>
-                <option value="อื่นๆ">9. อื่นๆ</option>
-              </select>
-            </div>
-
-            <div
-              class="form-group"
-              id="filterDropdownContainer"
-              style="flex: 1.5"
-            >
-              <label id="dynamicFilterLabel">ประเภทงาน</label>
-              <select
-                id="dynamicSelect"
-                class="form-control"
-                onchange="onDynamicSelectChange()"
-              >
-                <option value="ALL">เลือกทั้งหมด</option>
-              </select>
-            </div>
-
-            <div class="btn-container">
-              <button
-                class="btn btn-outline"
-                onclick="clearFilters()"
-                title="ล้างตัวกรอง"
-              >
-                <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
-              </button>
-              <button class="btn btn-primary" onclick="onSearchChange()">
-                <i class="fa-solid fa-magnifying-glass me-1"></i>ค้นหา
-              </button>
-            </div>
-          </div>
+        <!-- Empty state before a category is chosen -->
+        <div class="empty-state-card" id="emptyState">
+          เลือกประเภทงานด้านบนเพื่อดูรายการ
         </div>
 
-        <!-- Table Card -->
-        <div class="table-card">
-          <div class="table-title-bar">
-            <span>รายการงานกฎหมายและสำนวนคดี</span>
-            <span
-              class="badge"
-              style="background: #e2e8f0; color: #334155"
-              id="tableBadgeCount"
-              >0 รายการ</span
-            >
-          </div>
-          <div class="table-responsive">
-            <table id="dataTable">
-              <thead id="tableHeader"></thead>
-              <tbody id="tableBody"></tbody>
-            </table>
-          </div>
-          <div class="table-footer">
-            <div>
-              แสดงผล <b id="showingCount">0</b> จากทั้งหมด
-              <b id="totalCount">0</b> รายการ (หน้า
-              <span id="currentPageNum">1</span>/<span id="totalPagesNum"
-                >1</span
-              >)
+        <div id="inboxDetail" style="display: none">
+          <!-- Filter & Search Card -->
+          <div class="filter-card">
+            <div class="filter-grid">
+              <div class="form-group" style="flex: 2">
+                <label>ค้นหาข้อมูล</label>
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="form-control"
+                  onkeyup="onSearchChange()"
+                  placeholder="ค้นหาเลขสำนวน/เลขรับ กกม./ผู้กล่าวหา/ผู้ถูกกล่าวหา/นิติกร..."
+                />
+              </div>
+
+              <div
+                class="form-group"
+                id="filterDropdownContainer"
+                style="flex: 2"
+              >
+                <label id="dynamicFilterLabel">ประเภทงาน</label>
+                <select
+                  id="dynamicSelect"
+                  class="form-control"
+                  onchange="onDynamicSelectChange()"
+                >
+                  <option value="ALL">เลือกทั้งหมด</option>
+                </select>
+              </div>
+
+              <div class="btn-container">
+                <button
+                  class="btn btn-outline"
+                  onclick="clearFilters()"
+                  title="ล้างตัวกรอง"
+                >
+                  <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
+                </button>
+                <button class="btn btn-primary" onclick="onSearchChange()">
+                  <i class="fa-solid fa-magnifying-glass me-1"></i>ค้นหา
+                </button>
+              </div>
             </div>
-            <div class="paging-controls" id="pagingControls"></div>
+          </div>
+
+          <!-- Table Card -->
+          <div class="table-card">
+            <div class="table-title-bar">
+              <span>รายการงานกฎหมายและสำนวนคดี</span>
+              <span
+                class="badge"
+                style="background: #e2e8f0; color: #334155"
+                id="tableBadgeCount"
+                >0 รายการ</span
+              >
+            </div>
+            <div class="table-responsive">
+              <table id="dataTable">
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <div>
+                แสดงผล <b id="showingCount">0</b> จากทั้งหมด
+                <b id="totalCount">0</b> รายการ (หน้า
+                <span id="currentPageNum">1</span>/<span id="totalPagesNum"
+                  >1</span
+                >)
+              </div>
+              <div class="paging-controls" id="pagingControls"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -724,7 +728,7 @@
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
-      let currentCategory = "ALL";
+      let currentCategory = null;
 
       const svgEyeIcon = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
 
@@ -743,7 +747,7 @@
           officer: "นายกฤษดา",
           status: "รอมอบหมายกลุ่มงาน",
           statusCode: "PENDING_DIRECTOR",
-          slaText: "🔴 เหลือ 2 วัน",
+          slaText: "เหลือ 2 วัน",
           slaDays: 2,
         },
         {
@@ -758,7 +762,7 @@
           officer: "น.ส.วิภาดา",
           status: "รอมอบหมายนิติกร",
           statusCode: "PENDING_GROUP_DIRECTOR",
-          slaText: "🟡 เหลือ 5 วัน",
+          slaText: "เหลือ 5 วัน",
           slaDays: 5,
         },
         {
@@ -774,7 +778,7 @@
           status: "นิติกรกำลังจัดทำความเห็น",
           statusCode: "DRAFTING_OPINION",
           assignedRole: "legal_officer",
-          slaText: "🟡 เหลือ 10 วัน",
+          slaText: "เหลือ 10 วัน",
           slaDays: 10,
         },
         {
@@ -789,7 +793,7 @@
           officer: "น.ส.วิภาดา",
           status: "เสนอ ผอ.กลุ่ม ตรวจร่างความเห็น",
           statusCode: "PENDING_GROUP_REVIEW",
-          slaText: "🟡 เหลือ 8 วัน",
+          slaText: "เหลือ 8 วัน",
           slaDays: 8,
         },
         {
@@ -806,7 +810,7 @@
           status: "ธุรการรับผลมติ",
           statusCode: "RETURNED_FROM_EXEC",
           statusBadge: "bg-success text-white",
-          slaText: "🟡 เหลือ 6 วัน",
+          slaText: "เหลือ 6 วัน",
           slaDays: 6,
         },
         {
@@ -823,7 +827,7 @@
           status: "ธุรการรับผลมติ",
           statusCode: "RETURNED_FROM_EXEC",
           statusBadge: "bg-success text-white",
-          slaText: "🔴 เหลือ 2 วัน",
+          slaText: "เหลือ 2 วัน",
           slaDays: 2,
         },
         {
@@ -840,7 +844,7 @@
           status: "ธุรการรับผลมติ",
           statusCode: "RETURNED_FROM_EXEC",
           statusBadge: "bg-success text-white",
-          slaText: "🟡 เหลือ 4 วัน",
+          slaText: "เหลือ 4 วัน",
           slaDays: 4,
         },
         {
@@ -857,7 +861,7 @@
           status: "ธุรการรับผลมติ",
           statusCode: "RETURNED_FROM_EXEC",
           statusBadge: "bg-success text-white",
-          slaText: "🟢 เหลือ 8 วัน",
+          slaText: "เหลือ 8 วัน",
           slaDays: 8,
         },
         {
@@ -872,7 +876,7 @@
           officer: "น.ส.วิภาดา",
           status: "เสนอผู้บริหารลงนาม",
           statusCode: "PENDING_DEPUTY_SG",
-          slaText: "🔴 เหลือ 2 วัน",
+          slaText: "เหลือ 2 วัน",
           slaDays: 2,
         },
         {
@@ -887,7 +891,7 @@
           officer: "นายณรงค์",
           status: "อยู่ระหว่างคณะกรรมการ ป.ป.ท. พิจารณา",
           statusCode: "PENDING_BOARD",
-          slaText: "🟢 ปกติ",
+          slaText: "ปกติ",
           slaDays: 20,
         },
         {
@@ -902,7 +906,7 @@
           officer: "นายกฤษดา",
           status: "ส่งอัยการสูงสุดชี้ขาด",
           statusCode: "PENDING_FINAL_DISPATCH",
-          slaText: "🟢 ปกติ",
+          slaText: "ปกติ",
           slaDays: 25,
         },
         {
@@ -917,7 +921,7 @@
           officer: "น.ส.วิภาดา",
           status: "จบกระบวนการสั่งไม่ฟ้อง",
           statusCode: "COMPLETED",
-          slaText: "🟢 เสร็จสิ้น",
+          slaText: "เสร็จสิ้น",
           slaDays: 99,
         },
         {
@@ -932,7 +936,7 @@
           officer: "นายณรงค์",
           status: "จบกระบวนการสั่งไม่อุทธรณ์/ไม่ฎีกา",
           statusCode: "COMPLETED",
-          slaText: "🟢 เสร็จสิ้น",
+          slaText: "เสร็จสิ้น",
           slaDays: 99,
         },
         {
@@ -947,7 +951,7 @@
           officer: "นายกฤษดา",
           status: "อยู่ระหว่างพิจารณาคดีในชั้นศาล",
           statusCode: "IN_COURT",
-          slaText: "🟡 เหลือ 20 วัน",
+          slaText: "เหลือ 20 วัน",
           slaDays: 20,
         },
 
@@ -966,7 +970,7 @@
           officer: "นายณรงค์",
           status: "ส่งกอง/สำนักที่รับผิดชอบ",
           statusCode: "FORWARDED_DIVISION",
-          slaText: "🟡 เหลือ 12 วัน",
+          slaText: "เหลือ 12 วัน",
           slaDays: 12,
         },
         {
@@ -983,7 +987,7 @@
           officer: "น.ส.วิภาดา",
           status: "รอกองข้อมูลทำความเห็น",
           statusCode: "PENDING_OPINION",
-          slaText: "🟡 เหลือ 10 วัน",
+          slaText: "เหลือ 10 วัน",
           slaDays: 10,
         },
         {
@@ -1001,7 +1005,7 @@
           status: "รอนิติกรทำความเห็นเสนอ",
           statusCode: "DRAFTING_OPINION",
           assignedRole: "legal_officer",
-          slaText: "🟡 เหลือ 9 วัน",
+          slaText: "เหลือ 9 วัน",
           slaDays: 9,
         },
         {
@@ -1018,7 +1022,7 @@
           officer: "น.ส.วิภาดา",
           status: "เสนอคณะอนุกรรมการกลั่นกรองฯ พิจารณา",
           statusCode: "PENDING_SUBCOMMITTEE",
-          slaText: "🟡 เหลือ 7 วัน",
+          slaText: "เหลือ 7 วัน",
           slaDays: 7,
         },
         {
@@ -1035,7 +1039,7 @@
           officer: "นายณรงค์",
           status: "เสนอผู้บริหารเห็นชอบมติ",
           statusCode: "PENDING_EXEC_APPROVAL",
-          slaText: "🔴 เหลือ 2 วัน",
+          slaText: "เหลือ 2 วัน",
           slaDays: 2,
         },
         {
@@ -1052,7 +1056,7 @@
           officer: "นายกฤษดา",
           status: "แจ้งผลผู้ร้องขอ / ปิดคำร้อง",
           statusCode: "COMPLETED",
-          slaText: "🟢 เสร็จสิ้น",
+          slaText: "เสร็จสิ้น",
           slaDays: 99,
         },
         {
@@ -1069,7 +1073,7 @@
           officer: "นายณรงค์",
           status: "อยู่ระหว่างคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ",
           statusCode: "PENDING_APPEAL_COMM",
-          slaText: "🔴 เหลือ 3 วัน",
+          slaText: "เหลือ 3 วัน",
           slaDays: 3,
         },
         {
@@ -1086,7 +1090,7 @@
           officer: "น.ส.วิภาดา",
           status: "รอกองข้อมูลจัดทำรายงานชี้แจง",
           statusCode: "PENDING_DIVISION_REPORT",
-          slaText: "🟡 เหลือ 8 วัน",
+          slaText: "เหลือ 8 วัน",
           slaDays: 8,
         },
         {
@@ -1103,7 +1107,7 @@
           officer: "นายกฤษดา",
           status: "เสนอคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ พิจารณา",
           statusCode: "PENDING_APPEAL_REVIEW",
-          slaText: "🟡 เหลือ 5 วัน",
+          slaText: "เหลือ 5 วัน",
           slaDays: 5,
         },
         {
@@ -1120,7 +1124,7 @@
           officer: "น.ส.วิภาดา",
           status: "เสนอผู้บริหารเห็นชอบ",
           statusCode: "PENDING_EXEC_SIGN",
-          slaText: "🔴 เหลือ 1 วัน",
+          slaText: "เหลือ 1 วัน",
           slaDays: 1,
         },
         {
@@ -1137,7 +1141,7 @@
           officer: "นายณรงค์",
           status: "แจ้งผลวินิจฉัย/ปิดสำนวนอุทธรณ์",
           statusCode: "COMPLETED",
-          slaText: "🟢 เสร็จสิ้น",
+          slaText: "เสร็จสิ้น",
           slaDays: 99,
         },
 
@@ -1152,7 +1156,7 @@
           officer: "น.ส.วิภาดา",
           status: "รอมอบหมายคดีปกครอง",
           statusCode: "PENDING_DIRECTOR",
-          slaText: "🔴 เหลือ 30 วัน",
+          slaText: "เหลือ 30 วัน",
           slaDays: 30,
         },
         {
@@ -1165,7 +1169,7 @@
           officer: "นายกฤษดา",
           status: "รอนิติกรทำคำให้การ",
           statusCode: "PENDING_GROUP_DIRECTOR",
-          slaText: "🟡 เหลือ 25 วัน",
+          slaText: "เหลือ 25 วัน",
           slaDays: 25,
         },
         {
@@ -1179,7 +1183,7 @@
           status: "นิติกรทำร่างคำให้การ",
           statusCode: "DRAFTING_OPINION",
           assignedRole: "legal_officer",
-          slaText: "🟡 เหลือ 20 วัน",
+          slaText: "เหลือ 20 วัน",
           slaDays: 20,
         },
         {
@@ -1192,7 +1196,7 @@
           officer: "นายณรงค์",
           status: "เสนอ ผอ.กลุ่มฯ ตรวจ",
           statusCode: "PENDING_GROUP_REVIEW",
-          slaText: "🟡 เหลือ 15 วัน",
+          slaText: "เหลือ 15 วัน",
           slaDays: 15,
         },
         {
@@ -1205,7 +1209,7 @@
           officer: "นายกฤษดา",
           status: "เสนอ ผอ.กองกฎหมาย ตรวจ",
           statusCode: "PENDING_DIRECTOR_APPROVAL",
-          slaText: "🟡 เหลือ 10 วัน",
+          slaText: "เหลือ 10 วัน",
           slaDays: 10,
         },
         {
@@ -1218,7 +1222,7 @@
           officer: "น.ส.วิภาดา",
           status: "เสนอผู้บริหารลงนาม",
           statusCode: "PENDING_DEPUTY_SG",
-          slaText: "🔴 เหลือ 4 วัน",
+          slaText: "เหลือ 4 วัน",
           slaDays: 4,
         },
         {
@@ -1231,7 +1235,7 @@
           officer: "นายณรงค์",
           status: "ส่งพนักงานอัยการดำเนินคดีแทน",
           statusCode: "PENDING_DISPATCH",
-          slaText: "🟢 ปกติ",
+          slaText: "ปกติ",
           slaDays: 45,
         },
         {
@@ -1244,7 +1248,7 @@
           officer: "นายกฤษดา",
           status: "อยู่ระหว่างการพิจารณาของศาลปกครอง",
           statusCode: "IN_COURT",
-          slaText: "🟡 เหลือ 15 วัน",
+          slaText: "เหลือ 15 วัน",
           slaDays: 15,
         },
         {
@@ -1257,7 +1261,7 @@
           officer: "น.ส.วิภาดา",
           status: "อยู่ระหว่างพิจารณาอุทธรณ์คดีปกครอง",
           statusCode: "IN_APPEAL",
-          slaText: "🔴 เหลือ 5 วัน",
+          slaText: "เหลือ 5 วัน",
           slaDays: 5,
         },
         {
@@ -1270,7 +1274,7 @@
           officer: "นายณรงค์",
           status: "คดีถึงที่สุด/ปิดสำนวนคดีปกครอง",
           statusCode: "COMPLETED",
-          slaText: "🟢 เสร็จสิ้น",
+          slaText: "เสร็จสิ้น",
           slaDays: 99,
         },
       ];
@@ -1343,10 +1347,10 @@
               : {};
 
           let slaText = "";
-          if (days <= 0) slaText = `🔴 เกิน ${Math.abs(days)} วัน`;
-          else if (days <= 7) slaText = `🔴 เหลือ ${days} วัน`;
-          else if (days <= 15) slaText = `🟡 เหลือ ${days} วัน`;
-          else slaText = `🟢 เหลือ ${days} วัน`;
+          if (days <= 0) slaText = `เกิน ${Math.abs(days)} วัน`;
+          else if (days <= 7) slaText = `เหลือ ${days} วัน`;
+          else if (days <= 15) slaText = `เหลือ ${days} วัน`;
+          else slaText = `เหลือ ${days} วัน`;
 
           let cat = c.category || "10.1";
           let subType =
@@ -1576,7 +1580,8 @@
         const allCases = getAllDatabaseCases();
         const roleCases = getCasesForRole(allCases);
 
-        document.getElementById("count-all").innerText = roleCases.length;
+        document.getElementById("count-total-system").innerText =
+          allCases.length;
         document.getElementById("count-101").innerText = roleCases.filter(
           (d) => d.type === "10.1",
         ).length;
@@ -1593,14 +1598,7 @@
         const selectElem = document.getElementById("dynamicSelect");
         let subOptionsHtml = '<option value="ALL">เลือกทั้งหมด</option>';
 
-        if (cat === "ALL") {
-          labelElem.innerText = "ประเภทงาน";
-          subOptionsHtml += `
- <option value="10.1">คดีอาญาทุจริตฯ</option>
- <option value="10.2">การขอเปิดเผยข้อมูลข่าวสาร</option>
- <option value="10.3">คดีศาลปกครอง</option>
- `;
-        } else if (cat === "10.1") {
+        if (cat === "10.1") {
           labelElem.innerText = "มติอัยการ";
           subOptionsHtml += `
  <option value="สั่งไม่ฟ้อง">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
@@ -1629,30 +1627,36 @@
         selectElem.innerHTML = subOptionsHtml;
       }
 
+      const CATEGORY_CARD_ID = {
+        10.1: "card-101",
+        10.2: "card-102",
+        10.3: "card-103",
+      };
+
       function selectCategory(cat) {
-        currentCategory = cat;
         currentPage = 1;
         document
           .querySelectorAll(".card")
           .forEach((c) => c.classList.remove("active"));
-        if (cat === "ALL")
-          document.getElementById("card-all").classList.add("active");
-        if (cat === "10.1")
-          document.getElementById("card-101").classList.add("active");
-        if (cat === "10.2")
-          document.getElementById("card-102").classList.add("active");
-        if (cat === "10.3")
-          document.getElementById("card-103").classList.add("active");
+
+        // คลิกกล่องที่กำลังเปิดอยู่ซ้ำ -> ยุบกลับไปหน้าจอตัวเลขล้วน
+        if (currentCategory === cat) {
+          currentCategory = null;
+          document.getElementById("inboxDetail").style.display = "none";
+          document.getElementById("emptyState").style.display = "";
+          return;
+        }
+
+        currentCategory = cat;
+        document.getElementById(CATEGORY_CARD_ID[cat]).classList.add("active");
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("inboxDetail").style.display = "";
 
         updateDynamicFilter(cat);
         renderTable();
       }
 
       function onDynamicSelectChange() {
-        currentPage = 1;
-        renderTable();
-      }
-      function onProsecutorFilterChange() {
         currentPage = 1;
         renderTable();
       }
@@ -1668,7 +1672,6 @@
       function clearFilters() {
         document.getElementById("searchInput").value = "";
         document.getElementById("dynamicSelect").value = "ALL";
-        document.getElementById("prosecutorFilterSelect").value = "ALL";
         currentPage = 1;
         renderTable();
       }
@@ -1944,6 +1947,20 @@
         return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="สถานะคดี">${label}</span>`;
       }
 
+      /* สีของป้ายอายุความ/SLA แทนสัญลักษณ์อีโมจิเดิม (แดง/เหลือง/เขียว)
+         อิงจาก slaDays ตามเกณฑ์เดียวกับ calculateDaysRemaining ด้านบน */
+      function slaColor(item) {
+        const days = item.slaDays;
+        if (typeof days !== "number") return "#16a34a";
+        if (days <= 7) return "#dc2626";
+        if (days <= 15) return "#d97706";
+        return "#16a34a";
+      }
+
+      function renderSlaBadge(item) {
+        return `<span class="badge-danger-sla" style="color:${slaColor(item)};">${item.slaText}</span>`;
+      }
+
       function getActionButton(item, roleId) {
         const caseId = item.id || item.caseNo;
         const statusCode = item.statusCode || "";
@@ -2074,40 +2091,29 @@
       }
 
       function renderTable() {
+        const cat = currentCategory;
+        if (!cat) return;
+
         const header = document.getElementById("tableHeader");
         const body = document.getElementById("tableBody");
-        const cat = currentCategory;
         const searchVal = document
           .getElementById("searchInput")
           .value.trim()
           .toLowerCase();
         const dynamicVal = document.getElementById("dynamicSelect").value;
-        const prosecutorVal = document.getElementById(
-          "prosecutorFilterSelect",
-        ).value;
         const currentRole = getCurrentRole();
 
         const allCases = getAllDatabaseCases();
-        let filteredData = getCasesForRole(allCases);
-
-        if (cat !== "ALL") {
-          filteredData = filteredData.filter((d) => d.type === cat);
-        }
+        let filteredData = getCasesForRole(allCases).filter(
+          (d) => d.type === cat,
+        );
 
         if (dynamicVal !== "ALL") {
-          if (cat === "ALL") {
-            filteredData = filteredData.filter((d) => d.type === dynamicVal);
-          } else if (cat === "10.1") {
+          if (cat === "10.1") {
             filteredData = filteredData.filter((d) => d.subType === dynamicVal);
           } else if (cat === "10.2" || cat === "10.3") {
             filteredData = filteredData.filter((d) => d.level === dynamicVal);
           }
-        }
-
-        if (prosecutorVal !== "ALL") {
-          filteredData = filteredData.filter(
-            (d) => d.subType === prosecutorVal,
-          );
         }
 
         if (searchVal !== "") {
@@ -2177,7 +2183,7 @@
  <td>${item.accused}</td>
  <td>${item.officer}</td>
  <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
- <td><span class="badge-danger-sla">${item.slaText}</span></td>
+ <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
                   )
@@ -2212,7 +2218,7 @@
  <td>${item.reqUser || item.accuser || "-"}</td>
  <td>${item.officer}</td>
  <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
- <td><span class="badge-danger-sla">${item.slaText}</span></td>
+ <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
                   )
@@ -2245,44 +2251,7 @@
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
  <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
- <td><span class="badge-danger-sla">${item.slaText}</span></td>
- <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
- </tr>`,
-                  )
-                  .join("");
-        }
-        // 4. หัวคอลัมน์กล่องทั้งหมด (ALL)
-        else {
-          header.innerHTML = `
- <tr>
- <th>เลขสำนวน</th>
- <th>เลขรับ กกม.</th>
- <th>ประเภทสำนวน/ระดับ</th>
- <th>ชื่อเรื่อง</th>
- <th>ชื่อผู้กล่าวหา/ผู้ร้องขอ</th>
- <th>ชื่อผู้ถูกกล่าวหา</th>
- <th>นิติกร</th>
- <th>สถานะ</th>
- <th>อายุความ / SLA</th>
- <th style="text-align: center;">ดำเนินการ</th>
- </tr>`;
-
-          body.innerHTML =
-            paginatedData.length === 0
-              ? `<tr><td colspan="10" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
-              : paginatedData
-                  .map(
-                    (item) => `
- <tr>
- <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.caseNo || item.reqNo}</strong></td>
- <td>${item.lawNo && item.lawNo !== "-" ? `<span style="font-family:monospace; font-weight:600; color:#2563eb;">${item.lawNo}</span>` : '<span style="color:#94a3b8;">- ยังไม่ออกเลข -</span>'}</td>
- <td>${renderSubTypeBadge(item, "#e0f2fe", "#0369a1")}</td>
- <td style="max-width:200px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
- <td>${item.accuser || item.reqUser || "-"}</td>
- <td>${item.accused || "-"}</td>
- <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
- <td><span class="badge-danger-sla">${item.slaText}</span></td>
+ <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
                   )
@@ -2303,11 +2272,45 @@
         container.innerHTML = html;
       }
 
+      /* ปุ่มสลับธีมใช้ toggleTheme() ที่มาจาก ecmis-shell.js (ใช้ร่วมกันทุกหน้า)
+         ซึ่งเขียนไอคอนดวงจันทร์/พระอาทิตย์เป็นอีโมจิ ครอบฟังก์ชันเฉพาะหน้านี้
+         เพื่อเปลี่ยนเป็นไอคอน Font Awesome แทน โดยไม่ไปแก้ไฟล์ที่ใช้ร่วมกัน */
+      (function () {
+        const sharedToggleTheme = window.toggleTheme;
+        if (typeof sharedToggleTheme !== "function") return;
+        window.toggleTheme = function () {
+          sharedToggleTheme();
+          const themeBtn = document.getElementById("themeBtn");
+          if (!themeBtn) return;
+          const isDark = document.body.classList.contains("dark-mode");
+          themeBtn.innerHTML = isDark
+            ? '<i class="fa-solid fa-sun"></i>'
+            : '<i class="fa-solid fa-moon"></i>';
+        };
+      })();
+
+      /* updateRoleDisplay() (ecmis-shell.js) เรียก renderNotifications() ภายในตัวเอง
+         ซึ่งดึงหัวข้อแจ้งเตือนจาก NOTIF_BY_ROLE ที่มีอีโมจิฝังอยู่หน้าข้อความ
+         ครอบฟังก์ชันเฉพาะหน้านี้เพื่อตัดอีโมจิออกหลังเรนเดอร์ โดยไม่ไปแก้ไฟล์ที่ใช้ร่วมกัน */
+      (function () {
+        const sharedUpdateRoleDisplay = window.updateRoleDisplay;
+        if (typeof sharedUpdateRoleDisplay !== "function") return;
+        const EMOJI_PREFIX =
+          /^(?:[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}])+\s*/u;
+        window.updateRoleDisplay = function () {
+          sharedUpdateRoleDisplay();
+          document
+            .querySelectorAll("#notifListContainer .notif-item strong")
+            .forEach((el) => {
+              el.textContent = el.textContent.replace(EMOJI_PREFIX, "");
+            });
+        };
+      })();
+
       // Initialize page
       window.onload = function () {
         updateRoleDisplay();
         updateCardCounts();
-        selectCategory("ALL");
       };
     </script>
   </body>

@@ -961,6 +961,45 @@
       statusCode: "L2_BOARD_RESOLVED",
       status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
     },
+    /* ---- L2_BOARD_RESOLVED เพิ่มเติม — เติมช่องที่ยังขาดของชุด 4 ช่อง
+       (เปิดเผย/เปิดเผยบางส่วน/ไม่เปิดเผย x คดีเสร็จสิ้นแล้ว) ด้านบน: มีแค่
+       DISCLOSE+CLOSED (100026) กับ PARTIAL+CLOSED (100028) อยู่แล้ว ขาดแค่
+       DENY+CLOSED จึงเติมคำร้องนี้ให้ครบทั้ง 3 มติ x คดีเสร็จสิ้นแล้ว */
+    {
+      id: "คำร้อง-100031/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title:
+        "คำร้องขอเปิดเผยรายงานผลการไต่สวนคดีทุจริตเบิกจ่ายค่าตอบแทนที่สิ้นสุดแล้ว",
+      requesterName: "นายสมบัติ ยืนยง",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo:
+        "รายงานผลการไต่สวนคดีทุจริตเบิกจ่ายค่าตอบแทนที่คดียุติแล้ว",
+      relatedCaseNo: "คดี-100031/2569",
+      requestChannelName: "ยื่นด้วยตนเอง",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "DENY",
+      l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าข้อมูลที่ขอเป็นข้อมูลส่วนบุคคลของพยานและเจ้าหน้าที่ที่เกี่ยวข้อง แม้คดีจะเสร็จสิ้นแล้วก็ยังไม่อนุญาตให้เปิดเผยตามมาตรา 15",
+      l2CommitteeOpinion:
+        "คณะอนุกรรมการฯ เห็นว่าแม้คดีจะเสร็จสิ้นแล้ว แต่ข้อมูลยังกระทบต่อสิทธิส่วนบุคคลของผู้เกี่ยวข้อง จึงไม่อนุญาตให้เปิดเผย",
+      l2CaseState: "CLOSED",
+      l2CaseStateName: "คดีเสร็จสิ้นแล้ว",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-6),
+      l2InternalDocNo: "ปป 0002/4524",
+      l2Signatures: {
+        proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-2),
+          position: "ผู้อำนวยการกองกฎหมาย",
+        },
+      },
+      statusCode: "L2_BOARD_RESOLVED",
+      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+    },
     /* ---- คำร้องระหว่างทาง Part 2 (10-2-11 ถึง 10-2-21) --------------------
        ทุกสถานะที่เหลือของ Part 2 ยังไม่มีคำร้องทดสอบเลยแม้แต่รายการเดียว —
        ธุรการ (10-2-10) มีคำร้อง 3 รายการข้างบนให้ทดสอบอยู่แล้ว แต่เลขานุการฯ
