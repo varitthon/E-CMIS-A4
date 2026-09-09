@@ -1,0 +1,2515 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-CMIS | แดชบอร์ดสถิติและภาพรวมงานคดีกฎหมาย</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- E-CMIS Core Design System & Shell -->
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-design-system.css" />
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+      /* ==========================================================================
+         Dashboard-specific Layout & Component Extensions (Aligned with Design System)
+         ========================================================================== */
+      body {
+        font-family: var(--ds-font-body);
+        font-size: var(--base-font-size, 14px);
+        background-color: var(--ds-surface-sunken);
+        color: var(--ds-ink-700);
+      }
+
+      /* Masthead / Top Hero in Content Area */
+      .dash-masthead {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: var(--ds-space-4);
+        margin-bottom: var(--ds-space-6);
+        padding-bottom: var(--ds-space-4);
+        border-bottom: 1px solid var(--ds-line);
+      }
+      .dash-title-group h1 {
+        font-family: var(--ds-font-heading);
+        font-size: 1.55em;
+        font-weight: 700;
+        color: var(--ds-ink-900);
+        display: flex;
+        align-items: center;
+        gap: var(--ds-space-3);
+        margin-bottom: var(--ds-space-1);
+      }
+      .dash-title-group p {
+        font-size: 0.9em;
+        color: var(--ds-ink-500);
+        margin: 0;
+      }
+      .dash-action-group {
+        display: flex;
+        align-items: center;
+        gap: var(--ds-space-2);
+        flex-wrap: wrap;
+      }
+
+      /* Filter Card */
+      .dash-filter-card {
+        background: var(--ds-surface);
+        border: 1px solid var(--ds-line);
+        border-radius: var(--ds-radius-lg);
+        padding: var(--ds-space-4) var(--ds-space-5);
+        margin-bottom: var(--ds-space-6);
+        box-shadow: var(--ds-shadow-card);
+      }
+      .dash-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto;
+        gap: var(--ds-space-4);
+        align-items: flex-end;
+      }
+      .dash-filter-item label {
+        display: block;
+        font-size: var(--ds-text-xs);
+        font-weight: 600;
+        color: var(--ds-ink-700);
+        margin-bottom: var(--ds-space-1);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      /* KPI Cards Grid */
+      .dash-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--ds-space-4);
+        margin-bottom: var(--ds-space-6);
+      }
+      .dash-kpi-card {
+        background: var(--ds-surface);
+        border: 1px solid var(--ds-line);
+        border-radius: var(--ds-radius-lg);
+        padding: 18px 20px;
+        box-shadow: var(--ds-shadow-card);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        cursor: pointer;
+      }
+      .dash-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        border-color: var(--ds-blue-300);
+      }
+      .dash-kpi-card.is-active {
+        border-color: var(--ds-blue-600);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+      }
+      .dash-kpi-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .dash-kpi-label {
+        font-family: var(--ds-font-heading);
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--ds-ink-700);
+      }
+      .dash-kpi-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: var(--ds-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .dash-kpi-value {
+        font-family: var(--ds-font-heading);
+        font-size: 2em;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--ds-ink-900);
+        margin-bottom: 8px;
+      }
+      .dash-kpi-sub {
+        font-size: 0.78em;
+        color: var(--ds-ink-500);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .dash-kpi-trend {
+        font-weight: 600;
+      }
+      .dash-kpi-trend.positive { color: var(--ds-success-text); }
+      .dash-kpi-trend.warning { color: var(--ds-warning-text); }
+      .dash-kpi-trend.danger { color: var(--ds-danger-text); }
+
+      /* Visual Analytics Chart Grid */
+      .dash-chart-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--ds-space-6);
+        margin-bottom: var(--ds-space-6);
+      }
+      .dash-chart-grid-3 {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: var(--ds-space-6);
+        margin-bottom: var(--ds-space-6);
+      }
+      .dash-chart-container {
+        position: relative;
+        height: 270px;
+        width: 100%;
+      }
+
+      /* Urgent Attention Panel */
+      .dash-urgent-panel {
+        background: var(--ds-surface);
+        border: 1px solid var(--ds-line);
+        border-left: 4px solid var(--ds-danger-fill);
+        border-radius: var(--ds-radius-lg);
+        padding: 16px 20px;
+        margin-bottom: var(--ds-space-6);
+        box-shadow: var(--ds-shadow-card);
+      }
+      .dash-urgent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .dash-urgent-header h3 {
+        font-family: var(--ds-font-heading);
+        font-size: 1em;
+        font-weight: 700;
+        color: var(--ds-danger-text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Table Enhancements */
+      .dash-table-wrap {
+        overflow-x: auto;
+      }
+      .clickable-row {
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .clickable-row:hover {
+        background-color: var(--ds-surface-raised) !important;
+      }
+
+      /* Modal Backdrop & Dialog */
+      .dash-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+      }
+      .dash-modal-overlay.show {
+        display: flex;
+      }
+      .dash-modal-card {
+        background: var(--ds-surface);
+        border-radius: var(--ds-radius-lg);
+        width: 100%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--ds-shadow-overlay);
+        border: 1px solid var(--ds-line);
+        animation: dashModalIn 0.2s ease-out;
+      }
+      @keyframes dashModalIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* Media queries */
+      @media (max-width: 1024px) {
+        .dash-chart-grid-2,
+        .dash-chart-grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .dash-masthead {
+          flex-direction: column;
+        }
+        .dash-filter-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Print stylesheet */
+      @media print {
+        .sidebar, .topbar, .dash-filter-card, .dash-action-group, .dash-table-footer, .btn-no-print {
+          display: none !important;
+        }
+        body, .main, .content, .ds-content {
+          overflow: visible !important;
+          height: auto !important;
+          padding: 0 !important;
+          background: #fff !important;
+          color: #000 !important;
+        }
+        .ds-card, .dash-kpi-card {
+          box-shadow: none !important;
+          border: 1px solid #ccc !important;
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ============================= SIDEBAR ============================= -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <a href="javascript:void(0)" class="brand" title="สำนักงาน ป.ป.ท.">
+          <img src="pacc_logo.png" alt="PACC Logo" />
+          <span>
+            สำนักงาน ป.ป.ท.
+            <small>E-CMIS กองกฎหมาย (กอท.)</small>
+          </span>
+        </a>
+
+        <ul class="menu" id="sidebarMenu">
+          <li class="active">
+            <a href="dasdbord.html" title="แดชบอร์ดสรุปภาพรวม">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>แดชบอร์ดภาพรวม</span>
+            </a>
+          </li>
+          <li>
+            <a href="01-work-inbox.html" title="รายการงานกฎหมายและสำนวนคดี">
+              <i class="fa-solid fa-folder-open"></i>
+              <span>รายการงานและสำนวนคดี</span>
+            </a>
+          </li>
+          <li>
+            <a href="02-board-intake.html" id="btnBoardIntake" title="รับเรื่องเข้าระบบ">
+              <i class="fa-solid fa-file-signature"></i>
+              <span>รับเรื่องเข้าระบบ</span>
+            </a>
+          </li>
+          <li>
+            <a href="design-system.html" title="คู่มือ Design System" target="_blank">
+              <i class="fa-solid fa-palette"></i>
+              <span>คู่มือ Design System</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div style="font-weight: 600; color: #fff; margin-bottom: 2px;">
+          ระบบสารสนเทศงานคดี
+        </div>
+        <div>กิจกรรมที่ 10 · แดชบอร์ดวิเคราะห์ผล</div>
+      </div>
+    </aside>
+
+    <!-- ============================= MAIN WRAPPER ============================= -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            id="toggleSidebarBtn"
+            onclick="toggleSidebar()"
+            title="ย่อ/ขยายแถบเมนู"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <span>หน้าแรก</span>
+            <i class="fa-solid fa-chevron-right" style="font-size: 0.7em"></i>
+            <span>กองกฎหมาย (กอท.)</span>
+            <i class="fa-solid fa-chevron-right" style="font-size: 0.7em"></i>
+            <b style="color: var(--ds-ink-900)">แดชบอร์ดและสถิติภาพรวม</b>
+          </nav>
+        </div>
+
+        <div class="top-controls">
+          <!-- Accessibility / Font Sizer -->
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="stepFontSize(-1)" title="ลดขนาดตัวอักษร">A-</button>
+            <button class="ctrl-btn" onclick="stepFontSize(1)" title="เพิ่มขนาดตัวอักษร">A+</button>
+          </div>
+
+          <!-- Theme Mode Toggle -->
+          <button
+            class="circle-icon-btn"
+            id="themeToggleBtn"
+            onclick="toggleTheme()"
+            title="เปลี่ยนโหมดสี (สว่าง/มืด)"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div style="position: relative">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleNotifDropdown(event)"
+              title="การแจ้งเตือนงานคดี"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span class="noti-badge" id="topbarNotiBadge">3</span>
+            </button>
+            <div
+              class="notif-dropdown-menu"
+              id="notifDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="notif-dropdown-header">
+                <span><i class="fa-solid fa-bell me-1"></i>การแจ้งเตือน</span>
+                <small style="font-weight: normal; color: var(--ds-ink-500)">กิจกรรมที่ 10</small>
+              </div>
+              <div id="notifListContainer">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- User Profile -->
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้ใช้งาน"
+          >
+            <div class="avatar" id="userAvatar">น</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">นายนภัส สอนดี</span>
+              <span class="user-role" id="userRoleTitle">ผู้อำนวยการกองกฎหมาย</span>
+            </div>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.7em; color: var(--ds-ink-500)"></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้ใช้งาน</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">นายนภัส สอนดี</span>
+                  <span class="profile-card-title" id="profileCardTitle">ผู้อำนวยการกองกฎหมาย</span>
+                  <span class="profile-card-org" id="profileCardOrg">กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span>
+                </div>
+                <span class="profile-note">
+                  <i class="fa-solid fa-circle-info me-1"></i>
+                  แดชบอร์ดนี้แสดงผลแบบ Standalone สำหรับวิเคราะห์ข้อมูลสำนวนคดี
+                </span>
+              </div>
+              <a href="01-work-inbox.html" class="logout-link" style="color: var(--ds-blue-600)">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>กลับสู่รายการงานคดี</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============================= CONTENT CANVAS ============================= -->
+      <main class="ds-content">
+        <!-- MASTHEAD -->
+        <header class="dash-masthead">
+          <div class="dash-title-group">
+            <h1>
+              <i class="fa-solid fa-chart-line" style="color: var(--ds-blue-600)"></i>
+              แดชบอร์ดภาพรวมงานกฎหมายในทางคดี (E-CMIS Activity 10)
+            </h1>
+            <p>
+              การวิเคราะห์เชิงลึก: สำนวนคดีอาญาทุจริตฯ (10.1), การขอเปิดเผยข้อมูลข่าวสาร (10.2), และคดีศาลปกครอง (10.3)
+            </p>
+          </div>
+
+          <div class="dash-action-group btn-no-print">
+            <span class="ds-badge ds-badge-neutral" style="font-size: 0.85em;">
+              <i class="fa-regular fa-calendar-check me-1"></i>
+              <span id="currentDateDisplay">วันที่ 9 กันยายน 2569</span>
+            </span>
+            <button class="ds-btn ds-btn-secondary" onclick="exportDataReport()" title="ส่งออกข้อมูล">
+              <i class="fa-solid fa-file-excel me-1"></i>
+              <span>ส่งออกสรุป</span>
+            </button>
+            <button class="ds-btn ds-btn-secondary" onclick="window.print()" title="พิมพ์หน้านี้">
+              <i class="fa-solid fa-print me-1"></i>
+              <span>พิมพ์รายงาน</span>
+            </button>
+            <button class="ds-btn ds-btn-primary" onclick="refreshDashboard(true)" title="โหลดข้อมูลใหม่">
+              <i class="fa-solid fa-rotate me-1"></i>
+              <span>อัปเดตข้อมูล</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- GLOBAL FILTER BAR -->
+        <section class="dash-filter-card btn-no-print">
+          <div class="dash-filter-grid">
+            <div class="dash-filter-item">
+              <label><i class="fa-regular fa-calendar me-1"></i>ปีงบประมาณ</label>
+              <select id="filterFiscalYear" class="ds-form-control" onchange="applyFilters()">
+                <option value="ALL">ทั้งหมดทุกปีงบประมาณ</option>
+                <option value="2569" selected>ปีงบประมาณ พ.ศ. 2569</option>
+                <option value="2568">ปีงบประมาณ พ.ศ. 2568</option>
+              </select>
+            </div>
+
+            <div class="dash-filter-item">
+              <label><i class="fa-solid fa-layer-group me-1"></i>หมวดหมู่ภารกิจ</label>
+              <select id="filterCategory" class="ds-form-control" onchange="applyFilters()">
+                <option value="ALL">ทุกประเภทงาน (10.1 - 10.3)</option>
+                <option value="10.1">10.1 คดีอาญาทุจริตและประพฤติมิชอบ</option>
+                <option value="10.2">10.2 การขอเปิดเผยข้อมูลข่าวสาร</option>
+                <option value="10.3">10.3 คดีศาลปกครอง</option>
+              </select>
+            </div>
+
+            <div class="dash-filter-item">
+              <label><i class="fa-solid fa-user-tie me-1"></i>นิติกรผู้รับผิดชอบ</label>
+              <select id="filterOfficer" class="ds-form-control" onchange="applyFilters()">
+                <option value="ALL">นิติกรทุกคน</option>
+                <option value="นายณัฐพล บัวทุม">นายณัฐพล บัวทุม</option>
+                <option value="น.ส.วิภาดา">น.ส.วิภาดา</option>
+                <option value="นายกฤษดา">นายกฤษดา</option>
+                <option value="นายณรงค์">นายณรงค์</option>
+                <option value="นางกานดา รักษ์ธรรม">นางกานดา รักษ์ธรรม</option>
+              </select>
+            </div>
+
+            <div class="dash-filter-item">
+              <label><i class="fa-solid fa-stopwatch me-1"></i>สถานะกรอบเวลา (SLA)</label>
+              <select id="filterSla" class="ds-form-control" onchange="applyFilters()">
+                <option value="ALL">ทุกสถานะ SLA</option>
+                <option value="NORMAL">ปกติ (เหลือมากกว่า 5 วัน)</option>
+                <option value="WARNING">เฝ้าระวัง (เหลือ 1-5 วัน)</option>
+                <option value="OVERDUE">เกินกำหนด (Overdue)</option>
+                <option value="COMPLETED">เสร็จสิ้นแล้ว</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="ds-btn ds-btn-secondary" onclick="resetFilters()" title="ล้างตัวกรองทั้งหมด">
+                <i class="fa-solid fa-filter-circle-xmark me-1"></i>ล้างกรอง
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- KPI SUMMARY CARDS -->
+        <section class="dash-kpi-grid">
+          <!-- Total Cases -->
+          <div class="dash-kpi-card" onclick="filterByKpiCard('ALL')">
+            <div class="dash-kpi-top">
+              <span class="dash-kpi-label">สำนวนคดีทั้งหมดในระบบ</span>
+              <div class="dash-kpi-icon" style="background: var(--ds-surface-raised); color: var(--ds-navy-700)">
+                <i class="fa-solid fa-scale-balanced"></i>
+              </div>
+            </div>
+            <div class="dash-kpi-value" id="kpiTotalCount">0</div>
+            <div class="dash-kpi-sub">
+              <span>คดีอาญา: <b id="kpi101Sub">0</b> | ข่าวสาร: <b id="kpi102Sub">0</b> | ปกครอง: <b id="kpi103Sub">0</b></span>
+            </div>
+          </div>
+
+          <!-- In Progress -->
+          <div class="dash-kpi-card" onclick="filterByKpiCard('IN_PROGRESS')">
+            <div class="dash-kpi-top">
+              <span class="dash-kpi-label">อยู่ระหว่างดำเนินการ</span>
+              <div class="dash-kpi-icon" style="background: var(--ds-info-bg); color: var(--ds-info-text)">
+                <i class="fa-solid fa-spinner"></i>
+              </div>
+            </div>
+            <div class="dash-kpi-value" style="color: var(--ds-blue-600)" id="kpiActiveCount">0</div>
+            <div class="dash-kpi-sub">
+              <span>คิดเป็น <b id="kpiActivePct">0%</b> ของงานทั้งหมด</span>
+            </div>
+          </div>
+
+          <!-- Completed -->
+          <div class="dash-kpi-card" onclick="filterByKpiCard('COMPLETED')">
+            <div class="dash-kpi-top">
+              <span class="dash-kpi-label">ดำเนินการแล้วเสร็จ</span>
+              <div class="dash-kpi-icon" style="background: var(--ds-success-bg); color: var(--ds-success-text)">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+            <div class="dash-kpi-value" style="color: var(--ds-success-fill)" id="kpiCompletedCount">0</div>
+            <div class="dash-kpi-sub">
+              <span class="dash-kpi-trend positive"><i class="fa-solid fa-arrow-trend-up me-1"></i>ส่งผลมติ/คำสั่งสมบูรณ์</span>
+            </div>
+          </div>
+
+          <!-- Urgent / Near SLA Breach -->
+          <div class="dash-kpi-card" onclick="filterByKpiCard('WARNING')">
+            <div class="dash-kpi-top">
+              <span class="dash-kpi-label">เฝ้าระวัง / ใกล้ครบ SLA (≤ 5 วัน)</span>
+              <div class="dash-kpi-icon" style="background: var(--ds-warning-bg); color: var(--ds-warning-text)">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+            </div>
+            <div class="dash-kpi-value" style="color: var(--ds-warning-fill)" id="kpiUrgentCount">0</div>
+            <div class="dash-kpi-sub">
+              <span class="dash-kpi-trend warning"><i class="fa-solid fa-clock me-1"></i>ต้องเร่งรัดความเห็น</span>
+            </div>
+          </div>
+
+          <!-- SLA Compliance Rate -->
+          <div class="dash-kpi-card" onclick="filterByKpiCard('SLA_RATE')">
+            <div class="dash-kpi-top">
+              <span class="dash-kpi-label">อัตราสำเร็จตามกรอบเวลา</span>
+              <div class="dash-kpi-icon" style="background: var(--ds-sky-bg); color: var(--ds-sky-text)">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+            </div>
+            <div class="dash-kpi-value" style="color: var(--ds-sky-fill)" id="kpiSlaRate">0%</div>
+            <div class="dash-kpi-sub">
+              <span>เกินกำหนดเพียง <b id="kpiOverdueSub" style="color: var(--ds-danger-fill)">0</b> สำนวน</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- URGENT ATTENTION WATCHLIST (SLA CRITICAL) -->
+        <section class="dash-urgent-panel" id="urgentWatchlistSection">
+          <div class="dash-urgent-header">
+            <h3>
+              <i class="fa-solid fa-bell" style="animation: ds-pulse-mic 1.5s infinite"></i>
+              สำนวนคดีเฝ้าระวังเร่งด่วน (ใกล้ครบกำหนด SLA ภายใน 5 วัน)
+            </h3>
+            <span class="ds-badge ds-badge-danger" id="urgentBadgeCount">0 สำนวนเร่งด่วน</span>
+          </div>
+          <div class="dash-table-wrap">
+            <table class="ds-table" style="font-size: 0.84em; background: var(--ds-surface);">
+              <thead>
+                <tr>
+                  <th style="width: 140px">เลขรับ กกม. / สำนวน</th>
+                  <th style="width: 130px">ประเภทงาน</th>
+                  <th>เรื่อง / คู่กรณี</th>
+                  <th style="width: 150px">นิติกรผู้รับผิดชอบ</th>
+                  <th style="width: 170px">ขั้นตอนปัจจุบัน</th>
+                  <th style="width: 110px; text-align: center">กำหนดส่ง</th>
+                  <th style="width: 90px; text-align: center">เปิดดู</th>
+                </tr>
+              </thead>
+              <tbody id="urgentTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ANALYTICS CHARTS - ROW 1 -->
+        <div class="dash-chart-grid-2">
+          <!-- Chart 1: Case Domain Breakdown -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-chart-pie me-2" style="color: var(--ds-blue-600)"></i>สัดส่วนปริมาณงานตามภารกิจกฎหมาย</span>
+              <span class="ds-badge ds-badge-neutral" id="chart1Subtitle">รวม 3 กิจกรรม</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container">
+                <canvas id="chartCaseCategory"></canvas>
+              </div>
+              <div style="display: flex; justify-content: space-around; margin-top: 14px; font-size: 0.82em; text-align: center;">
+                <div>
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #2563eb; margin-right: 4px;"></span>
+                  <b>10.1 คดีอาญาทุจริตฯ</b>
+                  <div id="chart1Pct101" style="color: var(--ds-ink-500)">0% (0)</div>
+                </div>
+                <div>
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #d97706; margin-right: 4px;"></span>
+                  <b>10.2 ขอเปิดเผยข่าวสาร</b>
+                  <div id="chart1Pct102" style="color: var(--ds-ink-500)">0% (0)</div>
+                </div>
+                <div>
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #4f46e5; margin-right: 4px;"></span>
+                  <b>10.3 คดีศาลปกครอง</b>
+                  <div id="chart1Pct103" style="color: var(--ds-ink-500)">0% (0)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 2: Monthly Inflow & Outflow Trend -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-chart-line me-2" style="color: var(--ds-navy-700)"></i>แนวโน้มการรับสำนวนและผลการดำเนินงานรายเดือน</span>
+              <span class="ds-badge ds-badge-sky">ปีงบ 2568 - 2569</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container">
+                <canvas id="chartMonthlyTrend"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS CHARTS - ROW 2 -->
+        <div class="dash-chart-grid-3">
+          <!-- Chart 3: Workflow Pipeline Stages Funnel -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-diagram-project me-2" style="color: var(--ds-blue-600)"></i>สถานะสำนวนคดีในกระบวนการทำงาน (Workflow Pipeline)</span>
+              <span class="ds-badge ds-badge-info">ขั้นตอนปัจจุบัน</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container" style="height: 290px;">
+                <canvas id="chartWorkflowStages"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 4: Decision & Resolution Outcome Breakdown -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-gavel me-2" style="color: var(--ds-navy-700)"></i>ผลการพิจารณาและมติ (Outcomes)</span>
+              <span class="ds-badge ds-badge-neutral">สัดส่วนมติ</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container" style="height: 230px;">
+                <canvas id="chartDecisions"></canvas>
+              </div>
+              <div style="margin-top: 10px; font-size: 0.8em; line-height: 1.6; color: var(--ds-ink-500)">
+                <div><i class="fa-solid fa-circle text-primary me-1" style="font-size: 8px; color: #2563eb !important"></i> <b>เห็นควรทำความเห็นแย้ง</b>: ปกป้องผลประโยชน์รัฐ</div>
+                <div><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px; color: #16a34a !important"></i> <b>เห็นชอบตามอัยการ / เปิดเผยข้อมูล</b>: ยุติเรื่องตามระเบียบ</div>
+                <div><i class="fa-solid fa-circle text-warning me-1" style="font-size: 8px; color: #d97706 !important"></i> <b>เปิดเผยบางส่วน (ปิดทับ)</b>: คุ้มครองข้อมูลส่วนบุคคล</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS CHARTS - ROW 3 -->
+        <div class="dash-chart-grid-3">
+          <!-- Chart 5: Officer Caseload & Distribution -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-users-gear me-2" style="color: var(--ds-blue-600)"></i>ภาระงานและประสิทธิภาพรายนิติกรผู้รับผิดชอบ</span>
+              <span class="ds-badge ds-badge-neutral">Caseload</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container" style="height: 260px;">
+                <canvas id="chartOfficerCaseload"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 6: SLA Health & Risk Breakdown -->
+          <div class="ds-card">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-stopwatch-20 me-2" style="color: var(--ds-warning-fill)"></i>การกระจายตัวตามกรอบเวลา (SLA Health)</span>
+              <span class="ds-badge ds-badge-warning">Risk Matrix</span>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container" style="height: 260px;">
+                <canvas id="chartSlaHealth"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILED CASE DRILL-DOWN TABLE -->
+        <section class="ds-card">
+          <div class="ds-card-header">
+            <div>
+              <i class="fa-solid fa-list-check me-2" style="color: var(--ds-navy-700)"></i>
+              ตารางเจาะลึกรายละเอียดสำนวนคดี (Case Drill-down Data)
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="ds-badge ds-badge-solid-navy" id="tableFilteredCountBadge">0 รายการ</span>
+            </div>
+          </div>
+
+          <div class="ds-card-body" style="padding-bottom: 0;">
+            <!-- Table Search and Quick Filters -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <div style="position: relative; width: 340px; max-width: 100%;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--ds-ink-400)"></i>
+                <input
+                  type="text"
+                  id="tableSearchInput"
+                  class="ds-form-control"
+                  style="padding-left: 36px;"
+                  placeholder="ค้นหาเลขคดี, ชื่อเรื่อง, ผู้ถูกกล่าวหา, นิติกร..."
+                  onkeyup="onTableSearchChange()"
+                />
+              </div>
+
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="ds-btn ds-btn-secondary" style="height: 32px; font-size: 0.82em;" onclick="quickFilterStatus('ALL')">ทั้งหมด</button>
+                <button class="ds-btn ds-btn-secondary" style="height: 32px; font-size: 0.82em;" onclick="quickFilterStatus('10.1')">คดีอาญา (10.1)</button>
+                <button class="ds-btn ds-btn-secondary" style="height: 32px; font-size: 0.82em;" onclick="quickFilterStatus('10.2')">ข่าวสาร (10.2)</button>
+                <button class="ds-btn ds-btn-secondary" style="height: 32px; font-size: 0.82em;" onclick="quickFilterStatus('10.3')">ศาลปกครอง (10.3)</button>
+                <button class="ds-btn ds-btn-secondary" style="height: 32px; font-size: 0.82em;" onclick="quickFilterStatus('WARNING')">
+                  <span class="ds-badge ds-badge-warning" style="padding: 1px 6px; margin-right: 4px;">!</span> ใกล้ครบกำหนด
+                </button>
+              </div>
+            </div>
+
+            <!-- Main Data Table -->
+            <div class="dash-table-wrap">
+              <table class="ds-table" id="mainDataTable">
+                <thead>
+                  <tr>
+                    <th style="width: 45px; text-align: center">#</th>
+                    <th style="width: 140px">เลขรับ กกม. / เลขคดี</th>
+                    <th style="width: 120px">ประเภทงาน</th>
+                    <th>เรื่อง / พฤติการณ์คดี</th>
+                    <th style="width: 170px">คู่กรณี / ผู้ถูกกล่าวหา</th>
+                    <th style="width: 150px">นิติกรผู้รับผิดชอบ</th>
+                    <th style="width: 160px">สถานะปัจจุบัน</th>
+                    <th style="width: 110px; text-align: center">กรอบเวลา</th>
+                    <th style="width: 75px; text-align: center">ดูข้อมูล</th>
+                  </tr>
+                </thead>
+                <tbody id="mainTableBody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Table Footer Pagination -->
+          <div class="ds-card-actions dash-table-footer">
+            <div style="font-size: 0.85em; color: var(--ds-ink-500)">
+              แสดงผล <b id="tableShowingCount">0</b> จากทั้งหมด <b id="tableTotalCount">0</b> รายการ
+              (หน้า <span id="tableCurrentPage">1</span> / <span id="tableTotalPages">1</span>)
+            </div>
+
+            <div style="display: flex; gap: 4px;" id="paginationControls">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============================= CASE DETAIL MODAL ============================= -->
+    <div class="dash-modal-overlay" id="caseDetailModal" onclick="closeCaseModal(event)">
+      <div class="dash-modal-card" onclick="event.stopPropagation()">
+        <div class="ds-card-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-folder-open" style="color: var(--ds-blue-600)"></i>
+            <span id="modalCaseTitleHeader">รายละเอียดสำนวนคดี</span>
+          </div>
+          <button
+            class="circle-icon-btn"
+            style="width: 28px; height: 28px; font-size: 13px;"
+            onclick="closeCaseModal()"
+            title="ปิดหน้าต่าง"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="ds-card-body" id="modalCaseBody">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="ds-card-actions" style="justify-content: flex-end;">
+          <button class="ds-btn ds-btn-secondary" onclick="closeCaseModal()">
+            <i class="fa-solid fa-xmark me-1"></i>ปิดหน้าต่าง
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================= SCRIPTS ============================= -->
+    <script src="assets/ecmis-shell.js?v=20260908_2"></script>
+    <script>
+      /* ==========================================================================
+         E-CMIS Activity 10: Executive Analytics & Dashboard Engine
+         Standalone Architecture with LocalStorage Sync & Master Reference Data
+         ========================================================================== */
+
+      // Master comprehensive dataset analyzed from E-CMIS Activity 10:
+      // Combines 10.1 (Criminal/Prosecutor), 10.2 (Information Disclosure), and 10.3 (Administrative Court)
+      const MASTER_CASES = [
+        // ---- 10.1 คดีอาญาทุจริตและประพฤติมิชอบ ----
+        {
+          id: "คดี-100001/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100001/2569",
+          lawNo: "0001/2569",
+          paccCaseNo: "0012/2568",
+          fiscalYear: "2569",
+          title: "เบิกจ่ายงบประมาณโครงการฝึกอบรมเท็จ",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายสมชาย ทุจริตมั่น (อดีต ผอ.กองคลัง)",
+          officer: "นายกฤษดา",
+          status: "รอมอบหมายกลุ่มงาน",
+          statusCode: "PENDING_DIRECTOR",
+          workflowStep: 4,
+          stageName: "1. มอบหมายสำนวน",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 2,
+          slaText: "เหลือ 2 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-28"
+        },
+        {
+          id: "คดี-100002/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100002/2569",
+          lawNo: "0002/2569",
+          paccCaseNo: "0015/2568",
+          fiscalYear: "2569",
+          title: "ทุจริตจัดซื้อจัดจ้างโครงการอาหารกลางวันนักเรียน",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายวิชัย ใจดี (ผู้อำนวยการโรงเรียน)",
+          officer: "น.ส.วิภาดา",
+          status: "รอมอบหมายนิติกร",
+          statusCode: "PENDING_GROUP_DIRECTOR",
+          workflowStep: 5,
+          stageName: "1. มอบหมายสำนวน",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 5,
+          slaText: "เหลือ 5 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-25"
+        },
+        {
+          id: "คดี-100003/2569",
+          type: "10.1",
+          subType: "ถอนฟ้อง",
+          caseNo: "100003/2569",
+          lawNo: "0003/2569",
+          paccCaseNo: "0022/2568",
+          fiscalYear: "2569",
+          title: "เรียกรับสินบนโครงการก่อสร้างอาคารเอนกประสงค์",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายประเสริฐ มั่นคง (นายช่างโยธา)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "นิติกรกำลังจัดทำความเห็น",
+          statusCode: "DRAFTING_OPINION",
+          workflowStep: 6,
+          stageName: "2. นิติกรยกร่างความเห็น",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 10,
+          slaText: "เหลือ 10 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-20"
+        },
+        {
+          id: "คดี-100004/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100004/2569",
+          lawNo: "0004/2569",
+          paccCaseNo: "0030/2568",
+          fiscalYear: "2569",
+          title: "ละเว้นการปฏิบัติหน้าที่โดยมิชอบในการตรวจรับงานจ้าง",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายอนันต์ กล้าหาญ (ประธาน กก. ตรวจรับ)",
+          officer: "น.ส.วิภาดา",
+          status: "เสนอ ผอ.กลุ่ม ตรวจร่างความเห็น",
+          statusCode: "PENDING_GROUP_REVIEW",
+          workflowStep: 7,
+          stageName: "3. ตรวจสอบร่างความเห็น",
+          resolution: "เห็นชอบตามอัยการ",
+          slaDays: 8,
+          slaText: "เหลือ 8 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-18"
+        },
+        {
+          id: "คดี-100005/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "0038/2568",
+          lawNo: "0019/2569",
+          paccCaseNo: "0038/2568",
+          fiscalYear: "2569",
+          title: "พิจารณาความเห็นแย้งคำสั่งไม่ฟ้องคดีทุจริตโครงการก่อสร้างเขื่อนป้องกันตลิ่ง",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายมนตรี ว่องไว (อดีตวิศวกรโยธาชำนาญการ)",
+          officer: "นางกานดา รักษ์ธรรม",
+          status: "ธุรการรับผลมติ",
+          statusCode: "RETURNED_FROM_EXEC",
+          workflowStep: 10,
+          stageName: "6. รับผลมติ / ส่งออก",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 6,
+          slaText: "เหลือ 6 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-15"
+        },
+        {
+          id: "คดี-100014/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "0039/2568",
+          lawNo: "0020/2569",
+          paccCaseNo: "0039/2568",
+          fiscalYear: "2569",
+          title: "พิจารณาความเห็นแย้งคดีทุจริตจัดซื้อครุภัณฑ์สารสนเทศและ CCTV",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายสุทธิพงษ์ มั่นเพียร (อดีต ผอ.กองช่าง)",
+          officer: "นางกานดา รักษ์ธรรม",
+          status: "ธุรการรับผลมติ",
+          statusCode: "RETURNED_FROM_EXEC",
+          workflowStep: 10,
+          stageName: "6. รับผลมติ / ส่งออก",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 2,
+          slaText: "เหลือ 2 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-12"
+        },
+        {
+          id: "คดี-100015/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "0040/2568",
+          lawNo: "0021/2569",
+          paccCaseNo: "0040/2568",
+          fiscalYear: "2569",
+          title: "พิจารณาความเห็นแย้งคดีทุจริตเบิกจ่ายเงินงบอบรมสัมมนาเท็จ",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นางสาวพิมพา สมบูรณ์ทรัพย์ (หัวหน้าฝ่ายการเงิน)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "ธุรการรับผลมติ",
+          statusCode: "RETURNED_FROM_EXEC",
+          workflowStep: 10,
+          stageName: "6. รับผลมติ / ส่งออก",
+          resolution: "เห็นชอบตามอัยการ",
+          slaDays: 4,
+          slaText: "เหลือ 4 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-10"
+        },
+        {
+          id: "คดี-100006/2569",
+          type: "10.1",
+          subType: "ถอนฟ้อง",
+          caseNo: "100006/2569",
+          lawNo: "0006/2569",
+          paccCaseNo: "0045/2568",
+          fiscalYear: "2569",
+          title: "ทุจริตเงินอุดหนุนกองทุนหมู่บ้านและชุมชนเมือง",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายสมศักดิ์ รักดี (กรรมการกองทุน)",
+          officer: "น.ส.วิภาดา",
+          status: "เสนอผู้บริหารลงนาม",
+          statusCode: "PENDING_DEPUTY_SG",
+          workflowStep: 8,
+          stageName: "4. เสนอผู้บริหาร",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 2,
+          slaText: "เหลือ 2 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-05"
+        },
+        {
+          id: "คดี-100007/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100007/2569",
+          lawNo: "0007/2569",
+          paccCaseNo: "0049/2568",
+          fiscalYear: "2569",
+          title: "ใช้เอกสารสิทธิทางราชการปลอมเพื่อจัดสรรที่ดิน",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายธนพล ซื่อตรง (เจ้าพนักงานที่ดิน)",
+          officer: "นายณรงค์",
+          status: "อยู่ระหว่างคณะกรรมการ ป.ป.ท. พิจารณา",
+          statusCode: "PENDING_BOARD",
+          workflowStep: 9,
+          stageName: "4. เสนอผู้บริหาร",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 20,
+          slaText: "เหลือ 20 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-28"
+        },
+        {
+          id: "คดี-100008/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100008/2569",
+          lawNo: "0008/2569",
+          paccCaseNo: "0058/2568",
+          fiscalYear: "2569",
+          title: "จัดซื้อครุภัณฑ์การศึกษาและสื่อการเรียนการสอนราคาสูงเกินจริง",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายอำนาจ การศึกษา (อดีต ผอ.กองการศึกษา)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "นิติกรจัดส่งหนังสือ (0/2)",
+          statusCode: "PENDING_OFFICER_EXTERNAL_DISPATCH",
+          workflowStep: 18,
+          stageName: "5. จัดส่งหน่วยงานภายนอก",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 14,
+          slaText: "เหลือ 14 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-20"
+        },
+        {
+          id: "คดี-100009/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100009/2569",
+          lawNo: "0009/2569",
+          paccCaseNo: "0060/2568",
+          fiscalYear: "2569",
+          title: "จัดจ้างปรับปรุงภูมิทัศน์สวนสาธารณะเฉลิมพระเกียรติ",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายสมเกียรติ พัฒนาเมือง (อดีตนายกเทศมนตรี)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "จบกระบวนการสั่งไม่ฟ้อง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "เห็นชอบตามอัยการ",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2569-06-15"
+        },
+        {
+          id: "คดี-100010/2569",
+          type: "10.1",
+          subType: "ถอนฟ้อง",
+          caseNo: "100010/2569",
+          lawNo: "0010/2569",
+          paccCaseNo: "0065/2568",
+          fiscalYear: "2569",
+          title: "พิจารณาคำวินิจฉัยชี้ขาด อสส. คดีจัดซื้ออุปกรณ์สารสนเทศ",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายพิชัย เทคโนโลยี (อดีต ผอ.สำนัก)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "รอธุรการรับผลคำวินิจฉัย อสส.",
+          statusCode: "PENDING_ADMIN_OAG_VERDICT_INTAKE",
+          workflowStep: 19,
+          stageName: "6. รับผลมติ / ส่งออก",
+          resolution: "อสส. ชี้ขาดให้ฟ้อง",
+          slaDays: 15,
+          slaText: "เหลือ 15 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-02"
+        },
+        {
+          id: "คดี-100011/2569",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100011/2569",
+          lawNo: "0011/2569",
+          paccCaseNo: "0068/2568",
+          fiscalYear: "2569",
+          title: "พิจารณาคำวินิจฉัยชี้ขาด อสส. คดีระบบระบายน้ำชุมชน",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายเกรียงศักดิ์ โยธาการ",
+          officer: "นายนภัส สอนดี",
+          status: "ผอ.กอง ตรวจสอบคำวินิจฉัย อสส.",
+          statusCode: "PENDING_DIRECTOR_OAG_VERDICT_REVIEW",
+          workflowStep: 20,
+          stageName: "6. รับผลมติ / ส่งออก",
+          resolution: "อสส. ชี้ขาดให้ฟ้อง",
+          slaDays: 15,
+          slaText: "เหลือ 15 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-01"
+        },
+        {
+          id: "คดี-100012/2568",
+          type: "10.1",
+          subType: "สั่งไม่ฟ้อง",
+          caseNo: "100012/2568",
+          lawNo: "0088/2568",
+          paccCaseNo: "0090/2567",
+          fiscalYear: "2568",
+          title: "ทุจริตเบิกจ่ายเงินสงเคราะห์ผู้มีรายได้น้อย",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นายบุญลือ สุจริตธรรม",
+          officer: "นายกฤษดา",
+          status: "จบกระบวนการสั่งไม่ฟ้อง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "เห็นควรทำความเห็นแย้ง",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2568-11-10"
+        },
+        {
+          id: "คดี-100013/2568",
+          type: "10.1",
+          subType: "ถอนฟ้อง",
+          caseNo: "100013/2568",
+          lawNo: "0089/2568",
+          paccCaseNo: "0092/2567",
+          fiscalYear: "2568",
+          title: "เบิกค่าเบี้ยเลี้ยงและค่ายานพาหนะเท็จ",
+          accuser: "สำนักงาน ป.ป.ท.",
+          accused: "นางสาวศิริพร บุญช่วย",
+          officer: "นายณรงค์",
+          status: "จบกระบวนการสั่งไม่ฟ้อง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "เห็นชอบตามอัยการ",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2568-12-05"
+        },
+
+        // ---- 10.2 การขอเปิดเผยข้อมูลข่าวสาร ----
+        {
+          id: "คำร้อง-100101/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100101/2569",
+          lawNo: "0101/2569",
+          paccCaseNo: "สข-001/2569",
+          fiscalYear: "2569",
+          title: "ขอคัดลอกรายงานการไต่สวนข้อเท็จจริงคดีทุจริตโครงการก่อสร้าง",
+          accuser: "นายสุรชัย ขอตรวจสอบ",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณรงค์",
+          status: "ส่งกอง/สำนักที่รับผิดชอบ",
+          statusCode: "FORWARDED_DIVISION",
+          workflowStep: 1,
+          stageName: "1. รับเรื่องและส่งหน่วยงาน",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 12,
+          slaText: "เหลือ 12 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-25"
+        },
+        {
+          id: "คำร้อง-100102/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100102/2569",
+          lawNo: "0102/2569",
+          paccCaseNo: "สข-002/2569",
+          fiscalYear: "2569",
+          title: "ขอข้อมูลผลการวินิจฉัยชี้มูลความผิดวินัยร้ายแรง",
+          accuser: "นางสาวดารารัตน์ ข่าวสาร",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "น.ส.วิภาดา",
+          status: "รอกองข้อมูลทำความเห็น",
+          statusCode: "PENDING_OPINION",
+          workflowStep: 2,
+          stageName: "2. กองข้อมูลทำความเห็น",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 10,
+          slaText: "เหลือ 10 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-22"
+        },
+        {
+          id: "คำร้อง-100103/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100103/2569",
+          lawNo: "0103/2569",
+          paccCaseNo: "สข-003/2569",
+          fiscalYear: "2569",
+          title: "ขอข้อมูลคำสั่งแต่งตั้งคณะกรรมการตรวจสอบข้อเท็จจริง",
+          accuser: "นายวิชัย เปิดเผย",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณัฐพล บัวทุม",
+          status: "รอนิติกรทำความเห็นเสนอ",
+          statusCode: "DRAFTING_OPINION",
+          workflowStep: 3,
+          stageName: "2. นิติกรยกร่างความเห็น",
+          resolution: "เปิดเผยบางส่วน (ปิดทับ)",
+          slaDays: 1,
+          slaText: "เหลือ 1 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-16"
+        },
+        {
+          id: "คำร้อง-100104/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100104/2569",
+          lawNo: "0104/2569",
+          paccCaseNo: "สข-004/2569",
+          fiscalYear: "2569",
+          title: "ขอเอกสารรายงานผลการตรวจสอบการใช้จ่ายงบประมาณ",
+          accuser: "นายประเสริฐ สื่อมวลชน",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "น.ส.วิภาดา",
+          status: "เสนอคณะอนุกรรมการกลั่นกรองฯ พิจารณา",
+          statusCode: "PENDING_SUBCOMMITTEE",
+          workflowStep: 6,
+          stageName: "3. อนุกรรมการกลั่นกรอง",
+          resolution: "เปิดเผยบางส่วน (ปิดทับ)",
+          slaDays: 7,
+          slaText: "เหลือ 7 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-15"
+        },
+        {
+          id: "คำร้อง-100105/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100105/2569",
+          lawNo: "0105/2569",
+          paccCaseNo: "สข-005/2569",
+          fiscalYear: "2569",
+          title: "ขอทราบผลการพิจารณาคดีทุจริตโครงการก่อสร้างสนามกีฬา",
+          accuser: "นางสาววิไลลักษณ์",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณรงค์",
+          status: "เสนอผู้บริหารเห็นชอบมติ",
+          statusCode: "PENDING_EXEC_APPROVAL",
+          workflowStep: 8,
+          stageName: "4. เสนอผู้บริหาร",
+          resolution: "เปิดเผยทั้งหมด",
+          slaDays: 2,
+          slaText: "เหลือ 2 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-10"
+        },
+        {
+          id: "คำร้อง-100106/2569",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100106/2569",
+          lawNo: "0106/2569",
+          paccCaseNo: "สข-006/2569",
+          fiscalYear: "2569",
+          title: "ขอคัดสำนวนคำร้องเรียนกล่าวหาเจ้าหน้าที่รัฐ",
+          accuser: "นายสมชาย ประชาชน",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายกฤษดา",
+          status: "แจ้งผลผู้ร้องขอ / ปิดคำร้อง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "ไม่เปิดเผย (ปฏิเสธ)",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2569-07-15"
+        },
+        {
+          id: "อุทธรณ์-100107/2569",
+          type: "10.2",
+          subType: "ชั้นอุทธรณ์",
+          caseNo: "100107/2569",
+          lawNo: "0107/2569",
+          paccCaseNo: "อสข-001/2569",
+          fiscalYear: "2569",
+          title: "อุทธรณ์คำสั่งไม่เปิดเผยข้อมูลรายงานการสืบสวนข้อเท็จจริง",
+          accuser: "นายสุรชัย ขอตรวจสอบ",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณรงค์",
+          status: "อยู่ระหว่างคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ",
+          statusCode: "PENDING_APPEAL_COMM",
+          workflowStep: 7,
+          stageName: "3. อนุกรรมการกลั่นกรอง",
+          resolution: "เปิดเผยบางส่วน (ปิดทับ)",
+          slaDays: 3,
+          slaText: "เหลือ 3 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-01"
+        },
+        {
+          id: "อุทธรณ์-100108/2569",
+          type: "10.2",
+          subType: "ชั้นอุทธรณ์",
+          caseNo: "100108/2569",
+          lawNo: "0108/2569",
+          paccCaseNo: "อสข-002/2569",
+          fiscalYear: "2569",
+          title: "อุทธรณ์คำสั่งปฏิเสธการให้ข้อมูลข่าวสารบันทึกคำให้การพยาน",
+          accuser: "นางสาวดารารัตน์",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "น.ส.วิภาดา",
+          status: "รอกองข้อมูลจัดทำรายงานชี้แจง",
+          statusCode: "PENDING_DIVISION_REPORT",
+          workflowStep: 2,
+          stageName: "2. กองข้อมูลทำความเห็น",
+          resolution: "ไม่เปิดเผย (ปฏิเสธ)",
+          slaDays: 8,
+          slaText: "เหลือ 8 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-25"
+        },
+        {
+          id: "อุทธรณ์-100111/2569",
+          type: "10.2",
+          subType: "ชั้นอุทธรณ์",
+          caseNo: "100111/2569",
+          lawNo: "0111/2569",
+          paccCaseNo: "อสข-005/2569",
+          fiscalYear: "2569",
+          title: "แจ้งผลคำวินิจฉัยอุทธรณ์เสร็จสิ้นกรณีขอเอกสารการจัดซื้อ",
+          accuser: "นางสาววิไลลักษณ์",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณรงค์",
+          status: "แจ้งผลวินิจฉัย/ปิดสำนวนอุทธรณ์",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "เปิดเผยทั้งหมด",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2569-06-20"
+        },
+        {
+          id: "คำร้อง-100112/2568",
+          type: "10.2",
+          subType: "ชั้นต้น",
+          caseNo: "100112/2568",
+          lawNo: "0095/2568",
+          paccCaseNo: "สข-045/2568",
+          fiscalYear: "2568",
+          title: "ขอคัดสำเนารายงานการประชุมคณะกรรมการ ป.ป.ท.",
+          accuser: "สมาคมผู้สื่อข่าวสืบสวน",
+          accused: "สำนักงาน ป.ป.ท.",
+          officer: "นายณัฐพล บัวทุม",
+          status: "แจ้งผลผู้ร้องขอ / ปิดคำร้อง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "เปิดเผยทั้งหมด",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2568-11-18"
+        },
+
+        // ---- 10.3 คดีศาลปกครอง ----
+        {
+          id: "คดีปกครอง-100201/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100201/2569",
+          lawNo: "0020/2569",
+          paccCaseNo: "ปค-001/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องขอให้เพิกถอนคำสั่งทางปกครองกรณีสั่งให้ออกจากราชการ",
+          accuser: "นายเดชา นิติธรรม (ผู้ฟ้อง)",
+          accused: "คณะกรรมการ ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "น.ส.วิภาดา",
+          status: "รอมอบหมายคดีปกครอง",
+          statusCode: "PENDING_DIRECTOR",
+          workflowStep: 1,
+          stageName: "1. มอบหมายสำนวน",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 30,
+          slaText: "เหลือ 30 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-25"
+        },
+        {
+          id: "คดีปกครอง-100202/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100202/2569",
+          lawNo: "0021/2569",
+          paccCaseNo: "ปค-002/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องเรียกค่าเสียหายทางละเมิดจากการปฏิบัติหน้าที่ชี้มูลความผิด",
+          accuser: "หจก. ก่อสร้างมั่นคง (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายกฤษดา",
+          status: "รอนิติกรทำคำให้การ",
+          statusCode: "PENDING_GROUP_DIRECTOR",
+          workflowStep: 2,
+          stageName: "1. มอบหมายสำนวน",
+          resolution: "อยู่ระหว่างพิจารณา",
+          slaDays: 25,
+          slaText: "เหลือ 25 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-20"
+        },
+        {
+          id: "คดีปกครอง-100203/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100203/2569",
+          lawNo: "0022/2569",
+          paccCaseNo: "ปค-003/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องคดีพิพาทเกี่ยวกับการออกคำสั่งไล่ออกโดยมิชอบ",
+          accuser: "นายชูชัย มั่นเพียร (ผู้ฟ้อง)",
+          accused: "เลขาธิการ ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "นิติกรทำร่างคำให้การ",
+          statusCode: "DRAFTING_OPINION",
+          workflowStep: 3,
+          stageName: "2. นิติกรยกร่างความเห็น",
+          resolution: "ให้การต่อสู้คดี",
+          slaDays: 20,
+          slaText: "เหลือ 20 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-15"
+        },
+        {
+          id: "คดีปกครอง-100204/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100204/2569",
+          lawNo: "0023/2569",
+          paccCaseNo: "ปค-004/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องเพิกถอนคำสั่งลงโทษทางวินัยตัดเงินเดือน",
+          accuser: "นายสุรพล ธรรมาภิบาล (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายณรงค์",
+          status: "เสนอ ผอ.กลุ่มฯ ตรวจ",
+          statusCode: "PENDING_GROUP_REVIEW",
+          workflowStep: 4,
+          stageName: "3. ตรวจสอบร่างความเห็น",
+          resolution: "ให้การต่อสู้คดี",
+          slaDays: 15,
+          slaText: "เหลือ 15 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-10"
+        },
+        {
+          id: "คดีปกครอง-100205/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100205/2569",
+          lawNo: "0024/2569",
+          paccCaseNo: "ปค-005/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องคดีพิพาทสัญญาทางปกครองงานจัดซื้อระบบคอมพิวเตอร์",
+          accuser: "บริษัท ดาต้าเทค จำกัด (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายกฤษดา",
+          status: "เสนอ ผอ.กองกฎหมาย ตรวจ",
+          statusCode: "PENDING_DIRECTOR_APPROVAL",
+          workflowStep: 5,
+          stageName: "3. ตรวจสอบร่างความเห็น",
+          resolution: "ให้การต่อสู้คดี",
+          slaDays: 10,
+          slaText: "เหลือ 10 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-08-05"
+        },
+        {
+          id: "คดีปกครอง-100206/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100206/2569",
+          lawNo: "0025/2569",
+          paccCaseNo: "ปค-006/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องขอให้ชดใช้ค่าสินไหมทดแทนการละเมิดอำนาจหน้าที่",
+          accuser: "นายพิสุทธิ์ บริสุทธิ์ (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "น.ส.วิภาดา",
+          status: "เสนอผู้บริหารลงนาม",
+          statusCode: "PENDING_DEPUTY_SG",
+          workflowStep: 6,
+          stageName: "4. เสนอผู้บริหาร",
+          resolution: "ให้การต่อสู้คดี",
+          slaDays: 4,
+          slaText: "เหลือ 4 วัน",
+          slaAlert: "WARNING",
+          dateReceived: "2569-08-01"
+        },
+        {
+          id: "คดีปกครอง-100207/2569",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100207/2569",
+          lawNo: "0026/2569",
+          paccCaseNo: "ปค-007/2569",
+          fiscalYear: "2569",
+          title: "ฟ้องเพิกถอนมติคณะกรรมการ ป.ป.ท. กรณีชี้มูลความผิดวินัย",
+          accuser: "นางศิริเพ็ญ ชัยชนะ (ผู้ฟ้อง)",
+          accused: "คณะกรรมการ ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายณรงค์",
+          status: "ส่งพนักงานอัยการดำเนินคดีแทน",
+          statusCode: "PENDING_DISPATCH",
+          workflowStep: 7,
+          stageName: "5. จัดส่งหน่วยงานภายนอก",
+          resolution: "ส่งอัยการว่าต่าง",
+          slaDays: 45,
+          slaText: "ปกติ (45 วัน)",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-20"
+        },
+        {
+          id: "คดีปกครอง-100208/2569",
+          type: "10.3",
+          subType: "ศาลปกครองสูงสุด",
+          caseNo: "100208/2569",
+          lawNo: "0027/2569",
+          paccCaseNo: "ปค-008/2569",
+          fiscalYear: "2569",
+          title: "อุทธรณ์คดีพิพาทเจ้าหน้าที่รัฐกระทำละเมิดต่อศาลปกครองสูงสุด",
+          accuser: "นายชานนท์ เมธา (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายกฤษดา",
+          status: "อยู่ระหว่างการพิจารณาของศาลปกครอง",
+          statusCode: "IN_COURT",
+          workflowStep: 8,
+          stageName: "5. จัดส่งหน่วยงานภายนอก",
+          resolution: "อยู่ระหว่างการพิจารณา",
+          slaDays: 15,
+          slaText: "เหลือ 15 วัน",
+          slaAlert: "NORMAL",
+          dateReceived: "2569-07-15"
+        },
+        {
+          id: "คดีปกครอง-100210/2569",
+          type: "10.3",
+          subType: "ศาลปกครองสูงสุด",
+          caseNo: "100210/2569",
+          lawNo: "0029/2569",
+          paccCaseNo: "ปค-010/2569",
+          fiscalYear: "2569",
+          title: "คดีพิพาทสิ้นสุดตามคำพิพากษาศาลปกครองสูงสุด (ยกฟ้อง)",
+          accuser: "นายมนตรี สิทธิเดช (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายณรงค์",
+          status: "คดีถึงที่สุด/ปิดสำนวนคดีปกครอง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "ศาลยกฟ้อง (ป.ป.ท. ชนะ)",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2569-05-10"
+        },
+        {
+          id: "คดีปกครอง-100211/2568",
+          type: "10.3",
+          subType: "ศาลปกครองชั้นต้น",
+          caseNo: "100211/2568",
+          lawNo: "0077/2568",
+          paccCaseNo: "ปค-055/2568",
+          fiscalYear: "2568",
+          title: "ฟ้องเพิกถอนคำสั่งแต่งตั้งคณะกรรมการไต่สวนข้อเท็จจริง",
+          accuser: "นายธเนศ สถิตคุณ (ผู้ฟ้อง)",
+          accused: "สำนักงาน ป.ป.ท. (ผู้ถูกฟ้อง)",
+          officer: "นายณัฐพล บัวทุม",
+          status: "คดีถึงที่สุด/ปิดสำนวนคดีปกครอง",
+          statusCode: "COMPLETED",
+          workflowStep: 22,
+          stageName: "7. เสร็จสิ้นกระบวนการ",
+          resolution: "ศาลยกฟ้อง (ป.ป.ท. ชนะ)",
+          slaDays: 99,
+          slaText: "เสร็จสิ้น",
+          slaAlert: "COMPLETED",
+          dateReceived: "2568-10-15"
+        }
+      ];
+
+      // Local state variables
+      let allCases = [];
+      let filteredCases = [];
+      let currentPage = 1;
+      const pageSize = 8;
+      let activeKpiFilter = 'ALL';
+
+      // Chart Instances
+      let chartCategoryInstance = null;
+      let chartMonthlyTrendInstance = null;
+      let chartWorkflowStagesInstance = null;
+      let chartDecisionsInstance = null;
+      let chartOfficerCaseloadInstance = null;
+      let chartSlaHealthInstance = null;
+
+      // Compatibility with shell functions
+      window.stepFontSize = function (dir) {
+        if (typeof changeFontSize === 'function') changeFontSize(dir);
+      };
+
+      // Wrap toggleTheme to also update Chart.js colors
+      const originalToggleTheme = window.toggleTheme;
+      window.toggleTheme = function () {
+        if (typeof originalToggleTheme === 'function') originalToggleTheme();
+        const isDark = document.body.classList.contains('dark-mode');
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (themeBtn) {
+          themeBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        }
+        // Update Chart default text and grid colors
+        const textColor = isDark ? '#cbd5e1' : '#64748b';
+        const gridColor = isDark ? '#334155' : '#f1f5f9';
+        Chart.defaults.color = textColor;
+        if (chartMonthlyTrendInstance) {
+          chartMonthlyTrendInstance.options.scales.y.grid.color = gridColor;
+          chartMonthlyTrendInstance.update();
+        }
+        if (chartWorkflowStagesInstance) {
+          chartWorkflowStagesInstance.options.scales.x.grid.color = gridColor;
+          chartWorkflowStagesInstance.update();
+        }
+        if (chartOfficerCaseloadInstance) {
+          chartOfficerCaseloadInstance.options.scales.y.grid.color = gridColor;
+          chartOfficerCaseloadInstance.update();
+        }
+        if (chartSlaHealthInstance) {
+          chartSlaHealthInstance.options.scales.r.grid.color = isDark ? '#475569' : '#e2e8f0';
+          chartSlaHealthInstance.update();
+        }
+      };
+
+      // Initialize Dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        if (typeof updateRoleDisplay === 'function') {
+          updateRoleDisplay();
+        }
+        initDataSource();
+        renderDateHeader();
+        initCharts();
+        applyFilters();
+      });
+
+      function renderDateHeader() {
+        const d = new Date();
+        const thMonths = [
+          "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+          "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+        ];
+        const day = d.getDate();
+        const month = thMonths[d.getMonth()];
+        const year = d.getFullYear() + 543;
+        const el = document.getElementById("currentDateDisplay");
+        if (el) el.innerText = `ข้อมูล ณ วันที่ ${day} ${month} ${year}`;
+      }
+
+      // Check localStorage for any system changes or fall back to MASTER_CASES
+      function initDataSource() {
+        let storedCases = [];
+        try {
+          // Scan for known keys
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.indexOf("ecmis_act10_cases") !== -1) {
+              const parsed = JSON.parse(localStorage.getItem(key));
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                storedCases = parsed;
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Could not read localStorage", e);
+        }
+
+        if (storedCases && storedCases.length > 0) {
+          // Merge stored modifications with master cases
+          const map = new Map();
+          MASTER_CASES.forEach(c => map.set(c.id, c));
+          storedCases.forEach(sc => {
+            if (map.has(sc.id)) {
+              map.set(sc.id, Object.assign({}, map.get(sc.id), sc));
+            } else {
+              map.set(sc.id, Object.assign({
+                type: sc.category || "10.1",
+                subType: sc.courtOrder || "ทั่วไป",
+                fiscalYear: "2569",
+                stageName: sc.status || "กำลังดำเนินการ",
+                resolution: sc.finalOpinionType || "อยู่ระหว่างพิจารณา",
+                slaDays: sc.slaDaysRemaining || 10,
+                slaText: `เหลือ ${sc.slaDaysRemaining || 10} วัน`,
+                slaAlert: (sc.slaDaysRemaining <= 5) ? "WARNING" : "NORMAL",
+                dateReceived: sc.dateReceived || "2569-08-01"
+              }, sc));
+            }
+          });
+          allCases = Array.from(map.values());
+        } else {
+          allCases = JSON.parse(JSON.stringify(MASTER_CASES));
+        }
+      }
+
+      function refreshDashboard(notify) {
+        initDataSource();
+        applyFilters();
+        if (notify) {
+          alert("อัปเดตข้อมูลแดชบอร์ดสำเร็จ ข้อมูลสถิติเป็นปัจจุบันเรียบร้อยแล้ว");
+        }
+      }
+
+      function exportDataReport() {
+        const rows = [
+          ["ลำดับ", "เลขรับ กกม.", "ประเภทงาน", "ชื่อเรื่อง", "คู่กรณี/ผู้ถูกกล่าวหา", "นิติกร", "สถานะ", "กรอบเวลา (วัน)"]
+        ];
+        filteredCases.forEach((c, idx) => {
+          rows.push([
+            idx + 1,
+            c.lawNo || c.caseNo,
+            c.type === "10.1" ? "คดีอาญา (10.1)" : (c.type === "10.2" ? "ขอเปิดเผยข่าวสาร (10.2)" : "ศาลปกครอง (10.3)"),
+            `"${(c.title || "").replace(/"/g, '""')}"`,
+            `"${(c.accused || c.accuser || "").replace(/"/g, '""')}"`,
+            c.officer || "-",
+            c.status || "-",
+            c.slaDays || "-"
+          ]);
+        });
+        const csvContent = "\uFEFF" + rows.map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `รายงานสรุปงานคดี_ECMIS_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Filtering Logic
+      function applyFilters() {
+        const fYear = document.getElementById("filterFiscalYear").value;
+        const fCat = document.getElementById("filterCategory").value;
+        const fOfficer = document.getElementById("filterOfficer").value;
+        const fSla = document.getElementById("filterSla").value;
+        const searchTxt = (document.getElementById("tableSearchInput") ? document.getElementById("tableSearchInput").value : "").toLowerCase().trim();
+
+        filteredCases = allCases.filter(item => {
+          // Fiscal year
+          if (fYear !== "ALL" && item.fiscalYear !== fYear) return false;
+          // Category
+          if (fCat !== "ALL" && item.type !== fCat) return false;
+          // Officer
+          if (fOfficer !== "ALL" && item.officer !== fOfficer) return false;
+          // SLA
+          if (fSla === "NORMAL" && (item.slaAlert !== "NORMAL" || item.status.indexOf("เสร็จสิ้น") !== -1 || item.statusCode === "COMPLETED")) return false;
+          if (fSla === "WARNING" && item.slaAlert !== "WARNING") return false;
+          if (fSla === "OVERDUE" && item.slaAlert !== "OVERDUE") return false;
+          if (fSla === "COMPLETED" && item.statusCode !== "COMPLETED" && item.status.indexOf("เสร็จสิ้น") === -1 && item.status.indexOf("ปิดสำนวน") === -1) return false;
+
+          // KPI Card quick filter
+          if (activeKpiFilter === "IN_PROGRESS") {
+            if (item.statusCode === "COMPLETED" || item.status.indexOf("เสร็จสิ้น") !== -1 || item.status.indexOf("ปิดสำนวน") !== -1) return false;
+          } else if (activeKpiFilter === "COMPLETED") {
+            if (item.statusCode !== "COMPLETED" && item.status.indexOf("เสร็จสิ้น") === -1 && item.status.indexOf("ปิดสำนวน") === -1) return false;
+          } else if (activeKpiFilter === "WARNING") {
+            if (item.slaAlert !== "WARNING") return false;
+          }
+
+          // Text Search
+          if (searchTxt) {
+            const haystack = [
+              item.lawNo, item.caseNo, item.paccCaseNo, item.title,
+              item.accused, item.accuser, item.officer, item.status
+            ].join(" ").toLowerCase();
+            if (haystack.indexOf(searchTxt) === -1) return false;
+          }
+
+          return true;
+        });
+
+        currentPage = 1;
+        updateKpiMetrics();
+        renderUrgentWatchlist();
+        renderTable();
+        updateCharts();
+      }
+
+      function resetFilters() {
+        document.getElementById("filterFiscalYear").value = "ALL";
+        document.getElementById("filterCategory").value = "ALL";
+        document.getElementById("filterOfficer").value = "ALL";
+        document.getElementById("filterSla").value = "ALL";
+        if (document.getElementById("tableSearchInput")) document.getElementById("tableSearchInput").value = "";
+        activeKpiFilter = "ALL";
+        document.querySelectorAll(".dash-kpi-card").forEach(el => el.classList.remove("is-active"));
+        applyFilters();
+      }
+
+      function filterByKpiCard(type) {
+        activeKpiFilter = (activeKpiFilter === type) ? "ALL" : type;
+        document.querySelectorAll(".dash-kpi-card").forEach(el => el.classList.remove("is-active"));
+        if (activeKpiFilter !== "ALL") {
+          event.currentTarget.classList.add("is-active");
+        }
+        applyFilters();
+      }
+
+      function onTableSearchChange() {
+        applyFilters();
+      }
+
+      function quickFilterStatus(cat) {
+        if (cat === "ALL") {
+          document.getElementById("filterCategory").value = "ALL";
+          document.getElementById("filterSla").value = "ALL";
+        } else if (cat === "WARNING") {
+          document.getElementById("filterSla").value = "WARNING";
+        } else {
+          document.getElementById("filterCategory").value = cat;
+        }
+        applyFilters();
+      }
+
+      // Update KPI Numbers
+      function updateKpiMetrics() {
+        const total = filteredCases.length;
+        let c101 = 0, c102 = 0, c103 = 0;
+        let active = 0, completed = 0, urgent = 0, overdue = 0;
+
+        filteredCases.forEach(item => {
+          if (item.type === "10.1") c101++;
+          else if (item.type === "10.2") c102++;
+          else if (item.type === "10.3") c103++;
+
+          const isDone = (item.statusCode === "COMPLETED" || item.status.indexOf("เสร็จสิ้น") !== -1 || item.status.indexOf("ปิดสำนวน") !== -1);
+          if (isDone) {
+            completed++;
+          } else {
+            active++;
+            if (item.slaAlert === "WARNING") urgent++;
+            if (item.slaAlert === "OVERDUE") overdue++;
+          }
+        });
+
+        document.getElementById("kpiTotalCount").innerText = total;
+        document.getElementById("kpi101Sub").innerText = c101;
+        document.getElementById("kpi102Sub").innerText = c102;
+        document.getElementById("kpi103Sub").innerText = c103;
+
+        document.getElementById("kpiActiveCount").innerText = active;
+        const activePct = total > 0 ? ((active / total) * 100).toFixed(1) : 0;
+        document.getElementById("kpiActivePct").innerText = `${activePct}%`;
+
+        document.getElementById("kpiCompletedCount").innerText = completed;
+        document.getElementById("kpiUrgentCount").innerText = urgent;
+        document.getElementById("urgentBadgeCount").innerText = `${urgent} สำนวนเร่งด่วน`;
+
+        // SLA rate
+        const complianceRate = total > 0 ? (((total - overdue) / total) * 100).toFixed(1) : 100;
+        document.getElementById("kpiSlaRate").innerText = `${complianceRate}%`;
+        document.getElementById("kpiOverdueSub").innerText = overdue;
+      }
+
+      // Render Urgent Watchlist
+      function renderUrgentWatchlist() {
+        const urgentItems = filteredCases.filter(c => c.slaAlert === "WARNING" && c.statusCode !== "COMPLETED" && c.status.indexOf("เสร็จสิ้น") === -1);
+        const tbody = document.getElementById("urgentTableBody");
+        const panel = document.getElementById("urgentWatchlistSection");
+
+        if (!tbody) return;
+
+        if (urgentItems.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 18px; color: var(--ds-ink-500);"><i class="fa-solid fa-circle-check text-success me-2"></i>ไม่มีสำนวนคดีที่ใกล้ครบกำหนดในขณะนี้ การดำเนินการทั้งหมดอยู่ในเกณฑ์ปกติ</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = urgentItems.map((item, idx) => {
+          const typeBadge = getCategoryBadge(item.type);
+          return `
+            <tr class="clickable-row" onclick="openCaseModal('${item.id}')">
+              <td>
+                <span class="ds-mono" style="font-weight: 600; color: var(--ds-navy-700)">${item.lawNo || item.caseNo}</span>
+                <div style="font-size: 0.8em; color: var(--ds-ink-500)">คดี ป.ป.ท. ${item.paccCaseNo || '-'}</div>
+              </td>
+              <td>${typeBadge}</td>
+              <td>
+                <div style="font-weight: 600; color: var(--ds-ink-900); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">${item.title}</div>
+                <div style="font-size: 0.8em; color: var(--ds-ink-500)">ผู้ถูกกล่าวหา/คู่กรณี: ${item.accused || item.accuser || '-'}</div>
+              </td>
+              <td>
+                <i class="fa-solid fa-user me-1" style="color: var(--ds-ink-400); font-size: 11px;"></i>
+                <span>${item.officer || 'ยังไม่ระบุ'}</span>
+              </td>
+              <td>
+                <span class="ds-badge ds-badge-info" style="font-size: 0.8em">${item.status}</span>
+              </td>
+              <td style="text-align: center">
+                <span class="ds-badge ds-badge-danger" style="font-weight: 700;">${item.slaText}</span>
+              </td>
+              <td style="text-align: center">
+                <button class="circle-icon-btn" style="width: 28px; height: 28px; margin: 0 auto; font-size: 12px; color: var(--ds-blue-600);" onclick="event.stopPropagation(); openCaseModal('${item.id}')" title="ดูรายละเอียด">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function getCategoryBadge(type) {
+        if (type === "10.1") {
+          return `<span class="ds-badge ds-badge-info" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-scale-balanced me-1"></i>10.1 อาญาทุจริตฯ</span>`;
+        } else if (type === "10.2") {
+          return `<span class="ds-badge ds-badge-warning" style="background: #fef3c7; color: #92400e;"><i class="fa-solid fa-envelope-open-text me-1"></i>10.2 ข้อมูลข่าวสาร</span>`;
+        } else {
+          return `<span class="ds-badge ds-badge-neutral" style="background: #ede9fe; color: #5b21b6;"><i class="fa-solid fa-landmark me-1"></i>10.3 ศาลปกครอง</span>`;
+        }
+      }
+
+      // Render Drill-Down Data Table with Pagination
+      function renderTable() {
+        const tbody = document.getElementById("mainTableBody");
+        const countBadge = document.getElementById("tableFilteredCountBadge");
+        const showingEl = document.getElementById("tableShowingCount");
+        const totalEl = document.getElementById("tableTotalCount");
+        const currentP = document.getElementById("tableCurrentPage");
+        const totalP = document.getElementById("tableTotalPages");
+
+        const totalItems = filteredCases.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        countBadge.innerText = `${totalItems} รายการ`;
+        showingEl.innerText = totalItems === 0 ? 0 : `${(currentPage - 1) * pageSize + 1} - ${Math.min(currentPage * pageSize, totalItems)}`;
+        totalEl.innerText = totalItems;
+        currentP.innerText = currentPage;
+        totalP.innerText = totalPages;
+
+        if (totalItems === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 26px; color: var(--ds-ink-500)"><i class="fa-solid fa-magnifying-glass me-2"></i>ไม่พบข้อมูลสำนวนคดีที่ตรงกับเงื่อนไขตัวกรอง</td></tr>`;
+          renderPagination(totalPages);
+          return;
+        }
+
+        const startIdx = (currentPage - 1) * pageSize;
+        const pageItems = filteredCases.slice(startIdx, startIdx + pageSize);
+
+        tbody.innerHTML = pageItems.map((item, index) => {
+          const rowNum = startIdx + index + 1;
+          const catBadge = getCategoryBadge(item.type);
+
+          // Status Badge mapping
+          let statusBadgeClass = "ds-badge-info";
+          if (item.statusCode === "COMPLETED" || item.status.indexOf("เสร็จสิ้น") !== -1 || item.status.indexOf("ปิดสำนวน") !== -1) {
+            statusBadgeClass = "ds-badge-success";
+          } else if (item.status.indexOf("ตีกลับ") !== -1) {
+            statusBadgeClass = "ds-badge-danger";
+          } else if (item.status.indexOf("เสนอ") !== -1 || item.status.indexOf("รอ") !== -1) {
+            statusBadgeClass = "ds-badge-warning";
+          }
+
+          // SLA Badge
+          let slaBadge = `<span class="ds-badge ds-badge-neutral">${item.slaText || '-'}</span>`;
+          if (item.slaAlert === "WARNING") {
+            slaBadge = `<span class="ds-badge ds-badge-danger">${item.slaText}</span>`;
+          } else if (item.slaAlert === "COMPLETED") {
+            slaBadge = `<span class="ds-badge ds-badge-success"><i class="fa-solid fa-check me-1"></i>เสร็จสิ้น</span>`;
+          } else if (item.slaAlert === "NORMAL") {
+            slaBadge = `<span class="ds-badge ds-badge-sky">${item.slaText}</span>`;
+          }
+
+          return `
+            <tr class="clickable-row" onclick="openCaseModal('${item.id}')">
+              <td style="text-align: center; color: var(--ds-ink-400); font-size: 0.85em;">${rowNum}</td>
+              <td>
+                <b class="ds-mono" style="color: var(--ds-navy-700)">${item.lawNo || item.caseNo}</b>
+                <div style="font-size: 0.78em; color: var(--ds-ink-500)">สำนวน ${item.paccCaseNo || '-'}</div>
+              </td>
+              <td>${catBadge}</td>
+              <td>
+                <div style="font-weight: 600; color: var(--ds-ink-900); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">${item.title}</div>
+                <div style="font-size: 0.78em; color: var(--ds-ink-500)">คำสั่ง/คำขอ: ${item.subType || '-'} · มติ: ${item.resolution || '-'}</div>
+              </td>
+              <td>
+                <div style="max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.accused || item.accuser || '-'}">
+                  ${item.accused || item.accuser || '-'}
+                </div>
+              </td>
+              <td>
+                <i class="fa-solid fa-user-circle me-1" style="color: var(--ds-ink-400)"></i>
+                <span>${item.officer || 'ยังไม่ระบุ'}</span>
+              </td>
+              <td>
+                <span class="ds-badge ${statusBadgeClass}" style="font-size: 0.8em">${item.status}</span>
+              </td>
+              <td style="text-align: center">
+                ${slaBadge}
+              </td>
+              <td style="text-align: center">
+                <button class="circle-icon-btn" style="width: 28px; height: 28px; margin: 0 auto; font-size: 12px; color: var(--ds-blue-600)" onclick="event.stopPropagation(); openCaseModal('${item.id}')" title="ดูรายละเอียด">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        renderPagination(totalPages);
+      }
+
+      function renderPagination(totalPages) {
+        const container = document.getElementById("paginationControls");
+        if (!container) return;
+
+        let html = `
+          <button class="ds-btn ds-btn-secondary" style="height: 30px; padding: 0 8px;" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        `;
+
+        for (let p = 1; p <= totalPages; p++) {
+          if (p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+            const activeStyle = p === currentPage ? 'background: var(--ds-navy-700); color: #fff; border-color: var(--ds-navy-700); font-weight: bold;' : '';
+            html += `<button class="ds-btn ds-btn-secondary" style="height: 30px; min-width: 30px; padding: 0 8px; ${activeStyle}" onclick="goToPage(${p})">${p}</button>`;
+          } else if (p === currentPage - 2 || p === currentPage + 2) {
+            html += `<span style="padding: 4px 6px; color: var(--ds-ink-400)">...</span>`;
+          }
+        }
+
+        html += `
+          <button class="ds-btn ds-btn-secondary" style="height: 30px; padding: 0 8px;" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      function goToPage(p) {
+        const totalPages = Math.max(1, Math.ceil(filteredCases.length / pageSize));
+        if (p < 1 || p > totalPages) return;
+        currentPage = p;
+        renderTable();
+      }
+
+      // Case Modal
+      function openCaseModal(caseId) {
+        const item = allCases.find(c => c.id === caseId);
+        if (!item) return;
+
+        document.getElementById("modalCaseTitleHeader").innerText = `${item.lawNo || item.caseNo} - ${item.title}`;
+        const body = document.getElementById("modalCaseBody");
+
+        const is101 = item.type === "10.1";
+        const is102 = item.type === "10.2";
+        const is103 = item.type === "10.3";
+
+        body.innerHTML = `
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+            ${getCategoryBadge(item.type)}
+            <span class="ds-badge ds-badge-info">${item.status}</span>
+            <span class="ds-badge ds-badge-${item.slaAlert === 'WARNING' ? 'danger' : 'sky'}">${item.slaText}</span>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">เลขรับ กกม.</label>
+              <div class="ds-read-box ds-mono">${item.lawNo || item.caseNo || '-'}</div>
+            </div>
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">เลขสำนวน ป.ป.ท.</label>
+              <div class="ds-read-box ds-mono">${item.paccCaseNo || '-'}</div>
+            </div>
+
+            <div class="span-2">
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">ชื่อเรื่อง / ข้อพิจารณา</label>
+              <div class="ds-read-box" style="font-weight: 600; color: var(--ds-navy-700)">${item.title}</div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">ผู้กล่าวหา / ผู้ฟ้อง / ผู้ร้อง</label>
+              <div class="ds-read-box">${item.accuser || '-'}</div>
+            </div>
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">ผู้ถูกกล่าวหา / ผู้ถูกฟ้อง</label>
+              <div class="ds-read-box">${item.accused || '-'}</div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">นิติกรเจ้าของสำนวน</label>
+              <div class="ds-read-box"><i class="fa-solid fa-user me-2" style="color: var(--ds-blue-600)"></i>${item.officer || '-'}</div>
+            </div>
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">มติ / ผลการพิจารณา</label>
+              <div class="ds-read-box" style="font-weight: 600">${item.resolution || item.finalOpinionType || '-'}</div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">วันที่รับเรื่องเข้าระบบ</label>
+              <div class="ds-read-box">${item.dateReceived || '-'}</div>
+            </div>
+            <div>
+              <label style="font-size: 0.85em; font-weight: 600; color: var(--ds-ink-700); display: block; margin-bottom: 4px;">กรอบเวลาดำเนินการ (SLA)</label>
+              <div class="ds-read-box" style="color: ${item.slaAlert === 'WARNING' ? 'var(--ds-danger-text)' : 'inherit'}; font-weight: 600;">
+                <i class="fa-solid fa-stopwatch me-2"></i>${item.slaText} (กำหนด 15-30 วัน)
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("caseDetailModal").classList.add("show");
+      }
+
+      function closeCaseModal() {
+        document.getElementById("caseDetailModal").classList.remove("show");
+      }
+
+      // ==========================================================================
+      // Visualizations & Chart Setup (Chart.js Aligned with E-CMIS Design Tokens)
+      // ==========================================================================
+      function initCharts() {
+        const fontFamily = "'Prompt', 'Sarabun', sans-serif";
+        Chart.defaults.font.family = fontFamily;
+        Chart.defaults.color = "#64748b";
+
+        // Chart 1: Case Category Distribution (Doughnut)
+        const ctxCategory = document.getElementById("chartCaseCategory").getContext("2d");
+        chartCategoryInstance = new Chart(ctxCategory, {
+          type: "doughnut",
+          data: {
+            labels: ["10.1 คดีอาญาทุจริตฯ", "10.2 ขอเปิดเผยข่าวสาร", "10.3 คดีศาลปกครอง"],
+            datasets: [{
+              data: [0, 0, 0],
+              backgroundColor: ["#2563eb", "#d97706", "#4f46e5"],
+              borderWidth: 2,
+              borderColor: "#ffffff"
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "68%",
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    return ` ${ctx.label}: ${ctx.raw} สำนวน (${ctx.dataset.data.reduce((a, b) => a + b, 0) > 0 ? ((ctx.raw / ctx.dataset.data.reduce((a, b) => a + b, 0)) * 100).toFixed(1) : 0}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // Chart 2: Monthly Inflow Trend (Combo Bar + Line)
+        const ctxMonthly = document.getElementById("chartMonthlyTrend").getContext("2d");
+        chartMonthlyTrendInstance = new Chart(ctxMonthly, {
+          type: "bar",
+          data: {
+            labels: ["ต.ค. 68", "พ.ย. 68", "ธ.ค. 68", "ม.ค. 69", "ก.พ. 69", "มี.ค. 69", "เม.ย. 69", "พ.ค. 69", "มิ.ย. 69", "ก.ค. 69", "ส.ค. 69", "ก.ย. 69"],
+            datasets: [
+              {
+                type: "line",
+                label: "สำนวนแล้วเสร็จ",
+                data: [3, 4, 3, 5, 4, 6, 5, 7, 6, 8, 9, 6],
+                borderColor: "#16a34a",
+                backgroundColor: "rgba(22, 163, 74, 0.1)",
+                borderWidth: 2.5,
+                tension: 0.35,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: "#16a34a"
+              },
+              {
+                type: "bar",
+                label: "สำนวนรับเข้าใหม่",
+                data: [4, 5, 4, 6, 5, 7, 6, 8, 7, 9, 10, 7],
+                backgroundColor: "#2563eb",
+                borderRadius: 4,
+                barPercentage: 0.55
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+                labels: { boxWidth: 12, font: { size: 11 } }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "#f1f5f9" },
+                ticks: { stepSize: 2 }
+              },
+              x: {
+                grid: { display: false }
+              }
+            }
+          }
+        });
+
+        // Chart 3: Workflow Pipeline Stages (Horizontal Bar)
+        const ctxStages = document.getElementById("chartWorkflowStages").getContext("2d");
+        chartWorkflowStagesInstance = new Chart(ctxStages, {
+          type: "bar",
+          data: {
+            labels: [
+              "1. มอบหมายสำนวน",
+              "2. นิติกรยกร่างความเห็น",
+              "3. ตรวจร่างความเห็น",
+              "4. เสนอผู้บริหาร/บอร์ด",
+              "5. จัดส่งภายนอก/ศาล",
+              "6. รับผลมติ/คำวินิจฉัย",
+              "7. เสร็จสิ้นกระบวนการ"
+            ],
+            datasets: [{
+              label: "จำนวนสำนวน",
+              data: [0, 0, 0, 0, 0, 0, 0],
+              backgroundColor: [
+                "#94a3b8",
+                "#3b82f6",
+                "#0284c7",
+                "#6366f1",
+                "#f59e0b",
+                "#10b981",
+                "#16a34a"
+              ],
+              borderRadius: 4,
+              barPercentage: 0.65
+            }]
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: { color: "#f1f5f9" },
+                ticks: { stepSize: 1 }
+              },
+              y: {
+                grid: { display: false }
+              }
+            }
+          }
+        });
+
+        // Chart 4: Decision & Resolution Breakdown (Donut)
+        const ctxDecisions = document.getElementById("chartDecisions").getContext("2d");
+        chartDecisionsInstance = new Chart(ctxDecisions, {
+          type: "doughnut",
+          data: {
+            labels: [
+              "เห็นควรทำความเห็นแย้ง",
+              "เห็นชอบตามอัยการ",
+              "เปิดเผยบางส่วน (ปิดทับ)",
+              "เปิดเผยทั้งหมด",
+              "ไม่เปิดเผย / ชนะคดี"
+            ],
+            datasets: [{
+              data: [12, 6, 7, 5, 4],
+              backgroundColor: [
+                "#2563eb",
+                "#16a34a",
+                "#d97706",
+                "#0284c7",
+                "#64748b"
+              ],
+              borderWidth: 2,
+              borderColor: "#ffffff"
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "62%",
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { boxWidth: 10, font: { size: 10 } }
+              }
+            }
+          }
+        });
+
+        // Chart 5: Officer Caseload (Stacked Bar)
+        const ctxOfficer = document.getElementById("chartOfficerCaseload").getContext("2d");
+        chartOfficerCaseloadInstance = new Chart(ctxOfficer, {
+          type: "bar",
+          data: {
+            labels: ["นายณัฐพล", "น.ส.วิภาดา", "นายกฤษดา", "นายณรงค์", "นางกานดา"],
+            datasets: [
+              {
+                label: "เสร็จสิ้นแล้ว",
+                data: [4, 3, 2, 3, 2],
+                backgroundColor: "#16a34a",
+                borderRadius: 4
+              },
+              {
+                label: "ปกติ (กำลังดำเนินการ)",
+                data: [6, 5, 4, 3, 3],
+                backgroundColor: "#2563eb",
+                borderRadius: 4
+              },
+              {
+                label: "เฝ้าระวัง (≤ 5 วัน)",
+                data: [2, 1, 1, 1, 0],
+                backgroundColor: "#d97706",
+                borderRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "top", labels: { boxWidth: 10, font: { size: 10 } } }
+            },
+            scales: {
+              x: { stacked: true, grid: { display: false } },
+              y: { stacked: true, beginAtZero: true, grid: { color: "#f1f5f9" } }
+            }
+          }
+        });
+
+        // Chart 6: SLA Health Matrix (Polar Area)
+        const ctxSla = document.getElementById("chartSlaHealth").getContext("2d");
+        chartSlaHealthInstance = new Chart(ctxSla, {
+          type: "polarArea",
+          data: {
+            labels: [
+              "ปลอดภัย (> 10 วัน)",
+              "ปกติ (6-10 วัน)",
+              "เฝ้าระวัง (1-5 วัน)",
+              "เสร็จสิ้นแล้ว",
+              "เกินกำหนด"
+            ],
+            datasets: [{
+              data: [15, 8, 4, 10, 1],
+              backgroundColor: [
+                "rgba(37, 99, 235, 0.75)",
+                "rgba(2, 132, 199, 0.75)",
+                "rgba(217, 119, 6, 0.8)",
+                "rgba(22, 163, 74, 0.75)",
+                "rgba(220, 38, 38, 0.85)"
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 10 } } }
+            },
+            scales: {
+              r: {
+                ticks: { display: false },
+                grid: { color: "#e2e8f0" }
+              }
+            }
+          }
+        });
+      }
+
+      // Update Charts with Filtered Data
+      function updateCharts() {
+        if (!chartCategoryInstance) return;
+
+        // 1. Category Chart
+        let c101 = 0, c102 = 0, c103 = 0;
+        filteredCases.forEach(item => {
+          if (item.type === "10.1") c101++;
+          else if (item.type === "10.2") c102++;
+          else if (item.type === "10.3") c103++;
+        });
+
+        chartCategoryInstance.data.datasets[0].data = [c101, c102, c103];
+        chartCategoryInstance.update();
+
+        const total = c101 + c102 + c103;
+        document.getElementById("chart1Pct101").innerText = `${total > 0 ? ((c101 / total) * 100).toFixed(0) : 0}% (${c101})`;
+        document.getElementById("chart1Pct102").innerText = `${total > 0 ? ((c102 / total) * 100).toFixed(0) : 0}% (${c102})`;
+        document.getElementById("chart1Pct103").innerText = `${total > 0 ? ((c103 / total) * 100).toFixed(0) : 0}% (${c103})`;
+
+        // 2. Stages Funnel
+        const stageCounts = [0, 0, 0, 0, 0, 0, 0];
+        filteredCases.forEach(item => {
+          const s = item.stageName || "";
+          if (s.indexOf("1.") !== -1) stageCounts[0]++;
+          else if (s.indexOf("2.") !== -1) stageCounts[1]++;
+          else if (s.indexOf("3.") !== -1) stageCounts[2]++;
+          else if (s.indexOf("4.") !== -1) stageCounts[3]++;
+          else if (s.indexOf("5.") !== -1) stageCounts[4]++;
+          else if (s.indexOf("6.") !== -1) stageCounts[5]++;
+          else if (s.indexOf("7.") !== -1 || item.statusCode === "COMPLETED") stageCounts[6]++;
+          else stageCounts[1]++;
+        });
+        chartWorkflowStagesInstance.data.datasets[0].data = stageCounts;
+        chartWorkflowStagesInstance.update();
+
+        // 3. Officer Caseload
+        const officers = ["นายณัฐพล", "น.ส.วิภาดา", "นายกฤษดา", "นายณรงค์", "นางกานดา"];
+        const doneData = [0, 0, 0, 0, 0];
+        const inProgData = [0, 0, 0, 0, 0];
+        const warnData = [0, 0, 0, 0, 0];
+
+        filteredCases.forEach(item => {
+          const off = item.officer || "";
+          let idx = -1;
+          for (let i = 0; i < officers.length; i++) {
+            if (off.indexOf(officers[i]) !== -1) { idx = i; break; }
+          }
+          if (idx !== -1) {
+            const isDone = item.statusCode === "COMPLETED" || item.status.indexOf("เสร็จสิ้น") !== -1;
+            if (isDone) {
+              doneData[idx]++;
+            } else if (item.slaAlert === "WARNING") {
+              warnData[idx]++;
+            } else {
+              inProgData[idx]++;
+            }
+          }
+        });
+
+        chartOfficerCaseloadInstance.data.datasets[0].data = doneData;
+        chartOfficerCaseloadInstance.data.datasets[1].data = inProgData;
+        chartOfficerCaseloadInstance.data.datasets[2].data = warnData;
+        chartOfficerCaseloadInstance.update();
+
+        // 4. SLA Health
+        let safe = 0, norm = 0, warn = 0, done = 0, over = 0;
+        filteredCases.forEach(item => {
+          if (item.statusCode === "COMPLETED" || item.status.indexOf("เสร็จสิ้น") !== -1) {
+            done++;
+          } else if (item.slaAlert === "OVERDUE") {
+            over++;
+          } else if (item.slaAlert === "WARNING") {
+            warn++;
+          } else if (item.slaDays > 10) {
+            safe++;
+          } else {
+            norm++;
+          }
+        });
+        chartSlaHealthInstance.data.datasets[0].data = [safe, norm, warn, done, over];
+        chartSlaHealthInstance.update();
+      }
+    </script>
+  </body>
+</html>
