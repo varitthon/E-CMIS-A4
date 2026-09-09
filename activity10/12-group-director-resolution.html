@@ -563,7 +563,7 @@
             <a href="07-group-director-approval.html"
               ><i class="fa-solid fa-clipboard-check"></i>
               <span
-                ><mark class="wording-changed">ตรวจร่างความเห็น</mark></span
+                >ตรวจร่างความเห็น</span
               ></a
             >
           </li>
@@ -593,28 +593,38 @@
       </div>
     </div>
 
- <!-- Sidebar Navigation -->
- <div class="sidebar" id="sidebar">
- <div>
- <a href="01-work-inbox.html" class="brand">
- <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท.">
- <span>E-CMIS
- <small>ระบบกฎหมายในทางคดี</small>
- </span>
- </a>
- <ul class="menu" id="sidebarMenu">
- <li class="active"><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> <span>งานกฎหมายในทางคดี</span></a></li>
- <li><a href="05-group-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายนิติกร</span></a></li>
- <li><a href="07-group-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจร่างความเห็น</span></a></li>
- <li><a href="12-group-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติ และ มอบหมาย</span></a></li>
- <li><a href="14-group-director-final-review.html"><i class="fa-solid fa-file-signature"></i> <span>ตรวจร่างหนังสือตามมติ</span></a></li>
- <li><a href="21-group-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
- </ul>
- </div>
- <div class="sidebar-bottom">
- <i class="fa-solid fa-shield-halved me-1"></i> กลุ่มงานความเห็นแย้ง กองกฎหมาย
+ <!-- Main Content -->
+ <div class="main">
+ <!-- Topbar -->
+ <div class="topbar">
+ <div class="topbar-left">
+ <button type="button" class="btn-toggle-menu" onclick="toggleSidebar()" title="ย่อ/ขยายเมนู">
+ <i class="fa-solid fa-bars"></i>
+ </button>
+ <div class="breadcrumb">
+ <i class="fa-solid fa-house me-1"></i> หน้าแรก / งานกฎหมายในทางคดี / <strong style="color:var(--text-title);">ผอ.กลุ่มงาน มอบหมายนิติกรตามมติ</strong>
  </div>
  </div>
+ <div class="top-controls">
+ <div class="font-sizer">
+ <button class="ctrl-btn" onclick="changeFontSize(-1)" title="ลดขนาดตัวอักษร">A-</button>
+ <button class="ctrl-btn" onclick="changeFontSize(0)" title="ขนาดปกติ">A</button>
+ <button class="ctrl-btn" onclick="changeFontSize(1)" title="เพิ่มขนาดตัวอักษร">A+</button>
+ </div>
+ <div class="icon-btn-group">
+ <button type="button" class="circle-icon-btn" onclick="toggleTheme()" title="สลับโหมดมืด/สว่าง" id="themeBtn">🌙</button>
+ <button type="button" class="circle-icon-btn" title="การแจ้งเตือน">
+ <i class="fa-regular fa-bell"></i>
+ <span class="noti-badge">3</span>
+ </button>
+ </div>
+ <div class="user-profile-top" onclick="toggleProfileDropdown(event)">
+ <div class="avatar">อ</div>
+ <div class="user-info">
+ <span class="user-name" id="userName">นายอานนท์ ชินประชา</span>
+ <span class="user-role" id="userRole">ผู้อำนวยการกลุ่มงานความเห็นแย้ง</span>
+ </div>
+ <i class="fa-solid fa-chevron-down" style="font-size:0.7em; color:#94a3b8; margin-left:4px;"></i>
 
             <!-- Profile Dropdown -->
             <div class="profile-dropdown-menu" id="profileDropdown">
@@ -738,7 +748,7 @@
             </div>
             <div class="form-grid-2">
               <div class="form-group">
-                <label><mark class="wording-changed">มติอัยการ</mark></label>
+                <label>มติอัยการ</label>
                 <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
               </div>
               <div class="form-group">
@@ -755,32 +765,27 @@
           </div>
         </div>
 
+ <!-- Card 2: Resolution Details & Legal Director Directives -->
+ <div class="form-card">
+ <div class="form-card-header">
+ <span><i class="fa-solid fa-gavel text-primary me-2"></i>ผลมติคณะกรรมการ ป.ป.ท. และ คำสั่งการจาก ผอ.กองกฎหมาย</span>
+ <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ผอ.กอง มอบหมายแล้ว</span>
+ </div>
+ <div class="form-card-body">
+ <div class="form-grid-3">
  <div class="form-group">
- <label>ชื่อเรื่องกล่าวหา</label>
- <div class="read-box fw-bold" id="f_title" style="min-height:42px;">-</div>
+ <label>การประชุมครั้งที่</label>
+ <div class="read-box font-monospace fw-bold" id="f_meetingNo">14/2569</div>
  </div>
-  <div class="form-grid-2">
-   <div class="form-group">
-   <label>เลขสำนวนคดี</label>
-   <div class="read-box" id="f_caseNo">-</div>
+ <div class="form-group">
+ <label>วันที่ประชุมมีมติ</label>
+ <div class="read-box font-monospace text-secondary" id="f_boardMeetingDate">12 ส.ค. 2569</div>
  </div>
-   <div class="form-group">
- <label>หน่วยงานอัยการต้นทาง</label>
- <div class="read-box" id="f_source">-</div>
+ <div class="form-group">
+ <label>ผลมติคณะกรรมการ</label>
+ <div class="read-box fw-bold text-danger" id="f_boardResolution">
+ <i class="fa-solid fa-triangle-exclamation me-1"></i>เห็นชอบให้ทำความเห็นแย้ง
  </div>
- </div>
- <div class="form-grid-2">
-   <div class="form-group">
-     <label>มติอัยการ</label>
-     <div class="read-box" id="f_prosecutorCaseTypeName">-</div>
-   </div>
-   <div class="form-group">
- <label>ระดับศาล</label>
- <div class="read-box" id="f_level">-</div>
- </div>
-   <div class="form-group">
- <label>เลขที่หนังสืออัยการ</label>
- <div class="read-box font-monospace fw-bold" id="f_docNo">-</div>
  </div>
  </div>
 
@@ -974,12 +979,6 @@
         initUserProfile();
         loadCaseData();
       });
-
- <!-- Scripts -->
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <script src="assets/ecmis-app.js?v=20260904_6"></script>
- <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
- <script src="assets/ecmis-shell.js?v=20260904_6"></script>
 
       function changeFontSize(direction) {
         const currentSize = parseFloat(
