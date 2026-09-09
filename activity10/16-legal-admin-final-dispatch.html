@@ -10,6 +10,7 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
  <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2">
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
@@ -934,6 +935,16 @@
           dateInput.value = today;
         }
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme_mode");
+        if (savedTheme === "dark") {
+          document.body.classList.add("dark-mode");
+          const btn = document.getElementById("themeBtn");
+          if (btn) btn.textContent = "☀️";
+        }
+        loadCaseData();
+      });
 
       function loadCaseData() {
         const urlParams = new URLSearchParams(window.location.search);
