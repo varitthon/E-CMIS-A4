@@ -595,10 +595,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
+    <script src="assets/ecmis-10-2.js?v=20260903_2"></script>
 
     <script>
       const STEP_CODE = "LAW0045.1";
@@ -736,13 +737,7 @@
               : c.l2DirLegalOpinion,
           ) +
           '<div class="l2-doc-signblock">' +
-          sigBlock(
-            "proposer",
-            (typeof ECMIS !== "undefined" && ECMIS.ROLES && ECMIS.ROLES.find(r => r.id === "dir_legal"))
-              ? ECMIS.ROLES.find(r => r.id === "dir_legal").name
-              : "พ.ต.ท. เอกลักษณ์ บุญเลิศ",
-            "ผู้อำนวยการกองกฎหมาย"
-          ) +
+          sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") +
           "</div>";
       }
 
@@ -816,29 +811,16 @@
       }
 
       function populate() {
-        populateCommon();
         const opinionEl = document.getElementById("in_dirLegalOpinion");
         if (opinionEl) {
           opinionEl.value = currentCase.l2DirLegalOpinion || "";
           opinionEl.addEventListener("input", renderMemo);
         }
         renderMemo();
-        renderResolutionSheet();
-        resSheetRendered = true;
         ECMIS102.setHtml(
           "signChain",
           Activity102.renderSignChain(currentCase, "proposer"),
         );
-
-        if (Activity102.isSigned(currentCase, "proposer")) {
-          if (opinionEl) opinionEl.readOnly = true;
-          const submitBtn = document.querySelector(".form-actions .btn-primary");
-          if (submitBtn) {
-            submitBtn.classList.remove("btn-primary");
-            submitBtn.classList.add("btn-success");
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>ลงนามเรียบร้อยแล้ว';
-          }
-        }
       }
 
       function submitForm() {

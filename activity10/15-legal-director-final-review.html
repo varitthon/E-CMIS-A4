@@ -994,13 +994,9 @@
             ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง`
             : "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง",
         );
-        const officerDisplay =
-          (currentCase && currentCase.groupDirectorResolutionOfficer) ||
-          (currentCase && currentCase.officer && !currentCase.officer.includes("กานดา") && !currentCase.officer.includes("ธุรการ") ? currentCase.officer : "") ||
-          "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
         setElText(
           "f_officerName",
-          officerDisplay.includes("(") ? officerDisplay : `${officerDisplay} (นิติกรชำนาญการพิเศษ)`,
+          currentCase.officer || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)",
         );
         setElText(
           "f_finalOpinionType",
@@ -1315,7 +1311,7 @@
  <div class="fw-bold emd-sig-label">เซ็นชื่อในกรอบด้านล่าง</div>
  <div class="text-muted emd-fs-sm">กดเมาส์ค้างแล้วลาก หรือใช้นิ้วบนอุปกรณ์ระบบสัมผัส</div>
  </div>
- <button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2 emd-fs-sm" id="swal-sig-clear">
+ <button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2" id="swal-sig-clear" class="emd-fs-sm">
  <i class="fa-solid fa-eraser me-1"></i> ล้างลายเซ็น
  </button>
  </div>

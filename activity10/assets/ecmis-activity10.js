@@ -317,8 +317,8 @@
       petitioner: "",
       defendant: "",
       officialDocHeading: "",
-      officer: "นายณัฐพล บัวทุม",
-      officerPosition: "นิติกรชำนาญการพิเศษ",
+      officer: "นางกานดา รักษ์ธรรม",
+      officerPosition: "เจ้าหน้าที่ธุรการชำนาญงาน",
       assignedRole: "admin_legal",
       status: "ผู้บริหารลงนามแล้ว (รอธุรการตรวจรับ)",
       statusCode: "PENDING_ADMIN_SIGNED_RECEIVE",
@@ -363,8 +363,8 @@
       petitioner: "",
       defendant: "",
       officialDocHeading: "",
-      officer: "นายณัฐพล บัวทุม",
-      officerPosition: "นิติกรชำนาญการพิเศษ",
+      officer: "นางกานดา รักษ์ธรรม",
+      officerPosition: "เจ้าหน้าที่ธุรการชำนาญงาน",
       assignedRole: "admin_legal",
       status: "ธุรการรับผลมติ",
       statusCode: "RETURNED_FROM_EXEC",
@@ -414,8 +414,8 @@
       petitioner: "",
       defendant: "",
       officialDocHeading: "",
-      officer: "นายณัฐพล บัวทุม",
-      officerPosition: "นิติกรชำนาญการพิเศษ",
+      officer: "นางกานดา รักษ์ธรรม",
+      officerPosition: "เจ้าหน้าที่ธุรการชำนาญงาน",
       assignedRole: "admin_legal",
       status: "ธุรการรับผลมติ",
       statusCode: "RETURNED_FROM_EXEC",
@@ -465,8 +465,8 @@
       petitioner: "",
       defendant: "",
       officialDocHeading: "",
-      officer: "นายณัฐพล บัวทุม",
-      officerPosition: "นิติกรชำนาญการพิเศษ",
+      officer: "นางกานดา รักษ์ธรรม",
+      officerPosition: "เจ้าหน้าที่ธุรการชำนาญงาน",
       assignedRole: "admin_legal",
       status: "ธุรการรับผลมติ",
       statusCode: "RETURNED_FROM_EXEC",
@@ -516,8 +516,8 @@
       petitioner: "",
       defendant: "",
       officialDocHeading: "",
-      officer: "นายณัฐพล บัวทุม",
-      officerPosition: "นิติกรชำนาญการพิเศษ",
+      officer: "นางกานดา รักษ์ธรรม",
+      officerPosition: "เจ้าหน้าที่ธุรการชำนาญงาน",
       assignedRole: "admin_legal",
       status: "ธุรการรับผลมติ",
       statusCode: "RETURNED_FROM_EXEC",
@@ -1982,19 +1982,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          let modified = false;
-          parsed.forEach((c) => {
-            if (c.officer && (c.officer.includes("กานดา") || c.officer.includes("ธุรการ"))) {
-              const assignOfficer = c.groupDirectorResolutionOfficer || c.groupDirectorResolutionTarget || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
-              c.officer = assignOfficer.replace(/\s*\(.*?\)\s*/g, "").trim();
-              c.officerPosition = "นิติกรชำนาญการพิเศษ";
-              modified = true;
-            }
-          });
-          if (modified) saveCases(parsed);
-          return parsed;
-        }
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {
       console.warn("Failed to parse cases from localStorage", e);
@@ -2786,9 +2774,6 @@
         item.groupDirectorResolutionOrderedDate = formatDisplayDate(new Date());
         item.groupDirectorResolutionOrderDate =
           item.groupDirectorResolutionOrderedDate;
-        const cleanTarget = (item.groupDirectorResolutionTarget || "").replace(/\s*\(.*?\)\s*/g, "").trim();
-        item.officer = cleanTarget || "นายณัฐพล บัวทุม";
-        item.officerPosition = "นิติกรชำนาญการพิเศษ";
         saveCases(cases);
       }
       return item;
@@ -2973,7 +2958,7 @@
         item.status = "ผอ.กลุ่มงานตรวจหนังสือความเห็น";
         item.statusBadge = "bg-info text-dark";
         item.assignedRole = "group_director";
-        item.workflowStep = 13;
+        item.workflowStep = 11;
         if (docData) {
           item.finalOpinionType =
             docData.opinionType ||
@@ -2986,15 +2971,6 @@
           item.finalDocFile =
             docData.file || "ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf";
           item.finalDocNotes = docData.notes || "";
-          item.finalDocFileCopy2 = docData.fileCopy2 || "";
-          item.finalDocRequiredCopies = docData.requiredCopies || 1;
-          if (docData.officer) {
-            item.officer = docData.officer.replace(/\s*\(.*?\)\s*/g, "").trim();
-            item.officerPosition = "นิติกรชำนาญการพิเศษ";
-          }
-          if (docData.signature) {
-            item.officerFinalDocSignature = docData.signature;
-          }
         }
         item.finalDocSubmittedDate = formatDisplayDate(new Date());
         saveCases(cases);

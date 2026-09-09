@@ -1,397 +1,121 @@
 /* ============================================================
    ecmis-modal.css - Shared styles for SweetAlert2 modal content
    ------------------------------------------------------------
-   Every selector is scoped under .swal2-container or .swal2-popup.
-   This file provides a 100% self-contained layout and design system
-   for all SweetAlert2 dialogs across E-CMIS Activity 10, ensuring
-   flawless appearance whether the host page includes Bootstrap or not.
+   Every selector is scoped under .swal2-container on purpose.
+   Each page's inline <style> block loads AFTER all <link> tags and
+   defines a bare `.badge` rule; an unscoped single-class rule here
+   would tie on specificity and lose on source order. The extra
+   `.swal2-container` raises every rule to (0,2,0) so it wins
+   regardless of order, and keeps these rules out of page markup.
    ============================================================ */
 
-/* --- SweetAlert2 Base Popup & Typography Polish ------------ */
-.swal2-popup {
-  font-family: 'Prompt', 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  border-radius: 16px !important;
-  padding: 24px 28px !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.06) !important;
-}
-
-.swal2-popup .swal2-html-container {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: visible !important;
-  color: #1e293b !important;
-  font-size: 0.92rem !important;
-  line-height: 1.5 !important;
-}
-
-.swal2-actions {
-  margin-top: 1.25rem !important;
-  gap: 12px !important;
-}
-
-.swal2-actions button.swal2-styled {
-  font-family: 'Prompt', 'Sarabun', sans-serif !important;
-  border-radius: 8px !important;
-  padding: 8px 22px !important;
-  font-size: 0.92rem !important;
-  font-weight: 600 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.15s ease-in-out !important;
-}
-
-.swal2-actions button.swal2-styled:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.12) !important;
-}
-
-/* --- Summary / Confirmation box (emd-summary) -------------- */
+/* --- Summary / confirmation box ---------------------------- */
 .swal2-container .emd-summary {
-  text-align: left !important;
-  font-size: 0.92em !important;
-  padding: 12px 16px !important;
-  background: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  margin-top: 10px !important;
-  margin-bottom: 6px !important;
-  line-height: 1.6 !important;
+  text-align: left;
+  font-size: 0.9em;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
 }
-
 .swal2-container .emd-summary p {
-  margin-bottom: 6px !important;
-  margin-top: 0 !important;
+  margin-bottom: 4px;
 }
-
 .swal2-container .emd-summary p:last-child {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
+/* NOTE: .emd-strong-ok / .emd-strong-bad are chosen at RUNTIME by a
+   ternary in 19-legal-admin-oag-verdict-intake.html. A grep-based
+   "unused class" sweep will not see them - do not delete. */
 .swal2-container .emd-strong-ok {
-  color: #166534 !important;
-  font-weight: 700 !important;
+  color: #166534;
+  font-weight: 700;
 }
-
 .swal2-container .emd-strong-bad {
-  color: #dc2626 !important;
-  font-weight: 700 !important;
+  color: #dc2626;
+  font-weight: 700;
 }
 
-/* --- Generic Text Sizes & Colors --------------------------- */
+/* --- Generic text sizes ------------------------------------ */
 .swal2-container .emd-body {
-  font-size: 0.92rem !important;
-  text-align: left !important;
-  color: #1e293b !important;
+  font-size: 0.9rem;
 }
-
 .swal2-container .emd-fs-sm {
-  font-size: 0.8rem !important;
+  font-size: 0.78rem;
 }
 
-.swal2-container .text-start { text-align: left !important; }
-.swal2-container .text-center { text-align: center !important; }
-.swal2-container .text-end { text-align: right !important; }
-
-.swal2-container .text-primary { color: #2563eb !important; }
-.swal2-container .text-secondary { color: #64748b !important; }
-.swal2-container .text-success { color: #16a34a !important; }
-.swal2-container .text-danger { color: #dc2626 !important; }
-.swal2-container .text-warning { color: #d97706 !important; }
-.swal2-container .text-dark { color: #0f172a !important; }
-.swal2-container .text-muted { color: #64748b !important; }
-
-.swal2-container .fw-bold { font-weight: 700 !important; }
-.swal2-container .fw-semibold { font-weight: 600 !important; }
-.swal2-container .fw-normal { font-weight: 400 !important; }
-
-/* --- Flexbox Utilities (Scoped under .swal2-container) ------ */
-.swal2-container .d-flex { display: flex !important; }
-.swal2-container .d-inline-flex { display: inline-flex !important; }
-.swal2-container .d-block { display: block !important; }
-.swal2-container .d-none { display: none !important; }
-
-.swal2-container .flex-column { flex-direction: column !important; }
-.swal2-container .flex-row { flex-direction: row !important; }
-.swal2-container .flex-wrap { flex-wrap: wrap !important; }
-.swal2-container .flex-grow-1 { flex-grow: 1 !important; }
-.swal2-container .flex-shrink-0 { flex-shrink: 0 !important; }
-
-.swal2-container .align-items-center { align-items: center !important; }
-.swal2-container .align-items-start { align-items: flex-start !important; }
-.swal2-container .align-items-end { align-items: flex-end !important; }
-
-.swal2-container .justify-content-between { justify-content: space-between !important; }
-.swal2-container .justify-content-center { justify-content: center !important; }
-.swal2-container .justify-content-start { justify-content: flex-start !important; }
-.swal2-container .justify-content-end { justify-content: flex-end !important; }
-
-.swal2-container .gap-1 { gap: 0.25rem !important; }
-.swal2-container .gap-2 { gap: 0.5rem !important; }
-.swal2-container .gap-3 { gap: 0.85rem !important; }
-
-/* --- Grid System (Row & Col) -------------------------------- */
-.swal2-container .row {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  margin-left: -6px !important;
-  margin-right: -6px !important;
-  box-sizing: border-box !important;
-}
-
-.swal2-container .row.g-2 {
-  margin-left: -4px !important;
-  margin-right: -4px !important;
-}
-.swal2-container .row.g-2 > [class*="col-"] {
-  padding-left: 4px !important;
-  padding-right: 4px !important;
-}
-
-.swal2-container .row.g-3 {
-  margin-left: -6px !important;
-  margin-right: -6px !important;
-}
-.swal2-container .row.g-3 > [class*="col-"] {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-}
-
-.swal2-container .col-6 {
-  flex: 0 0 50% !important;
-  max-width: 50% !important;
-  width: 50% !important;
-  box-sizing: border-box !important;
-}
-
-.swal2-container .col-12 {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.swal2-container .h-100 { height: 100% !important; }
-
-/* --- Spacing Utilities (Margins & Paddings) ----------------- */
-.swal2-container .m-0 { margin: 0 !important; }
-.swal2-container .mb-1 { margin-bottom: 0.25rem !important; }
-.swal2-container .mb-2 { margin-bottom: 0.5rem !important; }
-.swal2-container .mb-3 { margin-bottom: 0.85rem !important; }
-.swal2-container .mb-4 { margin-bottom: 1.25rem !important; }
-.swal2-container .mt-1 { margin-top: 0.25rem !important; }
-.swal2-container .mt-2 { margin-top: 0.5rem !important; }
-.swal2-container .mt-3 { margin-top: 0.85rem !important; }
-.swal2-container .me-1 { margin-right: 0.25rem !important; }
-.swal2-container .me-2 { margin-right: 0.5rem !important; }
-.swal2-container .ms-1 { margin-left: 0.25rem !important; }
-.swal2-container .ms-2 { margin-left: 0.5rem !important; }
-
-.swal2-container .p-2 { padding: 0.5rem !important; }
-.swal2-container .p-3 { padding: 0.85rem 1rem !important; }
-.swal2-container .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
-.swal2-container .px-3 { padding-left: 0.85rem !important; padding-right: 0.85rem !important; }
-.swal2-container .py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-.swal2-container .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-.swal2-container .pb-2 { padding-bottom: 0.5rem !important; }
-
-/* --- Borders & Rounded Corners ------------------------------ */
-.swal2-container .border { border: 1px solid #e2e8f0 !important; }
-.swal2-container .border-bottom { border-bottom: 1px solid #e2e8f0 !important; }
-.swal2-container .border-top { border-top: 1px solid #e2e8f0 !important; }
-
-.swal2-container .rounded-2 { border-radius: 6px !important; }
-.swal2-container .rounded-3 { border-radius: 10px !important; }
-.swal2-container .rounded-pill { border-radius: 50rem !important; }
-
-.swal2-container .bg-light { background-color: #f8fafc !important; }
-.swal2-container .bg-white { background-color: #ffffff !important; }
-
-/* --- Badge & Button Utilities in Modals --------------------- */
-.swal2-container .badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0.35em 0.75em !important;
-  font-size: 0.76rem !important;
-  font-weight: 600 !important;
-  line-height: 1 !important;
-  border-radius: 50rem !important;
-  box-sizing: border-box !important;
-}
-
-.swal2-container .btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-family: inherit !important;
-  font-size: 0.82rem !important;
-  font-weight: 500 !important;
-  border: 1px solid transparent !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease-in-out !important;
-  box-sizing: border-box !important;
-  text-decoration: none !important;
-}
-
-.swal2-container .btn-sm {
-  padding: 4px 10px !important;
-  font-size: 0.78rem !important;
-  height: 30px !important;
-  border-radius: 6px !important;
-}
-
-.swal2-container .btn-outline-secondary {
-  color: #475569 !important;
-  border: 1px solid #cbd5e1 !important;
-  background-color: #ffffff !important;
-}
-
-.swal2-container .btn-outline-secondary:hover {
-  background-color: #f1f5f9 !important;
-  color: #0f172a !important;
-  border-color: #94a3b8 !important;
-}
-
-/* ============================================================
-   Signature Modal Components (Pages 06, 07, 08, 13, 14, 15, 22)
-   ============================================================ */
+/* --- Signature modal (pages 06, 07, 08, 14, 15, 22) -------- */
 .swal2-container .emd-sig-title {
-  color: #1e3a8a !important;
-  font-family: 'Prompt', sans-serif !important;
-  font-size: 1.15rem !important;
-  font-weight: 700 !important;
-  margin: 0 !important;
+  color: #0f2a62;
 }
-
 .swal2-container .emd-sig-signer {
-  background: #eff6ff !important;
-  border: 1px solid #bfdbfe !important;
-  color: #1e40af !important;
-  border-radius: 10px !important;
-  padding: 10px 14px !important;
-  font-size: 0.9rem !important;
-  box-sizing: border-box !important;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
 }
-
 .swal2-container .emd-sig-label {
-  font-size: 0.92rem !important;
-  color: #1e293b !important;
-  font-weight: 700 !important;
+  font-size: 0.9rem;
+  color: #1f2937;
 }
 
-/* Signature method selection cards */
+/* `!important` on border-color is required: these cards carry Bootstrap's
+   `.border` utility, which is itself `!important` in Bootstrap 5.3 and
+   would otherwise win at any specificity. Nothing else here needs it. */
 .swal2-container .emd-sig-card {
-  cursor: pointer !important;
-  transition: all 0.2s ease-in-out !important;
-  background: #ffffff !important;
-  border: 2px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  padding: 12px 14px !important;
-  box-sizing: border-box !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #ffffff;
+  border-color: #e5e7eb !important;
 }
-
-.swal2-container .emd-sig-card:hover {
-  border-color: #93c5fd !important;
-  background: #f8fafc !important;
-}
-
 .swal2-container .emd-sig-card.is-active {
-  background: #f0f7ff !important;
+  background: #f0f6ff;
   border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
 
 .swal2-container .emd-sig-ico {
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  border-radius: 8px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: #f1f5f9 !important;
-  color: #64748b !important;
-  transition: all 0.2s !important;
+  width: 38px;
+  height: 38px;
+  background: #f1f5f9;
+  color: #64748b;
 }
-
-.swal2-container .emd-sig-card.is-active .emd-sig-ico,
 .swal2-container .emd-sig-ico.is-primary {
-  background: #dbeafe !important;
-  color: #2563eb !important;
+  background: #dbeafe;
+  color: #2563eb;
 }
 
 .swal2-container .emd-sig-card-title {
-  font-weight: 700 !important;
-  font-size: 0.92rem !important;
-  color: #0f172a !important;
-  margin-bottom: 2px !important;
+  font-size: 0.88rem;
 }
-
 .swal2-container .emd-sig-card-desc {
-  font-size: 0.76rem !important;
-  color: #64748b !important;
-  line-height: 1.35 !important;
-}
-
-/* Handwriting canvas container */
-.swal2-container #swal-box-canvas {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  padding: 14px !important;
-  box-sizing: border-box !important;
+  font-size: 0.75rem;
+  line-height: 1.35;
 }
 
 .swal2-container .emd-sig-pad {
-  background: #fafcff !important;
-  border: 2px dashed #94a3b8 !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  position: relative !important;
-  box-sizing: border-box !important;
+  background: #fafbfd;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
 }
-
 .swal2-container .emd-sig-canvas {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: 170px !important;
-  display: block !important;
-  background: transparent !important;
-  cursor: crosshair !important;
-  touch-action: none !important;
+  width: 100%;
+  height: 170px;
+  touch-action: none;
 }
 
-/* Panels toggling */
+/* `display:block` is correct because both panels are plain <div>s today.
+   If either ever gains a `d-flex` class, Bootstrap's !important would
+   beat this and the panel would look broken only when hidden. */
 .swal2-container .emd-sig-panel {
-  display: none !important;
+  display: none;
 }
-
 .swal2-container .emd-sig-panel.is-visible {
-  display: block !important;
+  display: block;
 }
-
-/* Digital Certificate box */
 .swal2-container .emd-sig-cert {
-  background-color: #f0fdf4 !important;
-  border: 1.5px solid #86efac !important;
-  border-radius: 10px !important;
-  color: #14532d !important;
-  padding: 14px 16px !important;
-  font-size: 0.88rem !important;
-  line-height: 1.5 !important;
-  box-sizing: border-box !important;
-}
-
-.swal2-container #swal-sig-mode-badge {
-  background-color: #f1f5f9 !important;
-  color: #2563eb !important;
-  border: 1px solid #cbd5e1 !important;
-  padding: 4px 10px !important;
-  font-size: 0.78rem !important;
-  font-weight: 600 !important;
-  border-radius: 50rem !important;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.82rem;
 }
