@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>นิติกร จัดทำบันทึกความเห็น | E-CMIS กิจกรรมที่ 10.3</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260909_1" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 900px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+        height: 38px;
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+
+      /* Upload box (แนบเอกสาร) — เหมือน pattern ของ 02-board-intake.html */
+      .upload-box {
+        border: 2px dashed var(--border-color);
+        padding: 16px;
+        border-radius: 6px;
+        text-align: center;
+        background: var(--bg-body);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .upload-box input[type="file"] {
+        flex: 1;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+
+      /* Search results table — เหมือน pattern ของ 02-board-intake.html */
+      .search-results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.88em;
+      }
+      .search-results-table th,
+      .search-results-table td {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+      .search-results-table th {
+        background: var(--bg-body);
+        color: var(--text-title);
+        font-weight: 600;
+      }
+      .search-results-table tr:hover {
+        background: rgba(37, 99, 235, 0.05);
+        cursor: pointer;
+      }
+      .search-results-table tr.table-primary {
+        background: rgba(37, 99, 235, 0.12) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.3 — คดีศาลปกครอง
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >นิติกร จัดทำบันทึกความเห็น</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+              <a
+                href="login.html"
+                onclick="confirmLogout(event)"
+                class="logout-link"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper" id="stepper"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            รอธุรการประสานนักสืบเจ้าของสำนวนที่หน้า
+            <a href="10-3-05-legal-admin-coordinate-investigator.html"
+              >ธุรการ ประสานนักสืบเจ้าของสำนวน</a
+            >
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >รายละเอียดคดีศาลปกครอง</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                    -
+                  </div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้อง</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้อง</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ผลการตรวจสอบเบื้องต้นของนิติกร</label>
+                <div class="read-box read-box-textarea" id="f_reviewNotes">
+                  -
+                </div>
+              </div>
+              <div class="form-group">
+                <label>สำนวนที่ได้รับจากนักสืบเจ้าของสำนวน</label>
+                <div class="read-box" id="f_coordinateNotes">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: ค้นหาสำนวนคดีที่เกี่ยวข้อง (เหมือน pattern ของ 02-board-intake.html) -->
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-magnifying-glass text-primary me-2"></i
+                >ค้นหาสำนวนคดีที่เกี่ยวข้อง</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-3">
+                <div
+                  class="form-group"
+                  style="margin-bottom: 0; grid-column: span 2 / span 3"
+                >
+                  <label>ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
+                  <input
+                    type="text"
+                    id="opinionSearchInput"
+                    class="form-control"
+                    style="width: 100%"
+                    placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
+                    onkeyup="handleOpinionSearchKeyup(event)"
+                  />
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 20px"
+                    onclick="executeOpinionSearch()"
+                  >
+                    🔍 ค้นหาสำนวน
+                  </button>
+                </div>
+              </div>
+              <div
+                class="helper-text"
+                style="margin: 8px 0 16px; font-size: 0.82em; color: #64748b"
+              >
+                * ค้นหาได้จาก: <strong>เลขสำนวน</strong>,
+                <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>,
+                <strong>ชื่อผู้กล่าวหา</strong> หรือ
+                <strong>ชื่อผู้ถูกกล่าวหา</strong>
+              </div>
+
+              <div
+                id="opinionSearchResults"
+                class="d-none"
+                style="margin-bottom: 16px"
+              ></div>
+
+              <div class="form-group" id="grp_relatedCaseNo">
+                <label>เลขสำนวนที่เกี่ยวข้อง</label>
+                <input
+                  type="text"
+                  id="in_relatedCaseNo"
+                  class="form-control font-monospace"
+                  readonly
+                  placeholder="ค้นหาและเลือกสำนวนด้านบนเพื่อเชื่อมโยง"
+                  style="background-color: var(--bg-body)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
+                >จัดทำบันทึกสรุปความเห็น</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label
+                  >บันทึกสรุปความเห็น
+                  <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_opinionText"
+                  class="form-control"
+                  rows="6"
+                  placeholder="สรุปข้อเท็จจริง ข้อกฎหมาย และความเห็นของนิติกรต่อคำฟ้อง..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >แนบเอกสารประกอบความเห็น
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_opinionAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleOpinionAttachmentsChange(this)"
+                  />
+                </div>
+                <div id="opinionAttachmentsList" style="margin-top: 8px"></div>
+                <div
+                  class="info-box"
+                  style="
+                    margin-top: 10px;
+                    margin-bottom: 0;
+                    background: #fffbeb;
+                    border: 1px solid #fef3c7;
+                    border-radius: 6px;
+                    padding: 12px 16px;
+                    display: flex;
+                    gap: 10px;
+                    color: #92400e;
+                    font-size: 0.88em;
+                  "
+                >
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="submitForm()"
+              >
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
+                ส่งต่อ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+    <script src="assets/ecmis-10-3.js?v=20260909_1"></script>
+
+    <script>
+      const STEP_CODE = "LAW0092";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      let currentCase = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        ECMIS103.renderStepper("stepper", STEP_CODE);
+        loadCase();
+        ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const idx = Activity103.STEPS.findIndex((s) => s.code === STEP_CODE);
+        const prev = Activity103.STEPS[idx - 1];
+        currentCase = Activity103.getCase(id, prev ? prev.statusCode : null);
+
+        if (!currentCase) {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        populate();
+      }
+
+      function populateCommon() {
+        const c = currentCase;
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_reviewNotes", c.l3ReviewNotes);
+        ECMIS103.setText("f_coordinateNotes", c.l3CoordinateNotes);
+      }
+
+      function doneAndBack(text) {
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกสำเร็จ",
+          text: text,
+          timer: 1900,
+          showConfirmButton: false,
+        }).then(ECMIS103.goInbox);
+      }
+
+      function populate() {
+        populateCommon();
+      }
+
+      /* ---------------------------------------------- ค้นหาสำนวนคดีที่เกี่ยวข้อง
+         เหมือน pattern ของ 02-board-intake.html (executeIntakeSearch/selectIntakeCase)
+         แต่เลือกแล้วแค่เชื่อมโยงเลขสำนวน ไม่ต้องเติมฟอร์มทั้งหน้า */
+      function handleOpinionSearchKeyup(e) {
+        if (e.key === "Enter") executeOpinionSearch();
+      }
+
+      function executeOpinionSearch() {
+        const q = document
+          .getElementById("opinionSearchInput")
+          .value.trim()
+          .toLowerCase();
+        const resultsContainer = document.getElementById(
+          "opinionSearchResults",
+        );
+        if (!resultsContainer) return;
+
+        if (!q) {
+          Swal.fire({
+            icon: "info",
+            title: "กรุณากรอกคำค้นหา",
+            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือผู้ถูกกล่าวหา",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          resultsContainer.classList.add("d-none");
+          return;
+        }
+
+        const cases = Activity10.getPaccIntakeDatabase
+          ? Activity10.getPaccIntakeDatabase()
+          : [];
+        const matched = cases.filter((c) => {
+          return (
+            c.id.toLowerCase().includes(q) ||
+            (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
+            (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
+            (c.accuser && c.accuser.toLowerCase().includes(q)) ||
+            (c.accused && c.accused.toLowerCase().includes(q)) ||
+            c.title.toLowerCase().includes(q)
+          );
+        });
+
+        resultsContainer.classList.remove("d-none");
+
+        if (matched.length === 0) {
+          resultsContainer.innerHTML = `
+ <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
+ <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
+ </div>
+ `;
+          return;
+        }
+
+        let html = `
+ <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
+ <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+ <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+ <button type="button" class="ctrl-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')" title="ปิดแถบผลการค้นหา"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
+ </div>
+ <div style="overflow-x: auto;">
+ <table class="search-results-table">
+ <thead>
+ <tr>
+ <th>เลขสำนวน ป.ป.ท.</th>
+ <th>ชื่อผู้กล่าวหา</th>
+ <th>ชื่อผู้ถูกกล่าวหา</th>
+ <th>เรื่องสำนวน</th>
+ </tr>
+ </thead>
+ <tbody>
+ `;
+
+        matched.forEach((c) => {
+          const cleanId = c.id.replace(/^.*?-/, "");
+          const safeRowId = `opinion-row-${cleanId.replace(/[^a-zA-Z0-9]/g, "_")}`;
+          html += `
+ <tr id="${safeRowId}" onclick="selectOpinionCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้">
+ <td>
+ <strong class="font-monospace" style="color:var(--text-title);">${cleanId}</strong>
+ ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
+ </td>
+ <td>${c.accuser || "-"}</td>
+ <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
+ <td>${c.title}</td>
+ </tr>
+ `;
+        });
+
+        html += `
+ </tbody>
+ </table>
+ </div>
+ </div>
+ `;
+
+        resultsContainer.innerHTML = html;
+      }
+
+      function selectOpinionCase(caseId) {
+        const cases = Activity10.getPaccIntakeDatabase
+          ? Activity10.getPaccIntakeDatabase()
+          : [];
+        const target = cases.find(
+          (c) =>
+            c.id === caseId ||
+            c.id.replace(/^.*?-/, "") === caseId.replace(/^.*?-/, ""),
+        );
+        if (!target) return;
+
+        const cleanId = target.id.replace(/^.*?-/, "");
+        document.getElementById("in_relatedCaseNo").value = cleanId;
+
+        const resultsContainer = document.getElementById(
+          "opinionSearchResults",
+        );
+        if (resultsContainer) resultsContainer.classList.add("d-none");
+
+        Swal.fire({
+          icon: "success",
+          title: "เชื่อมโยงสำนวนสำเร็จ!",
+          text: `เชื่อมโยงเลขสำนวน ${cleanId} เรียบร้อยแล้ว`,
+          timer: 1400,
+          showConfirmButton: false,
+        });
+      }
+
+      /* ---------------------------------------------- แนบเอกสารประกอบความเห็น
+         เหมือน pattern ของ 02-board-intake.html (handleDisclosureAttachmentsChange) */
+      let opinionAttachedFiles = [];
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function handleOpinionAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          opinionAttachedFiles.push(file);
+        });
+
+        input.value = "";
+        renderOpinionAttachmentsList();
+      }
+
+      function removeOpinionAttachment(index) {
+        opinionAttachedFiles.splice(index, 1);
+        renderOpinionAttachmentsList();
+      }
+
+      function renderOpinionAttachmentsList() {
+        const listEl = document.getElementById("opinionAttachmentsList");
+        if (!listEl) return;
+        if (!opinionAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = opinionAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeOpinionAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      /* ---- page specific ---- */
+
+      function submitForm() {
+        const opinionText = document
+          .getElementById("in_opinionText")
+          .value.trim();
+        if (!opinionText) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุบันทึกสรุปความเห็น",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_opinionText").focus();
+          return;
+        }
+        const relatedCaseNo = document
+          .getElementById("in_relatedCaseNo")
+          .value.trim();
+
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันบันทึกความเห็น",
+          text: "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ",
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันและส่งต่อ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          Activity103.advance(currentCase.id, STEP_CODE, {
+            l3OpinionText: opinionText,
+            l3RelatedCaseNo: relatedCaseNo,
+            l3OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
+          });
+          doneAndBack("บันทึกความเห็นเรียบร้อยแล้ว");
+        });
+      }
+
+      /* ---- shell chrome (theme / font size / dropdown) ---- */
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

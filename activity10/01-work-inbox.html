@@ -725,6 +725,7 @@
     <script src="assets/ecmis-activity10.js?v=20260907_4"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
+    <script src="assets/ecmis-10-3.js?v=20260909_1"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1714,6 +1715,29 @@
           return;
         }
 
+        /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง เหมือน 10.2 ด้านบน */
+        if (
+          typeof Activity103 !== "undefined" &&
+          Activity103.isCourtCase(c)
+        ) {
+          const page3 = Activity103.ROUTES[sc];
+          if (page3) {
+            window.location.href = `${page3}?id=${encodeURIComponent(c.id)}`;
+          } else {
+            Swal.fire({
+              icon: "info",
+              title: "ไม่มีขั้นตอนที่ต้องดำเนินการ",
+              html:
+                '<div class="emd-summary">' +
+                `<p><strong>คดี:</strong> ${c.id}</p>` +
+                `<p><strong>สถานะปัจจุบัน:</strong> ${c.status || "-"}</p>` +
+                '<p style="color:#b45309">ขั้นตอนถัดไปยังไม่ implement (รอเสนอบอร์ด)</p></div>',
+              confirmButtonColor: "#1e3a8a",
+            });
+          }
+          return;
+        }
+
         if (roleId === "Kanda.R" || roleId === "admin_legal") {
           if (
             sc === "PENDING_ADMIN_OAG_VERDICT_INTAKE" ||
@@ -1917,6 +1941,27 @@
         });
       }
 
+      /* คำร้องสาย DISCLOSE/PARTIAL + อยู่ระหว่างไต่สวนที่เดินผ่านรอบเสนอ
+         กิจกรรมที่ 7 รอบ 2 จริง (10-2-25 ถึง 30) เท่านั้นที่ปลายทางเป็นมติบอร์ด
+         เต็มคณะจริง — คำร้องอื่นทั้งหมด (สาย DENY, สาย CLOSED, และสาย
+         INVESTIGATING ก่อนถึงรอบ 2) เป็นมติของเลขาธิการ ป.ป.ท.
+         ผู้ดูแลกองกฎหมายโดยตรงตั้งแต่ 10-2-31 (secgen เป็นชั้นอนุมัติเดียว
+         ไม่ใช่บอร์ดเต็มคณะ ดูคอมเมนต์ที่ assets/ecmis-10-2.js) — statusCode
+         ต่อไปนี้เกิดได้เฉพาะหลังผ่าน L2-RECEIVE-BOARD-ROUND2 (10-2-30) เท่านั้น */
+      const ROUND2_OR_LATER_STATUS_CODES = [
+        "L2_BOARD_RESOLVED_ROUND2",
+        "L2_PENDING_NOTICE_DRAFT",
+        "L2_PENDING_REDACTION",
+        "L2_PENDING_NOTICE_SIGN",
+        "L2_PENDING_NOTICE_DISPATCH",
+        "L2_CASE_CLOSED_NOTICE_SENT",
+      ];
+      function resolutionAuthorityLabel(kase) {
+        const isInvestigating = (kase.l2CaseState || "INVESTIGATING") === "INVESTIGATING";
+        const pastRound2 = ROUND2_OR_LATER_STATUS_CODES.indexOf(kase.statusCode) > -1;
+        return isInvestigating && pastRound2 ? "มติบอร์ด" : "มติเลขาธิการ";
+      }
+
       function resolutionBadge(item) {
         const kase = item && item.raw;
         const resType = kase && kase.l2ResolutionType;
@@ -1929,7 +1974,7 @@
           Activity102.RESOLUTION_TYPES,
           resType,
         );
-        return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="มติบอร์ด">${label}</span>`;
+        return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="${resolutionAuthorityLabel(kase)}">${label}</span>`;
       }
 
       /* แบดจ์สถานะคดี (คดีเสร็จสิ้นแล้ว/อยู่ระหว่างไต่สวน) คู่กับมติบอร์ดด้านบน —
@@ -1974,6 +2019,20 @@
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep.label}">ดำเนินการ</button>`;
           }
           return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคำร้อง">${svgEyeIcon}</button>`;
+        }
+
+        /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง (LAW0085-LAW0096)
+           เหมือน 10.2 ด้านบน ไม่ให้ตกลงไปในบันไดบทบาทของ 10.1 ด้านล่าง */
+        if (
+          typeof Activity103 !== "undefined" &&
+          Activity103.isCourtCase(item)
+        ) {
+          const nextPage3 = Activity103.ROUTES[statusCode];
+          const nextStep3 = nextPage3 ? Activity103.stepByPage(nextPage3) : null;
+          if (nextStep3 && nextStep3.role === roleId) {
+            return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep3.label}">ดำเนินการ</button>`;
+          }
+          return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคดี">${svgEyeIcon}</button>`;
         }
 
         // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)

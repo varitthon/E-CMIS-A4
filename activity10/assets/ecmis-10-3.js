@@ -1,0 +1,597 @@
+/**
+ * E-CMIS กิจกรรมที่ 10.3 — คดีศาลปกครอง (Part 1: รับคำฟ้อง - สรุปความเห็นเสนอบอร์ด)
+ * Shared runtime for the 10-3-*.html step pages, mirroring the pattern used by
+ * ecmis-10-2.js (STEPS table, signature modal, stepper/sidebar helpers) instead
+ * of copy-pasting per page the way the 10.1 pages do it.
+ *
+ * Covers LAW0085-LAW0096 of the AS-IS swimlane (see
+ * docs/10.3 mockup/flow-page-01.md and
+ * docs/10.3 mockup/implementation-plan-part1.md). Case intake for 10.3 happens
+ * on the shared 02-board-intake.html (category "10.3"), which writes the first
+ * L3_PENDING_DIRECTOR_ASSIGN status — everything after that lives here.
+ *
+ * Depends on: ecmis-app.js (ECMIS.ROLES), ecmis-activity10.js (Activity10 store),
+ * SweetAlert2, Bootstrap 5 CSS (signature modal layout only).
+ */
+(function (global) {
+  "use strict";
+
+  /* ------------------------------------------------------------------ FLOW
+     One entry per step. `status`/`statusCode` are what THIS step writes onto
+     the case once its page submits — so 01-work-inbox.html and the next
+     page's Activity103.getCase() know who acts on it next. */
+  const STEPS = [
+    {
+      code: "LAW0085",
+      seq: 1,
+      page: "02-board-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย",
+      statusCode: "L3_PENDING_DIRECTOR_ASSIGN",
+      label: "ธุรการกองกฎหมาย รับเรื่องและเสนอ ผอ.กองกฎหมาย",
+      stepName: "ธุรการ รับเรื่อง",
+    },
+    {
+      code: "LAW0088",
+      seq: 2,
+      page: "10-3-02-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร",
+      statusCode: "L3_PENDING_GROUP_ASSIGN",
+      label: "ผอ.กองกฎหมาย ลงนามมอบหมาย",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      code: "LAW0089",
+      seq: 3,
+      page: "10-3-03-group-director-assign.html",
+      role: "group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
+      status: "นิติกรตรวจสอบคำฟ้อง",
+      statusCode: "L3_PENDING_LAWYER_REVIEW",
+      label: "ผอ.กลุ่มงาน มอบหมายนิติกรผู้รับผิดชอบ",
+      stepName: "ผอ.กลุ่มงาน มอบหมายนิติกร",
+    },
+    {
+      code: "LAW0090",
+      seq: 4,
+      page: "10-3-04-lawyer-review-complaint.html",
+      role: "legal_officer",
+      roleTitle: "นิติกร (ผู้รับผิดชอบสำนวน)",
+      status: "ธุรการประสานนักสืบเจ้าของสำนวน",
+      statusCode: "L3_PENDING_ADMIN_COORDINATE",
+      label: "นิติกร ตรวจสอบคำฟ้องหามูลเหตุคดี",
+      stepName: "นิติกร ตรวจสอบคำฟ้อง",
+    },
+    {
+      code: "LAW0091",
+      seq: 5,
+      page: "10-3-05-legal-admin-coordinate-investigator.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรจัดทำบันทึกความเห็น",
+      statusCode: "L3_PENDING_LAWYER_OPINION",
+      label: "ธุรการ ประสานนักสืบเจ้าของสำนวน",
+      stepName: "ธุรการ ประสานนักสืบ",
+    },
+    {
+      code: "LAW0092",
+      seq: 6,
+      page: "10-3-06-lawyer-draft-opinion.html",
+      role: "legal_officer",
+      roleTitle: "นิติกร (ผู้รับผิดชอบสำนวน)",
+      status: "ผอ.กลุ่มงานพิจารณาเห็นชอบ",
+      statusCode: "L3_PENDING_GROUP_APPROVE",
+      label: "นิติกร ทำบันทึกสรุปความเห็น",
+      stepName: "นิติกร จัดทำบันทึกความเห็น",
+    },
+    {
+      code: "LAW0093",
+      seq: 7,
+      page: "10-3-07-group-director-approve.html",
+      role: "group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
+      status: "ผอ.กองกฎหมายลงนามผ่านเรื่อง",
+      statusCode: "L3_PENDING_DIRECTOR_SIGN",
+      label: "ผอ.กลุ่มงาน พิจารณาและเห็นชอบ",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ",
+    },
+    {
+      code: "LAW0094",
+      seq: 8,
+      page: "10-3-08-legal-director-sign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการออกเลขส่งและเสนอบอร์ด",
+      statusCode: "L3_PENDING_ADMIN_DISPATCH",
+      label: "ผอ.กองกฎหมาย ตรวจสอบและลงนามผ่านเรื่อง",
+      stepName: "ผอ.กองกฎหมาย ลงนาม",
+    },
+    {
+      code: "LAW0095",
+      seq: 9,
+      page: "10-3-09-legal-admin-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "รอเสนอบอร์ด (กิจกรรมที่ 7)",
+      statusCode: "L3_READY_FOR_BOARD",
+      label: "ธุรการ ออกเลขส่งภายในและส่งมติเสนอบอร์ด",
+      stepName: "ธุรการ ออกเลขส่ง/เสนอบอร์ด",
+    },
+  ];
+
+  function stepByCode(code) {
+    return STEPS.find(function (s) { return s.code === code; }) || null;
+  }
+  function stepByPage(page) {
+    return STEPS.find(function (s) { return s.page === page; }) || null;
+  }
+
+  /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ
+     (ขั้นตอนสุดท้าย L3_READY_FOR_BOARD ไม่มี route ต่อ — เป็น black box
+     รอหน้าเสนอบอร์ดจริงที่ยังไม่ implement ตามแผน) */
+  const ROUTES = STEPS.reduce(function (acc, step, i) {
+    const next = STEPS[i + 1];
+    if (next) acc[step.statusCode] = next.page;
+    return acc;
+  }, {});
+
+  const TH_MONTHS = [
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+  ];
+  function formatThaiDate(d) {
+    const dt = d instanceof Date ? d : new Date(d);
+    return dt.getDate() + " " + TH_MONTHS[dt.getMonth()] + " " + (dt.getFullYear() + 543);
+  }
+  function formatThaiDateTime(d) {
+    const dt = d instanceof Date ? d : new Date(d);
+    const hh = String(dt.getHours()).padStart(2, "0");
+    const mm = String(dt.getMinutes()).padStart(2, "0");
+    return formatThaiDate(dt) + " " + hh + ":" + mm + " น.";
+  }
+
+  const Activity103 = {
+    STEPS: STEPS,
+    ROUTES: ROUTES,
+    stepByCode: stepByCode,
+    stepByPage: stepByPage,
+
+    /* คดีของกิจกรรม 10.3 (คดีศาลปกครอง) — เช็คจาก category ที่ 02-board-intake.html เขียนไว้ */
+    isCourtCase: function (kase) {
+      if (!kase) return false;
+      const cat = kase.category || kase.type || (kase.raw && kase.raw.category) || "";
+      return String(cat).indexOf("10.3") === 0;
+    },
+
+    /* Activity10.getCaseById() ตกไปที่ cases[0] เมื่อไม่รู้จัก id — กรองเฉพาะ 10.3 ก่อน */
+    getCase: function (caseId, fallbackStatusCode) {
+      const all = (Activity10.getCases && Activity10.getCases()) || [];
+      const pool = all.filter(Activity103.isCourtCase);
+      const exact = caseId && pool.find(function (c) { return c.id === caseId; });
+      if (exact) return exact;
+      return (
+        pool.find(function (c) { return c.statusCode === fallbackStatusCode; }) ||
+        pool[0] ||
+        null
+      );
+    },
+
+    /* เดินงานไปขั้นถัดไปตามตาราง STEPS — ใช้ร่วมกันทุกหน้า 10-3-xx */
+    advance: function (caseId, stepCode, patch) {
+      const step = stepByCode(stepCode);
+      if (!step) return null;
+      const next = Object.assign(
+        {
+          status: step.status,
+          statusCode: step.statusCode,
+          statusBadge: "bg-primary text-white",
+          l3Step: step.code,
+          l3StepSeq: step.seq,
+        },
+        patch || {},
+      );
+      return Activity10.updateCase(caseId, next);
+    },
+
+    /* บันทึกลายเซ็นลงช่องของบทบาทที่กำลังลงนามอยู่ */
+    sign: function (caseId, slot, imageDataUrl, extra) {
+      const kase = Activity10.getCaseById(caseId);
+      if (!kase) return null;
+      const sigs = Object.assign({}, kase.l3Signatures || {});
+      sigs[slot] = Object.assign(
+        { image: imageDataUrl, signedAt: formatThaiDateTime(new Date()) },
+        extra || {},
+      );
+      return Activity10.updateCase(caseId, { l3Signatures: sigs });
+    },
+
+    /* ออกเลขหนังสือส่ง — ผูกกับปุ่มของหน้าที่ต้องออกเลข (LAW0091/LAW0095) */
+    issueDocNo: function (caseId, docField, dateField) {
+      const kase = Activity10.getCaseById(caseId);
+      if (kase && kase[docField]) return kase[docField];
+      const seq = String(4400 + Math.floor(Math.random() * 500)).padStart(4, "0");
+      const docNo = "ปป 0003/" + seq;
+      const patch = {};
+      patch[docField] = docNo;
+      patch[dateField] = formatThaiDate(new Date());
+      Activity10.updateCase(caseId, patch);
+      return docNo;
+    },
+  };
+
+  /* ---------------------------------------------------------- USER PROFILE */
+  function currentRoleId() {
+    return sessionStorage.getItem("ecmis_role") || "admin_legal";
+  }
+  function currentRole() {
+    const roles = (global.ECMIS && global.ECMIS.ROLES) || [];
+    const id = currentRoleId();
+    return roles.find(function (r) { return r.id === id || r.login === id; }) || null;
+  }
+  function signerLabel(roleId) {
+    const roles = (global.ECMIS && global.ECMIS.ROLES) || [];
+    const r = roles.find(function (x) { return x.id === roleId; });
+    return r ? r.name + " (" + r.title + ")" : "-";
+  }
+
+  /* ------------------------------------------------------- SIGNATURE MODAL
+     สำเนาเดียวกับที่ใช้ใน 08-legal-director-approval.html / ecmis-10-2.js */
+  let sigPadCtx = null;
+  let sigPadDrawing = false;
+  let sigPadHasDrawing = false;
+  let sigMode = "hand";
+
+  function getSigPadPos(canvas, evt) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height),
+    };
+  }
+
+  function selectSignatureMode(mode) {
+    sigMode = mode;
+    const cardHand = document.getElementById("swal-card-hand");
+    const cardCert = document.getElementById("swal-card-cert");
+    const badge = document.getElementById("swal-sig-mode-badge");
+    const boxCanvas = document.getElementById("swal-box-canvas");
+    const boxCert = document.getElementById("swal-box-cert");
+    if (cardHand) cardHand.classList.toggle("is-active", mode === "hand");
+    if (cardCert) cardCert.classList.toggle("is-active", mode === "cert");
+    if (badge) {
+      badge.innerHTML =
+        mode === "hand"
+          ? '<i class="fa-solid fa-check me-1"></i> เซ็นมือ'
+          : '<i class="fa-solid fa-check me-1"></i> ลายเซ็นดิจิทัล';
+    }
+    if (boxCanvas) boxCanvas.classList.toggle("is-visible", mode === "hand");
+    if (boxCert) boxCert.classList.toggle("is-visible", mode === "cert");
+  }
+
+  function clearSignaturePad() {
+    const canvas = document.getElementById("swal-sig-canvas");
+    if (!canvas || !sigPadCtx) return;
+    sigPadCtx.clearRect(0, 0, canvas.width, canvas.height);
+    sigPadHasDrawing = false;
+  }
+
+  function bindSignaturePad() {
+    const canvas = document.getElementById("swal-sig-canvas");
+    if (!canvas) return;
+    sigPadCtx = canvas.getContext("2d");
+    sigPadCtx.lineWidth = 2.4;
+    sigPadCtx.lineCap = "round";
+    sigPadCtx.strokeStyle = "#0F172A";
+    sigPadHasDrawing = false;
+    sigPadDrawing = false;
+    sigMode = "hand";
+
+    const startDraw = function (evt) {
+      evt.preventDefault();
+      sigPadDrawing = true;
+      const pos = getSigPadPos(canvas, evt);
+      sigPadCtx.beginPath();
+      sigPadCtx.moveTo(pos.x, pos.y);
+    };
+    const moveDraw = function (evt) {
+      if (!sigPadDrawing) return;
+      evt.preventDefault();
+      const pos = getSigPadPos(canvas, evt);
+      sigPadCtx.lineTo(pos.x, pos.y);
+      sigPadCtx.stroke();
+      sigPadHasDrawing = true;
+    };
+    const endDraw = function () { sigPadDrawing = false; };
+
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mousemove", moveDraw);
+    window.addEventListener("mouseup", endDraw);
+    canvas.addEventListener("touchstart", startDraw, { passive: false });
+    canvas.addEventListener("touchmove", moveDraw, { passive: false });
+    canvas.addEventListener("touchend", endDraw);
+
+    const clearBtn = document.getElementById("swal-sig-clear");
+    if (clearBtn) clearBtn.addEventListener("click", clearSignaturePad);
+    const cardHand = document.getElementById("swal-card-hand");
+    const cardCert = document.getElementById("swal-card-cert");
+    if (cardHand) cardHand.addEventListener("click", function () { selectSignatureMode("hand"); });
+    if (cardCert) cardCert.addEventListener("click", function () { selectSignatureMode("cert"); });
+  }
+
+  function generateCertificateStampImage(signerFull, certId) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 440;
+    canvas.height = 180;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ECFDF5";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#A7F3D0";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    ctx.fillStyle = "#065F46";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("ลงนามด้วยใบรับรองอิเล็กทรอนิกส์", 20, 40);
+    ctx.font = "13px sans-serif";
+    ctx.fillText("Certificate: " + certId, 20, 68);
+    const parenIdx = signerFull.indexOf("(");
+    const namePart = parenIdx > -1 ? signerFull.slice(0, parenIdx).trim() : signerFull;
+    const rolePart = parenIdx > -1 ? signerFull.slice(parenIdx).trim() : "";
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(namePart, 20, 100);
+    ctx.font = "12px sans-serif";
+    ctx.fillText(rolePart, 20, 122);
+    ctx.font = "11px sans-serif";
+    ctx.fillStyle = "#16A34A";
+    ctx.fillText(new Date().toLocaleString("th-TH"), 20, 150);
+    return canvas.toDataURL("image/png");
+  }
+
+  function openSignatureModal(opts, onConfirm) {
+    const cfg = opts || {};
+    const title = cfg.title || "ยืนยันการลงนามอิเล็กทรอนิกส์";
+    const signerFull = cfg.signer || signerLabel(currentRoleId());
+    const certId = cfg.certId || "PACC-2569-103";
+
+    Swal.fire({
+      width: "720px",
+      html:
+        '<div class="text-start emd-body">' +
+        '<div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">' +
+        '<i class="fa-solid fa-pen-nib text-primary fa-lg"></i>' +
+        '<h5 class="m-0 fw-bold emd-sig-title">' + title + "</h5>" +
+        "</div>" +
+        '<div class="p-3 mb-3 rounded-3 d-flex align-items-center gap-2 emd-sig-signer">' +
+        '<i class="fa-solid fa-user me-1"></i>' +
+        "<span>ผู้ลงนามคือ <strong>" + signerFull + "</strong></span>" +
+        "</div>" +
+        '<div class="d-flex align-items-center justify-content-between mb-2">' +
+        "<div>" +
+        '<div class="fw-bold emd-sig-label">เลือกวิธีลงนาม <span class="text-danger">*</span></div>' +
+        '<div class="text-muted emd-fs-sm">เลือกได้เพียง 1 วิธีต่อการลงนามหนึ่งครั้ง</div>' +
+        "</div>" +
+        '<div id="swal-sig-mode-badge" class="badge rounded-pill bg-light text-primary border px-2 py-1 emd-fs-sm">' +
+        '<i class="fa-solid fa-check me-1"></i> เซ็นมือ</div>' +
+        "</div>" +
+        '<div class="row g-3 mb-3">' +
+        '<div class="col-6">' +
+        '<div id="swal-card-hand" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card is-active">' +
+        '<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico is-primary">' +
+        '<i class="fa-solid fa-pen fa-lg"></i></div>' +
+        '<div><div class="fw-bold text-dark emd-sig-card-title">1. เซ็นมือ</div>' +
+        '<div class="text-muted emd-sig-card-desc">ใช้เมาส์หรือทัชแพดลากลายเซ็น</div></div>' +
+        "</div></div>" +
+        '<div class="col-6">' +
+        '<div id="swal-card-cert" class="p-3 rounded-3 border d-flex gap-3 align-items-start h-100 emd-sig-card">' +
+        '<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 emd-sig-ico">' +
+        '<i class="fa-solid fa-shield-halved fa-lg"></i></div>' +
+        '<div><div class="fw-bold text-dark emd-sig-card-title">2. ลายเซ็นดิจิทัล</div>' +
+        '<div class="text-muted emd-sig-card-desc">ประทับลายเซ็นอัตโนมัติด้วยใบรับรองอิเล็กทรอนิกส์ที่มีอยู่</div></div>' +
+        "</div></div>" +
+        "</div>" +
+        '<div id="swal-box-canvas" class="border rounded-3 p-3 mb-3 bg-white emd-sig-panel is-visible">' +
+        '<div class="d-flex align-items-center justify-content-between mb-2">' +
+        "<div>" +
+        '<div class="fw-bold emd-sig-label">เซ็นชื่อในกรอบด้านล่าง</div>' +
+        '<div class="text-muted emd-fs-sm">กดเมาส์ค้างแล้วลาก หรือใช้นิ้วบนอุปกรณ์ระบบสัมผัส</div>' +
+        "</div>" +
+        '<button type="button" class="btn btn-sm btn-outline-secondary border px-2 py-1 rounded-2 emd-fs-sm" id="swal-sig-clear">' +
+        '<i class="fa-solid fa-eraser me-1"></i> ล้างลายเซ็น</button>' +
+        "</div>" +
+        '<div class="sig-canvas-wrapper emd-sig-pad">' +
+        '<canvas id="swal-sig-canvas" width="640" height="170" class="emd-sig-canvas"></canvas>' +
+        "</div></div>" +
+        '<div id="swal-box-cert" class="p-3 rounded-3 emd-sig-panel emd-sig-cert">' +
+        '<div class="d-flex align-items-center gap-2 mb-1">' +
+        '<i class="fa-solid fa-circle-check text-success fa-lg"></i>' +
+        "<strong>Certificate: " + certId + "</strong></div>" +
+        "<div>ผู้ถือใบรับรอง: <strong>" + signerFull + "</strong></div>" +
+        '<div class="mt-1 text-success emd-fs-sm">ระบบจะประทับลายเซ็นอิเล็กทรอนิกส์ลงในเอกสารโดยอัตโนมัติ</div>' +
+        "</div></div>",
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-pen me-1"></i> ลงนาม',
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#16A34A",
+      cancelButtonColor: "#7C8CA3",
+      allowOutsideClick: false,
+      didOpen: bindSignaturePad,
+      preConfirm: function () {
+        if (sigMode === "hand") {
+          if (!sigPadHasDrawing) {
+            Swal.showValidationMessage("กรุณาลงลายมือชื่อในกรอบก่อนยืนยันการลงนาม");
+            return false;
+          }
+          return document.getElementById("swal-sig-canvas").toDataURL("image/png");
+        }
+        return generateCertificateStampImage(signerFull, certId);
+      },
+    }).then(function (result) {
+      if (result.isConfirmed && typeof onConfirm === "function") {
+        onConfirm(result.value, sigMode);
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------- PAGE HELPERS */
+  function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text == null || text === "" ? "-" : text;
+  }
+
+  function setHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  /* เอกสารแนบประกอบคำฟ้อง — แนบไว้ตั้งแต่ 02-board-intake.html (attachmentFileNames)
+     เก็บแค่ชื่อไฟล์ ไม่มีไบต์ไฟล์จริงให้ดาวน์โหลด (mockup ไม่มี backend เก็บไฟล์) */
+  function renderAttachments(containerId, fileNames) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const files = fileNames || [];
+    if (!files.length) {
+      el.innerHTML = '<div class="read-box l3-optional">ไม่มีเอกสารแนบ</div>';
+      return;
+    }
+    el.innerHTML = files
+      .map(function (name) {
+        const safeName = String(name).replace(/'/g, "\\'");
+        return (
+          '<div class="l3-attachment-row">' +
+          '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
+          name +
+          "</div>" +
+          '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="ECMIS103.mockOpenFile(\'' +
+          safeName +
+          "')\">" +
+          '<i class="fa-solid fa-download me-1"></i>ดาวน์โหลด</button>' +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+
+  function mockOpenFile(name) {
+    Swal.fire({
+      icon: "info",
+      title: "เปิดไฟล์ " + name + "...",
+      timer: 1200,
+      showConfirmButton: false,
+    });
+  }
+
+  /* รายชื่อผู้ฟ้อง/ผู้ถูกฟ้อง (อ่านอย่างเดียว) — เก็บเป็น array บนเคสตั้งแต่ 02-board-intake.html */
+  function renderPartyList(containerId, names) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const list = (names || []).filter(Boolean);
+    el.innerHTML = list.length
+      ? list.map(function (n) { return '<div class="read-box" style="margin-bottom:6px;">' + n + "</div>"; }).join("")
+      : '<div class="read-box l3-optional">-</div>';
+  }
+
+  /* หัวโปรไฟล์มุมขวาบน — ทุกหน้า 10.3 เรียกตอน DOMContentLoaded */
+  function initUserProfile() {
+    const role = currentRole();
+    if (!role) return;
+    const shortName = String(role.name || "")
+      .replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, "")
+      .trim();
+    setText("userAvatar", shortName.charAt(0) || "?");
+    setText("userName", role.name);
+    setText("userRoleTitle", role.title);
+    setText("profileCardName", role.name);
+    setText("profileCardTitle", role.title);
+    setText("profileCardOrg", (role.org || role.group) + " · สำนักงาน ป.ป.ท.");
+  }
+
+  /* เตือนเมื่อเปิดหน้าด้วยบทบาทที่ไม่ใช่เจ้าของขั้นตอนนั้น (ดูได้ แต่เซ็นแทนไม่ได้) */
+  function guardRole(expectedRoleId, roleTitle) {
+    if (currentRoleId() === expectedRoleId) return true;
+    const cur = currentRole();
+    Swal.fire({
+      icon: "warning",
+      title: "บทบาทไม่ตรงกับขั้นตอนนี้",
+      html:
+        '<div class="emd-summary">' +
+        "<p>ขั้นตอนนี้เป็นของ <strong>" + roleTitle + "</strong></p>" +
+        "<p>ขณะนี้เข้าสู่ระบบด้วยบทบาท <strong>" + (cur ? cur.title : "-") + "</strong></p>" +
+        "<p>ระบบเปิดให้ดูเอกสารได้ แต่ไม่สามารถลงนามแทนบทบาทอื่นได้</p>" +
+        "</div>",
+      confirmButtonColor: "#1e3a8a",
+      confirmButtonText: "รับทราบ",
+    });
+    return false;
+  }
+
+  function goInbox() {
+    window.location.href = "01-work-inbox.html";
+  }
+
+  /* แถบขั้นตอน — Part 1 เป็นเส้นตรงไม่มีสาขา จึงไม่ต้องกรองตามผลมติเหมือน 10.2 */
+  function renderStepper(containerId, currentCode) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const curIdx = STEPS.findIndex(function (s) { return s.code === currentCode; });
+    el.innerHTML = STEPS.map(function (step, i) {
+      const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
+      const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      return (
+        '<div class="step-item ' + cls + '" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-circle">' + inner + "</div>" +
+        '<div class="step-label">' + step.stepName + "</div>" +
+        "</div>"
+      );
+    }).join("");
+  }
+
+  /* เมนูข้างซ้าย — แสดงเฉพาะขั้นตอน 10-3-xx ที่บทบาทนั้นรับผิดชอบ (ไม่รวม
+     02-board-intake.html เพราะเป็นหน้ารับเรื่องกลางที่ใช้ร่วมกับหมวดอื่น) */
+  function renderSidebarMenu(containerId, activePage) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const roleId = currentRoleId();
+    const mine = STEPS.filter(function (s) {
+      return s.role === roleId && s.page.indexOf("10-3-") === 0;
+    });
+    const items = [
+      '<li' + (activePage === "01-work-inbox.html" ? ' class="active"' : "") +
+        '><a href="01-work-inbox.html"><i class="fa-solid fa-scale-balanced"></i> ' +
+        "<span>งานกฎหมายในทางคดี</span></a></li>",
+    ].concat(
+      mine.map(function (s) {
+        return (
+          "<li" + (s.page === activePage ? ' class="active"' : "") +
+          '><a href="' + s.page + '"><i class="fa-solid fa-file-pen"></i> ' +
+          "<span>" + s.label + "</span></a></li>"
+        );
+      }),
+    );
+    el.innerHTML = items.join("");
+  }
+
+  /* -------------------------------------------------------------- EXPORTS */
+  global.Activity103 = Activity103;
+  global.ECMIS103 = {
+    formatThaiDate: formatThaiDate,
+    formatThaiDateTime: formatThaiDateTime,
+    currentRoleId: currentRoleId,
+    currentRole: currentRole,
+    signerLabel: signerLabel,
+    openSignatureModal: openSignatureModal,
+    initUserProfile: initUserProfile,
+    guardRole: guardRole,
+    setText: setText,
+    setHtml: setHtml,
+    goInbox: goInbox,
+    renderStepper: renderStepper,
+    renderSidebarMenu: renderSidebarMenu,
+    renderAttachments: renderAttachments,
+    renderPartyList: renderPartyList,
+    mockOpenFile: mockOpenFile,
+  };
+})(window);

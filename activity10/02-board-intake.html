@@ -923,7 +923,7 @@
                   />
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group" id="grp_source">
                 <label
                   ><span id="lbl_source">หน่วยงานอัยการต้นทาง</span>
                   <span style="color: #dc2626">*</span></label
@@ -1185,6 +1185,177 @@
                   id="disclosureAttachmentsList"
                   style="margin-top: 8px"
                 ></div>
+                <div
+                  class="info-box"
+                  style="margin-top: 10px; margin-bottom: 0"
+                >
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== เฉพาะหมวด 10.3 คดีศาลปกครอง ==========
+                 แสดงแทนช่องเฉพาะงานอัยการ เมื่อเลือกหมวดหมู่ = 10.3 -->
+            <div id="div_courtCase" style="display: none">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล <span style="color: #dc2626">*</span></label>
+                  <input
+                    type="text"
+                    id="in_courtName"
+                    class="form-control"
+                    placeholder="เช่น ศาลปกครองกลาง"
+                    value="ศาลปกครองกลาง"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>สั่งถึง <span style="color: #dc2626">*</span></label>
+                  <input
+                    type="text"
+                    id="in_orderedTo"
+                    class="form-control"
+                    placeholder="เช่น เลขาธิการคณะกรรมการ ป.ป.ท."
+                    value="เลขาธิการคณะกรรมการ ป.ป.ท."
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >หมายเลขคดีดำ <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_blackCaseNo"
+                    class="form-control font-monospace"
+                    style="font-weight: 700"
+                    placeholder="เช่น อ. 104/2569"
+                    value="อ. 104/2569"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >หมายเลขคดีแดง
+                    <span style="font-weight: 400; color: #64748b"
+                      >(ถ้ามี)</span
+                    ></label
+                  >
+                  <input
+                    type="text"
+                    id="in_redCaseNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น อ. 55/2570 (กรอกเมื่อศาลตัดสินแล้ว)"
+                    value="อ. 55/2570"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group" id="grp_courtPlaintiffs">
+                <label
+                  >ผู้ฟ้อง <span style="color: #dc2626">*</span></label
+                >
+                <div id="courtPlaintiffList"></div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  style="margin-top: 6px"
+                  onclick="addCourtPlaintiffRow()"
+                >
+                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ฟ้อง
+                </button>
+              </div>
+
+              <div class="form-group" id="grp_courtDefendants">
+                <label
+                  >ผู้ถูกฟ้อง <span style="color: #dc2626">*</span></label
+                >
+                <div id="courtDefendantList"></div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  style="margin-top: 6px"
+                  onclick="addCourtDefendantRow()"
+                >
+                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ถูกฟ้อง
+                </button>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขสารบัญ <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_courtSarabanNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น สบ.0021/2569"
+                    value="สบ.0021/2569"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >หน่วยงานที่รับเรื่อง
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_receivingUnit"
+                    class="form-control"
+                    value="กองกฎหมาย"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >หมายเหตุ
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <textarea
+                  id="in_courtRemark"
+                  class="form-control"
+                  rows="2"
+                  maxlength="2000"
+                  placeholder="-"
+                  oninput="updateLivePreview()"
+                >
+-</textarea
+                >
+              </div>
+
+              <div class="form-group" id="grp_courtAttachments">
+                <label
+                  >แนบเอกสาร
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_courtAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleCourtAttachmentsChange(this)"
+                  />
+                </div>
+                <div id="courtAttachmentsList" style="margin-top: 8px"></div>
                 <div
                   class="info-box"
                   style="margin-top: 10px; margin-bottom: 0"
@@ -1649,6 +1820,7 @@
         if (!catEl) return;
         const cat = catEl.value;
         const isDisclosure = cat === "10.2.1";
+        const isCourtCase = cat === "10.3";
 
         const show = (id, visible) => {
           const el = document.getElementById(id);
@@ -1665,21 +1837,31 @@
           }
         }
 
-        /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร */
-        show("grp_docNo", !isDisclosure);
-        show("grp_prosecutorLevel", !isDisclosure);
-        show("grp_offenseBasis", !isDisclosure);
-        show("grp_title", !isDisclosure);
-        show("grp_summary", !isDisclosure);
-        show("grp_legalOpinion", !isDisclosure);
-        show("grp_scannedFile", !isDisclosure);
+        /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร หรือคดีศาลปกครอง */
+        const hideProsecutorOnly = isDisclosure || isCourtCase;
+        show("grp_docNo", !hideProsecutorOnly);
+        show("grp_prosecutorLevel", !hideProsecutorOnly);
+        show("grp_offenseBasis", !hideProsecutorOnly);
+        show("grp_title", !hideProsecutorOnly);
+        show("grp_summary", !hideProsecutorOnly);
+        show("grp_legalOpinion", !hideProsecutorOnly);
+        show("grp_scannedFile", !hideProsecutorOnly);
+        show("grp_source", !isCourtCase);
         show("div_disclosureRequest", isDisclosure);
+        show("div_courtCase", isCourtCase);
+
+        if (isCourtCase) {
+          renderCourtPlaintiffList();
+          renderCourtDefendantList();
+        }
 
         const header = document.getElementById("sectionHeaderText");
         if (header) {
           header.innerText = isDisclosure
             ? "📋 รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร"
-            : "📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ";
+            : isCourtCase
+              ? "📋 รายละเอียดคดีศาลปกครอง"
+              : "📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ";
         }
 
         const srcLabel = document.getElementById("lbl_source");
@@ -1690,6 +1872,233 @@
         }
 
         updateLivePreview();
+      }
+
+      /* ผู้ฟ้อง/ผู้ถูกฟ้อง (คดีศาลปกครอง) — เพิ่มได้หลายรายการ */
+      let courtPlaintiffs = ["นายสมชาย ใจดี"];
+      let courtDefendants = ["อธิบดีกรมการปกครอง"];
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function renderCourtPartyList(
+        containerId,
+        list,
+        updateFn,
+        removeFn,
+        placeholder,
+      ) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        el.innerHTML = list
+          .map(
+            (val, idx) => `
+ <div style="display:flex; gap:8px; margin-bottom:6px;">
+ <input type="text" class="form-control" style="flex:1;" placeholder="${placeholder}" value="${escapeHtml(val)}" oninput="${updateFn}(${idx}, this.value)" />
+ ${
+   list.length > 1
+     ? `<button type="button" class="btn btn-secondary" onclick="${removeFn}(${idx})" title="ลบรายการนี้"><i class="fa-solid fa-trash-can"></i></button>`
+     : ""
+ }
+ </div>`,
+          )
+          .join("");
+      }
+
+      function renderCourtPlaintiffList() {
+        renderCourtPartyList(
+          "courtPlaintiffList",
+          courtPlaintiffs,
+          "updateCourtPlaintiff",
+          "removeCourtPlaintiffRow",
+          "เช่น นายสมชาย ใจดี",
+        );
+      }
+      function addCourtPlaintiffRow() {
+        courtPlaintiffs.push("");
+        renderCourtPlaintiffList();
+      }
+      function removeCourtPlaintiffRow(idx) {
+        courtPlaintiffs.splice(idx, 1);
+        if (!courtPlaintiffs.length) courtPlaintiffs = [""];
+        renderCourtPlaintiffList();
+      }
+      function updateCourtPlaintiff(idx, val) {
+        courtPlaintiffs[idx] = val;
+        updateLivePreview();
+      }
+
+      function renderCourtDefendantList() {
+        renderCourtPartyList(
+          "courtDefendantList",
+          courtDefendants,
+          "updateCourtDefendant",
+          "removeCourtDefendantRow",
+          "เช่น อธิบดีกรมการปกครอง",
+        );
+      }
+      function addCourtDefendantRow() {
+        courtDefendants.push("");
+        renderCourtDefendantList();
+      }
+      function removeCourtDefendantRow(idx) {
+        courtDefendants.splice(idx, 1);
+        if (!courtDefendants.length) courtDefendants = [""];
+        renderCourtDefendantList();
+      }
+      function updateCourtDefendant(idx, val) {
+        courtDefendants[idx] = val;
+        updateLivePreview();
+      }
+
+      /* เอกสารเพิ่มเติม (คดีศาลปกครอง) — แนบได้หลายไฟล์ */
+      let courtAttachedFiles = [];
+
+      function handleCourtAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          courtAttachedFiles.push(file);
+        });
+
+        input.value = "";
+        renderCourtAttachmentsList();
+      }
+
+      function removeCourtAttachment(index) {
+        courtAttachedFiles.splice(index, 1);
+        renderCourtAttachmentsList();
+      }
+
+      function renderCourtAttachmentsList() {
+        const listEl = document.getElementById("courtAttachmentsList");
+        if (!listEl) return;
+        if (!courtAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = courtAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeCourtAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      /* ค่าที่กรอกในบล็อกคดีศาลปกครอง พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
+      function collectCourtCaseFields() {
+        const val = (id) => {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : "";
+        };
+
+        const plaintiffs = courtPlaintiffs.map((p) => p.trim()).filter(Boolean);
+        const defendants = courtDefendants.map((d) => d.trim()).filter(Boolean);
+
+        return {
+          courtName: val("in_courtName"),
+          blackCaseNo: val("in_blackCaseNo"),
+          redCaseNo: val("in_redCaseNo"),
+          orderedTo: val("in_orderedTo"),
+          plaintiffs: plaintiffs,
+          defendants: defendants,
+          courtSarabanNo: val("in_courtSarabanNo"),
+          courtRemark: val("in_courtRemark"),
+          receivingUnit: val("in_receivingUnit") || "กองกฎหมาย",
+          attachmentFileNames: courtAttachedFiles.map((f) => f.name),
+        };
+      }
+
+      /* ตรวจความครบถ้วนของบล็อกคดีศาลปกครอง ก่อนบันทึก */
+      function validateCourtCaseFields() {
+        const checks = [
+          ["in_courtName", "กรุณาระบุศาล"],
+          ["in_blackCaseNo", "กรุณาระบุหมายเลขคดีดำ"],
+          ["in_orderedTo", "กรุณาระบุสั่งถึง"],
+          ["in_courtSarabanNo", "กรุณาระบุเลขสารบัญ"],
+          ["in_receivingUnit", "กรุณาระบุหน่วยงานที่รับเรื่อง"],
+        ];
+        for (const [id, msg] of checks) {
+          const el = document.getElementById(id);
+          if (!el || !el.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: msg,
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (el) el.focus();
+            return false;
+          }
+        }
+
+        const hasPlaintiff = courtPlaintiffs.some((p) => p.trim());
+        if (!hasPlaintiff) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 รายการ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return false;
+        }
+
+        const hasDefendant = courtDefendants.some((d) => d.trim());
+        if (!hasDefendant) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุผู้ถูกฟ้องอย่างน้อย 1 รายการ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return false;
+        }
+
+        return true;
       }
 
       /* ค่าที่กรอกในบล็อก 10.2 พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
@@ -2428,27 +2837,32 @@
           "";
 
         const isDisclosure = category === "10.2.1";
+        const isCourtCase = category === "10.3";
 
-        /* หมวด 10.2 ซ่อนช่องของงานอัยการไว้ทั้งหมด จึงตรวจเฉพาะเลขที่ใช้ร่วมกัน
-           ส่วนชื่อเรื่องจะสร้างจากข้อมูลข่าวสารที่ขอเปิดเผยแทน */
-        const missingCore = isDisclosure
-          ? !centralSarabanNo || !lawReceiveNo
-          : !title || !docNo || !centralSarabanNo || !lawReceiveNo;
+        /* หมวด 10.2 และ 10.3 ซ่อนช่องของงานอัยการไว้ทั้งหมด จึงตรวจเฉพาะเลขที่ใช้ร่วมกัน
+           ส่วนชื่อเรื่องจะสร้างจากข้อมูลเฉพาะหมวดนั้นแทน */
+        const missingCore =
+          isDisclosure || isCourtCase
+            ? !centralSarabanNo || !lawReceiveNo
+            : !title || !docNo || !centralSarabanNo || !lawReceiveNo;
 
         if (missingCore) {
           Swal.fire({
             icon: "warning",
             title: "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน",
-            text: isDisclosure
-              ? "ต้องมี เลขสารบรรณกลาง และเลขรับกองกฎหมาย"
-              : "ต้องมี เลขสารบรรณกลาง, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
+            text:
+              isDisclosure || isCourtCase
+                ? "ต้องมี เลขสารบรรณกลาง และเลขรับกองกฎหมาย"
+                : "ต้องมี เลขสารบรรณกลาง, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
             confirmButtonColor: "#1e3a8a",
           });
           return;
         }
 
         if (isDisclosure && !validateDisclosureFields()) return;
-        if (!isDisclosure && !validateProsecutorFields()) return;
+        if (isCourtCase && !validateCourtCaseFields()) return;
+        if (!isDisclosure && !isCourtCase && !validateProsecutorFields())
+          return;
 
         Swal.fire({
           icon: "question",
@@ -2462,12 +2876,21 @@
         }).then((res) => {
           if (res.isConfirmed) {
             /* จุดแยกเส้นทาง: 10.2.1 เข้าสายงานคำขอเปิดเผยข้อมูลข่าวสาร
-               (สถานะ L2_* ให้หน้า 01-work-inbox ส่งต่อไป 10-2-01) */
+               (สถานะ L2_* ให้หน้า 01-work-inbox ส่งต่อไป 10-2-01)
+               10.3 เข้าสายงานคดีศาลปกครอง (สถานะ L3_* ส่งต่อไป 10-3-02) */
             const l2Fields = isDisclosure ? collectDisclosureFields() : {};
+            const l3Fields = isCourtCase ? collectCourtCaseFields() : {};
 
-            /* ช่อง "ชื่อเรื่อง" ของงานอัยการถูกซ่อนในหมวด 10.2 จึงใช้ค่าจาก
-               ช่อง "ชื่อเรื่อง" เฉพาะของคำขอเปิดเผยข้อมูลข่าวสารแทน */
-            const l2Title = isDisclosure ? l2Fields.title : title;
+            /* ช่อง "ชื่อเรื่อง" ของงานอัยการถูกซ่อนในหมวด 10.2/10.3 จึงประกอบ
+               ชื่อเรื่องจากข้อมูลเฉพาะหมวดนั้นแทน */
+            const courtCaseTitle = isCourtCase
+              ? `${l3Fields.plaintiffs.join(", ") || "-"} (ผู้ฟ้องคดี) ยื่นฟ้อง ${l3Fields.defendants.join(", ") || "-"} (ผู้ถูกฟ้องคดี)`
+              : "";
+            const finalTitle = isDisclosure
+              ? l2Fields.title
+              : isCourtCase
+                ? courtCaseTitle
+                : title;
             const routing = isDisclosure
               ? {
                   status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
@@ -2475,28 +2898,41 @@
                   l2Step: "LAW0037",
                   l2StepSeq: 6,
                 }
-              : {
-                  status: "ผอ.กองกฎหมายพิจารณา",
-                  statusCode: "PENDING_DIRECTOR",
-                };
+              : isCourtCase
+                ? {
+                    status: "ผอ.กองกฎหมายพิจารณามอบหมาย",
+                    statusCode: "L3_PENDING_DIRECTOR_ASSIGN",
+                    l3Step: "LAW0085",
+                    l3StepSeq: 1,
+                  }
+                : {
+                    status: "ผอ.กองกฎหมายพิจารณา",
+                    statusCode: "PENDING_DIRECTOR",
+                  };
 
             const newCase = Activity10.addCase({
               ...l2Fields,
+              ...l3Fields,
               ...routing,
               id: selectedIntakeCaseData ? selectedIntakeCaseData.id : null,
               category: category,
-              title: l2Title,
+              title: finalTitle,
               source: source,
               docNo: docNo,
               prosecutorCaseTypeNo: prosecutorCaseTypeNo,
               prosecutorCaseTypeName: prosecutorCaseTypeName,
               prosecutorLevel: prosecutorLevel,
               prosecutorLevelName: prosecutorLevelName,
-              offenseBases: isDisclosure ? [] : collectOffenseBases(),
-              summary: isDisclosure ? "" : summary,
-              legalOpinion: isDisclosure ? "" : legalOpinion,
-              accuser: accuser,
-              accused: accused,
+              offenseBases:
+                isDisclosure || isCourtCase ? [] : collectOffenseBases(),
+              summary: isDisclosure || isCourtCase ? "" : summary,
+              legalOpinion: isDisclosure || isCourtCase ? "" : legalOpinion,
+              accuser: isCourtCase
+                ? l3Fields.plaintiffs.join(", ") || "-"
+                : accuser,
+              accused: isCourtCase
+                ? l3Fields.defendants.join(", ") || "-"
+                : accused,
               paccCaseNo: selectedIntakeCaseData
                 ? selectedIntakeCaseData.paccCaseNo
                 : "",
