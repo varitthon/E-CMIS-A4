@@ -1580,17 +1580,15 @@
         const allCases = getAllDatabaseCases();
         const roleCases = getCasesForRole(allCases);
 
+        const count101 = roleCases.filter((d) => d.type === "10.1").length;
+        const count102 = roleCases.filter((d) => d.type === "10.2").length;
+        const count103 = roleCases.filter((d) => d.type === "10.3").length;
+
         document.getElementById("count-total-system").innerText =
-          allCases.length;
-        document.getElementById("count-101").innerText = roleCases.filter(
-          (d) => d.type === "10.1",
-        ).length;
-        document.getElementById("count-102").innerText = roleCases.filter(
-          (d) => d.type === "10.2",
-        ).length;
-        document.getElementById("count-103").innerText = roleCases.filter(
-          (d) => d.type === "10.3",
-        ).length;
+          count101 + count102 + count103;
+        document.getElementById("count-101").innerText = count101;
+        document.getElementById("count-102").innerText = count102;
+        document.getElementById("count-103").innerText = count103;
       }
 
       function updateDynamicFilter(cat) {
@@ -2311,6 +2309,7 @@
       window.onload = function () {
         updateRoleDisplay();
         updateCardCounts();
+        selectCategory("10.1");
       };
     </script>
   </body>
