@@ -492,51 +492,6 @@
             </div>
           </div>
 
-          <!-- เอกสารแนบ — แผ่นสรุปมติคณะอนุกรรมการฯ -->
-          <div class="form-card">
-            <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-file-circle-check text-success me-2"></i
-                >เอกสารแนบ —
-                มติคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
-              >
-              <div class="d-flex gap-2">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  style="height: 30px; padding: 0 12px; font-size: 0.82em"
-                  onclick="toggleResolutionSheet()"
-                >
-                  <i
-                    class="fa-solid fa-chevron-down me-1"
-                    id="resSheetToggleIcon"
-                  ></i
-                  ><span id="resSheetToggleText">แสดงเอกสาร</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  style="height: 30px; padding: 0 12px; font-size: 0.82em"
-                  onclick="
-                    ECMIS102.exportDocx(
-                      'resolutionSheet',
-                      'มติคณะอนุกรรมการพิจารณากลั่นกรองฯ',
-                    )
-                  "
-                >
-                  <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
-                </button>
-              </div>
-            </div>
-            <div
-              class="form-card-body"
-              id="resolutionSheetWrap"
-              style="display: none"
-            >
-              <div class="l2-doc" id="resolutionSheet"></div>
-            </div>
-          </div>
-
           <!-- สายการลงนามของบันทึกฉบับนี้ -->
           <div class="form-card">
             <div class="form-card-header">
@@ -617,8 +572,13 @@
                   class="form-control"
                   style="font-weight: 600; color: #1e3a8a"
                 >
-                  <option value="นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)">
-                    นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)
+                  <option value="DEPUTY">
+                    นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย
+                    ปฏิบัติราชการแทนเลขาธิการ)
+                  </option>
+                  <option value="SECGEN">
+                    นายอภิชาติ สุจริตกุล (เลขาธิการ คณะกรรมการ ป.ป.ท.
+                    ผู้ดูแลกองกฎหมาย)
                   </option>
                 </select>
               </div>
@@ -716,130 +676,17 @@
 
       /* ---- page specific ---- */
 
-      /* แสดงบันทึกข้อความ (Part 1-A) แบบอ่านอย่างเดียว พร้อมลายเซ็นผู้เสนอเรื่อง
-         สำเนาการ render เดียวกับ 10-2-08-legal-director-propose.html */
+      /* แสดงบันทึกข้อความ (Part 1-A) แบบอ่านอย่างเดียว — ใช้ตัวเรนเดอร์กลาง
+         (ผู้เสนอเรื่อง + ๕.ผอ.กองกฎหมาย ครบแล้วในขั้นนี้ ยังไม่ถึงจุดแยกสาย ๖/๗) */
       function renderMemo() {
-        const c = currentCase;
-        const sigs = Activity102.signState(c);
-        const row = (label, value) =>
-          '<div class="l2-doc-row"><span class="l2-doc-label">' +
-          label +
-          '</span><span class="l2-doc-value">' +
-          (value || "") +
-          "</span></div>";
-        const section = (label, value) =>
-          '<div class="l2-doc-section"><span class="l2-doc-label">' +
-          label +
-          '</span><div class="l2-doc-body">' +
-          (value || "") +
-          "</div></div>";
-        const sigBlock = (slot, name, role) => {
-          const s = sigs[slot];
-          const img =
-            s && s.image
-              ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
-              : '<div class="l2-sig-placeholder">รอลงนาม</div>';
-          const when =
-            s && s.signedAt
-              ? '<div class="l2-sign-when">' + s.signedAt + "</div>"
-              : "";
-          return (
-            '<div class="l2-sig-slot">' +
-            img +
-            '<div class="l2-sig-name">(' +
-            name +
-            ")</div>" +
-            '<div class="l2-sig-role">' +
-            role +
-            "</div>" +
-            when +
-            "</div>"
-          );
-        };
-
         document.getElementById("memoDoc").innerHTML =
-          '<div class="l2-doc-title">บันทึกข้อความ</div>' +
-          row("ส่วนราชการ", c.l2DivisionName) +
-          row("โทร.", c.l2DivisionPhone) +
-          row("ที่", c.l2InternalDocNo) +
-          row("วันที่", ECMIS102.formatThaiDate(c.l2DocDate)) +
-          row("เรื่อง", c.l2Subject) +
-          row("เรียน", c.l2AddressedTo) +
-          '<hr class="l2-doc-divider" />' +
-          section("๑. เรื่องเดิม", c.l2Background) +
-          section("๒. ข้อเท็จจริง", c.l2Facts) +
-          section("๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง", c.l2LegalBasis) +
-          section("๔. ข้อพิจารณา", c.l2Considerations) +
-          '<div class="l2-doc-section"><div class="l2-doc-body">' +
-          "จึงเรียนมาเพื่อโปรดพิจารณา และนำเสนอที่ประชุมคณะกรรมการ ป.ป.ท. ต่อไป</div></div>" +
-          section("๕. ความเห็นผู้อำนวยการกองกฎหมาย", c.l2DirLegalOpinion) +
-          '<div class="l2-doc-signblock">' +
-          sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") +
-          "</div>";
-      }
-
-      /* เอกสารแนบ (Part 1) — แผ่นสรุปมติคณะอนุกรรมการฯ อ่านอย่างเดียว
-         สำเนาการ render เดียวกับ 10-2-07-secretariat-resolution-doc.html */
-      function renderResolutionSheet() {
-        const c = currentCase;
-        const row = (label, value) =>
-          '<div class="l2-doc-row"><span class="l2-doc-label">' +
-          label +
-          '</span><span class="l2-doc-value">' +
-          (value || "") +
-          "</span></div>";
-        const section = (label, value) =>
-          '<div class="l2-doc-section"><span class="l2-doc-label">' +
-          label +
-          '</span><div class="l2-doc-body">' +
-          (value || "") +
-          "</div></div>";
-
-        document.getElementById("resolutionSheet").innerHTML =
-          '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
-          '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
-          '<hr class="l2-doc-divider" />' +
-          section("๑. เรื่อง", c.title) +
-          section("๒. ข้อเท็จจริง", c.l2CommitteeOpinion) +
-          section("๓. การร้องขอข้อมูลข่าวสาร", c.requestedInfo) +
-          row("๔. ในคราวการประชุมครั้งที่", c.l2MeetingNo) +
-          row("เมื่อวันที่", ECMIS102.formatThaiDate(c.l2MeetingDate)) +
-          section(
-            "คณะอนุกรรมการพิจารณากลั่นกรองฯ เห็นว่า",
-            c.l2CommitteeOpinion,
-          ) +
-          section(
-            "มติที่ประชุม",
-            (c.l2ResolutionTypeName || "") +
-              " — " +
-              (c.l2ResolutionDetail || ""),
-          ) +
-          row(
-            "๕. ผู้รับผิดชอบข้อมูลข่าวสาร",
-            c.l2DataOwner || "กองกฎหมาย สำนักงาน ป.ป.ท.",
-          );
+          ECMIS102.renderMemoDocument(currentCase);
       }
 
       function toggleMemoDoc() {
         const wrap = document.getElementById("memoDocWrap");
         const icon = document.getElementById("memoDocToggleIcon");
         const text = document.getElementById("memoDocToggleText");
-        const showing = wrap.style.display !== "none";
-        wrap.style.display = showing ? "none" : "block";
-        icon.classList.toggle("fa-chevron-down", showing);
-        icon.classList.toggle("fa-chevron-up", !showing);
-        text.textContent = showing ? "แสดงเอกสาร" : "ซ่อนเอกสาร";
-      }
-
-      let resSheetRendered = false;
-      function toggleResolutionSheet() {
-        if (!resSheetRendered) {
-          renderResolutionSheet();
-          resSheetRendered = true;
-        }
-        const wrap = document.getElementById("resolutionSheetWrap");
-        const icon = document.getElementById("resSheetToggleIcon");
-        const text = document.getElementById("resSheetToggleText");
         const showing = wrap.style.display !== "none";
         wrap.style.display = showing ? "none" : "block";
         icon.classList.toggle("fa-chevron-down", showing);
@@ -855,7 +702,7 @@
         renderMemo();
         ECMIS102.setHtml(
           "signChain",
-          Activity102.renderSignChain(currentCase, "proposer"),
+          Activity102.renderSignChain(currentCase, null),
         );
       }
 
@@ -891,8 +738,19 @@
           });
           return;
         }
-        const target = document.getElementById("in_dispatchTarget").value;
+        const branch = document.getElementById("in_dispatchTarget").value;
+        const targetLabel =
+          document.getElementById("in_dispatchTarget").selectedOptions[0]
+            .text;
         const notes = document.getElementById("in_dispatchNotes").value.trim();
+        const isDeputy = branch === "DEPUTY";
+        const nextStatusCode = isDeputy
+          ? "L2_PENDING_DEPUTY_SG_OPINION"
+          : "L2_PENDING_SECGEN_OPINION";
+        const nextStatus = isDeputy
+          ? "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๖) และลงนาม"
+          : "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๗) และลงนาม";
+        const nextAssignedRole = isDeputy ? "deputy_sg" : "secgen";
 
         Swal.fire({
           icon: "question",
@@ -903,9 +761,11 @@
             dispatchNo +
             "</p>" +
             "<p><strong>ส่งเสนอต่อไปยัง:</strong> " +
-            target +
+            targetLabel +
             "</p>" +
-            "<p><strong>ขั้นตอนต่อไป:</strong> เสนอมติบอร์ด (กิจกรรมที่ 7)</p></div>",
+            "<p><strong>ขั้นตอนต่อไป:</strong> " +
+            nextStatus +
+            "</p></div>",
           showCancelButton: true,
           confirmButtonText: "ยืนยันออกเลขส่ง",
           cancelButtonText: "ยกเลิก",
@@ -917,9 +777,13 @@
           Activity102.advance(currentCase.id, STEP_CODE, {
             l2DispatchNo: dispatchNo,
             l2DispatchDate: dispatchDate,
-            l2DispatchTarget: target,
+            l2DispatchTarget: targetLabel,
             l2DispatchNotes: notes,
-            officer: target,
+            l2ApprovalBranch: branch,
+            statusCode: nextStatusCode,
+            status: nextStatus,
+            assignedRole: nextAssignedRole,
+            officer: ECMIS102.signerLabel(nextAssignedRole),
           });
 
           Swal.fire({
@@ -930,7 +794,7 @@
               dispatchNo +
               "</p>" +
               "<p>ส่งเสนอผู้บริหาร (" +
-              target +
+              targetLabel +
               ") เรียบร้อยแล้ว</p></div>",
             confirmButtonColor: "#1e3a8a",
             confirmButtonText: "กลับหน้าคิวงาน",

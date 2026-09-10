@@ -101,10 +101,15 @@
       page: "10-2-07-secretariat-resolution-doc.html",
       role: "sub_secretariat",
       roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "ผอ.กองกฎหมายลงนามในฐานะผู้เสนอ",
-      statusCode: "L2_WAIT_SIGN_PROPOSER",
-      label: "ฝ่ายเลขานุการฯ จัดทำผลมติและออกเลขหนังสือส่งภายใน",
-      stepName: "เลขานุการฯ ออกเลขหนังสือ",
+      /* แก้ตามต้นฉบับจริง (มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิก.docx) — ผู้จัดทำ
+         บันทึกเป็นผู้ลงนามในฐานะผู้เสนอเรื่องเองที่หน้านี้เลย ("อนุกรรมการและ
+         เลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ" ท้ายหน้า 1 ของเอกสาร) ไม่ใช่
+         ผอ.กองกฎหมายเซ็นแทนแบบเดิม — ผอ.กองกฎหมายมีหน้าที่แค่ให้ความเห็น ๕
+         (ต่อจากนี้ที่ 10-2-08) เท่านั้น */
+      status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น (๕)",
+      statusCode: "L2_PENDING_DIRLEGAL_OPINION",
+      label: "ฝ่ายเลขานุการฯ จัดทำผลมติ ออกเลขหนังสือส่งภายใน และลงนามในฐานะผู้เสนอเรื่อง",
+      stepName: "เลขานุการฯ ออกเลขหนังสือ+ลงนาม",
     },
     {
       code: "LAW0045.1",
@@ -112,35 +117,75 @@
       page: "10-2-08-legal-director-propose.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      /* เดิมขั้นนี้เป็นขั้นสุดท้าย (L2_READY_FOR_BOARD) แต่หลังเพิ่มขั้นธุรการ
-         ออกเลขส่งด้านล่าง สถานะที่เกิดขึ้นหลังลงนามในหน้านี้จึงต้องเป็นสถานะ
-         รอธุรการดำเนินการต่อแทน */
+      /* เดิมหน้านี้ "ลงนามในฐานะผู้เสนอเรื่อง" ซึ่งผิดจากต้นฉบับจริง — ที่ถูกคือ
+         ผอ.กองกฎหมายให้ "๕. ความเห็นผู้อำนวยการกองกฎหมาย" (บล็อกที่ 1 จาก 3
+         บล็อกความเห็นในหน้า 2 ของเอกสาร) แล้วลงนามกำกับความเห็นของตัวเอง
+         เท่านั้น ไม่ใช่ลงนามแทนผู้เสนอเรื่อง */
       status: "ธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร",
       statusCode: "L2_PENDING_DISPATCH",
-      label: "ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง",
-      stepName: "ผอ.กอง ลงนามเสนอ",
+      label: "ผอ.กองกฎหมาย ให้ความเห็น (๕) และลงนาม",
+      stepName: "ผอ.กอง ให้ความเห็น+ลงนาม",
     },
     {
       /* ขั้นตอนนี้ไม่มีรหัส LAW ในผัง AS-IS10.2-swimlane-split.drawio เดิม
          (ผังเดิมข้ามจากผู้เสนอเรื่องไปที่ LAW0047 รองเลขาธิการฯ ลงนามเห็นชอบ
          โดยตรง) เพิ่มขั้นนี้ใหม่ตามคำขอ ให้สอดคล้องกับรูปแบบของกิจกรรม 10.1
          ที่มีขั้นธุรการออกเลขส่งคั่นระหว่างผู้อำนวยการลงนามกับส่งเสนอผู้บริหาร
-         (ดู 09-legal-admin-dispatch.html) — ยังไม่รวมขั้นรองเลขาธิการฯ ลงนาม */
+         (ดู 09-legal-admin-dispatch.html) — ธุรการเลือกได้ว่าจะส่งต่อให้
+         รองเลขาธิการ (ปฏิบัติราชการแทนเลขาธิการ, ข้อ ๖) หรือเลขาธิการโดยตรง
+         (ข้อ ๗) ตามหลักการมอบอำนาจที่ระบุไว้ใน ROLES ของ secgen — ค่า default
+         ของ step นี้คือสาย DEPUTY (auto-reduce ใช้อ้างอิง ROUTES ด้านล่าง) สาย
+         SECGEN เป็น route ที่เติมด้วยมือ */
       code: "L2-DISPATCH",
       seq: 16,
       page: "10-2-09-legal-admin-dispatch.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "รอเสนอมติบอร์ด (กิจกรรมที่ 7)",
-      statusCode: "L2_READY_FOR_BOARD",
-      label: "ธุรการกองกฎหมาย ออกเลขส่งและเสนอผู้บริหาร",
+      status: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๖) และลงนาม",
+      statusCode: "L2_PENDING_DEPUTY_SG_OPINION",
+      label: "ธุรการกองกฎหมาย ออกเลขส่งและเสนอผู้บริหาร (เลือกรองเลขาธิการหรือเลขาธิการ)",
       stepName: "ธุรการ ออกเลขส่ง",
+    },
+    {
+      /* ๖. ความเห็นรองเลขาธิการคณะกรรมการ ป.ป.ท. — เกิดขึ้นเฉพาะคำร้องที่
+         ธุรการเลือกส่งต่อรองเลขาธิการ (ปฏิบัติราชการแทนเลขาธิการ) ที่ 10-2-09
+         ลงนามแล้วจบสาย (ไม่ต้องผ่านเลขาธิการอีกในกรณีมอบอำนาจ) */
+      code: "L2-DEPUTY-SG-OPINION",
+      seq: 17,
+      page: "10-2-32-deputy-sg-opinion-sign.html",
+      role: "deputy_sg",
+      roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
+      statusCode: "L2_DEPUTY_SG_RESOLVED",
+      label: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ให้ความเห็น (๖) และลงนาม (ปฏิบัติราชการแทนเลขาธิการ)",
+      stepName: "รองเลขาธิการฯ ให้ความเห็น+ลงนาม",
+      approvalBranch: ["DEPUTY"],
+    },
+    {
+      /* ๗. ความเห็นเลขาธิการคณะกรรมการ ป.ป.ท. — เกิดขึ้นเฉพาะคำร้องที่ธุรการ
+         เลือกส่งต่อเลขาธิการโดยตรง (ไม่ผ่านการมอบอำนาจ) ที่ 10-2-09 อ้างอิง
+         นิยามบทบาท secgen ใน assets/ecmis-app.js (โมดูลกิจกรรมที่ 7.1) ที่ระบุ
+         ว่า "เลขาธิการฯ เป็นชั้นอนุมัติเดียว ไม่มีสายลำดับชั้นต่อจากนี้" — เป็น
+         เพียงบล็อกความเห็น+ลงนามตามต้นฉบับจริงเท่านั้น (ไม่มี UI เลือกมติ/
+         สถานะคดี/แนบไฟล์เพิ่มเติม — เอกสารต้นฉบับไม่มีช่องเหล่านี้ มติยังคง
+         ยึดตามที่คณะอนุกรรมการฯ บันทึกไว้ที่ 10-2-06 เสมอ ไม่มีการเขียนทับ) */
+      code: "L2-SECGEN-OPINION",
+      seq: 18,
+      page: "10-2-31-secgen-opinion-sign.html",
+      role: "secgen",
+      roleTitle: "เลขาธิการ คณะกรรมการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
+      statusCode: "L2_SECGEN_RESOLVED",
+      label: "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ให้ความเห็น (๗) และลงนาม",
+      stepName: "เลขาธิการฯ ให้ความเห็น+ลงนาม",
+      approvalBranch: ["SECGEN"],
     },
 
     /* ---------------------------------------------------------- PART 2
-       LAW0049 เป็นต้นไป — รับมติที่เลขาธิการ/คณะกรรมการ ป.ป.ท. เห็นชอบกลับมา
-       จากกิจกรรมที่ 7 แล้วแจ้งผลผู้ยื่นคำขอ ผังแยก 3 เส้นทางตามผลมติที่เลือก
-       ไว้แล้วที่ 10-2-06 (c.l2ResolutionType): DISCLOSE/PARTIAL ไปเส้นทางร่วม
+       LAW0049 เป็นต้นไป — รับผลจากสายการเห็นชอบ (๕ ผอ.กองกฎหมาย → ๖ รองเลขาธิการ
+       หรือ ๗ เลขาธิการ) แล้วแจ้งผลผู้ยื่นคำขอ ผังแยก 3 เส้นทางตามมติที่คณะ
+       อนุกรรมการฯ บันทึกไว้ตั้งแต่ 10-2-06 เสมอ (c.l2ResolutionType — สายการ
+       เห็นชอบข้างต้นไม่เขียนทับค่านี้): DISCLOSE/PARTIAL ไปเส้นทางร่วม
        (10-2-11 ถึง 10-2-14, ไฟล์ชื่อมีคำว่า disclose-partial ยกเว้น 10-2-12
        ที่เป็น partial ล้วนเพราะเกิดเฉพาะ PARTIAL), DENY ไปอีกเส้นทางที่มีรอบเสนอคณะกรรมการฯ ซ้อนอยู่
        (10-2-15 ถึง 10-2-20) เพราะไม่เปิดเผยข้อมูลต้องผ่านมติคณะกรรมการเต็มคณะ
@@ -156,14 +201,14 @@
        l2ResolutionType อยู่ในลิสต์นี้เท่านั้น (ไม่ระบุ = ขึ้นทุกคำร้อง) */
     {
       code: "L2-RECEIVE-OUTCOME",
-      seq: 17,
+      seq: 18,
       page: "10-2-10-legal-admin-receive-outcome.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
       status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ",
       statusCode: "L2_PENDING_NOTICE_DRAFT",
-      label: "ธุรการกองกฎหมาย รับมติที่เลขาธิการ/คณะกรรมการ ป.ป.ท. เห็นชอบ (กิจกรรมที่ 7)",
-      stepName: "ธุรการ รับมติ",
+      label: "ธุรการกองกฎหมาย รับทราบมติเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมายและส่งต่อ",
+      stepName: "ธุรการ รับทราบมติ",
     },
     {
       code: "L2-DENY-MEMO",
@@ -430,6 +475,20 @@
   ROUTES["L2_PENDING_COMMITTEE_MEMO_DRAFT"] = "10-2-25-secretariat-committee-memo-draft.html";
   delete ROUTES["L2_CASE_CLOSED_DISCLOSE_ASSIGNED"];
 
+  /* จุดแยกสาขา ๖/๗ หลัง L2-DISPATCH (10-2-09) — ธุรการเลือกส่งต่อรองเลขาธิการ
+     (ปฏิบัติราชการแทน, DEPUTY) หรือเลขาธิการโดยตรง (SECGEN) ตำแหน่งในอาเรย์คือ
+     L2-DISPATCH → L2-DEPUTY-SG-OPINION (10-2-32) → L2-SECGEN-OPINION (10-2-31)
+     → L2-RECEIVE-OUTCOME (10-2-10) เรียงติดกัน auto-reduce จึงเดินสาย DEPUTY
+     (ค่า default ของ L2-DISPATCH) ได้ถูกต้องเอง (L2_PENDING_DEPUTY_SG_OPINION →
+     10-2-32) แต่สาย SECGEN กับจุดต่อจาก DEPUTY ต้องเติม/แก้ด้วยมือ 2 จุด:
+       1) L2_PENDING_SECGEN_OPINION ไม่ใช่ค่า default ของ step ไหนเลย (10-2-09
+          set ค่านี้เองเมื่อธุรการเลือกสาย SECGEN) จึงไม่มี route มาก่อน
+       2) L2_DEPUTY_SG_RESOLVED ถูก auto-reduce ชี้ไป 10-2-31 ผิดจากตำแหน่ง
+          ติดกันบังเอิญ (L2-DEPUTY-SG-OPINION อยู่ติดกับ L2-SECGEN-OPINION ใน
+          อาเรย์) ทั้งที่ควรไปต่อที่ 10-2-10 เหมือนกับสาย SECGEN */
+  ROUTES["L2_PENDING_SECGEN_OPINION"] = "10-2-31-secgen-opinion-sign.html";
+  ROUTES["L2_DEPUTY_SG_RESOLVED"] = "10-2-10-legal-admin-receive-outcome.html";
+
   /* L2-NOTICE-DRAFT (10-2-11 ถึง 10-2-14) ย้ายไปอยู่ท้ายอาเรย์ STEPS แล้ว
      (ดูเหตุผลที่คอมเมนต์ตรงนั้น) — ตอนนี้ตำแหน่งจริงในอาเรย์คือต่อจาก
      L2-RECEIVE-BOARD-ROUND2 (10-2-30) พอดี ทำให้ auto-reduce สร้าง route
@@ -437,18 +496,11 @@
      (เดิมตอนที่ 10-2-30 ยังไม่มี ต้องเติม/ลบ route ตรงนี้ด้วยมือเพราะ 10-2-29 กับ
      10-2-11 อยู่ติดกันในอาเรย์บังเอิญ — ดูประวัติการแก้ไขถ้าต้องย้อนดู) */
 
-  /* L2_BOARD_RESOLVED — สถานะกลางระหว่าง L2_READY_FOR_BOARD (L2-DISPATCH,
-     10-2-09: เพิ่งออกเลขส่งเสนอกิจกรรมที่ 7 ยังไม่รู้ผล) กับสถานะที่
-     L2-RECEIVE-OUTCOME (10-2-10) เขียนทับหลังธุรการกดรับมติ ใช้เมื่อกิจกรรมที่ 7
-     (เลขาธิการ/คณะกรรมการ ป.ป.ท.) ตอบกลับมติมาแล้ว (ทราบผลใน 3 ทาง — เปิดเผย/
-     เปิดเผยบางส่วน/ไม่อนุญาตเปิดเผย ผ่าน c.l2ResolutionType ที่บันทึกไว้ตั้งแต่
-     10-2-06) แต่ธุรการยังไม่ได้เข้าไปกดรับทราบ/ยืนยันในหน้า 10-2-10 — เข้าคิวงาน
-     ของธุรการเหมือน L2_READY_FOR_BOARD ทุกประการ (เปิดหน้าเดียวกัน เพราะกิจกรรมที่ 7
-     ไม่มีหน้าของตัวเองในระบบนี้) ต่างกันแค่ข้อความสถานะที่แสดงใน 01-work-inbox.html */
-  ROUTES["L2_BOARD_RESOLVED"] = "10-2-10-legal-admin-receive-outcome.html";
-
-  /* L2_BOARD_RESOLVED_ROUND2 — เหมือน L2_BOARD_RESOLVED ข้างบนทุกประการ แต่เป็น
-     รอบเสนอกิจกรรมที่ 7 ครั้งที่ 2 (Flow 2 Part 1 ใหม่): L2_READY_FOR_BOARD_ROUND2
+  /* L2_BOARD_RESOLVED_ROUND2 — สถานะคั่นกลางแบบเดียวกับที่ L2_BOARD_RESOLVED
+     เคยเป็น (ก่อนเลิกใช้ ดูคอมเมนต์ L2-SECGEN-OPINION ด้านบน) แต่จุดนี้ยังคง
+     กล่องดำจริง (กิจกรรมที่ 7 รอบ 2 = คณะกรรมการ ป.ป.ท. เต็มคณะ ไม่ใช่แค่
+     เลขาธิการฯ ชั้นเดียวแบบรอบแรก) จึงยังไม่มีหน้าของตัวเอง ต้องเติม route
+     ด้วยมือเหมือนเดิม: L2_READY_FOR_BOARD_ROUND2
      (L2-COMMITTEE-DISPATCH, 10-2-29 — เพิ่งออกเลขส่งยังไม่รู้ผล) เข้าคิวงานเดียวกัน
      กับ L2_BOARD_RESOLVED_ROUND2 นี้โดยอัตโนมัติอยู่แล้ว (auto-reduce จากตำแหน่ง
      ติดกันในอาเรย์ STEPS ระหว่าง 10-2-29 กับ 10-2-30) ต่างกันแค่ข้อความสถานะ */
@@ -476,15 +528,6 @@
     { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน", color: "#1e3a8a" },
   ];
 
-  /* ป้ายกำกับ node แรกของแถบขั้นตอน "หลังบอร์ดมีมติ" (renderStepperV2) — ไม่ใช่
-     ขั้นตอนจริงใน STEPS (ไม่มีหน้าของตัวเอง เป็นแค่ผล l2ResolutionType ที่ทราบ
-     ตั้งแต่ 10-2-06 และย้อนกลับมาแสดงผลที่ 10-2-10) จึงแยกมาเป็นค่าคงที่ต่างหาก */
-  const BOARD_DECISION_LABEL = {
-    DISCLOSE: "บอร์ดมีมติอนุญาตเปิดเผย",
-    PARTIAL: "บอร์ดมีมติอนุญาตเปิดเผยบางส่วน",
-    DENY: "บอร์ดมีมติไม่อนุญาตเปิดเผย",
-  };
-
   function labelOf(list, value) {
     const hit = list.find(function (x) { return x.value === value; });
     return hit ? hit.label : "-";
@@ -496,13 +539,29 @@
   }
 
   /* ------------------------------------------------------------ SIGN CHAIN
-     บันทึกเสนอเลขาธิการฯ (Part 1-A) มีช่องลงนาม 2 บล็อก ผู้ลงนามแต่ละคนเซ็น
-     บนหน้าจอของตัวเองเท่านั้น ไม่มีหน้าไหนเซ็นแทนบทบาทอื่นได้ */
+     บันทึกเสนอเลขาธิการฯ (Part 1-A) — โครงสร้างตามต้นฉบับจริง
+     docs/10.2 mockup/Part 2 - new 1/มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิก.docx:
+     หน้า 1 ลงท้ายด้วยลายเซ็นผู้เสนอเรื่อง ("อนุกรรมการและเลขานุการ คณะอนุกรรมการ
+     พิจารณากลั่นกรองฯ" — ฝ่ายเลขานุการฯ ผู้จัดทำบันทึกเอง ไม่ใช่ ผอ.กองกฎหมาย)
+     หน้า 2 มี 3 บล็อกความเห็น+ลายเซ็นเรียงกัน: ๕.ผอ.กองกฎหมาย → ๖.รองเลขาธิการ
+     คณะกรรมการ ป.ป.ท. → ๗.เลขาธิการคณะกรรมการ ป.ป.ท. — แต่ธุรการเลือกได้ว่าจะส่ง
+     ต่อให้รองเลขาธิการ (ปฏิบัติราชการแทน) หรือเลขาธิการโดยตรงที่ 10-2-09 (ดู
+     l2ApprovalBranch) จึงมีแค่ข้อ ๕ ที่เกิดขึ้นเสมอ ส่วนข้อ ๖/๗ เกิดขึ้นเพียง
+     ข้อใดข้อหนึ่งต่อคำร้อง — SIGN_CHAIN นี้ใช้กับหน้า 10-2-07/08/09 เท่านั้น
+     (จุดที่ยังไม่ถึงจุดแยกสาขา) ส่วนข้อ ๖/๗ แต่ละหน้าเรนเดอร์เองผ่าน
+     renderMemoDocument() ด้านล่าง ไม่ได้อยู่ในอาเรย์นี้ */
   const SIGN_CHAIN = [
     {
       slot: "proposer",
-      role: "dir_legal",
+      role: "sub_secretariat",
       title: "ผู้เสนอเรื่อง",
+      position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+      certId: "PACC-SUBSEC-2569-102",
+    },
+    {
+      slot: "dirLegalOpinion",
+      role: "dir_legal",
+      title: "๕. ความเห็นผู้อำนวยการกองกฎหมาย",
       position: "ผู้อำนวยการกองกฎหมาย",
       certId: "PACC-DIRLEGAL-2569-102",
     },
@@ -546,6 +605,125 @@
       );
     });
     return '<div class="l2-sign-chain">' + items.join("") + "</div>";
+  }
+
+  /* ------------------------------------------------------------ MEMO DOCUMENT
+     บันทึกเสนอเลขาธิการฯ (Part 1) เต็มรูปแบบ 2 หน้า ตามต้นฉบับจริง docs/10.2
+     mockup/Part 2 - new 1/มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิก.docx — ใช้
+     ร่วมกันทุกหน้า Part 1 (10-2-07 ถึง 10-2-10, 10-2-31, 10-2-32) แทนที่จะก็อป
+     โครงเอกสารซ้ำในแต่ละไฟล์ (เสี่ยงเพี้ยนไปคนละแบบ) ก่อนธุรการเลือกสาย ๖/๗ ที่
+     10-2-09 (kase.l2ApprovalBranch ยังไม่มีค่า) แสดงทั้งบล็อก ๖ และ ๗ ว่างไว้ก่อน
+     (ตรงกับฟอร์มกระดาษเปล่าที่มีทั้งสองช่องเสมอ) หลังเลือกแล้วแสดงเฉพาะสายที่ถูก
+     เลือกจริง */
+  function renderMemoDocument(kase) {
+    const c = kase;
+    const sigs = signState(c);
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+      '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
+    const sigBlock = (slot, position) => {
+      const s = sigs[slot];
+      const img = s && s.image
+        ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
+        : '<div class="l2-sig-placeholder">รอลงนาม</div>';
+      const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
+      return (
+        '<div class="l2-sig-slot">' + img +
+        '<div class="l2-sig-name">(ชื่อ-สกุล)</div>' +
+        '<div class="l2-sig-role">' + position + "</div>" + when + "</div>"
+      );
+    };
+
+    let html =
+      '<div class="l2-doc-title">บันทึกข้อความ</div>' +
+      row("ส่วนราชการ", c.l2DivisionName) +
+      row("โทร.", c.l2DivisionPhone) +
+      row("ที่", c.l2InternalDocNo) +
+      row("วันที่", formatThaiDate(c.l2DocDate)) +
+      row("เรื่อง", c.l2Subject) +
+      row("เรียน", c.l2AddressedTo) +
+      '<hr class="l2-doc-divider" />' +
+      section("๑. เรื่องเดิม", c.l2Background) +
+      section(
+        "๒. ข้อเท็จจริง",
+        "คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารของคณะกรรมการ ป.ป.ท. ได้ดำเนินการประชุมครั้งที่ " +
+          (c.l2MeetingNo || "...") +
+          " เมื่อวัน" +
+          (formatThaiDate(c.l2MeetingDate) || "...") +
+          " ณ ห้องประชุม" +
+          (c.l2MeetingVenue || "...") +
+          " เรียบร้อยแล้ว จากการประชุมคณะอนุกรรมการพิจารณากลั่นกรองฯ ได้มีมติที่ประชุม ดังนี้<br/>" +
+          (c.l2Facts || "-"),
+      ) +
+      section("๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง", c.l2LegalBasis) +
+      section("๔. ข้อพิจารณา", c.l2Considerations) +
+      '<div class="l2-doc-section"><div class="l2-doc-body">จึงเรียนมาเพื่อโปรดพิจารณา</div></div>' +
+      '<div class="l2-doc-signblock">' +
+      sigBlock("proposer", "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ") +
+      "</div>" +
+      '<hr class="l2-doc-divider" />' +
+      '<div class="l2-doc-subtitle">-2-</div>' +
+      section("๕. ความเห็นผู้อำนวยการกองกฎหมาย", c.l2DirLegalOpinion) +
+      '<div class="l2-doc-signblock">' +
+      sigBlock("dirLegalOpinion", "ผู้อำนวยการกองกฎหมาย") +
+      "</div>";
+
+    const branch = c.l2ApprovalBranch;
+    if (!branch || branch === "DEPUTY") {
+      html +=
+        section("๖. ความเห็นรองเลขาธิการคณะกรรมการ ป.ป.ท.", c.l2DeputySgOpinion) +
+        '<div class="l2-doc-signblock">' +
+        sigBlock("deputySgOpinion", "รองเลขาธิการคณะกรรมการ ป.ป.ท.") +
+        "</div>";
+    }
+    if (!branch || branch === "SECGEN") {
+      html +=
+        section("๗. ความเห็นเลขาธิการคณะกรรมการ ป.ป.ท.", c.l2SecgenOpinion) +
+        '<div class="l2-doc-signblock">' +
+        sigBlock("secgenOpinion", "เลขาธิการคณะกรรมการ ป.ป.ท.") +
+        "</div>";
+    }
+    return html;
+  }
+
+  /* ------------------------------------------------------- RESOLUTION SHEET
+     แผ่นสรุปมติคณะอนุกรรมการพิจารณากลั่นกรองฯ ตามต้นฉบับจริง docs/10.2 mockup/
+     Part 1 - new 2/ตัวอย่างมติคณะอนุกรรมการกลั่นกรอง ที่นำเ.docx (9 ฟิลด์ ไม่มี
+     ส่วนหัวราชการ ไม่มีบล็อกลายเซ็น) — ใช้ร่วมกันทุกหน้าที่เคยก็อปโค้ดซ้ำ
+     (10-2-07 ถึง 10-2-10) ๒.ข้อเท็จจริง (facts) เป็นคนละฟิลด์กับ "คณะอนุกรรมการฯ
+     เห็นว่า" (committee_opinion) — เดิมโค้ดใช้ l2CommitteeOpinion ซ้ำทั้งสองช่อง
+     ผิดจากต้นฉบับ จึงเพิ่มฟิลด์ l2ResolutionFacts แยกต่างหาก */
+  function renderResolutionSheet(kase) {
+    const c = kase;
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+      '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
+
+    return (
+      '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
+      '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
+      '<hr class="l2-doc-divider" />' +
+      section("๑. เรื่อง", c.title) +
+      section("๒. ข้อเท็จจริง", c.l2ResolutionFacts) +
+      section("๓. การร้องขอข้อมูลข่าวสาร", c.requestedInfo) +
+      row("๔. ในคราวการประชุมครั้งที่", c.l2MeetingNo) +
+      row("เมื่อวันที่", formatThaiDate(c.l2MeetingDate)) +
+      section("คณะอนุกรรมการพิจารณากลั่นกรองฯ เห็นว่า", c.l2CommitteeOpinion) +
+      section(
+        "มติที่ประชุม",
+        (c.l2ResolutionTypeName || "") + " — " + (c.l2ResolutionDetail || ""),
+      ) +
+      row(
+        "๕. ผู้รับผิดชอบข้อมูลข่าวสาร",
+        c.l2DataOwner || "กองกฎหมาย สำนักงาน ป.ป.ท.",
+      )
+    );
   }
 
   /* ------------------------------------------------------------ THAI DATES */
@@ -1333,10 +1511,17 @@
        เลย — ให้ถือว่าเป็น "อยู่ระหว่างไต่สวน" (พฤติกรรมเดิมก่อนแยกสาย Flow 3) */
     const caseState = (kase && kase.l2CaseState) || "INVESTIGATING";
     const visible = STEPS.filter(function (s) {
-      /* ตัด L2-RECEIVE-OUTCOME (10-2-10, "ธุรการ รับมติ") ออกจากแถบขั้นตอน
-         ของหน้า Part 1 ทั้งหมดตามที่ขอ — เหลือแถบสิ้นสุดที่ L2-DISPATCH
-         (10-2-09, "ธุรการ ออกเลขส่ง") */
-      if (onPart1 && s.code === "L2-RECEIVE-OUTCOME") return false;
+      /* ตัด L2-DEPUTY-SG-OPINION (10-2-32), L2-SECGEN-OPINION (10-2-31) และ
+         L2-RECEIVE-OUTCOME (10-2-10, "ธุรการ รับมติ") ออกจากแถบขั้นตอนของหน้า
+         Part 1 ทั้งหมดตามที่ขอ — เหลือแถบสิ้นสุดที่ L2-DISPATCH (10-2-09,
+         "ธุรการ ออกเลขส่ง") */
+      if (
+        onPart1 &&
+        (s.code === "L2-DEPUTY-SG-OPINION" ||
+          s.code === "L2-SECGEN-OPINION" ||
+          s.code === "L2-RECEIVE-OUTCOME")
+      )
+        return false;
       if (!s.includeIf) return true;
       if (onPart1) return false;
       if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
@@ -1362,10 +1547,11 @@
   const PART2_STEPS = STEPS.slice(10);
 
   /* แถบขั้นตอนแบบ 2 แถวสำหรับหน้า 10-2-10 ถึง 10-2-17 — แถวบนคงที่ (Part 1
-     ส่งเสนอกิจกรรมที่ 7 เสร็จสิ้นเสมอ เพราะถึงหน้านี้ได้แปลว่าผ่าน Part 1 มาแล้ว)
-     แถวล่างเริ่มที่ node "บอร์ดมีมติ..." (ไม่ใช่ step จริงใน STEPS ดู
-     BOARD_DECISION_LABEL) ตามด้วยขั้นตอน Part 2 เฉพาะสาขาของคำร้องนี้ และปิดท้าย
-     ด้วยสถานะคดี (l2CaseState ที่บันทึกไว้ตั้งแต่ 10-2-06) ถ้ามีค่า */
+     ส่งเสนอเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมายเสร็จสิ้นเสมอ เพราะถึงหน้านี้ได้
+     แปลว่าผ่าน Part 1 มาแล้ว) แถวล่างเริ่มที่ขั้นตอน Part 2 เฉพาะสาขาของคำร้องนี้
+     (เริ่มที่ L2-SECGEN-OPINION, 10-2-31 ซึ่งเป็น step จริงใน STEPS แล้ว — เดิม
+     เคยเป็น node สังเคราะห์ "บอร์ดมีมติ..." ที่ไม่มีหน้าของตัวเอง ดูประวัติการ
+     แก้ไขถ้าต้องย้อนดู) และปิดท้ายด้วยสถานะคดี (l2CaseState) ถ้ามีค่า */
   function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
     const el1 = document.getElementById(part1ContainerId);
     const el2 = document.getElementById(part2ContainerId);
@@ -1385,17 +1571,18 @@
        "อยู่ระหว่างไต่สวน" (พฤติกรรมเดิมก่อนแยกสาย Flow 3) เหมือนกับที่
        renderStepper (แถบเดี่ยวเดิม) ทำไว้ด้านบน */
     const caseState = (kase && kase.l2CaseState) || "INVESTIGATING";
+    /* จุดแยกสาขา ๖/๗ (L2-DEPUTY-SG-OPINION/L2-SECGEN-OPINION) มีแค่สายเดียวที่
+       เกิดขึ้นจริงต่อคำร้อง เลือกไว้แล้วที่ 10-2-09 (kase.l2ApprovalBranch) —
+       ก่อนถึง 10-2-09 ค่านี้ยังไม่มี จึงโชว์ทั้งคู่ไปก่อน (renderStepper แถบเดี่ยว
+       ของ Part 1 ตัดทั้งสองออกไปแล้วอยู่ดี ไม่มีผลจนกว่าจะถึง Part 2) */
+    const approvalBranch = kase && kase.l2ApprovalBranch;
     const visible = PART2_STEPS.filter(function (s) {
+      if (s.approvalBranch && approvalBranch && s.approvalBranch.indexOf(approvalBranch) === -1) return false;
       if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
       if (!s.includeIf) return true;
       return branch && s.includeIf.indexOf(branch) > -1;
     });
     const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
-    const boardNode =
-      '<div class="step-item completed" title="มติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7)">' +
-      '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
-      '<div class="step-label">' + (BOARD_DECISION_LABEL[branch] || "บอร์ดมีมติ") + "</div>" +
-      "</div>";
     const stepsHtml = visible.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
@@ -1416,7 +1603,7 @@
         '<div class="step-label">สถานะคดี: ' + labelOf(CASE_STATES, kase.l2CaseState) + "</div>" +
         "</div>"
       : "";
-    el2.innerHTML = boardNode + stepsHtml + endNode;
+    el2.innerHTML = stepsHtml + endNode;
   }
 
   /* แบดจ์คู่ "มติ" + "สถานะคดี" — โชว์ให้ชัดว่าคำร้องนี้เป็นสาย/สถานะไหน
@@ -1493,6 +1680,8 @@
     getEditorText: getEditorText,
     getEditorHTML: getEditorHTML,
     renderAttachments: renderAttachments,
+    renderMemoDocument: renderMemoDocument,
+    renderResolutionSheet: renderResolutionSheet,
     mockOpenFile: mockOpenFile,
     zoomDoc: zoomDoc,
     initDocZoom: initDocZoom,

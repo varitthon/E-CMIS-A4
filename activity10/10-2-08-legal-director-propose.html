@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ผอ.กองกฎหมาย ลงนามในฐานะผู้เสนอเรื่อง | E-CMIS กิจกรรมที่ 10.2
+      ผอ.กองกฎหมาย ให้ความเห็น (๕) และลงนาม | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -337,7 +337,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ลงนามในฐานะผู้เสนอเรื่อง</span
+              >ให้ความเห็น (๕) และลงนาม</span
             >
           </div>
         </div>
@@ -429,10 +429,10 @@
           <div class="l2-note l2-note-info">
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              เอกสารฉบับนี้จัดทำโดยฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร
+              เอกสารฉบับนี้จัดทำและลงนามในฐานะผู้เสนอเรื่องโดยฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารแล้ว
               และแสดงแบบ<strong>อ่านอย่างเดียว</strong>
               บทบาทนี้ระบุความเห็นและลงนามได้เฉพาะช่อง
-              <strong>ผู้เสนอเรื่อง</strong> เท่านั้น
+              <strong>๕. ความเห็นผู้อำนวยการกองกฎหมาย</strong> เท่านั้น
             </div>
           </div>
 
@@ -526,50 +526,6 @@
           <div class="form-card">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-file-circle-check text-success me-2"></i
-                >เอกสารแนบ —
-                มติคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
-              >
-              <div class="d-flex gap-2">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  style="height: 30px; padding: 0 12px; font-size: 0.82em"
-                  onclick="toggleResolutionSheet()"
-                >
-                  <i
-                    class="fa-solid fa-chevron-down me-1"
-                    id="resSheetToggleIcon"
-                  ></i
-                  ><span id="resSheetToggleText">แสดงเอกสาร</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  style="height: 30px; padding: 0 12px; font-size: 0.82em"
-                  onclick="
-                    ECMIS102.exportDocx(
-                      'resolutionSheet',
-                      'มติคณะอนุกรรมการพิจารณากลั่นกรองฯ',
-                    )
-                  "
-                >
-                  <i class="fa-solid fa-download me-1"></i>ดาวน์โหลด
-                </button>
-              </div>
-            </div>
-            <div
-              class="form-card-body"
-              id="resolutionSheetWrap"
-              style="display: none"
-            >
-              <div class="l2-doc" id="resolutionSheet"></div>
-            </div>
-          </div>
-
-          <div class="form-card">
-            <div class="form-card-header">
-              <span
                 ><i class="fa-solid fa-file-signature text-primary me-2"></i
                 >สายการลงนามของบันทึกฉบับนี้</span
               >
@@ -586,7 +542,7 @@
               class="btn btn-primary"
               onclick="submitForm()"
             >
-              <i class="fa-solid fa-pen-nib me-1"></i>ลงนามในฐานะผู้เสนอเรื่อง
+              <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
             </button>
           </div>
         </div>
@@ -737,72 +693,14 @@
               : c.l2DirLegalOpinion,
           ) +
           '<div class="l2-doc-signblock">' +
-          sigBlock("proposer", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") +
+          sigBlock("dirLegalOpinion", "ชื่อ-สกุล", "ผู้อำนวยการกองกฎหมาย") +
           "</div>";
-      }
-
-      /* เอกสารแนบ (Part 1) — แผ่นสรุปมติคณะอนุกรรมการฯ อ่านอย่างเดียว
-         สำเนาการ render เดียวกับ 10-2-07-secretariat-resolution-doc.html */
-      function renderResolutionSheet() {
-        const c = currentCase;
-        const row = (label, value) =>
-          '<div class="l2-doc-row"><span class="l2-doc-label">' +
-          label +
-          '</span><span class="l2-doc-value">' +
-          (value || "") +
-          "</span></div>";
-        const section = (label, value) =>
-          '<div class="l2-doc-section"><span class="l2-doc-label">' +
-          label +
-          '</span><div class="l2-doc-body">' +
-          (value || "") +
-          "</div></div>";
-
-        document.getElementById("resolutionSheet").innerHTML =
-          '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
-          '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
-          '<hr class="l2-doc-divider" />' +
-          section("๑. เรื่อง", c.title) +
-          section("๒. ข้อเท็จจริง", c.l2CommitteeOpinion) +
-          section("๓. การร้องขอข้อมูลข่าวสาร", c.requestedInfo) +
-          row("๔. ในคราวการประชุมครั้งที่", c.l2MeetingNo) +
-          row("เมื่อวันที่", ECMIS102.formatThaiDate(c.l2MeetingDate)) +
-          section(
-            "คณะอนุกรรมการพิจารณากลั่นกรองฯ เห็นว่า",
-            c.l2CommitteeOpinion,
-          ) +
-          section(
-            "มติที่ประชุม",
-            (c.l2ResolutionTypeName || "") +
-              " — " +
-              (c.l2ResolutionDetail || ""),
-          ) +
-          row(
-            "๕. ผู้รับผิดชอบข้อมูลข่าวสาร",
-            c.l2DataOwner || "กองกฎหมาย สำนักงาน ป.ป.ท.",
-          );
       }
 
       function toggleMemoDoc() {
         const wrap = document.getElementById("memoDocWrap");
         const icon = document.getElementById("memoDocToggleIcon");
         const text = document.getElementById("memoDocToggleText");
-        const showing = wrap.style.display !== "none";
-        wrap.style.display = showing ? "none" : "block";
-        icon.classList.toggle("fa-chevron-down", showing);
-        icon.classList.toggle("fa-chevron-up", !showing);
-        text.textContent = showing ? "แสดงเอกสาร" : "ซ่อนเอกสาร";
-      }
-
-      let resSheetRendered = false;
-      function toggleResolutionSheet() {
-        if (!resSheetRendered) {
-          renderResolutionSheet();
-          resSheetRendered = true;
-        }
-        const wrap = document.getElementById("resolutionSheetWrap");
-        const icon = document.getElementById("resSheetToggleIcon");
-        const text = document.getElementById("resSheetToggleText");
         const showing = wrap.style.display !== "none";
         wrap.style.display = showing ? "none" : "block";
         icon.classList.toggle("fa-chevron-down", showing);
@@ -819,16 +717,16 @@
         renderMemo();
         ECMIS102.setHtml(
           "signChain",
-          Activity102.renderSignChain(currentCase, "proposer"),
+          Activity102.renderSignChain(currentCase, "dirLegalOpinion"),
         );
       }
 
       function submitForm() {
-        if (Activity102.isSigned(currentCase, "proposer")) {
+        if (Activity102.isSigned(currentCase, "dirLegalOpinion")) {
           Swal.fire({
             icon: "info",
             title: "ลงนามแล้ว",
-            text: "บันทึกฉบับนี้ผ่านการลงนามของผู้เสนอเรื่องเรียบร้อยแล้ว",
+            text: "ให้ความเห็น (๕) และลงนามเรียบร้อยแล้ว",
             confirmButtonColor: "#1e3a8a",
           });
           return;
@@ -836,13 +734,13 @@
 
         ECMIS102.openSignatureModal(
           {
-            title: "ลงนามในฐานะผู้เสนอเรื่อง (ผู้อำนวยการกองกฎหมาย)",
+            title: "ลงนามให้ความเห็น (๕) (ผู้อำนวยการกองกฎหมาย)",
             signer: ECMIS102.signerLabel("dir_legal"),
             certId: "PACC-DIRLEGAL-2569-102",
           },
           (image) => {
             const opinionEl = document.getElementById("in_dirLegalOpinion");
-            Activity102.sign(currentCase.id, "proposer", image, {
+            Activity102.sign(currentCase.id, "dirLegalOpinion", image, {
               position: "ผู้อำนวยการกองกฎหมาย",
             });
             Activity102.advance(currentCase.id, STEP_CODE, {
@@ -854,10 +752,10 @@
 
             Swal.fire({
               icon: "success",
-              title: "ลงนามในฐานะผู้เสนอเรื่องเรียบร้อย",
+              title: "ให้ความเห็นและลงนามเรียบร้อย",
               html:
                 '<div class="emd-summary">' +
-                "<p>บันทึกข้อความผ่านการลงนามของผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
+                "<p>บันทึกข้อความผ่านความเห็นและลายเซ็นของผู้อำนวยการกองกฎหมายเรียบร้อยแล้ว</p>" +
                 "<p><strong>ขั้นตอนต่อไป:</strong> ธุรการกองกฎหมายออกเลขส่งเสนอผู้บริหาร</p>" +
                 "</div>",
               confirmButtonColor: "#1e3a8a",

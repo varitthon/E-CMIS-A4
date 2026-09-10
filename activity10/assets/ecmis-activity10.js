@@ -738,16 +738,23 @@
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4501",
+      l2ApprovalBranch: "SECGEN",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_PENDING_SECGEN_OPINION",
+      status: "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็นและลงนาม",
     },
     {
       id: "คำร้อง-100011/2569",
@@ -774,16 +781,23 @@
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4502",
+      l2ApprovalBranch: "DEPUTY",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_PENDING_DEPUTY_SG_OPINION",
+      status: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๖) และลงนาม",
     },
     {
       id: "คำร้อง-100012/2569",
@@ -806,24 +820,32 @@
       l2MeetingNo: "8/2569",
       l2MeetingDate: getDateWithOffset(-10),
       l2InternalDocNo: "ปป 0002/4503",
+      l2ApprovalBranch: "SECGEN",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_PENDING_SECGEN_OPINION",
+      status: "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็นและลงนาม",
     },
-    /* ---- L2_BOARD_RESOLVED x 4 — มติ DISCLOSE/PARTIAL ที่มาพร้อมสถานะคดี
-       (l2CaseState) ที่ 10-2-06 เดาไว้แล้วตั้งแต่ก่อนถึงธุรการ ต่างจาก
-       100010/100011 ด้านบนที่ไม่มี l2CaseState เลย (fallback เป็น
-       "อยู่ระหว่างไต่สวน" เฉยๆ เวลาแสดงผล) — ชุดนี้ทำให้เปิด 10-2-10 แล้ว
-       เห็น radio สถานะคดี pre-fill เป็นค่าที่ตั้งใจระบุจริง ครบทั้ง 4
-       ช่อง (เปิดเผย/เปิดเผยบางส่วน x คดีเสร็จสิ้นแล้ว/อยู่ระหว่างไต่สวน)
-       ก่อนธุรการจะกดยืนยัน/แก้ไขที่ 10-2-10 */
+    /* ---- L2_SECGEN_RESOLVED x 4 — มติ DISCLOSE/PARTIAL ที่เลขาธิการ ป.ป.ท.
+       ผู้ดูแลกองกฎหมายลงนามชี้ขาดแล้วที่ 10-2-31 (มติ+สถานะคดี/l2CaseState
+       เป็นค่าจริงที่เลขาธิการฯ ยืนยัน ไม่ใช่แค่ค่าที่คณะอนุกรรมการฯ เดาไว้ที่
+       10-2-06 อีกต่อไป) ต่างจาก 100010/100011 ด้านบนที่ยังค้างอยู่ก่อน
+       10-2-31 (L2_PENDING_SECGEN_OPINION) — ชุดนี้มี l2Signatures.secgenOpinion
+       ด้วย ทำให้เปิด 10-2-10 (อ่านอย่างเดียวแล้ว) เห็นมติ/สถานะคดี/ลายเซ็น
+       เลขาธิการฯ ครบทั้ง 4 ช่อง (เปิดเผย/เปิดเผยบางส่วน x คดีเสร็จสิ้นแล้ว/
+       อยู่ระหว่างไต่สวน) พร้อมให้ธุรการกดรับทราบและส่งต่อ */
     {
       id: "คำร้อง-100025/2569",
       category: "10.2.1",
@@ -847,16 +869,29 @@
       l2MeetingNo: "9/2569",
       l2MeetingDate: getDateWithOffset(-6),
       l2InternalDocNo: "ปป 0002/4520",
+      l2ApprovalBranch: "DEPUTY",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
+        deputySgOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-1),
+          position: "รองเลขาธิการคณะกรรมการ ป.ป.ท.",
+        },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_DEPUTY_SG_RESOLVED",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
     },
     {
       id: "คำร้อง-100026/2569",
@@ -882,16 +917,29 @@
       l2MeetingNo: "9/2569",
       l2MeetingDate: getDateWithOffset(-6),
       l2InternalDocNo: "ปป 0002/4521",
+      l2ApprovalBranch: "SECGEN",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
+        secgenOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-1),
+          position: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+        },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_SECGEN_RESOLVED",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
     },
     {
       id: "คำร้อง-100027/2569",
@@ -915,16 +963,29 @@
       l2MeetingNo: "9/2569",
       l2MeetingDate: getDateWithOffset(-6),
       l2InternalDocNo: "ปป 0002/4522",
+      l2ApprovalBranch: "DEPUTY",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
+        deputySgOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-1),
+          position: "รองเลขาธิการคณะกรรมการ ป.ป.ท.",
+        },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_DEPUTY_SG_RESOLVED",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
     },
     {
       id: "คำร้อง-100028/2569",
@@ -950,18 +1011,31 @@
       l2MeetingNo: "9/2569",
       l2MeetingDate: getDateWithOffset(-6),
       l2InternalDocNo: "ปป 0002/4523",
+      l2ApprovalBranch: "SECGEN",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
+        secgenOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-1),
+          position: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+        },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_SECGEN_RESOLVED",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
     },
-    /* ---- L2_BOARD_RESOLVED เพิ่มเติม — เติมช่องที่ยังขาดของชุด 4 ช่อง
+    /* ---- L2_SECGEN_RESOLVED เพิ่มเติม — เติมช่องที่ยังขาดของชุด 4 ช่อง
        (เปิดเผย/เปิดเผยบางส่วน/ไม่เปิดเผย x คดีเสร็จสิ้นแล้ว) ด้านบน: มีแค่
        DISCLOSE+CLOSED (100026) กับ PARTIAL+CLOSED (100028) อยู่แล้ว ขาดแค่
        DENY+CLOSED จึงเติมคำร้องนี้ให้ครบทั้ง 3 มติ x คดีเสร็จสิ้นแล้ว */
@@ -989,16 +1063,29 @@
       l2MeetingNo: "9/2569",
       l2MeetingDate: getDateWithOffset(-6),
       l2InternalDocNo: "ปป 0002/4524",
+      l2ApprovalBranch: "SECGEN",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
+        secgenOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-1),
+          position: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+        },
       },
-      statusCode: "L2_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว รอธุรการตรวจรับ (กิจกรรมที่ 7)",
+      statusCode: "L2_SECGEN_RESOLVED",
+      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
     },
     /* ---- คำร้องระหว่างทาง Part 2 (10-2-11 ถึง 10-2-21) --------------------
        ทุกสถานะที่เหลือของ Part 2 ยังไม่มีคำร้องทดสอบเลยแม้แต่รายการเดียว —
@@ -1030,6 +1117,12 @@
       l2InternalDocNo: "ปป 0002/4504",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
@@ -1067,6 +1160,12 @@
       l2InternalDocNo: "ปป 0002/4505",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
@@ -1107,6 +1206,12 @@
       l2InternalDocNo: "ปป 0002/4506",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
@@ -1152,6 +1257,12 @@
         proposer: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1193,6 +1304,12 @@
         proposer: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1228,6 +1345,12 @@
       l2InternalDocNo: "ปป 0002/4509",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
@@ -1271,6 +1394,12 @@
         proposer: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
           position: "ผู้อำนวยการกองกฎหมาย",
         },
@@ -1311,6 +1440,12 @@
       l2InternalDocNo: "ปป 0002/4511",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
@@ -1484,6 +1619,12 @@
       l2InternalDocNo: "ปป 0002/4515",
       l2Signatures: {
         proposer: {
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+          signedAt: getDateWithOffset(-3),
+          position: "อนุกรรมการและเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ",
+        },
+        dirLegalOpinion: {
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
           signedAt: getDateWithOffset(-2),
