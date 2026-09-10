@@ -598,36 +598,11 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>
-                  <span
-                    >๒. ข้อเท็จจริง <span style="color: #dc2626">*</span>
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicResolutionFacts"
-                      onclick="toggleSpeechToText('in_resolutionFacts', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i></button
-                  ></span>
-                </label>
-                <textarea
-                  id="in_resolutionFacts"
-                  class="form-control"
-                  rows="3"
-                  placeholder="ระบุข้อเท็จจริงของเรื่อง..."
-                ></textarea>
-              </div>
-
-              <div class="form-group">
                 <label
                   >มติที่ประชุม <span style="color: #dc2626">*</span></label
                 >
                 <div class="l2-choice-grid" id="resolutionChoices"></div>
-                <div
-                  class="l2-choice-other-detail d-none"
-                  id="otherDetailWrap"
-                >
+                <div class="l2-choice-other-detail d-none" id="otherDetailWrap">
                   <label>โปรดระบุ</label>
                   <input
                     type="text"
@@ -693,9 +668,7 @@
               </div>
             </div>
             <div class="form-actions">
-              <a href="01-work-inbox.html" class="btn btn-secondary"
-                >ยกเลิก</a
-              >
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
               <button
                 type="button"
                 class="btn btn-primary"
@@ -811,8 +784,6 @@
           "f_secretariatOpinion",
           currentCase.l2SecretariatOpinion,
         );
-        document.getElementById("in_resolutionFacts").value =
-          currentCase.l2ResolutionFacts || "";
         document.getElementById("in_committeeOpinion").value =
           currentCase.l2CommitteeOpinion || "";
         document.getElementById("in_resolutionDetail").value =
@@ -877,11 +848,6 @@
       }
 
       function submitForm() {
-        const facts = requireText(
-          "in_resolutionFacts",
-          "กรุณาระบุข้อเท็จจริงของเรื่อง",
-        );
-        if (!facts) return;
         const opinion = requireText(
           "in_committeeOpinion",
           "กรุณาระบุความเห็นของคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
@@ -921,7 +887,6 @@
                 caseState,
               ),
               l2ResolutionOtherDetail: otherDetail,
-              l2ResolutionFacts: facts,
               l2CommitteeOpinion: opinion,
               l2ResolutionDetail: detail,
               assignedRole: "sub_secretariat",

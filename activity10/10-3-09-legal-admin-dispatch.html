@@ -424,8 +424,7 @@
                 >ออกเลขส่งภายในและส่งมติเสนอบอร์ด</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i
-                >ธุรการกองกฎหมาย</span
+                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
               >
             </div>
             <div class="form-card-body">
@@ -438,14 +437,10 @@
                   <div style="display: flex; gap: 8px">
                     <input
                       type="text"
-                      id="f_internalDocNo"
+                      id="in_internalDocNo"
                       class="form-control font-monospace"
-                      readonly
-                      style="
-                        background-color: var(--bg-body);
-                        font-weight: 700;
-                        color: #1e3a8a;
-                      "
+                      placeholder="เช่น ปป 0003/4451 (กรอกเองหรือกดออกเลขส่ง)"
+                      style="font-weight: 700; color: #1e3a8a"
                     />
                     <button
                       type="button"
@@ -534,10 +529,10 @@
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         ECMIS103.setText("f_opinionText", c.l3OpinionText);
-        ECMIS103.setText(
-          "f_internalDocNo",
-          c.l3InternalDocNo || "ยังไม่ได้ออกเลขส่ง",
-        );
+        const docNoEl = document.getElementById("in_internalDocNo");
+        if (docNoEl && !docNoEl.matches(":focus")) {
+          docNoEl.value = c.l3InternalDocNo || "";
+        }
         ECMIS103.setText("f_dispatchDate", c.l3InternalDocDate);
       }
 
@@ -573,10 +568,20 @@
       }
 
       function submitForm() {
-        if (!currentCase.l3InternalDocNo) {
-          issueInternalDocNo();
-          currentCase = Activity103.getCase(currentCase.id);
+        const docNo = document.getElementById("in_internalDocNo").value.trim();
+        if (!docNo) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุหรือกดออกเลขที่หนังสือส่งภายใน",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_internalDocNo").focus();
+          return;
         }
+        /* ผู้ใช้แก้เลขเองได้ — ถ้ายังไม่เคยกดออกเลขส่ง (ไม่มีวันที่) ให้ประทับวันนี้ให้ */
+        const docDate =
+          currentCase.l3InternalDocDate || ECMIS103.formatThaiDate(new Date());
         const notes =
           document.getElementById("in_dispatchNotes").value.trim() || "-";
 
@@ -584,8 +589,9 @@
           icon: "question",
           title: "ยืนยันส่งมติเสนอบอร์ด",
           html:
-            "ออกเลขส่งภายในและส่งเรื่องเข้ากิจกรรมที่ 7 (เสนอบอร์ด)<br/>" +
-            '<span style="color:#b45309">หมายเหตุ: หน้าเสนอบอร์ดยังไม่ implement ในระบบนี้ — คดีจะค้างที่สถานะ "รอเสนอบอร์ด" จนกว่าจะพัฒนาหน้านั้น</span>',
+            "ส่งเรื่องเข้ากิจกรรมที่ 7 (เสนอบอร์ด) ด้วยเลขที่หนังสือ <strong>" +
+            docNo +
+            "</strong><br/>",
           showCancelButton: true,
           confirmButtonText: "ยืนยันส่งมติเสนอบอร์ด",
           cancelButtonText: "ยกเลิก",
@@ -594,6 +600,8 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
           Activity103.advance(currentCase.id, STEP_CODE, {
+            l3InternalDocNo: docNo,
+            l3InternalDocDate: docDate,
             l3DispatchNotes: notes,
           });
           doneAndBack(

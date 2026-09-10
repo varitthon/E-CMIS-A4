@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร ตรวจสอบคำฟ้อง | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ตรวจสอบคำฟ้องและจัดทำความเห็น | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -153,6 +153,7 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 16px;
+        position: relative;
       }
       .form-group:last-child {
         margin-bottom: 0;
@@ -267,6 +268,49 @@
         cursor: pointer;
         font-weight: 600;
       }
+
+      /* Upload box (แนบเอกสาร) — เหมือน pattern ของ 02-board-intake.html */
+      .upload-box {
+        border: 2px dashed var(--border-color);
+        padding: 16px;
+        border-radius: 6px;
+        text-align: center;
+        background: var(--bg-body);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .upload-box input[type="file"] {
+        flex: 1;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+
+      /* Search results table — เหมือน pattern ของ 02-board-intake.html */
+      .search-results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.88em;
+      }
+      .search-results-table th,
+      .search-results-table td {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+      .search-results-table th {
+        background: var(--bg-body);
+        color: var(--text-title);
+        font-weight: 600;
+      }
+      .search-results-table tr:hover {
+        background: rgba(37, 99, 235, 0.05);
+        cursor: pointer;
+      }
+      .search-results-table tr.table-primary {
+        background: rgba(37, 99, 235, 0.12) !important;
+      }
     </style>
   </head>
   <body>
@@ -299,7 +343,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร ตรวจสอบคำฟ้อง</span
+              >นิติกร ตรวจสอบคำฟ้องและจัดทำความเห็น</span
             >
           </div>
         </div>
@@ -440,14 +484,80 @@
             </div>
           </div>
 
+          <!-- Card: ค้นหาสำนวนคดีที่เกี่ยวข้อง (เหมือน pattern ของ 02-board-intake.html)
+               แทนที่ขั้นตอนธุรการประสานนักสืบเจ้าของสำนวน — นิติกรค้นและดึงข้อมูลได้เอง -->
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-magnifying-glass text-primary me-2"></i
+                >ค้นหาสำนวนคดีที่เกี่ยวข้อง</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-3">
+                <div
+                  class="form-group"
+                  style="margin-bottom: 0; grid-column: span 2 / span 3"
+                >
+                  <label>ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
+                  <input
+                    type="text"
+                    id="opinionSearchInput"
+                    class="form-control"
+                    style="width: 100%"
+                    placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
+                    onkeyup="handleOpinionSearchKeyup(event)"
+                  />
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 20px"
+                    onclick="executeOpinionSearch()"
+                  >
+                    🔍 ค้นหาสำนวน
+                  </button>
+                </div>
+              </div>
+              <div
+                class="helper-text"
+                style="margin: 8px 0 16px; font-size: 0.82em; color: #64748b"
+              >
+                * ค้นหาได้จาก: <strong>เลขสำนวน</strong>,
+                <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>,
+                <strong>ชื่อผู้กล่าวหา</strong> หรือ
+                <strong>ชื่อผู้ถูกกล่าวหา</strong>
+              </div>
+
+              <div
+                id="opinionSearchResults"
+                class="d-none"
+                style="margin-bottom: 16px"
+              ></div>
+
+              <div class="form-group" id="grp_relatedCaseNo">
+                <label>เลขสำนวนที่เกี่ยวข้อง</label>
+                <input
+                  type="text"
+                  id="in_relatedCaseNo"
+                  class="form-control font-monospace"
+                  readonly
+                  placeholder="ค้นหาและเลือกสำนวนด้านบนเพื่อเชื่อมโยง"
+                  style="background-color: var(--bg-body)"
+                />
+              </div>
+            </div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-magnifying-glass text-primary me-2"></i
-                >ตรวจสอบคำฟ้องเพื่อหามูลเหตุคดี</span
+                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
+                >ตรวจสอบคำฟ้องและจัดทำบันทึกสรุปความเห็น</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
@@ -459,7 +569,7 @@
                 <textarea
                   id="in_reviewNotes"
                   class="form-control"
-                  rows="4"
+                  rows="3"
                   placeholder="ระบุผลการตรวจสอบคำฟ้องและมูลเหตุคดีเบื้องต้น..."
                 >
 -</textarea
@@ -476,9 +586,74 @@
                   class="helper-text"
                   style="margin-top: 6px; font-size: 0.82em; color: #64748b"
                 >
-                  หากติ๊กเลือก ระบบจะบันทึกไว้เพื่อส่งเรื่องเข้ากิจกรรมที่ 2
-                  (จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี) แยกต่างหาก
+                  หากติ๊กเลือก ระบบจะบันทึกไว้เพื่อส่งเรื่องเข้า
+                  จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี แยกต่างหาก
                   โดยไม่กระทบสายหลักของกิจกรรมนี้
+                </div>
+              </div>
+
+              <hr
+                style="
+                  border: 0;
+                  border-top: 1px solid var(--border-color);
+                  margin: 20px 0;
+                "
+              />
+
+              <div class="form-group">
+                <label
+                  >บันทึกสรุปความเห็น
+                  <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_opinionText"
+                  class="form-control"
+                  rows="6"
+                  placeholder="สรุปข้อเท็จจริง ข้อกฎหมาย และความเห็นของนิติกรต่อคำฟ้อง..."
+                >
+-</textarea
+                >
+              </div>
+
+              <div class="form-group">
+                <label
+                  >แนบเอกสารประกอบความเห็น
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_opinionAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleOpinionAttachmentsChange(this)"
+                  />
+                </div>
+                <div id="opinionAttachmentsList" style="margin-top: 8px"></div>
+                <div
+                  class="info-box"
+                  style="
+                    margin-top: 10px;
+                    margin-bottom: 0;
+                    background: #fffbeb;
+                    border: 1px solid #fef3c7;
+                    border-radius: 6px;
+                    padding: 12px 16px;
+                    display: flex;
+                    gap: 10px;
+                    color: #92400e;
+                    font-size: 0.88em;
+                  "
+                >
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
                 </div>
               </div>
             </div>
@@ -489,8 +664,7 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
-                ส่งต่อ
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ
               </button>
             </div>
           </div>
@@ -558,19 +732,245 @@
         populateCommon();
       }
 
+      /* ---------------------------------------------- ค้นหาสำนวนคดีที่เกี่ยวข้อง
+         เหมือน pattern ของ 02-board-intake.html (executeIntakeSearch/selectIntakeCase)
+         แต่เลือกแล้วแค่เชื่อมโยงเลขสำนวน ไม่ต้องเติมฟอร์มทั้งหน้า */
+      function handleOpinionSearchKeyup(e) {
+        if (e.key === "Enter") executeOpinionSearch();
+      }
+
+      function executeOpinionSearch() {
+        const q = document
+          .getElementById("opinionSearchInput")
+          .value.trim()
+          .toLowerCase();
+        const resultsContainer = document.getElementById(
+          "opinionSearchResults",
+        );
+        if (!resultsContainer) return;
+
+        if (!q) {
+          Swal.fire({
+            icon: "info",
+            title: "กรุณากรอกคำค้นหา",
+            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือผู้ถูกกล่าวหา",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          resultsContainer.classList.add("d-none");
+          return;
+        }
+
+        const cases = Activity10.getPaccIntakeDatabase
+          ? Activity10.getPaccIntakeDatabase()
+          : [];
+        const matched = cases.filter((c) => {
+          return (
+            c.id.toLowerCase().includes(q) ||
+            (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
+            (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
+            (c.accuser && c.accuser.toLowerCase().includes(q)) ||
+            (c.accused && c.accused.toLowerCase().includes(q)) ||
+            c.title.toLowerCase().includes(q)
+          );
+        });
+
+        resultsContainer.classList.remove("d-none");
+
+        if (matched.length === 0) {
+          resultsContainer.innerHTML = `
+ <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
+ <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
+ </div>
+ `;
+          return;
+        }
+
+        let html = `
+ <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
+ <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+ <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
+ <button type="button" class="ctrl-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')" title="ปิดแถบผลการค้นหา"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
+ </div>
+ <div style="overflow-x: auto;">
+ <table class="search-results-table">
+ <thead>
+ <tr>
+ <th>เลขสำนวน ป.ป.ท.</th>
+ <th>ชื่อผู้กล่าวหา</th>
+ <th>ชื่อผู้ถูกกล่าวหา</th>
+ <th>เรื่องสำนวน</th>
+ </tr>
+ </thead>
+ <tbody>
+ `;
+
+        matched.forEach((c) => {
+          const cleanId = c.id.replace(/^.*?-/, "");
+          const safeRowId = `opinion-row-${cleanId.replace(/[^a-zA-Z0-9]/g, "_")}`;
+          html += `
+ <tr id="${safeRowId}" onclick="selectOpinionCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้">
+ <td>
+ <strong class="font-monospace" style="color:var(--text-title);">${cleanId}</strong>
+ ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
+ </td>
+ <td>${c.accuser || "-"}</td>
+ <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
+ <td>${c.title}</td>
+ </tr>
+ `;
+        });
+
+        html += `
+ </tbody>
+ </table>
+ </div>
+ </div>
+ `;
+
+        resultsContainer.innerHTML = html;
+      }
+
+      function selectOpinionCase(caseId) {
+        const cases = Activity10.getPaccIntakeDatabase
+          ? Activity10.getPaccIntakeDatabase()
+          : [];
+        const target = cases.find(
+          (c) =>
+            c.id === caseId ||
+            c.id.replace(/^.*?-/, "") === caseId.replace(/^.*?-/, ""),
+        );
+        if (!target) return;
+
+        const cleanId = target.id.replace(/^.*?-/, "");
+        document.getElementById("in_relatedCaseNo").value = cleanId;
+
+        const resultsContainer = document.getElementById(
+          "opinionSearchResults",
+        );
+        if (resultsContainer) resultsContainer.classList.add("d-none");
+
+        Swal.fire({
+          icon: "success",
+          title: "เชื่อมโยงสำนวนสำเร็จ!",
+          text: `เชื่อมโยงเลขสำนวน ${cleanId} เรียบร้อยแล้ว`,
+          timer: 1400,
+          showConfirmButton: false,
+        });
+      }
+
+      /* ---------------------------------------------- แนบเอกสารประกอบความเห็น
+         เหมือน pattern ของ 02-board-intake.html (handleDisclosureAttachmentsChange) */
+      let opinionAttachedFiles = [];
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function handleOpinionAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          opinionAttachedFiles.push(file);
+        });
+
+        input.value = "";
+        renderOpinionAttachmentsList();
+      }
+
+      function removeOpinionAttachment(index) {
+        opinionAttachedFiles.splice(index, 1);
+        renderOpinionAttachmentsList();
+      }
+
+      function renderOpinionAttachmentsList() {
+        const listEl = document.getElementById("opinionAttachmentsList");
+        if (!listEl) return;
+        if (!opinionAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = opinionAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeOpinionAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      /* ---- page specific ---- */
+
       function submitForm() {
-        const notes =
+        const opinionText = document
+          .getElementById("in_opinionText")
+          .value.trim();
+        if (!opinionText) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุบันทึกสรุปความเห็น",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_opinionText").focus();
+          return;
+        }
+        const reviewNotes =
           document.getElementById("in_reviewNotes").value.trim() || "-";
-        const hasStayRequest = document.getElementById(
-          "in_hasStayRequest",
-        ).checked;
+        const hasStayRequest =
+          document.getElementById("in_hasStayRequest").checked;
+        const relatedCaseNo = document
+          .getElementById("in_relatedCaseNo")
+          .value.trim();
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันบันทึกผลตรวจสอบ",
+          title: "ยืนยันบันทึกผลตรวจสอบและความเห็น",
           html: hasStayRequest
-            ? "บันทึกผลตรวจสอบและส่งต่อ<br/><strong style='color:#d97706'>พร้อมส่งเรื่องคำขอทุเลาการบังคับคดีเข้ากิจกรรมที่ 2</strong>"
-            : "บันทึกผลตรวจสอบและส่งต่อ",
+            ? "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ<br/><strong style='color:#d97706'>พร้อมส่งเรื่องคำขอทุเลาการบังคับคดีเข้ากิจกรรมที่ 2</strong>"
+            : "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ",
           showCancelButton: true,
           confirmButtonText: "ยืนยันและส่งต่อ",
           cancelButtonText: "ยกเลิก",
@@ -579,13 +979,16 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
           Activity103.advance(currentCase.id, STEP_CODE, {
-            l3ReviewNotes: notes,
+            l3ReviewNotes: reviewNotes,
             l3HasStayRequest: hasStayRequest,
+            l3RelatedCaseNo: relatedCaseNo,
+            l3OpinionText: opinionText,
+            l3OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
           });
           doneAndBack(
             hasStayRequest
-              ? "บันทึกผลตรวจสอบเรียบร้อยแล้ว (มีคำขอทุเลาการบังคับคดี)"
-              : "บันทึกผลตรวจสอบเรียบร้อยแล้ว",
+              ? "บันทึกความเห็นเรียบร้อยแล้ว (มีคำขอทุเลาการบังคับคดี)"
+              : "บันทึกความเห็นเรียบร้อยแล้ว",
           );
         });
       }

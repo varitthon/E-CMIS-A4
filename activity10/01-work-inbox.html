@@ -1956,6 +1956,17 @@
         "L2_PENDING_NOTICE_DISPATCH",
         "L2_CASE_CLOSED_NOTICE_SENT",
       ];
+      /* อนุญาตเปิดเผย/คดีเสร็จสิ้นแล้ว (resolutionBadge/caseStateBadge) ต้องไม่
+         ขึ้นทันทีที่คณะอนุกรรมการฯ มีมติ (10-2-06) เพราะยังไม่ได้รับการตอบกลับ
+         จากเลขาธิการ/รองเลขาธิการ ป.ป.ท. จริง — ขึ้นเฉพาะเมื่อผ่านสถานะเหล่านี้
+         ไปแล้วเท่านั้น (คือหลัง L2_DEPUTY_SG_RESOLVED / L2_SECGEN_RESOLVED) */
+      const PRE_SECGEN_RESPONSE_STATUS_CODES = [
+        "L2_PENDING_RESOLUTION_DOC",
+        "L2_PENDING_DIRLEGAL_OPINION",
+        "L2_PENDING_DISPATCH",
+        "L2_PENDING_DEPUTY_SG_OPINION",
+        "L2_PENDING_SECGEN_OPINION",
+      ];
       function resolutionAuthorityLabel(kase) {
         const isInvestigating = (kase.l2CaseState || "INVESTIGATING") === "INVESTIGATING";
         const pastRound2 = ROUND2_OR_LATER_STATUS_CODES.indexOf(kase.statusCode) > -1;
@@ -1966,6 +1977,8 @@
         const kase = item && item.raw;
         const resType = kase && kase.l2ResolutionType;
         if (!resType || typeof Activity102 === "undefined") return "";
+        if (PRE_SECGEN_RESPONSE_STATUS_CODES.indexOf(kase.statusCode) > -1)
+          return "";
         const label = Activity102.labelOf(
           Activity102.RESOLUTION_TYPES,
           resType,
@@ -1984,6 +1997,8 @@
         const kase = item && item.raw;
         const resType = kase && kase.l2ResolutionType;
         if (!resType || typeof Activity102 === "undefined") return "";
+        if (PRE_SECGEN_RESPONSE_STATUS_CODES.indexOf(kase.statusCode) > -1)
+          return "";
         const stateValue = kase.l2CaseState || "INVESTIGATING";
         const label = Activity102.labelOf(Activity102.CASE_STATES, stateValue);
         const color = Activity102.colorOf(Activity102.CASE_STATES, stateValue);
