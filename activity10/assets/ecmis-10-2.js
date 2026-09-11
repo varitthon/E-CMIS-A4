@@ -528,6 +528,39 @@
     { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน", color: "#1e3a8a" },
   ];
 
+  /* กริดปุ่มเลือกมติ/สถานะคดี — ใช้ร่วมกันทุกหน้าที่ต้องเลือกค่าเหล่านี้
+     (10-2-06, 10-2-31, 10-2-32) แทนที่จะก็อปโค้ดซ้ำ handlerName คือชื่อ
+     ฟังก์ชัน global ของหน้านั้นๆ ที่จะถูกเรียกตอนคลิก (เช่น "selectResolution") */
+  function choiceGridHtml(list, selected, handlerName) {
+    return list
+      .map(
+        (o) =>
+          '<label class="l2-choice' +
+          (o.value === selected ? " is-active" : "") +
+          '" style="' +
+          (o.value === selected && o.color
+            ? "border-color:" + o.color + ";"
+            : "") +
+          ' justify-content: start;" onclick="' +
+          handlerName +
+          "('" +
+          o.value +
+          "')\">" +
+          '<input type="radio" value="' +
+          o.value +
+          '"' +
+          (o.value === selected ? " checked" : "") +
+          (o.color ? ' style="accent-color:' + o.color + '"' : "") +
+          " />" +
+          '<span class="l2-choice-label"' +
+          (o.color ? ' style="color:' + o.color + '"' : "") +
+          ">" +
+          o.label +
+          "</span></label>",
+      )
+      .join("");
+  }
+
   function labelOf(list, value) {
     const hit = list.find(function (x) { return x.value === value; });
     return hit ? hit.label : "-";
@@ -1682,6 +1715,7 @@
     renderAttachments: renderAttachments,
     renderMemoDocument: renderMemoDocument,
     renderResolutionSheet: renderResolutionSheet,
+    choiceGridHtml: choiceGridHtml,
     mockOpenFile: mockOpenFile,
     zoomDoc: zoomDoc,
     initDocZoom: initDocZoom,

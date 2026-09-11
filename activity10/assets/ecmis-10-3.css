@@ -65,3 +65,305 @@ body.dark-mode .l3-note-warn {
   display: flex;
   align-items: center;
 }
+
+/* ------------------------------------------------------------- SPLIT LAYOUT
+   เค้าโครง 2 คอลัมน์ (ตัวอย่างเอกสารสดปักหมุดด้านซ้าย ฟอร์มกรอกด้านขวา) —
+   คัดลอกโครงจาก ecmis-10-2.css (.l2-split*) มาเป็น .l3-split* เพื่อให้ 10-3
+   คงความ self-contained เหมือนโมดูล JS ของตัวเอง */
+.l3-split {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.l3-split-preview {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.l3-split-form {
+  min-width: 0;
+  width: 100%;
+}
+
+.l3-split-toggle {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .l3-split {
+    grid-template-columns: 2;
+  }
+  .l3-split-preview {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+  .l3-split-toggle {
+    display: inline-flex;
+  }
+  .l3-split-preview.is-collapsed .l3-split-preview-body {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- RICH EDITOR
+   Tiptap แบบขั้นต่ำ (ตัวหนา/ตัวเอียง/บูลเลต/เลข) หน้าตาใกล้เคียง .form-control */
+.l3-tiptap-wrap {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.l3-tiptap-wrap:focus-within {
+  border-color: #1e3a8a;
+}
+
+.l3-tiptap-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-body);
+}
+
+.l3-tiptap-toolbar button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-title);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82em;
+}
+
+.l3-tiptap-toolbar button:hover {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.l3-tiptap-toolbar button.is-active {
+  background: rgba(30, 58, 138, 0.1);
+  border-color: #1e3a8a;
+  color: #1e3a8a;
+}
+
+.l3-tiptap {
+  min-height: 110px;
+  padding: 10px 12px;
+  font-family: "Sarabun", sans-serif;
+  font-size: 0.95em;
+  line-height: 1.75;
+  color: var(--text-title);
+  outline: none;
+}
+
+.l3-tiptap .ProseMirror {
+  outline: none;
+}
+
+.l3-tiptap p {
+  margin: 0 0 0.5em;
+}
+
+.l3-tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.l3-tiptap ul,
+.l3-tiptap ol {
+  padding-left: 1.4em;
+  margin: 0 0 0.5em;
+}
+
+.l3-tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------ DOC PREVIEW VIEWER
+   กรอบ "ตัวอย่างเอกสารสด" แบบหน้ากระดาษ A4 พร้อมแถบเครื่องมือ (แก้ไข/ซูม) */
+.l3-doc {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 28px 32px;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.94em;
+}
+
+.l3-doc-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.l3-doc-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.l3-doc-value {
+  flex: 1 1 200px;
+  border-bottom: 1px dotted #94a3b8;
+  min-height: 1.5em;
+}
+
+.l3-doc-section {
+  margin-top: 14px;
+}
+
+.l3-doc-section > .l3-doc-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.l3-doc-body {
+  text-indent: 2.5em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.l3-doc-signblock {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 26px;
+}
+
+.l3-doc-viewer {
+  background: #ffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.l3-doc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.l3-doc-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  color: var(--text-title);
+}
+
+.l3-doc-toolbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.l3-doc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.l3-doc-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-title);
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.l3-doc-btn:hover {
+  background: var(--border-color);
+}
+
+.l3-doc-btn-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.l3-doc-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.l3-doc-zoom button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: pointer;
+  font-size: 0.8em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.l3-doc-zoom button:hover {
+  background: var(--border-color);
+}
+
+.l3-doc-zoom-val {
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.l3-doc-pageframe {
+  background: #334155;
+  padding: 22px 14px;
+  height: 550px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.l3-doc-page {
+  box-sizing: border-box;
+  background: #fff;
+  color: #0f172a;
+  width: 210mm;
+  max-width: none;
+  height: 297mm;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20mm 18mm;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.92em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}

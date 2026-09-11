@@ -144,8 +144,9 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังจากธุรการกองกฎหมายเลือกส่งเสนอเลขาธิการโดยตรงที่หน้า
-            <a href="10-2-09-legal-admin-dispatch.html">ออกเลขส่งเสนอผู้บริหาร</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลังจากรองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ให้ความเห็นและลงนามแล้ว (ตามค่าเริ่มต้นที่หน้า
+            <a href="10-2-32-deputy-sg-opinion-sign.html">รองเลขาธิการ ป.ป.ท. ให้ความเห็นและลงนาม</a>
+            ระบบจะส่งต่อมาที่นี่โดยอัตโนมัติ เว้นแต่เลือกข้าม)
           </div>
         </div>
 
@@ -165,6 +166,23 @@
             </div>
             <div class="form-card-body">
               <div class="l2-doc" id="memoDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+              <span><i class="fa-solid fa-gavel text-primary me-2"></i>มติและสถานะคดี</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff">เลขาธิการ ป.ป.ท.</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>มติ <span style="color: #dc2626">*</span></label>
+                <div class="l2-choice-grid" id="resolutionChoices"></div>
+              </div>
+              <div class="form-group">
+                <label>สถานะคดีที่เกี่ยวข้อง <span style="color: #dc2626">*</span></label>
+                <div class="l2-choice-grid" id="caseStateChoices"></div>
+              </div>
             </div>
           </div>
 
@@ -223,10 +241,44 @@
         populate();
       }
 
+      const SECGEN_RESOLUTION_TYPES = Activity102.RESOLUTION_TYPES.filter(
+        (o) => o.value !== "OTHER",
+      );
+      let resolutionType = "DISCLOSE";
+      let caseState = "CLOSED";
+
       function populate() {
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         document.getElementById("memoDoc").innerHTML =
           ECMIS102.renderMemoDocument(currentCase);
+        resolutionType = currentCase.l2ResolutionType || "DISCLOSE";
+        caseState = currentCase.l2CaseState || "CLOSED";
+        renderChoices();
+      }
+
+      function renderChoices() {
+        document.getElementById("resolutionChoices").innerHTML =
+          ECMIS102.choiceGridHtml(
+            SECGEN_RESOLUTION_TYPES,
+            resolutionType,
+            "selectResolution",
+          );
+        document.getElementById("caseStateChoices").innerHTML =
+          ECMIS102.choiceGridHtml(
+            Activity102.CASE_STATES,
+            caseState,
+            "selectCaseState",
+          );
+      }
+
+      function selectResolution(value) {
+        resolutionType = value;
+        renderChoices();
+      }
+
+      function selectCaseState(value) {
+        caseState = value;
+        renderChoices();
       }
 
       function submitForm() {
@@ -250,6 +302,16 @@
             Activity102.sign(currentCase.id, "secgenOpinion", image, { position: "เลขาธิการคณะกรรมการ ป.ป.ท." });
             Activity102.advance(currentCase.id, STEP_CODE, {
               l2SecgenOpinion: opinion,
+              l2ResolutionType: resolutionType,
+              l2ResolutionTypeName: Activity102.labelOf(
+                Activity102.RESOLUTION_TYPES,
+                resolutionType,
+              ),
+              l2CaseState: caseState,
+              l2CaseStateName: Activity102.labelOf(
+                Activity102.CASE_STATES,
+                caseState,
+              ),
               assignedRole: "admin_legal",
               officer: ECMIS102.signerLabel("admin_legal"),
             });

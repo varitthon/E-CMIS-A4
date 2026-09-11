@@ -564,23 +564,19 @@
               </div>
 
               <div class="form-group">
-                <label
-                  >ส่งเสนอต่อไปยัง <span style="color: #dc2626">*</span></label
-                >
-                <select
-                  id="in_dispatchTarget"
+                <label>ส่งเสนอต่อไปยัง</label>
+                <div
                   class="form-control"
-                  style="font-weight: 600; color: #1e3a8a"
+                  style="font-weight: 600; color: #1e3a8a; background: var(--bg-body)"
                 >
-                  <option value="DEPUTY">
-                    นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย
-                    ปฏิบัติราชการแทนเลขาธิการ)
-                  </option>
-                  <option value="SECGEN">
-                    นายอภิชาติ สุจริตกุล (เลขาธิการ คณะกรรมการ ป.ป.ท.
-                    ผู้ดูแลกองกฎหมาย)
-                  </option>
-                </select>
+                  นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย
+                  ปฏิบัติราชการแทนเลขาธิการ)
+                </div>
+                <div class="l2-optional" style="margin-top: 6px">
+                  ตามค่าเริ่มต้นระบบส่งเสนอรองเลขาธิการฯ ก่อนเสมอ
+                  หลังรองเลขาธิการฯ ให้ความเห็นแล้วจะส่งต่อเสนอเลขาธิการฯ
+                  โดยอัตโนมัติ เว้นแต่รองเลขาธิการฯ เลือกข้ามที่หน้าของตนเอง
+                </div>
               </div>
 
               <div class="form-group">
@@ -738,19 +734,13 @@
           });
           return;
         }
-        const branch = document.getElementById("in_dispatchTarget").value;
         const targetLabel =
-          document.getElementById("in_dispatchTarget").selectedOptions[0]
-            .text;
+          "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ปฏิบัติราชการแทนเลขาธิการ)";
         const notes = document.getElementById("in_dispatchNotes").value.trim();
-        const isDeputy = branch === "DEPUTY";
-        const nextStatusCode = isDeputy
-          ? "L2_PENDING_DEPUTY_SG_OPINION"
-          : "L2_PENDING_SECGEN_OPINION";
-        const nextStatus = isDeputy
-          ? "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๖) และลงนาม"
-          : "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็น (๗) และลงนาม";
-        const nextAssignedRole = isDeputy ? "deputy_sg" : "secgen";
+        const nextStatusCode = "L2_PENDING_DEPUTY_SG_OPINION";
+        const nextStatus =
+          "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย พิจารณาให้ความเห็นและลงนาม";
+        const nextAssignedRole = "deputy_sg";
 
         Swal.fire({
           icon: "question",
@@ -779,7 +769,6 @@
             l2DispatchDate: dispatchDate,
             l2DispatchTarget: targetLabel,
             l2DispatchNotes: notes,
-            l2ApprovalBranch: branch,
             statusCode: nextStatusCode,
             status: nextStatus,
             assignedRole: nextAssignedRole,
