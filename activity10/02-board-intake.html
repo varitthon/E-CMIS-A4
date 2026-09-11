@@ -1257,7 +1257,9 @@
                       ศาลปกครองสูงสุด
                     </option>
                     <option value="ศาลปกครองกลาง">ศาลปกครองกลาง</option>
-                    <option value="ศาลปกครองเชียงใหม่">ศาลปกครองเชียงใหม่</option>
+                    <option value="ศาลปกครองเชียงใหม่">
+                      ศาลปกครองเชียงใหม่
+                    </option>
                     <option value="ศาลปกครองสงขลา">ศาลปกครองสงขลา</option>
                     <option value="ศาลปกครองนครราชสีมา">
                       ศาลปกครองนครราชสีมา
@@ -1297,7 +1299,9 @@
                       updateLivePreview();
                     "
                   >
-                    <option value="คณะกรรมการ ป.ป.ท." selected>คณะกรรมการ ป.ป.ท.</option>
+                    <option value="คณะกรรมการ ป.ป.ท." selected>
+                      คณะกรรมการ ป.ป.ท.
+                    </option>
                     <option value="เลขาธิการคณะกรรมการ ป.ป.ท.">
                       เลขาธิการคณะกรรมการ ป.ป.ท.
                     </option>
@@ -1480,6 +1484,65 @@
                   />
                 </div>
                 <div id="courtAttachmentsList" style="margin-top: 8px"></div>
+
+                <div
+                  style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 10px;
+                    padding: 14px 16px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    margin-top: 12px;
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    id="in_hasStayObjectionSummons"
+                    style="
+                      width: 18px;
+                      height: 18px;
+                      margin-top: 2px;
+                      accent-color: #1e3a8a;
+                      cursor: pointer;
+                    "
+                    onchange="toggleStayObjectionUpload()"
+                  />
+                  <label
+                    for="in_hasStayObjectionSummons"
+                    style="margin: 0; cursor: pointer; font-weight: 600"
+                    >มีหมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา</label
+                  >
+                </div>
+
+                <div id="div_stayObjectionUpload" style="display: none">
+                  <div class="form-group" style="margin-top: 12px">
+                    <label
+                      >หมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <div class="upload-box">
+                      <input
+                        type="file"
+                        id="in_stayObjectionAttachments"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                        multiple
+                        onchange="handleStayObjectionAttachmentsChange(this)"
+                      />
+                    </div>
+                    <div
+                      id="stayObjectionAttachmentsList"
+                      style="margin-top: 8px"
+                    ></div>
+                    <div
+                      style="font-size: 0.78em; color: #64748b; margin-top: 4px"
+                    >
+                      เมื่อแนบหมายฉบับนี้
+                      ผอ.กองกฎหมายจะแก้ไขรายละเอียดคดีศาลปกครองได้ที่ขั้นตอนลงนามมอบหมาย
+                    </div>
+                  </div>
+                </div>
+
                 <div
                   class="info-box"
                   style="margin-top: 10px; margin-bottom: 0"
@@ -2183,6 +2246,90 @@
           .join("");
       }
 
+      let stayObjectionFiles = [];
+
+      function toggleStayObjectionUpload() {
+        const cb = document.getElementById("in_hasStayObjectionSummons");
+        const box = document.getElementById("div_stayObjectionUpload");
+        if (!cb || !box) return;
+        if (cb.checked) {
+          box.style.display = "block";
+        } else {
+          box.style.display = "none";
+          stayObjectionFiles = [];
+          renderStayObjectionAttachmentsList();
+        }
+      }
+
+      function handleStayObjectionAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          stayObjectionFiles.push(file);
+        });
+
+        input.value = "";
+        renderStayObjectionAttachmentsList();
+      }
+
+      function removeStayObjectionAttachment(index) {
+        stayObjectionFiles.splice(index, 1);
+        renderStayObjectionAttachmentsList();
+      }
+
+      function renderStayObjectionAttachmentsList() {
+        const listEl = document.getElementById("stayObjectionAttachmentsList");
+        if (!listEl) return;
+        if (!stayObjectionFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = stayObjectionFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-gavel" style="color:#b45309;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeStayObjectionAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
+      }
+
       /* ค่าที่กรอกในบล็อกคดีศาลปกครอง พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
       function collectCourtCaseFields() {
         const val = (id) => {
@@ -2213,6 +2360,11 @@
           courtRemark: val("in_courtRemark"),
           receivingUnit: val("in_receivingUnit") || "กองกฎหมาย",
           attachmentFileNames: courtAttachedFiles.map((f) => f.name),
+          l3HasStayObjectionSummons: !!(
+            document.getElementById("in_hasStayObjectionSummons") &&
+            document.getElementById("in_hasStayObjectionSummons").checked
+          ),
+          stayObjectionFileNames: stayObjectionFiles.map((f) => f.name),
         };
       }
 
@@ -2272,6 +2424,17 @@
             if (otherText) otherText.focus();
             return false;
           }
+        }
+
+        const stayCb = document.getElementById("in_hasStayObjectionSummons");
+        if (stayCb && stayCb.checked && !stayObjectionFiles.length) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาแนบไฟล์หมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return false;
         }
 
         const hasPlaintiff = courtPlaintiffs.some((p) => p.trim());
