@@ -7,7 +7,7 @@
   "use strict";
 
   // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v51_fix_committee_docdate_format";
+  const DATA_VERSION = "v52_add_10-3b-01_sample_case";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -1875,6 +1875,81 @@
       status: "รอธุรการบันทึกรับมติ รอบ 2 (กิจกรรมที่ 7)",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
+    },
+    /* ---------------------------------------------------------------- 10.3
+       ตัวอย่างคดีศาลปกครอง — เคสแม่เดินมาถึง LAW0090 แล้ว (ติ๊กมีคำขอทุเลาฯ
+       ไว้ตอนนั้น) กำลังรอ ผอ.กลุ่มงานคดีเห็นชอบที่ 10-3-07, พร้อมเคสลูกสาขา
+       Part 1b ที่ spawnStayObjectionCase() จะสร้างให้เอง — ใส่ไว้ล่วงหน้าเพื่อ
+       ให้ล็อกอินเป็นนิติกรกลุ่มงานคดี (Kittisak.S) แล้วเข้า 10-3b-01 ได้ทันที
+       โดยไม่ต้องไล่คลิกทั้งสาย 02-board-intake → 10-3-02 → 03 → 04 ใหม่ */
+    {
+      id: "คดีปกครอง-100097/2569",
+      title:
+        "นายวีระชัย ต่อสู้ธรรม (ผู้ฟ้องคดี) ยื่นฟ้อง เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท. (ผู้ถูกฟ้องคดี)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 210/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายวีระชัย ต่อสู้ธรรม"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายวีระชัย ต่อสู้ธรรม",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      courtSarabanNo: "สบ.0099/2569",
+      courtRemark: "-",
+      receivingUnit: "กองกฎหมาย",
+      attachmentFileNames: [
+        "หมายเรียกศาลปกครอง_คดี100097.pdf",
+        "สำเนาคำฟ้อง_100097.pdf",
+      ],
+      lawReceiveNo: "0099/2569",
+      centralSarabanNo: "2569/4501",
+      paccCaseNo: "ปค. 0012/2569",
+      blackNo: "อ. 210/2569",
+      redNo: "-",
+      dateReceived: getDateWithOffset(-5),
+      dueDate: getDateWithOffset(25),
+      workflowStep: 3,
+      officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+      assignedRole: "case_group_director",
+      status: "ผอ.กลุ่มงานพิจารณาเห็นชอบ",
+      statusCode: "L3_PENDING_GROUP_APPROVE",
+      statusBadge: "bg-primary text-white",
+      l3Step: "LAW0090",
+      l3StepSeq: 4,
+      l3ReviewNotes:
+        "ตรวจสอบคำฟ้องแล้วพบว่าคำสั่งไล่ออกทางวินัยดำเนินการตามขั้นตอนที่กฎหมายกำหนดโดยชอบ",
+      l3HasStayRequest: true,
+      l3RelatedCaseNo: "",
+      l3OpinionText:
+        "เห็นควรจัดทำคำให้การคัดค้านคำฟ้อง โดยยืนยันว่าคำสั่งไล่ออกทางวินัยเป็นไปตามขั้นตอนที่ ก.พ.ค. กำหนดครบถ้วนทุกประการ",
+      l3OpinionAttachments: [],
+    },
+    {
+      id: "คดีปกครอง-100097-B/2569",
+      title:
+        "คำขอทุเลาการบังคับคดี — ศาลปกครองกลาง (เกี่ยวข้องกับ อ. 210/2569)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      l3ParentCaseId: "คดีปกครอง-100097/2569",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 210/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายวีระชัย ต่อสู้ธรรม"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายวีระชัย ต่อสู้ธรรม",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      dateReceived: getDateWithOffset(-1),
+      dueDate: getDateWithOffset(14),
+      officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+      assignedRole: "case_legal_officer",
+      status: "นิติกรจัดทำคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_LAWYER_DRAFT",
+      statusBadge: "bg-primary text-white",
+      l3Step: null,
+      l3StepSeq: 0,
     },
   ];
 

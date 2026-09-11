@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260910_1" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 700px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+
+      .upload-box {
+        border: 2px dashed var(--border-color);
+        padding: 16px;
+        border-radius: 6px;
+        text-align: center;
+        background: var(--bg-body);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .upload-box input[type="file"] {
+        flex: 1;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.3 — คดีศาลปกครอง
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+              <a
+                href="login.html"
+                onclick="confirmLogout(event)"
+                class="logout-link"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper" id="stepper"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            หน้านี้เข้าถึงได้เฉพาะเมื่อมีการติ๊กเลือก
+            "ผู้ฟ้องคดียื่นคำขอทุเลาการบังคับคดีมาด้วย" ที่หน้า
+            <a href="10-3-04-lawyer-review-complaint.html"
+              >นิติกร ตรวจสอบ/จัดทำความเห็น</a
+            >
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div
+            class="l3-note"
+            style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a"
+          >
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <strong>เคสนี้เป็นสาขาคู่ขนานของกิจกรรมที่ 1</strong><br />
+              เดินสถานะแยกต่างหากจากคดีหลัก
+              <span class="font-monospace" id="f_parentCaseId">-</span>
+              ไม่กระทบขั้นตอนของคดีหลักที่กำลังดำเนินอยู่
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >ข้อมูลคดี (อ้างอิงจากคดีหลัก)</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                    -
+                  </div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้อง</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้อง</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
+                >จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="l3-split">
+                <div class="l3-split-preview" id="stayPreviewCol">
+                  <div class="l3-doc-viewer">
+                    <div class="l3-doc-toolbar">
+                      <div class="l3-doc-toolbar-title">
+                        <i class="fa-solid fa-file-lines text-primary"></i>
+                        <span
+                          >ตัวอย่างเอกสารสด —
+                          คำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+                        >
+                      </div>
+                      <div class="l3-doc-toolbar-actions">
+                        <button
+                          type="button"
+                          class="l3-doc-btn"
+                          onclick="ECMIS103.focusFirstField('in_stayObjectionText')"
+                        >
+                          <i class="fa-solid fa-pen-to-square"></i>แก้ไขเอกสาร
+                        </button>
+                        <div class="l3-doc-zoom">
+                          <button
+                            type="button"
+                            onclick="ECMIS103.zoomDoc('stayPreview', -1)"
+                          >
+                            <i class="fa-solid fa-minus"></i>
+                          </button>
+                          <span class="l3-doc-zoom-val" id="stayPreviewZoomVal"
+                            >55%</span
+                          >
+                          <button
+                            type="button"
+                            onclick="ECMIS103.zoomDoc('stayPreview', 1)"
+                          >
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="l3-doc-pageframe l3-split-preview-body">
+                      <div class="l3-doc l3-doc-page" id="stayPreview"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="l3-split-form">
+                  <div class="form-group">
+                    <label>ศาลที่ยื่นคำชี้แจง</label>
+                    <div class="read-box" id="f_courtNameForm">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label
+                      >เนื้อหาคำชี้แจงคัดค้าน
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tbStayObjection">
+                        <button type="button" data-cmd="bold" title="ตัวหนา">
+                          <i class="fa-solid fa-bold"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="italic"
+                          title="ตัวเอียง"
+                        >
+                          <i class="fa-solid fa-italic"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="bulletList"
+                          title="รายการหัวข้อ"
+                        >
+                          <i class="fa-solid fa-list-ul"></i>
+                        </button>
+                        <button
+                          type="button"
+                          data-cmd="orderedList"
+                          title="รายการลำดับเลข"
+                        >
+                          <i class="fa-solid fa-list-ol"></i>
+                        </button>
+                      </div>
+                      <div id="in_stayObjectionText"></div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label
+                      >แนบเอกสารประกอบ
+                      <span style="font-weight: 400; color: #64748b"
+                        >(ถ้ามี)</span
+                      ></label
+                    >
+                    <div class="upload-box">
+                      <input
+                        type="file"
+                        id="in_stayAttachments"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        multiple
+                        onchange="handleStayAttachmentsChange(this)"
+                      />
+                    </div>
+                    <div id="stayAttachmentsList" style="margin-top: 8px"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="submitForm()"
+              >
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
+                และ ส่งต่อธุรการเพื่อลงนาม
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+    <script src="assets/ecmis-10-3.js?v=20260910_1"></script>
+
+    <script>
+      const STEP_CODE = "LAW0097";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      let currentCase = null;
+      let stayEditor = null;
+      let stayAttachedFiles = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        ECMIS103.renderStepper("stepper", STEP_CODE);
+        loadCase();
+        ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      /* ทางเข้าเดียวคือสาขา Part 1b จาก 10-3-04 (spawnStayObjectionCase เขียน
+         L3B_PENDING_LAWYER_DRAFT ตรงตั้งแต่สร้างเคสลูก ไม่ใช่ผล advance() ของ
+         ขั้นก่อนหน้าใน STAY_STEPS จึงฮาร์ดโค้ดค่าจริงตรงนี้เหมือน 10-2-15) */
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        currentCase = Activity103.getCase(id, "L3B_PENDING_LAWYER_DRAFT");
+
+        if (!currentCase || !Activity103.isStayObjectionCase(currentCase)) {
+          currentCase = null;
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        populate();
+      }
+
+      function doneAndBack(text) {
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกสำเร็จ",
+          text: text,
+          timer: 1900,
+          showConfirmButton: false,
+        }).then(ECMIS103.goInbox);
+      }
+
+      function populate() {
+        const c = currentCase;
+        ECMIS103.setText("f_parentCaseId", c.l3ParentCaseId);
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_courtNameForm", c.courtName);
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+
+        const plaintiffNames = (c.plaintiffs || []).join(", ") || "ผู้ฟ้องคดี";
+        const defendantNames =
+          (c.defendants || []).join(", ") || "ผู้ถูกฟ้องคดี";
+        const initialText =
+          "ตามที่ " + plaintiffNames + " ได้ยื่นฟ้อง " + defendantNames +
+          " ต่อ " + (c.courtName || "ศาลปกครอง") + " ในคดีหมายเลขดำที่ " +
+          (c.blackCaseNo || "-") +
+          " พร้อมยื่นคำขอทุเลาการบังคับคดีตามคำสั่งทางปกครองไว้ด้วยนั้น " +
+          "ผู้ถูกฟ้องคดีขอคัดค้านคำขอทุเลาการบังคับคดีดังกล่าว โดยมีเหตุผลดังนี้ (1) คำสั่งทางปกครองที่พิพาทได้ออกโดยชอบด้วยกฎหมายและเป็นไปตามขั้นตอนที่กฎหมายกำหนดทุกประการ " +
+          "(2) หากมีการทุเลาการบังคับคดีไว้จะเป็นอุปสรรคแก่การบริหารงานของรัฐหรือแก่บริการสาธารณะ และ (3) ผู้ฟ้องคดีไม่ได้รับความเสียหายอย่างร้ายแรงจนยากแก่การเยียวยาแก้ไขในภายหลังหากศาลไม่มีคำสั่งทุเลาการบังคับคดีไว้ " +
+          "จึงขอศาลได้โปรดมีคำสั่งยกคำขอทุเลาการบังคับคดีของผู้ฟ้องคดี";
+
+        ECMIS103.mountEditor("in_stayObjectionText", {
+          placeholder: "ระบุเนื้อหาคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี...",
+          toolbarId: "tbStayObjection",
+          initialHTML: "<p>" + initialText + "</p>",
+          onUpdate: renderPreview,
+        }).then((editor) => {
+          stayEditor = editor;
+          renderPreview();
+        });
+        ECMIS103.initDocZoom("stayPreview", 0.55);
+      }
+
+      function renderPreview() {
+        const el = document.getElementById("stayPreview");
+        if (!el || !currentCase) return;
+        const c = currentCase;
+        const row = (label, value) =>
+          '<div class="l3-doc-row"><span class="l3-doc-label">' +
+          label +
+          '</span><span class="l3-doc-value">' +
+          (value || "-") +
+          "</span></div>";
+        const section = (label, html) =>
+          '<div class="l3-doc-section"><span class="l3-doc-label">' +
+          label +
+          '</span><div class="l3-doc-body">' +
+          (html || "-") +
+          "</div></div>";
+
+        el.innerHTML =
+          row("เรื่อง", "คำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี") +
+          row("เรียน", c.courtName || "-") +
+          row("คดีหมายเลขดำที่", c.blackCaseNo || "-") +
+          row(
+            "ระหว่าง",
+            (c.plaintiffs || []).join(", ") +
+              " ผู้ฟ้องคดี กับ " +
+              (c.defendants || []).join(", ") +
+              " ผู้ถูกฟ้องคดี",
+          ) +
+          section("ข้อเท็จจริงและคำชี้แจง", stayEditor ? stayEditor.getHTML() : "") +
+          (stayAttachedFiles.length
+            ? row(
+                "สิ่งที่แนบมาด้วย",
+                stayAttachedFiles.map((f) => f.name).join(", "),
+              )
+            : "") +
+          '<div class="l3-doc-signblock">' +
+          '<div style="text-align: center">' +
+          '<div style="height: 60px"></div>' +
+          '<div style="font-size: 0.88em">(ลงชื่อ) ..........................................</div>' +
+          '<div style="font-size: 0.82em; color: #64748b">นิติกรผู้จัดทำ (' +
+          (c.officer || "-") +
+          ")</div>" +
+          "</div></div>";
+      }
+
+      function handleStayAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          stayAttachedFiles.push(file);
+        });
+        input.value = "";
+        renderStayAttachmentsList();
+        renderPreview();
+      }
+
+      function removeStayAttachment(index) {
+        stayAttachedFiles.splice(index, 1);
+        renderStayAttachmentsList();
+        renderPreview();
+      }
+
+      function renderStayAttachmentsList() {
+        const listEl = document.getElementById("stayAttachmentsList");
+        if (!listEl) return;
+        if (!stayAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = stayAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return (
+              '<div class="l3-attachment-row">' +
+              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
+              file.name +
+              ' <span style="color: #94a3b8">(' +
+              sizeMb +
+              ' MB)</span></div>' +
+              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeStayAttachment(' +
+              idx +
+              ')"><i class="fa-solid fa-trash-can"></i></button>' +
+              "</div>"
+            );
+          })
+          .join("");
+      }
+
+      function submitForm() {
+        const text = ECMIS103.getEditorText("in_stayObjectionText");
+        if (!text) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุเนื้อหาคำชี้แจงคัดค้าน",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันบันทึกคำชี้แจงคัดค้าน",
+          text: "บันทึกและส่งต่อให้ธุรการกองกฎหมายลงนาม",
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันและส่งต่อ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          Activity103.advance(currentCase.id, STEP_CODE, {
+            l3StayObjectionText: ECMIS103.getEditorHTML("in_stayObjectionText"),
+            l3StayObjectionAttachments: stayAttachedFiles.map((f) => f.name),
+          });
+          doneAndBack("บันทึกคำชี้แจงคัดค้านเรียบร้อยแล้ว");
+        });
+      }
+
+      /* ---- shell chrome (theme / font size / dropdown) ---- */
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

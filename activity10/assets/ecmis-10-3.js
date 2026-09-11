@@ -103,11 +103,53 @@
     },
   ];
 
+  /* ------------------------------------------------------------- PART 1B
+     สาขาคู่ขนาน (ไม่ตัดสายหลัก) — เกิดจากติ๊ก checkbox "มีคำขอทุเลาการบังคับคดี"
+     ที่ 10-3-04 แล้วสร้างเคสลูกแยกต่างหาก (ดู docs/10.3 mockup/implementation-plan-part1b.md)
+     ใช้ statusCode เป็นของตัวเอง (คำนำหน้า L3B_) เพื่อไม่ให้ชนกับสถานะของเคสแม่ */
+  const STAY_STEPS = [
+    {
+      code: "LAW0097",
+      seq: 1,
+      page: "10-3b-01-lawyer-draft-stay-objection.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ธุรการลงนามคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_ADMIN_SIGN",
+      label: "นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
+      stepName: "นิติกร จัดทำคำชี้แจงคัดค้าน",
+    },
+    {
+      code: "LAW0098",
+      seq: 2,
+      page: "10-3b-02-legal-admin-sign-stay-objection.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรส่งคำชี้แจงต่อศาล",
+      statusCode: "L3B_PENDING_LAWYER_DISPATCH",
+      label: "ธุรการ ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
+      stepName: "ธุรการ ลงนาม",
+    },
+    {
+      code: "LAW0099",
+      seq: 3,
+      page: "10-3b-03-lawyer-dispatch-stay-objection.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ส่งคำชี้แจงคัดค้านต่อศาลแล้ว",
+      statusCode: "L3B_CLOSED",
+      label: "นิติกร ส่งคำชี้แจงคัดค้านต่อศาลปกครอง",
+      stepName: "นิติกร ส่งคำชี้แจง",
+    },
+  ];
+
+  const ALL_STEPS = STEPS.concat(STAY_STEPS);
+
   function stepByCode(code) {
-    return STEPS.find(function (s) { return s.code === code; }) || null;
+    return ALL_STEPS.find(function (s) { return s.code === code; }) || null;
   }
   function stepByPage(page) {
-    return STEPS.find(function (s) { return s.page === page; }) || null;
+    return ALL_STEPS.find(function (s) { return s.page === page; }) || null;
   }
 
   /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ
@@ -118,6 +160,16 @@
     if (next) acc[step.statusCode] = next.page;
     return acc;
   }, {});
+
+  /* L3B_PENDING_LAWYER_DRAFT คือสถานะตั้งต้นที่ spawnStayObjectionCase() เขียนไว้
+     ตอนสร้างเคสลูก — ไม่มีขั้นก่อนหน้าใน STAY_STEPS ให้ reduce ไล่ต่อได้ (ต้องระบุ
+     เส้นทางแรกเข้า 10-3b-01 ด้วยมือ) ส่วนที่เหลือไล่ต่อแบบเดียวกับ ROUTES ข้างบน */
+  ROUTES["L3B_PENDING_LAWYER_DRAFT"] = STAY_STEPS[0].page;
+  STAY_STEPS.reduce(function (acc, step, i) {
+    const next = STAY_STEPS[i + 1];
+    if (next) acc[step.statusCode] = next.page;
+    return acc;
+  }, ROUTES);
 
   const TH_MONTHS = [
     "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
@@ -200,6 +252,42 @@
       patch[dateField] = formatThaiDate(new Date());
       Activity10.updateCase(caseId, patch);
       return docNo;
+    },
+
+    /* คดีของกิจกรรมนี้ที่มี l3ParentCaseId คือเคสลูกของสาขาคำขอทุเลาฯ (Part 1b) */
+    isStayObjectionCase: function (kase) {
+      return !!(kase && kase.l3ParentCaseId);
+    },
+
+    /* สร้างเคสลูกแยกต่างหากเมื่อ 10-3-04 ติ๊ก "มีคำขอทุเลาการบังคับคดี" — เดินสถานะ
+       ของตัวเอง (L3B_*) เป็นอิสระจากเคสแม่ ไม่ชนกัน (ดู implementation-plan-part1b.md) */
+    spawnStayObjectionCase: function (parentCase) {
+      if (!parentCase) return null;
+      const childId = parentCase.id.replace(/\/(\d{4})$/, "-B/$1");
+      const existing = Activity10.getCaseById(childId);
+      if (existing) return existing;
+      return Activity10.addCase({
+        id: childId,
+        category: parentCase.category,
+        categoryName: parentCase.categoryName,
+        l3ParentCaseId: parentCase.id,
+        title:
+          "คำขอทุเลาการบังคับคดี — " + (parentCase.courtName || "") +
+          " (เกี่ยวข้องกับ " + (parentCase.blackCaseNo || "") + ")",
+        courtName: parentCase.courtName,
+        blackCaseNo: parentCase.blackCaseNo,
+        redCaseNo: parentCase.redCaseNo,
+        orderedTo: parentCase.orderedTo,
+        plaintiffs: parentCase.plaintiffs,
+        defendants: parentCase.defendants,
+        assignedRole: "case_legal_officer",
+        officer: parentCase.officer,
+        status: "นิติกรจัดทำคำชี้แจงคัดค้าน",
+        statusCode: "L3B_PENDING_LAWYER_DRAFT",
+        statusBadge: "bg-primary text-white",
+        l3Step: null,
+        l3StepSeq: 0,
+      });
     },
   };
 
@@ -536,8 +624,8 @@
     const el = document.getElementById(containerId);
     if (!el) return;
     const roleId = currentRoleId();
-    const mine = STEPS.filter(function (s) {
-      return s.role === roleId && s.page.indexOf("10-3-") === 0;
+    const mine = ALL_STEPS.filter(function (s) {
+      return s.role === roleId && s.page.indexOf("10-3") === 0;
     });
     const items = [
       '<li' + (activePage === "01-work-inbox.html" ? ' class="active"' : "") +
@@ -553,6 +641,142 @@
       }),
     );
     el.innerHTML = items.join("");
+  }
+
+  /* --------------------------------------------------------- RICH EDITOR
+     Tiptap แบบขั้นต่ำ (ตัวหนา/ตัวเอียง/บูลเลต/เลข) + แผงตัวอย่างเอกสารสด —
+     คัดลอกจาก ecmis-10-2.js (loadEditorModules/mountEditor/...) มาไว้ที่นี่
+     เพื่อให้ 10-3 self-contained เหมือนที่ทำกับ STEPS/สัญญาณลายเซ็นข้างต้น
+     ใช้ที่ 10-3b-01-lawyer-draft-stay-objection.html (LAW0097) */
+  let editorModulesPromise = null;
+  function loadEditorModules() {
+    if (!editorModulesPromise) {
+      editorModulesPromise = Promise.all([
+        import("https://esm.sh/@tiptap/core@2.9.1"),
+        import("https://esm.sh/@tiptap/starter-kit@2.9.1"),
+        import("https://esm.sh/@tiptap/extension-placeholder@2.9.1"),
+      ]);
+    }
+    return editorModulesPromise;
+  }
+
+  const richEditors = new Map();
+
+  /* opts: { placeholder, initialHTML, toolbarId, onUpdate(editor) } */
+  function mountEditor(containerId, opts) {
+    const cfg = opts || {};
+    const el = document.getElementById(containerId);
+    if (!el) return Promise.resolve(null);
+    el.classList.add("l3-tiptap");
+
+    return loadEditorModules().then(function (mods) {
+      const Core = mods[0];
+      const StarterKit = mods[1].default || mods[1].StarterKit;
+      const Placeholder = mods[2].default || mods[2].Placeholder;
+
+      const editor = new Core.Editor({
+        element: el,
+        extensions: [
+          StarterKit.configure({
+            heading: false,
+            codeBlock: false,
+            blockquote: false,
+            horizontalRule: false,
+          }),
+          Placeholder.configure({ placeholder: cfg.placeholder || "" }),
+        ],
+        content: cfg.initialHTML || "",
+        onUpdate: function () {
+          if (cfg.onUpdate) cfg.onUpdate(editor);
+        },
+      });
+
+      richEditors.set(containerId, editor);
+      if (cfg.toolbarId) bindEditorToolbar(cfg.toolbarId, editor);
+      return editor;
+    });
+  }
+
+  function bindEditorToolbar(toolbarId, editor) {
+    const bar = document.getElementById(toolbarId);
+    if (!bar) return;
+    const buttons = bar.querySelectorAll("[data-cmd]");
+    const refresh = function () {
+      buttons.forEach(function (btn) {
+        btn.classList.toggle("is-active", editor.isActive(btn.getAttribute("data-cmd")));
+      });
+    };
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const cmd = btn.getAttribute("data-cmd");
+        const chain = editor.chain().focus();
+        if (cmd === "bold") chain.toggleBold().run();
+        else if (cmd === "italic") chain.toggleItalic().run();
+        else if (cmd === "bulletList") chain.toggleBulletList().run();
+        else if (cmd === "orderedList") chain.toggleOrderedList().run();
+        refresh();
+      });
+    });
+    editor.on("selectionUpdate", refresh);
+    editor.on("transaction", refresh);
+    refresh();
+  }
+
+  function getEditorText(containerId) {
+    const editor = richEditors.get(containerId);
+    return editor ? editor.getText().trim() : "";
+  }
+
+  function getEditorHTML(containerId) {
+    const editor = richEditors.get(containerId);
+    return editor ? editor.getHTML() : "";
+  }
+
+  /* ------------------------------------------------------ DOC PREVIEW VIEWER
+     ตัวช่วยของแถบเครื่องมือ "ตัวอย่างเอกสารสด" (.l3-doc-viewer) — ซูมและเลื่อน
+     โฟกัสไปฟอร์ม (ฟอร์มยังเป็นแหล่งข้อมูลจริงหนึ่งเดียว ตัวอย่างเป็น read-only เสมอ) */
+  const docZoomLevels = new Map();
+
+  function zoomDoc(pageId, direction) {
+    const el = document.getElementById(pageId);
+    if (!el) return;
+    const current = docZoomLevels.get(pageId) || 0.5;
+    const next = Math.min(1.5, Math.max(0.3, current + direction * 0.1));
+    docZoomLevels.set(pageId, next);
+    el.style.zoom = String(next);
+    const label = document.getElementById(pageId + "ZoomVal");
+    if (label) label.textContent = Math.round(next * 100) + "%";
+  }
+
+  function initDocZoom(pageId, startZoom) {
+    const el = document.getElementById(pageId);
+    if (!el) return;
+    const z = startZoom || 0.5;
+    docZoomLevels.set(pageId, z);
+    el.style.zoom = String(z);
+    const label = document.getElementById(pageId + "ZoomVal");
+    if (label) label.textContent = Math.round(z * 100) + "%";
+  }
+
+  function setDocViewMode(btnEl) {
+    const bar = btnEl.closest(".l3-doc-viewmode");
+    if (!bar) return;
+    bar.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("is-active", b === btnEl);
+    });
+  }
+
+  function focusFirstField(fieldId) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const focusable =
+      el.matches("input, textarea, select, [contenteditable]")
+        ? el
+        : el.querySelector("input, textarea, select, [contenteditable]");
+    if (focusable && typeof focusable.focus === "function") {
+      window.setTimeout(function () { focusable.focus(); }, 300);
+    }
   }
 
   /* -------------------------------------------------------------- EXPORTS */
@@ -574,5 +798,12 @@
     renderAttachments: renderAttachments,
     renderPartyList: renderPartyList,
     mockOpenFile: mockOpenFile,
+    mountEditor: mountEditor,
+    getEditorText: getEditorText,
+    getEditorHTML: getEditorHTML,
+    zoomDoc: zoomDoc,
+    initDocZoom: initDocZoom,
+    setDocViewMode: setDocViewMode,
+    focusFirstField: focusFirstField,
   };
 })(window);
