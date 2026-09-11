@@ -90,10 +90,36 @@
       page: "10-2-06-subcommittee-resolution.html",
       role: "subcommittee_screen",
       roleTitle: "คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "ฝ่ายเลขานุการฯ จัดทำผลมติ",
+      status: "ธุรการกองกฎหมายให้ความเห็นเบื้องต้น",
       statusCode: "L2_PENDING_RESOLUTION_DOC",
       label: "คณะอนุกรรมการฯ พิจารณาตามระเบียบวาระและมีมติที่ประชุม",
       stepName: "คณะอนุกรรมการฯ มีมติ",
+    },
+    /* สองขั้นตอนใหม่ (ธุรการกองกฎหมาย -> ผอ.กองกฎหมาย) แค่ให้ความเห็นเบื้องต้น
+       + ลงนามหลังคณะอนุกรรมการฯ มีมติแล้ว (10-2-06) ก่อนฝ่ายเลขานุการฯ จะร่าง
+       บันทึกข้อความที่ 10-2-07 ไม่มีการเปลี่ยนแปลงมติ/สถานะคดีใดๆ เป็นแค่
+       comment เบื้องต้นแล้วส่งต่อ */
+    {
+      code: "L2-ADMIN-PRECOMMENT",
+      seq: 12,
+      page: "10-2-33-legal-admin-comment.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผู้อำนวยการกองกฎหมายให้ความเห็นเบื้องต้น",
+      statusCode: "L2_PENDING_DIRLEGAL_PRECOMMENT",
+      label: "ธุรการกองกฎหมาย ให้ความเห็นเบื้องต้นและลงนาม",
+      stepName: "ธุรการ ให้ความเห็นเบื้องต้น",
+    },
+    {
+      code: "L2-DIRLEGAL-PRECOMMENT",
+      seq: 12,
+      page: "10-2-34-legal-director-comment.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ฝ่ายเลขานุการฯ จัดทำบันทึกข้อความและออกเลขส่งภายใน",
+      statusCode: "L2_PENDING_SECRETARIAT_DRAFT",
+      label: "ผู้อำนวยการกองกฎหมาย ให้ความเห็นเบื้องต้นและลงนาม",
+      stepName: "ผอ.กอง ให้ความเห็นเบื้องต้น",
     },
     {
       code: "LAW0045-0046",
@@ -155,7 +181,7 @@
       page: "10-2-32-deputy-sg-opinion-sign.html",
       role: "deputy_sg",
       roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
-      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
+      status: "เลขาธิการ ป.ป.ท. ตอบกลับแล้ว",
       statusCode: "L2_DEPUTY_SG_RESOLVED",
       label: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ให้ความเห็น (๖) และลงนาม (ปฏิบัติราชการแทนเลขาธิการ)",
       stepName: "รองเลขาธิการฯ ให้ความเห็น+ลงนาม",
@@ -174,7 +200,7 @@
       page: "10-2-31-secgen-opinion-sign.html",
       role: "secgen",
       roleTitle: "เลขาธิการ คณะกรรมการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
-      status: "ธุรการกองกฎหมายบันทึกรับทราบผลการพิจารณาและส่งต่อฝ่ายเลขานุการฯ",
+      status: "เลขาธิการ ป.ป.ท. ตอบกลับแล้ว",
       statusCode: "L2_SECGEN_RESOLVED",
       label: "เลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย ให้ความเห็น (๗) และลงนาม",
       stepName: "เลขาธิการฯ ให้ความเห็น+ลงนาม",
@@ -325,10 +351,28 @@
       page: "10-2-25-secretariat-committee-memo-draft.html",
       role: "sub_secretariat",
       roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
+      status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณาอนุมัติ",
       statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
       label: "[อยู่ระหว่างไต่สวน] ฝ่ายเลขานุการฯ จัดทำมติคณะอนุกรรมการกลั่นกรองและบันทึกเสนอเลขาธิการ ลงนามในฐานะผู้เสนอเรื่อง",
       stepName: "[อยู่ระหว่างไต่สวน] เลขานุการฯ จัดทำมติ+บันทึก",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    /* ขั้นตอนใหม่ — ผอ.กลุ่มงานความเห็นแย้งอนุมัติก่อน แล้วจึงส่งต่อ ผอ.กองกฎหมาย
+       (10-2-26) statusCode ขาเข้า "L2_PENDING_COMMITTEE_DIRECTOR_OPINION" คือค่า
+       เดิมที่ 10-2-25 ส่งออกอยู่แล้ว (ไม่เปลี่ยน) — 10-2-26 เปลี่ยนไปรอ
+       "L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED" แทน (hardcode ทั้งคู่ ไม่ใช้
+       auto-derive เพราะ 25/26/29 ใช้ hardcoded lookup ไม่ใช่ prev-lookup ทั่วไป) */
+    {
+      code: "L2-COMMITTEE-GROUP-APPROVE",
+      seq: 29,
+      page: "10-2-27-group-director-committee-approve.html",
+      role: "group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
+      status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
+      statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED",
+      label: "[อยู่ระหว่างไต่สวน] ผอ.กลุ่มงานความเห็นแย้ง พิจารณาอนุมัติ",
+      stepName: "[อยู่ระหว่างไต่สวน] ผอ.กลุ่มงาน อนุมัติ",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
     },
@@ -559,6 +603,79 @@
           "</span></label>",
       )
       .join("");
+  }
+
+  /* แผ่นสรุปมติ (view-only) ของสายรอบเสนอกิจกรรมที่ 7 ครั้งที่ 2 (10-2-25 ถึง
+     30) — คนละชุดฟิลด์กับ ECMIS102.renderResolutionSheet ที่ใช้ในสาย Part 1
+     หลัก (l2ResolutionFacts) เพราะรอบนี้ใช้ l2CommitteeSheetFacts/DataOwner
+     แยกต่างหาก โครงเดียวกับ renderAttachSheet() ที่ 10-2-25 แต่อ่านค่าที่
+     บันทึกแล้วจาก case แทนตัว editor สด */
+  function renderCommitteeAttachSheet(kase) {
+    const c = kase;
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+      '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
+
+    return (
+      '<div class="l2-doc-title">คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</div>' +
+      '<div class="l2-doc-subtitle">ของคณะกรรมการ ป.ป.ท.</div>' +
+      '<hr class="l2-doc-divider" />' +
+      section("๑. เรื่อง", c.title) +
+      section("๒. ข้อเท็จจริง", c.l2CommitteeSheetFacts) +
+      section("๓. การร้องขอข้อมูลข่าวสาร", c.requestedInfo) +
+      row("๔. ในคราวการประชุมครั้งที่", c.l2MeetingNo) +
+      row("เมื่อวันที่", formatThaiDate(c.l2MeetingDate)) +
+      section("คณะอนุกรรมการพิจารณากลั่นกรองฯ เห็นว่า", c.l2CommitteeOpinion) +
+      section("มติที่ประชุม", (c.l2ResolutionTypeName || "") + " " + (c.l2ResolutionDetail || "")) +
+      row("๕. ผู้รับผิดชอบข้อมูลข่าวสาร", c.l2CommitteeSheetDataOwner)
+    );
+  }
+
+  /* บันทึกเสนอเลขาธิการ (view) ของสายรอบเสนอกิจกรรมที่ 7 ครั้งที่ 2 — ใช้ร่วมกัน
+     ทุกหน้าตั้งแต่ 10-2-26 (26/27/29) แทนที่จะก็อปแยกแต่ละหน้า เพราะเคยเกิดบั๊ก
+     มาแล้วที่ 10-2-29 ก็อปมาแล้วขาดข้อ ๑-๓ ไป — showDirLegalOpinion=true เมื่อ
+     ผอ.กองกฎหมายให้ความเห็นและลงนามแล้ว (ใช้ที่ 10-2-29 เท่านั้น เพราะ 26/27 ยัง
+     ไม่ถึงจุดนั้น) ตรงกับ docs/10.2 mockup/Part 1 - new 2/
+     ตัวอย่างบันทึกเสนอเลขาธิการ เพื่อเข้าคณะ-2.pdf */
+  function renderCommitteeMemoDoc(kase, showDirLegalOpinion) {
+    const c = kase;
+    const sigs = signState(c);
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+      '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
+    const sigSlot = (slot, role) => {
+      const s = sigs[slot];
+      const img = s && s.image
+        ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
+        : '<div class="l2-sig-placeholder">รอลงนาม</div>';
+      const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
+      return '<div class="l2-sig-slot">' + img + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">' + role + "</div>" + when + "</div>";
+    };
+
+    let html =
+      '<div class="l2-doc-title">มติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารฯ ครั้งที่ ' + (c.l2MeetingNo || "......") + "</div>" +
+      row("ส่วนราชการ", (c.l2CommitteeMemoDivisionName || "") + (c.l2CommitteeMemoDivisionPhone ? " โทร. " + c.l2CommitteeMemoDivisionPhone : "")) +
+      row("ที่ / วันที่", (c.l2CommitteeMemoDocNo || "รอออกเลข") + " / " + (c.l2CommitteeMemoDocDate || "-")) +
+      row("เรียน", c.l2CommitteeMemoAddressedTo) +
+      section("๑. เรื่องเดิม", c.l2CommitteeMemoBackground) +
+      section("๒. ข้อเท็จจริง", "การประชุมครั้งที่ " + (c.l2MeetingNo || "......") + " เมื่อวัน " + (c.l2CommitteeMemoDocDate || "-") +
+        " ณ ห้องประชุม " + (c.l2CommitteeMemoMeetingVenue || "") + "<br /><br />" + (c.l2CommitteeMemoResolutionText || "")) +
+      section("๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง", c.l2CommitteeMemoLegalBasis) +
+      section("๔. ข้อพิจารณา", c.l2CommitteeMemoConsiderations) +
+      '<div class="l2-doc-signblock">' + sigSlot("committeeMemoProposer", "อนุกรรมการและเลขานุการ") + "</div>";
+
+    if (showDirLegalOpinion) {
+      html +=
+        section("๕. ความเห็นผู้อำนวยการกองกฎหมาย", c.l2CommitteeDirectorOpinionText) +
+        '<div class="l2-doc-signblock">' + sigSlot("committeeDirectorOpinion", "ผู้อำนวยการกองกฎหมาย") + "</div>";
+    }
+    return html;
   }
 
   function labelOf(list, value) {
@@ -845,6 +962,17 @@
         { image: imageDataUrl, signedAt: formatThaiDateTime(new Date()) },
         extra || {},
       );
+      return Activity10.updateCase(caseId, { l2Signatures: sigs });
+    },
+
+    /* ล้างลายเซ็นของ slot ที่ระบุ — ใช้ตอน "ส่งกลับ" คำร้องไปขั้นก่อนหน้า เพื่อ
+       บังคับให้ขั้นนั้นพิจารณาและลงนามใหม่ ไม่ให้ลายเซ็นเดิมค้างอยู่กับเอกสารที่
+       ถูกส่งกลับมาแก้ไขแล้ว */
+    unsign: function (caseId, slot) {
+      const kase = Activity10.getCaseById(caseId);
+      if (!kase) return null;
+      const sigs = Object.assign({}, kase.l2Signatures || {});
+      delete sigs[slot];
       return Activity10.updateCase(caseId, { l2Signatures: sigs });
     },
 
@@ -1287,7 +1415,7 @@
     if (!el) return;
     const files = fileNames || [];
     if (!files.length) {
-      el.innerHTML = '<div class="read-box l2-optional">ไม่มีเอกสารแนบ</div>';
+      el.innerHTML = '<div class="read-box l2-optional">ไม่มีเอกสาร</div>';
       return;
     }
     el.innerHTML = files
@@ -1716,6 +1844,8 @@
     renderMemoDocument: renderMemoDocument,
     renderResolutionSheet: renderResolutionSheet,
     choiceGridHtml: choiceGridHtml,
+    renderCommitteeAttachSheet: renderCommitteeAttachSheet,
+    renderCommitteeMemoDoc: renderCommitteeMemoDoc,
     mockOpenFile: mockOpenFile,
     zoomDoc: zoomDoc,
     initDocZoom: initDocZoom,

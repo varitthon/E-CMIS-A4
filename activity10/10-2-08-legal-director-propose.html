@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ผอ.กองกฎหมาย ให้ความเห็น (๕) และลงนาม | E-CMIS กิจกรรมที่ 10.2
+      ผอ.กองกฎหมาย ให้ความเห็นและลงนาม | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -337,7 +337,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ให้ความเห็น (๕) และลงนาม</span
+              >ให้ความเห็นและลงนาม</span
             >
           </div>
         </div>
@@ -432,45 +432,7 @@
               เอกสารฉบับนี้จัดทำและลงนามในฐานะผู้เสนอเรื่องโดยฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารแล้ว
               และแสดงแบบ<strong>อ่านอย่างเดียว</strong>
               บทบาทนี้ระบุความเห็นและลงนามได้เฉพาะช่อง
-              <strong>๕. ความเห็นผู้อำนวยการกองกฎหมาย</strong> เท่านั้น
-            </div>
-          </div>
-
-          <div class="form-card" style="border: 2px solid #1e3a8a">
-            <div
-              class="form-card-header"
-              style="background: rgba(30, 58, 138, 0.05)"
-            >
-              <span
-                ><i class="fa-solid fa-comment-dots text-primary me-2"></i>๕.
-                ความเห็นผู้อำนวยการกองกฎหมาย</span
-              >
-              <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย</span
-              >
-            </div>
-            <div class="form-card-body">
-              <div class="form-group">
-                <label>
-                  <span
-                    >ความเห็น
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicDirOpinion"
-                      onclick="toggleSpeechToText('in_dirLegalOpinion', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i></button
-                  ></span>
-                </label>
-                <textarea
-                  id="in_dirLegalOpinion"
-                  class="form-control"
-                  rows="4"
-                  placeholder="ระบุความเห็นของผู้อำนวยการกองกฎหมาย..."
-                ></textarea>
-              </div>
+              <strong>ความเห็นผู้อำนวยการกองกฎหมาย</strong> เท่านั้น
             </div>
           </div>
 
@@ -532,6 +494,44 @@
             </div>
             <div class="form-card-body">
               <div id="signChain"></div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-comment-dots text-primary me-2"></i
+                >ความเห็นผู้อำนวยการกองกฎหมาย</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>
+                  <span
+                    >ความเห็น
+                    <button
+                      type="button"
+                      class="btn-mic"
+                      id="btnMicDirOpinion"
+                      onclick="toggleSpeechToText('in_dirLegalOpinion', this)"
+                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
+                    >
+                      <i class="fa-solid fa-microphone"></i></button
+                  ></span>
+                </label>
+                <textarea
+                  id="in_dirLegalOpinion"
+                  class="form-control"
+                  rows="4"
+                  placeholder="ระบุความเห็นของผู้อำนวยการกองกฎหมาย..."
+                ></textarea>
+              </div>
             </div>
           </div>
 
@@ -709,6 +709,7 @@
       }
 
       function populate() {
+        populateCommon();
         const opinionEl = document.getElementById("in_dirLegalOpinion");
         if (opinionEl) {
           opinionEl.value = currentCase.l2DirLegalOpinion || "";
@@ -726,7 +727,7 @@
           Swal.fire({
             icon: "info",
             title: "ลงนามแล้ว",
-            text: "ให้ความเห็น (๕) และลงนามเรียบร้อยแล้ว",
+            text: "ให้ความเห็นและลงนามเรียบร้อยแล้ว",
             confirmButtonColor: "#1e3a8a",
           });
           return;
@@ -734,7 +735,7 @@
 
         ECMIS102.openSignatureModal(
           {
-            title: "ลงนามให้ความเห็น (๕) (ผู้อำนวยการกองกฎหมาย)",
+            title: "ลงนามให้ความเห็น (ผู้อำนวยการกองกฎหมาย)",
             signer: ECMIS102.signerLabel("dir_legal"),
             certId: "PACC-DIRLEGAL-2569-102",
           },

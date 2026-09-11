@@ -144,8 +144,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังฝ่ายเลขานุการฯ จัดทำและลงนามเอกสารที่หน้า
-            <a href="10-2-25-secretariat-committee-memo-draft.html">จัดทำมติคณะอนุกรรมการกลั่นกรองและบันทึกเสนอเลขาธิการ</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลังผู้อำนวยการกลุ่มงานความเห็นแย้งอนุมัติที่หน้า
+            <a href="10-2-27-group-director-committee-approve.html">ผอ.กลุ่มงานความเห็นแย้ง พิจารณาอนุมัติ</a>
           </div>
         </div>
 
@@ -159,12 +159,29 @@
             </div>
           </div>
 
+          <div id="sendBackNotice" class="l2-note l2-note-warn d-none">
+            <i class="fa-solid fa-rotate-left"></i>
+            <div>
+              <strong>คำร้องนี้ถูกส่งกลับจาก ผอ.กลุ่มงานความเห็นแย้ง</strong><br />
+              เหตุผล: <span id="sendBackReasonText"></span>
+            </div>
+          </div>
+
           <div class="form-card">
             <div class="form-card-header">
               <span><i class="fa-solid fa-file-lines text-primary me-2"></i>มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิการ</span>
             </div>
             <div class="form-card-body">
               <div class="l2-doc" id="memoDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-circle-check text-success me-2"></i>แผ่นสรุปมติคณะอนุกรรมการพิจารณากลั่นกรองฯ</span>
+            </div>
+            <div class="form-card-body">
+              <div class="l2-doc" id="committeeSheet"></div>
             </div>
           </div>
 
@@ -181,9 +198,14 @@
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
-              <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
-              </button>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" onclick="sendBack()">
+                  <i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">
+                  <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -210,7 +232,7 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        currentCase = Activity102.getCase(id, "L2_PENDING_COMMITTEE_DIRECTOR_OPINION");
+        currentCase = Activity102.getCase(id, "L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED");
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
 
         if (!currentCase) {
@@ -224,37 +246,53 @@
       }
 
       function renderMemoDoc() {
-        const c = currentCase;
-        const sigs = Activity102.signState(c);
-        const row = (label, value) =>
-          '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
-          '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
-        const section = (label, value) =>
-          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
-          '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
-        const s = sigs.committeeMemoProposer;
-        const img = s && s.image
-          ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
-          : '<div class="l2-sig-placeholder">รอลงนาม</div>';
-        const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
-
         document.getElementById("memoDoc").innerHTML =
-          '<div class="l2-doc-title">มติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารฯ ครั้งที่ ' + (c.l2MeetingNo || "......") + "</div>" +
-          row("ที่ / วันที่", (c.l2CommitteeMemoDocNo || "รอออกเลข") + " / " + (c.l2CommitteeMemoDocDate || "-")) +
-          row("เรียน", c.l2CommitteeMemoAddressedTo) +
-          section("๑. เรื่องเดิม", c.l2CommitteeMemoBackground) +
-          section("๒. ข้อเท็จจริง", "การประชุมครั้งที่ " + (c.l2MeetingNo || "......") + " เมื่อวัน " + (c.l2CommitteeMemoDocDate || "-") +
-            " ณ ห้องประชุม " + (c.l2CommitteeMemoMeetingVenue || "") + "<br /><br />" + (c.l2CommitteeMemoResolutionText || "")) +
-          section("๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง", c.l2CommitteeMemoLegalBasis) +
-          section("๔. ข้อพิจารณา", c.l2CommitteeMemoConsiderations) +
-          '<div class="l2-doc-signblock">' +
-          '<div class="l2-sig-slot">' + img + '<div class="l2-sig-name">(ชื่อ-สกุล)</div><div class="l2-sig-role">อนุกรรมการและเลขานุการ</div>' + when + "</div>" +
-          "</div>";
+          ECMIS102.renderCommitteeMemoDoc(currentCase, false);
       }
 
       function populate() {
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         renderMemoDoc();
+        document.getElementById("committeeSheet").innerHTML =
+          ECMIS102.renderCommitteeAttachSheet(currentCase);
+        if (currentCase.l2CommitteeGroupApproveSendBackReason) {
+          document.getElementById("sendBackNotice").classList.remove("d-none");
+          document.getElementById("sendBackReasonText").textContent =
+            currentCase.l2CommitteeGroupApproveSendBackReason;
+        }
+      }
+
+      function sendBack() {
+        Swal.fire({
+          icon: "warning",
+          title: "ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง",
+          input: "textarea",
+          inputLabel: "เหตุผลที่ส่งกลับ",
+          inputPlaceholder: "ระบุเหตุผล...",
+          showCancelButton: true,
+          confirmButtonText: "ส่งกลับ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+          inputValidator: (value) => (!value ? "กรุณาระบุเหตุผลที่ส่งกลับ" : undefined),
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          Activity102.unsign(currentCase.id, "committeeGroupApprove");
+          Activity102.advance(currentCase.id, STEP_CODE, {
+            statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
+            status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
+            assignedRole: "group_director",
+            officer: ECMIS102.signerLabel("group_director"),
+            l2CommitteeDirectorSendBackReason: res.value.trim(),
+          });
+          Swal.fire({
+            icon: "success",
+            title: "ส่งกลับเรียบร้อย",
+            text: "ส่งกลับให้ ผอ.กลุ่มงานความเห็นแย้ง พิจารณาใหม่แล้ว",
+            timer: 1900,
+            showConfirmButton: false,
+          }).then(ECMIS102.goInbox);
+        });
       }
 
       function submitForm() {
