@@ -205,6 +205,12 @@
       const pool = all.filter(Activity103.isCourtCase);
       const exact = caseId && pool.find(function (c) { return c.id === caseId; });
       if (exact) return exact;
+      const byLawReceiveNo =
+        caseId &&
+        pool.find(function (c) {
+          return c.lawReceiveNo && String(c.lawReceiveNo) === String(caseId);
+        });
+      if (byLawReceiveNo) return byLawReceiveNo;
       return (
         pool.find(function (c) { return c.statusCode === fallbackStatusCode; }) ||
         pool[0] ||

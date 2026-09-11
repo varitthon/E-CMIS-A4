@@ -377,65 +377,266 @@
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
                 >รายละเอียดคดีศาลปกครอง</span
               >
-              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
-                ><i class="fa-solid fa-hashtag me-1"></i
-                ><span id="f_caseNo">-</span></span
-              >
+              <div style="display: flex; align-items: center; gap: 10px">
+                <button
+                  type="button"
+                  id="btnEditCaseDetail"
+                  class="btn btn-secondary d-none"
+                  style="padding: 4px 12px; font-size: 0.82em"
+                  onclick="enterCaseDetailEdit()"
+                >
+                  <i class="fa-solid fa-pen-to-square me-1"></i>แก้ไขข้อมูล
+                </button>
+                <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                  ><i class="fa-solid fa-hashtag me-1"></i
+                  ><span id="f_caseNo">-</span></span
+                >
+              </div>
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
+              <div
+                id="stayObjectionNotice"
+                class="d-none"
+                style="
+                  display: flex;
+                  gap: 10px;
+                  padding: 12px 14px;
+                  border: 1px solid #fcd34d;
+                  background: rgba(252, 211, 77, 0.14);
+                  border-radius: 8px;
+                  margin-bottom: 16px;
+                  font-size: 0.88em;
+                "
+              >
+                <i
+                  class="fa-solid fa-gavel"
+                  style="color: #b45309; margin-top: 2px"
+                ></i>
+                <div>
+                  <b>มีหมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา</b><br />
+                  แนบมาพร้อมการรับเรื่อง (เลขรับกองกฎหมาย
+                  <span class="font-monospace" id="f_stayLawReceiveNo">-</span>)
+                  — แก้ไขรายละเอียดคดีศาลปกครองในหน้านี้ได้
+                </div>
+              </div>
+
+              <div id="caseDetailRead">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>เลขรับกองกฎหมาย</label>
+                    <div class="read-box font-monospace" id="f_lawReceiveNo">
+                      -
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อหมาย</label>
+                    <div class="read-box" id="f_summonsName">-</div>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>ศาล</label>
+                    <div class="read-box" id="f_courtName">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>สั่งถึง</label>
+                    <div class="read-box" id="f_orderedTo">-</div>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>หมายเลขคดีดำ</label>
+                    <div class="read-box font-monospace" id="f_blackCaseNo">
+                      -
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเลขคดีแดง</label>
+                    <div class="read-box font-monospace" id="f_redCaseNo">
+                      -
+                    </div>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>ศาลให้ทำภายใน .... วัน (เวลาที่ศาลสั่ง)</label>
+                    <div class="read-box font-monospace" id="f_courtDeadlineDays">
+                      -
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>วันที่สำนักงาน ป.ป.ท. รับเรื่อง</label>
+                    <div class="read-box" id="f_courtReceivedDate">-</div>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>ผู้ฟ้อง</label>
+                    <div id="f_plaintiffs"></div>
+                  </div>
+                  <div class="form-group">
+                    <label>ผู้ถูกฟ้อง</label>
+                    <div id="f_defendants"></div>
+                  </div>
+                </div>
                 <div class="form-group">
-                  <label>เลขรับกองกฎหมาย</label>
-                  <div class="read-box font-monospace" id="f_lawReceiveNo">
+                  <label>เลขสารบัญ</label>
+                  <div class="read-box font-monospace" id="f_courtSarabanNo">
                     -
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>ศาล</label>
-                  <div class="read-box" id="f_courtName">-</div>
-                </div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>หมายเลขคดีดำ</label>
-                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                  <label>หมายเหตุ</label>
+                  <div class="read-box read-box-textarea" id="f_courtRemark">
                     -
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>หมายเลขคดีแดง</label>
-                  <div class="read-box font-monospace" id="f_redCaseNo">-</div>
+                  <label>เอกสารแนบ</label>
+                  <div id="f_attachments"></div>
+                </div>
+                <div class="form-group d-none" id="grp_stayObjectionFiles">
+                  <label>หมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา</label>
+                  <div id="f_stayObjectionAttachments"></div>
                 </div>
               </div>
-              <div class="form-group">
-                <label>สั่งถึง</label>
-                <div class="read-box" id="f_orderedTo">-</div>
-              </div>
-              <div class="form-grid-2">
+
+              <div id="caseDetailEdit" class="d-none">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>เลขรับกองกฎหมาย</label>
+                    <div class="read-box font-monospace" id="e_lawReceiveNo">
+                      -
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ชื่อหมาย <span style="color: #dc2626">*</span></label>
+                    <select id="e_summonsName" class="form-control"></select>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>ศาล <span style="color: #dc2626">*</span></label>
+                    <select id="e_courtName" class="form-control"></select>
+                  </div>
+                  <div class="form-group">
+                    <label>สั่งถึง <span style="color: #dc2626">*</span></label>
+                    <select id="e_orderedTo" class="form-control"></select>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label
+                      >หมายเลขคดีดำ <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="e_blackCaseNo"
+                      class="form-control font-monospace"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>หมายเลขคดีแดง</label>
+                    <input
+                      type="text"
+                      id="e_redCaseNo"
+                      class="form-control font-monospace"
+                    />
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label
+                      >ศาลให้ทำภายใน .... วัน (เวลาที่ศาลสั่ง)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="number"
+                      id="e_courtDeadlineDays"
+                      class="form-control font-monospace"
+                      min="1"
+                      step="1"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      >วันที่สำนักงาน ป.ป.ท. รับเรื่อง
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="date"
+                      id="e_courtReceivedDate"
+                      class="form-control"
+                      lang="th-TH-u-ca-buddhist"
+                    />
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label
+                      >ผู้ฟ้อง (บรรทัดละ 1 ราย)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <textarea
+                      id="e_plaintiffs"
+                      class="form-control"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label
+                      >ผู้ถูกฟ้อง (บรรทัดละ 1 ราย)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <textarea
+                      id="e_defendants"
+                      class="form-control"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
-                  <div id="f_plaintiffs"></div>
+                  <label
+                    >เลขสารบัญ <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="e_courtSarabanNo"
+                    class="form-control font-monospace"
+                  />
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
-                  <div id="f_defendants"></div>
+                  <label>หมายเหตุ</label>
+                  <textarea
+                    id="e_courtRemark"
+                    class="form-control"
+                    rows="2"
+                    maxlength="2000"
+                  ></textarea>
                 </div>
-              </div>
-              <div class="form-group">
-                <label>เลขสารบัญ</label>
-                <div class="read-box font-monospace" id="f_courtSarabanNo">
-                  -
+                <div
+                  style="
+                    display: flex;
+                    gap: 10px;
+                    justify-content: flex-end;
+                    margin-top: 8px;
+                  "
+                >
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="cancelCaseDetailEdit()"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="saveCaseDetailEdit()"
+                  >
+                    <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกการแก้ไข
+                  </button>
                 </div>
-              </div>
-              <div class="form-group">
-                <label>หมายเหตุ</label>
-                <div class="read-box read-box-textarea" id="f_courtRemark">
-                  -
-                </div>
-              </div>
-              <div class="form-group">
-                <label>เอกสารแนบ</label>
-                <div id="f_attachments"></div>
               </div>
             </div>
           </div>
@@ -543,20 +744,192 @@
         populate();
       }
 
+      const COURT_OPTIONS = [
+        "ศาลปกครองสูงสุด",
+        "ศาลปกครองกลาง",
+        "ศาลปกครองเชียงใหม่",
+        "ศาลปกครองสงขลา",
+        "ศาลปกครองนครราชสีมา",
+        "ศาลปกครองขอนแก่น",
+        "ศาลปกครองพิษณุโลก",
+        "ศาลปกครองระยอง",
+        "ศาลปกครองนครศรีธรรมราช",
+        "ศาลปกครองอุดรธานี",
+        "ศาลปกครองอุบลราชธานี",
+        "ศาลปกครองเพชรบุรี",
+        "ศาลปกครองนครสวรรค์",
+        "ศาลปกครองสุพรรณบุรี",
+        "ศาลปกครองภูเก็ต",
+        "ศาลปกครองยะลา",
+        "อื่นๆ",
+      ];
+      const SUMMONS_OPTIONS = [
+        "คำสั่งเรียกให้ทำคำให้การ",
+        "คำสั่งเรียกให้ทำคำชี้แจง",
+      ];
+      const ORDERED_TO_OPTIONS = [
+        "คณะกรรมการ ป.ป.ท.",
+        "เลขาธิการคณะกรรมการ ป.ป.ท.",
+        "สำนักงาน ป.ป.ท.",
+      ];
+
+      function fillSelect(id, options, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const list = options.slice();
+        if (value && list.indexOf(value) === -1) list.push(value);
+        el.innerHTML = list
+          .map(function (v) {
+            const sel = v === value ? " selected" : "";
+            return '<option value="' + v + '"' + sel + ">" + v + "</option>";
+          })
+          .join("");
+      }
+
+      function canEditCaseDetail() {
+        return !!(currentCase && currentCase.l3HasStayObjectionSummons);
+      }
+
       /* ค่าอ้างอิงร่วมที่ทุกหน้าแสดงเหมือนกัน */
       function populateCommon() {
         const c = currentCase;
         ECMIS103.setText("f_caseNo", c.id);
         ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
+        ECMIS103.setText("f_summonsName", c.summonsName);
         ECMIS103.setText("f_courtName", c.courtName);
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.setText("f_redCaseNo", c.redCaseNo);
         ECMIS103.setText("f_orderedTo", c.orderedTo);
+        ECMIS103.setText("f_courtDeadlineDays", c.courtDeadlineDays);
+        ECMIS103.setText("f_courtReceivedDate", c.courtReceivedDate);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         ECMIS103.setText("f_courtSarabanNo", c.courtSarabanNo);
         ECMIS103.setText("f_courtRemark", c.courtRemark);
         ECMIS103.renderAttachments("f_attachments", c.attachmentFileNames);
+        renderStayObjectionState();
+      }
+
+      function renderStayObjectionState() {
+        const c = currentCase;
+        const notice = document.getElementById("stayObjectionNotice");
+        const grp = document.getElementById("grp_stayObjectionFiles");
+        const btn = document.getElementById("btnEditCaseDetail");
+        const on = canEditCaseDetail();
+        notice.classList.toggle("d-none", !on);
+        grp.classList.toggle("d-none", !on);
+        btn.classList.toggle("d-none", !on);
+        if (!on) return;
+        ECMIS103.setText("f_stayLawReceiveNo", c.lawReceiveNo);
+        ECMIS103.renderAttachments(
+          "f_stayObjectionAttachments",
+          c.stayObjectionFileNames,
+        );
+      }
+
+      function enterCaseDetailEdit() {
+        const c = currentCase;
+        ECMIS103.setText("e_lawReceiveNo", c.lawReceiveNo);
+        fillSelect("e_summonsName", SUMMONS_OPTIONS, c.summonsName);
+        fillSelect("e_courtName", COURT_OPTIONS, c.courtName);
+        fillSelect("e_orderedTo", ORDERED_TO_OPTIONS, c.orderedTo);
+        document.getElementById("e_blackCaseNo").value = c.blackCaseNo || "";
+        document.getElementById("e_redCaseNo").value = c.redCaseNo || "";
+        document.getElementById("e_courtDeadlineDays").value =
+          c.courtDeadlineDays || "";
+        document.getElementById("e_courtReceivedDate").value =
+          c.courtReceivedDate || "";
+        document.getElementById("e_plaintiffs").value = (
+          c.plaintiffs || []
+        ).join("\n");
+        document.getElementById("e_defendants").value = (
+          c.defendants || []
+        ).join("\n");
+        document.getElementById("e_courtSarabanNo").value =
+          c.courtSarabanNo || "";
+        document.getElementById("e_courtRemark").value = c.courtRemark || "";
+        document.getElementById("caseDetailRead").classList.add("d-none");
+        document.getElementById("caseDetailEdit").classList.remove("d-none");
+        document.getElementById("btnEditCaseDetail").classList.add("d-none");
+      }
+
+      function cancelCaseDetailEdit() {
+        document.getElementById("caseDetailEdit").classList.add("d-none");
+        document.getElementById("caseDetailRead").classList.remove("d-none");
+        document.getElementById("btnEditCaseDetail").classList.remove("d-none");
+      }
+
+      function saveCaseDetailEdit() {
+        const v = function (id) {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : "";
+        };
+        const lines = function (id) {
+          return v(id)
+            .split("\n")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+        };
+
+        const plaintiffs = lines("e_plaintiffs");
+        const defendants = lines("e_defendants");
+        const checks = [
+          [v("e_summonsName"), "กรุณาเลือกชื่อหมาย"],
+          [v("e_courtName"), "กรุณาเลือกศาล"],
+          [v("e_orderedTo"), "กรุณาเลือกสั่งถึง"],
+          [v("e_blackCaseNo"), "กรุณาระบุหมายเลขคดีดำ"],
+          [v("e_courtDeadlineDays"), "กรุณาระบุจำนวนวันที่ศาลให้ทำ"],
+          [v("e_courtReceivedDate"), "กรุณาระบุวันที่สำนักงาน ป.ป.ท. รับเรื่อง"],
+          [v("e_courtSarabanNo"), "กรุณาระบุเลขสารบัญ"],
+          [plaintiffs.length ? "1" : "", "กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 ราย"],
+          [defendants.length ? "1" : "", "กรุณาระบุผู้ถูกฟ้องอย่างน้อย 1 ราย"],
+        ];
+        for (const [value, msg] of checks) {
+          if (!value) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: msg,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+        }
+
+        Activity10.updateCase(currentCase.id, {
+          summonsName: v("e_summonsName"),
+          courtName: v("e_courtName"),
+          orderedTo: v("e_orderedTo"),
+          blackCaseNo: v("e_blackCaseNo"),
+          redCaseNo: v("e_redCaseNo"),
+          courtDeadlineDays: v("e_courtDeadlineDays"),
+          courtReceivedDate: v("e_courtReceivedDate"),
+          plaintiffs: plaintiffs,
+          defendants: defendants,
+          courtSarabanNo: v("e_courtSarabanNo"),
+          courtRemark: v("e_courtRemark"),
+          accuser: plaintiffs.join(", ") || "-",
+          accused: defendants.join(", ") || "-",
+          title:
+            (plaintiffs.join(", ") || "-") +
+            " (ผู้ฟ้องคดี) ยื่นฟ้อง " +
+            (defendants.join(", ") || "-") +
+            " (ผู้ถูกฟ้องคดี)",
+          l3DetailEditedAt: new Date().toISOString(),
+        });
+
+        currentCase = Activity103.getCase(currentCase.id, null);
+        populateCommon();
+        cancelCaseDetailEdit();
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกการแก้ไขแล้ว",
+          text: "อัปเดตรายละเอียดคดีศาลปกครองเรียบร้อย",
+          timer: 1600,
+          showConfirmButton: false,
+        });
       }
 
       function todayISO() {
