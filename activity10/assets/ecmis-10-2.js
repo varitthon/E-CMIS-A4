@@ -635,10 +635,58 @@
       page: "10-2-appeal-10-legal-admin-board-submit.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "สิ้นสุด — ยื่นเรื่องเข้ากิจกรรมที่ 7 แล้ว",
+      status: "รอมติบอร์ดตอบกลับ",
       statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD",
       label: "[อุทธรณ์] ธุรการกองกฎหมาย ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7",
       stepName: "[อุทธรณ์] ธุรการ ออกเลขส่ง+ยื่นบอร์ด",
+      includeIf: ["DENY"],
+    },
+    {
+      /* sheet 7 "แจ้งผลอุทธรณ์" (LAW0080-083) เริ่มที่นี่ — precondition ของหน้านี้
+         คือ L2_APPEAL_BOARD_RESOLVED (สถานะคั่นกลาง "มติบอร์ดตอบกลับแล้ว" เพิ่มเข้า
+         APPEAL_STATUS_CODES ด้วยมือด้านล่าง ไม่ใช่ L2_APPEAL_SUBMITTED_TO_BOARD ของ
+         step ก่อนหน้าโดยตรง) ดู docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1 —
+         ต้องเติม/ลบ ROUTES ด้วยมือคู่กัน ดูคอมเมนต์ตรง ROUTES ด้านล่าง */
+      code: "L2-APPEAL-BOARD-RESOLUTION",
+      seq: 50,
+      page: "10-2-appeal-11-legal-admin-board-resolution.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ",
+      statusCode: "L2_PENDING_APPEAL_NOTICE_DRAFT",
+      label: "[อุทธรณ์] ธุรการกองกฎหมาย บันทึกมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์",
+      stepName: "[อุทธรณ์] ธุรการ บันทึกมติบอร์ด",
+      includeIf: ["DENY"],
+    },
+    {
+      /* code ตั้งชื่อ "L2-APPEAL-NOTICE-DRAFT-2" (ไม่ใช่ L2-NOTICE-DRAFT) กันชนกับ
+         step ของ Flow 2 (สาย DISCLOSE/PARTIAL หลัก) ที่ใช้ statusCode คนละชุดกัน
+         อยู่แล้วแต่ชื่อ code คล้ายกัน — ดู docs/10-2-flow4-appeal-plan.md หัวข้อ 8.5 */
+      code: "L2-APPEAL-NOTICE-DRAFT-2",
+      seq: 51,
+      page: "10-2-appeal-12-tracking-secretary-notice-draft.html",
+      role: "case_tracking_secretary",
+      roleTitle: "เลขานุการกลุ่มงานบริหารติดตามคดี",
+      status: "นิติกรเจ้าของสำนวนแจ้งผลผู้อุทธรณ์",
+      statusCode: "L2_PENDING_APPEAL_CASE_OWNER_NOTIFY",
+      label: "[อุทธรณ์] เลขานุการกลุ่มงานบริหารติดตามคดี จัดทำหนังสือแจ้งผลมติ",
+      stepName: "[อุทธรณ์] เลขาฯติดตามคดี จัดทำหนังสือแจ้งผล",
+      includeIf: ["DENY"],
+    },
+    {
+      /* LAW0082 + LAW0083 พับรวม — ผู้อุทธรณ์ (LAW0083) ไม่ใช่ผู้ใช้งานระบบ จึงพับ
+         เป็นข้อความ read-only แสดงกำหนดรับทราบผล 5 วัน ในหน้านี้แทน ไม่มีหน้าแยก
+         ดู docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.3 — terminal จริง จบทั้ง
+         sheet 6+7 ของ Flow 4 */
+      code: "L2-APPEAL-CASE-OWNER-NOTIFY",
+      seq: 52,
+      page: "10-2-appeal-13-case-owner-notify-appellant.html",
+      role: "original_officer",
+      roleTitle: "นิติกร/นักสืบเจ้าของเรื่อง (เจ้าของสำนวนเดิม)",
+      status: "สิ้นสุด — แจ้งผลผู้อุทธรณ์แล้ว",
+      statusCode: "L2_APPEAL_CASE_CLOSED_NOTIFIED",
+      label: "[อุทธรณ์] นิติกรเจ้าของสำนวน แจ้งผลคำวินิจฉัยให้ผู้อุทธรณ์ทราบ",
+      stepName: "[อุทธรณ์] นิติกร แจ้งผลผู้อุทธรณ์",
       includeIf: ["DENY"],
     },
   ];
@@ -719,12 +767,43 @@
      ที่ปิดสายเดิม ตามค่าเริ่มต้นที่เสนอไว้ในแผน) ต้องเติม route เข้าเองตรงนี้ */
   ROUTES["L2_PENDING_APPEAL_INTAKE"] = "10-2-appeal-01-legal-admin-intake.html";
 
+  /* L2-APPEAL-BOARD-RESOLUTION (10-2-appeal-11) ต่อท้าย L2-APPEAL-BOARD-DISPATCH
+     (10-2-appeal-10) ในอาเรย์พอดี — auto-reduce ด้านบนจึงสร้าง route ผิดโดยบังเอิญ:
+     ROUTES["L2_APPEAL_SUBMITTED_TO_BOARD"] ไปชี้ที่ appeal-11 ทั้งที่สถานะนี้ต้องเป็น
+     black-box รอผลจริง (ไม่มี route) จนกว่าจะมีสถานะคั่นกลาง L2_APPEAL_BOARD_RESOLVED
+     ("มติบอร์ดตอบกลับแล้ว") เกิดขึ้นก่อน (ดู APPEAL_STATUS_CODES.push ด้านบน และ
+     docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1) จึงต้องลบ route ที่ผิดทิ้ง แล้วเติม
+     route ที่ถูกต้องเข้าเอง */
+  delete ROUTES["L2_APPEAL_SUBMITTED_TO_BOARD"];
+  ROUTES["L2_APPEAL_BOARD_RESOLVED"] = "10-2-appeal-11-legal-admin-board-resolution.html";
+
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
   }
 
   function stepByPage(page) {
     return STEPS.find(function (s) { return s.page === page; }) || null;
+  }
+
+  /* คำร้องที่อยู่ในสาย Flow 4 (อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล) — เดินจาก STEPS
+     โดยตรง (code ขึ้นต้นด้วย "L2-APPEAL") ไม่ hardcode รายการ statusCode เอง
+     เพื่อให้ STEPS ยังเป็น single source of truth เดียว — เพิ่ม step ใหม่ของ
+     Flow 4 ใน STEPS (เช่น appeal-11 เป็นต้นไป) แล้วฟังก์ชันนี้จะครอบคลุมเองอัตโนมัติ */
+  const APPEAL_STATUS_CODES = STEPS.filter(function (s) {
+    return s.code.indexOf("L2-APPEAL") === 0;
+  }).map(function (s) { return s.statusCode; });
+
+  /* สถานะคั่นกลาง "มติบอร์ดตอบกลับแล้ว" — ไม่ได้มาจาก step ไหนใน STEPS โดยตรง
+     (เป็นเหตุการณ์ภายนอกระบบเหมือน L2_BOARD_RESOLVED_ROUND2 ของสาย Flow 2 Part 1
+     ด้านบน) เกิดขึ้นหลัง L2_APPEAL_SUBMITTED_TO_BOARD (appeal-10 ส่งเรื่องเข้า
+     กิจกรรมที่ 7 แล้ว รอผล) — ยังไม่มีหน้า/ROUTES รองรับ (รอ appeal-11 ตามแผน
+     docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1) เติมเข้า APPEAL_STATUS_CODES ด้วย
+     มือให้ isAppealCase()/แบดจ์ "อุทธรณ์" ยังครอบคลุมคำร้องที่อยู่สถานะนี้ */
+  APPEAL_STATUS_CODES.push("L2_APPEAL_BOARD_RESOLVED");
+
+  function isAppealCase(kase) {
+    if (!kase) return false;
+    return APPEAL_STATUS_CODES.indexOf(kase.statusCode) > -1;
   }
 
   /* ------------------------------------------------------- RESOLUTION TYPES
@@ -739,6 +818,16 @@
   const CASE_STATES = [
     { value: "CLOSED", label: "คดีเสร็จสิ้นแล้ว", color: "#1e3a8a" },
     { value: "INVESTIGATING", label: "อยู่ระหว่างไต่สวน", color: "#1e3a8a" },
+  ];
+
+  /* มติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) ต่อคำอุทธรณ์ — sheet 7 "แจ้งผลอุทธรณ์"
+     (LAW0080) ดู docs/10-2-flow4-appeal-plan.md หัวข้อ 8.2 — แยกจาก
+     RESOLUTION_TYPES ด้านบนเพราะเป็นคนละบริบท (RESOLUTION_TYPES มี "อื่นๆ" ซึ่ง
+     ไม่เข้ากับมติบอร์ดที่ทางเข้าตามผังเดิมมีแค่ 3 ทางตายตัวเท่านั้น) */
+  const BOARD_APPEAL_RESOLUTION_TYPES = [
+    { value: "DISCLOSE", label: "ให้เปิดเผยข้อมูลทั้งหมด", color: "#16a34a" },
+    { value: "PARTIAL", label: "ให้เปิดเผยข้อมูลบางส่วน", color: "#d97706" },
+    { value: "DENY", label: "ไม่เปิดเผยข้อมูล", color: "#dc2626" },
   ];
 
   /* กริดปุ่มเลือกมติ/สถานะคดี — ใช้ร่วมกันทุกหน้าที่ต้องเลือกค่าเหล่านี้
@@ -1134,6 +1223,8 @@
     ROUTES: ROUTES,
     RESOLUTION_TYPES: RESOLUTION_TYPES,
     CASE_STATES: CASE_STATES,
+    BOARD_APPEAL_RESOLUTION_TYPES: BOARD_APPEAL_RESOLUTION_TYPES,
+    isAppealCase: isAppealCase,
     SIGN_CHAIN: SIGN_CHAIN,
     stepByCode: stepByCode,
     stepByPage: stepByPage,
@@ -1957,7 +2048,7 @@
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       return (
-        '<div class="step-item ' + cls + '" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-item ' + cls + '" title="' + step.label + '">' +
         '<div class="step-circle">' + inner + "</div>" +
         '<div class="step-label">' + step.stepName + "</div>" +
         "</div>"
@@ -1984,7 +2075,7 @@
 
     el1.innerHTML = PART1_STEPS.map(function (step) {
       return (
-        '<div class="step-item completed" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-item completed" title="' + step.label + '">' +
         '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
         '<div class="step-label">' + step.stepName + "</div>" +
         "</div>"
@@ -2016,7 +2107,7 @@
          ไม่แตะ step.stepName ที่ renderStepper (แถบเดี่ยวเดิม) ยังใช้ค่าดิบอยู่ */
       const shortLabel = step.stepName.replace(/^\[[^\]]*\]\s*/, "");
       return (
-        '<div class="step-item ' + cls + '" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-item ' + cls + '" title="' + step.label + '">' +
         '<div class="step-circle">' + inner + "</div>" +
         '<div class="step-label">' + shortLabel + "</div>" +
         "</div>"
@@ -2045,7 +2136,8 @@
     const csColor = colorOf(CASE_STATES, caseStateValue);
     const chip = (label, color) =>
       '<span class="badge" style="background:' + color + ';color:#fff">' + label + "</span>";
-    el.innerHTML = resValue ? chip(resLabel, resColor) + chip(csLabel, csColor) : "";
+    const appealChip = isAppealCase(kase) ? chip("อุทธรณ์", "#7c3aed") : "";
+    el.innerHTML = resValue ? appealChip + chip(resLabel, resColor) + chip(csLabel, csColor) : "";
   }
 
   /* เมนูข้างซ้ายของงาน 10.2 — แสดงเฉพาะขั้นตอนที่บทบาทนั้นรับผิดชอบ

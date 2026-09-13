@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      นิติกรเจ้าของสำนวน แจ้งผลผู้อุทธรณ์ | E-CMIS กิจกรรมที่ 10.2
+    </title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260904_1" />
+
+    <style>
+      h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: 'Prompt', sans-serif; }
+      .menu li a i { font-size: 1.1em; width: 20px; text-align: center; }
+      .user-profile-top:hover { background: rgba(0,0,0,0.04); }
+      .content { padding: 20px 24px; max-width: 1300px; margin: 0 auto; width: 100%; }
+
+      .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow-x: auto; }
+      .stepper { display: flex; justify-content: flex-start; align-items: flex-start; position: relative; min-width: 900px; gap: 2px; }
+      .stepper::before { content: ''; position: absolute; top: 18px; left: 30px; right: 30px; height: 2px; background: var(--border-color); z-index: 1; }
+      .stepper-row-label { font-size: 0.78em; font-weight: 700; color: var(--text-title); margin: 0 0 10px 2px; display: flex; align-items: center; gap: 6px; }
+      .stepper-row-label:not(:first-child) { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--border-color); }
+      .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 0 0 92px; }
+      .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
+      .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
+      .step-item.completed .step-circle { background: #16a34a; border-color: #16a34a; color: #fff; }
+      .step-label { font-size: 0.72em; color: #64748b; text-align: center; white-space: normal; word-break: break-word; line-height: 1.3; padding: 0 2px; }
+      .step-item.active .step-label { color: var(--text-title); font-weight: 700; }
+
+      .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
+      .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 1.05em; }
+      .form-card-body { padding: 20px; }
+      .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+      .form-group:last-child { margin-bottom: 0; }
+      .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; }
+      .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+      .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+      textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+      .read-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-title); font-size: 0.9em; min-height: 38px; display: flex; align-items: center; }
+      .read-box-textarea { min-height: 70px; align-items: flex-start; white-space: pre-line; }
+      .font-monospace { font-family: monospace; }
+
+      .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; margin-bottom: 20px; }
+      .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
+      .btn-primary { background: #1e3a8a; color: #fff; }
+      .btn-primary:hover { background: #1e293b; color: #fff; }
+      .btn-secondary { background: var(--bg-body); color: var(--text-title); border: 1px solid var(--border-color); }
+      .btn-secondary:hover { background: var(--border-color); color: var(--text-title); }
+
+      .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
+      .d-none { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
+            <span style="color: var(--text-title); font-weight: 600">นิติกรเจ้าของสำนวน แจ้งผลผู้อุทธรณ์</span>
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">1</span></div>
+          </div>
+          <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-1" style="font-size: 0.72rem; color: #64748b"></i>
+            <div class="profile-dropdown-menu" id="profileDropdown" onclick="event.stopPropagation()">
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle">-</span>
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"><i class="fa-solid fa-circle-info me-1"></i>หากต้องการเปลี่ยนบทบาท กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span>
+              </div>
+              <a href="login.html" onclick="confirmLogout(event)" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
+        <div class="stepper-card">
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
+          <div class="stepper" id="stepperPart2"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
+            คำร้องจะมาถึงขั้นตอนนี้หลังเลขานุการกลุ่มงานบริหารติดตามคดีลงนามส่งหนังสือแจ้งผลมติที่หน้า
+            <a href="10-2-appeal-12-tracking-secretary-notice-draft.html">เลขานุการกลุ่มงานบริหารติดตามคดี จัดทำหนังสือแจ้งผลมติ</a>
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div class="l2-note l2-note-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              เลขานุการกลุ่มงานบริหารติดตามคดีส่งหนังสือแจ้งผลมติแล้ว นิติกรเจ้าของสำนวนแจ้งผลคำวินิจฉัยให้ผู้อุทธรณ์ทราบภายใน 5 วัน — ขั้นตอนนี้เป็นขั้นตอนสุดท้ายของ Flow การอุทธรณ์ทั้งหมด
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>ข้อมูลคำอุทธรณ์</span>
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"><i class="fa-solid fa-hashtag me-1"></i><span id="f_caseNo">-</span></span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ชื่อเรื่อง</label>
+                <div class="read-box" id="f_title">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ยื่นคำขอ (ผู้อุทธรณ์)</label>
+                  <div class="read-box" id="f_requesterName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>มติเดิม</label>
+                  <div class="read-box" id="f_resolution">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-inbox text-primary me-2"></i>ข้อมูลจากขั้นตอนก่อนหน้า</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ผลมติคณะกรรมการ ป.ป.ท.</label>
+                <div class="read-box" id="f_boardResolutionTypeName">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือแจ้งผลมติ</label>
+                  <div class="read-box font-monospace" id="f_noticeDraftDocNo">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่หนังสือ</label>
+                  <div class="read-box" id="f_noticeDraftDate">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็นเพิ่มเติม (เลขานุการกลุ่มงานบริหารติดตามคดี)</label>
+                <div class="read-box" id="f_noticeDraftNotes">-</div>
+              </div>
+              <div class="form-group">
+                <label>เอกสารแนบ (เลขานุการกลุ่มงานบริหารติดตามคดี)</label>
+                <div id="f_noticeDraftAttachments"></div>
+              </div>
+              <div class="form-group">
+                <label>ลายเซ็นจากขั้นตอนก่อนหน้า</label>
+                <div class="l2-doc-signblock" id="f_signatures"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-envelope-open-text text-primary me-2"></i>หนังสือแจ้งผลมติ</span>
+            </div>
+            <div class="form-card-body">
+              <div class="l2-doc" id="noticeDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div class="form-card-header" style="background: rgba(30,58,138,0.05)">
+              <span><i class="fa-solid fa-signature text-primary me-2"></i>แจ้งผลผู้อุทธรณ์</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>นิติกรเจ้าของสำนวน</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วันที่แจ้งผู้อุทธรณ์ <span style="color: #dc2626">*</span></label>
+                  <input type="date" id="in_notifyDate" class="form-control font-monospace" />
+                </div>
+                <div class="form-group">
+                  <label>ช่องทางแจ้ง <span style="color: #dc2626">*</span></label>
+                  <select id="in_channel" class="form-control" onchange="toggleChannelDetail()">
+                    <option value="ส่วนกลาง">แจ้งที่ส่วนกลาง</option>
+                    <option value="เขต">แจ้งผ่านเขต</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" id="channelDetailGroup" style="display: none">
+                <label>ระบุเขต</label>
+                <select id="in_channelDetail" class="form-control">
+                  <option value="เขต 1">เขต 1</option>
+                  <option value="เขต 2">เขต 2</option>
+                  <option value="เขต 3">เขต 3</option>
+                  <option value="เขต 4">เขต 4</option>
+                  <option value="เขต 5">เขต 5</option>
+                  <option value="เขต 6">เขต 6</option>
+                  <option value="เขต 7">เขต 7</option>
+                  <option value="เขต 8">เขต 8</option>
+                  <option value="เขต 9">เขต 9</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>ความเห็นเพิ่มเติม <span class="l2-optional">(ไม่บังคับ)</span></label>
+                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุความเห็นเพิ่มเติม..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>กำหนดผู้อุทธรณ์รับทราบผล</label>
+                <div class="read-box" id="f_expectedReceiptDate">-</div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
+              <button type="button" class="btn btn-primary" onclick="submitForm()">
+                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามและแจ้งผลผู้อุทธรณ์
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260909_1"></script>
+    <script src="assets/ecmis-capture.js"></script>
+    <script src="assets/ecmis-activity10.js?v=20260909_1"></script>
+    <script src="assets/ecmis-shell.js"></script>
+    <script src="assets/ecmis-10-2.js?v=20260909_1"></script>
+
+    <script>
+      const STEP_CODE = "L2-APPEAL-CASE-OWNER-NOTIFY";
+      const STEP = Activity102.stepByCode(STEP_CODE);
+      let currentCase = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS102.initUserProfile();
+        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
+        loadCase();
+        ECMIS102.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      /* คำร้องที่รอขั้นตอนนี้ = สถานะที่ "ขั้นก่อนหน้า" (L2-APPEAL-NOTICE-DRAFT-2)
+         เขียนไว้ คือ L2_PENDING_APPEAL_CASE_OWNER_NOTIFY — ไม่ใช่ statusCode ของ
+         STEP หน้านี้เอง (L2_APPEAL_CASE_CLOSED_NOTIFIED ซึ่งเป็น terminal จริง —
+         จบทั้ง sheet 6+7 ของ Flow 4 ไม่มีหน้าถัดไปอีก) */
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        currentCase = Activity102.getCase(id, "L2_PENDING_APPEAL_CASE_OWNER_NOTIFY");
+        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
+
+        if (!currentCase || currentCase.statusCode !== "L2_PENDING_APPEAL_CASE_OWNER_NOTIFY") {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStatusBadges("statusBadges", currentCase);
+        populate();
+      }
+
+      function toggleChannelDetail() {
+        const channel = document.getElementById("in_channel").value;
+        document.getElementById("channelDetailGroup").style.display =
+          channel === "เขต" ? "flex" : "none";
+      }
+
+      function addDays(days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        return d.toISOString().split("T")[0];
+      }
+
+      /* หนังสือแจ้งผลมติ — โครงเดียวกับที่ appeal-12 ร่างไว้ (read-only ที่นี่) */
+      function renderNoticeDoc() {
+        const c = currentCase;
+        const section = (label, value) =>
+          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+          '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
+        document.getElementById("noticeDoc").innerHTML =
+          '<div class="l2-doc-title">หนังสือแจ้งผลการพิจารณาอุทธรณ์</div>' +
+          '<div class="l2-doc-subtitle">เรื่อง ' + (c.title || "-") + "</div>" +
+          '<hr class="l2-doc-divider" />' +
+          section("เรียน", c.requesterName) +
+          section(
+            "ตามที่ท่านได้ยื่นอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลข่าวสารดังกล่าว บัดนี้คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติ",
+            c.l2AppealBoardResolutionTypeName,
+          ) +
+          section("เหตุผลประกอบคำวินิจฉัยของคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ", c.l2AppealRulingReason);
+      }
+
+      function populate() {
+        const c = currentCase;
+        document.getElementById("f_caseNo").textContent = c.id;
+        document.getElementById("f_title").textContent = c.title || "-";
+        document.getElementById("f_requesterName").textContent = c.requesterName || "-";
+        document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
+
+        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01 ถึง 10-2-appeal-12) */
+        document.getElementById("f_boardResolutionTypeName").textContent = c.l2AppealBoardResolutionTypeName || "-";
+        document.getElementById("f_noticeDraftDocNo").textContent = c.l2AppealNoticeDraftDocNo || "-";
+        document.getElementById("f_noticeDraftDate").textContent = c.l2AppealNoticeDraftDate || "-";
+        document.getElementById("f_noticeDraftNotes").textContent = c.l2AppealNoticeDraftNotes || "-";
+        ECMIS102.renderAttachments("f_noticeDraftAttachments", c.l2AppealNoticeDraftAttachmentFileNames);
+        ECMIS102.renderSignatureList("f_signatures", c, [
+          { slot: "appealBureauDirectorAssign", title: "ผู้อำนวยการกองบริหารคดี" },
+          { slot: "appealTrackingDirectorAssign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี" },
+          { slot: "appealCaseOwnerOpinion", title: "นิติกรเจ้าของสำนวน" },
+          { slot: "appealAgenda", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์" },
+          { slot: "appealRuling", title: "คณะอนุกรรมการวินิจฉัยอุทธรณ์" },
+          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (เสนอ)" },
+          { slot: "appealTrackingSign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี (รับรอง)" },
+          { slot: "appealBureauDirectorBoardPropose", title: "ผู้อำนวยการกองบริหารคดี (เสนอเรื่อง)" },
+          { slot: "appealBoardResolution", title: "เจ้าหน้าที่ธุรการกองกฎหมาย (บันทึกมติบอร์ด)" },
+          { slot: "appealNoticeDraft", title: "เลขานุการกลุ่มงานบริหารติดตามคดี" },
+        ]);
+        renderNoticeDoc();
+
+        document.getElementById("in_notifyDate").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("in_channel").value = "ส่วนกลาง";
+        document.getElementById("in_channelDetail").value = "เขต 1";
+        toggleChannelDetail();
+        document.getElementById("in_notes").value = "-";
+        document.getElementById("f_expectedReceiptDate").textContent =
+          addDays(5) + " (ภายใน 5 วันนับแต่วันที่แจ้ง)";
+      }
+
+      function submitForm() {
+        const notifyDate = document.getElementById("in_notifyDate").value;
+        if (!notifyDate) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุวันที่แจ้งผู้อุทธรณ์",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+
+        const channel = document.getElementById("in_channel").value;
+        const channelDetail =
+          channel === "เขต" ? document.getElementById("in_channelDetail").value : "-";
+        const notes = document.getElementById("in_notes").value.trim() || "-";
+        const expectedReceiptDate = addDays(5);
+
+        ECMIS102.openSignatureModal(
+          {
+            title: "ลงนามแจ้งผลผู้อุทธรณ์ (นิติกรเจ้าของสำนวน)",
+            signer: ECMIS102.signerLabel("original_officer"),
+            certId: "PACC-ORIGOFFICER-2569-102",
+          },
+          (image) => {
+            Activity102.sign(currentCase.id, "appealNotifyAppellant", image, {
+              position: "นิติกร/นักสืบเจ้าของเรื่อง (เจ้าของสำนวนเดิม)",
+            });
+            Activity102.advance(currentCase.id, STEP_CODE, {
+              l2AppealNotifyDate: notifyDate,
+              l2AppealNotifyChannel: channel,
+              l2AppealNotifyChannelDetail: channelDetail,
+              l2AppealNotifyNotes: notes,
+              l2AppealExpectedReceiptDate: expectedReceiptDate,
+              statusBadge: "bg-success text-white",
+            });
+
+            Swal.fire({
+              icon: "success",
+              title: "แจ้งผลผู้อุทธรณ์เรียบร้อย",
+              html:
+                '<div class="emd-summary">' +
+                "<p>ลงนามแจ้งผลคำวินิจฉัยให้ผู้อุทธรณ์ทราบเรียบร้อยแล้ว</p>" +
+                "<p><strong>สิ้นสุดขั้นตอน:</strong> คำร้องนี้เป็นขั้นตอนสุดท้ายของ Flow การอุทธรณ์ทั้งหมด (sheet 6+7)</p></div>",
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "กลับหน้าคิวงาน",
+            }).then(ECMIS102.goInbox);
+          },
+        );
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(window.getComputedStyle(document.body).fontSize);
+        document.body.style.fontSize = direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

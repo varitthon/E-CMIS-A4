@@ -188,6 +188,118 @@
         color: #fff;
       }
 
+      .ms-select {
+        position: relative;
+      }
+      .ms-control {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 35px;
+        padding: 5px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-card);
+        cursor: pointer;
+      }
+      .ms-select.is-open .ms-control {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      .ms-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        flex: 1;
+        min-width: 0;
+      }
+      .ms-placeholder {
+        color: #94a3b8;
+        font-size: 0.9em;
+      }
+      .ms-chip {
+        background: #e2e8f0;
+        color: #334155;
+        border-radius: 14px;
+        padding: 3px 6px 3px 10px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+      .ms-chip i {
+        font-size: 0.75em;
+        color: #64748b;
+        cursor: pointer;
+        padding: 2px;
+      }
+      .ms-chip i:hover {
+        color: #dc2626;
+      }
+      .ms-caret {
+        color: #94a3b8;
+        font-size: 0.8em;
+        flex: 0 0 auto;
+        transition: transform 0.15s ease;
+      }
+      .ms-select.is-open .ms-caret {
+        transform: rotate(180deg);
+      }
+      .ms-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        padding: 6px;
+        max-height: 260px;
+        overflow-y: auto;
+        display: none;
+      }
+      .ms-select.is-open .ms-menu {
+        display: block;
+      }
+      .ms-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+      .ms-option:hover {
+        background: var(--bg-body);
+      }
+      .ms-option.is-selected {
+        font-weight: 600;
+        color: #2563eb;
+      }
+      .ms-option-check {
+        width: 16px;
+        height: 16px;
+        border: 1.5px solid var(--border-color);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        font-size: 0.65em;
+        color: #fff;
+      }
+      .ms-option.is-selected .ms-option-check {
+        background: #2563eb;
+        border-color: #2563eb;
+      }
+
       .table-card {
         background: var(--bg-card);
         border-radius: 8px;
@@ -666,13 +778,28 @@
                 style="flex: 2"
               >
                 <label id="dynamicFilterLabel">ประเภทงาน</label>
-                <select
-                  id="dynamicSelect"
-                  class="form-control"
-                  onchange="onDynamicSelectChange()"
-                >
-                  <option value="ALL">เลือกทั้งหมด</option>
-                </select>
+                <div class="ms-select" id="dynamicMsSelect">
+                  <div class="ms-control" onclick="toggleMsMenu('dynamic', event)">
+                    <div class="ms-chips" id="dynamicSelectedChips">
+                      <span class="ms-placeholder">เลือกทั้งหมด</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down ms-caret"></i>
+                  </div>
+                  <div class="ms-menu" id="dynamicMsMenu"></div>
+                </div>
+              </div>
+
+              <div class="form-group" id="statusChipsGroup" style="flex: 2">
+                <label>สถานะ</label>
+                <div class="ms-select" id="statusMsSelect">
+                  <div class="ms-control" onclick="toggleMsMenu('status', event)">
+                    <div class="ms-chips" id="statusSelectedChips">
+                      <span class="ms-placeholder">เลือกทั้งหมด</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down ms-caret"></i>
+                  </div>
+                  <div class="ms-menu" id="statusMsMenu"></div>
+                </div>
               </div>
 
               <div class="btn-container">
@@ -740,6 +867,17 @@
       const PAGE_SIZE = 10;
       let currentPage = 1;
       let currentCategory = null;
+
+      /* ตัวกรองแบบ dropdown เลือกได้หลายค่า — เก็บค่าที่เลือกไว้ใน Set แทนค่าเดียว
+         ให้เลือกได้พร้อมกันหลายค่า ว่างเปล่า = "ทั้งหมด" (ไม่กรอง)
+         dynamicChipOptions มาจาก updateDynamicFilter(cat) ตามหมวดหมู่ที่เลือก (ระดับ/
+         มติอัยการ) statusChipOptions มาจากค่า status ที่พบจริงในคำร้องของหมวดหมู่
+         ที่เลือกอยู่ (คำนวณสดจากข้อมูล ไม่ hardcode) ให้กรองซ้อนตามสถานะจริงได้
+         ละเอียดกว่า ระดับ/มติอัยการ เพียงอย่างเดียว */
+      let dynamicChipOptions = [];
+      let selectedDynamicValues = new Set();
+      let statusChipOptions = [];
+      let selectedStatusValues = new Set();
 
       const svgEyeIcon = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
 
@@ -1366,8 +1504,17 @@
           let cat = c.category || "10.1";
           let subType =
             c.subType || deriveProsecutorSubType(c.prosecutorCaseTypeName);
+          const isAppeal =
+            typeof Activity102 !== "undefined" &&
+            Activity102.isAppealCase &&
+            Activity102.isAppealCase(c);
           let level =
-            c.level || (cat === "10.3" ? "ศาลปกครองชั้นต้น" : "ชั้นต้น");
+            c.level ||
+            (cat === "10.3"
+              ? "ศาลปกครองชั้นต้น"
+              : isAppeal
+                ? "ชั้นอุทธรณ์"
+                : "ชั้นต้น");
 
           const rawPaccNo = c.paccCaseNo || (tor && tor.paccCaseNo) || "";
           const cleanCaseNo = rawPaccNo
@@ -1604,36 +1751,160 @@
 
       function updateDynamicFilter(cat) {
         const labelElem = document.getElementById("dynamicFilterLabel");
-        const selectElem = document.getElementById("dynamicSelect");
-        let subOptionsHtml = '<option value="ALL">เลือกทั้งหมด</option>';
 
         if (cat === "10.1") {
           labelElem.innerText = "มติอัยการ";
-          subOptionsHtml += `
- <option value="สั่งไม่ฟ้อง">1. อัยการมีความเห็นสั่งไม่ฟ้อง</option>
- <option value="ถอนฟ้อง">2. อัยการมีความเห็นถอนฟ้อง</option>
- <option value="ไม่อุทธรณ์ (ลงโทษ)">3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)</option>
- <option value="ไม่อุทธรณ์ (ยกฟ้อง)">4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)</option>
- <option value="ถอนอุทธรณ์">5. อัยการมีความเห็นสั่งถอนอุทธรณ์</option>
- <option value="ไม่ฎีกา (ลงโทษ)">6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)</option>
- <option value="ไม่ฎีกา (ยกฟ้อง)">7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)</option>
- <option value="ถอนฎีกา">8. อัยการมีความเห็นสั่งถอนฎีกา</option>
- <option value="อื่นๆ">9. อื่นๆ</option>
- `;
+          dynamicChipOptions = [
+            { value: "สั่งไม่ฟ้อง", label: "1. อัยการมีความเห็นสั่งไม่ฟ้อง" },
+            { value: "ถอนฟ้อง", label: "2. อัยการมีความเห็นถอนฟ้อง" },
+            { value: "ไม่อุทธรณ์ (ลงโทษ)", label: "3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)" },
+            { value: "ไม่อุทธรณ์ (ยกฟ้อง)", label: "4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)" },
+            { value: "ถอนอุทธรณ์", label: "5. อัยการมีความเห็นสั่งถอนอุทธรณ์" },
+            { value: "ไม่ฎีกา (ลงโทษ)", label: "6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)" },
+            { value: "ไม่ฎีกา (ยกฟ้อง)", label: "7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)" },
+            { value: "ถอนฎีกา", label: "8. อัยการมีความเห็นสั่งถอนฎีกา" },
+            { value: "อื่นๆ", label: "9. อื่นๆ" },
+          ];
         } else if (cat === "10.2") {
           labelElem.innerText = "ระดับ";
-          subOptionsHtml += `
- <option value="ชั้นต้น">ชั้นต้น</option>
- <option value="ชั้นอุทธรณ์">ชั้นอุทธรณ์</option>
- `;
+          dynamicChipOptions = [
+            { value: "ชั้นต้น", label: "ชั้นต้น" },
+            { value: "ชั้นอุทธรณ์", label: "ชั้นอุทธรณ์" },
+          ];
         } else if (cat === "10.3") {
           labelElem.innerText = "ระดับ";
-          subOptionsHtml += `
- <option value="ศาลปกครองชั้นต้น">ศาลปกครองชั้นต้น</option>
- <option value="ศาลปกครองสูงสุด">ศาลปกครองสูงสุด</option>
- `;
+          dynamicChipOptions = [
+            { value: "ศาลปกครองชั้นต้น", label: "ศาลปกครองชั้นต้น" },
+            { value: "ศาลปกครองสูงสุด", label: "ศาลปกครองสูงสุด" },
+          ];
+        } else {
+          dynamicChipOptions = [];
         }
-        selectElem.innerHTML = subOptionsHtml;
+
+        selectedDynamicValues = new Set();
+        renderMsGroup("dynamic");
+
+        statusChipOptions = computeStatusOptions(cat);
+        selectedStatusValues = new Set();
+        renderMsGroup("status");
+      }
+
+      /* ตัวเลือก "สถานะ" คำนวณสดจากค่า status จริงที่พบในคำร้องของหมวดหมู่นี้
+         (ไม่ hardcode รายการเหมือน มติอัยการ/ระดับ ด้านบน เพราะจำนวนสถานะที่เป็นไปได้
+         ของแต่ละหมวดหมู่มีมากและเปลี่ยนบ่อยตาม STEPS) เรียงตามลำดับที่เจอครั้งแรก */
+      function computeStatusOptions(cat) {
+        const allCases = getAllDatabaseCases();
+        const rows = getCasesForRole(allCases).filter((d) => d.type === cat);
+        const seen = new Set();
+        const options = [];
+        rows.forEach((d) => {
+          if (d.status && !seen.has(d.status)) {
+            seen.add(d.status);
+            options.push({ value: d.status, label: d.status });
+          }
+        });
+        return options;
+      }
+
+      /* ตัวกรองแบบ dropdown เลือกได้หลายค่า (chip แสดงในกล่องตอนปิด dropdown)
+         MS_GROUPS ผูกชื่อกลุ่ม ("dynamic"/"type") เข้ากับ state/element ที่ใช้จริง
+         เพื่อให้ render/toggle เป็นฟังก์ชันกลางชุดเดียว ไม่ต้องแยกโค้ดซ้ำ */
+      const MS_GROUPS = {
+        dynamic: {
+          getOptions: () => dynamicChipOptions,
+          getSelected: () => selectedDynamicValues,
+          chipsElId: "dynamicSelectedChips",
+          menuElId: "dynamicMsMenu",
+          selectElId: "dynamicMsSelect",
+        },
+        status: {
+          getOptions: () => statusChipOptions,
+          getSelected: () => selectedStatusValues,
+          chipsElId: "statusSelectedChips",
+          menuElId: "statusMsMenu",
+          selectElId: "statusMsSelect",
+        },
+      };
+
+      function toggleMsMenu(group, evt) {
+        if (evt) evt.stopPropagation();
+        const el = document.getElementById(MS_GROUPS[group].selectElId);
+        if (!el) return;
+        const wasOpen = el.classList.contains("is-open");
+        document
+          .querySelectorAll(".ms-select.is-open")
+          .forEach((o) => o.classList.remove("is-open"));
+        if (!wasOpen) el.classList.add("is-open");
+      }
+
+      document.addEventListener("click", (e) => {
+        document.querySelectorAll(".ms-select.is-open").forEach((o) => {
+          if (!o.contains(e.target)) o.classList.remove("is-open");
+        });
+      });
+
+      function renderMsGroup(group) {
+        const cfg = MS_GROUPS[group];
+        const options = cfg.getOptions();
+        const selected = cfg.getSelected();
+        const chipsEl = document.getElementById(cfg.chipsElId);
+        const menuEl = document.getElementById(cfg.menuElId);
+        if (!chipsEl || !menuEl) return;
+
+        chipsEl.innerHTML = selected.size
+          ? Array.from(selected)
+              .map((v) => {
+                const opt = options.find((o) => o.value === v);
+                const label = opt ? opt.label : v;
+                return (
+                  '<span class="ms-chip">' +
+                  label +
+                  '<i class="fa-solid fa-xmark" onclick="removeMsValue(\'' +
+                  group +
+                  "', '" +
+                  v.replace(/'/g, "\\'") +
+                  "')\"></i></span>"
+                );
+              })
+              .join("")
+          : '<span class="ms-placeholder">เลือกทั้งหมด</span>';
+
+        menuEl.innerHTML = options
+          .map((o) => {
+            const active = selected.has(o.value);
+            return (
+              '<div class="ms-option' +
+              (active ? " is-selected" : "") +
+              '" onclick="toggleMsValue(\'' +
+              group +
+              "', '" +
+              o.value.replace(/'/g, "\\'") +
+              "')\">" +
+              '<span class="ms-option-check">' +
+              (active ? '<i class="fa-solid fa-check"></i>' : "") +
+              "</span>" +
+              o.label +
+              "</div>"
+            );
+          })
+          .join("");
+      }
+
+      function toggleMsValue(group, value) {
+        const selected = MS_GROUPS[group].getSelected();
+        if (selected.has(value)) selected.delete(value);
+        else selected.add(value);
+        renderMsGroup(group);
+        currentPage = 1;
+        renderTable();
+      }
+
+      function removeMsValue(group, value) {
+        if (window.event) window.event.stopPropagation();
+        MS_GROUPS[group].getSelected().delete(value);
+        renderMsGroup(group);
+        currentPage = 1;
+        renderTable();
       }
 
       const CATEGORY_CARD_ID = {
@@ -1676,10 +1947,6 @@
         }
       }
 
-      function onDynamicSelectChange() {
-        currentPage = 1;
-        renderTable();
-      }
       function onSearchChange() {
         currentPage = 1;
         renderTable();
@@ -1691,7 +1958,10 @@
 
       function clearFilters() {
         document.getElementById("searchInput").value = "";
-        document.getElementById("dynamicSelect").value = "ALL";
+        selectedDynamicValues = new Set();
+        selectedStatusValues = new Set();
+        renderMsGroup("dynamic");
+        renderMsGroup("status");
         currentPage = 1;
         renderTable();
       }
@@ -2217,7 +2487,6 @@
           .getElementById("searchInput")
           .value.trim()
           .toLowerCase();
-        const dynamicVal = document.getElementById("dynamicSelect").value;
         const currentRole = getCurrentRole();
 
         const allCases = getAllDatabaseCases();
@@ -2225,12 +2494,22 @@
           (d) => d.type === cat,
         );
 
-        if (dynamicVal !== "ALL") {
+        if (selectedDynamicValues.size > 0) {
           if (cat === "10.1") {
-            filteredData = filteredData.filter((d) => d.subType === dynamicVal);
+            filteredData = filteredData.filter((d) =>
+              selectedDynamicValues.has(d.subType),
+            );
           } else if (cat === "10.2" || cat === "10.3") {
-            filteredData = filteredData.filter((d) => d.level === dynamicVal);
+            filteredData = filteredData.filter((d) =>
+              selectedDynamicValues.has(d.level),
+            );
           }
+        }
+
+        if (selectedStatusValues.size > 0) {
+          filteredData = filteredData.filter((d) =>
+            selectedStatusValues.has(d.status),
+          );
         }
 
         if (searchVal !== "") {

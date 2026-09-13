@@ -329,6 +329,20 @@
       note: "แยกจาก \"คณะอนุกรรมการวินิจฉัยอุทธรณ์\" (subcommittee_appeal) เดิม — ใช้ชื่อเต็มตามผังเดิมของ Flow 4 โดยเฉพาะ",
       perms: ["view.assigned", "download", "screen.vote"],
     },
+    {
+      id: "case_tracking_secretary",
+      login: "Suda.K",
+      row: 19,
+      group: "กองบริหารคดี",
+      title: "เลขานุการกลุ่มงานบริหารติดตามคดี",
+      name: "นางสาวสุดา คดีเที่ยง",
+      org: "กองบริหารคดี",
+      act: "10.2",
+      responsibilities:
+        "จัดทำหนังสือแจ้งผลมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์ และส่งสำเนามติให้เจ้าของสำนวน (sheet 7 แจ้งผลอุทธรณ์)",
+      note: "คนละคนกับ case_tracking_director (ผอ.กลุ่มงานบริหารติดตามคดี) — ทำหน้าที่เลขานุการธุรการของกลุ่มงานเดียวกัน เฉพาะขั้นตอนหลังบอร์ดมีมติ (docs/10-2-flow4-appeal-plan.md หัวข้อ 8)",
+      perms: ["view.assigned", "download", "draft.doc", "sign.own"],
+    },
   ];
 
   /* --------------------------------------------------- DOCUMENT TYPE + SLA

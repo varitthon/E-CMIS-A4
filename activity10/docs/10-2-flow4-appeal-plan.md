@@ -1,7 +1,7 @@
 # กิจกรรมที่ 10.2 — Flow 4: อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล (แผน + สถานะ implement)
 
 > **สถานะเอกสาร:** กำลัง implement ทีละหน้า — ดูสถานะ ✅/⬜ ต่อหน้าด้านล่าง
-> **อ้างอิงผังเดิม:** [`docs/10.2 mockup/TO-BE10.2-swimlane-split.drawio`](10.2%20mockup/TO-BE10.2-swimlane-split.drawio) หน้า 6 "อุทธรณ์คำสั่ง (LAW0069–LAW0079)" **เฉพาะหน้านี้** — หน้า 7 "แจ้งผลอุทธรณ์ (LAW0080–LAW0083)" ยังไม่อยู่ในสโคปรอบนี้
+> **อ้างอิงผังเดิม:** [`docs/10.2 mockup/TO-BE10.2-swimlane-split.drawio`](10.2%20mockup/TO-BE10.2-swimlane-split.drawio) หน้า 6 "อุทธรณ์คำสั่ง (LAW0069–LAW0079)" — **implemented ครบแล้ว** (appeal-01 ถึง appeal-10) — และหน้า 7 "แจ้งผลอุทธรณ์ (LAW0080–LAW0083)" ซึ่งเดิมไม่อยู่ในสโคป ตอนนี้ **วางแผนแล้ว รอ implement** ดูหัวข้อ 8
 > **จุดเริ่ม:** ต่อจาก Flow 1 (มติเลขาธิการ — ไม่อนุญาตเปิดเผย) ที่จบที่ [10-2-17-legal-admin-deny-dispatch-committee.html](../10-2-17-legal-admin-deny-dispatch-committee.html) (`L2_CASE_CLOSED_DENY_ASSIGNED`) — ผู้ยื่นคำขอที่ได้รับแจ้งว่าไม่อนุญาตเปิดเผยข้อมูล มีสิทธิ์ยื่นอุทธรณ์ต่อ
 > **คำร้องเดินต่อในระเบียนเดิม:** ไม่สร้างเลขคำร้องใหม่ — สถานะใหม่ทั้งหมดเขียนทับ/ต่อยอดบนคำร้องเดิม (เช่น `คำร้อง-100019/2569`, `คำร้อง-100020/2569`)
 
@@ -18,12 +18,17 @@
   4. ทุกช่อง comment/textarea ที่ไม่บังคับต้องมี default value ("-") ไม่ปล่อยว่าง
   5. ทุกขั้นที่เป็น "การพิจารณา/มอบหมาย/เสนอ" อย่างเป็นทางการ (ไม่ใช่แค่บันทึกข้อมูลธรรมดาแบบ appeal-01) ต้องมี signature modal (`ECMIS102.openSignatureModal` + `Activity102.sign`) ก่อน `Activity102.advance` เสมอ — ผู้ใช้ยืนยันรูปแบบนี้ซ้ำหลายครั้งตลอดทั้ง flow
   6. ฟิลด์ "มอบหมายถึง" ที่เป็น dropdown ต้องแสดง**ชื่อบุคคลจริง** (`ECMIS102.signerLabel(roleId)`) ไม่ใช่แค่ชื่อตำแหน่ง — ตั้งค่า `<option>` text ผ่าน JS ตอน `populate()`
-- **Role ใหม่ทั้งหมดถูกเพิ่มใน `login.html`'s `ACTIVE_ROLE_IDS` แล้ว:** `case_bureau_director`, `case_tracking_director`, `appeal_subcommittee_secretariat`, `appeal_ruling_subcommittee`, `original_officer` — ไม่ต้องเพิ่มซ้ำ
+- **Role ใหม่ทั้งหมดถูกเพิ่มใน `login.html`'s `ACTIVE_ROLE_IDS` แล้ว:** `case_bureau_director`, `case_tracking_director`, `appeal_subcommittee_secretariat`, `appeal_ruling_subcommittee`, `original_officer`, `case_tracking_secretary` — ไม่ต้องเพิ่มซ้ำ
 - **Naming convention ของฟิลด์ข้อมูล:** ทุกฟิลด์ใหม่ของ Flow 4 ขึ้นต้นด้วย `l2Appeal...` (เช่น `l2AppealReceiveNo`, `l2AppealRulingType`) — ตาม pattern เดิมของ `l2...` ที่ใช้ทั้งไฟล์ `ecmis-10-2.js`/`ecmis-activity10.js`
-- **Naming convention ของ signature slot:** ตั้งชื่อ slot ตามบทบาทที่ลงนาม+การกระทำ เช่น `appealBureauDirectorAssign`, `appealTrackingDirectorAssign`, `appealCaseOwnerOpinion`, `appealAgenda`, `appealRuling`, `appealSecretariatMemo`, `appealTrackingSign` — หน้าถัดไปต้องต่อ pattern นี้ เช่น appeal-09 ควรใช้ slot `appealBureauDirectorBoardPropose`
-- **ข้อมูลตัวอย่าง (sample data):** ครบแล้วทั้ง 10 หน้า — เลขคำร้องล่าสุดที่ใช้คือ `คำร้อง-100042/2569` (ตัวถัดไปหากมีการขยาย flow นี้อีกคือ `100043`) — `100041` ทดสอบหน้า appeal-09 (สถานะ `L2_PENDING_APPEAL_BOARD_DISPATCH`), `100042` ทดสอบสถานะปิดท้าย terminal (`L2_APPEAL_SUBMITTED_TO_BOARD`)
-- **⬜ ยังไม่ได้ทำ:** เพิ่มหัวข้อ Flow 4 ใน [`docs/10-2-flow-by-board-resolution.md`](10-2-flow-by-board-resolution.md) (ไฟล์สรุป Flow 1-3 เดิม) เพื่อให้เอกสารภาพรวมครบทุก Flow — นี่คืองานเดียวที่เหลืออยู่ของแผนนี้
-- **นอกสโคป (ยืนยันแล้วว่าไม่ทำรอบนี้):** sheet 7 ("แจ้งผลอุทธรณ์", LAW0080-083) — การแจ้งผลหลังบอร์ดมีมติกลับมา ยังไม่มีหน้ารองรับ ปล่อยให้ `L2_APPEAL_SUBMITTED_TO_BOARD` เป็นสถานะปิดท้ายแบบ terminal-for-now
+- **Naming convention ของ signature slot:** ตั้งชื่อ slot ตามบทบาทที่ลงนาม+การกระทำ เช่น `appealBureauDirectorAssign`, `appealTrackingDirectorAssign`, `appealCaseOwnerOpinion`, `appealAgenda`, `appealRuling`, `appealSecretariatMemo`, `appealTrackingSign`, `appealBureauDirectorBoardPropose`, `appealBoardResolution` (appeal-11) — หน้าถัดไป (appeal-12) ควรใช้ slot `appealNoticeDraft` ต่อ pattern นี้ และอย่าลืมเพิ่ม `{slot: "appealBoardResolution", title: "เจ้าหน้าที่ธุรการกองกฎหมาย (บันทึกมติบอร์ด)"}` เข้าไปในลิสต์ `renderSignatureList` ของ appeal-12/13 ด้วย (มาตรฐานแสดงลายเซ็นสะสมทั้งหมด ข้อ 3 ของหัวข้อนี้)
+- **ข้อมูลตัวอย่าง (sample data):** ครบทั้ง 10 หน้าของ sheet 6 + สถานะคั่นกลางใหม่ 3 รายการ — เลขคำร้องล่าสุดที่ใช้คือ `คำร้อง-100045/2569` (ตัวถัดไปหากมีการขยาย flow นี้อีกคือ `100046`) — `100041` ทดสอบหน้า appeal-09, `100042` ทดสอบสถานะ "ส่งเข้ากิจกรรมที่ 7 แล้ว รอผล" (`L2_APPEAL_SUBMITTED_TO_BOARD`), `100043`–`100045` ทดสอบหน้า appeal-11 (สถานะ `L2_APPEAL_BOARD_RESOLVED` คนละมติบอร์ด DISCLOSE/PARTIAL/DENY — ดูหัวข้อ 8.2)
+- **⬜ ยังไม่ได้ทำ:** เพิ่มหัวข้อ Flow 4 ใน [`docs/10-2-flow-by-board-resolution.md`](10-2-flow-by-board-resolution.md) (ไฟล์สรุป Flow 1-3 เดิม) เพื่อให้เอกสารภาพรวมครบทุก Flow — รอจน appeal-12/13 เสร็จก่อนค่อยทำทีเดียว
+- **✅ Flow 4 sheet 6+7 ครบทั้ง 13 หน้าแล้ว** (appeal-01 ถึง appeal-13, หัวข้อ 3 และ 8.4.1-8.4.3) — เหลืออย่างเดียวคืออัปเดต `docs/10-2-flow-by-board-resolution.md` ให้ครอบคลุม sheet 7 ด้วย (ดูหัวข้อ 8.7)
+- **การตัดสินใจที่ยืนยันแล้วสำหรับหัวข้อ 8 (ถามผู้ใช้แล้วผ่าน AskUserQuestion):**
+  1. LAW0080 (จุดกรอกมติบอร์ด) ใช้ role เดิม `admin_legal` — ไม่สร้าง role ใหม่สำหรับ "กบค." ตามผังเดิม
+  2. LAW0081 (ทำหนังสือแจ้งผลมติ) สร้าง role ใหม่ `case_tracking_secretary` ("เลขานุการกลุ่มงานบริหารติดตามคดี") แยกจาก `case_tracking_director` ที่มีอยู่แล้ว
+  3. LAW0083 (ผู้อุทธรณ์ได้รับผลภายใน 5 วัน) ไม่มีหน้าแยก — พับรวมเป็นข้อมูล "รอผู้อุทธรณ์รับทราบภายใน 5 วัน" ในหน้า LAW0082 (appeal-13) แล้วปิดเคสที่หน้านั้นเลย
+  4. ตั้งชื่อไฟล์ต่อเลขเดิม `10-2-appeal-11`, `10-2-appeal-12`, `10-2-appeal-13`
 
 ---
 
@@ -177,7 +182,8 @@
 - ✅ `คำร้อง-100039/2569` — สถานะ `L2_PENDING_TRACKING_DIRECTOR_SIGN` (ทดสอบหน้า appeal-08, มติ REVERSE_PARTIAL)
 - ✅ `คำร้อง-100040/2569` — สถานะ `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` (จำลองว่าผ่าน appeal-08 มาแล้ว รอหน้า appeal-09 ที่ยังไม่สร้าง, มติ REVERSE_FULL)
 - ✅ `คำร้อง-100041/2569` — สถานะ `L2_PENDING_APPEAL_BOARD_DISPATCH` (ทดสอบหน้า appeal-09, มติ REVERSE_PARTIAL)
-- ✅ `คำร้อง-100042/2569` — สถานะ `L2_APPEAL_SUBMITTED_TO_BOARD` (terminal-for-now, จำลองว่าผ่าน appeal-10 มาแล้ว, มติ REVERSE_FULL) — ไม่มีหน้ารองรับต่อ เตรียมไว้สำหรับ sheet 7 ถ้าทำในอนาคต
+- ✅ `คำร้อง-100042/2569` — สถานะ `L2_APPEAL_SUBMITTED_TO_BOARD` (จำลองว่าผ่าน appeal-10 มาแล้ว รอผลบอร์ด, มติ REVERSE_FULL, status text "รอมติบอร์ดตอบกลับ") — ยังไม่มี route ออก (black-box จริง รอเหตุการณ์ภายนอก)
+- ✅ `คำร้อง-100043/2569` ถึง `100045/2569` — สถานะคั่นกลางใหม่ `L2_APPEAL_BOARD_RESOLVED` ("มติบอร์ดตอบกลับแล้ว") คนละ 1 รายการต่อค่ามติบอร์ดใน `BOARD_APPEAL_RESOLUTION_TYPES` (ดูหัวข้อ 8.2): `100043` = `DISCLOSE` (คู่กับมติ REVERSE_FULL ที่ appeal-06), `100044` = `PARTIAL` (คู่กับ REVERSE_PARTIAL), `100045` = `DENY` (คู่กับ UPHOLD) — มีฟิลด์ `l2AppealBoardResolutionType`/`...TypeName` ใส่ไว้ล่วงหน้าแล้วเพื่อความหลากหลายของข้อมูลทดสอบ (ในสายงานจริงธุรการจะกรอกค่านี้ที่หน้า appeal-11 เอง ไม่ใช่มีอยู่ก่อนตั้งแต่สถานะนี้ — ดูคอมเมนต์ในโค้ด) เตรียมไว้ทดสอบ precondition ของ appeal-11 (ดูหัวข้อ 8.4.1) เมื่อสร้างหน้านั้น
 
 ## 6. UI เสริมที่เพิ่มแล้ว
 
@@ -207,3 +213,84 @@
 - ✅ `01-work-inbox.html` — เพิ่มปุ่ม "รับเรื่องอุทธรณ์" (แสดงเฉพาะหมวด 10.2)
 - ✅ `login.html` — เพิ่ม 4 role ใหม่ของ Flow 4 เข้า `ACTIVE_ROLE_IDS` (แสดงใน autocomplete หน้า login)
 - ⬜ `docs/10-2-flow-by-board-resolution.md` — เพิ่มหัวข้อ Flow 4 อ้างอิงเอกสารนี้ (หลัง implement ครบทุกหน้า)
+
+**ไฟล์ใหม่ (Sheet 7, ดูหัวข้อ 8):**
+- ✅ `10-2-appeal-11-legal-admin-board-resolution.html`
+- ✅ `10-2-appeal-12-tracking-secretary-notice-draft.html`
+- ✅ `10-2-appeal-13-case-owner-notify-appellant.html`
+
+---
+
+## 8. Sheet 7 — แจ้งผลอุทธรณ์ (LAW0080–LAW0083, หลังบอร์ดมีมติ) — แผนใหม่ ยังไม่ implement
+
+> เดิม sheet นี้ไม่อยู่ในสโคป เพราะยังไม่มีหน้าให้ "มติบอร์ด" (ผลจากกิจกรรมที่ 7 ต่อคำอุทธรณ์) เข้ามาบันทึกในระบบเลย — คำร้องเดินไปจบที่ `L2_APPEAL_SUBMITTED_TO_BOARD` (terminal-for-now) ที่ [10-2-appeal-10-legal-admin-board-submit.html](../10-2-appeal-10-legal-admin-board-submit.html) แผนนี้เปิดสโคปหัวข้อนี้ต่อ โดยสร้างจุดกรอก "มติบอร์ด" (LAW0080) แล้วเดินสายจนจบ (LAW0081–083)
+
+### 8.1 ผังเดิม (อ้างอิง `docs/10.2 mockup/TO-BE10.2-swimlane-split.drawio` หน้า 7 "แจ้งผลอุธรณ์")
+
+| LAW | Lane เดิม | คำอธิบาย |
+|---|---|---|
+| LAW0080 | กบค. (กลุ่มงานคำวินิจฉัยและมติคณะกรรมการ) | ส่งมติคณะกรรมการ — ทางเข้ามีป้ายกำกับ 3 ทาง: "ให้เปิดเผยบางส่วน" / "ให้เปิดเผยข้อมูลทั้งหมด" / "ไม่เปิดเผยข้อมูล" |
+| LAW0081 | เลขากลุ่มงานติดตามคดี | ทำหนังสือแจ้งผลมติและส่งสำเนามติ |
+| LAW0082 | เจ้าของสำนวน | แจ้งผลคำวินิจฉัยตามมติคณะกรรมการ ป.ป.ท ให้ผู้อุทธรณ์ภายใน 5 วัน |
+| LAW0083 | ผู้อุทธรณ์ | ได้รับผลภายใน 5 วัน → สิ้นสุด |
+
+**สำคัญ:** ตามผัง ทั้ง 3 ทางของมติบอร์ด (เปิดเผยทั้งหมด/บางส่วน/ไม่เปิดเผย) **ไหลรวมเป็นเส้นทางเดียว** (LAW0080 → 081 → 082 → 083) — มติมีผลแค่เปลี่ยน**เนื้อหา**ของหนังสือแจ้งผล ไม่ได้แยก branch/หน้าต่างหากแบบสาย DENY ของ sheet 6 ก่อนหน้า
+
+### 8.2 สถานะ "มติบอร์ด" ที่ต้อง reserve ไว้ทั้งหมด (ตอบคำถามหลักของหัวข้อนี้)
+
+จุดที่ขาดหายไปคือหน้าให้กรอก "มติบอร์ด" — เพิ่ม constant ใหม่ `BOARD_APPEAL_RESOLUTION_TYPES` ใน `assets/ecmis-10-2.js` (แยกจาก `RESOLUTION_TYPES` เดิมที่ใช้กับ sheet 1-5 เพราะมี `OTHER` ซึ่งไม่เข้ากับบริบทนี้ — มติบอร์ดต่อคำอุทธรณ์มีได้แค่ 3 ค่าตามผังเดิมเป๊ะ ไม่มีทางเลือกอื่น):
+
+| value | label (ตรงตามผังเดิม) | สี |
+|---|---|---|
+| `DISCLOSE` | ให้เปิดเผยข้อมูลทั้งหมด | `#16a34a` (เขียว) |
+| `PARTIAL` | ให้เปิดเผยข้อมูลบางส่วน | `#d97706` (ส้ม) |
+| `DENY` | ไม่เปิดเผยข้อมูล | `#dc2626` (แดง) |
+
+เก็บผลไว้ที่ฟิลด์ใหม่ `l2AppealBoardResolutionType` / `l2AppealBoardResolutionTypeName` (คนละฟิลด์กับ `l2AppealRulingType` เดิมของคณะอนุกรรมการวินิจฉัยอุทธรณ์ที่ appeal-06 — บอร์ดจริงอาจให้ผลต่างจากที่คณะอนุกรรมการฯ เคยวินิจฉัยไว้ก็ได้ ฟิลด์นี้คือมติที่ถือเป็นที่สุด) ใช้ `ECMIS102.choiceGridHtml(BOARD_APPEAL_RESOLUTION_TYPES, selected, 'selectBoardResolution')` แบบเดียวกับที่ 10-2-06 ใช้เลือกมติคณะอนุกรรมการฯ (โครงสร้างเดิม ไม่ต้องสร้างใหม่)
+
+### 8.3 Role ใหม่ที่ต้องเพิ่ม
+
+| id | login | title | org | หมายเหตุ |
+|---|---|---|---|---|
+| `case_tracking_secretary` | (ตั้งตาม pattern เดิม เช่น `Suda.K`) | เลขานุการกลุ่มงานบริหารติดตามคดี | กองบริหารคดี | คนละคนกับ `case_tracking_director` (ผอ.) ที่มีอยู่แล้ว — เพิ่มใน `ecmis-app.js` ROLES array และ `login.html` ACTIVE_ROLE_IDS + ROLE_GROUPS (กลุ่ม "กิจกรรมที่ 10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล") |
+
+### 8.4 รายละเอียดแต่ละหน้า
+
+#### 8.4.1 `10-2-appeal-11-legal-admin-board-resolution.html` (LAW0080) — ✅ implemented
+- **Role:** `admin_legal`
+- **Precondition (statusCode ขาเข้า):** `L2_APPEAL_BOARD_RESOLVED` ("มติบอร์ดตอบกลับแล้ว") — **ไม่ใช่** `L2_APPEAL_SUBMITTED_TO_BOARD` โดยตรง — มีสถานะคั่นกลางใหม่แทรกแล้ว (✅ implement, ตาม pattern เดียวกับ `L2_BOARD_RESOLVED_ROUND2` ของ Flow 2 Part 1): `L2_APPEAL_SUBMITTED_TO_BOARD` (appeal-10 ส่งเรื่องแล้ว รอผล — ยังไม่มี route ออก เป็น black-box จริง) → เหตุการณ์ภายนอก "บอร์ดตอบกลับแล้ว" → `L2_APPEAL_BOARD_RESOLVED` (ยังไม่มี route จนกว่าจะสร้างหน้านี้ (appeal-11) จริง) — `APPEAL_STATUS_CODES` ที่ `isAppealCase()` ใช้ (`assets/ecmis-10-2.js`) ✅ เพิ่ม `L2_APPEAL_BOARD_RESOLVED` เข้าไปด้วยมือแล้วเช่นกัน (ให้แบดจ์ "อุทธรณ์" ยังขึ้นถูกต้อง)
+- **สิ่งที่ทำ:** รับ/บันทึกมติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) ที่ตอบกลับมาต่อคำอุทธรณ์นี้ — เลือกมติจาก `BOARD_APPEAL_RESOLUTION_TYPES` (บังคับเลือก) + เลขที่/วันที่หนังสือตอบกลับจากกิจกรรมที่ 7 (auto-suggest ตาม pattern เดิม) + ความเห็นเพิ่มเติม (optional, default "-")
+- **แสดงข้อมูลก่อนหน้าทั้งหมด:** เหมือนเดิมทุกหน้า (บันทึกคำวินิจฉัยอุทธรณ์จาก appeal-06/07, ลายเซ็นสะสมทั้งหมดถึง `appealBureauDirectorBoardPropose`)
+- **Signature:** มี (slot `appealBoardResolution`) — เดิมวางแผนว่าไม่ต้อง (เทียบ pattern 10-2-10/10-2-30) แต่ผู้ใช้ขอให้เพิ่มหลัง implement แล้ว เพราะเป็นจุดบันทึกมติที่เป็นทางการ
+- **สถานะที่เขียน:** `L2_PENDING_APPEAL_NOTICE_DRAFT`
+- **ปุ่ม:** "บันทึกมติคณะกรรมการ"
+
+#### 8.4.2 `10-2-appeal-12-tracking-secretary-notice-draft.html` (LAW0081) — ✅ implemented
+- **Role:** `case_tracking_secretary` (ใหม่)
+- **Precondition:** `L2_PENDING_APPEAL_NOTICE_DRAFT`
+- **สิ่งที่ทำ:** จัดทำหนังสือแจ้งผลมติ (เนื้อหาอ้างอิง `l2AppealBoardResolutionTypeName` ที่บันทึกไว้) + ส่งสำเนามติให้เจ้าของสำนวน — เลขที่/วันที่หนังสือ (auto-suggest) + ความเห็นเพิ่มเติม (optional) + แนบไฟล์ประกอบ (optional) + signature (เป็นการออกหนังสือทางการ ตาม standing rule ข้อ 5 ในหัวข้อ 0)
+- **สถานะที่เขียน:** `L2_PENDING_APPEAL_CASE_OWNER_NOTIFY`
+- **ปุ่ม:** "ลงนามและส่งหนังสือแจ้งผลมติ"
+
+#### 8.4.3 `10-2-appeal-13-case-owner-notify-appellant.html` (LAW0082 + LAW0083 พับรวม) — ✅ implemented
+- **Role:** `original_officer` (เจ้าของสำนวน — ใช้ role เดิมจาก appeal-04)
+- **Precondition:** `L2_PENDING_APPEAL_CASE_OWNER_NOTIFY`
+- **สิ่งที่ทำ:** แจ้งผลคำวินิจฉัยตามมติคณะกรรมการ ป.ป.ท. ให้ผู้อุทธรณ์ภายใน 5 วัน (LAW0082) — วันที่แจ้ง (auto = วันนี้) + ช่องทางแจ้ง (select เหมือน pattern เขต/ส่วนกลางที่ appeal-01) + ความเห็นเพิ่มเติม (optional) — ส่วน LAW0083 พับรวมเป็นข้อความ read-only "กำหนดผู้อุทธรณ์รับทราบผลภายใน 5 วันนับแต่วันที่แจ้ง" (คำนวณวันที่คาดว่าจะได้รับจาก `addDays(5)`) ไม่ต้องกรอกอะไรเพิ่ม — Signature: มี (เป็นขั้นแจ้งผลที่เป็นทางการ)
+- **สถานะที่เขียน:** `L2_APPEAL_CASE_CLOSED_NOTIFIED` (terminal จริง — จบทั้ง sheet 6+7 ของ Flow 4)
+- **ปุ่ม:** "ลงนามและแจ้งผลผู้อุทธรณ์"
+
+### 8.5 การเปลี่ยนแปลงที่ต้องทำใน `assets/ecmis-10-2.js`
+- เพิ่ม const `BOARD_APPEAL_RESOLUTION_TYPES` (ดู 8.2)
+- เพิ่ม STEPS entry 3 รายการต่อท้าย `L2-APPEAL-BOARD-DISPATCH` (เรียงติดกัน ROUTES ต่ออัตโนมัติ): `L2-APPEAL-BOARD-RESOLUTION` (appeal-11) → `L2-APPEAL-NOTICE-DRAFT-2` (appeal-12, ตั้งชื่อ code กันชนกับ `L2-NOTICE-DRAFT` ของ sheet 2 เดิม) → `L2-APPEAL-CASE-OWNER-NOTIFY` (appeal-13, terminal)
+- ลบสถานะ "terminal-for-now" ของ `L2_APPEAL_SUBMITTED_TO_BOARD` ออกจากคำอธิบายในโค้ด/คอมเมนต์ที่เกี่ยวข้อง (มันจะมี route ต่อจริงแล้ว)
+
+### 8.6 การเปลี่ยนแปลงที่ต้องทำใน `assets/ecmis-activity10.js`
+- ✅ `คำร้อง-100043/2569` ถึง `100045/2569` — สถานะ `L2_APPEAL_BOARD_RESOLVED` คนละมติบอร์ด (DISCLOSE/PARTIAL/DENY) ทดสอบ precondition ของ appeal-11
+- ✅ `คำร้อง-100046/2569` — สถานะ `L2_PENDING_APPEAL_NOTICE_DRAFT` ทดสอบ precondition ของ appeal-12
+- ✅ `คำร้อง-100047/2569` — สถานะ `L2_PENDING_APPEAL_CASE_OWNER_NOTIFY` ทดสอบ precondition ของ appeal-13
+- ✅ `คำร้อง-100048/2569` — สถานะ terminal เต็มรูปแบบ `L2_APPEAL_CASE_CLOSED_NOTIFIED` (จำลองว่าผ่าน appeal-13 มาแล้ว) — เลขถัดไปคือ `100049`
+
+### 8.7 อื่นๆ ที่ต้องทำคู่กัน
+- ✅ เพิ่ม role `case_tracking_secretary` ใน `assets/ecmis-app.js` (ROLES array) และใน `login.html` (`ACTIVE_ROLE_IDS` + `ROLE_GROUPS`)
+- ✅ อัปเดตหัวข้อ 7 แล้ว (เปลี่ยน ⬜ เป็น ✅ ทั้ง 3 ไฟล์)
+- ⬜ **ยังไม่ได้ทำ:** อัปเดต `docs/10-2-flow-by-board-resolution.md` ให้ครอบคลุม sheet 7 ด้วย (ไม่ใช่แค่ sheet 6) — งานเดียวที่เหลืออยู่ของ Flow 4 ทั้งหมด

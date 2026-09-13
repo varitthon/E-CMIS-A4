@@ -616,7 +616,7 @@
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       return (
-        '<div class="step-item ' + cls + '" title="' + step.code + " — " + step.label + '">' +
+        '<div class="step-item ' + cls + '" title="' + step.label + '">' +
         '<div class="step-circle">' + inner + "</div>" +
         '<div class="step-label">' + step.stepName + "</div>" +
         "</div>"
