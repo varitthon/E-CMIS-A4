@@ -395,7 +395,7 @@
       page: "10-2-29-legal-admin-committee-dispatch.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "รอเสนอมติบอร์ด รอบ 2 (กิจกรรมที่ 7)",
+      status: "มติบอร์ด ตอบกลับแล้ว",
       statusCode: "L2_READY_FOR_BOARD_ROUND2",
       label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.",
       stepName: "[อยู่ระหว่างไต่สวน] ธุรการ ส่งกิจกรรมที่7",
@@ -414,10 +414,42 @@
       page: "10-2-30-legal-admin-receive-board-round2.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_DIRLEGAL_BOARD_ACK",
+      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย รับมติจากกิจกรรมที่ 7",
+      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ รับมติ",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    /* สองขั้นตอนใหม่ — ผอ.กองกฎหมาย รับทราบมติคณะกรรมการ ป.ป.ท. ก่อน (ตามที่ธุรการ
+       บันทึกไว้ที่ 10-2-30) แล้วจึงส่งต่อ ผอ.กลุ่มงานความเห็นแย้ง รับทราบ ก่อนมอบให้
+       ฝ่ายเลขานุการคณะอนุกรรมการฯ จัดทำหนังสือแจ้งมติต่อไปที่ 10-2-11 — statusCode
+       ขาออกของขั้นที่สอง ("L2_PENDING_NOTICE_DRAFT") ซ้ำกับของ L2-RECEIVE-OUTCOME
+       (10-2-10) โดยตั้งใจ เพราะทั้งคู่ต้องไปที่ 10-2-11 เหมือนกัน — ไม่ต่างจาก
+       รูปแบบเดิมก่อนเพิ่ม 2 ขั้นนี้ (10-2-30 เคยใช้ค่าเดียวกันมาก่อนแล้ว) */
+    {
+      code: "L2-BOARD-DIRLEGAL-ACK",
+      seq: 34,
+      page: "10-2-35-legal-director-board-ack.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานความเห็นแย้งรับทราบมติคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_GROUPDIR_BOARD_ACK",
+      label: "[อยู่ระหว่างไต่สวน] ผอ.กองกฎหมาย รับทราบมติคณะกรรมการ ป.ป.ท. และลงนาม",
+      stepName: "[อยู่ระหว่างไต่สวน] ผอ.กอง รับทราบมติบอร์ด",
+      includeIf: ["DISCLOSE", "PARTIAL"],
+      caseState: ["INVESTIGATING"],
+    },
+    {
+      code: "L2-BOARD-GROUPDIR-ACK",
+      seq: 35,
+      page: "10-2-36-group-director-board-ack.html",
+      role: "group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
       status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ",
       statusCode: "L2_PENDING_NOTICE_DRAFT",
-      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย รับมติจากกิจกรรมที่ 7 รอบ 2",
-      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ รับมติรอบ 2",
+      label: "[อยู่ระหว่างไต่สวน] ผอ.กลุ่มงานความเห็นแย้ง รับทราบมติคณะกรรมการ ป.ป.ท. และลงนาม",
+      stepName: "[อยู่ระหว่างไต่สวน] ผอ.กลุ่มงาน รับทราบมติบอร์ด",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
     },
@@ -434,24 +466,24 @@
       page: "10-2-11-secretariat-disclose-partial-notice-draft.html",
       role: "sub_secretariat",
       roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
-      status: "เลขานุการฯ ปกปิดข้อมูลส่วนบุคคล หรือเสนอ ผอ.กองกฎหมายลงนาม",
-      statusCode: "L2_PENDING_REDACTION",
+      status: "ผอ.กลุ่มงานความเห็นแย้งให้ความเห็นหนังสือแจ้งมติ",
+      statusCode: "L2_PENDING_NOTICE_GROUPDIR_REVIEW",
       label: "[เปิดเผย/บางส่วน] ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
       stepName: "[เปิดเผย/บางส่วน] เลขานุการฯ ร่างหนังสือแจ้งมติ",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
     },
     {
-      code: "L2-REDACTION",
+      code: "L2-NOTICE-GROUPDIR-REVIEW",
       seq: 19,
-      page: "10-2-12-secretariat-partial-redaction.html",
-      role: "sub_secretariat",
-      roleTitle: "ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร",
+      page: "10-2-37-group-director-notice-review.html",
+      role: "group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง",
       status: "ผอ.กองกฎหมายตรวจและลงนามหนังสือแจ้งมติ",
       statusCode: "L2_PENDING_NOTICE_SIGN",
-      label: "[เปิดเผยบางส่วน] ฝ่ายเลขานุการฯ จัดเตรียมเอกสารและปกปิดข้อมูลส่วนบุคคลที่อ่อนไหว (กรณีอนุญาตเปิดเผยบางส่วน)",
-      stepName: "[เปิดเผยบางส่วน] เลขานุการฯ ปกปิดข้อมูล",
-      includeIf: ["PARTIAL"],
+      label: "[เปิดเผย/บางส่วน] ผอ.กลุ่มงานความเห็นแย้ง ให้ความเห็นและลงนามหนังสือแจ้งมติ",
+      stepName: "[เปิดเผย/บางส่วน] ผอ.กลุ่มงาน ให้ความเห็น",
+      includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
     },
     {
@@ -479,6 +511,135 @@
       stepName: "[เปิดเผย/บางส่วน] ธุรการ ส่งแจ้งผล",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
+    },
+
+    /* ---------------------------------------------------------- FLOW 4
+       อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล (Flow 4, drawio หน้า 6 "อุทธรณ์คำสั่ง"
+       LAW0069-079) — เริ่มหลังสาย DENY ปิดสำนวนที่ L2-DENY-DISPATCH-COMMITTEE
+       (10-2-17, L2_CASE_CLOSED_DENY_ASSIGNED) แล้วผู้ยื่นคำขอใช้สิทธิ์อุทธรณ์
+       ดูรายละเอียดแผนเต็มที่ docs/10-2-flow4-appeal-plan.md */
+    {
+      code: "L2-APPEAL-INTAKE",
+      seq: 40,
+      page: "10-2-appeal-01-legal-admin-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองบริหารคดีพิจารณาเรื่องอุทธรณ์และมอบหมาย",
+      statusCode: "L2_PENDING_BUREAU_DIRECTOR_ASSIGN",
+      label: "[อุทธรณ์] ธุรการกองกฎหมาย รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ E-CMIS",
+      stepName: "[อุทธรณ์] ธุรการ รับเรื่อง+บันทึกระบบ",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-BUREAU-ASSIGN",
+      seq: 41,
+      page: "10-2-appeal-02-case-bureau-director-assign.html",
+      role: "case_bureau_director",
+      roleTitle: "ผู้อำนวยการกองบริหารคดี",
+      status: "ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร",
+      statusCode: "L2_PENDING_TRACKING_DIRECTOR_ASSIGN",
+      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาเรื่องอุทธรณ์และมอบหมาย",
+      stepName: "[อุทธรณ์] ผอ.กองบริหารคดี มอบหมาย",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-TRACKING-ASSIGN",
+      seq: 42,
+      page: "10-2-appeal-03-case-tracking-director-assign.html",
+      role: "case_tracking_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี",
+      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
+      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
+      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี พิจารณาและมอบหมายนิติกร",
+      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี มอบหมาย",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-CASE-OWNER-OPINION",
+      seq: 43,
+      page: "10-2-appeal-04-case-owner-opinion.html",
+      role: "original_officer",
+      roleTitle: "นิติกร/นักสืบเจ้าของเรื่อง (เจ้าของสำนวนเดิม)",
+      status: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำวาระ",
+      statusCode: "L2_PENDING_APPEAL_AGENDA",
+      label: "[อุทธรณ์] นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์และทำความเห็น",
+      stepName: "[อุทธรณ์] นิติกร บันทึกความเห็น",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-AGENDA",
+      seq: 44,
+      page: "10-2-appeal-05-secretariat-agenda.html",
+      role: "appeal_subcommittee_secretariat",
+      roleTitle: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์",
+      status: "คณะอนุกรรมการวินิจฉัยอุทธรณ์พิจารณาและมีคำวินิจฉัย",
+      statusCode: "L2_PENDING_APPEAL_RULING",
+      label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำวาระ",
+      stepName: "[อุทธรณ์] เลขาฯ จัดทำวาระ",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-RULING",
+      seq: 45,
+      page: "10-2-appeal-06-subcommittee-ruling.html",
+      role: "appeal_ruling_subcommittee",
+      roleTitle: "คณะอนุกรรมการวินิจฉัยอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลหรือข้อเท็จจริง",
+      status: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.",
+      statusCode: "L2_PENDING_APPEAL_MEMO",
+      label: "[อุทธรณ์] คณะอนุกรรมการวินิจฉัยอุทธรณ์ พิจารณาและมีคำวินิจฉัย",
+      stepName: "[อุทธรณ์] คณะอนุกรรมการฯ วินิจฉัย",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-SECRETARIAT-MEMO",
+      seq: 46,
+      page: "10-2-appeal-07-secretariat-memo.html",
+      role: "appeal_subcommittee_secretariat",
+      roleTitle: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์",
+      status: "ผอ.กลุ่มงานบริหารติดตามคดีลงนามรับรอง",
+      statusCode: "L2_PENDING_TRACKING_DIRECTOR_SIGN",
+      label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.",
+      stepName: "[อุทธรณ์] เลขาฯ จัดทำบันทึกเสนอ",
+      includeIf: ["DENY"],
+    },
+    {
+      /* ขั้นตอนแทรกใหม่ ไม่มีเลข LAW — ผู้ใช้ระบุให้เพิ่มการลงนามส่งต่อระหว่าง
+         สองระดับผู้อำนวยการ (ผอ.กลุ่มงานบริหารติดตามคดี -> ผอ.กองบริหารคดี)
+         ก่อนนำเรื่องเข้ากิจกรรมที่ 7 */
+      code: "L2-APPEAL-TRACKING-SIGN",
+      seq: 47,
+      page: "10-2-appeal-08-case-tracking-director-sign.html",
+      role: "case_tracking_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
+      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี ลงนามส่งต่อ ผอ.กองบริหารคดี",
+      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี ลงนามส่งต่อ",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-BOARD-PROPOSE",
+      seq: 48,
+      page: "10-2-appeal-09-case-bureau-director-board-propose.html",
+      role: "case_bureau_director",
+      roleTitle: "ผู้อำนวยการกองบริหารคดี",
+      status: "ธุรการกองกฎหมายออกเลขส่งและยื่นมติบอร์ด",
+      statusCode: "L2_PENDING_APPEAL_BOARD_DISPATCH",
+      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาและลงนามในฐานะผู้เสนอเรื่อง",
+      stepName: "[อุทธรณ์] ผอ.กองบริหารคดี ลงนามเสนอ",
+      includeIf: ["DENY"],
+    },
+    {
+      code: "L2-APPEAL-BOARD-DISPATCH",
+      seq: 49,
+      page: "10-2-appeal-10-legal-admin-board-submit.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "สิ้นสุด — ยื่นเรื่องเข้ากิจกรรมที่ 7 แล้ว",
+      statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD",
+      label: "[อุทธรณ์] ธุรการกองกฎหมาย ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7",
+      stepName: "[อุทธรณ์] ธุรการ ออกเลขส่ง+ยื่นบอร์ด",
+      includeIf: ["DENY"],
     },
   ];
 
@@ -549,6 +710,14 @@
      กับ L2_BOARD_RESOLVED_ROUND2 นี้โดยอัตโนมัติอยู่แล้ว (auto-reduce จากตำแหน่ง
      ติดกันในอาเรย์ STEPS ระหว่าง 10-2-29 กับ 10-2-30) ต่างกันแค่ข้อความสถานะ */
   ROUTES["L2_BOARD_RESOLVED_ROUND2"] = "10-2-30-legal-admin-receive-board-round2.html";
+
+  /* Flow 4 (อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล, docs/10-2-flow4-appeal-plan.md) —
+     L2-APPEAL-INTAKE (10-2-appeal-01) ต่อท้ายอาเรย์ STEPS หลัง L2-NOTICE-DISPATCH
+     (10-2-14) ซึ่งเป็นสถานะปิดสำนวนของ Flow 2 (ROUTES["L2_CASE_CLOSED_NOTICE_SENT"]
+     ถูกลบทิ้งแล้วด้านบนตั้งแต่ auto-reduce แรก จึงไม่ชนกัน) — L2_PENDING_APPEAL_INTAKE
+     ไม่มี step ไหนใน STEPS ผลิตออกมาโดยอัตโนมัติ (ยังไม่มีปุ่ม "ยื่นอุทธรณ์" จากคำร้อง
+     ที่ปิดสายเดิม ตามค่าเริ่มต้นที่เสนอไว้ในแผน) ต้องเติม route เข้าเองตรงนี้ */
+  ROUTES["L2_PENDING_APPEAL_INTAKE"] = "10-2-appeal-01-legal-admin-intake.html";
 
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
@@ -676,6 +845,69 @@
         '<div class="l2-doc-signblock">' + sigSlot("committeeDirectorOpinion", "ผู้อำนวยการกองกฎหมาย") + "</div>";
     }
     return html;
+  }
+
+  /* มติคณะกรรมการ ป.ป.ท. (view) — ค่าที่ธุรการบันทึกไว้ที่ 10-2-30 หลังได้รับแจ้ง
+     กลับจากกิจกรรมที่ 7 จริง ใช้ร่วมกันตั้งแต่ 10-2-35/36 (ผอ.กอง/ผอ.กลุ่มงาน
+     รับทราบ) ไปจนถึง 10-2-11 เป็นต้นไป (ถ้ามี — คำร้องที่ไม่ได้เดินสายรอบเสนอ
+     กิจกรรมที่ 7 ซ้ำจะไม่มีค่านี้เลย จึง return "" ให้ผู้เรียกซ่อนการ์ดไปเอง) */
+  function renderBoardResolutionCard(kase) {
+    const c = kase;
+    if (!c.l2BoardResolutionRound2Text) return "";
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+      '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
+
+    return (
+      '<div class="l2-doc-title">มติคณะกรรมการ ป.ป.ท.</div>' +
+      row("เลขที่หนังสือ/รหัสอ้างอิง", c.l2BoardApprovalRefRound2) +
+      row("วันที่ได้รับแจ้งมติ", formatThaiDate(c.l2BoardApprovalDateRound2)) +
+      section("มติคณะกรรมการ ป.ป.ท.", c.l2BoardResolutionRound2Text) +
+      (c.l2ReceiveNotesRound2 ? section("หมายเหตุ", c.l2ReceiveNotesRound2) : "")
+    );
+  }
+
+  /* หนังสือแจ้งมติผู้ยื่นคำขอ (view) — ใช้ร่วมกันตั้งแต่ 10-2-37 (ผอ.กลุ่มงาน
+     ให้ความเห็น) ถึง 10-2-13/10-2-14 (ผอ.กองกฎหมายลงนาม/ธุรการออกเลขส่ง) ความเห็น
+     และลายเซ็นของ ผอ.กลุ่มงานความเห็นแย้ง (noticeGroupDirReview) ยังคงใช้เดินเรื่อง
+     ในระบบตามปกติที่ 10-2-37 แต่ตามต้นฉบับจริงไม่ปรากฏบนเอกสารฉบับพิมพ์ จึงไม่แสดง
+     ในฟังก์ชันนี้ — ไม่รวมบล็อกลายเซ็นผู้อำนวยการกองกฎหมาย (noticeApprover) เพราะ
+     เป็นลายเซ็นของหน้าตัวเองที่ 10-2-13 จัดการเองอยู่แล้ว */
+  function renderNoticeDoc(kase) {
+    const c = kase;
+    const row = (label, value) =>
+      '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
+      '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
+    const para = (value) => '<div class="l2-doc-body">' + (value || "") + "</div>";
+    const section = (label, value) =>
+      '<div class="l2-doc-section"><span class="l2-doc-label" style="display: block; text-indent: 2.5em">' + label +
+      '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
+
+    return (
+      '<div class="l2-doc-title">บันทึกข้อความ</div>' +
+      row("ส่วนราชการ", c.l2DivisionName) +
+      row("โทร.", c.l2DivisionPhone) +
+      row("ที่", c.l2NoticeDocNo) +
+      row("วันที่", formatThaiDate(c.l2NoticeDocDate)) +
+      row("เรื่อง", "แจ้งมติการประชุมคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารฯ" + (c.l2MeetingNo ? " ครั้งที่ " + c.l2MeetingNo : "")) +
+      row("เรียน", c.l2NoticeRecipient) +
+      para("ตามที่ " + (c.requesterName || "ผู้ยื่นคำขอ") + " ได้ยื่นคำขอเปิดเผยข้อมูลข่าวสาร เรื่อง " + (c.title || "") + " นั้น") +
+      para(
+        "สำนักงาน ป.ป.ท. โดยคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารของคณะกรรมการ ป.ป.ท. พิจารณาแล้วในการประชุมครั้งที่ " +
+        (c.l2MeetingNo || "......") + " เมื่อวันที่ " + (formatThaiDate(c.l2MeetingDate) || "...............") +
+        " เห็นว่า " + (c.l2CommitteeOpinion || "")) +
+      section("มติที่ประชุม",
+        "คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสารของคณะกรรมการ ป.ป.ท. มีมติ" + (c.l2ResolutionTypeName || "") + " ดังนี้<br />" +
+        (c.l2NoticeBody || "")) +
+      (c.l2ResolutionType === "PARTIAL" && c.l2NoticeAppointmentDate
+        ? row("นัดหมายตรวจดู/คัดถ่ายเอกสาร", formatThaiDate(c.l2NoticeAppointmentDate))
+        : "") +
+      para("ทั้งนี้ ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป") +
+      para("จึงเรียนมาเพื่อโปรดทราบและพิจารณาดำเนินการ")
+    );
   }
 
   function labelOf(list, value) {
@@ -1436,6 +1668,38 @@
       .join("");
   }
 
+  /* แสดงลายเซ็นของขั้นตอนก่อนหน้าทั้งหมด (Flow 4 อุทธรณ์) — slots คือ
+     [{slot, title}] เรียงตามลำดับที่ลงนามจริง ใช้ร่วมกันตั้งแต่หน้า
+     10-2-appeal-03 เป็นต้นไป (10-2-appeal-01 เป็นแค่ธุรการบันทึกรับเรื่อง
+     ไม่มีลายเซ็น จึงยังไม่มีอะไรให้แสดงที่ 10-2-appeal-02) */
+  function renderSignatureList(containerId, kase, slots) {
+    const el = document.getElementById(containerId);
+    if (!el || !slots || !slots.length) return;
+    const sigs = signState(kase);
+    el.innerHTML = slots
+      .map(function (s) {
+        const sig = sigs[s.slot];
+        const img =
+          sig && sig.image
+            ? '<img class="l2-sig-img" src="' + sig.image + '" alt="ลายเซ็น" />'
+            : '<div class="l2-sig-placeholder">รอลงนาม</div>';
+        const when =
+          sig && sig.signedAt
+            ? '<div class="l2-sign-when">' + sig.signedAt + "</div>"
+            : "";
+        return (
+          '<div class="l2-sig-slot">' +
+          img +
+          '<div class="l2-sig-role">' +
+          s.title +
+          "</div>" +
+          when +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+
   /* เปิด/ดาวน์โหลดไฟล์จริงไม่ได้ในmockup นี้ — แสดง toast แทน (ใช้แบบเดียวกับ
      07-group-director-approval.html ที่มีปุ่ม "ดาวน์โหลดร่าง" อยู่แล้ว) */
   function mockOpenFile(name) {
@@ -1841,11 +2105,14 @@
     getEditorText: getEditorText,
     getEditorHTML: getEditorHTML,
     renderAttachments: renderAttachments,
+    renderSignatureList: renderSignatureList,
     renderMemoDocument: renderMemoDocument,
     renderResolutionSheet: renderResolutionSheet,
     choiceGridHtml: choiceGridHtml,
     renderCommitteeAttachSheet: renderCommitteeAttachSheet,
     renderCommitteeMemoDoc: renderCommitteeMemoDoc,
+    renderBoardResolutionCard: renderBoardResolutionCard,
+    renderNoticeDoc: renderNoticeDoc,
     mockOpenFile: mockOpenFile,
     zoomDoc: zoomDoc,
     initDocZoom: initDocZoom,

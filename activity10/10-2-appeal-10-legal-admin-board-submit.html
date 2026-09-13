@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ผอ.กองกฎหมาย พิจารณาและให้ความเห็น | E-CMIS กิจกรรมที่ 10.2
+      ธุรการกองกฎหมาย ออกเลขส่งและยื่นมติบอร์ด | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -50,12 +50,16 @@
       .form-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
       .form-card-header { padding: 14px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-title); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 1.05em; }
       .form-card-body { padding: 20px; }
-
+      .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
       .form-group { display: flex; flex-direction: column; margin-bottom: 16px; }
       .form-group:last-child { margin-bottom: 0; }
-      .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-      .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); }
+      .form-group label { font-size: 0.88em; font-weight: 600; color: var(--text-title); margin-bottom: 6px; }
+      .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 0.9em; background-color: var(--bg-card); color: var(--text-title); height: 38px; }
+      .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
       textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
+      .read-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-title); font-size: 0.9em; min-height: 38px; display: flex; align-items: center; }
+      .read-box-textarea { min-height: 70px; align-items: flex-start; white-space: pre-line; }
+      .font-monospace { font-family: monospace; }
 
       .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; margin-bottom: 20px; }
       .btn { padding: 0 20px; border-radius: 6px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; white-space: nowrap; text-decoration: none; }
@@ -91,7 +95,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ผอ.กองกฎหมาย พิจารณาและให้ความเห็น</span>
+            <span style="color: var(--text-title); font-weight: 600">ธุรการกองกฎหมาย ออกเลขส่งและยื่นมติบอร์ด</span>
           </div>
         </div>
 
@@ -103,7 +107,7 @@
           </div>
           <div class="icon-btn-group">
             <button class="circle-icon-btn" onclick="toggleTheme()" id="themeBtn" title="สลับโหมดสี">🌙</button>
-            <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">2</span></div>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">🔔<span class="noti-badge">1</span></div>
           </div>
           <div class="user-profile-top" onclick="toggleProfileDropdown(event)" title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ">
             <div class="avatar" id="userAvatar">-</div>
@@ -136,7 +140,7 @@
         <div class="stepper-card">
           <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
           <div class="stepper" id="stepperPart1"></div>
-          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
           <div class="stepper" id="stepperPart2"></div>
         </div>
 
@@ -144,8 +148,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังผู้อำนวยการกลุ่มงานความเห็นแย้งอนุมัติที่หน้า
-            <a href="10-2-27-group-director-committee-approve.html">ผอ.กลุ่มงานความเห็นแย้ง พิจารณาอนุมัติ</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลังผู้อำนวยการกองบริหารคดีลงนามในฐานะผู้เสนอเรื่องที่หน้า
+            <a href="10-2-appeal-09-case-bureau-director-board-propose.html">ผอ.กองบริหารคดี ลงนามเสนอกิจกรรมที่ 7</a>
           </div>
         </div>
 
@@ -153,59 +157,80 @@
           <div class="l2-note l2-note-info">
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              เอกสารฉบับนี้จัดทำและลงนามโดยฝ่ายเลขานุการฯ ในฐานะผู้เสนอเรื่องแล้ว และแสดงแบบ<strong>อ่านอย่างเดียว</strong>
-              บทบาทนี้ให้ความเห็นและลงนามได้เฉพาะช่อง <strong>๕. ความเห็นผู้อำนวยการกองกฎหมาย</strong> เท่านั้น
-              หลังลงนามแล้วธุรการกองกฎหมายจะเป็นผู้ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท. ต่อไป
-            </div>
-          </div>
-
-          <div id="sendBackNotice" class="l2-note l2-note-warn d-none">
-            <i class="fa-solid fa-rotate-left"></i>
-            <div>
-              <strong>คำร้องนี้ถูกส่งกลับจาก ผอ.กลุ่มงานความเห็นแย้ง</strong><br />
-              เหตุผล: <span id="sendBackReasonText"></span>
+              ผู้อำนวยการกองบริหารคดีลงนามในฐานะผู้เสนอเรื่องแล้ว ธุรการกองกฎหมายออกเลขหนังสือส่งและยื่นเรื่องเข้ากิจกรรมที่ 7 อย่างเป็นทางการ ขั้นตอนนี้เป็นขั้นตอนสุดท้ายของ Flow การอุทธรณ์ในรอบนี้
             </div>
           </div>
 
           <div class="form-card">
             <div class="form-card-header">
-              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิการ</span>
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>ข้อมูลคำอุทธรณ์</span>
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"><i class="fa-solid fa-hashtag me-1"></i><span id="f_caseNo">-</span></span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ชื่อเรื่อง</label>
+                <div class="read-box" id="f_title">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ยื่นคำขอ (ผู้อุทธรณ์)</label>
+                  <div class="read-box" id="f_requesterName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>มติเดิม</label>
+                  <div class="read-box" id="f_resolution">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-inbox text-primary me-2"></i>ข้อมูลจากขั้นตอนก่อนหน้า</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ความเห็นเพิ่มเติม (ผอ.กองบริหารคดี)</label>
+                <div class="read-box" id="f_boardProposeNotes">-</div>
+              </div>
+              <div class="form-group">
+                <label>ลายเซ็นจากขั้นตอนก่อนหน้า</label>
+                <div class="l2-doc-signblock" id="f_signatures"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-signature text-primary me-2"></i>บันทึกคำวินิจฉัยอุทธรณ์</span>
             </div>
             <div class="form-card-body">
               <div class="l2-doc" id="memoDoc"></div>
             </div>
           </div>
 
-          <div class="form-card">
-            <div class="form-card-header">
-              <span><i class="fa-solid fa-file-circle-check text-success me-2"></i>แผ่นสรุปมติคณะอนุกรรมการพิจารณากลั่นกรองฯ</span>
-            </div>
-            <div class="form-card-body">
-              <div class="l2-doc" id="committeeSheet"></div>
-            </div>
-          </div>
-
           <div class="form-card" style="border: 2px solid #1e3a8a">
-            <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
-              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>๕. ความเห็นผู้อำนวยการกองกฎหมาย</span>
-              <span class="badge" style="background: #1e3a8a; color: #fff">ผอ.กองกฎหมาย</span>
+            <div class="form-card-header" style="background: rgba(30,58,138,0.05)">
+              <span><i class="fa-solid fa-paper-plane text-primary me-2"></i>ออกเลขส่งและยื่นเรื่อง</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span>
             </div>
             <div class="form-card-body">
-              <div class="form-group">
-                <label>ความเห็น <span style="color: #dc2626">*</span></label>
-                <textarea id="in_opinion" class="form-control" rows="3" placeholder="ระบุความเห็น..."></textarea>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือส่ง</label>
+                  <input type="text" id="in_docNo" class="form-control font-monospace" />
+                </div>
+                <div class="form-group">
+                  <label>วันที่ส่ง</label>
+                  <input type="date" id="in_docDate" class="form-control" />
+                </div>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
-              <div class="d-flex gap-2">
-                <button type="button" class="btn btn-secondary" onclick="sendBack()">
-                  <i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง
-                </button>
-                <button type="button" class="btn btn-primary" onclick="submitForm()">
-                  <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
-                </button>
-              </div>
+              <button type="button" class="btn btn-primary" onclick="submitForm()">
+                <i class="fa-solid fa-paper-plane me-1"></i>ออกเลขส่งและยื่นมติบอร์ด
+              </button>
             </div>
           </div>
         </div>
@@ -213,16 +238,22 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-app.js?v=20260909_1"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20260907_4"></script>
+    <script src="assets/ecmis-activity10.js?v=20260909_1"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
+    <script src="assets/ecmis-10-2.js?v=20260909_1"></script>
 
     <script>
-      const STEP_CODE = "L2-COMMITTEE-DIRECTOR-OPINION";
+      const STEP_CODE = "L2-APPEAL-BOARD-DISPATCH";
       const STEP = Activity102.stepByCode(STEP_CODE);
       let currentCase = null;
+
+      const RULING_LABELS = {
+        UPHOLD: "เห็นด้วยกับคำสั่งเดิม (ยืนไม่เปิดเผย)",
+        REVERSE_FULL: "กลับคำสั่งเดิม (ให้เปิดเผยทั้งหมด)",
+        REVERSE_PARTIAL: "กลับคำสั่งบางส่วน (ให้เปิดเผยบางส่วน)",
+      };
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS102.initUserProfile();
@@ -231,107 +262,98 @@
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
 
+      /* คำร้องที่รอขั้นตอนนี้ = สถานะที่ "ขั้นก่อนหน้า" (L2-APPEAL-BOARD-PROPOSE)
+         เขียนไว้ คือ L2_PENDING_APPEAL_BOARD_DISPATCH — ไม่ใช่ statusCode ของ STEP
+         หน้านี้เอง (L2_APPEAL_SUBMITTED_TO_BOARD ซึ่งเป็น terminal status ที่หน้านี้
+         จะเขียนเป็นค่าสุดท้าย ไม่มีหน้าถัดไปในสโคปนี้) */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        currentCase = Activity102.getCase(id, "L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED");
+        currentCase = Activity102.getCase(id, "L2_PENDING_APPEAL_BOARD_DISPATCH");
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
 
-        if (!currentCase) {
+        if (!currentCase || currentCase.statusCode !== "L2_PENDING_APPEAL_BOARD_DISPATCH") {
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
-          ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE);
           return;
         }
         ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
 
+      /* เลขที่หนังสือส่ง — สุ่มเลขต่อชุดเดียวกับที่ใช้ในหน้าธุรการอื่นๆ ของ Flow นี้
+         (ปป 0002/xxxx) ให้ดูสอดคล้องกัน */
+      function suggestDocNo() {
+        const seq = String(5200 + Math.floor(Math.random() * 400)).padStart(4, "0");
+        return "ปป 0002/" + seq;
+      }
+
       function renderMemoDoc() {
+        const c = currentCase;
+        const rulingLabel = RULING_LABELS[c.l2AppealRulingType] || "-";
+        const section = (label, value) =>
+          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
+          '</span><div class="l2-doc-body">' + (value || "-") + "</div></div>";
         document.getElementById("memoDoc").innerHTML =
-          ECMIS102.renderCommitteeMemoDoc(currentCase, false);
+          '<div class="l2-doc-title">บันทึกคำวินิจฉัยอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลหรือข้อเท็จจริง</div>' +
+          section("ผลคำวินิจฉัย", rulingLabel) +
+          section("เหตุผลประกอบคำวินิจฉัย", c.l2AppealRulingReason);
       }
 
       function populate() {
-        ECMIS102.renderStatusBadges("statusBadges", currentCase);
-        renderMemoDoc();
-        document.getElementById("committeeSheet").innerHTML =
-          ECMIS102.renderCommitteeAttachSheet(currentCase);
-        if (currentCase.l2CommitteeGroupApproveSendBackReason) {
-          document.getElementById("sendBackNotice").classList.remove("d-none");
-          document.getElementById("sendBackReasonText").textContent =
-            currentCase.l2CommitteeGroupApproveSendBackReason;
-        }
-      }
+        const c = currentCase;
+        document.getElementById("f_caseNo").textContent = c.id;
+        document.getElementById("f_title").textContent = c.title || "-";
+        document.getElementById("f_requesterName").textContent = c.requesterName || "-";
+        document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
 
-      function sendBack() {
-        Swal.fire({
-          icon: "warning",
-          title: "ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง",
-          input: "textarea",
-          inputLabel: "เหตุผลที่ส่งกลับ",
-          inputPlaceholder: "ระบุเหตุผล...",
-          showCancelButton: true,
-          confirmButtonText: "ส่งกลับ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#dc2626",
-          cancelButtonColor: "#64748b",
-          inputValidator: (value) => (!value ? "กรุณาระบุเหตุผลที่ส่งกลับ" : undefined),
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          Activity102.unsign(currentCase.id, "committeeGroupApprove");
-          Activity102.advance(currentCase.id, STEP_CODE, {
-            statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
-            status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
-            assignedRole: "group_director",
-            officer: ECMIS102.signerLabel("group_director"),
-            l2CommitteeDirectorSendBackReason: res.value.trim(),
-          });
-          Swal.fire({
-            icon: "success",
-            title: "ส่งกลับเรียบร้อย",
-            text: "ส่งกลับให้ ผอ.กลุ่มงานความเห็นแย้ง พิจารณาใหม่แล้ว",
-            timer: 1900,
-            showConfirmButton: false,
-          }).then(ECMIS102.goInbox);
-        });
+        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01 ถึง 10-2-appeal-09) */
+        document.getElementById("f_boardProposeNotes").textContent = c.l2AppealBoardProposeNotes || "-";
+        ECMIS102.renderSignatureList("f_signatures", c, [
+          { slot: "appealBureauDirectorAssign", title: "ผู้อำนวยการกองบริหารคดี" },
+          { slot: "appealTrackingDirectorAssign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี" },
+          { slot: "appealCaseOwnerOpinion", title: "นิติกรเจ้าของสำนวน" },
+          { slot: "appealAgenda", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์" },
+          { slot: "appealRuling", title: "คณะอนุกรรมการวินิจฉัยอุทธรณ์" },
+          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (เสนอ)" },
+          { slot: "appealTrackingSign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี (รับรอง)" },
+          { slot: "appealBureauDirectorBoardPropose", title: "ผู้อำนวยการกองบริหารคดี (เสนอเรื่อง)" },
+        ]);
+        renderMemoDoc();
+
+        document.getElementById("in_docNo").value = suggestDocNo();
+        document.getElementById("in_docDate").value = new Date().toISOString().slice(0, 10);
       }
 
       function submitForm() {
-        const opinion = document.getElementById("in_opinion").value.trim();
-        if (!opinion) {
-          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุความเห็น", confirmButtonColor: "#1e3a8a" });
-          return;
-        }
-        if (Activity102.isSigned(currentCase, "committeeDirectorOpinion")) {
-          Swal.fire({ icon: "info", title: "ลงนามแล้ว", text: "ให้ความเห็นและลงนามเรียบร้อยแล้ว", confirmButtonColor: "#1e3a8a" });
+        const docNo = document.getElementById("in_docNo").value.trim();
+        const docDate = document.getElementById("in_docDate").value;
+
+        if (!docNo || !docDate) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุเลขที่หนังสือส่งและวันที่ส่ง",
+            confirmButtonColor: "#1e3a8a",
+          });
           return;
         }
 
-        ECMIS102.openSignatureModal(
-          {
-            title: "ลงนามให้ความเห็น (ผู้อำนวยการกองกฎหมาย)",
-            signer: ECMIS102.signerLabel("dir_legal"),
-            certId: "PACC-DIRLEGAL-2569-102",
-          },
-          (image) => {
-            Activity102.sign(currentCase.id, "committeeDirectorOpinion", image, { position: "ผู้อำนวยการกองกฎหมาย" });
-            Activity102.advance(currentCase.id, STEP_CODE, {
-              l2CommitteeDirectorOpinionText: opinion,
-              assignedRole: "admin_legal",
-              officer: ECMIS102.signerLabel("admin_legal"),
-            });
+        Activity102.advance(currentCase.id, STEP_CODE, {
+          l2AppealBoardDispatchDocNo: docNo,
+          l2AppealBoardDispatchDate: docDate,
+        });
 
-            Swal.fire({
-              icon: "success",
-              title: "ให้ความเห็นและลงนามเรียบร้อย",
-              html:
-                '<div class="emd-summary">' +
-                "<p><strong>ขั้นตอนต่อไป:</strong> ธุรการกองกฎหมาย ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.</p></div>",
-              confirmButtonColor: "#1e3a8a",
-              confirmButtonText: "กลับหน้าคิวงาน",
-            }).then(ECMIS102.goInbox);
-          },
-        );
+        Swal.fire({
+          icon: "success",
+          title: "ยื่นมติบอร์ดเรียบร้อย",
+          html:
+            '<div class="emd-summary">' +
+            "<p>ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7 เรียบร้อยแล้ว</p>" +
+            "<p><strong>สิ้นสุดขั้นตอน:</strong> คำร้องนี้เป็นขั้นตอนสุดท้ายของ Flow การอุทธรณ์ในรอบนี้ (รอผลจากกิจกรรมที่ 7 ซึ่งอยู่นอกสโคปที่ดำเนินการในระบบนี้)</p></div>",
+          confirmButtonColor: "#1e3a8a",
+          confirmButtonText: "กลับหน้าคิวงาน",
+        }).then(ECMIS102.goInbox);
       }
 
       function toggleTheme() {
