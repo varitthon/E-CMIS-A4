@@ -198,6 +198,10 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
  background:var(--ecmis-navy); color:#fff; border-color:var(--ecmis-navy); transform:translateY(-1px);
 }
 .role-badge-btn .badge-login-id{ font-weight:700; color:var(--ecmis-gold); font-size:.7rem; }
+.role-quick-group{ margin-bottom:.85rem; }
+.role-quick-group:last-child{ margin-bottom:0; }
+.role-quick-group-label{ font-size:.7rem; font-weight:600; color:#64748b; margin-bottom:.4rem; }
+.role-quick-chips{ display:flex; flex-wrap:wrap; gap:6px; }
 
 /* ThaID panel */
 .thaid-panel{ text-align:center; }
@@ -373,6 +377,13 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
  </button>
  </form>
 
+ <div class="role-quick-box" id="roleQuickBox">
+ <div class="role-quick-title">
+ <span><i class="fa-solid fa-users me-1"></i>เลือกบทบาทด่วน (สำหรับทดสอบ)</span>
+ </div>
+ <div id="roleQuickGroups"></div>
+ </div>
+
  </div>
 
  <!-- ThaID panel -->
@@ -466,6 +477,7 @@ body.high-contrast .auth-tab.active{ background:#fff !important; color:#000 !imp
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/ecmis-app.js?v=20260904_6"></script>
+<script src="assets/ecmis-capture.js"></script>
 <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
 
 <script>
@@ -475,9 +487,53 @@ const ACTIVE_ROLE_IDS = [
  'case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer',
  // กิจกรรม 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร
  'sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen',
+ // กิจกรรม 10.2 — Flow 4 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล
+ 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer',
  // กิจกรรม 10.3 — คดีศาลปกครอง
  'case_group_director', 'case_legal_officer'
 ];
+
+// จัดกลุ่มบทบาทสำหรับ chip list ด่วน — ตามชุดเดียวกับ ACTIVE_ROLE_IDS ด้านบน
+// เพิ่ม/แก้บทบาทใน ACTIVE_ROLE_IDS แล้วต้องมาแก้ ids ในกลุ่มนี้คู่กันด้วย
+const ROLE_GROUPS = [
+ { label: 'กิจกรรมที่ 10.1', ids: ['case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
+ { label: 'กิจกรรมที่ 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร', ids: ['sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen'] },
+ { label: 'กิจกรรมที่ 10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer'] },
+ { label: 'กิจกรรมที่ 10.3 — คดีศาลปกครอง', ids: ['case_group_director', 'case_legal_officer'] },
+];
+
+function renderRoleQuickBox(){
+ const container = document.getElementById('roleQuickGroups');
+ if (!container || typeof ECMIS === 'undefined' || !ECMIS.ROLES) return;
+ container.innerHTML = '';
+ ROLE_GROUPS.forEach(group => {
+ const roles = group.ids.map(id => ECMIS.ROLES.find(r => r.id === id)).filter(Boolean);
+ if (!roles.length) return;
+
+ const groupEl = document.createElement('div');
+ groupEl.className = 'role-quick-group';
+
+ const labelEl = document.createElement('div');
+ labelEl.className = 'role-quick-group-label';
+ labelEl.textContent = group.label;
+ groupEl.appendChild(labelEl);
+
+ const chipsEl = document.createElement('div');
+ chipsEl.className = 'role-quick-chips';
+ roles.forEach(r => {
+ const btn = document.createElement('button');
+ btn.type = 'button';
+ btn.className = 'role-badge-btn';
+ btn.title = r.name + ' (' + r.org + ')';
+ btn.textContent = r.title;
+ btn.addEventListener('click', () => selectQuickRole(r.login));
+ chipsEl.appendChild(btn);
+ });
+ groupEl.appendChild(chipsEl);
+
+ container.appendChild(groupEl);
+ });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
  if (typeof ECMIS !== 'undefined' && ECMIS.ROLES) {
@@ -485,10 +541,12 @@ document.addEventListener('DOMContentLoaded', () => {
  // 1. Populate Datalist options
  const datalist = document.getElementById('loginUsernameHints');
  if (datalist) {
- datalist.innerHTML = activeRoles.map(r => 
+ datalist.innerHTML = activeRoles.map(r =>
  `<option value="${r.login}">${r.title} — ${r.name} (${r.group})</option>`
  ).join('');
  }
+ // 2. Populate quick-select role chips (some browsers render <datalist> poorly)
+ renderRoleQuickBox();
  }
 });
 

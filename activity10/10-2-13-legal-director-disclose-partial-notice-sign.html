@@ -138,7 +138,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังฝ่ายเลขานุการฯ จัดทำร่างหนังสือแจ้งมติ (และปกปิดข้อมูล กรณีอนุญาตบางส่วน) เรียบร้อยแล้ว
+            คำร้องจะมาถึงขั้นตอนนี้หลัง ผอ.กลุ่มงานความเห็นแย้ง ให้ความเห็นและลงนามหนังสือแจ้งมติที่หน้า
+            <a href="10-2-37-group-director-notice-review.html">ผอ.กลุ่มงานความเห็นแย้ง ให้ความเห็นหนังสือแจ้งมติ</a>
           </div>
         </div>
 
@@ -172,6 +173,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260904_3"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_3"></script>
@@ -209,12 +211,6 @@
       function renderNoticeDoc() {
         const c = currentCase;
         const sigs = Activity102.signState(c);
-        const row = (label, value) =>
-          '<div class="l2-doc-row"><span class="l2-doc-label">' + label +
-          '</span><span class="l2-doc-value">' + (value || "") + "</span></div>";
-        const section = (label, value) =>
-          '<div class="l2-doc-section"><span class="l2-doc-label">' + label +
-          '</span><div class="l2-doc-body">' + (value || "") + "</div></div>";
         const s = sigs.noticeApprover;
         const img = s && s.image
           ? '<img class="l2-sig-img" src="' + s.image + '" alt="ลายเซ็น" />'
@@ -222,12 +218,7 @@
         const when = s && s.signedAt ? '<div class="l2-sign-when">' + s.signedAt + "</div>" : "";
 
         document.getElementById("noticeDoc").innerHTML =
-          '<div class="l2-doc-title">หนังสือแจ้งมติผู้ยื่นคำขอ</div>' +
-          row("เรียน", c.l2NoticeRecipient) +
-          section("เนื้อหา", c.l2NoticeBody) +
-          (c.l2ResolutionType === "PARTIAL" && c.l2NoticeAppointmentDate
-            ? row("นัดหมายตรวจดู/คัดถ่ายเอกสาร", ECMIS102.formatThaiDate(c.l2NoticeAppointmentDate))
-            : "") +
+          ECMIS102.renderNoticeDoc(c) +
           '<div class="l2-doc-signblock">' +
           '<div class="l2-sig-slot">' + img +
           '<div class="l2-sig-name">(' + "ชื่อ-สกุล" + ")</div>" +

@@ -575,6 +575,15 @@
             >
               <i class="fa-solid fa-rotate me-1"></i>รีเซ็ต
             </button>
+            <button
+              class="btn btn-outline"
+              id="btnAppealIntakeTest"
+              onclick="goToAppealIntake()"
+              title="รับเรื่องอุทธรณ์คำสั่งไม่เปิดเผยข้อมูล (Flow 4)"
+              style="display: none"
+            >
+              <i class="fa-solid fa-gavel me-1"></i>รับเรื่องอุทธรณ์
+            </button>
             <a
               href="02-board-intake.html"
               class="btn btn-primary"
@@ -717,6 +726,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
+    <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260907_4"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
@@ -1643,6 +1653,7 @@
           currentCategory = null;
           document.getElementById("inboxDetail").style.display = "none";
           document.getElementById("emptyState").style.display = "";
+          updateCategoryScopedButtons();
           return;
         }
 
@@ -1652,7 +1663,17 @@
         document.getElementById("inboxDetail").style.display = "";
 
         updateDynamicFilter(cat);
+        updateCategoryScopedButtons();
         renderTable();
+      }
+
+      /* ปุ่มที่ผูกกับหมวดหมู่งานหนึ่ง ๆ เท่านั้น (เช่น ปุ่มทดสอบ Flow 4 ผูกกับ
+         "ขอเปิดเผยข้อมูลข่าวสาร" 10.2) ให้โชว์เฉพาะตอนเลือกหมวดหมู่นั้นอยู่ */
+      function updateCategoryScopedButtons() {
+        const btnAppeal = document.getElementById("btnAppealIntakeTest");
+        if (btnAppeal) {
+          btnAppeal.style.display = currentCategory === "10.2" ? "" : "none";
+        }
       }
 
       function onDynamicSelectChange() {
@@ -1939,6 +1960,30 @@
             });
           }
         });
+      }
+
+      /* ปุ่ม "รับเรื่องอุทธรณ์" — พาไปหน้า 10-2-appeal-01 แบบทั่วไป (ไม่ผูกกับ
+         คำร้องใดคำร้องหนึ่ง) เพราะอาจมีคำร้องมากกว่าหนึ่งรายการรอรับเรื่อง
+         พร้อมกัน — ตัวหน้าเองจะแสดงช่องให้เลือกคำร้องเมื่อเปิดโดยไม่มี ?id=
+         (ต่างจากปุ่ม "ดำเนินการ" รายแถวในตารางที่ผูก id คำร้องนั้นมาให้ตรง ๆ
+         อยู่แล้วผ่าน handleCaseAction ด้านบน) — เช็คก่อนว่ามีคำร้องรออยู่จริง
+         เพื่อไม่ให้เปิดหน้าไปเจอ "ยังไม่มีคำร้องในขั้นตอนนี้" เปล่า ๆ */
+      function goToAppealIntake() {
+        if (typeof Activity102 === "undefined") return;
+        const all = (Activity10.getCases && Activity10.getCases()) || [];
+        const hasPending = all.some(function (c) {
+          return c.statusCode === "L2_PENDING_APPEAL_INTAKE";
+        });
+        if (!hasPending) {
+          Swal.fire({
+            icon: "info",
+            title: "ไม่มีคำร้องที่รอรับเรื่องอุทธรณ์",
+            text: "ยังไม่มีคำร้องในสถานะรอรับเรื่องอุทธรณ์ (L2_PENDING_APPEAL_INTAKE) ในขณะนี้",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        window.location.href = "10-2-appeal-01-legal-admin-intake.html";
       }
 
       /* คำร้องสาย DISCLOSE/PARTIAL + อยู่ระหว่างไต่สวนที่เดินผ่านรอบเสนอ

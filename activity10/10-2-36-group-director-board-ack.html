@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ธุรการกองกฎหมาย ให้ความเห็นเบื้องต้นและลงนาม | E-CMIS กิจกรรมที่ 10.2
+      ผอ.กลุ่มงานความเห็นแย้ง รับทราบมติคณะกรรมการ ป.ป.ท. | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,6 +38,8 @@
       .stepper-card { background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border-color); padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow-x: auto; }
       .stepper { display: flex; justify-content: flex-start; align-items: flex-start; position: relative; min-width: 900px; gap: 2px; }
       .stepper::before { content: ''; position: absolute; top: 18px; left: 30px; right: 30px; height: 2px; background: var(--border-color); z-index: 1; }
+      .stepper-row-label { font-size: 0.78em; font-weight: 700; color: var(--text-title); margin: 0 0 10px 2px; display: flex; align-items: center; gap: 6px; }
+      .stepper-row-label:not(:first-child) { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--border-color); }
       .step-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 0 0 92px; }
       .step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-body); border: 2px solid var(--border-color); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9em; margin-bottom: 6px; }
       .step-item.active .step-circle { background: #1e3a8a; border-color: #1e3a8a; color: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.2); }
@@ -64,11 +66,6 @@
 
       .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; display: inline-block; white-space: nowrap; }
       .d-none { display: none !important; }
-
-      .btn-mic { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #2563eb; font-size: 12px; vertical-align: middle; margin-left: 6px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-      .btn-mic:hover { background: #2563eb; color: #fff; border-color: #2563eb; transform: scale(1.08); }
-      .btn-mic.recording { background: #dc2626 !important; color: #fff !important; border-color: #b91c1c !important; animation: pulse-mic 1.2s infinite ease-in-out; }
-      @keyframes pulse-mic { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.6); transform: scale(1); } 50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); transform: scale(1.1); } 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); transform: scale(1); } }
     </style>
   </head>
   <body>
@@ -94,7 +91,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ธุรการกองกฎหมาย ให้ความเห็นเบื้องต้น</span>
+            <span style="color: var(--text-title); font-weight: 600">ผอ.กลุ่มงานความเห็นแย้ง รับทราบมติคณะกรรมการ ป.ป.ท.</span>
           </div>
         </div>
 
@@ -135,99 +132,74 @@
       </div>
 
       <div class="content">
+        <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper" id="stepper"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
+          <div class="stepper" id="stepperPart2"></div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังจากคณะอนุกรรมการฯ มีมติที่หน้า
-            <a href="10-2-06-subcommittee-resolution.html">คณะอนุกรรมการฯ มีมติ</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลัง ผอ.กองกฎหมาย รับทราบและลงนามที่หน้า
+            <a href="10-2-35-legal-director-board-ack.html">ผอ.กองกฎหมาย รับทราบมติคณะกรรมการ ป.ป.ท.</a>
           </div>
         </div>
 
         <div id="pageBody">
+          <div class="l2-note l2-note-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              ผู้อำนวยการกองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท. และลงนามแล้ว
+              บทบาทนี้มีหน้าที่รับทราบและลงนามเป็นลำดับสุดท้ายก่อนส่งต่อ หลังลงนามแล้วฝ่ายเลขานุการคณะอนุกรรมการฯ จะเป็นผู้จัดทำหนังสือแจ้งมติต่อไป
+            </div>
+          </div>
+
           <div class="form-card">
             <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร</span
-              >
-              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
-                ><i class="fa-solid fa-hashtag me-1"></i
-                ><span id="f_caseNo">-</span></span
-              >
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>มติการประชุมอนุกรรมการฯ ที่นำเสนอเลขาธิการ</span>
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขรับกองกฎหมาย</label>
-                  <div class="read-box font-monospace" id="f_lawReceiveNo">-</div>
-                </div>
-                <div class="form-group">
-                  <label>ช่องทางการยื่นคำขอ</label>
-                  <div class="read-box" id="f_requestChannel">-</div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ชื่อเรื่อง</label>
-                <div class="read-box" style="font-weight: 600" id="f_title">-</div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ผู้ยื่นคำขอ</label>
-                  <div class="read-box" id="f_requesterName">-</div>
-                </div>
-                <div class="form-group">
-                  <label>ประเภทผู้ยื่นคำขอ</label>
-                  <div class="read-box" id="f_requesterType">-</div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ข้อมูลข่าวสารที่ขอเปิดเผย</label>
-                <div class="read-box read-box-textarea" id="f_requestedInfo">-</div>
-              </div>
-              <div class="form-group">
-                <label>เอกสารแนบประกอบคำร้อง</label>
-                <div id="f_attachments"></div>
-              </div>
+              <div class="l2-doc" id="memoDoc"></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-file-circle-check text-success me-2"></i>แผ่นสรุปมติคณะอนุกรรมการพิจารณากลั่นกรองฯ</span>
+            </div>
+            <div class="form-card-body">
+              <div class="l2-doc" id="committeeSheet"></div>
+            </div>
+          </div>
+
+          <div class="form-card" id="boardResolutionCardWrap" style="border: 2px solid #16a34a">
+            <div class="form-card-header" style="background: rgba(22, 163, 74, 0.05)">
+              <span><i class="fa-solid fa-gavel text-success me-2"></i>มติคณะกรรมการ ป.ป.ท.</span>
+            </div>
+            <div class="form-card-body">
+              <div class="l2-doc" id="boardResolutionCard"></div>
             </div>
           </div>
 
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
-              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>ความเห็นเบื้องต้นหลังคณะอนุกรรมการฯ มีมติ</span>
-              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span>
+              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>รับทราบมติคณะกรรมการ ป.ป.ท.</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff">ผอ.กลุ่มงานความเห็นแย้ง</span>
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>
-                  <span
-                    >ความเห็น
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicAdminComment"
-                      onclick="toggleSpeechToText('in_adminComment', this)"
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i></button
-                  ></span>
-                </label>
-                <textarea
-                  id="in_adminComment"
-                  class="form-control"
-                  rows="4"
-                  placeholder="ระบุความเห็น..."
-                ></textarea>
+                <label>ความเห็น <span style="color: #dc2626">*</span></label>
+                <textarea id="in_opinion" class="form-control" rows="3" placeholder="ระบุความเห็น..."></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
+                <i class="fa-solid fa-pen-nib me-1"></i>รับทราบและลงนาม
               </button>
             </div>
           </div>
@@ -240,75 +212,77 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260908_1"></script>
     <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260903_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
 
     <script>
-      const STEP_CODE = "L2-ADMIN-PRECOMMENT";
+      const STEP_CODE = "L2-BOARD-GROUPDIR-ACK";
       const STEP = Activity102.stepByCode(STEP_CODE);
       let currentCase = null;
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS102.initUserProfile();
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
-        ECMIS102.renderStepper("stepper", STEP_CODE);
         loadCase();
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* คำร้องที่รอขั้นตอนนี้ = คำร้องที่ค้าง statusCode ของขั้นก่อนหน้า (10-2-06) */
+      /* คำร้องที่รอขั้นตอนนี้ = คำร้องที่ค้าง statusCode ที่ 10-2-35 ส่งออก */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity102.STEPS.findIndex((s) => s.code === STEP_CODE);
-        const prev = Activity102.STEPS[idx - 1];
-        currentCase = Activity102.getCase(id, prev ? prev.statusCode : null);
+        currentCase = Activity102.getCase(id, "L2_PENDING_GROUPDIR_BOARD_ACK");
+        ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
 
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
+          ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE);
           return;
         }
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
         populate();
       }
 
-      function populateCommon() {
-        const c = currentCase;
-        ECMIS102.setText("f_caseNo", c.id);
-        ECMIS102.setText("f_lawReceiveNo", c.lawReceiveNo);
-        ECMIS102.setText("f_title", c.title);
-        ECMIS102.setText("f_requesterName", c.requesterName);
-        ECMIS102.setText("f_requesterType", c.requesterTypeName);
-        ECMIS102.setText("f_requestedInfo", c.requestedInfo);
-        ECMIS102.setText("f_requestChannel", c.requestChannelName);
-        ECMIS102.renderAttachments("f_attachments", c.attachmentFileNames);
-      }
-
       function populate() {
-        populateCommon();
+        ECMIS102.renderStatusBadges("statusBadges", currentCase);
+        document.getElementById("memoDoc").innerHTML =
+          ECMIS102.renderCommitteeMemoDoc(currentCase, true);
+        document.getElementById("committeeSheet").innerHTML =
+          ECMIS102.renderCommitteeAttachSheet(currentCase);
+        document.getElementById("boardResolutionCard").innerHTML =
+          ECMIS102.renderBoardResolutionCard(currentCase);
       }
 
       function submitForm() {
-        const notes = document.getElementById("in_adminComment").value.trim();
+        const opinion = document.getElementById("in_opinion").value.trim();
+        if (!opinion) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุความเห็น", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
+        if (Activity102.isSigned(currentCase, "boardGroupDirAck")) {
+          Swal.fire({ icon: "info", title: "ลงนามแล้ว", text: "รับทราบและลงนามเรียบร้อยแล้ว", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
 
         ECMIS102.openSignatureModal(
           {
-            title: "ลงนามให้ความเห็นเบื้องต้น (ธุรการกองกฎหมาย)",
-            signer: ECMIS102.signerLabel("admin_legal"),
-            certId: "PACC-ADMINLEGAL-2569-102",
+            title: "ลงนามรับทราบมติคณะกรรมการ ป.ป.ท. (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)",
+            signer: ECMIS102.signerLabel("group_director"),
+            certId: "PACC-GROUPDIR-2569-102",
           },
           (image) => {
-            Activity102.sign(currentCase.id, STEP_CODE, image);
+            Activity102.sign(currentCase.id, "boardGroupDirAck", image, { position: "ผู้อำนวยการกลุ่มงานความเห็นแย้ง" });
             Activity102.advance(currentCase.id, STEP_CODE, {
-              l2AdminPreComment: notes,
-              assignedRole: "dir_legal",
-              officer: ECMIS102.signerLabel("dir_legal"),
+              l2BoardGroupDirAckOpinion: opinion,
+              assignedRole: "sub_secretariat",
+              officer: ECMIS102.signerLabel("sub_secretariat"),
             });
 
             Swal.fire({
               icon: "success",
-              title: "ให้ความเห็นและลงนามเรียบร้อย",
+              title: "รับทราบและลงนามเรียบร้อย",
               html:
                 '<div class="emd-summary">' +
-                "<p><strong>ขั้นตอนต่อไป:</strong> ผู้อำนวยการกองกฎหมาย ให้ความเห็นเบื้องต้น</p></div>",
+                "<p><strong>ขั้นตอนต่อไป:</strong> ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ</p></div>",
               confirmButtonColor: "#1e3a8a",
               confirmButtonText: "กลับหน้าคิวงาน",
             }).then(ECMIS102.goInbox);
