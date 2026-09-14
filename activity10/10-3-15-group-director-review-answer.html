@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ผอ.กลุ่มงานคดี พิจารณาเห็นชอบ | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>ผอ.กลุ่มงานคดี ตรวจร่างคำให้การ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -277,7 +277,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ผอ.กลุ่มงานคดี พิจารณาและเห็นชอบ</span
+              >ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ</span
             >
           </div>
         </div>
@@ -368,9 +368,9 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอ ผอ.กองกฎหมายพิจารณาผลมติและมอบหมายงานที่หน้า
-            <a href="10-3-11-legal-director-assign-resolution.html"
-              >ผอ.กองกฎหมาย พิจารณาผลมติและมอบหมายงาน</a
+            รอนิติกรร่างคำให้การแก้คำฟ้องและเสนอที่หน้า
+            <a href="10-3-14-lawyer-draft-answer.html"
+              >นิติกร ร่างคำให้การแก้คำฟ้อง</a
             >
             ก่อน
           </div>
@@ -444,46 +444,21 @@
           <div class="form-card">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-gavel text-primary me-2"></i
-                >ผลมติคณะกรรมการ ป.ป.ท.</span
-              >
-              <span
-                class="badge"
-                style="background: #dcfce7; color: #166534"
-                id="f_resolutionResultBadge"
-                >-</span
+                ><i class="fa-solid fa-hourglass-half text-primary me-2"></i
+                >กำหนดเวลายื่นคำให้การ</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ครั้งที่ประชุม</label>
-                  <div class="read-box font-monospace" id="f_meetingNo">-</div>
-                </div>
-                <div class="form-group">
-                  <label>วันที่ประชุม</label>
-                  <div class="read-box" id="f_meetingDate">-</div>
-                </div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>วาระที่</label>
-                  <div class="read-box font-monospace" id="f_agendaNo">-</div>
-                </div>
-                <div class="form-group">
-                  <label>ผลมติ</label>
-                  <div class="read-box" id="f_resolutionResult">-</div>
+              <div class="form-group">
+                <label>ครบกำหนดยื่นคำให้การ (ปัจจุบัน)</label>
+                <div class="l3-due-box" id="dueBox">
+                  <span class="l3-due-date" id="f_currentDue">-</span>
+                  <span class="l3-due-left" id="f_daysLeft">-</span>
                 </div>
               </div>
               <div class="form-group">
-                <label>สาระสำคัญของมติ</label>
-                <div class="read-box read-box-textarea" id="f_resolutionText">
-                  -
-                </div>
-              </div>
-              <div class="form-group">
-                <label>รายงานสรุปมติ</label>
-                <div id="f_reportFiles"></div>
+                <label>คำขอขยายเวลาที่ยื่นแล้ว</label>
+                <div class="read-box read-box-textarea" id="f_extensionSummary">-</div>
               </div>
             </div>
           </div>
@@ -491,91 +466,114 @@
           <div class="form-card">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-bullhorn text-primary me-2"></i
-                >การแจ้งผลมติ (จากธุรการกองกฎหมาย)</span
+                ><i class="fa-solid fa-file-signature text-primary me-2"></i
+                >ร่างเอกสารที่นิติกรเสนอ</span
               >
-              <span
-                class="badge"
-                style="background: #dcfce7; color: #166534"
-                id="f_ackBadge"
-                ><i class="fa-solid fa-check me-1"></i>รับทราบแล้ว</span
-              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขที่หนังสือแจ้งผล</label>
-                  <div
-                    class="read-box font-monospace"
-                    id="f_noticeDocNo"
-                    style="font-weight: 700; color: #1e3a8a"
-                  >
-                    -
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>วันที่แจ้งผล</label>
-                  <div class="read-box" id="f_noticeDate">-</div>
-                </div>
+              <div class="l3-doc-tabs">
+                <button type="button" class="l3-doc-tab is-active" data-tab="answer" onclick="switchDocTab('answer')">
+                  <i class="fa-solid fa-scale-balanced"></i> 1. คำให้การแก้คำฟ้อง
+                </button>
+                <button type="button" class="l3-doc-tab" data-tab="letter" onclick="switchDocTab('letter')">
+                  <i class="fa-solid fa-envelope"></i> 2. หนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)
+                </button>
               </div>
-              <div class="form-group">
-                <label>แจ้งถึง</label>
-                <div id="f_noticeRecipients"></div>
-              </div>
-              <div class="form-group">
-                <label>หมายเหตุ</label>
-                <div class="read-box read-box-textarea" id="f_noticeNotes">
-                  -
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ผู้แจ้งผล</label>
-                <div class="l3-sig-preview">
-                  <img id="f_noticeSigImg" alt="ลายมือชื่อผู้แจ้งผล" class="d-none" />
-                  <div class="l3-sig-preview-meta">
-                    <div><strong id="f_noticeBy">-</strong></div>
-                    <div>แจ้งเมื่อ <span id="f_noticeAt">-</span></div>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ผู้รับทราบผลมติ</label>
-                <div class="read-box" id="f_ackInfo">-</div>
-              </div>
-            </div>
-          </div>
 
-          <div class="form-card">
-            <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-user-tie text-primary me-2"></i
-                >ข้อสั่งการ ผอ.กองกฎหมาย</span
-              >
-            </div>
-            <div class="form-card-body">
+              <div class="l3-split" id="panelAnswer">
+                <div class="l3-split-preview">
+                  <div class="l3-doc-viewer">
+                    <div class="l3-doc-toolbar">
+                      <div class="l3-doc-toolbar-title">
+                        <i class="fa-solid fa-file-lines text-primary"></i>
+                        <span>ตัวอย่างเอกสาร — คำให้การแก้คำฟ้อง</span>
+                      </div>
+                      <div class="l3-doc-toolbar-actions">
+                        <div class="l3-doc-zoom">
+                          <button type="button" onclick="ECMIS103.zoomDoc('answerPreview', -1)"><i class="fa-solid fa-minus"></i></button>
+                          <span class="l3-doc-zoom-val" id="answerPreviewZoomVal">55%</span>
+                          <button type="button" onclick="ECMIS103.zoomDoc('answerPreview', 1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="l3-doc-pageframe l3-split-preview-body">
+                      <div class="l3-doc l3-doc-page" id="answerPreview"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="l3-split-form">
+                  <div class="form-group">
+                    <label>ยื่นต่อศาล</label>
+                    <div class="read-box" id="f_answerCourt">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>เนื้อหาคำให้การ (ข้อเท็จจริงและข้อต่อสู้)</label>
+                    <div class="l3-tiptap-readonly" id="f_answerHTML">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำขอท้ายคำให้การ</label>
+                    <div class="read-box read-box-textarea" id="f_answerPrayer">-</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="l3-split d-none" id="panelLetter">
+                <div class="l3-split-preview">
+                  <div class="l3-doc-viewer">
+                    <div class="l3-doc-toolbar">
+                      <div class="l3-doc-toolbar-title">
+                        <i class="fa-solid fa-file-lines text-primary"></i>
+                        <span>ตัวอย่างเอกสาร — หนังสือนำส่ง</span>
+                      </div>
+                      <div class="l3-doc-toolbar-actions">
+                        <div class="l3-doc-zoom">
+                          <button type="button" onclick="ECMIS103.zoomDoc('letterPreview', -1)"><i class="fa-solid fa-minus"></i></button>
+                          <span class="l3-doc-zoom-val" id="letterPreviewZoomVal">55%</span>
+                          <button type="button" onclick="ECMIS103.zoomDoc('letterPreview', 1)"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="l3-doc-pageframe l3-split-preview-body">
+                      <div class="l3-doc l3-doc-page" id="letterPreview"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="l3-split-form">
+                  <div class="form-group">
+                    <label>เรื่อง</label>
+                    <div class="read-box" id="f_letterSubject">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>เรียน</label>
+                    <div class="read-box" id="f_letterTo">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>สิ่งที่ส่งมาด้วย</label>
+                    <div class="read-box read-box-textarea" id="f_letterEnclosures">-</div>
+                  </div>
+                  <div class="form-group">
+                    <label>เนื้อหาหนังสือ</label>
+                    <div class="l3-tiptap-readonly" id="f_letterHTML">-</div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="l3-divider" />
+
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>มอบหมายให้</label>
-                  <div class="read-box" id="f_directorAssignTo">-</div>
+                  <label>พยานหลักฐานและเอกสารประกอบ</label>
+                  <div id="f_evidenceFiles"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้สั่งการ</label>
-                  <div class="read-box" id="f_directorName">-</div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ข้อสั่งการ</label>
-                <div class="read-box read-box-textarea" id="f_directorOrder">
-                  -
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ลายมือชื่อ ผอ.กองกฎหมาย</label>
-                <div class="l3-sig-preview">
-                  <img id="f_directorSigImg" alt="ลายมือชื่อ ผอ.กองกฎหมาย" class="d-none" />
-                  <div class="l3-sig-preview-meta">
-                    <div><strong id="f_directorSigName">-</strong></div>
-                    <div>ลงนามเมื่อ <span id="f_directorSignedAt">-</span></div>
+                  <label>นิติกรผู้เสนอร่าง</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_lawyerSigImg" alt="ลายมือชื่อนิติกร" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_lawyerName">-</strong></div>
+                      <div>เสนอเมื่อ <span id="f_lawyerSignedAt">-</span></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -589,7 +587,7 @@
             >
               <span
                 ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
-                >พิจารณาและเห็นชอบ</span
+                >ตรวจสอบร่างคำให้การ</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กลุ่มงานคดี</span
@@ -597,12 +595,28 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
+                <div class="l3-recipient-list">
+                  <div class="l3-checkbox-row">
+                    <input type="checkbox" id="in_checkedAnswer" />
+                    <label for="in_checkedAnswer"
+                      >ตรวจสอบร่างคำให้การแก้คำฟ้องแล้ว <span style="color: #dc2626">*</span></label
+                    >
+                  </div>
+                  <div class="l3-checkbox-row">
+                    <input type="checkbox" id="in_checkedLetter" />
+                    <label for="in_checkedLetter"
+                      >ตรวจสอบร่างหนังสือนำส่งถึงสำนักงานคดีปกครองแล้ว <span style="color: #dc2626">*</span></label
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label>ความเห็น ผอ.กลุ่มงานคดี</label>
                 <textarea
-                  id="in_approveNotes"
+                  id="in_reviewNotes"
                   class="form-control"
                   rows="3"
-                  placeholder="ระบุความเห็นเพิ่มเติม (ถ้ามี)..."
+                  placeholder="ระบุความเห็นหรือข้อสังเกตต่อร่าง (ถ้ามี)..."
                 ></textarea>
               </div>
               <div class="form-group">
@@ -612,12 +626,8 @@
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-signature me-1"></i>ลงนาม เห็นชอบ และ ส่งต่อ
+              <button type="button" class="btn btn-primary" onclick="submitForm()">
+                <i class="fa-solid fa-signature me-1"></i>ลงนาม ตรวจสอบ และ เสนอ ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -633,8 +643,9 @@
     <script src="assets/ecmis-10-3.js?v=20260914_11"></script>
 
     <script>
-      const STEP_CODE = "L3-21";
+      const STEP_CODE = "L3-24";
       const STEP = Activity103.stepByCode(STEP_CODE);
+      const EXT_RESULT = { PENDING: "รอผลคำสั่งศาล", GRANTED: "ศาลอนุญาต", DENIED: "ศาลไม่อนุญาต" };
       let currentCase = null;
       let viewOnly = false;
 
@@ -675,8 +686,10 @@
       }
 
       function fillSavedValues() {
-        document.getElementById("in_approveNotes").value =
-          currentCase.l3ResolutionGroupApproveNotes || "";
+        const r = currentCase.l3AnswerGroupReview || {};
+        document.getElementById("in_checkedAnswer").checked = !!r.checkedAnswer;
+        document.getElementById("in_checkedLetter").checked = !!r.checkedLetter;
+        document.getElementById("in_reviewNotes").value = r.notes || "";
       }
 
       function esc(t) {
@@ -691,26 +704,14 @@
         return iso ? ECMIS103.formatThaiDate(iso) : "-";
       }
 
-      function lawyerLabel() {
-        return (
-          (currentCase && currentCase.officer) ||
-          ECMIS103.signerLabel("case_legal_officer")
-        );
-      }
-
-      function showSig(imgId, sig) {
-        const img = document.getElementById(imgId);
-        if (sig && sig.image) {
-          img.src = sig.image;
-          img.classList.remove("d-none");
-        }
+      function parties(list) {
+        return (list || []).filter(Boolean).join(", ") || "-";
       }
 
       function populate() {
         const c = currentCase;
-        const r = c.l3BoardResolution || {};
-        const n = c.l3ResolutionNotice || {};
-        const sigs = c.l3Signatures || {};
+        const docs = c.l3AnswerDocs || {};
+        const sig = (c.l3Signatures || {})["L3-23"];
 
         ECMIS103.setText("f_caseNo", c.id);
         ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
@@ -719,71 +720,158 @@
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
+        renderDeadline();
 
-        ECMIS103.setText("f_resolutionResultBadge", r.result);
-        ECMIS103.setText("f_meetingNo", r.meetingNo);
-        ECMIS103.setText("f_meetingDate", formatISODate(r.meetingDate));
-        ECMIS103.setText("f_agendaNo", r.agendaNo);
-        ECMIS103.setText("f_resolutionResult", r.result);
-        ECMIS103.setText("f_resolutionText", r.text);
-        ECMIS103.renderAttachments("f_reportFiles", r.reportFileNames);
-
-        ECMIS103.setText("f_noticeDocNo", n.docNo);
-        ECMIS103.setText("f_noticeDate", formatISODate(n.docDate));
-        ECMIS103.setText("f_noticeNotes", n.notes);
-        ECMIS103.setText("f_noticeBy", n.notifiedBy);
-        ECMIS103.setText("f_noticeAt", (sigs["L3-19"] && sigs["L3-19"].signedAt) || n.notifiedAt);
-        ECMIS103.setHtml(
-          "f_noticeRecipients",
-          (n.recipients || []).length
-            ? n.recipients
-                .map(
-                  (x) =>
-                    `<div class="read-box" style="margin-bottom:6px;"><i class="fa-solid fa-user-check me-2" style="color:#16a34a;"></i>${esc(x.label)} — ${esc(x.name)}</div>`,
-                )
-                .join("")
-            : '<div class="read-box l3-optional">ไม่มีข้อมูลผู้รับแจ้ง</div>',
-        );
-        showSig("f_noticeSigImg", sigs["L3-19"]);
+        ECMIS103.setText("f_draftVersion", "ร่างครั้งที่ " + (docs.version || 1));
+        ECMIS103.setText("f_answerCourt", c.courtName);
+        ECMIS103.setHtml("f_answerHTML", docs.answerHTML || "-");
+        ECMIS103.setText("f_answerPrayer", docs.prayer);
+        ECMIS103.setText("f_letterSubject", docs.letterSubject);
+        ECMIS103.setText("f_letterTo", docs.letterTo);
         ECMIS103.setText(
-          "f_ackInfo",
-          n.acknowledgedBy
-            ? n.acknowledgedBy + " เมื่อ " + n.acknowledgedAt
-            : "-",
+          "f_letterEnclosures",
+          (docs.letterEnclosures || "")
+            .split("\n")
+            .map((x) => x.trim())
+            .filter(Boolean)
+            .map((x, i) => i + 1 + ". " + x)
+            .join("\n"),
         );
+        ECMIS103.setHtml("f_letterHTML", docs.letterHTML || "-");
+        ECMIS103.renderAttachments("f_evidenceFiles", docs.evidenceNames);
 
-        ECMIS103.setText("f_directorAssignTo", c.l3ResolutionAssignTo);
-        ECMIS103.setText("f_directorName", ECMIS103.signerLabel("dir_legal"));
-        ECMIS103.setText("f_directorOrder", c.l3ResolutionDirectorOrderNotes);
-        ECMIS103.setText("f_directorSigName", ECMIS103.signerLabel("dir_legal"));
-        ECMIS103.setText("f_directorSignedAt", sigs["L3-20"] && sigs["L3-20"].signedAt);
-        showSig("f_directorSigImg", sigs["L3-20"]);
+        ECMIS103.setText("f_lawyerName", c.officer || ECMIS103.signerLabel("case_legal_officer"));
+        ECMIS103.setText("f_lawyerSignedAt", sig && sig.signedAt);
+        const img = document.getElementById("f_lawyerSigImg");
+        if (sig && sig.image) {
+          img.src = sig.image;
+          img.classList.remove("d-none");
+        }
+        ECMIS103.setText("f_forwardTo", ECMIS103.signerLabel("dir_legal"));
 
-        ECMIS103.setText("f_forwardTo", "นิติกรเจ้าของเรื่อง — " + lawyerLabel());
+        ECMIS103.initDocZoom("answerPreview", 0.55);
+        ECMIS103.initDocZoom("letterPreview", 0.55);
+        renderPreviews(docs);
+      }
+
+      function renderDeadline() {
+        const c = currentCase;
+        const d = Activity103.computeAnswerDeadline(c);
+        const box = document.getElementById("dueBox");
+        box.classList.remove("is-soon", "is-overdue");
+        if (!d) {
+          ECMIS103.setText("f_currentDue", "ไม่มีข้อมูลวันรับเรื่องหรือจำนวนวันที่ศาลกำหนด");
+          ECMIS103.setText("f_daysLeft", "");
+        } else {
+          ECMIS103.setText("f_currentDue", ECMIS103.formatThaiDate(d.currentDue));
+          let left = "เหลือ " + d.daysLeft + " วัน";
+          if (d.daysLeft < 0) {
+            box.classList.add("is-overdue");
+            left = "เลยกำหนดมาแล้ว " + Math.abs(d.daysLeft) + " วัน";
+          } else if (d.daysLeft <= 7) {
+            box.classList.add("is-soon");
+            left = d.daysLeft === 0 ? "ครบกำหนดวันนี้" : left;
+          }
+          ECMIS103.setText("f_daysLeft", left);
+        }
+        const ext = c.l3ExtensionRequests || [];
+        ECMIS103.setText(
+          "f_extensionSummary",
+          ext.length
+            ? ext
+                .map(
+                  (r) =>
+                    "ครั้งที่ " + r.no + ": ยื่น " + formatISODate(r.filedDate) + " ขอ " + r.requestedDays + " วัน — " +
+                    (EXT_RESULT[r.result] || "-") + (r.result === "GRANTED" ? " " + r.grantedDays + " วัน" : ""),
+                )
+                .join("\n")
+            : "ไม่มีคำขอขยายเวลา",
+        );
+      }
+
+      function switchDocTab(tab) {
+        document.querySelectorAll(".l3-doc-tab").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
+        document.getElementById("panelAnswer").classList.toggle("d-none", tab !== "answer");
+        document.getElementById("panelLetter").classList.toggle("d-none", tab !== "letter");
+      }
+
+      function renderPreviews(docs) {
+        const c = currentCase;
+        const row = (label, value) =>
+          '<div class="l3-doc-row"><span class="l3-doc-label">' + label + '</span><span class="l3-doc-value">' + (value || "-") + "</span></div>";
+        const section = (label, html) =>
+          '<div class="l3-doc-section"><span class="l3-doc-label">' + label + '</span><div class="l3-doc-body">' + (html || "-") + "</div></div>";
+        const signBlock = (who, note) =>
+          '<div class="l3-doc-signblock"><div style="text-align: center">' +
+          '<div style="height: 50px"></div>' +
+          '<div style="font-size: 0.88em">(ลงชื่อ) ..........................................</div>' +
+          '<div style="font-size: 0.82em">' + who + "</div>" +
+          '<div style="font-size: 0.75em; color: #64748b">' + note + "</div>" +
+          "</div></div>";
+
+        document.getElementById("answerPreview").innerHTML =
+          '<div style="text-align:center; font-weight:700; font-size:1.1em; margin-bottom:10px;">คำให้การ</div>' +
+          row("ศาล", esc(c.courtName)) +
+          row("คดีหมายเลขดำที่", esc(c.blackCaseNo)) +
+          row("ระหว่าง", esc(parties(c.plaintiffs)) + " ผู้ฟ้องคดี กับ " + esc(parties(c.defendants)) + " ผู้ถูกฟ้องคดี") +
+          section("ผู้ถูกฟ้องคดีขอให้การดังต่อไปนี้", docs.answerHTML) +
+          section("คำขอท้ายคำให้การ", esc(docs.prayer)) +
+          (docs.evidenceNames && docs.evidenceNames.length ? row("พยานหลักฐานที่แนบ", esc(docs.evidenceNames.join(", "))) : "") +
+          signBlock("ประธานกรรมการ ป.ป.ท.", "ผู้ถูกฟ้องคดี (ลงนามในขั้นตอนที่ 29)");
+
+        const enclosures = (docs.letterEnclosures || "")
+          .split("\n")
+          .map((x) => x.trim())
+          .filter(Boolean)
+          .map((x, i) => i + 1 + ". " + esc(x))
+          .join("<br/>");
+        document.getElementById("letterPreview").innerHTML =
+          '<div style="text-align:right; font-size:0.85em; margin-bottom:8px;">สำนักงาน ป.ป.ท.</div>' +
+          row("ที่", "ปป ........ / ........ (ออกเลขในขั้นตอนที่ 28)") +
+          row("เรื่อง", esc(docs.letterSubject)) +
+          row("เรียน", esc(docs.letterTo)) +
+          (enclosures ? row("สิ่งที่ส่งมาด้วย", enclosures) : "") +
+          section("", docs.letterHTML) +
+          signBlock("เลขาธิการคณะกรรมการ ป.ป.ท. หรือผู้ปฏิบัติราชการแทน", "ลงนามในขั้นตอนที่ 27") +
+          '<div style="font-size:0.75em; color:#64748b; margin-top:10px;">กองกฎหมาย สำนักงาน ป.ป.ท. — ผู้จัดทำ ' + esc(c.officer || "-") + "</div>";
+      }
+
+      function warn(title, text) {
+        Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
       }
 
       function submitForm() {
         if (!currentCase) return;
-        const r = currentCase.l3BoardResolution || {};
-        const notes =
-          document.getElementById("in_approveNotes").value.trim() || "-";
-        const forwardTo = lawyerLabel();
+        const checkedAnswer = document.getElementById("in_checkedAnswer").checked;
+        const checkedLetter = document.getElementById("in_checkedLetter").checked;
+        if (!checkedAnswer) {
+          switchDocTab("answer");
+          return warn("กรุณายืนยันการตรวจสอบคำให้การ", "กรุณาตรวจสอบร่างคำให้การแก้คำฟ้อง แล้วติ๊กยืนยัน");
+        }
+        if (!checkedLetter) {
+          switchDocTab("letter");
+          return warn("กรุณายืนยันการตรวจสอบหนังสือนำส่ง", "กรุณาตรวจสอบร่างหนังสือนำส่ง แล้วติ๊กยืนยัน");
+        }
+        const notes = document.getElementById("in_reviewNotes").value.trim() || "-";
+        const forwardTo = ECMIS103.signerLabel("dir_legal");
+        const docs = currentCase.l3AnswerDocs || {};
+        const dueText = document.getElementById("f_currentDue").textContent + " (" + document.getElementById("f_daysLeft").textContent + ")";
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันการพิจารณาและเห็นชอบ?",
+          title: "ยืนยันผลการตรวจสอบร่างคำให้การ?",
           html: `
  <div class="emd-summary">
  <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
- <p><strong>ผลมติ:</strong> ${esc(r.result || "-")}</p>
- <p><strong>ข้อสั่งการ ผอ.กองกฎหมาย:</strong> ${esc(currentCase.l3ResolutionDirectorOrderNotes || "-")}</p>
+ <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
+ <p><strong>ตรวจสอบแล้ว:</strong> ร่างคำให้การแก้คำฟ้อง, ร่างหนังสือนำส่ง เรื่อง ${esc(docs.letterSubject || "-")}</p>
  <p><strong>ความเห็น ผอ.กลุ่มงานคดี:</strong> ${esc(notes)}</p>
  <p><strong>ส่งต่อให้:</strong> ${esc(forwardTo)}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง นิติกร ยื่นคำขอขยายเวลาต่อศาล</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การ</p>
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: "ยืนยันเห็นชอบและส่งต่อ",
+          confirmButtonText: "ยืนยันตรวจสอบและเสนอต่อ",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#16a34a",
           cancelButtonColor: "#64748b",
@@ -791,22 +879,27 @@
           if (!res.isConfirmed) return;
           ECMIS103.openSignatureModal(
             {
-              title: "ลงนามพิจารณาและเห็นชอบ",
+              title: "ลงนามตรวจสอบร่างคำให้การแก้คำฟ้อง",
               signer: ECMIS103.signerLabel("case_group_director"),
               certId: "PACC-CASEGROUPDIR-2569-103",
             },
             (image) => {
               Activity103.sign(currentCase.id, STEP_CODE, image);
               Activity103.advance(currentCase.id, STEP_CODE, {
-                l3ResolutionGroupApproveNotes: notes,
-                l3ResolutionForwardTo: forwardTo,
-                assignedRole: "case_legal_officer",
+                l3AnswerGroupReview: {
+                  checkedAnswer: true,
+                  checkedLetter: true,
+                  notes: notes,
+                  reviewedBy: ECMIS103.signerLabel("case_group_director"),
+                  reviewedAt: ECMIS103.formatThaiDateTime(new Date()),
+                },
+                assignedRole: "dir_legal",
               });
 
               Swal.fire({
                 icon: "success",
-                title: "เห็นชอบสำเร็จ!",
-                text: "ส่งเรื่องให้ " + forwardTo + " ยื่นคำขอขยายเวลาต่อศาลเรียบร้อยแล้ว",
+                title: "ตรวจสอบร่างคำให้การสำเร็จ!",
+                text: "เสนอร่างคำให้การและหนังสือนำส่งให้ " + forwardTo + " ตรวจสอบเรียบร้อยแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);
