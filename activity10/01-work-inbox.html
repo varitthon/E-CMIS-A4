@@ -862,7 +862,7 @@
     <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260914_12"></script>
+    <script src="assets/ecmis-10-3.js?v=20260914_13"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1757,6 +1757,9 @@
               c.statusCode === "PENDING_DEPUTY_SG" ||
               c.statusCode === "SUBMITTED_TO_EXEC_ROUND2" ||
               c.assignedRole === "deputy_sg" ||
+              (typeof Activity103 !== "undefined" &&
+                Activity103.isCourtCase(c) &&
+                Activity103.hasRoleSigned(c, "deputy_sg")) ||
               (c.status && c.status.includes("ผู้บริหาร")),
           );
         }
@@ -1769,9 +1772,12 @@
         ) {
           return allCases.filter(
             (c) =>
-              typeof Activity102 !== "undefined" &&
-              Activity102.isDisclosureCase(c) &&
-              c.assignedRole === roleId,
+              (typeof Activity102 !== "undefined" &&
+                Activity102.isDisclosureCase(c) &&
+                c.assignedRole === roleId) ||
+              (typeof Activity103 !== "undefined" &&
+                Activity103.isCourtCase(c) &&
+                (c.assignedRole === roleId || Activity103.hasRoleSigned(c, roleId))),
           );
         }
         return allCases;

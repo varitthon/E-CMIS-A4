@@ -221,10 +221,35 @@
       label: "ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การแก้คำฟ้อง",
       stepName: "ผอ.กองกฎหมาย ตรวจร่าง",
     },
+    {
+      code: "L3-26",
+      seq: 8,
+      page: "10-3-17-legal-admin-internal-dispatch-answer.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
+      label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายในและเสนอผู้ลงนาม",
+      stepName: "ธุรการ ออกเลขส่งภายใน",
+    },
   ];
 
+  const COVER_SIGNER_ROUTES = {
+    secgen: {
+      role: "secgen",
+      label: "เลขาธิการ ป.ป.ท.",
+      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
+    },
+    deputy_sg: {
+      role: "deputy_sg",
+      label: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทนเลขาธิการ)",
+      status: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน) ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
+    },
+  };
+
   const PLANNED_ANSWER_STEPS = [
-    { flowNo: 26, stepName: "ธุรการ ออกเลขส่งภายใน", label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน" },
     { flowNo: 27, stepName: "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง", label: "เลขาธิการ ป.ป.ท. หรือรองเลขาธิการ ปฏิบัติราชการแทน ตรวจคำให้การและลงนามหนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)" },
     { flowNo: 28, stepName: "สารบรรณกลาง ออกเลขส่งออก", label: "สารบรรณกลาง ชั้น 14 ออกเลขหนังสือส่งออก" },
     { flowNo: 29, stepName: "ประธานกรรมการ ลงนามคำให้การ", label: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การแก้คำฟ้อง" },
@@ -306,6 +331,7 @@
   const Activity103 = {
     STEPS: STEPS,
     ANSWER_STEPS: ANSWER_STEPS,
+    COVER_SIGNER_ROUTES: COVER_SIGNER_ROUTES,
     ROUTES: ROUTES,
     stepByCode: stepByCode,
     stepByPage: stepByPage,
