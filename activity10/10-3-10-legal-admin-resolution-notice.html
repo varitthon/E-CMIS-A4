@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ธุรการ รับเรื่องและแจ้งผลมติ | E-CMIS กิจกรรมที่ 10.3</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_4" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 900px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+        height: 38px;
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.3 — คดีศาลปกครอง
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >ธุรการ รับเรื่องและแจ้งผลมติ</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+              <a
+                href="login.html"
+                onclick="confirmLogout(event)"
+                class="logout-link"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper-row-label">
+            <i class="fa-solid fa-paper-plane"></i> ก่อนคณะกรรมการ ป.ป.ท. มีมติ
+          </div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label">
+            <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
+            <span class="stepper-legend"
+              ><span class="stepper-legend-dot"></span> ยังไม่มีหน้าในระบบ</span
+            >
+          </div>
+          <div class="stepper stepper-wide" id="stepperPart2"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            รอธุรการกองกฎหมายออกเลขส่งภายในและส่งเรื่องเสนอคณะกรรมการ ป.ป.ท.
+            ที่หน้า
+            <a href="10-3-09-legal-admin-dispatch.html"
+              >ธุรการ ออกเลขส่งภายในและส่งมติเสนอบอร์ด</a
+            >
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div id="viewModeNotice" class="l3-note l3-note-info d-none">
+            <i class="fa-solid fa-eye"></i>
+            <div style="flex: 1">
+              <strong>ขั้นตอนนี้ดำเนินการแล้ว (ดูอย่างเดียว)</strong><br />
+              ลงนามโดย <span id="f_viewSigner">-</span> เมื่อ
+              <span id="f_viewSignedAt">-</span><br />
+              สถานะปัจจุบันของคดี: <strong id="f_viewStatus">-</strong>
+            </div>
+            <img
+              id="f_viewSigImg"
+              alt="ลายมือชื่อ"
+              class="d-none"
+              style="max-height: 56px; background: #fff; border-radius: 6px; padding: 4px"
+            />
+          </div>
+          <div class="l3-note l3-note-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <strong>คดีนี้ผ่านการพิจารณาของคณะกรรมการ ป.ป.ท. แล้ว</strong
+              ><br />
+              ขั้นตอนเลขาธิการลงนามเสนอ → สารบรรณกลาง → ประธานบรรจุวาระ →
+              คณะกรรมการมีมติ → กองบริหารคดีทำรายงานสรุปมติ
+              ดำเนินการนอกระบบ ให้บันทึกผลมติจากรายงานสรุปมติที่ได้รับ
+              แล้วแจ้งผลต่อ ผอ.กองกฎหมาย
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >รายละเอียดคดีศาลปกครอง</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขรับกองกฎหมาย</label>
+                  <div class="read-box font-monospace" id="f_lawReceiveNo">
+                    -
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ชื่อหมาย</label>
+                  <div class="read-box" id="f_summonsName">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                    -
+                  </div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้อง</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้อง</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-paper-plane text-primary me-2"></i
+                >เรื่องที่เสนอคณะกรรมการ ป.ป.ท.</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือส่งภายใน</label>
+                  <div class="read-box font-monospace" id="f_internalDocNo">
+                    -
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ออกเลขส่ง</label>
+                  <div class="read-box" id="f_internalDocDate">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>บันทึกสรุปความเห็น</label>
+                <div class="read-box read-box-textarea" id="f_opinionText">
+                  -
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-envelope-open-text text-primary me-2"></i
+                >รับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="l3-section-title">
+                <i class="fa-solid fa-gavel text-primary"></i>
+                รายงานสรุปมติคณะกรรมการ ป.ป.ท. (จากกองบริหารคดี)
+              </div>
+              <div id="incomingReportNote" class="l3-note l3-note-info d-none">
+                <i class="fa-solid fa-inbox"></i>
+                <div>
+                  <strong>ได้รับรายงานสรุปมติแล้ว</strong><br />
+                  จาก <span id="f_incomingReportedBy">-</span> เมื่อ
+                  <span id="f_incomingReportDate">-</span>
+                  — ระบบเติมข้อมูลด้านล่างให้แล้ว กรุณาตรวจสอบกับรายงานก่อนบันทึก
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >ครั้งที่ประชุม <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_meetingNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น 41/2569"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันที่ประชุม <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_meetingDate"
+                    class="form-control"
+                    lang="th-TH-u-ca-buddhist"
+                  />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วาระที่ <span style="color: #dc2626">*</span></label>
+                  <input
+                    type="text"
+                    id="in_agendaNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น 5.41"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>ผลมติ</label>
+                  <div class="read-box" id="f_resolutionResult">
+                    มีมติมอบอำนาจ
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label
+                  >สาระสำคัญของมติ <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_resolutionText"
+                  class="form-control"
+                  rows="4"
+                  placeholder="สรุปข้อมติตามรายงานสรุปมติ เช่น มอบอำนาจให้ผู้อำนวยการกองกฎหมายขอขยายระยะเวลายื่นคำให้การ และมอบหมายพนักงานอัยการเป็นผู้แก้ต่างคดี..."
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label
+                  >แนบรายงานสรุปมติ <span style="color: #dc2626">*</span></label
+                >
+                <div class="l3-upload-box">
+                  <input
+                    type="file"
+                    id="in_resolutionReport"
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleReportChange(this)"
+                  />
+                </div>
+                <div id="reportList" style="margin-top: 8px"></div>
+              </div>
+
+              <hr class="l3-divider" />
+
+              <div class="l3-section-title">
+                <i class="fa-solid fa-bullhorn text-primary"></i>
+                การแจ้งผลมติ
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขที่หนังสือแจ้งผล
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <div style="display: flex; gap: 8px">
+                    <input
+                      type="text"
+                      id="in_noticeDocNo"
+                      class="form-control font-monospace"
+                      placeholder="กรอกเองหรือกดออกเลข"
+                      style="font-weight: 700; color: #1e3a8a"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      onclick="issueNoticeDocNo()"
+                    >
+                      <i class="fa-solid fa-hashtag me-1"></i>ออกเลข
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันที่แจ้งผล <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_noticeDate"
+                    class="form-control"
+                    lang="th-TH-u-ca-buddhist"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>แจ้งถึง</label>
+                <div class="l3-recipient-list">
+                  <div class="l3-checkbox-row is-disabled">
+                    <input type="checkbox" id="in_notifyLegalDirector" checked disabled />
+                    <label for="in_notifyLegalDirector"
+                      >ผอ.กองกฎหมาย —
+                      <span id="f_legalDirectorName">-</span>
+                      <div style="font-weight: 400; font-size: 0.85em; color: #64748b">
+                        ผู้รับแจ้งหลัก (ขั้นถัดไปตาม flow)
+                      </div></label
+                    >
+                  </div>
+                  <div class="l3-checkbox-row">
+                    <input type="checkbox" id="in_notifyLawyer" checked />
+                    <label for="in_notifyLawyer"
+                      >นิติกรเจ้าของเรื่อง —
+                      <span id="f_lawyerName">-</span></label
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>หมายเหตุ</label>
+                <textarea
+                  id="in_noticeNotes"
+                  class="form-control"
+                  rows="2"
+                  placeholder="ระบุหมายเหตุ (ถ้ามี)..."
+                ></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="submitForm()"
+              >
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ แจ้งผล
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-capture.js"></script>
+    <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+    <script src="assets/ecmis-10-3.js?v=20260914_8"></script>
+
+    <script>
+      const STEP_CODE = "L3-19";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      const RESOLUTION_RESULT = "มีมติมอบอำนาจ";
+      let currentCase = null;
+      let viewOnly = false;
+      let reportFiles = [];
+      let presetReportNames = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        loadCase();
+        if (!viewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const pending = Activity103.pendingStatusFor(STEP.page);
+        const found = Activity103.getCase(id, pending);
+        if (found && found.statusCode === pending) {
+          currentCase = found;
+        } else if (id && found && found.id === id && Activity103.isStepSigned(found, STEP_CODE)) {
+          currentCase = found;
+          viewOnly = true;
+        }
+        ECMIS103.renderStepperV2(
+          "stepperPart1",
+          "stepperPart2",
+          viewOnly ? null : STEP_CODE,
+          currentCase,
+        );
+
+        if (!currentCase) {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        populate();
+        if (viewOnly) {
+          fillSavedValues();
+          ECMIS103.applyViewMode(currentCase, STEP_CODE);
+        }
+      }
+
+      function fillSavedValues() {
+        const r = currentCase.l3BoardResolution || {};
+        const n = currentCase.l3ResolutionNotice || {};
+        document.getElementById("in_meetingNo").value = r.meetingNo || "";
+        document.getElementById("in_meetingDate").value = r.meetingDate || "";
+        document.getElementById("in_agendaNo").value = r.agendaNo || "";
+        document.getElementById("in_resolutionText").value = r.text || "";
+        presetReportNames = (r.reportFileNames || []).slice();
+        reportFiles = [];
+        renderReportList();
+        document.getElementById("in_noticeDocNo").value = n.docNo || "";
+        document.getElementById("in_noticeDate").value = n.docDate || "";
+        document.getElementById("in_noticeNotes").value = n.notes || "";
+        document.getElementById("in_notifyLawyer").checked = (n.recipients || []).some(
+          (x) => x.role === "case_legal_officer",
+        );
+        document.getElementById("incomingReportNote").classList.add("d-none");
+      }
+
+      function esc(t) {
+        return String(t == null ? "" : t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function todayISO() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function populate() {
+        const c = currentCase;
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
+        ECMIS103.setText("f_summonsName", c.summonsName);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_internalDocNo", c.l3InternalDocNo);
+        ECMIS103.setText("f_internalDocDate", c.l3InternalDocDate);
+        ECMIS103.setText("f_opinionText", c.l3OpinionText);
+        ECMIS103.setText(
+          "f_legalDirectorName",
+          ECMIS103.signerLabel("dir_legal"),
+        );
+        ECMIS103.setText("f_lawyerName", c.officer);
+        document.getElementById("in_noticeDate").value = todayISO();
+        const docNoEl = document.getElementById("in_noticeDocNo");
+        if (c.l3ResolutionNoticeDocNo) docNoEl.value = c.l3ResolutionNoticeDocNo;
+        prefillIncomingReport(c.l3IncomingBoardReport);
+      }
+
+      function prefillIncomingReport(report) {
+        if (!report) return;
+        document.getElementById("in_meetingNo").value = report.meetingNo || "";
+        document.getElementById("in_meetingDate").value = report.meetingDate || "";
+        document.getElementById("in_agendaNo").value = report.agendaNo || "";
+        document.getElementById("in_resolutionText").value = report.text || "";
+        presetReportNames = (report.reportFileNames || []).slice();
+        renderReportList();
+        ECMIS103.setText("f_incomingReportedBy", report.reportedBy);
+        ECMIS103.setText(
+          "f_incomingReportDate",
+          report.reportDate ? ECMIS103.formatThaiDate(report.reportDate) : "-",
+        );
+        document.getElementById("incomingReportNote").classList.remove("d-none");
+      }
+
+      function handleReportChange(input) {
+        if (!input.files || !input.files.length) return;
+        const allowed = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowed.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > 100 * 1024 * 1024) {
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          reportFiles.push(file);
+        });
+        input.value = "";
+        renderReportList();
+      }
+
+      function removeReport(index) {
+        reportFiles.splice(index, 1);
+        renderReportList();
+      }
+
+      function removePresetReport(index) {
+        presetReportNames.splice(index, 1);
+        renderReportList();
+      }
+
+      function renderReportList() {
+        const el = document.getElementById("reportList");
+        const presetRows = presetReportNames
+          .map(
+            (name, idx) => `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)} <span style="color:#94a3b8;">(จากกองบริหารคดี)</span></div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removePresetReport(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`,
+          )
+          .join("");
+        el.innerHTML = presetRows + reportFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeReport(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      function issueNoticeDocNo() {
+        const docNo = Activity103.issueDocNo(
+          currentCase.id,
+          "l3ResolutionNoticeDocNo",
+          "l3ResolutionNoticeDocDate",
+        );
+        currentCase = Activity103.getCase(currentCase.id);
+        document.getElementById("in_noticeDocNo").value = docNo;
+        Swal.fire({
+          icon: "success",
+          title: "ออกเลขหนังสือแจ้งผลเรียบร้อยแล้ว",
+          text: "เลขที่หนังสือ " + docNo,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+
+      function warn(title, text, focusId) {
+        Swal.fire({
+          icon: "warning",
+          title: title,
+          text: text,
+          confirmButtonColor: "#1e3a8a",
+        });
+        if (focusId) document.getElementById(focusId).focus();
+      }
+
+      function formatISODate(iso) {
+        return iso ? ECMIS103.formatThaiDate(iso) : "-";
+      }
+
+      function submitForm() {
+        if (!currentCase) return;
+
+        const v = (id) => document.getElementById(id).value.trim();
+        const meetingNo = v("in_meetingNo");
+        const meetingDate = v("in_meetingDate");
+        const agendaNo = v("in_agendaNo");
+        const resolutionText = v("in_resolutionText");
+        const noticeDocNo = v("in_noticeDocNo");
+        const noticeDate = v("in_noticeDate");
+        const noticeNotes = v("in_noticeNotes") || "-";
+
+        if (!meetingNo) return warn("กรุณากรอกครั้งที่ประชุม", "กรุณากรอกครั้งที่ประชุมคณะกรรมการ ป.ป.ท. ตามรายงานสรุปมติ", "in_meetingNo");
+        if (!meetingDate) return warn("กรุณาระบุวันที่ประชุม", "กรุณาระบุวันที่ประชุมคณะกรรมการ ป.ป.ท.", "in_meetingDate");
+        if (!agendaNo) return warn("กรุณากรอกวาระที่", "กรุณากรอกวาระที่พิจารณาเรื่องนี้", "in_agendaNo");
+        if (!resolutionText) return warn("กรุณาระบุสาระสำคัญของมติ", "กรุณาสรุปข้อมติตามรายงานสรุปมติ", "in_resolutionText");
+        if (!reportFiles.length && !presetReportNames.length) return warn("กรุณาแนบรายงานสรุปมติ", "กรุณาแนบไฟล์รายงานสรุปมติจากกองบริหารคดีอย่างน้อย 1 ไฟล์");
+        if (!noticeDocNo) return warn("กรุณากรอกเลขที่หนังสือแจ้งผล", "กรุณากรอกหรือกดออกเลขที่หนังสือแจ้งผล", "in_noticeDocNo");
+        if (!noticeDate) return warn("กรุณาระบุวันที่แจ้งผล", "กรุณาระบุวันที่แจ้งผลมติ", "in_noticeDate");
+
+        const legalDirector = ECMIS103.signerLabel("dir_legal");
+        const recipients = [{ role: "dir_legal", label: "ผอ.กองกฎหมาย", name: legalDirector }];
+        if (document.getElementById("in_notifyLawyer").checked) {
+          recipients.push({ role: "case_legal_officer", label: "นิติกรเจ้าของเรื่อง", name: currentCase.officer || "-" });
+        }
+
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันการรับเรื่องและแจ้งผลมติ?",
+          html: `
+ <div class="emd-summary">
+ <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
+ <p><strong>มติคณะกรรมการ ป.ป.ท.:</strong> ครั้งที่ ${esc(meetingNo)} วันที่ ${esc(formatISODate(meetingDate))} วาระที่ ${esc(agendaNo)}</p>
+ <p><strong>ผลมติ:</strong> ${RESOLUTION_RESULT}</p>
+ <p><strong>เลขที่หนังสือแจ้งผล:</strong> ${esc(noticeDocNo)}</p>
+ <p><strong>แจ้งถึง:</strong> ${recipients.map((r) => esc(r.label + " — " + r.name)).join("<br/>")}</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ผอ.กองกฎหมาย พิจารณาและมอบหมายงาน</p>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันบันทึกและแจ้งผล",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#16a34a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103.openSignatureModal(
+            {
+              title: "ลงนามบันทึกรับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.",
+              signer: ECMIS103.signerLabel("admin_legal"),
+              certId: "PACC-ADMINLEGAL-2569-103",
+            },
+            (image) => {
+              const now = new Date();
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(currentCase.id, STEP_CODE, {
+                l3BoardResolution: {
+                  meetingNo: meetingNo,
+                  meetingDate: meetingDate,
+                  agendaNo: agendaNo,
+                  result: RESOLUTION_RESULT,
+                  text: resolutionText,
+                  reportFileNames: presetReportNames.concat(reportFiles.map((f) => f.name)),
+                },
+                l3ResolutionNotice: {
+                  docNo: noticeDocNo,
+                  docDate: noticeDate,
+                  recipients: recipients,
+                  notifiedBy: ECMIS103.signerLabel("admin_legal"),
+                  notifiedAt: ECMIS103.formatThaiDateTime(now),
+                  notes: noticeNotes,
+                  acknowledgedBy: null,
+                  acknowledgedAt: null,
+                },
+                l3ResolutionNoticeDocNo: noticeDocNo,
+                assignedRole: "dir_legal",
+              });
+
+              Swal.fire({
+                icon: "success",
+                title: "รับเรื่องและแจ้งผลมติสำเร็จ!",
+                text: `แจ้งผลมติคณะกรรมการ ป.ป.ท. ด้วยหนังสือเลขที่ ${noticeDocNo} ถึง ผอ.กองกฎหมาย เรียบร้อยแล้ว`,
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>
