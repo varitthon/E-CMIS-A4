@@ -8,7 +8,7 @@
 
 | # | LAW | หน้า (ไฟล์) | บทบาทที่ต้องล็อกอิน | Login | ชื่อ (ตำแหน่ง) | ทำอะไร (กดปุ่ม) | คำร้องตัวอย่าง | สถานะหลังกด |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 0069-071 | [10-2-appeal-01-legal-admin-intake.html](../10-2-appeal-01-legal-admin-intake.html) | `admin_legal` | **Kanda.R** | นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย) | "บันทึกรับเรื่องอุทธรณ์และเข้าสู่ระบบ" | `คำร้อง-100032/2569` | `L2_PENDING_BUREAU_DIRECTOR_ASSIGN` |
+| 1 | 0069-071 | [10-2-appeal-01-legal-admin-intake.html](../10-2-appeal-01-legal-admin-intake.html) | `case_bureau_admin` | **Nichada.T** | นางนิชาดา ธุรการกิจ (ธุรการกองบริหารคดี) | "บันทึกรับเรื่องอุทธรณ์และเข้าสู่ระบบ" | `คำร้อง-100032/2569` | `L2_PENDING_BUREAU_DIRECTOR_ASSIGN` |
 | 2 | 0072 | [10-2-appeal-02-case-bureau-director-assign.html](../10-2-appeal-02-case-bureau-director-assign.html) | `case_bureau_director` | **Pattama.B** | นางปัทมา บริหารกิจ (ผู้อำนวยการกองบริหารคดี) | "ลงนามและมอบหมาย" | `คำร้อง-100033/2569` | `L2_PENDING_TRACKING_DIRECTOR_ASSIGN` |
 | 3 | 0073 | [10-2-appeal-03-case-tracking-director-assign.html](../10-2-appeal-03-case-tracking-director-assign.html) | `case_tracking_director` | **Wichai.T** | นายวิชัย ติดตามกิจ (ผู้อำนวยการกลุ่มงานบริหารติดตามคดี) | "ลงนามและมอบหมายนิติกร" | `คำร้อง-100034/2569` | `L2_PENDING_CASE_OWNER_APPEAL_OPINION` |
 | 4 | 0074 | [10-2-appeal-04-case-owner-opinion.html](../10-2-appeal-04-case-owner-opinion.html) | `original_officer` | **Somchai.J** | นายสมชาย ใจซื่อ (นิติกร/นักสืบเจ้าของเรื่อง) | "ลงนามและส่งต่อ" | `คำร้อง-100035/2569` | `L2_PENDING_APPEAL_AGENDA` |
@@ -17,9 +17,9 @@
 | 7 | 0077 | [10-2-appeal-07-secretariat-memo.html](../10-2-appeal-07-secretariat-memo.html) | `appeal_subcommittee_secretariat` | **Malee.S** | นางสาวมาลี เสรีกิจ (ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์) | "ลงนามและเสนอ" | `คำร้อง-100038/2569` | `L2_PENDING_TRACKING_DIRECTOR_SIGN` |
 | 8 | *(แทรกใหม่)* | [10-2-appeal-08-case-tracking-director-sign.html](../10-2-appeal-08-case-tracking-director-sign.html) | `case_tracking_director` | **Wichai.T** | นายวิชัย ติดตามกิจ (ผู้อำนวยการกลุ่มงานบริหารติดตามคดี) | "ลงนามส่งต่อ ผอ.กองบริหารคดี" | `คำร้อง-100039/2569` | `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` |
 | 9 | 0078 | [10-2-appeal-09-case-bureau-director-board-propose.html](../10-2-appeal-09-case-bureau-director-board-propose.html) | `case_bureau_director` | **Pattama.B** | นางปัทมา บริหารกิจ (ผู้อำนวยการกองบริหารคดี) | "ลงนามเสนอกิจกรรมที่ 7" | `คำร้อง-100040/2569` | `L2_PENDING_APPEAL_BOARD_DISPATCH` |
-| 10 | 0079 | [10-2-appeal-10-legal-admin-board-submit.html](../10-2-appeal-10-legal-admin-board-submit.html) | `admin_legal` | **Kanda.R** | นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย) | "ออกเลขส่งและยื่นมติบอร์ด" | `คำร้อง-100041/2569` | `L2_APPEAL_SUBMITTED_TO_BOARD` *(รอผลจริงจากกิจกรรมที่ 7 — ไม่มีหน้าถัดไปจนกว่าจะ "ได้รับมติ")* |
+| 10 | 0079 | [10-2-appeal-10-legal-admin-board-submit.html](../10-2-appeal-10-legal-admin-board-submit.html) | `case_bureau_admin` | **Nichada.T** | นางนิชาดา ธุรการกิจ (ธุรการกองบริหารคดี) | "ออกเลขส่งและยื่นมติบอร์ด" | `คำร้อง-100041/2569` | `L2_APPEAL_SUBMITTED_TO_BOARD` *(รอผลจริงจากกิจกรรมที่ 7 — ไม่มีหน้าถัดไปจนกว่าจะ "ได้รับมติ")* |
 | — | *(เหตุการณ์ภายนอก)* | *ไม่มีหน้า — จำลองด้วยสถานะ* | — | — | — | บอร์ด (กิจกรรมที่ 7) ตอบกลับมติแล้ว | `คำร้อง-100042/2569` = ยังรอ (`L2_APPEAL_SUBMITTED_TO_BOARD`) / `คำร้อง-100043-045/2569` = ตอบกลับแล้ว (`L2_APPEAL_BOARD_RESOLVED`) | — |
-| 11 | 0080 | [10-2-appeal-11-legal-admin-board-resolution.html](../10-2-appeal-11-legal-admin-board-resolution.html) | `admin_legal` | **Kanda.R** | นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย) | "ลงนามและบันทึกมติคณะกรรมการ" — เลือกมติได้ 3 แบบ | `คำร้อง-100043/2569` (DISCLOSE) / `100044` (PARTIAL) / `100045` (DENY) | `L2_PENDING_APPEAL_NOTICE_DRAFT` |
+| 11 | 0080 | [10-2-appeal-11-legal-admin-board-resolution.html](../10-2-appeal-11-legal-admin-board-resolution.html) | `case_bureau_admin` | **Nichada.T** | นางนิชาดา ธุรการกิจ (ธุรการกองบริหารคดี) | "ลงนามและบันทึกมติคณะกรรมการ" — เลือกมติได้ 3 แบบ | `คำร้อง-100043/2569` (DISCLOSE) / `100044` (PARTIAL) / `100045` (DENY) | `L2_PENDING_APPEAL_NOTICE_DRAFT` |
 | 12 | 0081 | [10-2-appeal-12-tracking-secretary-notice-draft.html](../10-2-appeal-12-tracking-secretary-notice-draft.html) | `case_tracking_secretary` | **Suda.K** | นางสาวสุดา คดีเที่ยง (เลขานุการกลุ่มงานบริหารติดตามคดี) | "ลงนามและส่งหนังสือแจ้งผลมติ" | `คำร้อง-100046/2569` | `L2_PENDING_APPEAL_CASE_OWNER_NOTIFY` |
 | 13 | 0082+0083 | [10-2-appeal-13-case-owner-notify-appellant.html](../10-2-appeal-13-case-owner-notify-appellant.html) | `original_officer` | **Somchai.J** | นายสมชาย ใจซื่อ (นิติกร/นักสืบเจ้าของเรื่อง) | "ลงนามและแจ้งผลผู้อุทธรณ์" | `คำร้อง-100047/2569` | `L2_APPEAL_CASE_CLOSED_NOTIFIED` **(สิ้นสุด Flow 4 ทั้งหมด)** |
 
@@ -27,7 +27,7 @@
 
 | Role id | Login | ชื่อ | ตำแหน่ง | ใช้ในขั้นตอน |
 |---|---|---|---|---|
-| `admin_legal` | Kanda.R | นางกานดา รักษ์ธรรม | เจ้าหน้าที่ธุรการกองกฎหมาย | 1, 10, 11 |
+| `case_bureau_admin` | Nichada.T | นางนิชาดา ธุรการกิจ | ธุรการกองบริหารคดี | 1, 10, 11 |
 | `case_bureau_director` | Pattama.B | นางปัทมา บริหารกิจ | ผู้อำนวยการกองบริหารคดี | 2, 9 |
 | `case_tracking_director` | Wichai.T | นายวิชัย ติดตามกิจ | ผู้อำนวยการกลุ่มงานบริหารติดตามคดี | 3, 8 |
 | `original_officer` | Somchai.J | นายสมชาย ใจซื่อ | นิติกร/นักสืบเจ้าของเรื่อง | 4, 13 |

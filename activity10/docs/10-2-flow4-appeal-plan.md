@@ -75,7 +75,7 @@
 
 ### 3.1 `10-2-appeal-01-legal-admin-intake.html` — ✅ implemented
 - **LAW:** 0069–071 (พับรวมทั้งการรับเรื่องและการคีย์เข้าระบบเป็นหน้าเดียว ตามที่ผู้ใช้ขอให้รวม)
-- **Role:** `admin_legal` (เจ้าหน้าที่ธุรการกองกฎหมาย)
+- **Role:** ~~`admin_legal`~~ → `case_bureau_admin` (ธุรการกองบริหารคดี) — เปลี่ยนแล้ว ดูหัวข้อ 9
 - **เข้าเงื่อนไข:** คำร้องอยู่ที่ `L2_PENDING_APPEAL_INTAKE` — seed ตรง ๆ ในข้อมูลตัวอย่าง (ไม่มีปุ่ม "ยื่นอุทธรณ์" บนคำร้องปิดสำนวนเดิม) เข้าหน้านี้ได้ทั้งแบบมี `?id=` (จากปุ่ม "ดำเนินการ" รายแถว) และไม่มี (จากปุ่ม "รับเรื่องอุทธรณ์" เหนือตาราง — จะมีช่องให้เลือกคำร้องเมื่อมีมากกว่า 1 รายการรอ)
 - **ฟอร์ม:** เลขที่หนังสือรับ (auto-suggest), วันที่ลงรับ (date, default วันนี้), ช่องทางยื่น (ส่วนกลาง/เขต + ระบุเขต), หมายเหตุ (optional), เอกสารแนบ (file, optional, หลายไฟล์), เลขที่คำอุทธรณ์ในระบบ (auto-suggest จากเลขคำร้องเดิม), สรุปประเด็นอุทธรณ์ (textarea, บังคับ)
 - **สถานะที่เขียน:** `L2_PENDING_BUREAU_DIRECTOR_ASSIGN`
@@ -147,7 +147,7 @@
 
 ### 3.10 `10-2-appeal-10-legal-admin-board-submit.html` — ✅ implemented
 - **LAW:** 0079
-- **Role:** `admin_legal`
+- **Role:** ~~`admin_legal`~~ → `case_bureau_admin` (ธุรการกองบริหารคดี) — เปลี่ยนแล้ว ดูหัวข้อ 9
 - **สิ่งที่ทำ:** ออกเลขหนังสือส่งและยื่นเรื่องเข้ากิจกรรมที่ 7 อย่างเป็นทางการ — **จบสโคปของ Flow 4 รอบนี้**
 - **ฟอร์ม:** เลขที่หนังสือส่ง (auto), วันที่ส่ง (auto)
 - **สถานะที่เขียน:** `L2_APPEAL_SUBMITTED_TO_BOARD` (terminal-for-now)
@@ -257,7 +257,7 @@
 ### 8.4 รายละเอียดแต่ละหน้า
 
 #### 8.4.1 `10-2-appeal-11-legal-admin-board-resolution.html` (LAW0080) — ✅ implemented
-- **Role:** `admin_legal`
+- **Role:** ~~`admin_legal`~~ → `case_bureau_admin` (ธุรการกองบริหารคดี) — เปลี่ยนแล้ว ดูหัวข้อ 9
 - **Precondition (statusCode ขาเข้า):** `L2_APPEAL_BOARD_RESOLVED` ("มติบอร์ดตอบกลับแล้ว") — **ไม่ใช่** `L2_APPEAL_SUBMITTED_TO_BOARD` โดยตรง — มีสถานะคั่นกลางใหม่แทรกแล้ว (✅ implement, ตาม pattern เดียวกับ `L2_BOARD_RESOLVED_ROUND2` ของ Flow 2 Part 1): `L2_APPEAL_SUBMITTED_TO_BOARD` (appeal-10 ส่งเรื่องแล้ว รอผล — ยังไม่มี route ออก เป็น black-box จริง) → เหตุการณ์ภายนอก "บอร์ดตอบกลับแล้ว" → `L2_APPEAL_BOARD_RESOLVED` (ยังไม่มี route จนกว่าจะสร้างหน้านี้ (appeal-11) จริง) — `APPEAL_STATUS_CODES` ที่ `isAppealCase()` ใช้ (`assets/ecmis-10-2.js`) ✅ เพิ่ม `L2_APPEAL_BOARD_RESOLVED` เข้าไปด้วยมือแล้วเช่นกัน (ให้แบดจ์ "อุทธรณ์" ยังขึ้นถูกต้อง)
 - **สิ่งที่ทำ:** รับ/บันทึกมติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) ที่ตอบกลับมาต่อคำอุทธรณ์นี้ — เลือกมติจาก `BOARD_APPEAL_RESOLUTION_TYPES` (บังคับเลือก) + เลขที่/วันที่หนังสือตอบกลับจากกิจกรรมที่ 7 (auto-suggest ตาม pattern เดิม) + ความเห็นเพิ่มเติม (optional, default "-")
 - **แสดงข้อมูลก่อนหน้าทั้งหมด:** เหมือนเดิมทุกหน้า (บันทึกคำวินิจฉัยอุทธรณ์จาก appeal-06/07, ลายเซ็นสะสมทั้งหมดถึง `appealBureauDirectorBoardPropose`)
@@ -294,3 +294,16 @@
 - ✅ เพิ่ม role `case_tracking_secretary` ใน `assets/ecmis-app.js` (ROLES array) และใน `login.html` (`ACTIVE_ROLE_IDS` + `ROLE_GROUPS`)
 - ✅ อัปเดตหัวข้อ 7 แล้ว (เปลี่ยน ⬜ เป็น ✅ ทั้ง 3 ไฟล์)
 - ⬜ **ยังไม่ได้ทำ:** อัปเดต `docs/10-2-flow-by-board-resolution.md` ให้ครอบคลุม sheet 7 ด้วย (ไม่ใช่แค่ sheet 6) — งานเดียวที่เหลืออยู่ของ Flow 4 ทั้งหมด
+
+---
+
+## 9. ✅ เปลี่ยน role งานธุรการของ Flow 4 จาก `admin_legal` เป็น `case_bureau_admin`
+
+> ผู้ใช้ขอให้แก้หลัง implement ครบทั้ง 13 หน้าแล้ว: เดิมขั้นตอนธุรการ 3 จุดของ Flow 4 (LAW0069-071, LAW0079, LAW0080) ใช้ role `admin_legal` (เจ้าหน้าที่ธุรการกองกฎหมาย) ซึ่งเป็นหน่วยงานของ Flow 1-3 (กองกฎหมาย, ก่อนเข้าสู่ขั้นอุทธรณ์) — ไม่สอดคล้องกับหน่วยงานเจ้าของเรื่องจริงของ Flow 4 คือ**กองบริหารคดี** (`case_bureau_director`/`case_tracking_director`/`case_tracking_secretary` อยู่กองบริหารคดีอยู่แล้วทุกตัว) จึงสร้าง role ใหม่ `case_bureau_admin` ("ธุรการกองบริหารคดี") ให้ทำหน้าที่ธุรการแทน `admin_legal` เฉพาะใน Flow 4 เท่านั้น (Flow 1-3 ยังใช้ `admin_legal` เหมือนเดิม ไม่กระทบ)
+
+- **Role ใหม่:** `case_bureau_admin` — login `Nichada.T`, ชื่อ "นางนิชาดา ธุรการกิจ", org กองบริหารคดี — เพิ่มใน `assets/ecmis-app.js` (ROLES array) แล้ว
+- **STEPS entry ที่เปลี่ยน role** (`assets/ecmis-10-2.js`): `L2-APPEAL-INTAKE` (appeal-01), `L2-APPEAL-BOARD-DISPATCH` (appeal-10), `L2-APPEAL-BOARD-RESOLUTION` (appeal-11) — เปลี่ยน `role`/`roleTitle`/`label` จาก admin_legal → case_bureau_admin ครบแล้ว
+- **หน้าที่แก้ข้อความ display** (title/breadcrumb/badge/info-note/signature-modal/link ข้ามหน้า): appeal-01, appeal-09 (จุดส่งต่อ `assignedRole`/`officer`), appeal-10, appeal-11 (รวม signature slot `appealBoardResolution`'s `position`), appeal-12, appeal-13 (2 หน้าหลังแค่แก้ signature-list label ที่อ้างถึง slot เดิม) — **ไม่แตะ** appeal-01's ลิงก์กลับไปหน้า Flow 1 (`10-2-17-legal-admin-deny-dispatch-committee.html`) เพราะหน้านั้นเป็นของ กองกฎหมาย จริง ๆ ไม่ใช่ Flow 4
+- **Sample data** (`assets/ecmis-activity10.js`): เปลี่ยน `assignedRole`/`officer`/`status` (เฉพาะที่มีชื่อ role ฝังอยู่) ของคำร้อง `100032`, `100041`-`100045` (6 รายการ) จาก admin_legal/"นางกานดา รักษ์ธรรม" หรือ "นายวิชัย ธุรการดี" → case_bureau_admin/"นางนิชาดา ธุรการกิจ"
+- **`login.html`:** เพิ่ม `case_bureau_admin` เข้า `ACTIVE_ROLE_IDS` และเข้ากลุ่ม chip "กิจกรรมที่ 10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล" (`admin_legal` ยังอยู่ใน `ACTIVE_ROLE_IDS` เหมือนเดิม เพราะยังใช้กับ Flow 1-3)
+- **⬜ ยังไม่ได้ทำ:** อัปเดต [`docs/10-2-flow4-appeal-test-flow.md`](10-2-flow4-appeal-test-flow.md) และ PDF คู่กัน (login/role คอลัมน์ขั้นที่ 1, 10, 11 ต้องเปลี่ยนจาก Kanda.R → Nichada.T)
