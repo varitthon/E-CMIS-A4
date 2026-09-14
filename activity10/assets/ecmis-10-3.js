@@ -281,6 +281,7 @@
   const VERDICT_BUILT_PAGES = [
     "10-3v-02-legal-director-assign.html",
     "10-3v-03-group-director-assign.html",
+    "10-3v-04-lawyer-verdict-analysis.html",
   ];
   /* VERDICT_STEPS[0] (LAW0119/10-3v-00, รวม LAW0119+LAW0120) เขียนสถานะเดียวกับที่มัน
      สังกัด (entry point เหมือน LAW0085/02-board-intake.html) — reduce ด้านล่างไล่
