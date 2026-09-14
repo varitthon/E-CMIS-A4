@@ -177,11 +177,31 @@
       label: "ผอ.กลุ่มงานคดี พิจารณาและเห็นชอบผลมติ/ข้อสั่งการ",
       stepName: "ผอ.กลุ่มงานคดี เห็นชอบ",
     },
+    {
+      code: "L3-22",
+      seq: 4,
+      page: "10-3-13-lawyer-request-extension.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "นิติกรร่างคำให้การแก้คำฟ้อง",
+      statusCode: "L3_PENDING_LAWYER_DRAFT_ANSWER",
+      label: "นิติกร ยื่นคำขอขยายเวลาต่อศาล",
+      stepName: "นิติกร ขอขยายเวลาต่อศาล",
+    },
+    {
+      code: "L3-23",
+      seq: 5,
+      page: "10-3-14-lawyer-draft-answer.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานคดีตรวจสอบร่างคำให้การ",
+      statusCode: "L3_PENDING_GROUP_ANSWER_REVIEW",
+      label: "นิติกร ร่างคำให้การแก้คำฟ้องและหนังสือนำส่ง",
+      stepName: "นิติกร ร่างคำให้การ",
+    },
   ];
 
   const PLANNED_ANSWER_STEPS = [
-    { flowNo: 22, stepName: "นิติกร ขอขยายเวลาต่อศาล", label: "นิติกร กลุ่มงานคดี ยื่นคำขอขยายเวลาต่อศาล" },
-    { flowNo: 23, stepName: "นิติกร ร่างคำให้การ", label: "นิติกร กลุ่มงานคดี ร่างคำให้การแก้คำฟ้อง" },
     { flowNo: 24, stepName: "ผอ.กลุ่มงานคดี ตรวจร่าง", label: "ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ" },
     { flowNo: 25, stepName: "ผอ.กองกฎหมาย ตรวจร่าง", label: "ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การแก้คำฟ้อง" },
     { flowNo: 26, stepName: "ธุรการ ออกเลขส่งภายใน", label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน" },
@@ -243,6 +263,19 @@
     const dt = d instanceof Date ? d : new Date(d);
     return dt.getDate() + " " + TH_MONTHS[dt.getMonth()] + " " + (dt.getFullYear() + 543);
   }
+  function parseISODate(iso) {
+    const parts = String(iso || "").split("-");
+    if (parts.length !== 3) return null;
+    const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function toISODate(d) {
+    return (
+      d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0")
+    );
+  }
   function formatThaiDateTime(d) {
     const dt = d instanceof Date ? d : new Date(d);
     const hh = String(dt.getHours()).padStart(2, "0");
@@ -261,6 +294,32 @@
     isStepSigned: function (kase, stepCode) {
       return !!(kase && kase.l3Signatures && kase.l3Signatures[stepCode]);
     },
+
+    computeAnswerDeadline: function (kase, requests) {
+      const base = parseISODate(kase && kase.courtReceivedDate);
+      const baseDays = parseInt(kase && kase.courtDeadlineDays, 10);
+      if (!base || !baseDays) return null;
+      const list = requests || (kase && kase.l3ExtensionRequests) || [];
+      const grantedTotal = list.reduce(function (sum, r) {
+        return sum + (r && r.result === "GRANTED" ? parseInt(r.grantedDays, 10) || 0 : 0);
+      }, 0);
+      const originalDue = new Date(base);
+      originalDue.setDate(originalDue.getDate() + baseDays);
+      const currentDue = new Date(originalDue);
+      currentDue.setDate(currentDue.getDate() + grantedTotal);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return {
+        baseDate: base,
+        baseDays: baseDays,
+        originalDue: originalDue,
+        grantedTotal: grantedTotal,
+        currentDue: currentDue,
+        daysLeft: Math.round((currentDue - today) / 86400000),
+      };
+    },
+
+    toISODate: toISODate,
 
     hasRoleSigned: function (kase, roleId) {
       const src = (kase && kase.raw) || kase;
