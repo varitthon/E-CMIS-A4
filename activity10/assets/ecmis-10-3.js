@@ -143,7 +143,111 @@
     },
   ];
 
-  const ALL_STEPS = STEPS.concat(STAY_STEPS);
+  /* ---------------------------------------------------------- PART 5–6
+     รับคำพิพากษาศาลปกครองชั้นต้น → วิเคราะห์ผล/กำหนดแนวทาง (LAW0119–LAW0128)
+     เป็นเคสใหม่แยกจากเคสรับคำฟ้อง (l3CaseType = "verdict") เดินสถานะ L3V_* ของตัวเอง
+     เริ่มที่ 10-3v-00 (LAW0119+LAW0120 รวมหน้าเดียว) ดู
+     docs/10.3 mockup/implementation-plan-part5-6.md
+     ขั้นที่ยังไม่มีหน้าจริง (10-3v-02 เป็นต้นไป) route ชี้ไปหน้าที่ยังไม่สร้าง */
+  const VERDICT_STEPS = [
+    {
+      /* รวม LAW0119 (รับหนังสือแจ้งผลคำพิพากษา) + LAW0120 (ลงทะเบียนคดีปกครอง)
+         เป็นหน้าเดียว — ธุรการกองกฎหมายทำทั้งสองขั้นในการ์ดเดียวแล้วส่งตรงถึง
+         ผอ.กองกฎหมาย ไม่ต้องมีสถานะ "รอลงทะเบียน" คั่นกลาง (เหมือนที่ Part 1
+         รวม LAW0090+LAW0092 เป็น 10-3-04) สร้างเคสใหม่ตรง ๆ ด้วย Activity10.addCase()
+         เป็นจุดเริ่มของสาย L3V_* (ไม่มี route ชี้เข้ามาหาไฟล์นี้เอง เหมือน
+         LAW0085/02-board-intake.html) */
+      code: "LAW0119",
+      seq: 0,
+      page: "10-3v-00-legal-admin-verdict-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย (คำพิพากษา)",
+      statusCode: "L3V_PENDING_DIRECTOR_ASSIGN",
+      label: "ธุรการ รับหนังสือแจ้งผลคำพิพากษาและลงทะเบียนคดีปกครอง",
+      stepName: "ธุรการ รับเรื่อง/ลงทะเบียน",
+    },
+    {
+      code: "LAW0121",
+      seq: 1,
+      page: "10-3v-02-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (คำพิพากษา)",
+      statusCode: "L3V_PENDING_GROUP_ASSIGN",
+      label: "ผอ.กองกฎหมาย แจกจ่าย/มอบหมาย (คำพิพากษา)",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      code: "LAW0122",
+      seq: 2,
+      page: "10-3v-03-group-director-assign.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรวิเคราะห์ผลคำพิพากษา",
+      statusCode: "L3V_PENDING_LAWYER_ANALYSIS",
+      label: "ผอ.กลุ่มงาน มอบหมายนิติกร (คำพิพากษา)",
+      stepName: "ผอ.กลุ่มงาน มอบหมายนิติกร",
+    },
+    {
+      code: "LAW0123",
+      seq: 3,
+      page: "10-3v-04-lawyer-verdict-analysis.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานพิจารณาเห็นชอบ (คำพิพากษา)",
+      statusCode: "L3V_PENDING_GROUP_APPROVE",
+      label: "นิติกร ตรวจ/วิเคราะห์ผลคำพิพากษา",
+      stepName: "นิติกร วิเคราะห์ผลคำพิพากษา",
+    },
+    {
+      code: "LAW0126",
+      seq: 4,
+      page: "10-3v-05-group-director-approve.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายกำหนดแนวทาง (คำพิพากษา)",
+      statusCode: "L3V_PENDING_DIRECTOR_DECIDE",
+      label: "ผอ.กลุ่มงาน พิจารณาและเห็นชอบ (คำพิพากษา)",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ",
+    },
+    {
+      /* สถานะที่เขียนจริงมาจาก VERDICT_BRANCHES ตามทางที่ ผอ.กองเลือก — ค่านี้เป็นแค่ค่าตั้งต้น */
+      code: "LAW0127",
+      seq: 5,
+      page: "10-3v-06-legal-director-decide.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "กำหนดแนวทางดำเนินการแล้ว",
+      statusCode: "L3V_DECIDED",
+      label: "ผอ.กองกฎหมาย กำหนดแนวทางดำเนินการ (คำพิพากษา)",
+      stepName: "ผอ.กองกฎหมาย กำหนดแนวทาง",
+    },
+  ];
+
+  /* LAW0128 — 3 ทางหลัง ผอ.กองกฎหมายกำหนดแนวทาง (ทุกทางเป็น black box ไปกิจกรรมอื่น) */
+  const VERDICT_BRANCHES = {
+    APPEAL_REPLY: {
+      label: "ชนะคดี (ผู้ฟ้องคดียื่นอุทธรณ์)",
+      proposal: "จัดทำคำแก้อุทธรณ์",
+      status: "รอจัดทำคำแก้อุทธรณ์ (กิจกรรมที่ 7)",
+      statusCode: "L3V_TO_APPEAL_REPLY",
+    },
+    APPEAL_CONSIDER: {
+      label: "แพ้คดี",
+      proposal: "พิจารณาความเห็นควรอุทธรณ์",
+      status: "รอพิจารณาความเห็นควรอุทธรณ์ (กิจกรรมที่ 8)",
+      statusCode: "L3V_TO_APPEAL_CONSIDER",
+    },
+    CLOSE: {
+      label: "ชนะคดี (ผู้ฟ้องคดีไม่ยื่นอุทธรณ์)",
+      proposal: "ยุติ/ปิดสำนวน",
+      status: "รอปิดสำนวน (LAW0163)",
+      statusCode: "L3V_TO_CLOSE",
+    },
+  };
+
+  const ALL_STEPS = STEPS.concat(STAY_STEPS, VERDICT_STEPS);
 
   function stepByCode(code) {
     return ALL_STEPS.find(function (s) { return s.code === code; }) || null;
@@ -171,6 +275,31 @@
     return acc;
   }, ROUTES);
 
+  /* หน้าที่สร้างแล้วจริง — สถานะที่ชี้ไปหน้าที่ยังไม่สร้างจะไม่มี route (inbox แสดงเป็น
+     "ขั้นตอนถัดไปยังไม่ implement" แทนการพาไปหน้า 404) เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่
+     (10-3v-00 ไม่ต้องอยู่ในนี้ เพราะเป็นจุดเริ่มที่เข้าด้วยปุ่ม ไม่ใช่ปลายทางของ ROUTES) */
+  const VERDICT_BUILT_PAGES = [
+    "10-3v-02-legal-director-assign.html",
+    "10-3v-03-group-director-assign.html",
+  ];
+  /* VERDICT_STEPS[0] (LAW0119/10-3v-00, รวม LAW0119+LAW0120) เขียนสถานะเดียวกับที่มัน
+     สังกัด (entry point เหมือน LAW0085/02-board-intake.html) — reduce ด้านล่างไล่
+     ROUTES ต่อจากตรงนี้เอง */
+  VERDICT_STEPS.reduce(function (acc, step, i) {
+    const next = VERDICT_STEPS[i + 1];
+    if (next && VERDICT_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 5–6) — ใช้กับแถบขั้นตอน */
+  function flowOf(code) {
+    return [STEPS, STAY_STEPS, VERDICT_STEPS].find(function (flow) {
+      return flow.some(function (s) { return s.code === code; });
+    }) || STEPS;
+  }
+
   const TH_MONTHS = [
     "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
@@ -188,6 +317,8 @@
 
   const Activity103 = {
     STEPS: STEPS,
+    VERDICT_STEPS: VERDICT_STEPS,
+    VERDICT_BRANCHES: VERDICT_BRANCHES,
     ROUTES: ROUTES,
     stepByCode: stepByCode,
     stepByPage: stepByPage,
@@ -263,6 +394,12 @@
     /* คดีของกิจกรรมนี้ที่มี l3ParentCaseId คือเคสลูกของสาขาคำขอทุเลาฯ (Part 1b) */
     isStayObjectionCase: function (kase) {
       return !!(kase && kase.l3ParentCaseId);
+    },
+
+    /* เคสรับผลคำพิพากษา (Part 5–6) — ลิงก์กลับคดีรับคำฟ้องเดิมเก็บใน l3OriginCaseId
+       (ไม่ใช้ l3ParentCaseId เพราะจะถูก isStayObjectionCase นับเป็นเคสลูก Part 1b) */
+    isVerdictCase: function (kase) {
+      return !!(kase && kase.l3CaseType === "verdict");
     },
 
     /* สร้างเคสลูกแยกต่างหากเมื่อ 10-3-04 ติ๊ก "มีคำขอทุเลาการบังคับคดี" — เดินสถานะ
@@ -607,12 +744,13 @@
     window.location.href = "01-work-inbox.html";
   }
 
-  /* แถบขั้นตอน — Part 1 เป็นเส้นตรงไม่มีสาขา จึงไม่ต้องกรองตามผลมติเหมือน 10.2 */
+  /* แถบขั้นตอน — แต่ละสายงาน (Part 1 / 1b / 5–6) เป็นเส้นตรง แสดงเฉพาะสายที่ขั้นนั้นสังกัด */
   function renderStepper(containerId, currentCode) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    const curIdx = STEPS.findIndex(function (s) { return s.code === currentCode; });
-    el.innerHTML = STEPS.map(function (step, i) {
+    const flow = flowOf(currentCode);
+    const curIdx = flow.findIndex(function (s) { return s.code === currentCode; });
+    el.innerHTML = flow.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       return (
