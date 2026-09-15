@@ -343,6 +343,20 @@
       note: "คนละคนกับ case_tracking_director (ผอ.กลุ่มงานบริหารติดตามคดี) — ทำหน้าที่เลขานุการธุรการของกลุ่มงานเดียวกัน เฉพาะขั้นตอนหลังบอร์ดมีมติ (docs/10-2-flow4-appeal-plan.md หัวข้อ 8)",
       perms: ["view.assigned", "download", "draft.doc", "sign.own"],
     },
+    {
+      id: "case_bureau_admin",
+      login: "Nichada.T",
+      row: 20,
+      group: "กองบริหารคดี",
+      title: "ธุรการกองบริหารคดี",
+      name: "นางนิชาดา ธุรการกิจ",
+      org: "กองบริหารคดี",
+      act: "10.2",
+      responsibilities:
+        "รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ, ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7, บันทึกมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์ (sheet 6-7 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล)",
+      note: "งานธุรการของสาย Flow 4 อุทธรณ์ ทั้งหมดเดิมใช้ admin_legal (ธุรการกองกฎหมาย) — แยกออกมาเป็น role นี้ เพื่อให้สอดคล้องกับหน่วยงานเจ้าของเรื่อง (กองบริหารคดี) เหมือน case_bureau_director/case_tracking_director/case_tracking_secretary ที่เหลือในสายนี้ ดู docs/10-2-flow4-appeal-plan.md",
+      perms: ["view.assigned", "download", "assign.work"],
+    },
   ];
 
   /* --------------------------------------------------- DOCUMENT TYPE + SLA

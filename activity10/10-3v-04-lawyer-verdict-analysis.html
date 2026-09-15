@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>นิติกร วิเคราะห์ผลคำพิพากษา | E-CMIS กิจกรรมที่ 10.3</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_2" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 900px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+        height: 38px;
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+      .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+
+      /* การ์ดเลือกผลคดี — พอร์ตจากแพทเทิร์น .decision-grid/.decision-card ใน
+         06-officer-opinion.html (ผลการตรวจพิจารณาทางกฎหมาย) */
+      .decision-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .decision-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+      .decision-card:hover {
+        border-color: #93c5fd;
+        background: rgba(37, 99, 235, 0.02);
+      }
+      /* .form-group label{margin-bottom:6px; justify-content:space-between}
+         ก็ตรงกับ <label class="decision-card"> ด้วย (สืบทอดมาเพราะการ์ดอยู่ใน
+         .form-group) — override ให้ไม่มีระยะห่างเกิน gap ของ grid และให้
+         ข้อความชิดซ้ายถัดจาก radio แทนที่จะถูกดันไปขวาสุด */
+      .decision-grid .decision-card {
+        margin-bottom: 0;
+        justify-content: flex-start;
+      }
+      .decision-card.active-win {
+        border-color: #16a34a;
+        background: rgba(22, 163, 74, 0.05);
+      }
+      .decision-card.active-lose {
+        border-color: #dc2626;
+        background: rgba(220, 38, 38, 0.05);
+      }
+      .decision-card.active-partial {
+        border-color: #d97706;
+        background: rgba(217, 119, 6, 0.05);
+      }
+      @media (max-width: 1024px) {
+        .decision-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div>
+        <a href="01-work-inbox.html" class="brand">
+          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
+          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
+        </a>
+        <ul class="menu" id="sidebarMenu"></ul>
+      </div>
+      <div class="sidebar-bottom">
+        <div>สำนักงาน ป.ป.ท.</div>
+        <div style="font-size: 0.9em; opacity: 0.7">
+          กิจกรรมที่ 10.3 — คดีศาลปกครอง
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >นิติกร วิเคราะห์ผลคำพิพากษา</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+              <a
+                href="login.html"
+                onclick="confirmLogout(event)"
+                class="logout-link"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>ออกจากระบบ</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper" id="stepper"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            รอ ผอ.กลุ่มงานคดีมอบหมายที่หน้า
+            <a href="10-3v-03-group-director-assign.html"
+              >ผอ.กลุ่มงาน มอบหมายนิติกร (คำพิพากษา)</a
+            >
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-gavel text-primary me-2"></i
+                >ข้อมูลคำพิพากษาศาลปกครองชั้นต้น</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div id="f_originCase"></div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ศาลมีคำพิพากษา</label>
+                  <div class="read-box" id="f_verdictDate">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                    -
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีแดง</label>
+                  <div class="read-box font-monospace" id="f_redCaseNo">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้อง</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้อง</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ข้อสั่งการจาก ผอ.กลุ่มงานคดี</label>
+                <div
+                  class="read-box read-box-textarea"
+                  id="f_groupAssignNotes"
+                >
+                  -
+                </div>
+              </div>
+              <div class="form-group">
+                <label>เอกสารแนบ (คำพิพากษา)</label>
+                <div id="f_attachments"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-magnifying-glass text-primary me-2"></i
+                >ตรวจสอบคำพิพากษา / มูลเหตุคดี</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label
+                  >ประเด็นแห่งคดี / มูลเหตุคดี
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <textarea
+                  id="in_verdictIssues"
+                  class="form-control"
+                  rows="3"
+                  placeholder="ระบุประเด็นแห่งคดีที่ศาลวินิจฉัย / มูลเหตุคดีเบื้องต้น..."
+                >
+-</textarea
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
+                >บันทึกผลคำพิพากษา</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ผลคดี <span style="color: #dc2626">*</span></label>
+                <div class="decision-grid">
+                  <label
+                    class="decision-card"
+                    id="label_result_win"
+                    onclick="selectVerdictResult('WIN')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_verdictResult"
+                      id="result_win"
+                      value="ชนะ"
+                      style="accent-color: #16a34a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #16a34a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-circle-check me-1"></i>ชนะคดี
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (ระบุว่าผู้ฟ้องยื่นอุทธรณ์หรือไม่)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_result_lose"
+                    onclick="selectVerdictResult('LOSE')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_verdictResult"
+                      id="result_lose"
+                      value="แพ้"
+                      style="accent-color: #dc2626; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #dc2626;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-circle-xmark me-1"></i>แพ้คดี
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (พิจารณาความเห็นควรอุทธรณ์)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_result_partial"
+                    onclick="selectVerdictResult('PARTIAL')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_verdictResult"
+                      id="result_partial"
+                      value="แพ้บางส่วน"
+                      style="accent-color: #d97706; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #d97706;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-circle-half-stroke me-1"></i
+                        >แพ้บางส่วน
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (พิจารณาความเห็นควรอุทธรณ์)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >สรุปคำพิพากษา
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <textarea
+                  id="in_verdictSummary"
+                  class="form-control"
+                  rows="3"
+                  placeholder="สรุปสาระสำคัญของคำพิพากษา..."
+                >
+-</textarea
+                >
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >วันที่อ่าน/รับทราบคำพิพากษา
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_verdictReadDate"
+                    class="form-control font-monospace"
+                    lang="th-TH-u-ca-buddhist"
+                    onchange="onReadDateChange()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันครบกำหนดอุทธรณ์
+                    <span style="font-weight: 400; color: #64748b"
+                      >(ค่าเริ่มต้น +30 วัน แก้ไขได้)</span
+                    ></label
+                  >
+                  <input
+                    type="date"
+                    id="in_appealDeadline"
+                    class="form-control font-monospace"
+                    lang="th-TH-u-ca-buddhist"
+                    oninput="appealDeadlineTouched = true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group d-none" id="grp_appealByPlaintiff">
+                <label
+                  >ผู้ฟ้องคดียื่นอุทธรณ์?
+                  <span style="color: #dc2626">*</span></label
+                >
+                <div
+                  class="decision-grid"
+                  style="grid-template-columns: repeat(2, 1fr)"
+                >
+                  <label
+                    class="decision-card"
+                    id="label_appeal_yes"
+                    onclick="selectAppealByPlaintiff('YES')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_appealByPlaintiff"
+                      id="appeal_yes"
+                      value="ยื่น"
+                      style="accent-color: #d97706; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #d97706;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-file-signature me-1"></i
+                        >ยื่นอุทธรณ์
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (จัดทำคำแก้อุทธรณ์)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_appeal_no"
+                    onclick="selectAppealByPlaintiff('NO')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_appealByPlaintiff"
+                      id="appeal_no"
+                      value="ไม่ยื่น"
+                      style="accent-color: #16a34a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #16a34a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-circle-check me-1"></i
+                        >ไม่ยื่นอุทธรณ์
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (ยุติ/ปิดสำนวน)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-pen-fancy text-primary me-2"></i
+                >วิเคราะห์ผลคำพิพากษาและบันทึกความเห็น</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label
+                  >บันทึกความเห็น
+                  <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_verdictOpinionText"
+                  class="form-control"
+                  rows="6"
+                  placeholder="สรุปข้อเท็จจริง ข้อกฎหมาย และความเห็นของนิติกรต่อผลคำพิพากษา..."
+                >
+-</textarea
+                >
+              </div>
+
+              <div class="form-group">
+                <label
+                  >แนบเอกสารประกอบความเห็น
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_verdictOpinionAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleOpinionAttachmentsChange(this)"
+                  />
+                </div>
+                <div
+                  id="opinionAttachmentsList"
+                  style="margin-top: 8px"
+                ></div>
+                <div class="info-box" style="margin-top: 10px; margin-bottom: 0">
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-route text-primary me-2"></i
+                >แนวทางที่เสนอ</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div
+                id="f_proposedBranch"
+                style="font-weight: 700; font-size: 1.02em; color: #1e3a8a"
+              >
+                — เลือกผลคดีด้านบนก่อน —
+              </div>
+              <div
+                class="helper-text"
+                style="margin-top: 6px; font-size: 0.82em; color: #64748b"
+              >
+                แนวทางนี้คำนวณอัตโนมัติจากผลคดี — ผอ.กองกฎหมายจะยืนยันหรือเปลี่ยนแนวทางในขั้นตอนถัดไป
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="submitForm()"
+              >
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
+    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_9"></script>
+
+    <script>
+      /* LAW0123+0124+0125 (รวมหน้าเดียว) — นิติกร กลุ่มงานคดี ตรวจสอบคำพิพากษา,
+         บันทึกผลคำพิพากษา, วิเคราะห์และบันทึกความเห็น พร้อมเสนอแนวทาง
+         (เคสรับผลคำพิพากษา, Part 5–6) — เคสมาจาก 10-3v-03 ที่สถานะ
+         L3V_PENDING_LAWYER_ANALYSIS ดู docs/10.3 mockup/implementation-plan-part5-6.md */
+      const STEP_CODE = "LAW0123";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      let currentCase = null;
+      let appealDeadlineTouched = false;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        ECMIS103.renderStepper("stepper", STEP_CODE);
+        loadCase();
+        ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const idx = Activity103.VERDICT_STEPS.findIndex(
+          (s) => s.code === STEP_CODE,
+        );
+        const prev = Activity103.VERDICT_STEPS[idx - 1];
+        const found = Activity103.getCase(id, prev ? prev.statusCode : null);
+        /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคสคำพิพากษา */
+        currentCase =
+          found && Activity103.isVerdictCase(found) ? found : null;
+
+        if (!currentCase) {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        populate();
+      }
+
+      /* วันที่จาก input type=date (YYYY-MM-DD) → วันที่ไทย */
+      function thaiDateFromIso(iso) {
+        if (!iso) return "-";
+        const d = new Date(iso);
+        return isNaN(d.getTime()) ? iso : ECMIS103.formatThaiDate(d);
+      }
+
+      function todayISO() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function populate() {
+        const c = currentCase;
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_verdictDate", thaiDateFromIso(c.verdictDate));
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.setText("f_redCaseNo", c.redCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_groupAssignNotes", c.l3GroupAssignNotes);
+        ECMIS103.renderAttachments("f_attachments", c.attachmentFileNames);
+
+        const originEl = document.getElementById("f_originCase");
+        originEl.innerHTML = "";
+        if (c.l3OriginCaseId) {
+          const note = document.createElement("div");
+          note.className = "l3-note";
+          note.style.marginBottom = "16px";
+          const icon = document.createElement("i");
+          icon.className = "fa-solid fa-link";
+          const text = document.createElement("div");
+          text.textContent = "เชื่อมกับคดีรับคำฟ้องเดิม: " + c.l3OriginCaseId;
+          note.appendChild(icon);
+          note.appendChild(text);
+          originEl.appendChild(note);
+        }
+
+        document.getElementById("in_verdictReadDate").value = todayISO();
+        updateProposedBranch();
+      }
+
+      /* ---- ผลคดี / วันครบกำหนดอุทธรณ์ / แนวทางที่เสนอ ---- */
+
+      /* การ์ดเลือกผลคดี (แพทเทิร์นเดียวกับ selectOpinionType() ใน
+         06-officer-opinion.html) — เซ็ต radio + สลับ class เน้นการ์ดที่เลือก */
+      function selectVerdictResult(type) {
+        const cards = {
+          WIN: document.getElementById("label_result_win"),
+          LOSE: document.getElementById("label_result_lose"),
+          PARTIAL: document.getElementById("label_result_partial"),
+        };
+        Object.values(cards).forEach((el) => {
+          if (el) el.className = "decision-card";
+        });
+
+        const t = (type || "").toUpperCase();
+        if (t === "WIN") {
+          document.getElementById("result_win").checked = true;
+          if (cards.WIN) cards.WIN.className = "decision-card active-win";
+        } else if (t === "LOSE") {
+          document.getElementById("result_lose").checked = true;
+          if (cards.LOSE) cards.LOSE.className = "decision-card active-lose";
+        } else if (t === "PARTIAL") {
+          document.getElementById("result_partial").checked = true;
+          if (cards.PARTIAL)
+            cards.PARTIAL.className = "decision-card active-partial";
+        }
+
+        onResultChange();
+      }
+
+      /* การ์ด "ผู้ฟ้องคดียื่นอุทธรณ์?" — ใช้แพทเทิร์นเดียวกับ selectVerdictResult()
+         (ใช้สี active-partial/active-win ซ้ำ ไม่ต้องเพิ่ม class ใหม่) */
+      function selectAppealByPlaintiff(type) {
+        const cards = {
+          YES: document.getElementById("label_appeal_yes"),
+          NO: document.getElementById("label_appeal_no"),
+        };
+        Object.values(cards).forEach((el) => {
+          if (el) el.className = "decision-card";
+        });
+
+        const t = (type || "").toUpperCase();
+        if (t === "YES") {
+          document.getElementById("appeal_yes").checked = true;
+          if (cards.YES) cards.YES.className = "decision-card active-partial";
+        } else if (t === "NO") {
+          document.getElementById("appeal_no").checked = true;
+          if (cards.NO) cards.NO.className = "decision-card active-win";
+        }
+
+        updateProposedBranch();
+      }
+
+      function onResultChange() {
+        const result = getResult();
+        const grp = document.getElementById("grp_appealByPlaintiff");
+        grp.classList.toggle("d-none", result !== "ชนะ");
+        if (result !== "ชนะ") {
+          document
+            .querySelectorAll('input[name="in_appealByPlaintiff"]')
+            .forEach((el) => (el.checked = false));
+          ["label_appeal_yes", "label_appeal_no"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.className = "decision-card";
+          });
+        }
+        updateProposedBranch();
+      }
+
+      function onReadDateChange() {
+        if (appealDeadlineTouched) return;
+        const readDate = document.getElementById("in_verdictReadDate").value;
+        if (!readDate) return;
+        const d = new Date(readDate);
+        d.setDate(d.getDate() + 30);
+        document.getElementById("in_appealDeadline").value = d
+          .toISOString()
+          .split("T")[0];
+      }
+
+      function getResult() {
+        const el = document.querySelector(
+          'input[name="in_verdictResult"]:checked',
+        );
+        return el ? el.value : "";
+      }
+
+      function getAppealByPlaintiff() {
+        const el = document.querySelector(
+          'input[name="in_appealByPlaintiff"]:checked',
+        );
+        return el ? el.value : "";
+      }
+
+      /* ผลคดี + (ถ้าชนะ) ผู้ฟ้องยื่นอุทธรณ์หรือไม่ → แนวทาง 1 ใน 3 ของ LAW0128
+         (VERDICT_BRANCHES ใน ecmis-10-3.js) — แพ้บางส่วนไปทางเดียวกับแพ้ */
+      function computeProposedBranch() {
+        const result = getResult();
+        if (result === "แพ้" || result === "แพ้บางส่วน") {
+          return "APPEAL_CONSIDER";
+        }
+        if (result === "ชนะ") {
+          const appeal = getAppealByPlaintiff();
+          if (appeal === "ยื่น") return "APPEAL_REPLY";
+          if (appeal === "ไม่ยื่น") return "CLOSE";
+        }
+        return null;
+      }
+
+      function updateProposedBranch() {
+        const key = computeProposedBranch();
+        const el = document.getElementById("f_proposedBranch");
+        if (!key) {
+          el.textContent = getResult()
+            ? "— เลือก \"ผู้ฟ้องคดียื่นอุทธรณ์?\" ด้านบนก่อน —"
+            : "— เลือกผลคดีด้านบนก่อน —";
+          return;
+        }
+        const branch = Activity103.VERDICT_BRANCHES[key];
+        el.textContent = branch.label + " → " + branch.proposal;
+      }
+
+      /* ---- แนบเอกสารประกอบความเห็น (เหมือน pattern ของ 10-3-04) ---- */
+      let opinionAttachedFiles = [];
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function handleOpinionAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${sizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          opinionAttachedFiles.push(file);
+        });
+        input.value = "";
+        renderOpinionAttachmentsList();
+      }
+
+      function removeOpinionAttachment(index) {
+        opinionAttachedFiles.splice(index, 1);
+        renderOpinionAttachmentsList();
+      }
+
+      function renderOpinionAttachmentsList() {
+        const listEl = document.getElementById("opinionAttachmentsList");
+        if (!listEl) return;
+        if (!opinionAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = opinionAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeOpinionAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      function doneAndBack(text) {
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกสำเร็จ",
+          text: text,
+          timer: 1900,
+          showConfirmButton: false,
+        }).then(ECMIS103.goInbox);
+      }
+
+      function submitForm() {
+        const result = getResult();
+        if (!result) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกผลคดี",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        const readDate = document.getElementById("in_verdictReadDate").value;
+        if (!readDate) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุวันที่อ่าน/รับทราบคำพิพากษา",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        const appealByPlaintiff = getAppealByPlaintiff();
+        if (result === "ชนะ" && !appealByPlaintiff) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุว่าผู้ฟ้องคดียื่นอุทธรณ์หรือไม่",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        const opinionText = document
+          .getElementById("in_verdictOpinionText")
+          .value.trim();
+        if (!opinionText) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุบันทึกความเห็น",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_verdictOpinionText").focus();
+          return;
+        }
+        const branchKey = computeProposedBranch();
+        if (!branchKey) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "ระบบยังคำนวณแนวทางที่เสนอไม่ได้ กรุณาตรวจผลคดีด้านบน",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        const branch = Activity103.VERDICT_BRANCHES[branchKey];
+
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันบันทึกและส่งต่อ ผอ.กลุ่มงานคดี",
+          html:
+            "แนวทางที่เสนอ: <strong>" +
+            branch.label +
+            " → " +
+            branch.proposal +
+            "</strong>",
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันและส่งต่อ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          Activity103.advance(currentCase.id, STEP_CODE, {
+            l3VerdictIssues:
+              document.getElementById("in_verdictIssues").value.trim() ||
+              "-",
+            l3VerdictResult: result,
+            l3VerdictSummary:
+              document.getElementById("in_verdictSummary").value.trim() ||
+              "-",
+            l3VerdictReadDate: readDate,
+            l3AppealDeadline: document.getElementById("in_appealDeadline")
+              .value,
+            l3AppealByPlaintiff: appealByPlaintiff || null,
+            l3VerdictOpinionText: opinionText,
+            l3VerdictOpinionAttachments: opinionAttachedFiles.map(
+              (f) => f.name,
+            ),
+            l3ProposedBranch: branchKey,
+            assignedRole: "case_group_director",
+            officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+          });
+          doneAndBack(
+            "ส่งเรื่องให้ ผอ.กลุ่มงานคดี พิจารณาเห็นชอบเรียบร้อยแล้ว",
+          );
+        });
+      }
+
+      /* ---- shell chrome (theme / font size / dropdown) ---- */
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

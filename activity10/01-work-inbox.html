@@ -697,6 +697,14 @@
               <i class="fa-solid fa-gavel me-1"></i>รับเรื่องอุทธรณ์
             </button>
             <a
+              href="10-3v-00-legal-admin-verdict-intake.html"
+              class="btn btn-outline"
+              id="btnVerdictIntake"
+              title="รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น (LAW0119)"
+              style="display: none"
+              ><i class="fa-solid fa-gavel me-1"></i>บันทึกผลพิพากษา</a
+            >
+            <a
               href="02-board-intake.html"
               class="btn btn-primary"
               id="btnBoardIntake"
@@ -853,16 +861,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_4"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_9"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -2000,6 +2007,16 @@
         if (btnAppeal) {
           btnAppeal.style.display = currentCategory === "10.2" ? "" : "none";
         }
+        /* ปุ่ม "บันทึกผลพิพากษา" (LAW0119, ทางลัดไป 02-board-intake พร้อมเลือก
+           ประเภทเรื่อง = รับผลคำพิพากษา) โชว์เฉพาะตอนเลือกหมวด "คดีศาลปกครอง"
+           และเฉพาะบทบาทธุรการกองกฎหมายที่มีสิทธิ์รับเรื่องเข้าระบบ */
+        const btnVerdict = document.getElementById("btnVerdictIntake");
+        if (btnVerdict) {
+          const roleId = getCurrentRole();
+          const canIntake = roleId === "admin_legal" || roleId === "Kanda.R";
+          btnVerdict.style.display =
+            currentCategory === "10.3" && canIntake ? "" : "none";
+        }
       }
 
       function onSearchChange() {
@@ -2084,7 +2101,7 @@
                 '<div class="emd-summary">' +
                 `<p><strong>คดี:</strong> ${c.id}</p>` +
                 `<p><strong>สถานะปัจจุบัน:</strong> ${c.status || "-"}</p>` +
-                '<p style="color:#b45309">ขั้นตอนถัดไปยังไม่ implement (รอเสนอบอร์ด)</p></div>',
+                '<p style="color:#b45309">ขั้นตอนถัดไปยังไม่ implement</p></div>',
               confirmButtonColor: "#1e3a8a",
             });
           }
