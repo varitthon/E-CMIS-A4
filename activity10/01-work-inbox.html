@@ -869,7 +869,7 @@
     <script src="assets/ecmis-activity10.js?v=20260907_4"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_19"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_21"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1993,6 +1993,32 @@
         window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
       }
 
+      /* eye icon ของคดีศาลปกครอง (กิจกรรมที่ 10.3) — พาไปหน้าขั้นตอนปัจจุบันของ
+         เคสแบบดูอย่างเดียว (?view=1) แทนที่จะพาไปหน้า 03-prosecutor-doc.html
+         ที่เป็นของกิจกรรมอื่นและไม่รู้จักเคส 10.3 (ดู ECMIS103.applyViewOnlyMode
+         ใน ecmis-10-3.js) ถ้ายังไม่มีหน้าขั้นตอนถัดไป (terminal/ยังไม่ implement)
+         ให้แสดงสรุปสถานะแทน */
+      function viewCourtCase(caseId, targetPage) {
+        if (targetPage) {
+          window.location.href = `${targetPage}?id=${encodeURIComponent(caseId)}&view=1`;
+          return;
+        }
+        const allCases = getAllDatabaseCases();
+        const c = allCases.find(
+          (item) => item.id === caseId || item.caseNo === caseId,
+        ) || { id: caseId };
+        Swal.fire({
+          icon: "info",
+          title: "ยังไม่มีหน้าขั้นตอนถัดไป",
+          html:
+            '<div class="emd-summary">' +
+            `<p><strong>คดี:</strong> ${c.id}</p>` +
+            `<p><strong>สถานะปัจจุบัน:</strong> ${c.status || "-"}</p>` +
+            "</div>",
+          confirmButtonColor: "#1e3a8a",
+        });
+      }
+
       function handleCaseAction(caseId) {
         const roleId = getCurrentRole();
         const allCases = getAllDatabaseCases();
@@ -2383,6 +2409,23 @@
         return ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;" title="ความเห็นที่นิติกรเสนอ">${branch.label}</span>`;
       }
 
+      /* แบดจ์มติบอร์ด (บอร์ดเห็นชอบให้อุทธรณ์ / เห็นชอบไม่อุทธรณ์) — คู่กับสถานะ
+         เหมือน appealConsiderProposalBadge ด้านบน ไม่ผูกกับสถานะปัจจุบัน ให้
+         คงอยู่ต่อแม้เคสจะเดินเข้า Branch A/B (LAW0153.../LAW0164...) ไปแล้ว
+         ใช้ statusCode L9_BOARD_APPROVED_APPEAL / L9_BOARD_APPROVED_NO_APPEAL
+         เป็นจุดเข้าปัจจุบัน แต่แบดจ์อ่านจาก l9BoardDecision โดยตรงเพื่อให้
+         ติดตามต่อได้แม้ขั้นถัดไปเปลี่ยน statusCode ไปแล้ว */
+      function boardDecisionBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || !kase.l9BoardDecision) return "";
+        const isAppeal = kase.l9BoardDecision === "APPEAL";
+        const label = isAppeal ? "มติบอร์ดเห็นชอบให้อุทธรณ์" : "มติบอร์ดเห็นชอบไม่อุทธรณ์";
+        const bg = isAppeal ? "#dcfce7" : "#fee2e2";
+        const fg = isAppeal ? "#15803d" : "#b91c1c";
+        const border = isAppeal ? "#86efac" : "#fca5a5";
+        return ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;" title="มติของคณะกรรมการ ป.ป.ท.">${label}</span>`;
+      }
+
       /* แบดจ์ชื่อขั้นตอนปัจจุบันของสายจัดทำคำอุทธรณ์ (Part 10a, เห็นควรอุทธรณ์
          หลัง Part 8) — ให้ผู้ดูสามารถติดตามความคืบหน้าบนสายนี้ได้จากอินบ็อกซ์
          เดียวกันโดยไม่ต้องเปิดเคสเข้าไปดู ใช้ stepName สั้นๆ ของ
@@ -2395,7 +2438,49 @@
           (s) => s.statusCode === kase.statusCode,
         );
         if (!step) return "";
-        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายจัดทำคำอุทธรณ์ (กิจกรรมที่ 10)">${step.stepName}</span>`;
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายจัดทำคำอุทธรณ์">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของสายเสนอมติต่อบอร์ด (Part 9, เห็นควรไม่อุทธรณ์
+         หลัง Part 8) — คู่กับ appealDraftStepBadge ด้านบน แต่คนละ statusCode
+         (APPEAL_BOARD_STEPS ใช้ L9_ ไม่ชนกับ APPEAL_DRAFT_STEPS ที่ใช้ L10_) */
+      function appealBoardStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.APPEAL_BOARD_STEPS) return "";
+        const step = Activity103.APPEAL_BOARD_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายเสนอมติต่อบอร์ด">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของ Branch A (มติบอร์ดเห็นชอบให้อุทธรณ์,
+         LAW0154-0160) — คู่กับ appealDraftStepBadge/appealBoardStepBadge
+         ด้านบน แต่คนละ statusCode (BOARD_APPROVED_APPEAL_STEPS ใช้ L9A_) */
+      function branchAStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.BOARD_APPROVED_APPEAL_STEPS) return "";
+        const step = Activity103.BOARD_APPROVED_APPEAL_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายดำเนินการอุทธรณ์ (มติบอร์ด)">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของ Branch B (มติบอร์ดเห็นชอบไม่อุทธรณ์,
+         LAW0164-171/0163) — คู่กับ branchAStepBadge ด้านบน แต่คนละ statusCode
+         (BOARD_NO_APPEAL_STEPS ใช้ L9B_) */
+      function branchBStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.BOARD_NO_APPEAL_STEPS) return "";
+        const step = Activity103.BOARD_NO_APPEAL_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายแจ้งความประสงค์ไม่อุทธรณ์ (มติบอร์ด)">${step.stepName}</span>`;
       }
 
       /* สีของป้ายอายุความ/SLA แทนสัญลักษณ์อีโมจิเดิม (แดง/เหลือง/เขียว)
@@ -2440,7 +2525,8 @@
           if (nextStep3 && nextStep3.role === roleId) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep3.label}">ดำเนินการ</button>`;
           }
-          return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคดี">${svgEyeIcon}</button>`;
+          const viewArg = nextPage3 ? `'${nextPage3}'` : "null";
+          return `<button class="action-btn" onclick="viewCourtCase('${caseId}', ${viewArg})" title="ดูรายละเอียดคดี (ดูอย่างเดียว)">${svgEyeIcon}</button>`;
         }
 
         // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
@@ -2724,7 +2810,7 @@
  <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.level}</span></td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,

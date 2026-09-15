@@ -518,7 +518,7 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260915_2"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_19"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_21"></script>
 
     <script>
       /* LAW0122 — ผอ.กลุ่มงานคดี มอบหมายนิติกร (เคสรับผลคำพิพากษา, Part 5–6)
@@ -533,7 +533,8 @@
         ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
         ECMIS103.renderStepper("stepper", STEP_CODE);
         loadCase();
-        ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+        const isViewOnly = ECMIS103.applyViewOnlyMode();
+        if (!isViewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
       });
 
       function loadCase() {
