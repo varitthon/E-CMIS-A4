@@ -96,7 +96,7 @@
       page: "10-3-09-legal-admin-dispatch.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "รอเสนอบอร์ด (กิจกรรมที่ 7)",
+      status: "รอเสนอบอร์ด",
       statusCode: "L3_READY_FOR_BOARD",
       label: "ธุรการ ออกเลขส่งภายในและส่งมติเสนอบอร์ด",
       stepName: "ธุรการ ออกเลขส่ง/เสนอบอร์ด",
@@ -333,6 +333,7 @@
   const PLANNED_ANSWER_STEPS = [
   ];
 
+
   /* ---------------------------------------------------------- PART 5–6
      รับคำพิพากษาศาลปกครองชั้นต้น → วิเคราะห์ผล/กำหนดแนวทาง (LAW0119–LAW0128)
      เป็นเคสใหม่แยกจากเคสรับคำฟ้อง (l3CaseType = "verdict") เดินสถานะ L3V_* ของตัวเอง
@@ -434,18 +435,24 @@
   const VERDICT_BRANCHES = {
     APPEAL_REPLY: {
       label: "ชนะคดี (ผู้ฟ้องคดียื่นอุทธรณ์)",
+      resultLabel: "ชนะคดี",
+      appealNote: "ผู้ฟ้องคดียื่นอุทธรณ์",
       proposal: "จัดทำคำแก้อุทธรณ์",
-      status: "รอจัดทำคำแก้อุทธรณ์ (กิจกรรมที่ 7)",
+      status: "รอจัดทำคำแก้อุทธรณ์",
       statusCode: "L3V_TO_APPEAL_REPLY",
     },
     APPEAL_CONSIDER: {
       label: "แพ้คดี",
+      resultLabel: "แพ้คดี",
+      appealNote: null,
       proposal: "พิจารณาความเห็นควรอุทธรณ์",
-      status: "รอพิจารณาความเห็นควรอุทธรณ์ (กิจกรรมที่ 8)",
+      status: "รอพิจารณาความเห็นควรอุทธรณ์",
       statusCode: "L3V_TO_APPEAL_CONSIDER",
     },
     CLOSE: {
       label: "ชนะคดี (ผู้ฟ้องคดีไม่ยื่นอุทธรณ์)",
+      resultLabel: "ชนะคดี",
+      appealNote: "ผู้ฟ้องคดีไม่ยื่นอุทธรณ์",
       proposal: "ยุติ/ปิดสำนวน",
       status: "รอปิดสำนวน (LAW0163)",
       statusCode: "L3V_TO_CLOSE",
@@ -554,7 +561,440 @@
     },
   ];
 
-  const ALL_STEPS = STEPS.concat(STAY_STEPS, ANSWER_STEPS, VERDICT_STEPS, APPEAL_STEPS);
+  /* ------------------------------------------------------------- PART 8
+     พิจารณาความเห็นควรอุทธรณ์ (LAW0142–0148) — เดินต่อบนเคสคำพิพากษาเดิม
+     (ไม่สร้างเคสใหม่) เข้าที่ L3V_TO_APPEAL_CONSIDER จาก 10-3v-06 (แพ้คดี)
+     ใช้คำนำหน้า L8_ แยกจาก L3V_/L7_ ดู
+     docs/10.3 mockup/implementation-plan-part8.md — เก็บ assign loop ตามผัง
+     AS-IS ตรงๆ (ไม่ตัดรอบซ้ำเหมือน Part 7) ตอนนี้ implement เฉพาะ
+     LAW0143+0144 (10-3v-16) และรอบมอบหมายที่ 1 ฝั่ง ผอ.กองกฎหมาย (10-3v-17) ก่อน */
+  const APPEAL_CONSIDER_STEPS = [
+    {
+      code: "LAW0143",
+      seq: 0,
+      page: "10-3v-16-legal-admin-appeal-consider-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย (ความเห็นควรอุทธรณ์)",
+      statusCode: "L8_PENDING_DIRECTOR_ASSIGN1",
+      label: "ธุรการ รับหนังสือแจ้งผลคำพิพากษาเพื่อพิจารณาอุทธรณ์",
+      stepName: "ธุรการ รับหนังสือ",
+    },
+    {
+      /* (เพิ่ม) ในผัง AS-IS — ไม่มีเลข LAW ของตัวเอง ใช้รหัสภายใน "L8ASSIGN1" */
+      code: "L8ASSIGN1",
+      seq: 1,
+      page: "10-3v-17-legal-director-assign1.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกรลงทะเบียน",
+      statusCode: "L8_PENDING_GROUP_ASSIGN1",
+      label: "ผอ.กองกฎหมาย มอบหมาย ผอ.กลุ่มงานคดี (ลงทะเบียนคดี)",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      /* (เพิ่ม) ในผัง AS-IS — ไม่มีเลข LAW ของตัวเอง ใช้รหัสภายใน "L8GROUPASSIGN1" */
+      code: "L8GROUPASSIGN1",
+      seq: 2,
+      page: "10-3v-18-group-director-assign1.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรลงทะเบียนคดีปกครอง",
+      statusCode: "L8_PENDING_LAWYER_REGISTER",
+      label: "ผอ.กลุ่มงาน มอบหมายนิติกร (ลงทะเบียนคดี)",
+      stepName: "ผอ.กลุ่มงาน มอบหมาย",
+    },
+    {
+      /* รวม LAW0145 (ลงทะเบียน) + LAW0148 (ตรวจสอบคำพิพากษา) + decision
+         (เห็นควรอุทธรณ์หรือไม่) เป็นหน้าเดียว — ผู้ใช้ยืนยันให้ตัดรอบมอบหมายที่ 2
+         ออก (ไม่ต้องมอบหมายซ้ำเพื่อไปตรวจสอบคำพิพากษาอีกรอบ) เหมือนที่ Part 7
+         รวม LAW0133+0136+0137 เข้าหน้าเดียวกัน */
+      code: "LAW0145",
+      seq: 3,
+      page: "10-3v-19-lawyer-register.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานพิจารณาเห็นชอบการลงทะเบียน",
+      statusCode: "L8_PENDING_GROUP_APPROVE1",
+      label: "นิติกร ลงทะเบียนคดี/ตรวจสอบคำพิพากษา/เสนอความเห็นควรอุทธรณ์",
+      stepName: "นิติกร ลงทะเบียน/เสนอความเห็น",
+    },
+    {
+      /* สถานะที่เขียนจริงมาจาก APPEAL_CONSIDER_BRANCHES ตามที่ ผอ.กลุ่มงานเลือก —
+         ค่านี้เป็นแค่ค่าตั้งต้น (เหมือน VERDICT_STEPS LAW0127/10-3v-06) */
+      code: "LAW0146",
+      seq: 4,
+      page: "10-3v-20-group-director-approve1.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "พิจารณาความเห็นควรอุทธรณ์แล้ว",
+      statusCode: "L8_DECIDED",
+      label: "ผอ.กลุ่มงาน พิจารณาและยืนยันความเห็นควรอุทธรณ์",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ/ยืนยัน",
+    },
+  ];
+
+  /* LAW0148 (decision) — 2 ทางหลัง ผอ.กลุ่มงานยืนยันความเห็น (ทั้งคู่เป็น
+     black box ไปกิจกรรมอื่น — กิจกรรมที่ 9/10 ยังไม่ implement) */
+  const APPEAL_CONSIDER_BRANCHES = {
+    APPEAL: {
+      label: "นิติกรเห็นควรอุทธรณ์",
+      proposal: "จัดทำคำอุทธรณ์",
+      status: "รอจัดทำคำอุทธรณ์",
+      statusCode: "L8_TO_APPEAL_DRAFT",
+    },
+    BOARD: {
+      label: "นิติกรเห็นควรไม่อุทธรณ์",
+      proposal: "เสนอมติต่อบอร์ด",
+      status: "รอเสนอมติอุทธรณ์ต่อบอร์ด",
+      statusCode: "L8_TO_BOARD_PROPOSE",
+    },
+  };
+
+  /* --------------------------------------------------------- PART 10a
+     ดำเนินการอุทธรณ์ (LAW0157-0160) — เดินต่อบนเคสคำพิพากษาเดิม เข้าที่
+     L8_TO_APPEAL_DRAFT จาก 10-3v-20 (ผอ.กลุ่มงานยืนยัน "เห็นควรอุทธรณ์")
+     ใช้คำนำหน้า L10_ แยกจาก L8_/L7_/L3V_ — ผังจริงมี LAW0161-0163 ต่อ (ยื่นศาล/
+     พิพากษา/ปิดสำนวน) ที่ยังไม่ implement (เป็นฝั่งอัยการ/ศาล ไม่ใช่ขั้นตอน
+     ภายในกองกฎหมาย) ดู flow-page-10.md
+
+     LAW0156 (นิติกร ร่างคำอุทธรณ์) "ตัด" ออกจากที่นี่แล้ว — ไม่ใช่เพราะยังไม่
+     implement แต่เพราะซ้ำกับ 10-3v-19 (LAW0145) ที่ให้นิติกรแนบร่างคำอุทธรณ์
+     ไปพร้อมกับตอนสรุปความเห็นควรอุทธรณ์อยู่แล้ว (ช่อง "แนบคำอุทธรณ์" เปลี่ยน
+     label ตามสาขาที่เลือกไว้ที่ 10-3v-19) จึงให้ L8_TO_APPEAL_DRAFT ข้ามตรงไป
+     LAW0157 (10-3v-22) เลย ไม่ผ่านหน้าร่างซ้ำอีกรอบ */
+  const APPEAL_DRAFT_STEPS = [
+    {
+      code: "LAW0157",
+      seq: 0,
+      page: "10-3v-22-group-director-review-appeal.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายพิจารณาและลงนามคำอุทธรณ์",
+      statusCode: "L10_PENDING_DIRECTOR_SIGN",
+      label: "ผอ.กลุ่มงาน ตรวจร่างคำอุทธรณ์",
+      stepName: "ผอ.กลุ่มงาน ตรวจร่าง",
+    },
+    {
+      code: "LAW0158",
+      seq: 1,
+      page: "10-3v-23-legal-director-sign-appeal.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก",
+      statusCode: "L10_PENDING_DOC_NO",
+      label: "ผอ.กองกฎหมาย พิจารณาและลงนามคำอุทธรณ์/หนังสือถึงสำนักงานคดีปกครอง",
+      stepName: "ผอ.กองกฎหมาย ลงนาม",
+    },
+    {
+      code: "LAW0159",
+      seq: 2,
+      page: "10-3v-24-legal-admin-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์",
+      statusCode: "L10_PENDING_LAWYER_SEND",
+      label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
+      stepName: "ธุรการ ออกเลขส่ง",
+    },
+    {
+      code: "LAW0160",
+      seq: 3,
+      page: "10-3v-25-lawyer-send-appeal.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "จัดส่งคำอุทธรณ์ไปยังสำนักงานคดีปกครองแล้ว (รอยื่นต่อศาลปกครองสูงสุด)",
+      statusCode: "L10_SENT_TO_PROSECUTOR",
+      label: "นิติกร ส่งหนังสือและคำอุทธรณ์ไปยังสำนักงานคดีปกครอง",
+      stepName: "นิติกร ส่งคำอุทธรณ์",
+    },
+  ];
+
+  /* --------------------------------------------------- PART 10 (Branch A)
+     ดำเนินการอุทธรณ์ — ทางเข้าจากมติบอร์ด "เห็นชอบให้อุทธรณ์" (LAW0153-0160)
+     เดินต่อบนเคสคำพิพากษาเดิม เข้าที่ L9_BOARD_APPROVED_APPEAL จาก Part 9
+     (ยังไม่มีหน้าบันทึกมติบอร์ดจริง — ตอนนี้เข้าด้วย seed case ที่วางไว้ล่วงหน้า
+     ที่สถานะนี้แล้ว ดู ecmis-activity10.js คดีปกครอง-100311/2569)
+
+     ต่างจาก Part 8a→10a (L8_TO_APPEAL_DRAFT) ตรงที่เคสสายนี้ไม่มีร่างคำอุทธรณ์
+     มาก่อนเลย (มีแต่ "บันทึกเสนอบอร์ด" จาก 10-3v-19) จึงต้องเดินเต็มสาย
+     บังคับบัญชา ธุรการ→ผอ.กองกฎหมาย→ผอ.กลุ่มงาน→นิติกร ตามที่ตกลง (เพิ่ม
+     ธุรการรับเรื่องนำหน้า แม้ผัง AS-IS เดิมของหน้านี้จะเริ่มที่นิติกรตรงๆ
+     เพราะไม่ถือเป็นเอกสารนอกเข้าใหม่ — แต่ที่ตกลงกันคือให้เดินสายบังคับบัญชา
+     ให้ครบเหมือน Part อื่นๆ) แล้วจบด้วยรีวิว/ลงนาม/ออกเลข/ส่ง เป็น "สาย
+     คู่ขนาน" แยกจาก APPEAL_DRAFT_STEPS ด้านบน (ใช้ statusCode คนละชุด L9A_
+     และ code คนละชุด เพื่อไม่ให้ชนกับ LAW0157-0160 ของสาย Part 8a) ตามที่
+     เลือกไว้ (แยกสาย ไม่ใช้หน้าร่วมกับ 10-3v-22-25)
+
+     ทุกขั้นตอน "เซ็น" ยกเว้นธุรการ (ตามที่ตกลง) นิติกรต้องแนบไฟล์ทั้งตอนร่าง
+     (10-3v-32) และตอนส่ง (10-3v-36) */
+  const BOARD_APPROVED_APPEAL_STEPS = [
+    {
+      code: "L9A_INTAKE",
+      seq: 0,
+      page: "10-3v-29-legal-admin-board-appeal-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณาและมอบหมายงาน (ดำเนินการอุทธรณ์)",
+      statusCode: "L9A_PENDING_DIRECTOR_ASSIGN",
+      label: "ธุรการ รับหนังสือแจ้งมติบอร์ดเห็นชอบให้อุทธรณ์",
+      stepName: "ธุรการ รับเรื่อง",
+    },
+    {
+      code: "LAW0155",
+      seq: 1,
+      page: "10-3v-30-legal-director-assign2.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานคดีพิจารณาและเห็นชอบ (ดำเนินการอุทธรณ์)",
+      statusCode: "L9A_PENDING_GROUP_APPROVE",
+      label: "ผอ.กองกฎหมาย พิจารณาและมอบหมายงาน",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      code: "LAW0154",
+      seq: 2,
+      page: "10-3v-31-group-director-assign2.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลและร่างคำอุทธรณ์",
+      statusCode: "L9A_PENDING_LAWYER_DRAFT",
+      label: "ผอ.กลุ่มงานคดี พิจารณาเห็นชอบและมอบหมายนิติกรดำเนินการ",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ/มอบหมาย",
+    },
+    {
+      code: "LAW0153_0156",
+      seq: 3,
+      page: "10-3v-32-lawyer-draft-appeal2.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานคดีตรวจร่างคำอุทธรณ์",
+      statusCode: "L9A_PENDING_GROUP_REVIEW",
+      label: "นิติกร รับเรื่องเพื่อดำเนินการแจ้งผล และร่างคำอุทธรณ์",
+      stepName: "นิติกร รับเรื่อง/ร่าง",
+    },
+    {
+      code: "LAW0157B",
+      seq: 4,
+      page: "10-3v-33-group-director-review-appeal2.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายพิจารณาและลงนามคำอุทธรณ์",
+      statusCode: "L9A_PENDING_DIRECTOR_SIGN",
+      label: "ผอ.กลุ่มงาน ตรวจร่างคำอุทธรณ์",
+      stepName: "ผอ.กลุ่มงาน ตรวจร่าง",
+    },
+    {
+      code: "LAW0158B",
+      seq: 5,
+      page: "10-3v-34-legal-director-sign-appeal2.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก (สายมติบอร์ด)",
+      statusCode: "L9A_PENDING_DOC_NO",
+      label: "ผอ.กองกฎหมาย พิจารณาและลงนามคำอุทธรณ์/หนังสือถึงสำนักงานคดีปกครอง",
+      stepName: "ผอ.กองกฎหมาย ลงนาม",
+    },
+    {
+      code: "LAW0159B",
+      seq: 6,
+      page: "10-3v-35-legal-admin-dispatch2.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์ (สายมติบอร์ด)",
+      statusCode: "L9A_PENDING_LAWYER_SEND",
+      label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
+      stepName: "ธุรการ ออกเลขส่ง",
+    },
+    {
+      code: "LAW0160B",
+      seq: 7,
+      page: "10-3v-36-lawyer-send-appeal2.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "จัดส่งคำอุทธรณ์ไปยังสำนักงานคดีปกครองแล้ว (รอยื่นต่อศาลปกครองสูงสุด)",
+      statusCode: "L9A_SENT_TO_PROSECUTOR",
+      label: "นิติกร ส่งหนังสือและคำอุทธรณ์ไปยังสำนักงานคดีปกครอง",
+      stepName: "นิติกร ส่งคำอุทธรณ์",
+    },
+  ];
+
+  /* --------------------------------------------------- PART 11 (Branch B)
+     แจ้งความประสงค์ไม่อุทธรณ์ — ทางเข้าจากมติบอร์ด "เห็นชอบไม่อุทธรณ์"
+     (LAW0164-0171, LAW0163) เดินต่อบนเคสคำพิพากษาเดิม เข้าที่
+     L9_BOARD_APPROVED_NO_APPEAL จาก Part 9 (ยังไม่มีหน้าบันทึกมติบอร์ดจริง —
+     เข้าด้วย seed case ที่วางไว้ล่วงหน้า ดู ecmis-activity10.js
+     คดีปกครอง-100312/2569) ดู docs/10.3 mockup/flow-page-11.md
+
+     ผัง AS-IS ของหน้านี้เริ่มที่นิติกรตรง (LAW0164) แต่ตามที่ตกลง (เหมือน
+     Branch A) ให้เดินสายบังคับบัญชา ธุรการ→ผอ.กองกฎหมาย→ผอ.กลุ่มงาน→นิติกร
+     นำหน้าก่อนเสมอเมื่อเป็นทางเข้าจากเอกสาร/มติภายนอกใหม่ — ขั้นตอนนำหน้า 3
+     ขั้นนี้ (L9B_INTAKE/L9B_DIRECTOR_ASSIGN1/L9B_GROUP_ASSIGN1) ไม่มีเลข LAW
+     กำกับ (ไม่ได้อยู่ในผังเดิม)
+
+     ตามที่ตกลง (ตัด LAW0165/0166/(เพิ่ม) ออก และรวม LAW0164+0167 เป็นหน้า
+     เดียว) — รอบมอบหมาย/เห็นชอบซ้ำสองรอบก่อนถึงขั้นจัดทำหนังสือถูกตัดออกเพราะ
+     ซ้ำกับรอบมอบหมายเริ่มต้น (ธุรการ→ผอ.กอง→ผอ.กลุ่ม) ที่ทำไปแล้ว นิติกรจึง
+     รับเรื่องและจัดทำหนังสือในหน้าเดียวกันทันที (LAW0164_0167) แล้วเข้าสู่
+     รอบตรวจ/ลงนาม/ออกเลข/ส่ง (LAW0168-171/0163) ตามผังเดิม รวม LAW0171
+     (ส่งหนังสือ) + LAW0163 (ปิดสำนวน) เป็นหน้าเดียว (คนละก้อนแต่บทบาทเดียวกัน
+     ติดกัน — เหมือนที่รวม LAW0153+0156 ใน Branch A)
+
+     ทุกขั้นตอน "เซ็น" ยกเว้นธุรการ (เหมือน Branch A) นิติกรแนบไฟล์ทุกขั้น
+     ของตัวเอง (LAW0164_0167 รับเรื่อง/จัดทำหนังสือ / LAW0171+0163 ส่ง) ใช้
+     คำนำหน้าฟิลด์ l9b* และ statusCode คนละชุด L9B_ แยกจาก l9a* / L9A_ ของ
+     Branch A เพื่อไม่ให้ชนกัน */
+  const BOARD_NO_APPEAL_STEPS = [
+    {
+      code: "L9B_INTAKE",
+      seq: 0,
+      page: "10-3v-37-legal-admin-no-appeal-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณาและมอบหมายงาน (แจ้งไม่อุทธรณ์)",
+      statusCode: "L9B_PENDING_DIRECTOR_ASSIGN1",
+      label: "ธุรการ รับหนังสือแจ้งมติบอร์ดเห็นชอบไม่อุทธรณ์",
+      stepName: "ธุรการ รับเรื่อง",
+    },
+    {
+      code: "L9B_DIRECTOR_ASSIGN1",
+      seq: 1,
+      page: "10-3v-38-legal-director-assign3.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานคดีพิจารณาและมอบหมายนิติกร (แจ้งไม่อุทธรณ์)",
+      statusCode: "L9B_PENDING_GROUP_ASSIGN1",
+      label: "ผอ.กองกฎหมาย พิจารณาและมอบหมายงาน",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      code: "L9B_GROUP_ASSIGN1",
+      seq: 2,
+      page: "10-3v-39-group-director-assign3.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลไม่อุทธรณ์",
+      statusCode: "L9B_PENDING_LAWYER_INTAKE",
+      label: "ผอ.กลุ่มงานคดี พิจารณาและมอบหมายนิติกรดำเนินการ",
+      stepName: "ผอ.กลุ่มงาน มอบหมาย",
+    },
+    {
+      code: "LAW0164_0167",
+      seq: 3,
+      page: "10-3v-40-lawyer-no-appeal-intake.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานคดีตรวจสอบหนังสือ",
+      statusCode: "L9B_PENDING_GROUP_REVIEW",
+      label: "นิติกร รับเรื่องและจัดทำหนังสือส่งภายนอกถึงอัยการ",
+      stepName: "นิติกร รับเรื่อง/จัดทำหนังสือ",
+    },
+    {
+      code: "LAW0168",
+      seq: 4,
+      page: "10-3v-45-group-director-review3.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายลงนามในหนังสือที่ส่งถึงอัยการ",
+      statusCode: "L9B_PENDING_DIRECTOR_SIGN",
+      label: "ผอ.กลุ่มงานคดี ตรวจสอบหนังสือ",
+      stepName: "ผอ.กลุ่มงาน ตรวจหนังสือ",
+    },
+    {
+      code: "LAW0169",
+      seq: 5,
+      page: "10-3v-46-legal-director-sign3.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายออกเลขหนังสือ (แจ้งไม่อุทธรณ์)",
+      statusCode: "L9B_PENDING_DOC_NO",
+      label: "ผอ.กองกฎหมาย ลงนามในหนังสือที่ส่งถึงอัยการ",
+      stepName: "ผอ.กองกฎหมาย ลงนาม",
+    },
+    {
+      code: "LAW0170",
+      seq: 6,
+      page: "10-3v-47-legal-admin-dispatch3.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรจัดส่งหนังสือแจ้งไม่อุทธรณ์ทางไปรษณีย์",
+      statusCode: "L9B_PENDING_LAWYER_SEND",
+      label: "ธุรการ ออกเลขหนังสือ",
+      stepName: "ธุรการ ออกเลขส่ง",
+    },
+    {
+      code: "LAW0171_0163",
+      seq: 7,
+      page: "10-3v-48-lawyer-send-close.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "จัดส่งหนังสือแจ้งไม่อุทธรณ์แล้ว และปิดสำนวนคดี",
+      statusCode: "L9B_CLOSED",
+      label: "นิติกร ส่งหนังสือแจ้งความประสงค์ไม่อุทธรณ์ และปิดสำนวน",
+      stepName: "นิติกร ส่ง/ปิดสำนวน",
+    },
+  ];
+
+  /* --------------------------------------------------------- PART 9
+     เสนอมติอุทธรณ์ต่อบอร์ด (LAW0150-0152) — เดินต่อบนเคสคำพิพากษาเดิม เข้าที่
+     L8_TO_BOARD_PROPOSE จาก 10-3v-20 (ผอ.กลุ่มงานยืนยัน "เห็นควรไม่อุทธรณ์")
+     ใช้คำนำหน้า L9_ แยกจาก L10_/L8_/L7_/L3V_ — ผังจริงมี LAW0153/0164 ต่อ
+     (บอร์ดเห็นชอบอุทธรณ์ → กิจกรรมที่ 10 / บอร์ดเห็นชอบไม่อุทธรณ์ → กิจกรรมที่ 11)
+     ที่ยังไม่ implement (เป็นมติบอร์ดจริง ไม่ใช่ขั้นตอนภายในกองกฎหมาย) ดู
+     flow-page-09.md
+
+     LAW0149 (นิติกรทำบันทึกสรุปความเห็น) "ตัด" ออกจากที่นี่แล้ว — ซ้ำกับ
+     10-3v-19 (LAW0145) ที่ให้นิติกรแนบบันทึกเสนอบอร์ดไปพร้อมกับตอนสรุป
+     ความเห็นควรอุทธรณ์อยู่แล้ว (ช่อง "แนบบันทึกเสนอบอร์ด" เปลี่ยน label ตาม
+     สาขาที่เลือกไว้ที่ 10-3v-19 เหมือนที่ทำกับ LAW0156 ใน Part 10a) จึงให้
+     L8_TO_BOARD_PROPOSE ข้ามตรงไป LAW0150 (10-3v-26) เลย */
+  const APPEAL_BOARD_STEPS = [
+    {
+      code: "LAW0150",
+      seq: 0,
+      page: "10-3v-26-group-director-board-approve.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายพิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
+      statusCode: "L9_PENDING_DIRECTOR_APPROVE",
+      label: "ผอ.กลุ่มงาน พิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ",
+    },
+    {
+      code: "LAW0151",
+      seq: 1,
+      page: "10-3v-27-legal-director-board-approve.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการกองกฎหมายส่งมติเสนอบอร์ด",
+      statusCode: "L9_PENDING_DOC_SEND",
+      label: "ผอ.กองกฎหมาย พิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
+      stepName: "ผอ.กองกฎหมาย เห็นชอบ",
+    },
+    {
+      code: "LAW0152",
+      seq: 2,
+      page: "10-3v-28-legal-admin-board-propose.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "เสนอมติอุทธรณ์ต่อบอร์ดแล้ว (รอบอร์ดพิจารณา)",
+      statusCode: "L9_PROPOSED_TO_BOARD",
+      label: "ธุรการ ส่งมติเสนอบอร์ด",
+      stepName: "ธุรการ ส่งมติบอร์ด",
+    },
+  ];
+
+  const ALL_STEPS = STEPS.concat(
+    STAY_STEPS,
+    ANSWER_STEPS,
+    VERDICT_STEPS,
+    APPEAL_STEPS,
+    APPEAL_CONSIDER_STEPS,
+    APPEAL_DRAFT_STEPS,
+    BOARD_APPROVED_APPEAL_STEPS,
+    APPEAL_BOARD_STEPS,
+    BOARD_NO_APPEAL_STEPS,
+  );
 
   function stepByCode(code) {
     return ALL_STEPS.find(function (s) { return s.code === code; }) || null;
@@ -563,7 +1003,9 @@
     return ALL_STEPS.find(function (s) { return s.page === page; }) || null;
   }
 
-  /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ */
+  /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ
+     (ขั้นตอนสุดท้าย L3_READY_FOR_BOARD ไม่มี route ต่อ — เป็น black box
+     รอหน้าเสนอบอร์ดจริงที่ยังไม่ implement ตามแผน) */
   const ROUTES = STEPS.reduce(function (acc, step, i) {
     const next = STEPS[i + 1];
     if (next) acc[step.statusCode] = next.page;
@@ -653,11 +1095,167 @@
     ROUTES["L3V_TO_APPEAL_REPLY"] = "10-3v-08-legal-admin-appeal-intake.html";
   }
 
-  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 3 / 5–6 / 7) — ใช้กับแถบขั้นตอน */
+  /* หน้า Part 8 ที่สร้างแล้วจริง (เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่ต่อไป) */
+  const APPEAL_CONSIDER_BUILT_PAGES = [
+    "10-3v-16-legal-admin-appeal-consider-intake.html",
+    "10-3v-17-legal-director-assign1.html",
+    "10-3v-18-group-director-assign1.html",
+    "10-3v-19-lawyer-register.html",
+    "10-3v-20-group-director-approve1.html",
+  ];
+  APPEAL_CONSIDER_STEPS.reduce(function (acc, step, i) {
+    const next = APPEAL_CONSIDER_STEPS[i + 1];
+    if (next && APPEAL_CONSIDER_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L3V_TO_APPEAL_CONSIDER (แพ้คดี, Part 6b) เข้าตรงที่ LAW0143 (10-3v-16) —
+     เขียนโดย VERDICT_BRANCHES.APPEAL_CONSIDER ไม่ใช่ statusCode ของขั้นก่อนหน้า
+     จึงต่อ route ด้วยมือแบบเดียวกับ L3V_TO_APPEAL_REPLY */
+  if (
+    APPEAL_CONSIDER_BUILT_PAGES.indexOf(
+      "10-3v-16-legal-admin-appeal-consider-intake.html",
+    ) !== -1
+  ) {
+    ROUTES["L3V_TO_APPEAL_CONSIDER"] =
+      "10-3v-16-legal-admin-appeal-consider-intake.html";
+  }
+
+  /* หน้า Part 10a ที่สร้างแล้วจริง (เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่ต่อไป) */
+  const APPEAL_DRAFT_BUILT_PAGES = [
+    "10-3v-22-group-director-review-appeal.html",
+    "10-3v-23-legal-director-sign-appeal.html",
+    "10-3v-24-legal-admin-dispatch.html",
+    "10-3v-25-lawyer-send-appeal.html",
+  ];
+  APPEAL_DRAFT_STEPS.reduce(function (acc, step, i) {
+    const next = APPEAL_DRAFT_STEPS[i + 1];
+    if (next && APPEAL_DRAFT_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L8_TO_APPEAL_DRAFT (เห็นควรอุทธรณ์, Part 8) เข้าตรงที่ LAW0157 (10-3v-22) —
+     ข้าม LAW0156 (หน้าร่างแยก) ไปเลยเพราะซ้ำกับการแนบคำอุทธรณ์ที่ 10-3v-19
+     อยู่แล้ว (ดูหมายเหตุที่ APPEAL_DRAFT_STEPS ด้านบน) เขียนโดย
+     APPEAL_CONSIDER_BRANCHES.APPEAL ไม่ใช่ statusCode ของขั้นก่อนหน้า จึงต่อ
+     route ด้วยมือแบบเดียวกับ L3V_TO_APPEAL_CONSIDER */
+  if (
+    APPEAL_DRAFT_BUILT_PAGES.indexOf(
+      "10-3v-22-group-director-review-appeal.html",
+    ) !== -1
+  ) {
+    ROUTES["L8_TO_APPEAL_DRAFT"] =
+      "10-3v-22-group-director-review-appeal.html";
+  }
+
+  /* หน้าสาย Branch A (มติบอร์ดเห็นชอบให้อุทธรณ์) ที่สร้างแล้วจริง */
+  const BOARD_APPROVED_APPEAL_BUILT_PAGES = [
+    "10-3v-29-legal-admin-board-appeal-intake.html",
+    "10-3v-30-legal-director-assign2.html",
+    "10-3v-31-group-director-assign2.html",
+    "10-3v-32-lawyer-draft-appeal2.html",
+    "10-3v-33-group-director-review-appeal2.html",
+    "10-3v-34-legal-director-sign-appeal2.html",
+    "10-3v-35-legal-admin-dispatch2.html",
+    "10-3v-36-lawyer-send-appeal2.html",
+  ];
+  BOARD_APPROVED_APPEAL_STEPS.reduce(function (acc, step, i) {
+    const next = BOARD_APPROVED_APPEAL_STEPS[i + 1];
+    if (next && BOARD_APPROVED_APPEAL_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L9_BOARD_APPROVED_APPEAL เข้าตรงที่ L9A_INTAKE (10-3v-29) — เขียนโดย
+     seed case ล่วงหน้า (ยังไม่มีหน้าบันทึกมติบอร์ดจริง) จึงต่อ route ด้วยมือ
+     แบบเดียวกับ L8_TO_APPEAL_DRAFT/L8_TO_BOARD_PROPOSE */
+  if (
+    BOARD_APPROVED_APPEAL_BUILT_PAGES.indexOf(
+      "10-3v-29-legal-admin-board-appeal-intake.html",
+    ) !== -1
+  ) {
+    ROUTES["L9_BOARD_APPROVED_APPEAL"] =
+      "10-3v-29-legal-admin-board-appeal-intake.html";
+  }
+
+  /* หน้า Part 9 ที่สร้างแล้วจริง (เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่ต่อไป) */
+  const APPEAL_BOARD_BUILT_PAGES = [
+    "10-3v-26-group-director-board-approve.html",
+    "10-3v-27-legal-director-board-approve.html",
+    "10-3v-28-legal-admin-board-propose.html",
+  ];
+  APPEAL_BOARD_STEPS.reduce(function (acc, step, i) {
+    const next = APPEAL_BOARD_STEPS[i + 1];
+    if (next && APPEAL_BOARD_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L8_TO_BOARD_PROPOSE (เห็นควรไม่อุทธรณ์, Part 8) เข้าตรงที่ LAW0150
+     (10-3v-26) — ข้าม LAW0149 (หน้าทำบันทึกแยก) ไปเลยเพราะซ้ำกับการแนบบันทึก
+     เสนอบอร์ดที่ 10-3v-19 อยู่แล้ว (ดูหมายเหตุที่ APPEAL_BOARD_STEPS ด้านบน)
+     เขียนโดย APPEAL_CONSIDER_BRANCHES.BOARD ไม่ใช่ statusCode ของขั้นก่อนหน้า
+     จึงต่อ route ด้วยมือแบบเดียวกับ L8_TO_APPEAL_DRAFT */
+  if (
+    APPEAL_BOARD_BUILT_PAGES.indexOf(
+      "10-3v-26-group-director-board-approve.html",
+    ) !== -1
+  ) {
+    ROUTES["L8_TO_BOARD_PROPOSE"] =
+      "10-3v-26-group-director-board-approve.html";
+  }
+
+  /* หน้าสาย Branch B (มติบอร์ดเห็นชอบไม่อุทธรณ์) ที่สร้างแล้วจริง */
+  const BOARD_NO_APPEAL_BUILT_PAGES = [
+    "10-3v-37-legal-admin-no-appeal-intake.html",
+    "10-3v-38-legal-director-assign3.html",
+    "10-3v-39-group-director-assign3.html",
+    "10-3v-40-lawyer-no-appeal-intake.html",
+    "10-3v-45-group-director-review3.html",
+    "10-3v-46-legal-director-sign3.html",
+    "10-3v-47-legal-admin-dispatch3.html",
+    "10-3v-48-lawyer-send-close.html",
+  ];
+  BOARD_NO_APPEAL_STEPS.reduce(function (acc, step, i) {
+    const next = BOARD_NO_APPEAL_STEPS[i + 1];
+    if (next && BOARD_NO_APPEAL_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L9_BOARD_APPROVED_NO_APPEAL เข้าตรงที่ L9B_INTAKE (10-3v-37) — เขียนโดย
+     seed case ล่วงหน้า (ยังไม่มีหน้าบันทึกมติบอร์ดจริง) จึงต่อ route ด้วยมือ
+     แบบเดียวกับ L9_BOARD_APPROVED_APPEAL */
+  if (
+    BOARD_NO_APPEAL_BUILT_PAGES.indexOf(
+      "10-3v-37-legal-admin-no-appeal-intake.html",
+    ) !== -1
+  ) {
+    ROUTES["L9_BOARD_APPROVED_NO_APPEAL"] =
+      "10-3v-37-legal-admin-no-appeal-intake.html";
+  }
+
+  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 5–6 / 7 / 8 / 9 / 10a / 10b / 11) — ใช้กับแถบขั้นตอน */
   function flowOf(code) {
-    return [STEPS, STAY_STEPS, ANSWER_STEPS, VERDICT_STEPS, APPEAL_STEPS].find(function (
-      flow,
-    ) {
+    return [
+      STEPS,
+      STAY_STEPS,
+      ANSWER_STEPS,
+      VERDICT_STEPS,
+      APPEAL_STEPS,
+      APPEAL_CONSIDER_STEPS,
+      APPEAL_DRAFT_STEPS,
+      BOARD_APPROVED_APPEAL_STEPS,
+      APPEAL_BOARD_STEPS,
+      BOARD_NO_APPEAL_STEPS,
+    ].find(function (flow) {
       return flow.some(function (s) { return s.code === code; });
     }) || STEPS;
   }
@@ -696,11 +1294,18 @@
     COVER_SIGNER_ROUTES: COVER_SIGNER_ROUTES,
     VERDICT_STEPS: VERDICT_STEPS,
     APPEAL_STEPS: APPEAL_STEPS,
+    APPEAL_CONSIDER_STEPS: APPEAL_CONSIDER_STEPS,
+    APPEAL_CONSIDER_BRANCHES: APPEAL_CONSIDER_BRANCHES,
+    APPEAL_DRAFT_STEPS: APPEAL_DRAFT_STEPS,
+    APPEAL_BOARD_STEPS: APPEAL_BOARD_STEPS,
+    BOARD_APPROVED_APPEAL_STEPS: BOARD_APPROVED_APPEAL_STEPS,
+    BOARD_NO_APPEAL_STEPS: BOARD_NO_APPEAL_STEPS,
     VERDICT_BRANCHES: VERDICT_BRANCHES,
     ROUTES: ROUTES,
     stepByCode: stepByCode,
     stepByPage: stepByPage,
     pendingStatusFor: pendingStatusFor,
+    toISODate: toISODate,
 
     isStepSigned: function (kase, stepCode) {
       return !!(kase && kase.l3Signatures && kase.l3Signatures[stepCode]);
@@ -729,8 +1334,6 @@
         daysLeft: Math.round((currentDue - today) / 86400000),
       };
     },
-
-    toISODate: toISODate,
 
     hasRoleSigned: function (kase, roleId) {
       const src = (kase && kase.raw) || kase;
@@ -1176,12 +1779,47 @@
     window.location.href = "01-work-inbox.html";
   }
 
+  /* โหมดดูอย่างเดียว — inbox ลิงก์ eye icon มาที่หน้าขั้นตอนปัจจุบันของเคสพร้อม
+     ?view=1 เมื่อไม่ใช่คิวของบทบาทตัวเอง (แทนที่จะพาไปหน้าอื่นที่ไม่เกี่ยวข้อง)
+     ปิดช่องกรอกทั้งหมดใน #pageBody + ปุ่มเซ็น/ยืนยัน ไม่ต้อง guardRole ซ้ำ
+     คืนค่า true ถ้าอยู่ในโหมดนี้ (ให้หน้าเรียกข้าม guardRole ได้) */
+  function applyViewOnlyMode() {
+    const isView = new URLSearchParams(window.location.search).get("view") === "1";
+    if (!isView) return false;
+
+    const pageBody = document.getElementById("pageBody");
+    if (!pageBody || !pageBody.parentNode) return true;
+
+    const banner = document.createElement("div");
+    banner.className = "view-only-banner";
+    banner.innerHTML =
+      '<i class="fa-solid fa-eye"></i><span>โหมดดูอย่างเดียว — ไม่สามารถลงนามหรือบันทึกได้ในหน้านี้</span>';
+    pageBody.parentNode.insertBefore(banner, pageBody);
+
+    pageBody.querySelectorAll("input, textarea, select").forEach(function (el) {
+      el.disabled = true;
+    });
+    pageBody.querySelectorAll(".btn-primary").forEach(function (btn) {
+      btn.disabled = true;
+      btn.classList.add("btn-disabled-view");
+    });
+    pageBody.querySelectorAll(".decision-card").forEach(function (card) {
+      card.classList.add("btn-disabled-view");
+    });
+
+    return true;
+  }
+
   /* แถบขั้นตอน — แต่ละสายงาน (Part 1 / 1b / 5–6) เป็นเส้นตรง แสดงเฉพาะสายที่ขั้นนั้นสังกัด */
-  function renderStepper(containerId, currentCode) {
+  function renderStepper(containerId, currentCode, endCode) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    const flow = flowOf(currentCode);
+    let flow = flowOf(currentCode);
     const curIdx = flow.findIndex(function (s) { return s.code === currentCode; });
+    if (endCode) {
+      const endIdx = flow.findIndex(function (s) { return s.code === endCode; });
+      if (endIdx >= 0) flow = flow.slice(0, endIdx + 1);
+    }
     el.innerHTML = flow.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
@@ -1194,105 +1832,31 @@
     }).join("");
   }
 
-  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
-    const el1 = document.getElementById(part1ContainerId);
-    const el2 = document.getElementById(part2ContainerId);
-    if (!el1 || !el2) return;
-    const sigs = (kase && kase.l3Signatures) || {};
-
-    const part1 = STEPS.map(function (step) {
-      const sig = sigs[step.code];
-      const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
-      return (
-        '<div class="step-item completed" title="' + tip + '">' +
-        '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
-        '<div class="step-label">' + step.stepName + "</div>" +
-        "</div>"
-      );
-    });
-
-    const resolution = kase && (kase.l3BoardResolution || kase.l3IncomingBoardReport);
-    const boardNode = resolution
-      ? '<div class="step-item completed" title="คณะกรรมการ ป.ป.ท. ' + resolution.result + '">' +
-        '<div class="step-circle"><i class="fa-solid fa-gavel"></i></div>' +
-        '<div class="step-label">คณะกรรมการ ป.ป.ท. ' + resolution.result +
-        "<br/>ครั้งที่ " + resolution.meetingNo + " วาระ " + resolution.agendaNo + "</div>" +
-        "</div>"
-      : '<div class="step-item active" title="ขั้นตอนนอกระบบ">' +
-        '<div class="step-circle"><i class="fa-solid fa-hourglass-half"></i></div>' +
-        '<div class="step-label">รอคณะกรรมการ ป.ป.ท. มีมติ</div>' +
-        "</div>";
-    el1.innerHTML = part1.join("") + boardNode;
-
-    const chosenSigner = kase && kase.l3CoverLetterSignerRole;
-    const seenGroups = {};
-    const visibleSteps = ANSWER_STEPS.filter(function (s) {
-      if (!s.altGroup) return true;
-      if (chosenSigner) return s.role === chosenSigner;
-      if (seenGroups[s.altGroup]) return false;
-      seenGroups[s.altGroup] = true;
-      return true;
-    });
-    const currentStep = stepByCode(currentCode);
-    let curIdx = visibleSteps.findIndex(function (s) {
-      return s.code === currentCode || (currentStep && currentStep.altGroup && s.altGroup === currentStep.altGroup);
-    });
-    if (currentCode == null && kase) {
-      const next = stepByPage(ROUTES[kase.statusCode]);
-      const nextIdx = next ? visibleSteps.indexOf(next) : -1;
-      const lastIdx = visibleSteps.findIndex(function (s) { return s.code === kase.l3Step; });
-      curIdx = nextIdx > -1 ? nextIdx : lastIdx > -1 ? lastIdx + 1 : -1;
+  /* สร้าง HTML ของบรรทัด "ขั้นตอนถัดไป" ใต้ stepper-card — รับ statusCode ที่ขั้น
+     ปัจจุบันจะเขียนไว้ (หรือ statusCode ของสาขาที่ตัดสินใจแล้ว) แล้วไล่หา
+     ขั้นถัดไปจาก ROUTES ถ้ายังไม่มีหน้าที่ build (ROUTES ไม่มี entry) จะ fallback
+     ไปใช้ opts.fallbackLabel ที่ผู้เรียกระบุเอง (บอกว่าขั้นถัดไปคืออะไรตามผัง
+     แม้ยังไม่ implement) opts.prefix ใส่ป้ายกำกับ เช่น ชื่อสาขาที่เลือกไว้ */
+  function nextStepNoteHtml(statusCode, opts) {
+    const cfg = opts || {};
+    const prefixHtml = cfg.prefix ? " (" + cfg.prefix + ")" : "";
+    const page = ROUTES[statusCode];
+    if (page) {
+      const step = stepByPage(page);
+      if (step) {
+        return (
+          "ขั้นตอนถัดไป" + prefixHtml + ": <strong>" + step.roleTitle +
+          "</strong> — " + step.label
+        );
+      }
     }
-    const builtNodes = visibleSteps.map(function (step, i) {
-      const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
-      const isLast = i === visibleSteps.length - 1 && !PLANNED_ANSWER_STEPS.length;
-      const inner = isLast ? '<i class="fa-solid fa-flag-checkered"></i>' : i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
-      const finalCls = isLast && i <= curIdx ? " step-final" : "";
-      const sig = sigs[step.code];
-      const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
-      const name = step.altGroup && !chosenSigner ? "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง" : step.stepName;
+    if (cfg.fallbackLabel) {
       return (
-        '<div class="step-item ' + cls + finalCls + '" title="' + tip + '">' +
-        '<div class="step-circle">' + inner + "</div>" +
-        '<div class="step-label">' + name + "</div>" +
-        "</div>"
+        "ขั้นตอนถัดไป" + prefixHtml + ": " + cfg.fallbackLabel +
+        " <em>(ยังไม่ implement ในระบบ)</em>"
       );
-    });
-    const plannedNodes = PLANNED_ANSWER_STEPS.map(function (step, i) {
-      const waiting = curIdx === visibleSteps.length && i === 0 ? " is-waiting" : "";
-      return (
-        '<div class="step-item planned' + waiting + '" title="' + step.label + '">' +
-        '<div class="step-circle">' + (visibleSteps.length + i + 1) + "</div>" +
-        '<div class="step-label">' + step.stepName + "</div>" +
-        "</div>"
-      );
-    });
-    el2.innerHTML = builtNodes.concat(plannedNodes).join("");
-  }
-
-  function applyViewMode(kase, stepCode) {
-    const step = stepByCode(stepCode);
-    const sig = ((kase && kase.l3Signatures) || {})[stepCode];
-    const notice = document.getElementById("viewModeNotice");
-    if (notice) notice.classList.remove("d-none");
-    setText("f_viewSigner", step ? signerLabel(step.role) : "-");
-    setText("f_viewSignedAt", sig && sig.signedAt);
-    setText("f_viewStatus", kase && kase.status);
-    const img = document.getElementById("f_viewSigImg");
-    if (img && sig && sig.image) {
-      img.src = sig.image;
-      img.classList.remove("d-none");
     }
-    const card = document.getElementById("actionCard");
-    if (!card) return;
-    card.querySelectorAll("input, textarea, select").forEach(function (el) {
-      el.disabled = true;
-    });
-    card.querySelectorAll(".l3-upload-box, button").forEach(function (el) {
-      el.classList.add("d-none");
-    });
-    const back = card.querySelector(".form-actions a");
-    if (back) back.textContent = "กลับหน้ารายการ";
+    return "";
   }
 
   /* เมนูข้างซ้าย — แสดงเฉพาะขั้นตอน 10-3-xx ที่บทบาทนั้นรับผิดชอบ (ไม่รวม
@@ -1467,12 +2031,12 @@
     openSignatureModal: openSignatureModal,
     initUserProfile: initUserProfile,
     guardRole: guardRole,
+    applyViewOnlyMode: applyViewOnlyMode,
     setText: setText,
     setHtml: setHtml,
     goInbox: goInbox,
     renderStepper: renderStepper,
-    renderStepperV2: renderStepperV2,
-    applyViewMode: applyViewMode,
+    nextStepNoteHtml: nextStepNoteHtml,
     renderSidebarMenu: renderSidebarMenu,
     renderAttachments: renderAttachments,
     renderPartyList: renderPartyList,

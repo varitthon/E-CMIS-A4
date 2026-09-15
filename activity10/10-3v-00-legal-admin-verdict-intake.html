@@ -249,6 +249,21 @@
       .d-none {
         display: none !important;
       }
+      .info-box {
+        background: #fffbeb;
+        border: 1px solid #fef3c7;
+        border-radius: 6px;
+        padding: 10px 14px;
+        display: flex;
+        gap: 10px;
+        color: #92400e;
+        font-size: 0.76em;
+      }
+      body.dark-mode .info-box {
+        background: #3b2d12;
+        border-color: #78350f;
+        color: #fde68a;
+      }
       .helper-text {
         font-size: 0.78em;
         color: #64748b;
@@ -702,7 +717,6 @@
                   class="info-box"
                   style="margin-top: 10px; margin-bottom: 0"
                 >
-                  <div style="font-size: 1.2em">ℹ️</div>
                   <div>
                     <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
                     • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
@@ -732,7 +746,6 @@
                 <i class="fa-solid fa-circle-info"></i>
                 <div>
                   ลงทะเบียนคดีปกครองในระบบแทนสมุดคุม (MS Excel) — เลขทะเบียนพิมพ์เองได้
-                  หรือกดปุ่ม "ออกเลขทะเบียน" ให้ระบบออกให้
                 </div>
               </div>
               <div class="form-grid-2">
@@ -741,27 +754,23 @@
                     >เลขทะเบียนคดีปกครอง
                     <span style="color: #dc2626">*</span></label
                   >
-                  <div style="display: flex; gap: 8px">
-                    <input
-                      type="text"
-                      id="in_verdictRegNo"
-                      class="form-control font-monospace"
-                      placeholder="เช่น ทบ.ปค. 0123/2569 (กรอกเองหรือกดออกเลขทะเบียน)"
-                      style="font-weight: 700; color: #1e3a8a"
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-secondary"
-                      style="white-space: nowrap"
-                      onclick="issueRegNo()"
-                    >
-                      <i class="fa-solid fa-hashtag me-1"></i>ออกเลขทะเบียน
-                    </button>
-                  </div>
+                  <input
+                    type="text"
+                    id="in_verdictRegNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น ทบ.ปค. 0123/2569"
+                    style="font-weight: 700; color: #1e3a8a"
+                    oninput="onVerdictRegNoInput()"
+                  />
                 </div>
                 <div class="form-group">
                   <label>วันที่ลงทะเบียน</label>
-                  <div class="read-box" id="f_regDate">-</div>
+                  <input
+                    type="date"
+                    id="in_regDate"
+                    class="form-control font-monospace"
+                    lang="th-TH-u-ca-buddhist"
+                  />
                 </div>
               </div>
               <div class="form-group">
@@ -798,9 +807,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
+    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_9"></script>
+    <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
 
     <script>
       /* LAW0119 — ธุรการกองกฎหมาย รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
@@ -809,7 +818,6 @@
          ดู docs/10.3 mockup/implementation-plan-part5-6.md */
       const STEP_CODE = "LAW0119";
       const STEP = Activity103.stepByCode(STEP_CODE);
-      let regDate = "";
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -827,29 +835,18 @@
         });
         renderCourtPlaintiffList();
         renderCourtDefendantList();
-        ECMIS103.setText("f_regDate", regDate);
       });
 
-      /* ออกเลขทะเบียนคดีปกครอง (mockup — สุ่มเลขลำดับ ไม่มี backend ออกเลขจริง) */
-      function issueRegNo() {
-        const input = document.getElementById("in_verdictRegNo");
-        if (!input.value.trim()) {
-          const seq = String(1 + Math.floor(Math.random() * 999)).padStart(
-            4,
-            "0",
-          );
-          const buddhistYear = new Date().getFullYear() + 543;
-          input.value = "ทบ.ปค. " + seq + "/" + buddhistYear;
+      /* ประทับวันที่ลงทะเบียนอัตโนมัติครั้งแรกที่พิมพ์เลขทะเบียนคดี (ถ้ายังไม่ระบุ)
+         ผู้ใช้แก้วันที่เองได้ตลอดผ่านช่อง in_regDate (แทนปุ่ม "ออกเลขทะเบียน" ที่ตัดออก) */
+      function onVerdictRegNoInput() {
+        const hasValue = document
+          .getElementById("in_verdictRegNo")
+          .value.trim();
+        const regDateInput = document.getElementById("in_regDate");
+        if (hasValue && !regDateInput.value) {
+          regDateInput.value = new Date().toISOString().slice(0, 10);
         }
-        regDate = ECMIS103.formatThaiDate(new Date());
-        ECMIS103.setText("f_regDate", regDate);
-        Swal.fire({
-          icon: "success",
-          title: "ออกเลขทะเบียนเรียบร้อยแล้ว",
-          text: "เลขทะเบียนคดีปกครอง " + input.value,
-          timer: 1500,
-          showConfirmButton: false,
-        });
       }
 
       /* ผู้ฟ้อง/ผู้ถูกฟ้อง — เพิ่มได้หลายรายการ (ports จาก 02-board-intake.html) */
@@ -1142,7 +1139,7 @@
           ["in_courtReceivedDate", "กรุณาระบุวันที่สำนักงาน ป.ป.ท. รับเรื่อง"],
           ["in_courtSarabanNo", "กรุณาระบุเลขสารบัญ"],
           ["in_receivingUnit", "กรุณาระบุหน่วยงานที่รับเรื่อง"],
-          ["in_verdictRegNo", "กรุณาระบุหรือกดออกเลขทะเบียนคดีปกครอง"],
+          ["in_verdictRegNo", "กรุณาระบุเลขทะเบียนคดีปกครอง"],
         ];
         for (const [id, msg] of checks) {
           const el = document.getElementById(id);
@@ -1190,8 +1187,10 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
 
-          /* ผู้ใช้พิมพ์เลขทะเบียนเองได้ — ถ้ายังไม่เคยกดออกเลข (ไม่มีวันที่) ให้ประทับวันนี้ */
-          const finalRegDate = regDate || ECMIS103.formatThaiDate(new Date());
+          /* ผู้ใช้แก้วันที่ลงทะเบียนเองได้เสมอ — ถ้ายังไม่ระบุ ให้ประทับวันนี้ */
+          const finalRegDate =
+            document.getElementById("in_regDate").value ||
+            new Date().toISOString().slice(0, 10);
 
           const title =
             "ผลคำพิพากษาศาลปกครองชั้นต้น คดีหมายเลขดำที่ " +

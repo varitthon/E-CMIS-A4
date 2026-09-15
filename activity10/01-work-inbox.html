@@ -787,7 +787,10 @@
               >
                 <label id="dynamicFilterLabel">ประเภทงาน</label>
                 <div class="ms-select" id="dynamicMsSelect">
-                  <div class="ms-control" onclick="toggleMsMenu('dynamic', event)">
+                  <div
+                    class="ms-control"
+                    onclick="toggleMsMenu('dynamic', event)"
+                  >
                     <div class="ms-chips" id="dynamicSelectedChips">
                       <span class="ms-placeholder">เลือกทั้งหมด</span>
                     </div>
@@ -800,7 +803,10 @@
               <div class="form-group" id="statusChipsGroup" style="flex: 2">
                 <label>สถานะ</label>
                 <div class="ms-select" id="statusMsSelect">
-                  <div class="ms-control" onclick="toggleMsMenu('status', event)">
+                  <div
+                    class="ms-control"
+                    onclick="toggleMsMenu('status', event)"
+                  >
                     <div class="ms-chips" id="statusSelectedChips">
                       <span class="ms-placeholder">เลือกทั้งหมด</span>
                     </div>
@@ -860,16 +866,11 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
-    <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_9"></script>
+    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_9"></script>
+    <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1462,7 +1463,8 @@
         }
         const name = String(src.summonsName || "").trim();
         if (!name) return { group: "ไม่ระบุ", text: "ไม่ระบุ" };
-        if (SUMMONS_NAMES_103.includes(name)) return { group: name, text: name };
+        if (SUMMONS_NAMES_103.includes(name))
+          return { group: name, text: name };
         return { group: "อื่นๆ", text: name };
       }
 
@@ -1712,6 +1714,8 @@
                 Activity103.hasRoleSigned(c, "dir_legal")) ||
               c.statusCode === "COMPLETED" ||
               c.statusCode === "COMPLETED_OAG_RESOLVED" ||
+              (typeof Activity103 !== "undefined" &&
+                Activity103.isCourtCase(c)) ||
               (c.status &&
                 (c.status.includes("ผอ.กองกฎหมาย") ||
                   c.status.includes("ผอ.กอง") ||
@@ -1784,7 +1788,8 @@
                 c.assignedRole === roleId) ||
               (typeof Activity103 !== "undefined" &&
                 Activity103.isCourtCase(c) &&
-                (c.assignedRole === roleId || Activity103.hasRoleSigned(c, roleId))),
+                (c.assignedRole === roleId ||
+                  Activity103.hasRoleSigned(c, roleId))),
           );
         }
         return allCases;
@@ -1813,11 +1818,23 @@
           dynamicChipOptions = [
             { value: "สั่งไม่ฟ้อง", label: "1. อัยการมีความเห็นสั่งไม่ฟ้อง" },
             { value: "ถอนฟ้อง", label: "2. อัยการมีความเห็นถอนฟ้อง" },
-            { value: "ไม่อุทธรณ์ (ลงโทษ)", label: "3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)" },
-            { value: "ไม่อุทธรณ์ (ยกฟ้อง)", label: "4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)" },
+            {
+              value: "ไม่อุทธรณ์ (ลงโทษ)",
+              label: "3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)",
+            },
+            {
+              value: "ไม่อุทธรณ์ (ยกฟ้อง)",
+              label: "4. อัยการมีความเห็นสั่งไม่อุทธรณ์(ยกฟ้อง)",
+            },
             { value: "ถอนอุทธรณ์", label: "5. อัยการมีความเห็นสั่งถอนอุทธรณ์" },
-            { value: "ไม่ฎีกา (ลงโทษ)", label: "6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)" },
-            { value: "ไม่ฎีกา (ยกฟ้อง)", label: "7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)" },
+            {
+              value: "ไม่ฎีกา (ลงโทษ)",
+              label: "6. อัยการมีความเห็นสั่งไม่ฎีกา(ลงโทษ)",
+            },
+            {
+              value: "ไม่ฎีกา (ยกฟ้อง)",
+              label: "7. อัยการมีความเห็นสั่งไม่ฎีกา(ยกฟ้อง)",
+            },
             { value: "ถอนฎีกา", label: "8. อัยการมีความเห็นสั่งถอนฎีกา" },
             { value: "อื่นๆ", label: "9. อื่นๆ" },
           ];
@@ -2053,6 +2070,32 @@
         window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
       }
 
+      /* eye icon ของคดีศาลปกครอง (กิจกรรมที่ 10.3) — พาไปหน้าขั้นตอนปัจจุบันของ
+         เคสแบบดูอย่างเดียว (?view=1) แทนที่จะพาไปหน้า 03-prosecutor-doc.html
+         ที่เป็นของกิจกรรมอื่นและไม่รู้จักเคส 10.3 (ดู ECMIS103.applyViewOnlyMode
+         ใน ecmis-10-3.js) ถ้ายังไม่มีหน้าขั้นตอนถัดไป (terminal/ยังไม่ implement)
+         ให้แสดงสรุปสถานะแทน */
+      function viewCourtCase(caseId, targetPage) {
+        if (targetPage) {
+          window.location.href = `${targetPage}?id=${encodeURIComponent(caseId)}&view=1`;
+          return;
+        }
+        const allCases = getAllDatabaseCases();
+        const c = allCases.find(
+          (item) => item.id === caseId || item.caseNo === caseId,
+        ) || { id: caseId };
+        Swal.fire({
+          icon: "info",
+          title: "ยังไม่มีหน้าขั้นตอนถัดไป",
+          html:
+            '<div class="emd-summary">' +
+            `<p><strong>คดี:</strong> ${c.id}</p>` +
+            `<p><strong>สถานะปัจจุบัน:</strong> ${c.status || "-"}</p>` +
+            "</div>",
+          confirmButtonColor: "#1e3a8a",
+        });
+      }
+
       function handleCaseAction(caseId) {
         const roleId = getCurrentRole();
         const allCases = getAllDatabaseCases();
@@ -2086,10 +2129,7 @@
         }
 
         /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง เหมือน 10.2 ด้านบน */
-        if (
-          typeof Activity103 !== "undefined" &&
-          Activity103.isCourtCase(c)
-        ) {
+        if (typeof Activity103 !== "undefined" && Activity103.isCourtCase(c)) {
           const page3 = Activity103.ROUTES[sc];
           if (page3) {
             window.location.href = `${page3}?id=${encodeURIComponent(c.id)}`;
@@ -2362,8 +2402,10 @@
         "L2_PENDING_SECGEN_OPINION",
       ];
       function resolutionAuthorityLabel(kase) {
-        const isInvestigating = (kase.l2CaseState || "INVESTIGATING") === "INVESTIGATING";
-        const pastRound2 = ROUND2_OR_LATER_STATUS_CODES.indexOf(kase.statusCode) > -1;
+        const isInvestigating =
+          (kase.l2CaseState || "INVESTIGATING") === "INVESTIGATING";
+        const pastRound2 =
+          ROUND2_OR_LATER_STATUS_CODES.indexOf(kase.statusCode) > -1;
         return isInvestigating && pastRound2 ? "มติบอร์ด" : "มติเลขาธิการ";
       }
 
@@ -2397,6 +2439,125 @@
         const label = Activity102.labelOf(Activity102.CASE_STATES, stateValue);
         const color = Activity102.colorOf(Activity102.CASE_STATES, stateValue);
         return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="สถานะคดี">${label}</span>`;
+      }
+
+      /* แบดจ์ "ผอ.กองกฎหมายมีความเห็นแล้ว" คู่กับสถานะ — ขึ้นกับเคสคำพิพากษา
+         (กิจกรรมที่ 10.3, Activity103) ทุกเคสที่ ผอ.กองกฎหมายกำหนดแนวทางแล้ว
+         (มี l3ProposedBranch จาก LAW0128) ไม่ผูกกับสถานะปัจจุบัน — ให้คงอยู่ต่อ
+         แม้เคสจะเดินเข้า Part 7/8 ไปแล้ว (ไม่ใช่แค่ตอนอยู่ที่สถานะเปลี่ยนผ่าน
+         3 ทางหลัง LAW0128 เหมือนเดิม) ใช้ VERDICT_BRANCHES.label ที่มีอยู่แล้ว */
+      function verdictBranchBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isVerdictCase(kase)) return "";
+        const branch = Activity103.VERDICT_BRANCHES[kase.l3ProposedBranch];
+        if (!branch) return "";
+        let html = ` <span class="badge" style="background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; font-weight:600;" title="ผอ.กองกฎหมายกำหนดแนวทางแล้ว">ผอ.กองกฎหมายมีความเห็นแล้ว</span>`;
+        if (branch.resultLabel) {
+          const isWin = branch.resultLabel === "ชนะคดี";
+          const bg = isWin ? "#dcfce7" : "#fee2e2";
+          const fg = isWin ? "#15803d" : "#b91c1c";
+          const border = isWin ? "#86efac" : "#fca5a5";
+          html += ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;">${branch.resultLabel}</span>`;
+        }
+        if (branch.appealNote) {
+          html += ` <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-weight:600;">${branch.appealNote}</span>`;
+        }
+        return html;
+      }
+
+      /* แบดจ์ความเห็นที่นิติกรเสนอ (เห็นควรอุทธรณ์/เห็นควรไม่อุทธรณ์ — LAW0145
+         ที่ 10-3v-19) คู่กับสถานะ — ให้ผู้ดูอินบ็อกซ์เห็นว่ากำลังรอ
+         ผอ.กลุ่มงานคดียืนยันไปทางไหนโดยไม่ต้องเปิดเคสเข้าไปดู ใช้
+         APPEAL_CONSIDER_BRANCHES.label ที่มีอยู่แล้ว ไม่ผูกกับสถานะปัจจุบัน
+         (คงอยู่ต่อแม้เคสจะยืนยันแล้วและเดินเข้า Part 9/10a ไปแล้ว) */
+      function appealConsiderProposalBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isVerdictCase(kase)) return "";
+        if (!Activity103.APPEAL_CONSIDER_BRANCHES) return "";
+        const branch =
+          Activity103.APPEAL_CONSIDER_BRANCHES[kase.l8ProposedBranch];
+        if (!branch) return "";
+        const isAppeal = kase.l8ProposedBranch === "APPEAL";
+        const bg = isAppeal ? "#dcfce7" : "#fee2e2";
+        const fg = isAppeal ? "#15803d" : "#b91c1c";
+        const border = isAppeal ? "#86efac" : "#fca5a5";
+        return ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;" title="ความเห็นที่นิติกรเสนอ">${branch.label}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของสายจัดทำคำอุทธรณ์ (Part 10a, เห็นควรอุทธรณ์
+         หลัง Part 8) — ให้ผู้ดูสามารถติดตามความคืบหน้าบนสายนี้ได้จากอินบ็อกซ์
+         เดียวกันโดยไม่ต้องเปิดเคสเข้าไปดู ใช้ stepName สั้นๆ ของ
+         APPEAL_DRAFT_STEPS ที่ statusCode ตรงกับสถานะปัจจุบันของเคส */
+      function appealDraftStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.APPEAL_DRAFT_STEPS) return "";
+        const step = Activity103.APPEAL_DRAFT_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายจัดทำคำอุทธรณ์">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของสายเสนอมติต่อบอร์ด (Part 9, เห็นควรไม่อุทธรณ์
+         หลัง Part 8) — คู่กับ appealDraftStepBadge ด้านบน แต่คนละ statusCode
+         (APPEAL_BOARD_STEPS ใช้ L9_ ไม่ชนกับ APPEAL_DRAFT_STEPS ที่ใช้ L10_) */
+      function appealBoardStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.APPEAL_BOARD_STEPS) return "";
+        const step = Activity103.APPEAL_BOARD_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายเสนอมติต่อบอร์ด">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์มติบอร์ด (บอร์ดเห็นชอบให้อุทธรณ์ / เห็นชอบไม่อุทธรณ์) — คู่กับสถานะ
+         เหมือน appealConsiderProposalBadge ด้านบน ไม่ผูกกับสถานะปัจจุบัน ให้
+         คงอยู่ต่อแม้เคสจะเดินเข้า Branch A/B (LAW0153.../LAW0164...) ไปแล้ว
+         ใช้ statusCode L9_BOARD_APPROVED_APPEAL / L9_BOARD_APPROVED_NO_APPEAL
+         เป็นจุดเข้าปัจจุบัน แต่แบดจ์อ่านจาก l9BoardDecision โดยตรงเพื่อให้
+         ติดตามต่อได้แม้ขั้นถัดไปเปลี่ยน statusCode ไปแล้ว */
+      function boardDecisionBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || !kase.l9BoardDecision) return "";
+        const isAppeal = kase.l9BoardDecision === "APPEAL";
+        const label = isAppeal ? "มติบอร์ดเห็นชอบให้อุทธรณ์" : "มติบอร์ดเห็นชอบไม่อุทธรณ์";
+        const bg = isAppeal ? "#dcfce7" : "#fee2e2";
+        const fg = isAppeal ? "#15803d" : "#b91c1c";
+        const border = isAppeal ? "#86efac" : "#fca5a5";
+        return ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;" title="มติของคณะกรรมการ ป.ป.ท.">${label}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของ Branch A (มติบอร์ดเห็นชอบให้อุทธรณ์,
+         LAW0154-0160) — คู่กับ appealDraftStepBadge/appealBoardStepBadge
+         ด้านบน แต่คนละ statusCode (BOARD_APPROVED_APPEAL_STEPS ใช้ L9A_) */
+      function branchAStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.BOARD_APPROVED_APPEAL_STEPS) return "";
+        const step = Activity103.BOARD_APPROVED_APPEAL_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายดำเนินการอุทธรณ์ (มติบอร์ด)">${step.stepName}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของ Branch B (มติบอร์ดเห็นชอบไม่อุทธรณ์,
+         LAW0164-171/0163) — คู่กับ branchAStepBadge ด้านบน แต่คนละ statusCode
+         (BOARD_NO_APPEAL_STEPS ใช้ L9B_) */
+      function branchBStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.BOARD_NO_APPEAL_STEPS) return "";
+        const step = Activity103.BOARD_NO_APPEAL_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายแจ้งความประสงค์ไม่อุทธรณ์ (มติบอร์ด)">${step.stepName}</span>`;
       }
 
       /* สีของป้ายอายุความ/SLA แทนสัญลักษณ์อีโมจิเดิม (แดง/เหลือง/เขียว)
@@ -2437,11 +2598,14 @@
           Activity103.isCourtCase(item)
         ) {
           const nextPage3 = Activity103.ROUTES[statusCode];
-          const nextStep3 = nextPage3 ? Activity103.stepByPage(nextPage3) : null;
+          const nextStep3 = nextPage3
+            ? Activity103.stepByPage(nextPage3)
+            : null;
           if (nextStep3 && nextStep3.role === roleId) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep3.label}">ดำเนินการ</button>`;
           }
-          return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคดี">${svgEyeIcon}</button>`;
+          const viewArg = nextPage3 ? `'${nextPage3}'` : "null";
+          return `<button class="action-btn" onclick="viewCourtCase('${caseId}', ${viewArg})" title="ดูรายละเอียดคดี (ดูอย่างเดียว)">${svgEyeIcon}</button>`;
         }
 
         // 1. เจ้าหน้าที่ธุรการกองกฎหมาย (admin_legal / Kanda.R)
@@ -2729,7 +2893,7 @@
  <td style="max-width:200px;">${renderSummonsBadge103(item)}</td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
