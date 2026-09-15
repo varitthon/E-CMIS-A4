@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ผอ.กองกฎหมาย ตรวจร่างคำให้การ | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ส่งไปรษณีย์ถึงอัยการ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -277,7 +277,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การแก้คำฟ้อง</span
+              >นิติกร จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง</span
             >
           </div>
         </div>
@@ -368,10 +368,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอ ผอ.กลุ่มงานคดีตรวจสอบร่างคำให้การที่หน้า
-            <a href="10-3-15-group-director-review-answer.html"
-              >ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ</a
-            >
+            รอนิติกรรวบรวมชุดเอกสารที่หน้า
+            <a href="10-3-23-lawyer-collect-documents.html">นิติกร รวบรวมเอกสาร</a>
             ก่อน
           </div>
         </div>
@@ -584,30 +582,234 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-user-check text-primary me-2"></i
-                >ผลการตรวจของ ผอ.กลุ่มงานคดี</span
+                >ผลการตรวจร่าง</span
               >
               <span class="badge" style="background: #dcfce7; color: #166534"
-                ><i class="fa-solid fa-check me-1"></i>ตรวจสอบแล้ว</span
+                ><i class="fa-solid fa-check me-1"></i>ผ่านการตรวจ 2 ระดับ</span
               >
             </div>
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>รายการที่ตรวจ</label>
-                  <div class="read-box read-box-textarea" id="f_groupChecks">-</div>
+                  <label>ผอ.กลุ่มงานคดี</label>
+                  <div class="read-box read-box-textarea" id="f_groupReview">-</div>
                 </div>
                 <div class="form-group">
-                  <label>ความเห็น ผอ.กลุ่มงานคดี</label>
-                  <div class="read-box read-box-textarea" id="f_groupNotes">-</div>
+                  <label>ผอ.กองกฎหมาย</label>
+                  <div class="read-box read-box-textarea" id="f_directorReview">-</div>
                 </div>
               </div>
-              <div class="form-group">
-                <label>ผู้ตรวจสอบ</label>
-                <div class="l3-sig-preview">
-                  <img id="f_groupSigImg" alt="ลายมือชื่อ ผอ.กลุ่มงานคดี" class="d-none" />
-                  <div class="l3-sig-preview-meta">
-                    <div><strong id="f_groupReviewer">-</strong></div>
-                    <div>ลงนามเมื่อ <span id="f_groupSignedAt">-</span></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-stamp text-primary me-2"></i
+                >การออกเลขหนังสือส่งภายใน (ธุรการกองกฎหมาย)</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือส่งภายใน</label>
+                  <div class="read-box font-monospace" id="f_internalDocNo" style="font-weight: 700; color: #1e3a8a">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ลงวันที่</label>
+                  <div class="read-box" id="f_internalDocDate">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เสนอผู้ลงนาม</label>
+                  <div class="read-box" id="f_proposedSigner">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเหตุธุรการ</label>
+                  <div class="read-box" id="f_dispatchNotes">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-signature text-primary me-2"></i
+                >การลงนามหนังสือนำส่ง</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534"
+                ><i class="fa-solid fa-check me-1"></i>ลงนามแล้ว</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ลงนาม</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_coverSigImg" alt="ลายมือชื่อผู้ลงนามหนังสือนำส่ง" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_coverSignedBy">-</strong></div>
+                      <div>ลงนามเมื่อ <span id="f_coverSignedAt">-</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ความเห็นผู้ลงนาม</label>
+                  <div class="read-box read-box-textarea" id="f_coverOpinion">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-hashtag text-primary me-2"></i
+                >การออกเลขหนังสือส่งออก (สารบรรณกลาง)</span
+              >
+              <span class="badge" style="background: #fee2e2; color: #b91c1c" id="f_urgencyBadge">-</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือส่งออก</label>
+                  <div class="read-box font-monospace" id="f_externalDocNo" style="font-weight: 700; color: #1e3a8a">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ลงวันที่</label>
+                  <div class="read-box" id="f_externalDocDate">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ออกเลข</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_registrySigImg" alt="ลายมือชื่อสารบรรณกลาง" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_registrySignedBy">-</strong></div>
+                      <div>ออกเลขเมื่อ <span id="f_registrySignedAt">-</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเหตุสารบรรณกลาง</label>
+                  <div class="read-box read-box-textarea" id="f_registryNotes">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-pen-nib text-primary me-2"></i
+                >การลงนามในคำให้การ (ประธานกรรมการ ป.ป.ท.)</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534"
+                ><i class="fa-solid fa-check me-1"></i>ลงนามแล้ว</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ลงนาม</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_chairmanSigImg" alt="ลายมือชื่อประธานกรรมการ" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_chairmanSignedBy">-</strong></div>
+                      <div>ลงนามเมื่อ <span id="f_chairmanSignedAt">-</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ข้อสั่งการประธานกรรมการ</label>
+                  <div class="read-box read-box-textarea" id="f_chairmanNotes">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-folder-open text-primary me-2"></i
+                >เอกสารฉบับจริงที่ธุรการกองกฎหมายรวบรวม</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534"
+                ><i class="fa-solid fa-check me-1"></i>ลงนามครบถ้วน</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>รายการที่รับแล้ว</label>
+                  <div class="read-box read-box-textarea" id="f_originalChecklist">-</div>
+                </div>
+                <div class="form-group">
+                  <label>จำนวนชุด</label>
+                  <div class="read-box" id="f_originalSets">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ไฟล์สแกนเอกสารฉบับจริง</label>
+                  <div id="f_originalScans"></div>
+                </div>
+                <div class="form-group">
+                  <label>ธุรการผู้รวบรวม</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_adminSigImg" alt="ลายมือชื่อธุรการ" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_adminCollectedBy">-</strong></div>
+                      <div>รวบรวมเมื่อ <span id="f_adminSignedAt">-</span></div>
+                      <div>หมายเหตุ: <span id="f_originalNotes">-</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-box-archive text-primary me-2"></i
+                >ชุดเอกสารที่รวบรวมแล้ว</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534" id="f_packageBadge">-</span>
+            </div>
+            <div class="form-card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" style="font-size: 0.88em">
+                  <thead>
+                    <tr>
+                      <th style="width: 44px">ลำดับ</th>
+                      <th>เอกสาร</th>
+                      <th>รายละเอียด</th>
+                      <th style="width: 110px">ประเภท</th>
+                      <th style="width: 70px; text-align: center">รวม</th>
+                    </tr>
+                  </thead>
+                  <tbody id="f_packageTable"></tbody>
+                </table>
+              </div>
+              <hr class="l3-divider" />
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เอกสารเพิ่มเติม</label>
+                  <div id="f_packageExtra"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้รวบรวม</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_packageSigImg" alt="ลายมือชื่อนิติกร" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_packagePreparedBy">-</strong></div>
+                      <div>รวบรวมเมื่อ <span id="f_packageSignedAt">-</span></div>
+                      <div>จำนวน <span id="f_packageEnvelopes">-</span> ซอง — หมายเหตุ: <span id="f_packageNotes">-</span></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -620,48 +822,98 @@
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
-                >ตรวจสอบร่างคำให้การแก้คำฟ้อง</span
+                ><i class="fa-solid fa-truck-fast text-primary me-2"></i
+                >จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง (อัยการ)</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย</span
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร กลุ่มงานคดี</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-group">
-                <div class="l3-recipient-list">
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_checkedAnswer" />
-                    <label for="in_checkedAnswer"
-                      >ตรวจสอบร่างคำให้การแก้คำฟ้องแล้ว <span style="color: #dc2626">*</span></label
-                    >
-                  </div>
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_checkedLetter" />
-                    <label for="in_checkedLetter"
-                      >ตรวจสอบร่างหนังสือนำส่งถึงสำนักงานคดีปกครองแล้ว <span style="color: #dc2626">*</span></label
-                    >
-                  </div>
+              <div class="l3-note l3-note-info" style="margin-bottom: 16px">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  บันทึกข้อมูลการฝากส่งและแนบหลักฐานการรับฝากจากไปรษณีย์
+                  เลขพัสดุจะใช้ติดตามสถานะการจัดส่งและใบตอบรับในขั้นตอนถัดไป
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label><span>วิธีจัดส่ง <span style="color: #dc2626">*</span></span></label>
+                  <select id="in_postMethod" class="form-control" onchange="onMethodChange()">
+                    <option value="EMS ด่วนพิเศษ" selected>EMS ด่วนพิเศษ</option>
+                    <option value="ลงทะเบียนตอบรับ">ลงทะเบียนตอบรับ</option>
+                    <option value="ลงทะเบียน">ลงทะเบียน</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label><span>เลขพัสดุ / เลขที่ลงทะเบียน <span style="color: #dc2626">*</span></span></label>
+                  <input
+                    type="text"
+                    id="in_trackingNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น EX123456789TH"
+                    maxlength="13"
+                    style="text-transform: uppercase"
+                  />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label><span>วันที่ฝากส่ง <span style="color: #dc2626">*</span></span></label>
+                  <input type="date" id="in_postDate" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label>ที่ทำการไปรษณีย์ต้นทาง</label>
+                  <input type="text" id="in_postOffice" class="form-control" placeholder="เช่น ไปรษณีย์หลักสี่" />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้รับปลายทาง</label>
+                  <div class="read-box" id="f_destination">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ค่าบริการ (บาท)</label>
+                  <input type="number" id="in_postFee" class="form-control" min="0" step="0.01" placeholder="0.00" />
                 </div>
               </div>
               <div class="form-group">
-                <label>ความเห็น ผอ.กองกฎหมาย</label>
-                <textarea
-                  id="in_reviewNotes"
-                  class="form-control"
-                  rows="3"
-                  placeholder="ระบุความเห็นหรือข้อสังเกตต่อร่าง (ถ้ามี)..."
-                ></textarea>
+                <label><span>ที่อยู่ปลายทาง <span style="color: #dc2626">*</span></span></label>
+                <textarea id="in_postAddress" class="form-control" rows="2" placeholder="ระบุที่อยู่สำนักงานคดีปกครองปลายทาง..."></textarea>
               </div>
               <div class="form-group">
-                <label>ส่งต่อให้</label>
-                <div class="read-box" id="f_forwardTo">-</div>
+                <label><span>แนบใบรับฝาก / ใบเสร็จไปรษณีย์ <span style="color: #dc2626">*</span></span></label>
+                <div class="l3-upload-box">
+                  <input
+                    type="file"
+                    id="in_receiptFiles"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleReceiptChange(this)"
+                  />
+                </div>
+                <div id="receiptList" style="margin-top: 8px"></div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้จัดส่ง</label>
+                  <div class="read-box" id="f_postedBy">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ขั้นตอนถัดไป</label>
+                  <div class="read-box" id="f_forwardTo">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>หมายเหตุ</label>
+                <textarea id="in_postNotes" class="form-control" rows="2" placeholder="ระบุหมายเหตุ (ถ้ามี)..."></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-signature me-1"></i>ลงนาม ตรวจสอบ และ ส่งธุรการออกเลขส่งภายใน
+                <i class="fa-solid fa-signature me-1"></i>ลงนาม และ บันทึกการจัดส่ง
               </button>
             </div>
           </div>
@@ -677,11 +929,14 @@
     <script src="assets/ecmis-10-3.js?v=20260914_20"></script>
 
     <script>
-      const STEP_CODE = "L3-25";
+      const STEP_CODE = "L3-32";
       const STEP = Activity103.stepByCode(STEP_CODE);
       const EXT_RESULT = { PENDING: "รอผลคำสั่งศาล", GRANTED: "ศาลอนุญาต", DENIED: "ศาลไม่อนุญาต" };
       let currentCase = null;
       let viewOnly = false;
+      let receiptFiles = [];
+      let savedReceiptNames = [];
+      const TRACKING_PATTERN = /^[A-Z]{2}\d{9}[A-Z]{2}$/;
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -720,10 +975,110 @@
       }
 
       function fillSavedValues() {
-        const r = currentCase.l3AnswerDirectorReview || {};
-        document.getElementById("in_checkedAnswer").checked = !!r.checkedAnswer;
-        document.getElementById("in_checkedLetter").checked = !!r.checkedLetter;
-        document.getElementById("in_reviewNotes").value = r.notes || "";
+        const p = currentCase.l3AnswerPosting || {};
+        document.getElementById("in_postMethod").value = p.method || "EMS ด่วนพิเศษ";
+        document.getElementById("in_trackingNo").value = p.trackingNo || "";
+        document.getElementById("in_postDate").value = p.postDate || "";
+        document.getElementById("in_postOffice").value = p.postOffice || "";
+        document.getElementById("in_postFee").value = p.fee != null ? p.fee : "";
+        document.getElementById("in_postAddress").value = p.address || "";
+        document.getElementById("in_postNotes").value = p.notes && p.notes !== "-" ? p.notes : "";
+        savedReceiptNames = p.receiptNames || [];
+        renderReceiptList();
+      }
+
+      function onMethodChange() {
+        const method = document.getElementById("in_postMethod").value;
+        document.getElementById("in_trackingNo").placeholder = method === "EMS ด่วนพิเศษ" ? "เช่น EX123456789TH" : "เช่น RR123456789TH";
+      }
+
+      function renderPackage() {
+        const c = currentCase;
+        const p = c.l3AnswerPackage || {};
+        const items = p.items || [];
+        document.getElementById("f_packageTable").innerHTML = items.length
+          ? items
+              .map(
+                (it, i) => `<tr>
+ <td>${i + 1}</td>
+ <td>${esc(it.label)}</td>
+ <td>${esc(it.detail)}</td>
+ <td>${esc(it.type)}</td>
+ <td style="text-align:center">${it.included ? '<i class="fa-solid fa-check" style="color:#16a34a"></i>' : '<i class="fa-solid fa-xmark" style="color:#dc2626"></i>'}</td>
+ </tr>`,
+              )
+              .join("")
+          : '<tr><td colspan="5" style="text-align:center; color:#64748b">ไม่มีข้อมูลชุดเอกสาร</td></tr>';
+        ECMIS103.setText("f_packageBadge", "รวม " + items.filter((it) => it.included).length + "/" + items.length + " รายการ");
+        ECMIS103.renderAttachments("f_packageExtra", p.extraNames);
+        const sig = (c.l3Signatures || {})["L3-31"];
+        ECMIS103.setText("f_packagePreparedBy", p.preparedBy || c.officer);
+        ECMIS103.setText("f_packageSignedAt", (sig && sig.signedAt) || p.preparedDate);
+        ECMIS103.setText("f_packageEnvelopes", p.envelopeCount);
+        ECMIS103.setText("f_packageNotes", p.notes);
+        const img = document.getElementById("f_packageSigImg");
+        if (sig && sig.image) {
+          img.src = sig.image;
+          img.classList.remove("d-none");
+        }
+      }
+
+      function handleReceiptChange(input) {
+        if (!input.files || !input.files.length) return;
+        const allowed = ["pdf", "png", "jpg", "jpeg"];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowed.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > 100 * 1024 * 1024) {
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          receiptFiles.push(file);
+        });
+        input.value = "";
+        renderReceiptList();
+      }
+
+      function removeReceipt(index) {
+        receiptFiles.splice(index, 1);
+        renderReceiptList();
+      }
+
+      function renderReceiptList() {
+        const el = document.getElementById("receiptList");
+        if (viewOnly) {
+          el.innerHTML = savedReceiptNames
+            .map((n) => '<div class="l3-attachment-row"><div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' + esc(n) + "</div></div>")
+            .join("");
+          return;
+        }
+        el.innerHTML = receiptFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeReceipt(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      function selectedSigner() {
+        return currentCase ? currentCase.l3CoverLetterSignerRole : null;
       }
 
       function esc(t) {
@@ -781,23 +1136,78 @@
           img.src = sig.image;
           img.classList.remove("d-none");
         }
-        ECMIS103.setText("f_forwardTo", ECMIS103.signerLabel("admin_legal"));
-
-        const g = c.l3AnswerGroupReview || {};
-        const gSig = (c.l3Signatures || {})["L3-24"];
+        ECMIS103.setText("f_internalDocNo", c.l3AnswerInternalDocNo);
+        ECMIS103.setText("f_internalDocDate", c.l3AnswerInternalDocDate);
+        ECMIS103.setText("f_proposedSigner", c.l3CoverLetterSignerName);
+        ECMIS103.setText("f_dispatchNotes", c.l3AnswerDispatchNotes);
+        ECMIS103.setText("f_forwardTo", "นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ");
+        ECMIS103.setText("f_destination", docs.letterTo);
+        ECMIS103.setText("f_postedBy", c.officer || ECMIS103.signerLabel("case_legal_officer"));
+        document.getElementById("in_postDate").value = Activity103.toISODate(new Date());
+        document.getElementById("in_postDate").max = Activity103.toISODate(new Date());
+        document.getElementById("in_postAddress").value = docs.letterTo ? docs.letterTo.replace(/^อธิบดีอัยการ\s*/, "") : "";
+        const o = c.l3AnswerOriginals || {};
+        const origLabels = { answer: "คำให้การแก้คำฟ้อง ฉบับจริง", letter: "หนังสือนำส่ง ฉบับจริง", evidence: "พยานหลักฐานและเอกสารประกอบ", copy: "สำเนาคู่ฉบับเก็บในสำนวน" };
         ECMIS103.setText(
-          "f_groupChecks",
-          [g.checkedAnswer ? "✔ ร่างคำให้การแก้คำฟ้อง" : "✘ ร่างคำให้การแก้คำฟ้อง",
-           g.checkedLetter ? "✔ ร่างหนังสือนำส่ง" : "✘ ร่างหนังสือนำส่ง"].join("\n"),
+          "f_originalChecklist",
+          Object.keys(origLabels).map((k) => ((o.checklist || {})[k] ? "✔ " : "✘ ") + origLabels[k]).join("\n"),
         );
-        ECMIS103.setText("f_groupNotes", g.notes);
-        ECMIS103.setText("f_groupReviewer", g.reviewedBy || ECMIS103.signerLabel("case_group_director"));
-        ECMIS103.setText("f_groupSignedAt", (gSig && gSig.signedAt) || g.reviewedAt);
-        const gImg = document.getElementById("f_groupSigImg");
-        if (gSig && gSig.image) {
-          gImg.src = gSig.image;
-          gImg.classList.remove("d-none");
+        ECMIS103.setText("f_originalSets", "ฉบับจริง " + (o.originalSets || "-") + " ชุด / สำเนาคู่ฉบับ " + (o.copySets != null ? o.copySets : "-") + " ชุด");
+        ECMIS103.renderAttachments("f_originalScans", o.scanNames);
+        ECMIS103.setText("f_adminCollectedBy", o.collectedBy || ECMIS103.signerLabel("admin_legal"));
+        const adminSig = (c.l3Signatures || {})["L3-30"];
+        ECMIS103.setText("f_adminSignedAt", (adminSig && adminSig.signedAt) || o.collectedDate);
+        ECMIS103.setText("f_originalNotes", o.notes);
+        const adminImg = document.getElementById("f_adminSigImg");
+        if (adminSig && adminSig.image) {
+          adminImg.src = adminSig.image;
+          adminImg.classList.remove("d-none");
         }
+        const chairCs = c.l3AnswerChairmanSigning || {};
+        const chairSig = (c.l3Signatures || {})["L3-29"];
+        ECMIS103.setText("f_chairmanSignedBy", chairCs.signedBy || ECMIS103.signerLabel("chairman"));
+        ECMIS103.setText("f_chairmanSignedAt", (chairSig && chairSig.signedAt) || chairCs.signedAt);
+        ECMIS103.setText("f_chairmanNotes", chairCs.notes);
+        const chairImg = document.getElementById("f_chairmanSigImg");
+        if (chairSig && chairSig.image) {
+          chairImg.src = chairSig.image;
+          chairImg.classList.remove("d-none");
+        }
+        renderPackage();
+        ECMIS103.setText("f_externalDocNo", c.l3AnswerExternalDocNo);
+        ECMIS103.setText("f_externalDocDate", c.l3AnswerExternalDocDate);
+        ECMIS103.setText("f_urgencyBadge", c.l3AnswerUrgency || "-");
+        ECMIS103.setText("f_registryNotes", c.l3AnswerRegistryNotes);
+        const regSig = (c.l3Signatures || {})["L3-28"];
+        ECMIS103.setText("f_registrySignedBy", ECMIS103.signerLabel("registry"));
+        ECMIS103.setText("f_registrySignedAt", regSig && regSig.signedAt);
+        const regImg = document.getElementById("f_registrySigImg");
+        if (regSig && regSig.image) {
+          regImg.src = regSig.image;
+          regImg.classList.remove("d-none");
+        }
+        const cs = c.l3CoverLetterSigning || {};
+        const coverSig = (c.l3Signatures || {})[cs.signerRole === "deputy_sg" ? "L3-27B" : "L3-27A"];
+        ECMIS103.setText("f_coverSignedBy", cs.signedBy || c.l3CoverLetterSignerName);
+        ECMIS103.setText("f_coverSignedAt", (coverSig && coverSig.signedAt) || cs.signedAt);
+        ECMIS103.setText("f_coverOpinion", cs.opinion);
+        const coverImg = document.getElementById("f_coverSigImg");
+        if (coverSig && coverSig.image) {
+          coverImg.src = coverSig.image;
+          coverImg.classList.remove("d-none");
+        }
+
+        const sigs = c.l3Signatures || {};
+        const reviewText = (r, code) =>
+          r
+            ? [
+                (r.checkedAnswer ? "✔" : "✘") + " ร่างคำให้การ  " + (r.checkedLetter ? "✔" : "✘") + " หนังสือนำส่ง",
+                "ความเห็น: " + (r.notes || "-"),
+                "ลงนาม: " + (r.reviewedBy || "-") + " เมื่อ " + ((sigs[code] && sigs[code].signedAt) || r.reviewedAt || "-"),
+              ].join("\n")
+            : "-";
+        ECMIS103.setText("f_groupReview", reviewText(c.l3AnswerGroupReview, "L3-24"));
+        ECMIS103.setText("f_directorReview", reviewText(c.l3AnswerDirectorReview, "L3-25"));
 
         ECMIS103.initDocZoom("answerPreview", 0.55);
         ECMIS103.initDocZoom("letterPreview", 0.55);
@@ -867,7 +1277,20 @@
           section("ผู้ถูกฟ้องคดีขอให้การดังต่อไปนี้", docs.answerHTML) +
           section("คำขอท้ายคำให้การ", esc(docs.prayer)) +
           (docs.evidenceNames && docs.evidenceNames.length ? row("พยานหลักฐานที่แนบ", esc(docs.evidenceNames.join(", "))) : "") +
-          signBlock("ประธานกรรมการ ป.ป.ท.", "ผู้ถูกฟ้องคดี (ลงนามในขั้นตอนที่ 29)");
+          (function () {
+            const sig = (c.l3Signatures || {})["L3-29"];
+            const who = ECMIS103.signerLabel("chairman");
+            if (sig && sig.image) {
+              return (
+                '<div class="l3-doc-signblock"><div style="text-align: center">' +
+                '<img src="' + sig.image + '" alt="ลายมือชื่อ" style="max-height: 50px" />' +
+                '<div style="font-size: 0.88em">(ลงชื่อ) ' + esc(who) + "</div>" +
+                '<div style="font-size: 0.75em; color: #64748b">ผู้ถูกฟ้องคดี — ลงนามแล้ว ' + esc(sig.signedAt) + "</div>" +
+                "</div></div>"
+              );
+            }
+            return signBlock(esc(who), "ผู้แทนผู้ถูกฟ้องคดี");
+          })();
 
         const enclosures = (docs.letterEnclosures || "")
           .split("\n")
@@ -877,12 +1300,21 @@
           .join("<br/>");
         document.getElementById("letterPreview").innerHTML =
           '<div style="text-align:right; font-size:0.85em; margin-bottom:8px;">สำนักงาน ป.ป.ท.</div>' +
-          row("ที่", "ปป ........ / ........ (ออกเลขในขั้นตอนที่ 28)") +
+          (c.l3AnswerUrgency ? '<div style="color:#dc2626; font-weight:700; font-size:1.05em; margin-bottom:6px;">' + esc(c.l3AnswerUrgency) + "</div>" : "") +
+          row("ที่", esc(c.l3AnswerExternalDocNo || "-") + (c.l3AnswerExternalDocDate ? " ลงวันที่ " + esc(c.l3AnswerExternalDocDate) : "")) +
           row("เรื่อง", esc(docs.letterSubject)) +
           row("เรียน", esc(docs.letterTo)) +
           (enclosures ? row("สิ่งที่ส่งมาด้วย", enclosures) : "") +
           section("", docs.letterHTML) +
-          signBlock("เลขาธิการคณะกรรมการ ป.ป.ท. หรือผู้ปฏิบัติราชการแทน", "ลงนามในขั้นตอนที่ 27") +
+          signBlock(
+            (function () {
+              const role = typeof selectedSigner === "function" ? selectedSigner() : null;
+              if (role === "secgen") return ECMIS103.signerLabel("secgen");
+              if (role === "deputy_sg") return ECMIS103.signerLabel("deputy_sg") + "<br/>ปฏิบัติราชการแทนเลขาธิการคณะกรรมการ ป.ป.ท.";
+              return "เลขาธิการคณะกรรมการ ป.ป.ท. หรือผู้ปฏิบัติราชการแทน";
+            })(),
+            "ลงนามแล้ว " + esc(((c.l3CoverLetterSigning || {}).signedAt) || ""),
+          ) +
           '<div style="font-size:0.75em; color:#64748b; margin-top:10px;">กองกฎหมาย สำนักงาน ป.ป.ท. — ผู้จัดทำ ' + esc(c.officer || "-") + "</div>";
       }
 
@@ -892,37 +1324,45 @@
 
       function submitForm() {
         if (!currentCase) return;
-        const checkedAnswer = document.getElementById("in_checkedAnswer").checked;
-        const checkedLetter = document.getElementById("in_checkedLetter").checked;
-        if (!checkedAnswer) {
-          switchDocTab("answer");
-          return warn("กรุณายืนยันการตรวจสอบคำให้การ", "กรุณาตรวจสอบร่างคำให้การแก้คำฟ้อง แล้วติ๊กยืนยัน");
-        }
-        if (!checkedLetter) {
-          switchDocTab("letter");
-          return warn("กรุณายืนยันการตรวจสอบหนังสือนำส่ง", "กรุณาตรวจสอบร่างหนังสือนำส่ง แล้วติ๊กยืนยัน");
-        }
-        const notes = document.getElementById("in_reviewNotes").value.trim() || "-";
-        const forwardTo = ECMIS103.signerLabel("admin_legal");
-        const docs = currentCase.l3AnswerDocs || {};
+        const method = document.getElementById("in_postMethod").value;
+        const trackingEl = document.getElementById("in_trackingNo");
+        const trackingNo = trackingEl.value.trim().toUpperCase();
+        trackingEl.value = trackingNo;
+        if (!trackingNo) return warn("กรุณากรอกเลขพัสดุ", "กรุณากรอกเลขพัสดุหรือเลขที่ลงทะเบียนจากใบรับฝาก");
+        if (!TRACKING_PATTERN.test(trackingNo))
+          return warn("รูปแบบเลขพัสดุไม่ถูกต้อง", "เลขพัสดุต้องมี 13 หลัก รูปแบบ ตัวอักษร 2 ตัว + ตัวเลข 9 หลัก + ตัวอักษร 2 ตัว เช่น EX123456789TH");
+        const postDate = document.getElementById("in_postDate").value;
+        if (!postDate) return warn("กรุณาระบุวันที่ฝากส่ง", "กรุณาเลือกวันที่ฝากส่งไปรษณีย์");
+        if (postDate > Activity103.toISODate(new Date())) return warn("วันที่ฝากส่งไม่ถูกต้อง", "วันที่ฝากส่งต้องไม่เป็นวันในอนาคต");
+        const address = document.getElementById("in_postAddress").value.trim();
+        if (!address) return warn("กรุณาระบุที่อยู่ปลายทาง", "กรุณากรอกที่อยู่สำนักงานคดีปกครองปลายทาง");
+        if (!receiptFiles.length) return warn("กรุณาแนบใบรับฝาก", "กรุณาแนบใบรับฝากหรือใบเสร็จไปรษณีย์อย่างน้อย 1 ไฟล์");
+        const feeRaw = document.getElementById("in_postFee").value;
+        const fee = feeRaw === "" ? null : Number(feeRaw);
+        if (fee != null && !(fee >= 0)) return warn("ค่าบริการไม่ถูกต้อง", "ค่าบริการต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป");
+        const postOffice = document.getElementById("in_postOffice").value.trim();
+        const notes = document.getElementById("in_postNotes").value.trim() || "-";
+        const receiptNames = receiptFiles.map((f) => f.name);
+        const postedBy = currentCase.officer || ECMIS103.signerLabel("case_legal_officer");
+        const destination = (currentCase.l3AnswerDocs || {}).letterTo || "-";
         const dueText = document.getElementById("f_currentDue").textContent + " (" + document.getElementById("f_daysLeft").textContent + ")";
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันผลการตรวจสอบร่างคำให้การแก้คำฟ้อง?",
+          title: "ยืนยันการบันทึกการจัดส่ง?",
           html: `
  <div class="emd-summary">
  <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
+ <p><strong>วิธีจัดส่ง:</strong> ${esc(method)} เลขพัสดุ ${esc(trackingNo)}</p>
+ <p><strong>วันที่ฝากส่ง:</strong> ${esc(formatISODate(postDate))}${postOffice ? " ณ " + esc(postOffice) : ""}</p>
+ <p><strong>ผู้รับปลายทาง:</strong> ${esc(destination)}</p>
+ <p><strong>หนังสือนำส่ง:</strong> ${esc(currentCase.l3AnswerExternalDocNo || "-")} (${esc(currentCase.l3AnswerUrgency || "-")})</p>
  <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
- <p><strong>ตรวจสอบแล้ว:</strong> ร่างคำให้การแก้คำฟ้อง, ร่างหนังสือนำส่ง เรื่อง ${esc(docs.letterSubject || "-")}</p>
- <p><strong>ความเห็น ผอ.กลุ่มงานคดี:</strong> ${esc((currentCase.l3AnswerGroupReview || {}).notes || "-")}</p>
- <p><strong>ความเห็น ผอ.กองกฎหมาย:</strong> ${esc(notes)}</p>
- <p><strong>ส่งต่อให้:</strong> ${esc(forwardTo)}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ</p>
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: "ยืนยันตรวจสอบและส่งต่อ",
+          confirmButtonText: "ยืนยันบันทึกการจัดส่ง",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#16a34a",
           cancelButtonColor: "#64748b",
@@ -930,27 +1370,32 @@
           if (!res.isConfirmed) return;
           ECMIS103.openSignatureModal(
             {
-              title: "ลงนามตรวจสอบร่างคำให้การแก้คำฟ้อง (ผอ.กองกฎหมาย)",
-              signer: ECMIS103.signerLabel("dir_legal"),
-              certId: "PACC-DIRLEGAL-2569-103",
+              title: "ลงนามบันทึกการจัดส่งเอกสารถึงอัยการ",
+              signer: ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-LAWYER-2569-103",
             },
             (image) => {
               Activity103.sign(currentCase.id, STEP_CODE, image);
               Activity103.advance(currentCase.id, STEP_CODE, {
-                l3AnswerDirectorReview: {
-                  checkedAnswer: true,
-                  checkedLetter: true,
+                l3AnswerPosting: {
+                  method: method,
+                  trackingNo: trackingNo,
+                  postDate: postDate,
+                  postOffice: postOffice,
+                  address: address,
+                  fee: fee,
+                  receiptNames: receiptNames,
+                  destination: destination,
                   notes: notes,
-                  reviewedBy: ECMIS103.signerLabel("dir_legal"),
-                  reviewedAt: ECMIS103.formatThaiDateTime(new Date()),
+                  postedBy: postedBy,
                 },
-                assignedRole: "admin_legal",
+                assignedRole: "case_legal_officer",
               });
 
               Swal.fire({
                 icon: "success",
-                title: "ตรวจสอบร่างคำให้การสำเร็จ!",
-                text: "ส่งร่างคำให้การและหนังสือนำส่งให้ " + forwardTo + " ออกเลขหนังสือส่งภายในเรียบร้อยแล้ว",
+                title: "บันทึกการจัดส่งสำเร็จ!",
+                text: "จัดส่ง " + method + " เลขพัสดุ " + trackingNo + " ถึง " + destination + " เรียบร้อยแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);

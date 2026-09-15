@@ -232,6 +232,98 @@
       label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายในและเสนอผู้ลงนาม",
       stepName: "ธุรการ ออกเลขส่งภายใน",
     },
+    {
+      code: "L3-27A",
+      seq: 9,
+      page: "10-3-18-secgen-sign-cover-letter.html",
+      role: "secgen",
+      roleTitle: "เลขาธิการ คณะกรรมการ ป.ป.ท.",
+      entryStatus: "L3_PENDING_SECGEN_COVER_SIGN",
+      altGroup: "cover-sign",
+      status: "สารบรรณกลางออกเลขหนังสือส่งออก",
+      statusCode: "L3_PENDING_REGISTRY_ANSWER_EXTERNAL_NO",
+      label: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      stepName: "เลขาธิการ ลงนามหนังสือนำส่ง",
+    },
+    {
+      code: "L3-27B",
+      seq: 9,
+      page: "10-3-19-deputy-sg-sign-cover-letter.html",
+      role: "deputy_sg",
+      roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
+      entryStatus: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
+      altGroup: "cover-sign",
+      status: "สารบรรณกลางออกเลขหนังสือส่งออก",
+      statusCode: "L3_PENDING_REGISTRY_ANSWER_EXTERNAL_NO",
+      label: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน) ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      stepName: "รองเลขาธิการ ลงนามหนังสือนำส่ง",
+    },
+    {
+      code: "L3-28",
+      seq: 10,
+      page: "10-3-20-registry-issue-external-no.html",
+      role: "registry",
+      roleTitle: "สารบรรณกลาง",
+      status: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การ",
+      statusCode: "L3_PENDING_CHAIRMAN_ANSWER_SIGN",
+      label: "สารบรรณกลาง ออกเลขหนังสือส่งออก",
+      stepName: "สารบรรณกลาง ออกเลขส่งออก",
+    },
+    {
+      code: "L3-29",
+      seq: 11,
+      page: "10-3-21-chairman-sign-answer.html",
+      role: "chairman",
+      roleTitle: "ประธานกรรมการ ป.ป.ท.",
+      status: "ธุรการกองกฎหมายรวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วน",
+      statusCode: "L3_PENDING_ADMIN_COLLECT_ORIGINALS",
+      label: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การแก้คำฟ้อง",
+      stepName: "ประธานกรรมการ ลงนามคำให้การ",
+    },
+    {
+      code: "L3-30",
+      seq: 12,
+      page: "10-3-22-legal-admin-collect-originals.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรรวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
+      statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
+      label: "ธุรการกองกฎหมาย รวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วนแล้ว",
+      stepName: "ธุรการ รวบรวมฉบับจริง",
+    },
+    {
+      code: "L3-31",
+      seq: 13,
+      page: "10-3-23-lawyer-collect-documents.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "นิติกรจัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
+      statusCode: "L3_PENDING_LAWYER_POST_TO_PROSECUTOR",
+      label: "นิติกร กลุ่มงานคดี รวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
+      stepName: "นิติกร รวบรวมเอกสาร",
+    },
+    {
+      code: "L3-32",
+      seq: 14,
+      page: "10-3-24-lawyer-post-to-prosecutor.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "นิติกรติดตามสถานะการจัดส่งและใบตอบรับ",
+      statusCode: "L3_PENDING_LAWYER_TRACK_STATUS",
+      label: "นิติกรเจ้าของเรื่อง จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
+      stepName: "นิติกร ส่งไปรษณีย์ถึงอัยการ",
+    },
+    {
+      code: "L3-33",
+      seq: 15,
+      page: "10-3-25-lawyer-track-status.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา",
+      statusCode: "L3_AWAITING_JUDGMENT",
+      label: "นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ",
+      stepName: "นิติกร ติดตามสถานะ",
+    },
   ];
 
   const COVER_SIGNER_ROUTES = {
@@ -250,13 +342,6 @@
   };
 
   const PLANNED_ANSWER_STEPS = [
-    { flowNo: 27, stepName: "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง", label: "เลขาธิการ ป.ป.ท. หรือรองเลขาธิการ ปฏิบัติราชการแทน ตรวจคำให้การและลงนามหนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)" },
-    { flowNo: 28, stepName: "สารบรรณกลาง ออกเลขส่งออก", label: "สารบรรณกลาง ชั้น 14 ออกเลขหนังสือส่งออก" },
-    { flowNo: 29, stepName: "ประธานกรรมการ ลงนามคำให้การ", label: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การแก้คำฟ้อง" },
-    { flowNo: 30, stepName: "ธุรการ รวบรวมฉบับจริง", label: "ธุรการกองกฎหมาย รวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วนแล้ว" },
-    { flowNo: 31, stepName: "นิติกร รวบรวมเอกสาร", label: "นิติกร กลุ่มงานคดี รวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง" },
-    { flowNo: 32, stepName: "นิติกร ส่งไปรษณีย์ถึงอัยการ", label: "นิติกรเจ้าของเรื่อง จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง" },
-    { flowNo: 33, stepName: "นิติกร ติดตามสถานะ", label: "นิติกร ติดตามสถานะ (ต่อไปรอคำพิพากษา — กรณี 2)" },
   ];
 
   const ALL_STEPS = STEPS.concat(STAY_STEPS, ANSWER_STEPS);
@@ -285,12 +370,11 @@
     return acc;
   }, ROUTES);
 
-  ROUTES[STEPS[STEPS.length - 1].statusCode] = ANSWER_STEPS[0].page;
-  ANSWER_STEPS.reduce(function (acc, step, i) {
-    const next = ANSWER_STEPS[i + 1];
-    if (next) acc[step.statusCode] = next.page;
-    return acc;
-  }, ROUTES);
+  let answerPrevStatus = STEPS[STEPS.length - 1].statusCode;
+  ANSWER_STEPS.forEach(function (step) {
+    ROUTES[step.entryStatus || answerPrevStatus] = step.page;
+    answerPrevStatus = step.statusCode;
+  });
 
   function pendingStatusFor(page) {
     return (
@@ -855,36 +939,50 @@
         "</div>";
     el1.innerHTML = part1.join("") + boardNode;
 
-    let curIdx = ANSWER_STEPS.findIndex(function (s) { return s.code === currentCode; });
+    const chosenSigner = kase && kase.l3CoverLetterSignerRole;
+    const seenGroups = {};
+    const visibleSteps = ANSWER_STEPS.filter(function (s) {
+      if (!s.altGroup) return true;
+      if (chosenSigner) return s.role === chosenSigner;
+      if (seenGroups[s.altGroup]) return false;
+      seenGroups[s.altGroup] = true;
+      return true;
+    });
+    const currentStep = stepByCode(currentCode);
+    let curIdx = visibleSteps.findIndex(function (s) {
+      return s.code === currentCode || (currentStep && currentStep.altGroup && s.altGroup === currentStep.altGroup);
+    });
     if (currentCode == null && kase) {
       const next = stepByPage(ROUTES[kase.statusCode]);
-      const nextIdx = next ? ANSWER_STEPS.indexOf(next) : -1;
-      const lastIdx = ANSWER_STEPS.findIndex(function (s) { return s.code === kase.l3Step; });
+      const nextIdx = next ? visibleSteps.indexOf(next) : -1;
+      const lastIdx = visibleSteps.findIndex(function (s) { return s.code === kase.l3Step; });
       curIdx = nextIdx > -1 ? nextIdx : lastIdx > -1 ? lastIdx + 1 : -1;
     }
-    const builtNodes = ANSWER_STEPS.map(function (step, i) {
+    const builtNodes = visibleSteps.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       const sig = sigs[step.code];
       const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
+      const name = step.altGroup && !chosenSigner ? "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง" : step.stepName;
       return (
         '<div class="step-item ' + cls + '" title="' + tip + '">' +
         '<div class="step-circle">' + inner + "</div>" +
-        '<div class="step-label">' + step.stepName + "</div>" +
+        '<div class="step-label">' + name + "</div>" +
         "</div>"
       );
     });
     const plannedNodes = PLANNED_ANSWER_STEPS.map(function (step, i) {
-      const waiting = curIdx === ANSWER_STEPS.length && i === 0 ? " is-waiting" : "";
+      const waiting = curIdx === visibleSteps.length && i === 0 ? " is-waiting" : "";
       return (
         '<div class="step-item planned' + waiting + '" title="' + step.label + ' (ยังไม่มีหน้าในระบบ)">' +
-        '<div class="step-circle">' + (ANSWER_STEPS.length + i + 1) + "</div>" +
+        '<div class="step-circle">' + (visibleSteps.length + i + 1) + "</div>" +
         '<div class="step-label">' + step.stepName + "</div>" +
         "</div>"
       );
     });
+    const reachedEnd = curIdx >= visibleSteps.length;
     const endNode =
-      '<div class="step-item planned" title="ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา (กรณี 2)">' +
+      '<div class="step-item planned' + (reachedEnd ? " is-waiting" : "") + '" title="ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา (กรณี 2)">' +
       '<div class="step-circle"><i class="fa-solid fa-flag-checkered"></i></div>' +
       '<div class="step-label">รอคำพิพากษา (กรณี 2)</div>' +
       "</div>";
