@@ -865,11 +865,11 @@
     <script src="assets/ecmis-shell.js"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20260907_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20260915_2"></script>
     <script src="assets/ecmis-activity10.js?v=20260907_4"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_5"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_19"></script>
     <script>
       const PAGE_SIZE = 10;
       let currentPage = 1;
@@ -1669,6 +1669,8 @@
               c.assignedRole === "dir_legal" ||
               c.statusCode === "COMPLETED" ||
               c.statusCode === "COMPLETED_OAG_RESOLVED" ||
+              (typeof Activity103 !== "undefined" &&
+                Activity103.isCourtCase(c)) ||
               (c.status &&
                 (c.status.includes("ผอ.กองกฎหมาย") ||
                   c.status.includes("ผอ.กอง") ||
@@ -2337,6 +2339,65 @@
         return ` <span class="badge" style="background:${color}1a; color:${color}; border:1px solid ${color}66; font-weight:600;" title="สถานะคดี">${label}</span>`;
       }
 
+      /* แบดจ์ "ผอ.กองกฎหมายมีความเห็นแล้ว" คู่กับสถานะ — ขึ้นกับเคสคำพิพากษา
+         (กิจกรรมที่ 10.3, Activity103) ทุกเคสที่ ผอ.กองกฎหมายกำหนดแนวทางแล้ว
+         (มี l3ProposedBranch จาก LAW0128) ไม่ผูกกับสถานะปัจจุบัน — ให้คงอยู่ต่อ
+         แม้เคสจะเดินเข้า Part 7/8 ไปแล้ว (ไม่ใช่แค่ตอนอยู่ที่สถานะเปลี่ยนผ่าน
+         3 ทางหลัง LAW0128 เหมือนเดิม) ใช้ VERDICT_BRANCHES.label ที่มีอยู่แล้ว */
+      function verdictBranchBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isVerdictCase(kase)) return "";
+        const branch = Activity103.VERDICT_BRANCHES[kase.l3ProposedBranch];
+        if (!branch) return "";
+        let html = ` <span class="badge" style="background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; font-weight:600;" title="ผอ.กองกฎหมายกำหนดแนวทางแล้ว">ผอ.กองกฎหมายมีความเห็นแล้ว</span>`;
+        if (branch.resultLabel) {
+          const isWin = branch.resultLabel === "ชนะคดี";
+          const bg = isWin ? "#dcfce7" : "#fee2e2";
+          const fg = isWin ? "#15803d" : "#b91c1c";
+          const border = isWin ? "#86efac" : "#fca5a5";
+          html += ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;">${branch.resultLabel}</span>`;
+        }
+        if (branch.appealNote) {
+          html += ` <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-weight:600;">${branch.appealNote}</span>`;
+        }
+        return html;
+      }
+
+      /* แบดจ์ความเห็นที่นิติกรเสนอ (เห็นควรอุทธรณ์/เห็นควรไม่อุทธรณ์ — LAW0145
+         ที่ 10-3v-19) คู่กับสถานะ — ให้ผู้ดูอินบ็อกซ์เห็นว่ากำลังรอ
+         ผอ.กลุ่มงานคดียืนยันไปทางไหนโดยไม่ต้องเปิดเคสเข้าไปดู ใช้
+         APPEAL_CONSIDER_BRANCHES.label ที่มีอยู่แล้ว ไม่ผูกกับสถานะปัจจุบัน
+         (คงอยู่ต่อแม้เคสจะยืนยันแล้วและเดินเข้า Part 9/10a ไปแล้ว) */
+      function appealConsiderProposalBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isVerdictCase(kase)) return "";
+        if (!Activity103.APPEAL_CONSIDER_BRANCHES) return "";
+        const branch = Activity103.APPEAL_CONSIDER_BRANCHES[kase.l8ProposedBranch];
+        if (!branch) return "";
+        const isAppeal = kase.l8ProposedBranch === "APPEAL";
+        const bg = isAppeal ? "#dcfce7" : "#fee2e2";
+        const fg = isAppeal ? "#15803d" : "#b91c1c";
+        const border = isAppeal ? "#86efac" : "#fca5a5";
+        return ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;" title="ความเห็นที่นิติกรเสนอ">${branch.label}</span>`;
+      }
+
+      /* แบดจ์ชื่อขั้นตอนปัจจุบันของสายจัดทำคำอุทธรณ์ (Part 10a, เห็นควรอุทธรณ์
+         หลัง Part 8) — ให้ผู้ดูสามารถติดตามความคืบหน้าบนสายนี้ได้จากอินบ็อกซ์
+         เดียวกันโดยไม่ต้องเปิดเคสเข้าไปดู ใช้ stepName สั้นๆ ของ
+         APPEAL_DRAFT_STEPS ที่ statusCode ตรงกับสถานะปัจจุบันของเคส */
+      function appealDraftStepBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.APPEAL_DRAFT_STEPS) return "";
+        const step = Activity103.APPEAL_DRAFT_STEPS.find(
+          (s) => s.statusCode === kase.statusCode,
+        );
+        if (!step) return "";
+        return ` <span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:600;" title="อยู่ในสายจัดทำคำอุทธรณ์ (กิจกรรมที่ 10)">${step.stepName}</span>`;
+      }
+
       /* สีของป้ายอายุความ/SLA แทนสัญลักษณ์อีโมจิเดิม (แดง/เหลือง/เขียว)
          อิงจาก slaDays ตามเกณฑ์เดียวกับ calculateDaysRemaining ด้านบน */
       function slaColor(item) {
@@ -2663,7 +2724,7 @@
  <td><span class="badge" style="background:#f1f5f9; color:#475569;">${item.level}</span></td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,

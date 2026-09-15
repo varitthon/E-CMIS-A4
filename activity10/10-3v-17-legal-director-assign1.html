@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ผอ.กองกฎหมาย มอบหมาย (คำแก้อุทธรณ์) | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>ผอ.กองกฎหมาย มอบหมาย ผอ.กลุ่มงานคดี (พิจารณาอุทธรณ์) | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -281,7 +281,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ผอ.กองกฎหมาย มอบหมาย (คำแก้อุทธรณ์)</span
+              >ผอ.กองกฎหมาย มอบหมาย ผอ.กลุ่มงานคดี (พิจารณาอุทธรณ์)</span
             >
           </div>
         </div>
@@ -363,8 +363,8 @@
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
             รอ ธุรการกองกฎหมายรับหนังสือที่หน้า
-            <a href="10-3v-08-legal-admin-appeal-intake.html"
-              >ธุรการ รับหนังสือแจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์</a
+            <a href="10-3v-16-legal-admin-appeal-consider-intake.html"
+              >ธุรการ รับหนังสือแจ้งผลคำพิพากษา (พิจารณาอุทธรณ์)</a
             >
             ก่อน
           </div>
@@ -426,7 +426,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-inbox text-primary me-2"></i
-                >ข้อมูลรับหนังสือแจ้งคำสั่งศาล (ธุรการ)</span
+                >ข้อมูลรับหนังสือแจ้งผลคำพิพากษา (ธุรการ)</span
               >
             </div>
             <div class="form-card-body">
@@ -445,11 +445,11 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>วันที่แจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์</label>
+                <label>วันที่หนังสือแจ้งผลคำพิพากษา</label>
                 <div class="read-box" id="f_noticeDate">-</div>
               </div>
               <div class="form-group">
-                <label>เอกสารแนบ (สำเนาคำอุทธรณ์/หนังสือแจ้งคำสั่งศาล)</label>
+                <label>เอกสารแนบ</label>
                 <div id="f_noticeAttachments"></div>
               </div>
             </div>
@@ -462,7 +462,7 @@
             >
               <span
                 ><i class="fa-solid fa-user-gear text-primary me-2"></i
-                >แจกจ่าย/มอบหมายงาน</span
+                >มอบหมาย ผอ.กลุ่มงานคดี (ลงทะเบียนคดี)</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองกฎหมาย</span
@@ -532,10 +532,11 @@
     <script src="assets/ecmis-10-3.js?v=20260915_19"></script>
 
     <script>
-      /* LAW0135 — ผอ.กองกฎหมาย แจกจ่าย/มอบหมาย (Part 7, คำแก้อุทธรณ์)
-         เคสมาจาก 10-3v-08 ที่สถานะ L7_PENDING_DIRECTOR_ASSIGN
-         ดู docs/10.3 mockup/implementation-plan-part7.md */
-      const STEP_CODE = "LAW0135";
+      /* (เพิ่ม) — ผอ.กองกฎหมาย มอบหมาย ผอ.กลุ่มงานคดี รอบที่ 1 (ลงทะเบียนคดี)
+         Part 8, เคสมาจาก 10-3v-16 ที่สถานะ L8_PENDING_DIRECTOR_ASSIGN1
+         ดู docs/10.3 mockup/implementation-plan-part8.md — เก็บ assign loop
+         2 รอบตามผัง AS-IS ตรงๆ (รอบนี้คือรอบที่ 1 สำหรับงานลงทะเบียน) */
+      const STEP_CODE = "L8ASSIGN1";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
 
@@ -549,17 +550,17 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity103.APPEAL_STEPS.findIndex(
+        const idx = Activity103.APPEAL_CONSIDER_STEPS.findIndex(
           (s) => s.code === STEP_CODE,
         );
-        const prev = Activity103.APPEAL_STEPS[idx - 1];
+        const prev = Activity103.APPEAL_CONSIDER_STEPS[idx - 1];
         const found = Activity103.getCase(id, prev ? prev.statusCode : null);
         /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
-           คำพิพากษาที่อยู่สถานะ L7_PENDING_DIRECTOR_ASSIGN เท่านั้น */
+           คำพิพากษาที่อยู่สถานะ L8_PENDING_DIRECTOR_ASSIGN1 เท่านั้น */
         currentCase =
           found &&
           Activity103.isVerdictCase(found) &&
-          found.statusCode === "L7_PENDING_DIRECTOR_ASSIGN"
+          found.statusCode === "L8_PENDING_DIRECTOR_ASSIGN1"
             ? found
             : null;
 
@@ -593,10 +594,10 @@
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         ECMIS103.setText("f_verdictResult", c.l3VerdictResult);
 
-        ECMIS103.setText("f_centralSarabanNo", c.l7CentralSarabanNo);
-        ECMIS103.setText("f_lawReceiveNo", c.l7LawReceiveNo);
-        ECMIS103.setText("f_noticeDate", thaiDateFromIso(c.l7NoticeDate));
-        ECMIS103.renderAttachments("f_noticeAttachments", c.l7NoticeAttachments);
+        ECMIS103.setText("f_centralSarabanNo", c.l8CentralSarabanNo);
+        ECMIS103.setText("f_lawReceiveNo", c.l8LawReceiveNo);
+        ECMIS103.setText("f_noticeDate", thaiDateFromIso(c.l8NoticeDate));
+        ECMIS103.renderAttachments("f_noticeAttachments", c.l8NoticeAttachments);
 
         document.getElementById("in_orderDate").value = todayISO();
       }
@@ -621,15 +622,15 @@
           {
             title: "ลงนามคำสั่งการและมอบหมายงาน",
             signer: ECMIS103.signerLabel("dir_legal"),
-            certId: "PACC-DIRLEGAL-2569-107",
+            certId: "PACC-DIRLEGAL-2569-108",
           },
           (image) => {
             Activity103.sign(currentCase.id, STEP_CODE, image);
             Activity103.advance(currentCase.id, STEP_CODE, {
-              l7DirectorOrderNotes: notes,
-              l7DirectorOrderDate:
+              l8DirectorOrderNotes: notes,
+              l8DirectorOrderDate:
                 document.getElementById("in_orderDate").value,
-              l7DirectorAssignTarget: targetName,
+              l8DirectorAssignTarget: targetName,
               assignedRole: "case_group_director",
               officer: targetName,
             });
