@@ -143,6 +143,196 @@
     },
   ];
 
+  const ANSWER_STEPS = [
+    {
+      code: "L3-19",
+      seq: 1,
+      page: "10-3-10-legal-admin-resolution-notice.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณาและมอบหมายงาน",
+      statusCode: "L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN",
+      label: "ธุรการกองกฎหมาย รับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.",
+      stepName: "ธุรการ รับเรื่อง/แจ้งผลมติ",
+    },
+    {
+      code: "L3-20",
+      seq: 2,
+      page: "10-3-11-legal-director-assign-resolution.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานคดีพิจารณาเห็นชอบ",
+      statusCode: "L3_PENDING_GROUP_RESOLUTION_APPROVE",
+      label: "ผอ.กองกฎหมาย พิจารณาผลมติและมอบหมายงาน",
+      stepName: "ผอ.กองกฎหมาย มอบหมายงาน",
+    },
+    {
+      code: "L3-21",
+      seq: 3,
+      page: "10-3-12-group-director-approve-resolution.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรยื่นคำขอขยายเวลาต่อศาล",
+      statusCode: "L3_PENDING_LAWYER_EXTENSION",
+      label: "ผอ.กลุ่มงานคดี พิจารณาและเห็นชอบผลมติ/ข้อสั่งการ",
+      stepName: "ผอ.กลุ่มงานคดี เห็นชอบ",
+    },
+    {
+      code: "L3-22",
+      seq: 4,
+      page: "10-3-13-lawyer-request-extension.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานคดีตรวจสอบร่างคำให้การ",
+      statusCode: "L3_PENDING_GROUP_ANSWER_REVIEW",
+      label: "นิติกร ยื่นคำขอขยายเวลาต่อศาลและร่างคำให้การแก้คำฟ้อง",
+      stepName: "นิติกร ขอขยายเวลา/ร่างคำให้การ",
+    },
+    {
+      code: "L3-24",
+      seq: 5,
+      page: "10-3-15-group-director-review-answer.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายตรวจสอบร่างคำให้การ",
+      statusCode: "L3_PENDING_DIRECTOR_ANSWER_REVIEW",
+      label: "ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ",
+      stepName: "ผอ.กลุ่มงานคดี ตรวจร่าง",
+    },
+    {
+      code: "L3-25",
+      seq: 6,
+      page: "10-3-16-legal-director-review-answer.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการออกเลขหนังสือส่งภายใน",
+      statusCode: "L3_PENDING_ADMIN_ANSWER_INTERNAL_NO",
+      label: "ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การแก้คำฟ้อง",
+      stepName: "ผอ.กองกฎหมาย ตรวจร่าง",
+    },
+    {
+      code: "L3-26",
+      seq: 7,
+      page: "10-3-17-legal-admin-internal-dispatch-answer.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
+      label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายในและเสนอผู้ลงนาม",
+      stepName: "ธุรการ ออกเลขส่งภายใน",
+    },
+    {
+      code: "L3-27A",
+      seq: 8,
+      page: "10-3-18-secgen-sign-cover-letter.html",
+      role: "secgen",
+      roleTitle: "เลขาธิการ คณะกรรมการ ป.ป.ท.",
+      entryStatus: "L3_PENDING_SECGEN_COVER_SIGN",
+      altGroup: "cover-sign",
+      status: "สารบรรณกลางออกเลขหนังสือส่งออก",
+      statusCode: "L3_PENDING_REGISTRY_ANSWER_EXTERNAL_NO",
+      label: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      stepName: "เลขาธิการ ลงนามหนังสือนำส่ง",
+    },
+    {
+      code: "L3-27B",
+      seq: 8,
+      page: "10-3-19-deputy-sg-sign-cover-letter.html",
+      role: "deputy_sg",
+      roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
+      entryStatus: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
+      altGroup: "cover-sign",
+      status: "สารบรรณกลางออกเลขหนังสือส่งออก",
+      statusCode: "L3_PENDING_REGISTRY_ANSWER_EXTERNAL_NO",
+      label: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน) ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      stepName: "รองเลขาธิการ ลงนามหนังสือนำส่ง",
+    },
+    {
+      code: "L3-28",
+      seq: 9,
+      page: "10-3-20-registry-issue-external-no.html",
+      role: "registry",
+      roleTitle: "สารบรรณกลาง",
+      status: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การ",
+      statusCode: "L3_PENDING_CHAIRMAN_ANSWER_SIGN",
+      label: "สารบรรณกลาง ออกเลขหนังสือส่งออก",
+      stepName: "สารบรรณกลาง ออกเลขส่งออก",
+    },
+    {
+      code: "L3-29",
+      seq: 10,
+      page: "10-3-21-chairman-sign-answer.html",
+      role: "chairman",
+      roleTitle: "ประธานกรรมการ ป.ป.ท.",
+      status: "ธุรการกองกฎหมายรวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วน",
+      statusCode: "L3_PENDING_ADMIN_COLLECT_ORIGINALS",
+      label: "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การแก้คำฟ้อง",
+      stepName: "ประธานกรรมการ ลงนามคำให้การ",
+    },
+    {
+      code: "L3-30",
+      seq: 11,
+      page: "10-3-22-legal-admin-collect-originals.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรรวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
+      statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
+      label: "ธุรการกองกฎหมาย รวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วนแล้ว",
+      stepName: "ธุรการ รวบรวมฉบับจริง",
+    },
+    {
+      code: "L3-31",
+      seq: 12,
+      page: "10-3-23-lawyer-collect-documents.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "นิติกรจัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
+      statusCode: "L3_PENDING_LAWYER_POST_TO_PROSECUTOR",
+      label: "นิติกร กลุ่มงานคดี รวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
+      stepName: "นิติกร รวบรวมเอกสาร",
+    },
+    {
+      code: "L3-32",
+      seq: 13,
+      page: "10-3-24-lawyer-post-to-prosecutor.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "นิติกรติดตามสถานะการจัดส่งและใบตอบรับ",
+      statusCode: "L3_PENDING_LAWYER_TRACK_STATUS",
+      label: "นิติกรเจ้าของเรื่อง จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
+      stepName: "นิติกร ส่งไปรษณีย์ถึงอัยการ",
+    },
+    {
+      code: "L3-33",
+      seq: 14,
+      page: "10-3-25-lawyer-track-status.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา",
+      statusCode: "L3_AWAITING_JUDGMENT",
+      label: "นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ",
+      stepName: "นิติกร ติดตามสถานะ",
+    },
+  ];
+
+  const COVER_SIGNER_ROUTES = {
+    secgen: {
+      role: "secgen",
+      label: "เลขาธิการ ป.ป.ท.",
+      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
+    },
+    deputy_sg: {
+      role: "deputy_sg",
+      label: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทนเลขาธิการ)",
+      status: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน) ตรวจคำให้การและลงนามหนังสือนำส่ง",
+      statusCode: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
+    },
+  };
+
+  const PLANNED_ANSWER_STEPS = [
+  ];
+
   /* ---------------------------------------------------------- PART 5–6
      รับคำพิพากษาศาลปกครองชั้นต้น → วิเคราะห์ผล/กำหนดแนวทาง (LAW0119–LAW0128)
      เป็นเคสใหม่แยกจากเคสรับคำฟ้อง (l3CaseType = "verdict") เดินสถานะ L3V_* ของตัวเอง
@@ -364,7 +554,7 @@
     },
   ];
 
-  const ALL_STEPS = STEPS.concat(STAY_STEPS, VERDICT_STEPS, APPEAL_STEPS);
+  const ALL_STEPS = STEPS.concat(STAY_STEPS, ANSWER_STEPS, VERDICT_STEPS, APPEAL_STEPS);
 
   function stepByCode(code) {
     return ALL_STEPS.find(function (s) { return s.code === code; }) || null;
@@ -373,9 +563,7 @@
     return ALL_STEPS.find(function (s) { return s.page === page; }) || null;
   }
 
-  /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ
-     (ขั้นตอนสุดท้าย L3_READY_FOR_BOARD ไม่มี route ต่อ — เป็น black box
-     รอหน้าเสนอบอร์ดจริงที่ยังไม่ implement ตามแผน) */
+  /* สถานะที่ขั้นตอน i เขียนไว้ -> หน้าของขั้นตอนถัดไปที่ต้องดำเนินการ */
   const ROUTES = STEPS.reduce(function (acc, step, i) {
     const next = STEPS[i + 1];
     if (next) acc[step.statusCode] = next.page;
@@ -391,6 +579,20 @@
     if (next) acc[step.statusCode] = next.page;
     return acc;
   }, ROUTES);
+
+  let answerPrevStatus = STEPS[STEPS.length - 1].statusCode;
+  ANSWER_STEPS.forEach(function (step) {
+    ROUTES[step.entryStatus || answerPrevStatus] = step.page;
+    answerPrevStatus = step.statusCode;
+  });
+
+  function pendingStatusFor(page) {
+    return (
+      Object.keys(ROUTES).find(function (code) {
+        return ROUTES[code] === page;
+      }) || null
+    );
+  }
 
   /* หน้าที่สร้างแล้วจริง — สถานะที่ชี้ไปหน้าที่ยังไม่สร้างจะไม่มี route (inbox แสดงเป็น
      "ขั้นตอนถัดไปยังไม่ implement" แทนการพาไปหน้า 404) เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่
@@ -451,9 +653,9 @@
     ROUTES["L3V_TO_APPEAL_REPLY"] = "10-3v-08-legal-admin-appeal-intake.html";
   }
 
-  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 5–6 / 7) — ใช้กับแถบขั้นตอน */
+  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 3 / 5–6 / 7) — ใช้กับแถบขั้นตอน */
   function flowOf(code) {
-    return [STEPS, STAY_STEPS, VERDICT_STEPS, APPEAL_STEPS].find(function (
+    return [STEPS, STAY_STEPS, ANSWER_STEPS, VERDICT_STEPS, APPEAL_STEPS].find(function (
       flow,
     ) {
       return flow.some(function (s) { return s.code === code; });
@@ -468,6 +670,19 @@
     const dt = d instanceof Date ? d : new Date(d);
     return dt.getDate() + " " + TH_MONTHS[dt.getMonth()] + " " + (dt.getFullYear() + 543);
   }
+  function parseISODate(iso) {
+    const parts = String(iso || "").split("-");
+    if (parts.length !== 3) return null;
+    const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function toISODate(d) {
+    return (
+      d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0")
+    );
+  }
   function formatThaiDateTime(d) {
     const dt = d instanceof Date ? d : new Date(d);
     const hh = String(dt.getHours()).padStart(2, "0");
@@ -477,12 +692,68 @@
 
   const Activity103 = {
     STEPS: STEPS,
+    ANSWER_STEPS: ANSWER_STEPS,
+    COVER_SIGNER_ROUTES: COVER_SIGNER_ROUTES,
     VERDICT_STEPS: VERDICT_STEPS,
     APPEAL_STEPS: APPEAL_STEPS,
     VERDICT_BRANCHES: VERDICT_BRANCHES,
     ROUTES: ROUTES,
     stepByCode: stepByCode,
     stepByPage: stepByPage,
+    pendingStatusFor: pendingStatusFor,
+
+    isStepSigned: function (kase, stepCode) {
+      return !!(kase && kase.l3Signatures && kase.l3Signatures[stepCode]);
+    },
+
+    computeAnswerDeadline: function (kase, requests) {
+      const base = parseISODate(kase && kase.courtReceivedDate);
+      const baseDays = parseInt(kase && kase.courtDeadlineDays, 10);
+      if (!base || !baseDays) return null;
+      const list = requests || (kase && kase.l3ExtensionRequests) || [];
+      const grantedTotal = list.reduce(function (sum, r) {
+        return sum + (r && r.result === "GRANTED" ? parseInt(r.grantedDays, 10) || 0 : 0);
+      }, 0);
+      const originalDue = new Date(base);
+      originalDue.setDate(originalDue.getDate() + baseDays);
+      const currentDue = new Date(originalDue);
+      currentDue.setDate(currentDue.getDate() + grantedTotal);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return {
+        baseDate: base,
+        baseDays: baseDays,
+        originalDue: originalDue,
+        grantedTotal: grantedTotal,
+        currentDue: currentDue,
+        daysLeft: Math.round((currentDue - today) / 86400000),
+      };
+    },
+
+    toISODate: toISODate,
+
+    hasRoleSigned: function (kase, roleId) {
+      const src = (kase && kase.raw) || kase;
+      const sigs = (src && src.l3Signatures) || {};
+      return Object.keys(sigs).some(function (code) {
+        const step = stepByCode(code);
+        return !!(step && step.role === roleId);
+      });
+    },
+
+    viewPageFor: function (kase, roleId) {
+      const src = (kase && kase.raw) || kase;
+      if (!src) return null;
+      const sigs = src.l3Signatures || {};
+      if (roleId) {
+        const mine = ANSWER_STEPS.filter(function (s) {
+          return s.role === roleId && sigs[s.code];
+        });
+        if (mine.length) return mine[mine.length - 1].page;
+      }
+      const step = stepByCode(src.l3Step);
+      return step && ANSWER_STEPS.indexOf(step) > -1 ? step.page : null;
+    },
 
     /* คดีของกิจกรรม 10.3 (คดีศาลปกครอง) — เช็คจาก category ที่ 02-board-intake.html เขียนไว้ */
     isCourtCase: function (kase) {
@@ -923,6 +1194,107 @@
     }).join("");
   }
 
+  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
+    const el1 = document.getElementById(part1ContainerId);
+    const el2 = document.getElementById(part2ContainerId);
+    if (!el1 || !el2) return;
+    const sigs = (kase && kase.l3Signatures) || {};
+
+    const part1 = STEPS.map(function (step) {
+      const sig = sigs[step.code];
+      const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
+      return (
+        '<div class="step-item completed" title="' + tip + '">' +
+        '<div class="step-circle"><i class="fa-solid fa-check"></i></div>' +
+        '<div class="step-label">' + step.stepName + "</div>" +
+        "</div>"
+      );
+    });
+
+    const resolution = kase && (kase.l3BoardResolution || kase.l3IncomingBoardReport);
+    const boardNode = resolution
+      ? '<div class="step-item completed" title="คณะกรรมการ ป.ป.ท. ' + resolution.result + '">' +
+        '<div class="step-circle"><i class="fa-solid fa-gavel"></i></div>' +
+        '<div class="step-label">คณะกรรมการ ป.ป.ท. ' + resolution.result +
+        "<br/>ครั้งที่ " + resolution.meetingNo + " วาระ " + resolution.agendaNo + "</div>" +
+        "</div>"
+      : '<div class="step-item active" title="ขั้นตอนนอกระบบ">' +
+        '<div class="step-circle"><i class="fa-solid fa-hourglass-half"></i></div>' +
+        '<div class="step-label">รอคณะกรรมการ ป.ป.ท. มีมติ</div>' +
+        "</div>";
+    el1.innerHTML = part1.join("") + boardNode;
+
+    const chosenSigner = kase && kase.l3CoverLetterSignerRole;
+    const seenGroups = {};
+    const visibleSteps = ANSWER_STEPS.filter(function (s) {
+      if (!s.altGroup) return true;
+      if (chosenSigner) return s.role === chosenSigner;
+      if (seenGroups[s.altGroup]) return false;
+      seenGroups[s.altGroup] = true;
+      return true;
+    });
+    const currentStep = stepByCode(currentCode);
+    let curIdx = visibleSteps.findIndex(function (s) {
+      return s.code === currentCode || (currentStep && currentStep.altGroup && s.altGroup === currentStep.altGroup);
+    });
+    if (currentCode == null && kase) {
+      const next = stepByPage(ROUTES[kase.statusCode]);
+      const nextIdx = next ? visibleSteps.indexOf(next) : -1;
+      const lastIdx = visibleSteps.findIndex(function (s) { return s.code === kase.l3Step; });
+      curIdx = nextIdx > -1 ? nextIdx : lastIdx > -1 ? lastIdx + 1 : -1;
+    }
+    const builtNodes = visibleSteps.map(function (step, i) {
+      const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
+      const isLast = i === visibleSteps.length - 1 && !PLANNED_ANSWER_STEPS.length;
+      const inner = isLast ? '<i class="fa-solid fa-flag-checkered"></i>' : i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      const finalCls = isLast && i <= curIdx ? " step-final" : "";
+      const sig = sigs[step.code];
+      const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
+      const name = step.altGroup && !chosenSigner ? "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง" : step.stepName;
+      return (
+        '<div class="step-item ' + cls + finalCls + '" title="' + tip + '">' +
+        '<div class="step-circle">' + inner + "</div>" +
+        '<div class="step-label">' + name + "</div>" +
+        "</div>"
+      );
+    });
+    const plannedNodes = PLANNED_ANSWER_STEPS.map(function (step, i) {
+      const waiting = curIdx === visibleSteps.length && i === 0 ? " is-waiting" : "";
+      return (
+        '<div class="step-item planned' + waiting + '" title="' + step.label + '">' +
+        '<div class="step-circle">' + (visibleSteps.length + i + 1) + "</div>" +
+        '<div class="step-label">' + step.stepName + "</div>" +
+        "</div>"
+      );
+    });
+    el2.innerHTML = builtNodes.concat(plannedNodes).join("");
+  }
+
+  function applyViewMode(kase, stepCode) {
+    const step = stepByCode(stepCode);
+    const sig = ((kase && kase.l3Signatures) || {})[stepCode];
+    const notice = document.getElementById("viewModeNotice");
+    if (notice) notice.classList.remove("d-none");
+    setText("f_viewSigner", step ? signerLabel(step.role) : "-");
+    setText("f_viewSignedAt", sig && sig.signedAt);
+    setText("f_viewStatus", kase && kase.status);
+    const img = document.getElementById("f_viewSigImg");
+    if (img && sig && sig.image) {
+      img.src = sig.image;
+      img.classList.remove("d-none");
+    }
+    const card = document.getElementById("actionCard");
+    if (!card) return;
+    card.querySelectorAll("input, textarea, select").forEach(function (el) {
+      el.disabled = true;
+    });
+    card.querySelectorAll(".l3-upload-box, button").forEach(function (el) {
+      el.classList.add("d-none");
+    });
+    const back = card.querySelector(".form-actions a");
+    if (back) back.textContent = "กลับหน้ารายการ";
+  }
+
   /* เมนูข้างซ้าย — แสดงเฉพาะขั้นตอน 10-3-xx ที่บทบาทนั้นรับผิดชอบ (ไม่รวม
      02-board-intake.html เพราะเป็นหน้ารับเรื่องกลางที่ใช้ร่วมกับหมวดอื่น) */
   function renderSidebarMenu(containerId, activePage) {
@@ -1099,6 +1471,8 @@
     setHtml: setHtml,
     goInbox: goInbox,
     renderStepper: renderStepper,
+    renderStepperV2: renderStepperV2,
+    applyViewMode: applyViewMode,
     renderSidebarMenu: renderSidebarMenu,
     renderAttachments: renderAttachments,
     renderPartyList: renderPartyList,
