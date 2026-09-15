@@ -223,6 +223,21 @@
       label: "ผอ.กองกฎหมาย กำหนดแนวทางดำเนินการ (คำพิพากษา)",
       stepName: "ผอ.กองกฎหมาย กำหนดแนวทาง",
     },
+    {
+      /* ทางเข้าจาก Part 6c เท่านั้น (ชนะคดี ผู้ฟ้องคดีไม่ยื่นอุทธรณ์) — entry status
+         คือ L3V_TO_CLOSE ที่เขียนโดย VERDICT_BRANCHES.CLOSE ไม่ใช่ statusCode ของ
+         ขั้นก่อนหน้าใน array นี้ จึงต้องเพิ่ม ROUTES["L3V_TO_CLOSE"] ด้วยมือด้านล่าง
+         (reduce อัตโนมัติจะไม่สร้าง route เข้าขั้นนี้ให้) เป็น terminal ไม่มีขั้นต่อ */
+      code: "LAW0163",
+      seq: 6,
+      page: "10-3v-07-lawyer-close-case.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ปิดสำนวนคดีแล้ว",
+      statusCode: "L3V_CLOSED",
+      label: "นิติกร ดำเนินการตามคำพิพากษา/ปิดสำนวน",
+      stepName: "นิติกร ปิดสำนวน",
+    },
   ];
 
   /* LAW0128 — 3 ทางหลัง ผอ.กองกฎหมายกำหนดแนวทาง (ทุกทางเป็น black box ไปกิจกรรมอื่น) */
@@ -247,7 +262,109 @@
     },
   };
 
-  const ALL_STEPS = STEPS.concat(STAY_STEPS, VERDICT_STEPS);
+  /* ---------------------------------------------------------------- PART 7
+     จัดทำคำแก้อุทธรณ์ (LAW0129–0141) — เดินต่อบนเคสคำพิพากษาเดิม (ไม่สร้างเคส
+     ใหม่) เข้าที่ L3V_TO_APPEAL_REPLY จาก 10-3v-06 (ชนะคดี ผู้ฟ้องคดียื่นอุทธรณ์)
+     ใช้คำนำหน้า L7_ แยกจาก L3V_ ดู docs/10.3 mockup/implementation-plan-part7.md
+     รวม assign loop ที่ซ้ำในผัง AS-IS เหลือรอบเดียว + ย้าย LAW0133 (ลงทะเบียนคดี)
+     เข้าไปอยู่ในหน้านิติกร — ตอนนี้ implement เฉพาะ LAW0131+0132 (10-3v-08) ก่อน */
+  const APPEAL_STEPS = [
+    {
+      code: "LAW0131",
+      seq: 0,
+      page: "10-3v-08-legal-admin-appeal-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย (คำแก้อุทธรณ์)",
+      statusCode: "L7_PENDING_DIRECTOR_ASSIGN",
+      label: "ธุรการ รับหนังสือแจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์",
+      stepName: "ธุรการ รับหนังสือ",
+    },
+    {
+      code: "LAW0135",
+      seq: 1,
+      page: "10-3v-09-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (คำแก้อุทธรณ์)",
+      statusCode: "L7_PENDING_GROUP_ASSIGN",
+      label: "ผอ.กองกฎหมาย แจกจ่าย/มอบหมาย (คำแก้อุทธรณ์)",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
+    },
+    {
+      /* (เพิ่ม) ในผัง AS-IS — ไม่มีเลข LAW ของตัวเอง ใช้รหัสภายใน "L7ASSIGN" */
+      code: "L7ASSIGN",
+      seq: 2,
+      page: "10-3v-10-group-director-assign.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "นิติกรร่างคำแก้อุทธรณ์",
+      statusCode: "L7_PENDING_LAWYER_DRAFT",
+      label: "ผอ.กลุ่มงาน มอบหมายนิติกร (คำแก้อุทธรณ์)",
+      stepName: "ผอ.กลุ่มงาน มอบหมายนิติกร",
+    },
+    {
+      code: "LAW0133",
+      seq: 3,
+      page: "10-3v-11-lawyer-draft-appeal-reply.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ผอ.กลุ่มงานตรวจร่างคำแก้อุทธรณ์",
+      statusCode: "L7_PENDING_GROUP_APPROVE",
+      label: "นิติกร ลงทะเบียนคดี/ตรวจสอบ/ร่างคำแก้อุทธรณ์",
+      stepName: "นิติกร ร่างคำแก้อุทธรณ์",
+    },
+    {
+      /* รวม LAW0134 (ตรวจร่าง) + LAW0138 (เห็นชอบ) เป็นหน้าเดียว — ยืนยันแบบ
+         confirm ธรรมดา (ไม่มีลายเซ็น) เหมือน 10-3v-05/10-3-07 */
+      code: "LAW0134",
+      seq: 4,
+      page: "10-3v-12-group-director-approve.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายพิจารณาและลงนาม (คำแก้อุทธรณ์)",
+      statusCode: "L7_PENDING_DIRECTOR_SIGN",
+      label: "ผอ.กลุ่มงาน ตรวจร่างคำแก้อุทธรณ์และเห็นชอบ",
+      stepName: "ผอ.กลุ่มงาน เห็นชอบ",
+    },
+    {
+      code: "LAW0139",
+      seq: 5,
+      page: "10-3v-13-legal-director-sign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการออกเลขส่งคำแก้อุทธรณ์",
+      statusCode: "L7_PENDING_ADMIN_DISPATCH",
+      label: "ผอ.กองกฎหมาย พิจารณาและลงนามในคำแก้อุทธรณ์",
+      stepName: "ผอ.กองกฎหมาย ลงนาม",
+    },
+    {
+      code: "LAW0140",
+      seq: 6,
+      page: "10-3v-14-legal-admin-dispatch.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "นิติกรส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง",
+      statusCode: "L7_PENDING_LAWYER_SEND",
+      label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
+      stepName: "ธุรการ ออกเลขส่ง",
+    },
+    {
+      /* ทางออกเป็น black box ไปกิจกรรมอื่น (Page 10/LAW0161) — เป็น terminal
+         ไม่มี route ต่อจากสถานะนี้ ดู implementation-plan-part7.md (open item #4) */
+      code: "LAW0141",
+      seq: 7,
+      page: "10-3v-15-lawyer-send-appeal-reply.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครองแล้ว",
+      statusCode: "L7_SENT_TO_PROSECUTOR",
+      label: "นิติกร ส่งหนังสือและคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง",
+      stepName: "นิติกร ส่งหนังสือ",
+    },
+  ];
+
+  const ALL_STEPS = STEPS.concat(STAY_STEPS, VERDICT_STEPS, APPEAL_STEPS);
 
   function stepByCode(code) {
     return ALL_STEPS.find(function (s) { return s.code === code; }) || null;
@@ -282,6 +399,9 @@
     "10-3v-02-legal-director-assign.html",
     "10-3v-03-group-director-assign.html",
     "10-3v-04-lawyer-verdict-analysis.html",
+    "10-3v-05-group-director-approve.html",
+    "10-3v-06-legal-director-decide.html",
+    "10-3v-07-lawyer-close-case.html",
   ];
   /* VERDICT_STEPS[0] (LAW0119/10-3v-00, รวม LAW0119+LAW0120) เขียนสถานะเดียวกับที่มัน
      สังกัด (entry point เหมือน LAW0085/02-board-intake.html) — reduce ด้านล่างไล่
@@ -294,9 +414,48 @@
     return acc;
   }, ROUTES);
 
-  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 5–6) — ใช้กับแถบขั้นตอน */
+  /* L3V_TO_CLOSE (ชนะคดี ผู้ฟ้องคดีไม่ยื่นอุทธรณ์, Part 6c) เข้าตรงที่ LAW0163
+     (10-3v-07) — ไม่ได้อยู่ในลำดับ VERDICT_STEPS ปกติเพราะเขียนโดย
+     VERDICT_BRANCHES.CLOSE ไม่ใช่ statusCode ของขั้นก่อนหน้า จึงต่อ route ด้วยมือ
+     (L3V_TO_APPEAL_REPLY/L3V_TO_APPEAL_CONSIDER ยังไม่มี route — รอ Part 7/8) */
+  if (VERDICT_BUILT_PAGES.indexOf("10-3v-07-lawyer-close-case.html") !== -1) {
+    ROUTES["L3V_TO_CLOSE"] = "10-3v-07-lawyer-close-case.html";
+  }
+
+  /* หน้า Part 7 ที่สร้างแล้วจริง (เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่ต่อไป) */
+  const APPEAL_BUILT_PAGES = [
+    "10-3v-08-legal-admin-appeal-intake.html",
+    "10-3v-09-legal-director-assign.html",
+    "10-3v-10-group-director-assign.html",
+    "10-3v-11-lawyer-draft-appeal-reply.html",
+    "10-3v-12-group-director-approve.html",
+    "10-3v-13-legal-director-sign.html",
+    "10-3v-14-legal-admin-dispatch.html",
+    "10-3v-15-lawyer-send-appeal-reply.html",
+  ];
+  APPEAL_STEPS.reduce(function (acc, step, i) {
+    const next = APPEAL_STEPS[i + 1];
+    if (next && APPEAL_BUILT_PAGES.indexOf(next.page) !== -1) {
+      acc[step.statusCode] = next.page;
+    }
+    return acc;
+  }, ROUTES);
+
+  /* L3V_TO_APPEAL_REPLY (ชนะคดี ผู้ฟ้องคดียื่นอุทธรณ์, Part 6a) เข้าตรงที่ LAW0131
+     (10-3v-08) — เขียนโดย VERDICT_BRANCHES.APPEAL_REPLY ไม่ใช่ statusCode ของขั้น
+     ก่อนหน้าใน APPEAL_STEPS จึงต่อ route ด้วยมือแบบเดียวกับ L3V_TO_CLOSE */
+  if (
+    APPEAL_BUILT_PAGES.indexOf("10-3v-08-legal-admin-appeal-intake.html") !==
+    -1
+  ) {
+    ROUTES["L3V_TO_APPEAL_REPLY"] = "10-3v-08-legal-admin-appeal-intake.html";
+  }
+
+  /* ขั้นตอนของสายงานที่ขั้นนั้นสังกัด (Part 1 / 1b / 5–6 / 7) — ใช้กับแถบขั้นตอน */
   function flowOf(code) {
-    return [STEPS, STAY_STEPS, VERDICT_STEPS].find(function (flow) {
+    return [STEPS, STAY_STEPS, VERDICT_STEPS, APPEAL_STEPS].find(function (
+      flow,
+    ) {
       return flow.some(function (s) { return s.code === code; });
     }) || STEPS;
   }
@@ -319,6 +478,7 @@
   const Activity103 = {
     STEPS: STEPS,
     VERDICT_STEPS: VERDICT_STEPS,
+    APPEAL_STEPS: APPEAL_STEPS,
     VERDICT_BRANCHES: VERDICT_BRANCHES,
     ROUTES: ROUTES,
     stepByCode: stepByCode,

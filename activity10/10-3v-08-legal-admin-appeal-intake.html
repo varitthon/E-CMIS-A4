@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ผอ.กลุ่มงาน มอบหมายนิติกร | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>ธุรการ รับหนังสือแจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260910_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_1" />
 
     <style>
       h1,
@@ -230,6 +230,10 @@
         background: var(--border-color);
         color: var(--text-title);
       }
+      .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
       .badge {
         padding: 4px 10px;
@@ -277,7 +281,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ผอ.กลุ่มงาน มอบหมายนิติกร</span
+              >ธุรการ รับหนังสือแจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์</span
             >
           </div>
         </div>
@@ -358,11 +362,11 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอ ผอ.กองกฎหมายลงนามมอบหมายที่หน้า
-            <a href="10-3-02-legal-director-assign.html"
-              >ผอ.กองกฎหมาย ลงนามมอบหมาย</a
+            รอ ผอ.กองกฎหมายกำหนดแนวทางที่หน้า
+            <a href="10-3v-06-legal-director-decide.html"
+              >ผอ.กองกฎหมาย กำหนดแนวทาง (คำพิพากษา)</a
             >
-            ก่อน
+            ก่อน (ต้องเลือกทาง "ชนะคดี (ผู้ฟ้องคดียื่นอุทธรณ์)")
           </div>
         </div>
 
@@ -370,8 +374,8 @@
           <div class="form-card">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >รายละเอียดคดีศาลปกครอง</span
+                ><i class="fa-solid fa-gavel text-primary me-2"></i
+                >ข้อมูลคำพิพากษาศาลปกครองชั้นต้น</span
               >
               <span class="badge" style="background: #dbeafe; color: #1e3a8a"
                 ><i class="fa-solid fa-hashtag me-1"></i
@@ -381,14 +385,12 @@
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>เลขรับกองกฎหมาย</label>
-                  <div class="read-box font-monospace" id="f_lawReceiveNo">
-                    -
-                  </div>
-                </div>
-                <div class="form-group">
                   <label>ศาล</label>
                   <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ศาลมีคำพิพากษา</label>
+                  <div class="read-box" id="f_verdictDate">-</div>
                 </div>
               </div>
               <div class="form-grid-2">
@@ -413,9 +415,15 @@
                   <div id="f_defendants"></div>
                 </div>
               </div>
-              <div class="form-group">
-                <label>เอกสารแนบ</label>
-                <div id="f_attachments"></div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผลคดี</label>
+                  <div class="read-box" id="f_verdictResult">-</div>
+                </div>
+                <div class="form-group">
+                  <label>แนวทางที่ ผอ.กองกฎหมายกำหนด</label>
+                  <div class="read-box" id="f_directorDecision">-</div>
+                </div>
               </div>
             </div>
           </div>
@@ -426,51 +434,99 @@
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-user-gear text-primary me-2"></i
-                >มอบหมายนิติกรผู้รับผิดชอบ</span
+                ><i class="fa-solid fa-inbox text-primary me-2"></i
+                >รับหนังสือแจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กลุ่มงานคดี</span
+                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
               >
             </div>
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
                   <label
-                    >มอบหมายให้ <span style="color: #dc2626">*</span></label
+                    >เลขสารบรรณกลาง
+                    <span style="color: #dc2626">*</span></label
                   >
-                  <select
-                    id="in_assignTarget"
-                    class="form-control"
-                    style="font-weight: 600; color: #1e3a8a"
-                  >
-                    <option value="case_legal_officer">
-                      นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)
-                    </option>
-                  </select>
+                  <input
+                    type="text"
+                    id="in_centralSarabanNo"
+                    class="form-control font-monospace"
+                    style="font-weight: 700"
+                    placeholder="เช่น 2569/4610"
+                    value="2569/4610"
+                  />
                 </div>
                 <div class="form-group">
                   <label
-                    >วันที่มอบหมาย <span style="color: #dc2626">*</span></label
+                    >วันที่รับเอกสาร
+                    <span style="color: #dc2626">*</span></label
                   >
                   <input
                     type="date"
-                    id="in_assignDate"
+                    id="in_physicalDocDate"
+                    class="form-control"
+                    lang="th-TH-u-ca-buddhist"
+                  />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขรับกองกฎหมาย
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_lawReceiveNo"
                     class="form-control font-monospace"
-                    style="font-weight: 600"
+                    style="font-weight: 700; color: #1e3a8a"
+                    placeholder="เช่น 0061/2569"
+                    value="0061/2569"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >วันที่แจ้งคำสั่งศาลให้ทำคำแก้อุทธรณ์
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_noticeDate"
+                    class="form-control"
+                    lang="th-TH-u-ca-buddhist"
                   />
                 </div>
               </div>
               <div class="form-group">
-                <label>ข้อสั่งการ / หมายเหตุ</label>
-                <textarea
-                  id="in_assignNotes"
-                  class="form-control"
-                  rows="3"
-                  placeholder="ระบุข้อสั่งการ..."
+                <label
+                  >แนบสำเนาคำอุทธรณ์ของผู้ฟ้องคดี / หนังสือแจ้งคำสั่งศาล
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
                 >
--</textarea
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_noticeAttachments"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleNoticeAttachmentsChange(this)"
+                  />
+                </div>
+                <div id="noticeAttachmentsList" style="margin-top: 8px"></div>
+                <div
+                  class="info-box"
+                  style="margin-top: 10px; margin-bottom: 0"
                 >
+                  <div style="font-size: 1.2em">ℹ️</div>
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
+                </div>
               </div>
             </div>
             <div class="form-actions">
@@ -480,8 +536,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>มอบหมาย และ
-                ส่งต่อ
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ
+                ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -492,12 +548,17 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260915_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260910_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_5"></script>
 
     <script>
-      const STEP_CODE = "LAW0089";
+      /* LAW0131+0132 (รวมหน้าเดียว) — ธุรการกองกฎหมาย รับหนังสือแจ้งคำสั่งศาล
+         ให้ทำคำแก้อุทธรณ์ + ลงทะเบียนรับเรื่อง (สารบรรณ) — Part 7, เดินต่อบนเคส
+         คำพิพากษาเดิม (ไม่สร้างเคสใหม่) เคสมาจาก 10-3v-06 ที่สถานะ
+         L3V_TO_APPEAL_REPLY ดู docs/10.3 mockup/implementation-plan-part7.md */
+      const STEP_CODE = "LAW0131";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
 
@@ -511,9 +572,15 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity103.STEPS.findIndex((s) => s.code === STEP_CODE);
-        const prev = Activity103.STEPS[idx - 1];
-        currentCase = Activity103.getCase(id, prev ? prev.statusCode : null);
+        const found = Activity103.getCase(id, "L3V_TO_APPEAL_REPLY");
+        /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
+           คำพิพากษาที่อยู่สถานะ L3V_TO_APPEAL_REPLY เท่านั้น */
+        currentCase =
+          found &&
+          Activity103.isVerdictCase(found) &&
+          found.statusCode === "L3V_TO_APPEAL_REPLY"
+            ? found
+            : null;
 
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
@@ -523,20 +590,115 @@
         populate();
       }
 
-      function populateCommon() {
-        const c = currentCase;
-        ECMIS103.setText("f_caseNo", c.id);
-        ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
-        ECMIS103.setText("f_courtName", c.courtName);
-        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
-        ECMIS103.setText("f_redCaseNo", c.redCaseNo);
-        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
-        ECMIS103.renderPartyList("f_defendants", c.defendants);
-        ECMIS103.renderAttachments("f_attachments", c.attachmentFileNames);
+      /* วันที่จาก input type=date (YYYY-MM-DD) → วันที่ไทย */
+      function thaiDateFromIso(iso) {
+        if (!iso) return "-";
+        const d = new Date(iso);
+        return isNaN(d.getTime()) ? iso : ECMIS103.formatThaiDate(d);
       }
 
       function todayISO() {
         return new Date().toISOString().split("T")[0];
+      }
+
+      function populate() {
+        const c = currentCase;
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_verdictDate", thaiDateFromIso(c.verdictDate));
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.setText("f_redCaseNo", c.redCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_verdictResult", c.l3VerdictResult);
+        ECMIS103.setText("f_directorDecision", c.status);
+
+        [
+          ["in_physicalDocDate", todayISO()],
+          ["in_noticeDate", todayISO()],
+        ].forEach(([id, val]) => {
+          const el = document.getElementById(id);
+          if (el && !el.value) el.value = val;
+        });
+      }
+
+      /* แนบสำเนาคำอุทธรณ์/หนังสือแจ้งคำสั่งศาล (เหมือน pattern ของ 02-board-intake.html) */
+      let noticeAttachedFiles = [];
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function handleNoticeAttachmentsChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${sizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          noticeAttachedFiles.push(file);
+        });
+        input.value = "";
+        renderNoticeAttachmentsList();
+      }
+
+      function removeNoticeAttachment(index) {
+        noticeAttachedFiles.splice(index, 1);
+        renderNoticeAttachmentsList();
+      }
+
+      function renderNoticeAttachmentsList() {
+        const listEl = document.getElementById("noticeAttachmentsList");
+        if (!listEl) return;
+        if (!noticeAttachedFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = noticeAttachedFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
+ <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
+ <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeNoticeAttachment(${idx})" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          })
+          .join("");
       }
 
       function doneAndBack(text) {
@@ -549,36 +711,47 @@
         }).then(ECMIS103.goInbox);
       }
 
-      function populate() {
-        populateCommon();
-        document.getElementById("in_assignDate").value = todayISO();
-      }
-
       function submitForm() {
-        const notes =
-          document.getElementById("in_assignNotes").value.trim() || "-";
-        const target = document.getElementById("in_assignTarget");
-        const targetName = target.options[target.selectedIndex].text;
+        const val = (id) => document.getElementById(id).value.trim();
+        const checks = [
+          ["in_centralSarabanNo", "กรุณาระบุเลขสารบรรณกลาง"],
+          ["in_physicalDocDate", "กรุณาระบุวันที่รับเอกสาร"],
+          ["in_lawReceiveNo", "กรุณาระบุเลขรับกองกฎหมาย"],
+          ["in_noticeDate", "กรุณาระบุวันที่แจ้งคำสั่งศาล"],
+        ];
+        for (const [id, msg] of checks) {
+          const el = document.getElementById(id);
+          if (!el || !el.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: msg,
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (el) el.focus();
+            return;
+          }
+        }
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันมอบหมายนิติกร",
-          text: "มอบหมายให้ " + targetName + " ดำเนินการต่อ",
+          title: "ยืนยัน และ เสนอ ผอ.กองกฎหมาย",
+          text: "บันทึกรับหนังสือแจ้งคำสั่งศาล และส่งต่อ ผอ.กองกฎหมายพิจารณามอบหมาย",
           showCancelButton: true,
-          confirmButtonText: "ยืนยันและส่งต่อ",
+          confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#1e3a8a",
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
           Activity103.advance(currentCase.id, STEP_CODE, {
-            l3GroupAssignNotes: notes,
-            l3GroupAssignDate: document.getElementById("in_assignDate").value,
-            l3GroupAssignTarget: targetName,
-            assignedRole: "case_legal_officer",
-            officer: targetName,
+            l7CentralSarabanNo: val("in_centralSarabanNo"),
+            l7PhysicalDocDate: val("in_physicalDocDate"),
+            l7LawReceiveNo: val("in_lawReceiveNo"),
+            l7NoticeDate: val("in_noticeDate"),
+            l7NoticeAttachments: noticeAttachedFiles.map((f) => f.name),
           });
-          doneAndBack("ส่งเรื่องให้ " + targetName + " เรียบร้อยแล้ว");
+          doneAndBack("บันทึกและส่งเสนอ ผอ.กองกฎหมายเรียบร้อยแล้ว");
         });
       }
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร ตรวจสอบคำฟ้องและจัดทำความเห็น | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ร่างคำแก้อุทธรณ์ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260910_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_1" />
 
     <style>
       h1,
@@ -153,7 +153,6 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 16px;
-        position: relative;
       }
       .form-group:last-child {
         margin-bottom: 0;
@@ -231,6 +230,10 @@
         background: var(--border-color);
         color: var(--text-title);
       }
+      .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
       .badge {
         padding: 4px 10px;
@@ -246,47 +249,13 @@
       .d-none {
         display: none !important;
       }
-
-      .l3-checkbox-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 14px 16px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        background: var(--bg-body);
+      .helper-text {
+        font-size: 0.78em;
+        color: #64748b;
+        margin-top: 4px;
       }
-      .l3-checkbox-row input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        margin-top: 2px;
-        accent-color: #1e3a8a;
-        cursor: pointer;
-      }
-      .l3-checkbox-row label {
-        margin: 0;
-        cursor: pointer;
-        font-weight: 600;
-      }
-
-      /* Upload box (แนบเอกสาร) — เหมือน pattern ของ 02-board-intake.html */
-      .upload-box {
-        border: 2px dashed var(--border-color);
-        padding: 16px;
-        border-radius: 6px;
-        text-align: center;
-        background: var(--bg-body);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .upload-box input[type="file"] {
-        flex: 1;
-        font-size: 0.88em;
-        color: var(--text-main);
-      }
-
-      /* Search results table — เหมือน pattern ของ 02-board-intake.html */
+      /* ค้นหาสำนวนคดีที่เกี่ยวข้อง — ตารางผลค้นหาแบบเดียวกับ 02-board-intake.html
+         / 10-3-04-lawyer-review-complaint.html */
       .search-results-table {
         width: 100%;
         border-collapse: collapse;
@@ -307,9 +276,6 @@
       .search-results-table tr:hover {
         background: rgba(37, 99, 235, 0.05);
         cursor: pointer;
-      }
-      .search-results-table tr.table-primary {
-        background: rgba(37, 99, 235, 0.12) !important;
       }
     </style>
   </head>
@@ -343,7 +309,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร ตรวจสอบคำฟ้องและจัดทำความเห็น</span
+              >นิติกร ร่างคำแก้อุทธรณ์</span
             >
           </div>
         </div>
@@ -424,20 +390,28 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอ ผอ.กลุ่มงานมอบหมายนิติกรที่หน้า
-            <a href="10-3-03-group-director-assign.html"
-              >ผอ.กลุ่มงาน มอบหมายนิติกร</a
+            รอ ผอ.กลุ่มงานคดีมอบหมายที่หน้า
+            <a href="10-3v-10-group-director-assign.html"
+              >ผอ.กลุ่มงาน มอบหมายนิติกร (คำแก้อุทธรณ์)</a
             >
             ก่อน
           </div>
         </div>
 
         <div id="pageBody">
+          <div id="rejectNotice" class="l3-note l3-note-warn d-none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+              <strong>ผอ.กลุ่มงานคดีส่งร่างกลับมาให้แก้ไข</strong><br />
+              <span id="f_rejectNotes">-</span>
+            </div>
+          </div>
+
           <div class="form-card">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >รายละเอียดคดีศาลปกครอง</span
+                ><i class="fa-solid fa-gavel text-primary me-2"></i
+                >ข้อมูลคำพิพากษาศาลปกครองชั้นต้น</span
               >
               <span class="badge" style="background: #dbeafe; color: #1e3a8a"
                 ><i class="fa-solid fa-hashtag me-1"></i
@@ -451,15 +425,21 @@
                   <div class="read-box" id="f_courtName">-</div>
                 </div>
                 <div class="form-group">
+                  <label>วันที่ศาลมีคำพิพากษา</label>
+                  <div class="read-box" id="f_verdictDate">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
                   <label>หมายเลขคดีดำ</label>
                   <div class="read-box font-monospace" id="f_blackCaseNo">
                     -
                   </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label>สั่งถึง</label>
-                <div class="read-box" id="f_orderedTo">-</div>
+                <div class="form-group">
+                  <label>หมายเลขคดีแดง</label>
+                  <div class="read-box font-monospace" id="f_redCaseNo">-</div>
+                </div>
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
@@ -472,20 +452,23 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>หมายเหตุ</label>
-                <div class="read-box read-box-textarea" id="f_courtRemark">
+                <label>ข้อสั่งการจาก ผอ.กลุ่มงานคดี</label>
+                <div
+                  class="read-box read-box-textarea"
+                  id="f_groupAssignNotes"
+                >
                   -
                 </div>
               </div>
               <div class="form-group">
-                <label>เอกสารแนบ</label>
-                <div id="f_attachments"></div>
+                <label>เอกสารแนบ (สำเนาคำอุทธรณ์/หนังสือแจ้งคำสั่งศาล)</label>
+                <div id="f_noticeAttachments"></div>
               </div>
             </div>
           </div>
 
-          <!-- Card: ค้นหาสำนวนคดีที่เกี่ยวข้อง (เหมือน pattern ของ 02-board-intake.html)
-               แทนที่ขั้นตอนธุรการประสานนักสืบเจ้าของสำนวน — นิติกรค้นและดึงข้อมูลได้เอง -->
+          <!-- Card: ค้นหาสำนวนคดีที่เกี่ยวข้อง (เหมือน pattern ของ 02-board-intake.html /
+               10-3-04-lawyer-review-complaint.html) -->
           <div class="form-card">
             <div class="form-card-header">
               <span
@@ -550,14 +533,53 @@
             </div>
           </div>
 
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-book text-primary me-2"></i
+                >ลงทะเบียนคดี (คำแก้อุทธรณ์)</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >เลขทะเบียนคดี
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_caseRegNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น ทบ.อธ. 0031/2569"
+                    style="font-weight: 700; color: #1e3a8a"
+                    oninput="onCaseRegNoInput()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>วันที่ลงทะเบียน</label>
+                  <input
+                    type="date"
+                    id="in_regDate"
+                    class="form-control font-monospace"
+                    lang="th-TH-u-ca-buddhist"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >ตรวจสอบคำฟ้องและจัดทำบันทึกสรุปความเห็น</span
+                ><i class="fa-solid fa-pen-fancy text-primary me-2"></i
+                >ร่างคำแก้อุทธรณ์</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
@@ -565,96 +587,47 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ผลการตรวจสอบเบื้องต้น / มูลเหตุคดี</label>
-                <textarea
-                  id="in_reviewNotes"
-                  class="form-control"
-                  rows="3"
-                  placeholder="ระบุผลการตรวจสอบคำฟ้องและมูลเหตุคดีเบื้องต้น..."
-                >
--</textarea
-                >
-              </div>
-              <div class="form-group">
-                <div class="l3-checkbox-row">
-                  <input type="checkbox" id="in_hasStayRequest" />
-                  <label for="in_hasStayRequest"
-                    >ผู้ฟ้องคดียื่นคำขอทุเลาการบังคับคดีมาด้วย</label
-                  >
-                </div>
-                <div
-                  class="helper-text"
-                  style="margin-top: 6px; font-size: 0.82em; color: #64748b"
-                >
-                  หากติ๊กเลือก ระบบจะบันทึกไว้เพื่อส่งเรื่องเข้า
-                  จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี แยกต่างหาก
-                  โดยไม่กระทบสายหลักของกิจกรรมนี้
-                </div>
-              </div>
-
-              <hr
-                style="
-                  border: 0;
-                  border-top: 1px solid var(--border-color);
-                  margin: 20px 0;
-                "
-              />
-
-              <div class="form-group">
                 <label
-                  >บันทึกสรุปความเห็น
+                  >แนบเอกสารร่างคำแก้อุทธรณ์
                   <span style="color: #dc2626">*</span></label
-                >
-                <textarea
-                  id="in_opinionText"
-                  class="form-control"
-                  rows="6"
-                  placeholder="สรุปข้อเท็จจริง ข้อกฎหมาย และความเห็นของนิติกรต่อคำฟ้อง..."
-                >
--</textarea
-                >
-              </div>
-
-              <div class="form-group">
-                <label
-                  >แนบเอกสารประกอบความเห็น
-                  <span style="font-weight: 400; color: #64748b"
-                    >(ถ้ามี)</span
-                  ></label
                 >
                 <div class="upload-box">
                   <input
                     type="file"
-                    id="in_opinionAttachments"
+                    id="in_draftAttachments"
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                     multiple
-                    onchange="handleOpinionAttachmentsChange(this)"
+                    onchange="handleDraftAttachmentsChange(this)"
                   />
                 </div>
-                <div id="opinionAttachmentsList" style="margin-top: 8px"></div>
+                <div id="draftAttachmentsList" style="margin-top: 8px"></div>
                 <div
-                  class="info-box"
                   style="
                     margin-top: 10px;
-                    margin-bottom: 0;
-                    background: #fffbeb;
-                    border: 1px solid #fef3c7;
-                    border-radius: 6px;
-                    padding: 12px 16px;
-                    display: flex;
-                    gap: 10px;
-                    color: #92400e;
-                    font-size: 0.88em;
+                    font-size: 0.82em;
+                    color: #64748b;
+                    opacity: 0.7;
                   "
                 >
-                  <div style="font-size: 1.2em">ℹ️</div>
-                  <div>
-                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
-                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
-                    JPEG<br />
-                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
-                  </div>
+                  ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                  JPEG — ขนาดไฟล์สูงสุดไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
                 </div>
+              </div>
+              <div class="form-group">
+                <label
+                  >หมายเหตุ
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <textarea
+                  id="in_draftText"
+                  class="form-control"
+                  rows="8"
+                  placeholder="หมายเหตุเพิ่มเติมเกี่ยวกับร่างคำแก้อุทธรณ์..."
+                >
+-</textarea
+                >
               </div>
             </div>
             <div class="form-actions">
@@ -664,7 +637,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ
+                <i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ ส่งต่อ
+                ผอ.กลุ่มงานคดี
               </button>
             </div>
           </div>
@@ -675,12 +649,17 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260915_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260910_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_5"></script>
 
     <script>
-      const STEP_CODE = "LAW0090";
+      /* LAW0133+0136+0137 (รวมหน้าเดียว) — นิติกร ลงทะเบียนคดี + ตรวจสอบ
+         คำพิพากษา/ศึกษาคำอุทธรณ์คู่กรณี + ร่างคำแก้อุทธรณ์ (Part 7)
+         เคสมาจาก 10-3v-10 ที่สถานะ L7_PENDING_LAWYER_DRAFT
+         ดู docs/10.3 mockup/implementation-plan-part7.md */
+      const STEP_CODE = "LAW0133";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
 
@@ -694,9 +673,19 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity103.STEPS.findIndex((s) => s.code === STEP_CODE);
-        const prev = Activity103.STEPS[idx - 1];
-        currentCase = Activity103.getCase(id, prev ? prev.statusCode : null);
+        const idx = Activity103.APPEAL_STEPS.findIndex(
+          (s) => s.code === STEP_CODE,
+        );
+        const prev = Activity103.APPEAL_STEPS[idx - 1];
+        const found = Activity103.getCase(id, prev ? prev.statusCode : null);
+        /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
+           คำพิพากษาที่อยู่สถานะ L7_PENDING_LAWYER_DRAFT เท่านั้น */
+        currentCase =
+          found &&
+          Activity103.isVerdictCase(found) &&
+          found.statusCode === "L7_PENDING_LAWYER_DRAFT"
+            ? found
+            : null;
 
         if (!currentCase) {
           document.getElementById("noCaseNotice").classList.remove("d-none");
@@ -706,35 +695,57 @@
         populate();
       }
 
-      function populateCommon() {
-        const c = currentCase;
-        ECMIS103.setText("f_caseNo", c.id);
-        ECMIS103.setText("f_courtName", c.courtName);
-        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
-        ECMIS103.setText("f_orderedTo", c.orderedTo);
-        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
-        ECMIS103.renderPartyList("f_defendants", c.defendants);
-        ECMIS103.setText("f_courtRemark", c.courtRemark);
-        ECMIS103.renderAttachments("f_attachments", c.attachmentFileNames);
+      /* วันที่จาก input type=date (YYYY-MM-DD) → วันที่ไทย */
+      function thaiDateFromIso(iso) {
+        if (!iso) return "-";
+        const d = new Date(iso);
+        return isNaN(d.getTime()) ? iso : ECMIS103.formatThaiDate(d);
       }
 
-      function doneAndBack(text) {
-        Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: text,
-          timer: 1900,
-          showConfirmButton: false,
-        }).then(ECMIS103.goInbox);
+      function todayISO() {
+        return new Date().toISOString().split("T")[0];
       }
 
       function populate() {
-        populateCommon();
+        const c = currentCase;
+
+        const rejectNotice = document.getElementById("rejectNotice");
+        if (c.l7GroupRejectNotes && c.l7GroupRejectNotes !== "-") {
+          ECMIS103.setText("f_rejectNotes", c.l7GroupRejectNotes);
+          rejectNotice.classList.remove("d-none");
+        } else {
+          rejectNotice.classList.add("d-none");
+        }
+
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_verdictDate", thaiDateFromIso(c.verdictDate));
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.setText("f_redCaseNo", c.redCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_groupAssignNotes", c.l7GroupAssignNotes);
+        ECMIS103.renderAttachments("f_noticeAttachments", c.l7NoticeAttachments);
+
+        document.getElementById("in_caseRegNo").value = c.l7CaseRegNo || "";
+        document.getElementById("in_regDate").value = c.l7CaseRegDate || "";
+      }
+
+      /* ประทับวันที่ลงทะเบียนอัตโนมัติครั้งแรกที่พิมพ์เลขทะเบียนคดี (ถ้ายังไม่ระบุ)
+         ผู้ใช้แก้วันที่เองได้ตลอดผ่านช่อง in_regDate (แทนปุ่ม "ออกเลขทะเบียน" ที่ตัดออก) */
+      function onCaseRegNoInput() {
+        const hasValue = document
+          .getElementById("in_caseRegNo")
+          .value.trim();
+        const regDateInput = document.getElementById("in_regDate");
+        if (hasValue && !regDateInput.value) {
+          regDateInput.value = todayISO();
+        }
       }
 
       /* ---------------------------------------------- ค้นหาสำนวนคดีที่เกี่ยวข้อง
-         เหมือน pattern ของ 02-board-intake.html (executeIntakeSearch/selectIntakeCase)
-         แต่เลือกแล้วแค่เชื่อมโยงเลขสำนวน ไม่ต้องเติมฟอร์มทั้งหน้า */
+         เหมือน pattern ของ 02-board-intake.html / 10-3-04-lawyer-review-complaint.html
+         (executeIntakeSearch/selectIntakeCase) แต่เลือกแล้วแค่เชื่อมโยงเลขสำนวน */
       function handleOpinionSearchKeyup(e) {
         if (e.key === "Enter") executeOpinionSearch();
       }
@@ -780,7 +791,7 @@
         if (matched.length === 0) {
           resultsContainer.innerHTML = `
  <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
- <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
+ <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${escapeHtml(q)}"
  </div>
  `;
           return;
@@ -790,7 +801,7 @@
  <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
  <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
- <button type="button" class="ctrl-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')" title="ปิดแถบผลการค้นหา"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
+ <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.75rem; height: 26px;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
  </div>
  <div style="overflow-x: auto;">
  <table class="search-results-table">
@@ -807,16 +818,15 @@
 
         matched.forEach((c) => {
           const cleanId = c.id.replace(/^.*?-/, "");
-          const safeRowId = `opinion-row-${cleanId.replace(/[^a-zA-Z0-9]/g, "_")}`;
           html += `
- <tr id="${safeRowId}" onclick="selectOpinionCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้">
+ <tr onclick="selectOpinionCase('${escapeHtml(c.id)}')" title="คลิกเพื่อเลือกสำนวนนี้">
  <td>
- <strong class="font-monospace" style="color:var(--text-title);">${cleanId}</strong>
- ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
+ <strong class="font-monospace" style="color:var(--text-title);">${escapeHtml(cleanId)}</strong>
+ ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${escapeHtml(c.paccCaseNo)}</div>` : ""}
  </td>
- <td>${c.accuser || "-"}</td>
- <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
- <td>${c.title}</td>
+ <td>${escapeHtml(c.accuser || "-")}</td>
+ <td style="font-weight:600;">${escapeHtml((window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-")}</td>
+ <td>${escapeHtml(c.title)}</td>
  </tr>
  `;
         });
@@ -859,9 +869,8 @@
         });
       }
 
-      /* ---------------------------------------------- แนบเอกสารประกอบความเห็น
-         เหมือน pattern ของ 02-board-intake.html (handleDisclosureAttachmentsChange) */
-      let opinionAttachedFiles = [];
+      /* แนบเอกสารประกอบร่าง (เหมือน pattern ของ 02-board-intake.html) */
+      let draftAttachedFiles = [];
 
       function escapeHtml(str) {
         return String(str == null ? "" : str)
@@ -872,7 +881,7 @@
           .replace(/'/g, "&#39;");
       }
 
-      function handleOpinionAttachmentsChange(input) {
+      function handleDraftAttachmentsChange(input) {
         if (!input.files || !input.files.length) return;
         const maxSizeBytes = 100 * 1024 * 1024;
         const allowedExts = [
@@ -885,7 +894,6 @@
           "jpg",
           "jpeg",
         ];
-
         Array.from(input.files).forEach((file) => {
           const ext = file.name.split(".").pop().toLowerCase();
           if (!allowedExts.includes(ext)) {
@@ -898,42 +906,41 @@
             return;
           }
           if (file.size > maxSizeBytes) {
-            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
             Swal.fire({
               icon: "warning",
               title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              text: `ไฟล์ "${file.name}" มีขนาด ${sizeMb} MB เกินกำหนดสูงสุด 100 MB`,
               confirmButtonColor: "#1e3a8a",
             });
             return;
           }
-          opinionAttachedFiles.push(file);
+          draftAttachedFiles.push(file);
         });
-
         input.value = "";
-        renderOpinionAttachmentsList();
+        renderDraftAttachmentsList();
       }
 
-      function removeOpinionAttachment(index) {
-        opinionAttachedFiles.splice(index, 1);
-        renderOpinionAttachmentsList();
+      function removeDraftAttachment(index) {
+        draftAttachedFiles.splice(index, 1);
+        renderDraftAttachmentsList();
       }
 
-      function renderOpinionAttachmentsList() {
-        const listEl = document.getElementById("opinionAttachmentsList");
+      function renderDraftAttachmentsList() {
+        const listEl = document.getElementById("draftAttachmentsList");
         if (!listEl) return;
-        if (!opinionAttachedFiles.length) {
+        if (!draftAttachedFiles.length) {
           listEl.innerHTML = "";
           return;
         }
-        listEl.innerHTML = opinionAttachedFiles
+        listEl.innerHTML = draftAttachedFiles
           .map((file, idx) => {
             const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
             return `
  <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
  <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
  <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
- <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeOpinionAttachment(${idx})" title="ลบไฟล์นี้">
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeDraftAttachment(${idx})" title="ลบไฟล์นี้">
  <i class="fa-solid fa-trash-can"></i>
  </button>
  </div>`;
@@ -941,59 +948,64 @@
           .join("");
       }
 
-      /* ---- page specific ---- */
+      function doneAndBack(text) {
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกสำเร็จ",
+          text: text,
+          timer: 1900,
+          showConfirmButton: false,
+        }).then(ECMIS103.goInbox);
+      }
 
       function submitForm() {
-        const opinionText = document
-          .getElementById("in_opinionText")
-          .value.trim();
-        if (!opinionText) {
+        const regNo = document.getElementById("in_caseRegNo").value.trim();
+        if (!regNo) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุบันทึกสรุปความเห็น",
+            text: "กรุณาระบุเลขทะเบียนคดี",
             confirmButtonColor: "#1e3a8a",
           });
-          document.getElementById("in_opinionText").focus();
           return;
         }
-        const reviewNotes =
-          document.getElementById("in_reviewNotes").value.trim() || "-";
-        const hasStayRequest =
-          document.getElementById("in_hasStayRequest").checked;
-        const relatedCaseNo = document
-          .getElementById("in_relatedCaseNo")
-          .value.trim();
-
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันบันทึกผลตรวจสอบและความเห็น",
-          html: hasStayRequest
-            ? "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ<br/><strong style='color:#d97706'>พร้อมส่งเรื่องคำขอทุเลาการบังคับคดีเข้ากิจกรรมที่ 2</strong>"
-            : "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ",
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันและส่งต่อ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          Activity103.advance(currentCase.id, STEP_CODE, {
-            l3ReviewNotes: reviewNotes,
-            l3HasStayRequest: hasStayRequest,
-            l3RelatedCaseNo: relatedCaseNo,
-            l3OpinionText: opinionText,
-            l3OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
+        if (!draftAttachedFiles.length) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาแนบเอกสารร่างคำแก้อุทธรณ์อย่างน้อย 1 ไฟล์",
+            confirmButtonColor: "#1e3a8a",
           });
-          if (hasStayRequest) {
-            Activity103.spawnStayObjectionCase(currentCase);
-          }
-          doneAndBack(
-            hasStayRequest
-              ? "บันทึกความเห็นเรียบร้อยแล้ว (มีคำขอทุเลาการบังคับคดี)"
-              : "บันทึกความเห็นเรียบร้อยแล้ว",
-          );
-        });
+          return;
+        }
+        const draftText = document.getElementById("in_draftText").value.trim();
+        const finalRegDate =
+          document.getElementById("in_regDate").value || todayISO();
+
+        ECMIS103.openSignatureModal(
+          {
+            title: "ลงนามรับรองร่างคำแก้อุทธรณ์",
+            signer: ECMIS103.signerLabel("case_legal_officer"),
+            certId: "PACC-CASELEGAL-2569-107",
+          },
+          (image) => {
+            Activity103.sign(currentCase.id, STEP_CODE, image);
+            Activity103.advance(currentCase.id, STEP_CODE, {
+              l7CaseRegNo: regNo,
+              l7CaseRegDate: finalRegDate,
+              l7RelatedCaseNo: document
+                .getElementById("in_relatedCaseNo")
+                .value.trim(),
+              l7DraftText: draftText || "-",
+              l7DraftAttachments: draftAttachedFiles.map((f) => f.name),
+              assignedRole: "case_group_director",
+              officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+            });
+            doneAndBack(
+              "ลงนามและส่งเรื่องให้ ผอ.กลุ่มงานคดีตรวจร่างเรียบร้อยแล้ว",
+            );
+          },
+        );
       }
 
       /* ---- shell chrome (theme / font size / dropdown) ---- */
