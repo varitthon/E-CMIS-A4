@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_8" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_2" />
 
     <style>
       h1,
@@ -357,9 +357,6 @@
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label">
             <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
-            <span class="stepper-legend"
-              ><span class="stepper-legend-dot"></span> ยังไม่มีหน้าในระบบ</span
-            >
           </div>
           <div class="stepper stepper-wide" id="stepperPart2"></div>
         </div>
@@ -590,22 +587,13 @@
                     >เลขที่หนังสือแจ้งผล
                     <span style="color: #dc2626">*</span></label
                   >
-                  <div style="display: flex; gap: 8px">
-                    <input
-                      type="text"
-                      id="in_noticeDocNo"
-                      class="form-control font-monospace"
-                      placeholder="กรอกเองหรือกดออกเลข"
-                      style="font-weight: 700; color: #1e3a8a"
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-secondary"
-                      onclick="issueNoticeDocNo()"
-                    >
-                      <i class="fa-solid fa-hashtag me-1"></i>ออกเลข
-                    </button>
-                  </div>
+                  <input
+                    type="text"
+                    id="in_noticeDocNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น ปป 0003/4501"
+                    style="font-weight: 700; color: #1e3a8a"
+                  />
                 </div>
                 <div class="form-group">
                   <label
@@ -620,26 +608,13 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>แจ้งถึง</label>
-                <div class="l3-recipient-list">
-                  <div class="l3-checkbox-row is-disabled">
-                    <input type="checkbox" id="in_notifyLegalDirector" checked disabled />
-                    <label for="in_notifyLegalDirector"
-                      >ผอ.กองกฎหมาย —
-                      <span id="f_legalDirectorName">-</span>
-                      <div style="font-weight: 400; font-size: 0.85em; color: #64748b">
-                        ผู้รับแจ้งหลัก (ขั้นถัดไปตาม flow)
-                      </div></label
-                    >
-                  </div>
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_notifyLawyer" checked />
-                    <label for="in_notifyLawyer"
-                      >นิติกรเจ้าของเรื่อง —
-                      <span id="f_lawyerName">-</span></label
-                    >
-                  </div>
-                </div>
+                <label
+                  >แจ้งถึง นิติกร กลุ่มงานคดี
+                  <span style="color: #dc2626">*</span></label
+                >
+                <select id="in_notifyLawyer" class="form-control">
+                  <option value="">-- เลือกนิติกร --</option>
+                </select>
               </div>
               <div class="form-group">
                 <label>หมายเหตุ</label>
@@ -671,7 +646,7 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260914_20"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_4"></script>
 
     <script>
       const STEP_CODE = "L3-19";
@@ -679,6 +654,11 @@
       const RESOLUTION_RESULT = "มีมติมอบอำนาจ";
       let currentCase = null;
       let viewOnly = false;
+      const LAWYERS = [
+        "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+        "นางสาวสุดา คดีเที่ยง (นิติกร กลุ่มงานคดี)",
+        "นางสาวพิมพ์ชนก ธรรมรักษ์ (นิติกร กลุ่มงานคดี)",
+      ];
       let reportFiles = [];
       let presetReportNames = [];
 
@@ -731,9 +711,8 @@
         document.getElementById("in_noticeDocNo").value = n.docNo || "";
         document.getElementById("in_noticeDate").value = n.docDate || "";
         document.getElementById("in_noticeNotes").value = n.notes || "";
-        document.getElementById("in_notifyLawyer").checked = (n.recipients || []).some(
-          (x) => x.role === "case_legal_officer",
-        );
+        const lawyer = (n.recipients || []).find((x) => x.role === "case_legal_officer");
+        document.getElementById("in_notifyLawyer").value = lawyer ? lawyer.name : "";
         document.getElementById("incomingReportNote").classList.add("d-none");
       }
 
@@ -761,14 +740,9 @@
         ECMIS103.setText("f_internalDocNo", c.l3InternalDocNo);
         ECMIS103.setText("f_internalDocDate", c.l3InternalDocDate);
         ECMIS103.setText("f_opinionText", c.l3OpinionText);
-        ECMIS103.setText(
-          "f_legalDirectorName",
-          ECMIS103.signerLabel("dir_legal"),
-        );
-        ECMIS103.setText("f_lawyerName", c.officer);
+        renderLawyerOptions(c.officer);
         document.getElementById("in_noticeDate").value = todayISO();
-        const docNoEl = document.getElementById("in_noticeDocNo");
-        if (c.l3ResolutionNoticeDocNo) docNoEl.value = c.l3ResolutionNoticeDocNo;
+        if (c.l3ResolutionNoticeDocNo) document.getElementById("in_noticeDocNo").value = c.l3ResolutionNoticeDocNo;
         prefillIncomingReport(c.l3IncomingBoardReport);
       }
 
@@ -850,21 +824,14 @@
           .join("");
       }
 
-      function issueNoticeDocNo() {
-        const docNo = Activity103.issueDocNo(
-          currentCase.id,
-          "l3ResolutionNoticeDocNo",
-          "l3ResolutionNoticeDocDate",
-        );
-        currentCase = Activity103.getCase(currentCase.id);
-        document.getElementById("in_noticeDocNo").value = docNo;
-        Swal.fire({
-          icon: "success",
-          title: "ออกเลขหนังสือแจ้งผลเรียบร้อยแล้ว",
-          text: "เลขที่หนังสือ " + docNo,
-          timer: 1500,
-          showConfirmButton: false,
-        });
+      function renderLawyerOptions(selected) {
+        const names = LAWYERS.slice();
+        if (selected && !names.includes(selected)) names.unshift(selected);
+        const el = document.getElementById("in_notifyLawyer");
+        el.innerHTML =
+          '<option value="">-- เลือกนิติกร --</option>' +
+          names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
+        el.value = selected || "";
       }
 
       function warn(title, text, focusId) {
@@ -898,14 +865,12 @@
         if (!agendaNo) return warn("กรุณากรอกวาระที่", "กรุณากรอกวาระที่พิจารณาเรื่องนี้", "in_agendaNo");
         if (!resolutionText) return warn("กรุณาระบุสาระสำคัญของมติ", "กรุณาสรุปข้อมติตามรายงานสรุปมติ", "in_resolutionText");
         if (!reportFiles.length && !presetReportNames.length) return warn("กรุณาแนบรายงานสรุปมติ", "กรุณาแนบไฟล์รายงานสรุปมติจากกองบริหารคดีอย่างน้อย 1 ไฟล์");
-        if (!noticeDocNo) return warn("กรุณากรอกเลขที่หนังสือแจ้งผล", "กรุณากรอกหรือกดออกเลขที่หนังสือแจ้งผล", "in_noticeDocNo");
+        if (!noticeDocNo) return warn("กรุณากรอกเลขที่หนังสือแจ้งผล", "กรุณากรอกเลขที่หนังสือแจ้งผล", "in_noticeDocNo");
         if (!noticeDate) return warn("กรุณาระบุวันที่แจ้งผล", "กรุณาระบุวันที่แจ้งผลมติ", "in_noticeDate");
+        const lawyerName = v("in_notifyLawyer");
+        if (!lawyerName) return warn("กรุณาเลือกนิติกร", "กรุณาเลือกนิติกร กลุ่มงานคดี ที่ต้องการแจ้งผลมติ", "in_notifyLawyer");
 
-        const legalDirector = ECMIS103.signerLabel("dir_legal");
-        const recipients = [{ role: "dir_legal", label: "ผอ.กองกฎหมาย", name: legalDirector }];
-        if (document.getElementById("in_notifyLawyer").checked) {
-          recipients.push({ role: "case_legal_officer", label: "นิติกรเจ้าของเรื่อง", name: currentCase.officer || "-" });
-        }
+        const recipients = [{ role: "case_legal_officer", label: "นิติกร กลุ่มงานคดี", name: lawyerName }];
 
         Swal.fire({
           icon: "question",
@@ -962,7 +927,7 @@
               Swal.fire({
                 icon: "success",
                 title: "รับเรื่องและแจ้งผลมติสำเร็จ!",
-                text: `แจ้งผลมติคณะกรรมการ ป.ป.ท. ด้วยหนังสือเลขที่ ${noticeDocNo} ถึง ผอ.กองกฎหมาย เรียบร้อยแล้ว`,
+                text: `แจ้งผลมติคณะกรรมการ ป.ป.ท. ด้วยหนังสือเลขที่ ${noticeDocNo} ถึง ${lawyerName} เรียบร้อยแล้ว`,
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร ยื่นคำขอขยายเวลาต่อศาล | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ขอขยายเวลาและร่างคำให้การ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_8" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_2" />
 
     <style>
       h1,
@@ -277,7 +277,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร ยื่นคำขอขยายเวลาต่อศาล</span
+              >นิติกร ยื่นคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง</span
             >
           </div>
         </div>
@@ -357,9 +357,6 @@
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label">
             <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
-            <span class="stepper-legend"
-              ><span class="stepper-legend-dot"></span> ยังไม่มีหน้าในระบบ</span
-            >
           </div>
           <div class="stepper stepper-wide" id="stepperPart2"></div>
         </div>
@@ -527,13 +524,26 @@
             >
               <span
                 ><i class="fa-solid fa-scale-balanced text-primary me-2"></i
-                >ยื่นคำขอขยายเวลาต่อศาล</span
+                >ยื่นคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>นิติกร กลุ่มงานคดี</span
               >
             </div>
             <div class="form-card-body">
+              <div id="returnNotice" class="l3-note l3-note-warn d-none" style="margin-bottom: 16px">
+                <i class="fa-solid fa-rotate-left"></i>
+                <div>
+                  <strong><span id="f_returnFrom">ผอ.กลุ่มงานคดี</span>ส่งกลับให้แก้ไข</strong><br />
+                  <span id="f_returnInfo">-</span><br />
+                  ประเด็นที่ต้องแก้ไข: <span id="f_returnNotes">-</span><br />
+                  <span style="font-size: 0.85em">โดย <span id="f_returnBy">-</span></span>
+                </div>
+              </div>
+              <div class="l3-section-title">
+                <i class="fa-solid fa-scale-balanced text-primary"></i>
+                1. ยื่นคำขอขยายเวลาต่อศาล
+              </div>
               <div class="l3-note l3-note-info">
                 <i class="fa-solid fa-circle-info"></i>
                 <div>
@@ -568,6 +578,34 @@
                   placeholder="ระบุหมายเหตุ (ถ้ามี)..."
                 ></textarea>
               </div>
+
+              <hr class="l3-divider" />
+
+              <div class="l3-section-title">
+                <i class="fa-solid fa-pen-to-square text-primary"></i>
+                2. ร่างคำให้การแก้คำฟ้องและหนังสือนำส่ง
+              </div>
+              <div class="form-group">
+                <label>ร่างคำให้การแก้คำฟ้อง <span style="color: #dc2626">*</span></label>
+                <div class="l3-upload-box">
+                  <input type="file" id="in_answerFiles" accept=".pdf,.doc,.docx" multiple onchange="addDocFiles('answer', this)" />
+                </div>
+                <div id="answerFileList" style="margin-top: 8px"></div>
+              </div>
+              <div class="form-group">
+                <label>ร่างหนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ) <span style="color: #dc2626">*</span></label>
+                <div class="l3-upload-box">
+                  <input type="file" id="in_letterFiles" accept=".pdf,.doc,.docx" multiple onchange="addDocFiles('letter', this)" />
+                </div>
+                <div id="letterFileList" style="margin-top: 8px"></div>
+              </div>
+              <div class="form-group">
+                <label>พยานหลักฐานและเอกสารประกอบ <span style="font-weight: 400; color: #64748b">(ถ้ามี)</span></label>
+                <div class="l3-upload-box">
+                  <input type="file" id="in_evidenceFiles" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="addDocFiles('evidence', this)" />
+                </div>
+                <div id="evidenceFileList" style="margin-top: 8px"></div>
+              </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
@@ -576,7 +614,7 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-signature me-1"></i>ลงนาม บันทึก และ ส่งต่อ
+                <i class="fa-solid fa-signature me-1"></i>ลงนาม และ เสนอ ผอ.กลุ่มงานคดี
               </button>
             </div>
           </div>
@@ -589,7 +627,7 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260914_20"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_4"></script>
 
     <script>
       const STEP_CODE = "L3-22";
@@ -602,6 +640,11 @@
       let currentCase = null;
       let viewOnly = false;
       let extensionRows = [];
+      const DOC_GROUPS = {
+        answer: { listId: "answerFileList", label: "ร่างคำให้การแก้คำฟ้อง", allowed: ["pdf", "doc", "docx"], files: [] },
+        letter: { listId: "letterFileList", label: "ร่างหนังสือนำส่ง", allowed: ["pdf", "doc", "docx"], files: [] },
+        evidence: { listId: "evidenceFileList", label: "พยานหลักฐาน", allowed: ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"], files: [] },
+      };
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -646,6 +689,48 @@
         document.getElementById("in_extensionNotes").value =
           currentCase.l3ExtensionNotes || "";
         renderExtensionList();
+        const docs = currentCase.l3AnswerDocs || {};
+        DOC_GROUPS.answer.files = (docs.answerFileNames || []).slice();
+        DOC_GROUPS.letter.files = (docs.letterFileNames || []).slice();
+        DOC_GROUPS.evidence.files = (docs.evidenceNames || []).slice();
+        Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+      }
+
+      function addDocFiles(key, input) {
+        if (!input.files || !input.files.length) return;
+        const group = DOC_GROUPS[key];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!group.allowed.includes(ext)) {
+            warn("ชนิดไฟล์ไม่ถูกต้อง", `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (${group.allowed.join(", ").toUpperCase()})`);
+            return;
+          }
+          if (file.size > 100 * 1024 * 1024) {
+            warn("ขนาดไฟล์เกินกำหนด", `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`);
+            return;
+          }
+          group.files.push(file.name);
+        });
+        input.value = "";
+        renderDocFiles(key);
+      }
+
+      function removeDocFile(key, idx) {
+        DOC_GROUPS[key].files.splice(idx, 1);
+        renderDocFiles(key);
+      }
+
+      function renderDocFiles(key) {
+        const group = DOC_GROUPS[key];
+        document.getElementById(group.listId).innerHTML = group.files
+          .map(
+            (name, idx) => `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)}</div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeDocFile('${key}', ${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`,
+          )
+          .join("");
       }
 
       function esc(t) {
@@ -693,8 +778,28 @@
         ECMIS103.setText("f_groupSignedAt", sigs["L3-21"] && sigs["L3-21"].signedAt);
 
         if (!viewOnly) {
-          extensionRows = [newRow()];
+          const prev = c.l3ExtensionRequests || [];
+          extensionRows = prev.length ? prev.map((r) => Object.assign({ fileNames: [] }, r, { fileNames: (r.fileNames || []).slice() })) : [newRow()];
           renderExtensionList();
+          const docs = c.l3AnswerDocs || {};
+          DOC_GROUPS.answer.files = (docs.answerFileNames || []).slice();
+          DOC_GROUPS.letter.files = (docs.letterFileNames || []).slice();
+          DOC_GROUPS.evidence.files = (docs.evidenceNames || []).slice();
+          Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+          const ret = c.l3AnswerReturn;
+          if (ret) {
+            const label = (d) => (d === "APPROVE" ? "เห็นชอบ" : "ไม่เห็นชอบ");
+            ECMIS103.setText(
+              "f_returnInfo",
+              ret.from === "case_legal_officer"
+                ? "เลขคดี ศาล และคู่ความตรงกัน: " + (ret.decisionAnswer === "APPROVE" ? "เห็นด้วย" : "ไม่เห็นด้วย") + " / ลำดับเอกสารและสำเนาคู่ฉบับ: " + (ret.decisionLetter === "APPROVE" ? "เห็นด้วย" : "ไม่เห็นด้วย")
+                : "ร่างคำให้การ: " + label(ret.decisionAnswer) + " / ร่างหนังสือนำส่ง: " + label(ret.decisionLetter),
+            );
+            ECMIS103.setText("f_returnNotes", ret.notes);
+            ECMIS103.setText("f_returnFrom", ({ dir_legal: "ผอ.กองกฎหมาย", secgen: "เลขาธิการ ป.ป.ท. ", deputy_sg: "รองเลขาธิการ ป.ป.ท. ", case_legal_officer: "นิติกร (ขั้นรวบรวมเอกสาร) " })[ret.from] || "ผอ.กลุ่มงานคดี");
+            ECMIS103.setText("f_returnBy", (ret.reviewedBy || "-") + " เมื่อ " + (ret.reviewedAt || "-"));
+            document.getElementById("returnNotice").classList.remove("d-none");
+          }
         }
       }
 
@@ -791,7 +896,7 @@
  </div>` : ""}
  </div>` : ""}
  <div class="form-group" style="margin-bottom: 0">
- <label>แนบคำร้อง / คำสั่งศาล</label>
+ <label>แนบคำร้อง / คำสั่งศาล <span style="color: #dc2626">*</span></label>
  <div class="l3-upload-box"><input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple onchange="addExtFiles(${idx}, this)" /></div>
  <div style="margin-top: 8px">${files}</div>
  </div>
@@ -854,7 +959,10 @@
           if (row.result === "GRANTED" && !(parseInt(row.grantedDays, 10) > 0)) {
             return warn("กรุณาระบุจำนวนวันที่ศาลอนุญาต", "คำขอขยายเวลา" + no + " ศาลอนุญาตแล้ว ต้องระบุจำนวนวันที่ได้รับอนุญาต");
           }
+          if (!row.fileNames.length) return warn("กรุณาแนบคำร้อง / คำสั่งศาล", "คำขอขยายเวลา" + no + " ต้องแนบคำร้องหรือคำสั่งศาลอย่างน้อย 1 ไฟล์");
         }
+        if (!DOC_GROUPS.answer.files.length) return warn("กรุณาแนบร่างคำให้การแก้คำฟ้อง", "กรุณาแนบไฟล์ร่างคำให้การแก้คำฟ้องอย่างน้อย 1 ไฟล์");
+        if (!DOC_GROUPS.letter.files.length) return warn("กรุณาแนบร่างหนังสือนำส่ง", "กรุณาแนบไฟล์ร่างหนังสือนำส่งถึงสำนักงานคดีปกครองอย่างน้อย 1 ไฟล์");
 
         const d = refreshDeadline();
         const notes = document.getElementById("in_extensionNotes").value.trim() || "-";
@@ -870,17 +978,20 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันการบันทึกคำขอขยายเวลา?",
+          title: "ยืนยันการเสนอคำขอขยายเวลาและร่างคำให้การ?",
           html: `
  <div class="emd-summary">
  <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
  <p><strong>คำขอขยายเวลา:</strong><br/>${rowsSummary}</p>
  <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง นิติกร ร่างคำให้การแก้คำฟ้อง</p>
+ <p><strong>ร่างคำให้การแก้คำฟ้อง:</strong> ${DOC_GROUPS.answer.files.map(esc).join(", ")}</p>
+ <p><strong>ร่างหนังสือนำส่ง:</strong> ${DOC_GROUPS.letter.files.map(esc).join(", ")}</p>
+ <p><strong>พยานหลักฐานแนบ:</strong> ${DOC_GROUPS.evidence.files.length} ไฟล์</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ</p>
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: "ยืนยันบันทึกและส่งต่อ",
+          confirmButtonText: "ยืนยันเสนอ",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#16a34a",
           cancelButtonColor: "#64748b",
@@ -888,7 +999,7 @@
           if (!res.isConfirmed) return;
           ECMIS103.openSignatureModal(
             {
-              title: "ลงนามบันทึกการยื่นคำขอขยายเวลาต่อศาล",
+              title: "ลงนามเสนอคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง",
               signer: currentCase.officer || ECMIS103.signerLabel("case_legal_officer"),
               certId: "PACC-CASELAWYER-2569-103",
             },
@@ -907,13 +1018,20 @@
                 l3ExtensionNotes: notes,
                 l3AnswerOriginalDueDate: d ? Activity103.toISODate(d.originalDue) : "",
                 l3AnswerDueDate: d ? Activity103.toISODate(d.currentDue) : "",
-                assignedRole: "case_legal_officer",
+                l3AnswerDocs: {
+                  answerFileNames: DOC_GROUPS.answer.files.slice(),
+                  letterFileNames: DOC_GROUPS.letter.files.slice(),
+                  evidenceNames: DOC_GROUPS.evidence.files.slice(),
+                  version: currentCase.l3AnswerReturn ? ((currentCase.l3AnswerDocs || {}).version || 1) + 1 : 1,
+                },
+                l3AnswerReturn: undefined,
+                assignedRole: "case_group_director",
               });
 
               Swal.fire({
                 icon: "success",
-                title: "บันทึกคำขอขยายเวลาสำเร็จ!",
-                text: "ครบกำหนดยื่นคำให้การ " + dueText + " — ส่งต่อขั้นร่างคำให้การแก้คำฟ้องเรียบร้อยแล้ว",
+                title: "เสนอร่างคำให้การสำเร็จ!",
+                text: "ครบกำหนดยื่นคำให้การ " + dueText + " — ส่ง ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การเรียบร้อยแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);

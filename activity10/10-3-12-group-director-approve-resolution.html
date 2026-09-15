@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_8" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_2" />
 
     <style>
       h1,
@@ -357,9 +357,6 @@
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label">
             <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
-            <span class="stepper-legend"
-              ><span class="stepper-legend-dot"></span> ยังไม่มีหน้าในระบบ</span
-            >
           </div>
           <div class="stepper stepper-wide" id="stepperPart2"></div>
         </div>
@@ -606,8 +603,13 @@
                 ></textarea>
               </div>
               <div class="form-group">
-                <label>ส่งต่อให้</label>
-                <div class="read-box" id="f_forwardTo">-</div>
+                <label
+                  >ส่งต่อให้ (นิติกร กลุ่มงานคดี)
+                  <span style="color: #dc2626">*</span></label
+                >
+                <select id="in_forwardTo" class="form-control">
+                  <option value="">-- เลือกนิติกร --</option>
+                </select>
               </div>
             </div>
             <div class="form-actions">
@@ -630,7 +632,7 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260914_20"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_4"></script>
 
     <script>
       const STEP_CODE = "L3-21";
@@ -677,6 +679,7 @@
       function fillSavedValues() {
         document.getElementById("in_approveNotes").value =
           currentCase.l3ResolutionGroupApproveNotes || "";
+        renderLawyerOptions(currentCase.l3ResolutionForwardTo);
       }
 
       function esc(t) {
@@ -691,11 +694,30 @@
         return iso ? ECMIS103.formatThaiDate(iso) : "-";
       }
 
-      function lawyerLabel() {
+      const LAWYERS = [
+        "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+        "นางสาวสุดา คดีเที่ยง (นิติกร กลุ่มงานคดี)",
+        "นางสาวพิมพ์ชนก ธรรมรักษ์ (นิติกร กลุ่มงานคดี)",
+      ];
+
+      function defaultLawyer() {
+        const n = (currentCase && currentCase.l3ResolutionNotice) || {};
+        const notified = (n.recipients || []).find((x) => x.role === "case_legal_officer");
         return (
+          (notified && notified.name) ||
           (currentCase && currentCase.officer) ||
           ECMIS103.signerLabel("case_legal_officer")
         );
+      }
+
+      function renderLawyerOptions(selected) {
+        const names = LAWYERS.slice();
+        if (selected && !names.includes(selected)) names.unshift(selected);
+        const el = document.getElementById("in_forwardTo");
+        el.innerHTML =
+          '<option value="">-- เลือกนิติกร --</option>' +
+          names.map((x) => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
+        el.value = selected || "";
       }
 
       function showSig(imgId, sig) {
@@ -759,7 +781,7 @@
         ECMIS103.setText("f_directorSignedAt", sigs["L3-20"] && sigs["L3-20"].signedAt);
         showSig("f_directorSigImg", sigs["L3-20"]);
 
-        ECMIS103.setText("f_forwardTo", "นิติกรเจ้าของเรื่อง — " + lawyerLabel());
+        renderLawyerOptions(defaultLawyer());
       }
 
       function submitForm() {
@@ -767,7 +789,16 @@
         const r = currentCase.l3BoardResolution || {};
         const notes =
           document.getElementById("in_approveNotes").value.trim() || "-";
-        const forwardTo = lawyerLabel();
+        const forwardTo = document.getElementById("in_forwardTo").value;
+        if (!forwardTo) {
+          Swal.fire({
+            icon: "warning",
+            title: "กรุณาเลือกนิติกร",
+            text: "กรุณาเลือกนิติกร กลุ่มงานคดี ที่ต้องการส่งต่อ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
 
         Swal.fire({
           icon: "question",

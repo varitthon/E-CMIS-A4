@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260914_8" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_2" />
 
     <style>
       h1,
@@ -357,9 +357,6 @@
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label">
             <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
-            <span class="stepper-legend"
-              ><span class="stepper-legend-dot"></span> ยังไม่มีหน้าในระบบ</span
-            >
           </div>
           <div class="stepper stepper-wide" id="stepperPart2"></div>
         </div>
@@ -470,90 +467,14 @@
               <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
             </div>
             <div class="form-card-body">
-              <div class="l3-doc-tabs">
-                <button type="button" class="l3-doc-tab is-active" data-tab="answer" onclick="switchDocTab('answer')">
-                  <i class="fa-solid fa-scale-balanced"></i> 1. คำให้การแก้คำฟ้อง
-                </button>
-                <button type="button" class="l3-doc-tab" data-tab="letter" onclick="switchDocTab('letter')">
-                  <i class="fa-solid fa-envelope"></i> 2. หนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)
-                </button>
-              </div>
-
-              <div class="l3-split" id="panelAnswer">
-                <div class="l3-split-preview">
-                  <div class="l3-doc-viewer">
-                    <div class="l3-doc-toolbar">
-                      <div class="l3-doc-toolbar-title">
-                        <i class="fa-solid fa-file-lines text-primary"></i>
-                        <span>ตัวอย่างเอกสาร — คำให้การแก้คำฟ้อง</span>
-                      </div>
-                      <div class="l3-doc-toolbar-actions">
-                        <div class="l3-doc-zoom">
-                          <button type="button" onclick="ECMIS103.zoomDoc('answerPreview', -1)"><i class="fa-solid fa-minus"></i></button>
-                          <span class="l3-doc-zoom-val" id="answerPreviewZoomVal">55%</span>
-                          <button type="button" onclick="ECMIS103.zoomDoc('answerPreview', 1)"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="l3-doc-pageframe l3-split-preview-body">
-                      <div class="l3-doc l3-doc-page" id="answerPreview"></div>
-                    </div>
-                  </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ร่างคำให้การแก้คำฟ้อง</label>
+                  <div id="f_answerFiles"></div>
                 </div>
-                <div class="l3-split-form">
-                  <div class="form-group">
-                    <label>ยื่นต่อศาล</label>
-                    <div class="read-box" id="f_answerCourt">-</div>
-                  </div>
-                  <div class="form-group">
-                    <label>เนื้อหาคำให้การ (ข้อเท็จจริงและข้อต่อสู้)</label>
-                    <div class="l3-tiptap-readonly" id="f_answerHTML">-</div>
-                  </div>
-                  <div class="form-group">
-                    <label>คำขอท้ายคำให้การ</label>
-                    <div class="read-box read-box-textarea" id="f_answerPrayer">-</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="l3-split d-none" id="panelLetter">
-                <div class="l3-split-preview">
-                  <div class="l3-doc-viewer">
-                    <div class="l3-doc-toolbar">
-                      <div class="l3-doc-toolbar-title">
-                        <i class="fa-solid fa-file-lines text-primary"></i>
-                        <span>ตัวอย่างเอกสาร — หนังสือนำส่ง</span>
-                      </div>
-                      <div class="l3-doc-toolbar-actions">
-                        <div class="l3-doc-zoom">
-                          <button type="button" onclick="ECMIS103.zoomDoc('letterPreview', -1)"><i class="fa-solid fa-minus"></i></button>
-                          <span class="l3-doc-zoom-val" id="letterPreviewZoomVal">55%</span>
-                          <button type="button" onclick="ECMIS103.zoomDoc('letterPreview', 1)"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="l3-doc-pageframe l3-split-preview-body">
-                      <div class="l3-doc l3-doc-page" id="letterPreview"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="l3-split-form">
-                  <div class="form-group">
-                    <label>เรื่อง</label>
-                    <div class="read-box" id="f_letterSubject">-</div>
-                  </div>
-                  <div class="form-group">
-                    <label>เรียน</label>
-                    <div class="read-box" id="f_letterTo">-</div>
-                  </div>
-                  <div class="form-group">
-                    <label>สิ่งที่ส่งมาด้วย</label>
-                    <div class="read-box read-box-textarea" id="f_letterEnclosures">-</div>
-                  </div>
-                  <div class="form-group">
-                    <label>เนื้อหาหนังสือ</label>
-                    <div class="l3-tiptap-readonly" id="f_letterHTML">-</div>
-                  </div>
+                <div class="form-group">
+                  <label>ร่างหนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)</label>
+                  <div id="f_letterFiles"></div>
                 </div>
               </div>
 
@@ -748,13 +669,13 @@
                   <div class="read-box read-box-textarea" id="f_originalChecklist">-</div>
                 </div>
                 <div class="form-group">
-                  <label>จำนวนชุด</label>
+                  <label>วันที่รับเอกสารฉบับจริง</label>
                   <div class="read-box" id="f_originalSets">-</div>
                 </div>
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ไฟล์สแกนเอกสารฉบับจริง</label>
+                  <label>เอกสารเพิ่มเติม</label>
                   <div id="f_originalScans"></div>
                 </div>
                 <div class="form-group">
@@ -765,50 +686,6 @@
                       <div><strong id="f_adminCollectedBy">-</strong></div>
                       <div>รวบรวมเมื่อ <span id="f_adminSignedAt">-</span></div>
                       <div>หมายเหตุ: <span id="f_originalNotes">-</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-card">
-            <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-box-archive text-primary me-2"></i
-                >ชุดเอกสารที่รวบรวมแล้ว</span
-              >
-              <span class="badge" style="background: #dcfce7; color: #166534" id="f_packageBadge">-</span>
-            </div>
-            <div class="form-card-body">
-              <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0" style="font-size: 0.88em">
-                  <thead>
-                    <tr>
-                      <th style="width: 44px">ลำดับ</th>
-                      <th>เอกสาร</th>
-                      <th>รายละเอียด</th>
-                      <th style="width: 110px">ประเภท</th>
-                      <th style="width: 70px; text-align: center">รวม</th>
-                    </tr>
-                  </thead>
-                  <tbody id="f_packageTable"></tbody>
-                </table>
-              </div>
-              <hr class="l3-divider" />
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เอกสารเพิ่มเติม</label>
-                  <div id="f_packageExtra"></div>
-                </div>
-                <div class="form-group">
-                  <label>ผู้รวบรวม</label>
-                  <div class="l3-sig-preview">
-                    <img id="f_packageSigImg" alt="ลายมือชื่อนิติกร" class="d-none" />
-                    <div class="l3-sig-preview-meta">
-                      <div><strong id="f_packagePreparedBy">-</strong></div>
-                      <div>รวบรวมเมื่อ <span id="f_packageSignedAt">-</span></div>
-                      <div>จำนวน <span id="f_packageEnvelopes">-</span> ซอง — หมายเหตุ: <span id="f_packageNotes">-</span></div>
                     </div>
                   </div>
                 </div>
@@ -988,7 +865,7 @@
     <script src="assets/ecmis-capture.js"></script>
     <script src="assets/ecmis-activity10.js?v=20260914_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260914_20"></script>
+    <script src="assets/ecmis-10-3.js?v=20260915_4"></script>
 
     <script>
       const STEP_CODE = "L3-33";
@@ -1052,36 +929,6 @@
         renderTimeliness();
       }
 
-      function renderPackage() {
-        const c = currentCase;
-        const p = c.l3AnswerPackage || {};
-        const items = p.items || [];
-        document.getElementById("f_packageTable").innerHTML = items.length
-          ? items
-              .map(
-                (it, i) => `<tr>
- <td>${i + 1}</td>
- <td>${esc(it.label)}</td>
- <td>${esc(it.detail)}</td>
- <td>${esc(it.type)}</td>
- <td style="text-align:center">${it.included ? '<i class="fa-solid fa-check" style="color:#16a34a"></i>' : '<i class="fa-solid fa-xmark" style="color:#dc2626"></i>'}</td>
- </tr>`,
-              )
-              .join("")
-          : '<tr><td colspan="5" style="text-align:center; color:#64748b">ไม่มีข้อมูลชุดเอกสาร</td></tr>';
-        ECMIS103.setText("f_packageBadge", "รวม " + items.filter((it) => it.included).length + "/" + items.length + " รายการ");
-        ECMIS103.renderAttachments("f_packageExtra", p.extraNames);
-        const sig = (c.l3Signatures || {})["L3-31"];
-        ECMIS103.setText("f_packagePreparedBy", p.preparedBy || c.officer);
-        ECMIS103.setText("f_packageSignedAt", (sig && sig.signedAt) || p.preparedDate);
-        ECMIS103.setText("f_packageEnvelopes", p.envelopeCount);
-        ECMIS103.setText("f_packageNotes", p.notes);
-        const img = document.getElementById("f_packageSigImg");
-        if (sig && sig.image) {
-          img.src = sig.image;
-          img.classList.remove("d-none");
-        }
-      }
 
       function renderPosting() {
         const c = currentCase;
@@ -1250,7 +1097,7 @@
       function populate() {
         const c = currentCase;
         const docs = c.l3AnswerDocs || {};
-        const sig = (c.l3Signatures || {})["L3-23"];
+        const sig = (c.l3Signatures || {})["L3-22"];
 
         ECMIS103.setText("f_caseNo", c.id);
         ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
@@ -1263,20 +1110,8 @@
 
         ECMIS103.setText("f_draftVersion", "ร่างครั้งที่ " + (docs.version || 1));
         ECMIS103.setText("f_answerCourt", c.courtName);
-        ECMIS103.setHtml("f_answerHTML", docs.answerHTML || "-");
-        ECMIS103.setText("f_answerPrayer", docs.prayer);
-        ECMIS103.setText("f_letterSubject", docs.letterSubject);
-        ECMIS103.setText("f_letterTo", docs.letterTo);
-        ECMIS103.setText(
-          "f_letterEnclosures",
-          (docs.letterEnclosures || "")
-            .split("\n")
-            .map((x) => x.trim())
-            .filter(Boolean)
-            .map((x, i) => i + 1 + ". " + x)
-            .join("\n"),
-        );
-        ECMIS103.setHtml("f_letterHTML", docs.letterHTML || "-");
+        ECMIS103.renderAttachments("f_answerFiles", docs.answerFileNames);
+        ECMIS103.renderAttachments("f_letterFiles", docs.letterFileNames);
         ECMIS103.renderAttachments("f_evidenceFiles", docs.evidenceNames);
 
         ECMIS103.setText("f_lawyerName", c.officer || ECMIS103.signerLabel("case_legal_officer"));
@@ -1307,8 +1142,8 @@
           "f_originalChecklist",
           Object.keys(origLabels).map((k) => ((o.checklist || {})[k] ? "✔ " : "✘ ") + origLabels[k]).join("\n"),
         );
-        ECMIS103.setText("f_originalSets", "ฉบับจริง " + (o.originalSets || "-") + " ชุด / สำเนาคู่ฉบับ " + (o.copySets != null ? o.copySets : "-") + " ชุด");
-        ECMIS103.renderAttachments("f_originalScans", o.scanNames);
+        ECMIS103.setText("f_originalSets", o.collectedDate);
+        ECMIS103.renderAttachments("f_originalScans", o.extraNames || o.scanNames);
         ECMIS103.setText("f_adminCollectedBy", o.collectedBy || ECMIS103.signerLabel("admin_legal"));
         const adminSig = (c.l3Signatures || {})["L3-30"];
         ECMIS103.setText("f_adminSignedAt", (adminSig && adminSig.signedAt) || o.collectedDate);
@@ -1328,7 +1163,6 @@
           chairImg.src = chairSig.image;
           chairImg.classList.remove("d-none");
         }
-        renderPackage();
         ECMIS103.setText("f_externalDocNo", c.l3AnswerExternalDocNo);
         ECMIS103.setText("f_externalDocDate", c.l3AnswerExternalDocDate);
         ECMIS103.setText("f_urgencyBadge", c.l3AnswerUrgency || "-");
@@ -1363,10 +1197,6 @@
             : "-";
         ECMIS103.setText("f_groupReview", reviewText(c.l3AnswerGroupReview, "L3-24"));
         ECMIS103.setText("f_directorReview", reviewText(c.l3AnswerDirectorReview, "L3-25"));
-
-        ECMIS103.initDocZoom("answerPreview", 0.55);
-        ECMIS103.initDocZoom("letterPreview", 0.55);
-        renderPreviews(docs);
       }
 
       function renderDeadline() {
@@ -1402,75 +1232,6 @@
                 .join("\n")
             : "ไม่มีคำขอขยายเวลา",
         );
-      }
-
-      function switchDocTab(tab) {
-        document.querySelectorAll(".l3-doc-tab").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
-        document.getElementById("panelAnswer").classList.toggle("d-none", tab !== "answer");
-        document.getElementById("panelLetter").classList.toggle("d-none", tab !== "letter");
-      }
-
-      function renderPreviews(docs) {
-        const c = currentCase;
-        const row = (label, value) =>
-          '<div class="l3-doc-row"><span class="l3-doc-label">' + label + '</span><span class="l3-doc-value">' + (value || "-") + "</span></div>";
-        const section = (label, html) =>
-          '<div class="l3-doc-section"><span class="l3-doc-label">' + label + '</span><div class="l3-doc-body">' + (html || "-") + "</div></div>";
-        const signBlock = (who, note) =>
-          '<div class="l3-doc-signblock"><div style="text-align: center">' +
-          '<div style="height: 50px"></div>' +
-          '<div style="font-size: 0.88em">(ลงชื่อ) ..........................................</div>' +
-          '<div style="font-size: 0.82em">' + who + "</div>" +
-          '<div style="font-size: 0.75em; color: #64748b">' + note + "</div>" +
-          "</div></div>";
-
-        document.getElementById("answerPreview").innerHTML =
-          '<div style="text-align:center; font-weight:700; font-size:1.1em; margin-bottom:10px;">คำให้การ</div>' +
-          row("ศาล", esc(c.courtName)) +
-          row("คดีหมายเลขดำที่", esc(c.blackCaseNo)) +
-          row("ระหว่าง", esc(parties(c.plaintiffs)) + " ผู้ฟ้องคดี กับ " + esc(parties(c.defendants)) + " ผู้ถูกฟ้องคดี") +
-          section("ผู้ถูกฟ้องคดีขอให้การดังต่อไปนี้", docs.answerHTML) +
-          section("คำขอท้ายคำให้การ", esc(docs.prayer)) +
-          (docs.evidenceNames && docs.evidenceNames.length ? row("พยานหลักฐานที่แนบ", esc(docs.evidenceNames.join(", "))) : "") +
-          (function () {
-            const sig = (c.l3Signatures || {})["L3-29"];
-            const who = ECMIS103.signerLabel("chairman");
-            if (sig && sig.image) {
-              return (
-                '<div class="l3-doc-signblock"><div style="text-align: center">' +
-                '<img src="' + sig.image + '" alt="ลายมือชื่อ" style="max-height: 50px" />' +
-                '<div style="font-size: 0.88em">(ลงชื่อ) ' + esc(who) + "</div>" +
-                '<div style="font-size: 0.75em; color: #64748b">ผู้ถูกฟ้องคดี — ลงนามแล้ว ' + esc(sig.signedAt) + "</div>" +
-                "</div></div>"
-              );
-            }
-            return signBlock(esc(who), "ผู้แทนผู้ถูกฟ้องคดี");
-          })();
-
-        const enclosures = (docs.letterEnclosures || "")
-          .split("\n")
-          .map((x) => x.trim())
-          .filter(Boolean)
-          .map((x, i) => i + 1 + ". " + esc(x))
-          .join("<br/>");
-        document.getElementById("letterPreview").innerHTML =
-          '<div style="text-align:right; font-size:0.85em; margin-bottom:8px;">สำนักงาน ป.ป.ท.</div>' +
-          (c.l3AnswerUrgency ? '<div style="color:#dc2626; font-weight:700; font-size:1.05em; margin-bottom:6px;">' + esc(c.l3AnswerUrgency) + "</div>" : "") +
-          row("ที่", esc(c.l3AnswerExternalDocNo || "-") + (c.l3AnswerExternalDocDate ? " ลงวันที่ " + esc(c.l3AnswerExternalDocDate) : "")) +
-          row("เรื่อง", esc(docs.letterSubject)) +
-          row("เรียน", esc(docs.letterTo)) +
-          (enclosures ? row("สิ่งที่ส่งมาด้วย", enclosures) : "") +
-          section("", docs.letterHTML) +
-          signBlock(
-            (function () {
-              const role = typeof selectedSigner === "function" ? selectedSigner() : null;
-              if (role === "secgen") return ECMIS103.signerLabel("secgen");
-              if (role === "deputy_sg") return ECMIS103.signerLabel("deputy_sg") + "<br/>ปฏิบัติราชการแทนเลขาธิการคณะกรรมการ ป.ป.ท.";
-              return "เลขาธิการคณะกรรมการ ป.ป.ท. หรือผู้ปฏิบัติราชการแทน";
-            })(),
-            "ลงนามแล้ว " + esc(((c.l3CoverLetterSigning || {}).signedAt) || ""),
-          ) +
-          '<div style="font-size:0.75em; color:#64748b; margin-top:10px;">กองกฎหมาย สำนักงาน ป.ป.ท. — ผู้จัดทำ ' + esc(c.officer || "-") + "</div>";
       }
 
       function warn(title, text) {

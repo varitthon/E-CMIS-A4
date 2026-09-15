@@ -183,25 +183,14 @@
       page: "10-3-13-lawyer-request-extension.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "นิติกรร่างคำให้การแก้คำฟ้อง",
-      statusCode: "L3_PENDING_LAWYER_DRAFT_ANSWER",
-      label: "นิติกร ยื่นคำขอขยายเวลาต่อศาล",
-      stepName: "นิติกร ขอขยายเวลาต่อศาล",
-    },
-    {
-      code: "L3-23",
-      seq: 5,
-      page: "10-3-14-lawyer-draft-answer.html",
-      role: "case_legal_officer",
-      roleTitle: "นิติกร กลุ่มงานคดี",
       status: "ผอ.กลุ่มงานคดีตรวจสอบร่างคำให้การ",
       statusCode: "L3_PENDING_GROUP_ANSWER_REVIEW",
-      label: "นิติกร ร่างคำให้การแก้คำฟ้องและหนังสือนำส่ง",
-      stepName: "นิติกร ร่างคำให้การ",
+      label: "นิติกร ยื่นคำขอขยายเวลาต่อศาลและร่างคำให้การแก้คำฟ้อง",
+      stepName: "นิติกร ขอขยายเวลา/ร่างคำให้การ",
     },
     {
       code: "L3-24",
-      seq: 6,
+      seq: 5,
       page: "10-3-15-group-director-review-answer.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
@@ -212,7 +201,7 @@
     },
     {
       code: "L3-25",
-      seq: 7,
+      seq: 6,
       page: "10-3-16-legal-director-review-answer.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
@@ -223,7 +212,7 @@
     },
     {
       code: "L3-26",
-      seq: 8,
+      seq: 7,
       page: "10-3-17-legal-admin-internal-dispatch-answer.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
@@ -234,7 +223,7 @@
     },
     {
       code: "L3-27A",
-      seq: 9,
+      seq: 8,
       page: "10-3-18-secgen-sign-cover-letter.html",
       role: "secgen",
       roleTitle: "เลขาธิการ คณะกรรมการ ป.ป.ท.",
@@ -247,7 +236,7 @@
     },
     {
       code: "L3-27B",
-      seq: 9,
+      seq: 8,
       page: "10-3-19-deputy-sg-sign-cover-letter.html",
       role: "deputy_sg",
       roleTitle: "รองเลขาธิการ ป.ป.ท. ผู้ดูแลกองกฎหมาย",
@@ -260,7 +249,7 @@
     },
     {
       code: "L3-28",
-      seq: 10,
+      seq: 9,
       page: "10-3-20-registry-issue-external-no.html",
       role: "registry",
       roleTitle: "สารบรรณกลาง",
@@ -271,7 +260,7 @@
     },
     {
       code: "L3-29",
-      seq: 11,
+      seq: 10,
       page: "10-3-21-chairman-sign-answer.html",
       role: "chairman",
       roleTitle: "ประธานกรรมการ ป.ป.ท.",
@@ -282,7 +271,7 @@
     },
     {
       code: "L3-30",
-      seq: 12,
+      seq: 11,
       page: "10-3-22-legal-admin-collect-originals.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
@@ -293,7 +282,7 @@
     },
     {
       code: "L3-31",
-      seq: 13,
+      seq: 12,
       page: "10-3-23-lawyer-collect-documents.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
@@ -304,7 +293,7 @@
     },
     {
       code: "L3-32",
-      seq: 14,
+      seq: 13,
       page: "10-3-24-lawyer-post-to-prosecutor.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
@@ -315,7 +304,7 @@
     },
     {
       code: "L3-33",
-      seq: 15,
+      seq: 14,
       page: "10-3-25-lawyer-track-status.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
@@ -960,12 +949,14 @@
     }
     const builtNodes = visibleSteps.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
-      const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      const isLast = i === visibleSteps.length - 1 && !PLANNED_ANSWER_STEPS.length;
+      const inner = isLast ? '<i class="fa-solid fa-flag-checkered"></i>' : i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      const finalCls = isLast && i <= curIdx ? " step-final" : "";
       const sig = sigs[step.code];
       const tip = step.label + (sig && sig.signedAt ? " — ลงนามเมื่อ " + sig.signedAt : "");
       const name = step.altGroup && !chosenSigner ? "เลขาธิการ/รองฯ ลงนามหนังสือนำส่ง" : step.stepName;
       return (
-        '<div class="step-item ' + cls + '" title="' + tip + '">' +
+        '<div class="step-item ' + cls + finalCls + '" title="' + tip + '">' +
         '<div class="step-circle">' + inner + "</div>" +
         '<div class="step-label">' + name + "</div>" +
         "</div>"
@@ -974,19 +965,13 @@
     const plannedNodes = PLANNED_ANSWER_STEPS.map(function (step, i) {
       const waiting = curIdx === visibleSteps.length && i === 0 ? " is-waiting" : "";
       return (
-        '<div class="step-item planned' + waiting + '" title="' + step.label + ' (ยังไม่มีหน้าในระบบ)">' +
+        '<div class="step-item planned' + waiting + '" title="' + step.label + '">' +
         '<div class="step-circle">' + (visibleSteps.length + i + 1) + "</div>" +
         '<div class="step-label">' + step.stepName + "</div>" +
         "</div>"
       );
     });
-    const reachedEnd = curIdx >= visibleSteps.length;
-    const endNode =
-      '<div class="step-item planned' + (reachedEnd ? " is-waiting" : "") + '" title="ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา (กรณี 2)">' +
-      '<div class="step-circle"><i class="fa-solid fa-flag-checkered"></i></div>' +
-      '<div class="step-label">รอคำพิพากษา (กรณี 2)</div>' +
-      "</div>";
-    el2.innerHTML = builtNodes.concat(plannedNodes).join("") + endNode;
+    el2.innerHTML = builtNodes.concat(plannedNodes).join("");
   }
 
   function applyViewMode(kase, stepCode) {
