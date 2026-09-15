@@ -1468,6 +1468,34 @@
         return { group: "อื่นๆ", text: name };
       }
 
+      /* จัดลำดับเคสลูกคำขอทุเลาฯ (l3ParentCaseId) ให้อยู่ถัดจากเคสแม่ทันทีใน
+         รายการ (indent + จัดกลุ่มให้เห็นชัดว่าเป็นคู่กัน) — เคสอื่นที่ไม่มี
+         ความสัมพันธ์พ่อ-ลูกคงลำดับเดิมตามที่ผ่านมา ถ้าเคสแม่ไม่อยู่ในชุดเดียวกัน
+         (ถูกกรองออกไปด้วยค้นหา/ตัวกรองสถานะ) เคสลูกจะคงอยู่ตำแหน่งเดิม */
+      function groupParentChildCases103(list) {
+        const byId = new Map(list.map((d) => [d.raw ? d.raw.id : d.caseNo, d]));
+        const childrenByParent = new Map();
+        const standalone = [];
+        list.forEach((d) => {
+          const parentId = d.raw && d.raw.l3ParentCaseId;
+          if (parentId && byId.has(parentId)) {
+            if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
+            childrenByParent.get(parentId).push(d);
+          } else {
+            standalone.push(d);
+          }
+        });
+        const result = [];
+        standalone.forEach((d) => {
+          result.push(d);
+          const id = d.raw ? d.raw.id : d.caseNo;
+          if (childrenByParent.has(id)) {
+            result.push(...childrenByParent.get(id));
+          }
+        });
+        return result;
+      }
+
       function renderSummonsBadge103(item) {
         const info = getSummonsInfo103(item);
         const esc = (t) =>
@@ -2774,6 +2802,15 @@
           );
         }
 
+        /* จัดกลุ่มเคสลูกคำขอทุเลาฯ (l3ParentCaseId) ให้อยู่ติดถัดจากเคสแม่ในตาราง
+           ทันที แทนที่จะกระจายไปตามลำดับการเรียงปกติ (ทางเลือก 2 — เห็นความ
+           สัมพันธ์พ่อ-ลูกชัดเจนโดยไม่ต้องเพิ่มแบดจ์ใหม่) ใช้เฉพาะหมวด 10.3 และ
+           กระทบเฉพาะเคสที่อยู่ในผลลัพธ์ที่กรองแล้วชุดเดียวกันเท่านั้น (ถ้าเคสแม่
+           ถูกกรองออกไปเพราะเงื่อนไขค้นหา/สถานะ เคสลูกจะอยู่ตำแหน่งเดิมตามปกติ) */
+        if (cat === "10.3") {
+          filteredData = groupParentChildCases103(filteredData);
+        }
+
         const totalItems = filteredData.length;
         const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
@@ -2885,10 +2922,13 @@
             paginatedData.length === 0
               ? `<tr><td colspan="8" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
               : paginatedData
-                  .map(
-                    (item) => `
- <tr>
- <td><strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;">${item.caseNo}</strong></td>
+                  .map((item) => {
+                    const isChild103 = !!(
+                      item.raw && item.raw.l3ParentCaseId
+                    );
+                    return `
+ <tr${isChild103 ? ' style="background:rgba(30,58,138,0.035);"' : ""}>
+ <td>${isChild103 ? `<i class="fa-solid fa-turn-up fa-rotate-90 me-1" style="color:#94a3b8; font-size:0.85em;" title="เคสลูกของ ${item.raw.l3ParentCaseId}"></i>` : ""}<strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;${isChild103 ? " margin-left:14px;" : ""}">${item.caseNo}</strong></td>
  <td>${item.lawNo && item.lawNo !== "-" ? `<span style="font-family:monospace; font-weight:600; color:#2563eb;">${item.lawNo}</span>` : '<span style="color:#94a3b8;">- ยังไม่ออกเลข -</span>'}</td>
  <td style="max-width:200px;">${renderSummonsBadge103(item)}</td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
@@ -2896,8 +2936,8 @@
  <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
- </tr>`,
-                  )
+ </tr>`;
+                  })
                   .join("");
         }
       }

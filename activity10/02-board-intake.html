@@ -1250,7 +1250,10 @@
                   <select
                     id="in_courtName"
                     class="form-control"
-                    onchange="updateLivePreview()"
+                    onchange="
+                      toggleCourtNameOtherInput();
+                      updateLivePreview();
+                    "
                   >
                     <option value="ศาลปกครองสูงสุด" selected>
                       ศาลปกครองสูงสุด
@@ -1282,8 +1285,29 @@
                     </option>
                     <option value="ศาลปกครองภูเก็ต">ศาลปกครองภูเก็ต</option>
                     <option value="ศาลปกครองยะลา">ศาลปกครองยะลา</option>
-                    <option value="อื่นๆ">อื่นๆ</option>
+                    <option value="OTHER">อื่นๆ</option>
                   </select>
+                  <div
+                    id="div_courtNameOther"
+                    style="display: none; margin-top: 8px"
+                  >
+                    <label
+                      style="
+                        font-size: 0.82em;
+                        color: var(--text-title);
+                        margin-bottom: 4px;
+                      "
+                      >ระบุชื่อศาล (อื่นๆ)
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="in_courtNameOtherText"
+                      class="form-control"
+                      placeholder="โปรดระบุชื่อศาล..."
+                      oninput="updateLivePreview()"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1899,6 +1923,21 @@
         }
       }
 
+      /* "อื่นๆ" ในช่องศาล (เฉพาะบล็อกคดีศาลปกครอง) */
+      function toggleCourtNameOtherInput() {
+        const select = document.getElementById("in_courtName");
+        const otherDiv = document.getElementById("div_courtNameOther");
+        if (select && otherDiv) {
+          if (select.value === "OTHER") {
+            otherDiv.style.display = "block";
+            const input = document.getElementById("in_courtNameOtherText");
+            if (input) input.focus();
+          } else {
+            otherDiv.style.display = "none";
+          }
+        }
+      }
+
       /* "อื่นๆ" ในช่องสั่งถึง (เฉพาะบล็อกคดีศาลปกครอง) */
       function toggleOrderedToOtherInput() {
         const select = document.getElementById("in_orderedTo");
@@ -2335,7 +2374,10 @@
         const defendants = courtDefendants.map((d) => d.trim()).filter(Boolean);
 
         return {
-          courtName: val("in_courtName"),
+          courtName:
+            val("in_courtName") === "OTHER"
+              ? val("in_courtNameOtherText")
+              : val("in_courtName"),
           blackCaseNo: val("in_blackCaseNo"),
           redCaseNo: val("in_redCaseNo"),
           orderedTo:
@@ -2384,6 +2426,22 @@
               confirmButtonColor: "#1e3a8a",
             });
             if (el) el.focus();
+            return false;
+          }
+        }
+
+        /* เลือก "อื่นๆ" ในช่องศาล ต้องระบุชื่อศาลด้วย */
+        const courtSel = document.getElementById("in_courtName");
+        if (courtSel && courtSel.value === "OTHER") {
+          const otherText = document.getElementById("in_courtNameOtherText");
+          if (!otherText || !otherText.value.trim()) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุชื่อศาล (อื่นๆ)",
+              confirmButtonColor: "#1e3a8a",
+            });
+            if (otherText) otherText.focus();
             return false;
           }
         }

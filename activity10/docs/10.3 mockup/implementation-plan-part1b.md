@@ -9,7 +9,7 @@
 | # | คำถาม | คำตอบ |
 |---|---|---|
 | 1 | สถาปัตยกรรมเคส (ขนานกับสายหลัก) | **สร้างเคสลูกแยกต่างหาก** (child case) อ้างอิงเคสแม่ผ่าน `l3ParentCaseId` — มีแถวของตัวเองใน inbox และเดินสถานะ (`L3B_*`) เป็นอิสระจากเคสหลัก |
-| 2 | ผู้ลงนาม LAW0098 | **คงเป็นธุรการกองกฎหมาย ตามผังเดิม** — ไม่ปรับเป็น ผอ. |
+| 2 | ผู้ลงนาม LAW0098 | **ประธานกรรมการ ป.ป.ท. (`chairman`)** — แก้ไขจากแผนเดิม (เคยระบุผิดเป็นธุรการกองกฎหมาย) ให้ตรงกับผัง AS-IS ที่ยืนยันแล้ว |
 
 ## ทำไมต้องเป็นเคสลูก ไม่ใช่ field เสริมในเคสเดิม
 
@@ -19,8 +19,8 @@
 
 ```
 (spawn จาก 10-3-04) → L3B_PENDING_LAWYER_DRAFT
-  → [10-3b-01, LAW0097, นิติกร] → L3B_PENDING_ADMIN_SIGN
-  → [10-3b-02, LAW0098, ธุรการ] → L3B_PENDING_LAWYER_DISPATCH
+  → [10-3b-01, LAW0097, นิติกร] → L3B_PENDING_CHAIRMAN_SIGN
+  → [10-3b-02, LAW0098, ประธานกรรมการ ป.ป.ท.] → L3B_PENDING_LAWYER_DISPATCH
   → [10-3b-03, LAW0099, นิติกร] → L3B_CLOSED (จบ — black box ไม่มี route ต่อ)
 ```
 
@@ -29,8 +29,8 @@
 | # | ไฟล์ | สถานะไฟล์ | บทบาท | LAW# | ทำอะไร | `statusCode` ก่อนหน้านี้ |
 |---|---|---|---|---|---|---|
 | 1 | `10-3-04-lawyer-review-complaint.html` | แก้ไข | นิติกร กลุ่มงานคดี | (trigger) | ติ๊ก checkbox แล้ว submit → เรียก `Activity103.spawnStayObjectionCase(parentCase)` สร้างเคสลูก | — |
-| 2 | `10-3b-01-lawyer-draft-stay-objection.html` | ใหม่ | นิติกร กลุ่มงานคดี | LAW0097 | จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | `L3B_PENDING_LAWYER_DRAFT` |
-| 3 | `10-3b-02-legal-admin-sign-stay-objection.html` | ใหม่ | ธุรการกองกฎหมาย | LAW0098 | ยื่นมติบอร์ด ลงนามคำชี้แจงคัดค้าน (sign modal) | `L3B_PENDING_ADMIN_SIGN` |
+| 2 | `10-3b-01-lawyer-draft-stay-objection.html` | สร้างแล้ว | นิติกร กลุ่มงานคดี | LAW0097 | แนบคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี (เอกสารแนบไฟล์ ไม่ใช่ editor สด) | `L3B_PENDING_CHAIRMAN_SIGN` |
+| 3 | `10-3b-02-chairman-sign-stay-objection.html` | สร้างแล้ว | ประธานกรรมการ ป.ป.ท. | LAW0098 | ตรวจสอบและลงนามคำชี้แจงคัดค้าน (sign modal) | `L3B_PENDING_LAWYER_DISPATCH` |
 | 4 | `10-3b-03-lawyer-dispatch-stay-objection.html` | ใหม่ | นิติกร กลุ่มงานคดี | LAW0099 | ส่งคำชี้แจงต่อศาลปกครองโดยตรง | `L3B_PENDING_LAWYER_DISPATCH` |
 
 **ชื่อไฟล์ใช้ prefix `10-3b-`** (ไม่ใช่ `10-3-10/11/12`) เพื่อให้เห็นชัดว่าเป็นสาขาคู่ขนาน ไม่ใช่ลำดับต่อจากสายหลัก

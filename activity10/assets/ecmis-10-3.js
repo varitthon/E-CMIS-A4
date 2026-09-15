@@ -114,21 +114,21 @@
       page: "10-3b-01-lawyer-draft-stay-objection.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "ธุรการลงนามคำชี้แจงคัดค้าน",
-      statusCode: "L3B_PENDING_ADMIN_SIGN",
+      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_CHAIRMAN_SIGN",
       label: "นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
       stepName: "นิติกร จัดทำคำชี้แจงคัดค้าน",
     },
     {
       code: "LAW0098",
       seq: 2,
-      page: "10-3b-02-legal-admin-sign-stay-objection.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      page: "10-3b-02-chairman-sign-stay-objection.html",
+      role: "chairman",
+      roleTitle: "ประธานกรรมการ ป.ป.ท.",
       status: "นิติกรส่งคำชี้แจงต่อศาล",
       statusCode: "L3B_PENDING_LAWYER_DISPATCH",
-      label: "ธุรการ ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
-      stepName: "ธุรการ ลงนาม",
+      label: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
+      stepName: "ประธานฯ ลงนาม",
     },
     {
       code: "LAW0099",
@@ -142,6 +142,49 @@
       stepName: "นิติกร ส่งคำชี้แจง",
     },
   ];
+
+  /* ------------------------------------------------------------- PART 3
+     คำสั่งศาลเรื่องทุเลาการบังคับคดี (LAW0100-0102) — เดินต่อบนเคสลูกเดิม
+     (ไม่สร้างเคสใหม่) เข้าที่ L3B_CLOSED จาก 10-3b-03 (ตามที่ตกลง — ยึดผังจริง
+     docs/10.3 mockup/flow-page-03.md: LAW0100 role คือ "ศาลปกครอง" ไม่ใช่
+     ธุรการ จึงเป็นนิติกรที่บันทึกผลคำสั่งศาล ไม่มีขั้นธุรการคั่นกลางแบบที่
+     เคยวางแผนผิดไว้ก่อนหน้านี้ — รวม LAW0100 (รับคำสั่ง+จำแนก) กับ LAW0101
+     (ทำคำอุทธรณ์) เป็นหน้าเดียวตามที่ตกลง (10-3b-04): เลือก "ศาลมีคำสั่งให้
+     ทุเลาฯ" แล้วช่องแนบคำอุทธรณ์ + เซ็นโผล่ขึ้นในหน้าเดียวกันทันที ไม่ต้อง
+     เปลี่ยนหน้า — เลือก "ศาลยกคำขอ" ไม่ต้องเซ็น ปิดจบทันที (LAW0102) */
+  const COURT_ORDER_STEPS = [
+    {
+      /* หน้าเดียวรวม LAW0100 (รับคำสั่ง+จำแนก 2 ทาง) + LAW0101 (ทำคำอุทธรณ์
+         เมื่อเลือกทาง GRANTED) — statusCode ที่นี่เป็นแค่ค่าตั้งต้น (เหมือน
+         VERDICT_STEPS LAW0127/10-3v-06) สถานะจริงที่เขียนมาจาก
+         COURT_ORDER_BRANCHES ตามที่นิติกรเลือก */
+      code: "LAW0100_0101",
+      seq: 1,
+      page: "10-3b-04-lawyer-court-order-intake.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      entryStatus: "L3B_CLOSED",
+      status: "จัดทำคำอุทธรณ์คัดค้านคำสั่งศาลแล้ว",
+      statusCode: "L3B2_APPEAL_FILED",
+      label: "นิติกร รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี",
+      stepName: "นิติกร รับคำสั่งศาล/ดำเนินการ",
+    },
+  ];
+
+  /* LAW0100 — 2 ทางหลังนิติกรจำแนกคำสั่งศาล (ยึด docs/10.3 mockup/flow-page-03.md)
+     ทั้งสองทางเป็น terminal โดยตรง (ไม่มีหน้าถัดไปแยกต่างหากแล้ว) */
+  const COURT_ORDER_BRANCHES = {
+    GRANTED: {
+      label: "ศาลมีคำสั่งให้ทุเลาการบังคับคดี",
+      status: "จัดทำคำอุทธรณ์คัดค้านคำสั่งศาลแล้ว",
+      statusCode: "L3B2_APPEAL_FILED",
+    },
+    DENIED: {
+      label: "ศาลยกคำขอทุเลาการบังคับคดี",
+      status: "ยุติส่วนคำขอทุเลา (รอผลคดีหลัก)",
+      statusCode: "L3B2_CLOSED",
+    },
+  };
 
   const ANSWER_STEPS = [
     {
@@ -986,6 +1029,7 @@
 
   const ALL_STEPS = STEPS.concat(
     STAY_STEPS,
+    COURT_ORDER_STEPS,
     ANSWER_STEPS,
     VERDICT_STEPS,
     APPEAL_STEPS,
@@ -1021,6 +1065,15 @@
     if (next) acc[step.statusCode] = next.page;
     return acc;
   }, ROUTES);
+
+  /* COURT_ORDER_STEPS ใช้ entryStatus เหมือน ANSWER_STEPS ด้านล่าง — เข้าที่
+     L3B_CLOSED (ปลายทาง STAY_STEPS) หน้าเดียว (LAW0100_0101) จบทั้ง 2 ทางเลย
+     ไม่มีหน้าถัดไปให้ route ต่อ */
+  let courtOrderPrevStatus = null;
+  COURT_ORDER_STEPS.forEach(function (step) {
+    ROUTES[step.entryStatus || courtOrderPrevStatus] = step.page;
+    courtOrderPrevStatus = step.statusCode;
+  });
 
   let answerPrevStatus = STEPS[STEPS.length - 1].statusCode;
   ANSWER_STEPS.forEach(function (step) {
@@ -1290,6 +1343,8 @@
 
   const Activity103 = {
     STEPS: STEPS,
+    COURT_ORDER_STEPS: COURT_ORDER_STEPS,
+    COURT_ORDER_BRANCHES: COURT_ORDER_BRANCHES,
     ANSWER_STEPS: ANSWER_STEPS,
     COVER_SIGNER_ROUTES: COVER_SIGNER_ROUTES,
     VERDICT_STEPS: VERDICT_STEPS,
@@ -1452,6 +1507,13 @@
         title:
           "คำขอทุเลาการบังคับคดี — " + (parentCase.courtName || "") +
           " (เกี่ยวข้องกับ " + (parentCase.blackCaseNo || "") + ")",
+        /* ไม่ตั้งชื่อฟิลด์ paccCaseNo ว่างไว้ ไม่งั้น getTorDetails() ของเคสแม่-ลูก
+           จะ fallback ไปใช้ค่า default เดียวกันทั้งหมด ("0012/2568") ทำให้
+           01-work-inbox.html แสดงเลขสำนวนซ้ำกันทุกเคสลูก — ต่อท้าย "-ท" จาก
+           เลขสำนวนเคสแม่แทน เพื่อให้เห็นว่าเป็นคำขอทุเลาของเคสแม่เลขนั้น */
+        paccCaseNo: parentCase.paccCaseNo
+          ? parentCase.paccCaseNo + "-ท"
+          : "",
         courtName: parentCase.courtName,
         blackCaseNo: parentCase.blackCaseNo,
         redCaseNo: parentCase.redCaseNo,

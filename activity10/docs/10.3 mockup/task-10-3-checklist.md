@@ -9,7 +9,7 @@
 | Part | เนื้อหา (ตามผัง AS-IS) | LAW# | สถานะ |
 | --- | --- | --- | --- |
 | 1 | รับคำฟ้อง - สรุปความเห็นเสนอบอร์ด | LAW0084–0096 | ✅ **Implemented** (7 ไฟล์ — ดูรายละเอียดด้านล่าง) |
-| 1b | (สาขา) กรณีมีคำขอทุเลาการบังคับคดี | LAW0097–0099 | 🟡 **LAW0097 implemented** (`10-3b-01`, เคสลูกสร้างจริงและส่งต่อได้) — LAW0098/0099 ยังไม่ implement |
+| 1b | (สาขา) กรณีมีคำขอทุเลาการบังคับคดี | LAW0097–0099 | 🟡 **LAW0097/0098 implemented** (`10-3b-01` นิติกรแนบเอกสาร, `10-3b-02` ประธานกรรมการ ป.ป.ท. ลงนาม — แก้ไขบทบาทผู้ลงนามจากธุรการเป็นประธานฯ ให้ตรงผัง AS-IS) — LAW0099 ยังไม่ implement |
 | 2 | คำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | LAW0097–0099 | 🟡 ดู Part 1b ด้านบน (คนละหมายเลขอ้างอิงเดียวกันในผัง AS-IS) |
 | 3 | คำสั่งศาลเรื่องทุเลาการบังคับคดี | LAW0100–0102 | ❌ ยังไม่ implement |
 | 4 | จัดทำคำให้การแก้คำฟ้อง | LAW0103–0115 | ✅ **implemented** (`10-3-10`…`10-3-25`, 15 หน้า — ทีมงานอื่น (feat/10.3-case-1) merge เข้ามารวมกับสายงานนี้; ทางเข้าจาก `L3_READY_FOR_BOARD` ต่อจาก Part 1 โดยตรง เดินสถานะ `L3-19`…`L3-33`, มีทางแยก secgen/deputy_sg ลงนามหนังสือนำส่ง — ดูรายละเอียดในโค้ด/หน้าจริง ไม่ได้ทำเอกสารสรุปแยกในเซสชันนี้) |
@@ -49,13 +49,14 @@
 
 | # | ไฟล์ | บทบาท | LAW# | ทำอะไร | `statusCode` ที่เขียน |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `10-3b-01-lawyer-draft-stay-objection.html` *(ใหม่)* | นิติกร กลุ่มงานคดี | LAW0097 | จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี — TipTap editor + แผงตัวอย่างเอกสารสด (split layout) พร้อมเนื้อหาตัวอย่างเติมไว้ล่วงหน้า | `L3B_PENDING_ADMIN_SIGN` |
-| 2 | `10-3-04-lawyer-review-complaint.html` *(แก้ไขไฟล์เดิม)* | นิติกร กลุ่มงานคดี | (trigger) | `submitForm()` เรียก `Activity103.spawnStayObjectionCase(currentCase)` เมื่อติ๊ก checkbox คำขอทุเลาฯ | — |
-| 3 | `assets/ecmis-10-3.js` *(แก้ไขไฟล์เดิม)* | — | — | เพิ่ม `STAY_STEPS`/`ROUTES["L3B_PENDING_LAWYER_DRAFT"]`, `Activity103.spawnStayObjectionCase`/`isStayObjectionCase`, TipTap helpers | — |
+| 1 | `10-3b-01-lawyer-draft-stay-objection.html` *(ใหม่ — แก้ไขภายหลังจาก editor เป็นแนบไฟล์)* | นิติกร กลุ่มงานคดี | LAW0097 | แนบคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี (ไฟล์บังคับ) + เอกสารประกอบ (ถ้ามี) + เลือก/แก้ไขศาลที่ยื่น (select พร้อมช่อง "อื่นๆ") — ไม่ใช้ live editor แล้ว | `L3B_PENDING_CHAIRMAN_SIGN` |
+| 2 | `10-3b-02-chairman-sign-stay-objection.html` *(ใหม่)* | ประธานกรรมการ ป.ป.ท. | LAW0098 | ตรวจสอบเอกสารที่นิติกรแนบ ลงนามผ่าน sign modal — แก้ไขบทบาทผู้ลงนามจากธุรการเป็นประธานฯ ให้ตรงผัง AS-IS (ดู [implementation-plan-part1b.md](implementation-plan-part1b.md)) | `L3B_PENDING_LAWYER_DISPATCH` |
+| 3 | `10-3-04-lawyer-review-complaint.html` *(แก้ไขไฟล์เดิม)* | นิติกร กลุ่มงานคดี | (trigger) | `submitForm()` เรียก `Activity103.spawnStayObjectionCase(currentCase)` เมื่อติ๊ก checkbox คำขอทุเลาฯ | — |
+| 4 | `assets/ecmis-10-3.js` *(แก้ไขไฟล์เดิม)* | — | — | เพิ่ม `STAY_STEPS`/`ROUTES["L3B_PENDING_LAWYER_DRAFT"]`, `Activity103.spawnStayObjectionCase`/`isStayObjectionCase` | — |
 
 เคสลูกสร้างด้วย `Activity10.addCase()` (id รูปแบบ `<เลขคดีแม่>-B/2569`, `l3ParentCaseId` อ้างอิงกลับเคสแม่, `category`/ผู้ฟ้อง-ถูกฟ้อง/officer สืบทอดจากเคสแม่) เดินสถานะ `L3B_*` เป็นอิสระ ไม่ชนกับเคสแม่ — ตรงตามที่ตกลงไว้ใน [implementation-plan-part1b.md](implementation-plan-part1b.md)
 
-**ยังไม่ implement:** `10-3b-02-legal-admin-sign-stay-objection.html` (LAW0098, ธุรการลงนาม), `10-3b-03-lawyer-dispatch-stay-objection.html` (LAW0099, นิติกรส่งศาล) — เคสลูกจะค้างที่สถานะ `L3B_PENDING_ADMIN_SIGN` เป็น black box ไปก่อนจนกว่าจะ implement ต่อ
+**ยังไม่ implement:** `10-3b-03-lawyer-dispatch-stay-objection.html` (LAW0099, นิติกรส่งศาล, terminal) — เคสลูกจะค้างที่สถานะ `L3B_PENDING_LAWYER_DISPATCH` เป็น black box ไปก่อนจนกว่าจะ implement ต่อ
 
 ---
 
@@ -106,7 +107,7 @@
 ## Known gaps / TODO
 
 - [ ] **`L3_READY_FOR_BOARD` เป็น black box** — ยังไม่มีหน้า "เสนอบอร์ด (กิจกรรมที่ 7)" จริงในระบบ คดีจะค้างสถานะนี้ไปก่อน
-- [ ] **Part 1b (คำขอทุเลาการบังคับคดี) — LAW0098/0099 ยังไม่ implement** — `10-3b-01` (LAW0097) สร้างเคสลูกและส่งต่อได้แล้ว แต่เคสลูกจะค้างที่ `L3B_PENDING_ADMIN_SIGN` เป็น black box (ยังไม่มีหน้าธุรการลงนาม/นิติกรส่งศาล)
+- [ ] **Part 1b (คำขอทุเลาการบังคับคดี) — LAW0099 ยังไม่ implement** — `10-3b-01` (LAW0097, นิติกร) และ `10-3b-02` (LAW0098, ประธานกรรมการ ป.ป.ท.) implement แล้ว แต่เคสลูกจะค้างที่ `L3B_PENDING_LAWYER_DISPATCH` เป็น black box (ยังไม่มีหน้านิติกรส่งศาล)
 - [ ] **ตัวเลขสรุปในหน้า inbox นับเคสลูกรวมด้วย** — เคสลูกของ Part 1b มี `category: "10.3"` เหมือนเคสแม่ จึงถูกนับรวมใน "คดีศาลปกครอง" ที่ inbox ทำให้ตัวเลขไม่ตรงกับจำนวนคดีจริง (known tradeoff ตาม implementation-plan-part1b.md ยังไม่ตัดสินใจว่าจะแก้)
 - [ ] **`implementation-plan-part1.md` ล้าสมัย** — ยังอธิบายโครงสร้าง 9 ไฟล์เดิม (ก่อนรวม 04/06 และตัด 05) ควรอัปเดตให้ตรงกับ 7 ไฟล์ปัจจุบัน
 - [ ] **ยังไม่ทดสอบ end-to-end ในเบราว์เซอร์จริงนอก sandbox** — ตรวจแค่ syntax/div-balance เท่านั้นระหว่าง implement (เนื่องจาก `activity10/` อยู่นอก working directory ของ session ทำให้ preview ได้แค่ static snapshot)

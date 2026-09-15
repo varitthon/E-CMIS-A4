@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ส่งคำชี้แจงคัดค้านต่อศาลปกครอง | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -153,7 +153,6 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 16px;
-        position: relative;
       }
       .form-group:last-child {
         margin-bottom: 0;
@@ -177,10 +176,16 @@
         font-size: 0.9em;
         background-color: var(--bg-card);
         color: var(--text-title);
+        height: 38px;
       }
       .form-control:focus {
         border-color: #2563eb;
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
       }
 
       .form-actions {
@@ -240,7 +245,6 @@
       .d-none {
         display: none !important;
       }
-
       .upload-box {
         border: 2px dashed var(--border-color);
         padding: 16px;
@@ -255,21 +259,6 @@
         flex: 1;
         font-size: 0.88em;
         color: var(--text-main);
-      }
-      .info-box {
-        background: #fffbeb;
-        border: 1px solid #fef3c7;
-        border-radius: 6px;
-        padding: 10px 14px;
-        display: flex;
-        gap: 10px;
-        color: #92400e;
-        font-size: 0.76em;
-      }
-      body.dark-mode .info-box {
-        background: #3b2d12;
-        border-color: #78350f;
-        color: #fde68a;
       }
     </style>
   </head>
@@ -303,7 +292,7 @@
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+              >นิติกร ส่งคำชี้แจงคัดค้านต่อศาลปกครอง</span
             >
           </div>
         </div>
@@ -384,10 +373,9 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            หน้านี้เข้าถึงได้เฉพาะเมื่อมีการติ๊กเลือก
-            "ผู้ฟ้องคดียื่นคำขอทุเลาการบังคับคดีมาด้วย" ที่หน้า
-            <a href="10-3-04-lawyer-review-complaint.html"
-              >นิติกร ตรวจสอบ/จัดทำความเห็น</a
+            รอประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านที่หน้า
+            <a href="10-3b-02-chairman-sign-stay-objection.html"
+              >ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน</a
             >
             ก่อน
           </div>
@@ -444,14 +432,43 @@
             </div>
           </div>
 
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-signature text-primary me-2"></i
+                >คำชี้แจงคัดค้านที่ลงนามแล้ว</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534"
+                ><i class="fa-solid fa-check me-1"></i>ประธานกรรมการ ป.ป.ท.
+                ลงนามแล้ว</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>คำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</label>
+                <div id="f_stayObjectionFiles"></div>
+              </div>
+              <div class="form-group">
+                <label>เอกสารประกอบเพิ่มเติม</label>
+                <div id="f_staySupportingFiles"></div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็น / ข้อสั่งการของประธานกรรมการ ป.ป.ท.</label>
+                <div class="read-box read-box-textarea" id="f_chairmanNotes">
+                  -
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+                ><i class="fa-solid fa-paper-plane text-primary me-2"></i
+                >ส่งคำชี้แจงคัดค้านต่อศาลปกครองโดยตรง และปิดสำนวน</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
@@ -460,110 +477,113 @@
             <div class="form-card-body">
               <div class="form-group">
                 <label
-                  >ศาลที่ยื่นคำชี้แจง
-                  <span style="color: #dc2626">*</span></label
+                  >วิธีการจัดส่ง <span style="color: #dc2626">*</span></label
                 >
                 <select
-                  id="in_courtNameForm"
+                  id="in_sendMethod"
                   class="form-control"
-                  onchange="toggleStayCourtNameOtherInput()"
+                  style="font-weight: 600; color: #1e3a8a"
+                  onchange="toggleSendMethod()"
                 >
-                  <option value="ศาลปกครองสูงสุด">ศาลปกครองสูงสุด</option>
-                  <option value="ศาลปกครองกลาง">ศาลปกครองกลาง</option>
-                  <option value="ศาลปกครองเชียงใหม่">
-                    ศาลปกครองเชียงใหม่
+                  <option value="" disabled selected>
+                    -- เลือกวิธีการจัดส่ง --
                   </option>
-                  <option value="ศาลปกครองสงขลา">ศาลปกครองสงขลา</option>
-                  <option value="ศาลปกครองนครราชสีมา">
-                    ศาลปกครองนครราชสีมา
-                  </option>
-                  <option value="ศาลปกครองขอนแก่น">ศาลปกครองขอนแก่น</option>
-                  <option value="ศาลปกครองพิษณุโลก">ศาลปกครองพิษณุโลก</option>
-                  <option value="ศาลปกครองระยอง">ศาลปกครองระยอง</option>
-                  <option value="ศาลปกครองนครศรีธรรมราช">
-                    ศาลปกครองนครศรีธรรมราช
-                  </option>
-                  <option value="ศาลปกครองอุดรธานี">ศาลปกครองอุดรธานี</option>
-                  <option value="ศาลปกครองอุบลราชธานี">
-                    ศาลปกครองอุบลราชธานี
-                  </option>
-                  <option value="ศาลปกครองเพชรบุรี">ศาลปกครองเพชรบุรี</option>
-                  <option value="ศาลปกครองนครสวรรค์">
-                    ศาลปกครองนครสวรรค์
-                  </option>
-                  <option value="ศาลปกครองสุพรรณบุรี">
-                    ศาลปกครองสุพรรณบุรี
-                  </option>
-                  <option value="ศาลปกครองภูเก็ต">ศาลปกครองภูเก็ต</option>
-                  <option value="ศาลปกครองยะลา">ศาลปกครองยะลา</option>
-                  <option value="OTHER">อื่นๆ</option>
+                  <option value="post">ไปรษณีย์</option>
+                  <option value="hand">ส่งด้วยตนเอง</option>
                 </select>
-                <div
-                  id="div_stayCourtNameOther"
-                  style="display: none; margin-top: 8px"
-                >
-                  <label
-                    style="
-                      font-size: 0.82em;
-                      color: var(--text-title);
-                      margin-bottom: 4px;
-                    "
-                    >ระบุชื่อศาล (อื่นๆ)
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_courtNameFormOtherText"
-                    class="form-control"
-                    placeholder="โปรดระบุชื่อศาล..."
-                  />
+              </div>
+
+              <div id="grp_postFields">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label
+                      >วันที่ส่ง <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="date"
+                      id="in_sentDate"
+                      class="form-control font-monospace"
+                      lang="th-TH-u-ca-buddhist"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      >เลขพัสดุ EMS
+                      <span style="font-weight: 400; color: #64748b"
+                        >(ถ้ามี)</span
+                      ></label
+                    >
+                    <input
+                      type="text"
+                      id="in_emsTracking"
+                      class="form-control font-monospace"
+                      placeholder="เช่น EG123456789TH"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div class="form-group">
-                <label
-                  >แนบคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี
-                  <span style="color: #dc2626">*</span></label
-                >
-                <div class="upload-box">
-                  <input
-                    type="file"
-                    id="in_stayObjectionDoc"
-                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleStayObjectionDocChange(this)"
-                  />
-                </div>
-                <div id="stayObjectionDocList" style="margin-top: 8px"></div>
-                <div
-                  class="info-box"
-                  style="margin-top: 10px; margin-bottom: 0"
-                >
-                  <div>
-                    <b>ข้อกำหนดการแนบไฟล์:</b><br />
-                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, PNG, JPG, JPEG<br />
-                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+              <div id="grp_handFields" class="d-none">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label
+                      >วันที่นำส่งด้วยตนเอง
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="date"
+                      id="in_handDate"
+                      class="form-control font-monospace"
+                      lang="th-TH-u-ca-buddhist"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      >สถานที่นำส่ง
+                      <span style="color: #dc2626">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="in_handLocation"
+                      class="form-control"
+                      placeholder="เช่น ศาลปกครองกลาง"
+                    />
                   </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label
-                  >แนบเอกสารประกอบ
-                  <span style="font-weight: 400; color: #64748b"
-                    >(ถ้ามี)</span
-                  ></label
+                  >สำเนาหนังสือนำส่งศาล
+                  <span style="color: #dc2626">*</span></label
                 >
                 <div class="upload-box">
                   <input
                     type="file"
-                    id="in_stayAttachments"
+                    id="in_docCopyFiles"
                     accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                     multiple
-                    onchange="handleStayAttachmentsChange(this)"
+                    onchange="handleDocCopyChange(this)"
                   />
                 </div>
-                <div id="stayAttachmentsList" style="margin-top: 8px"></div>
+                <div id="docCopyList" style="margin-top: 8px"></div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >บันทึกปิดสำนวน
+                  <span style="font-weight: 400; color: #64748b"
+                    >(ถ้ามี)</span
+                  ></label
+                >
+                <textarea
+                  id="in_closeNotes"
+                  class="form-control"
+                  rows="3"
+                  placeholder="ระบุบันทึกปิดสำนวน (ถ้ามี)..."
+                >
+ส่งคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดีต่อศาลปกครองเรียบร้อยแล้ว บันทึกปิดสำนวนของสาขาคำขอทุเลาฯ</textarea
+                >
               </div>
             </div>
             <div class="form-actions">
@@ -573,8 +593,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก
-                และ ส่งต่อประธานกรรมการ ป.ป.ท. เพื่อลงนาม
+                <i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ
+                ยืนยันส่ง/ปิดสำนวน
               </button>
             </div>
           </div>
@@ -590,11 +610,10 @@
     <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
 
     <script>
-      const STEP_CODE = "LAW0097";
+      const STEP_CODE = "LAW0099";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
-      let stayObjectionDocFiles = [];
-      let stayAttachedFiles = [];
+      let docCopyFiles = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -604,30 +623,26 @@
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* ทางเข้าเดียวคือสาขา Part 1b จาก 10-3-04 (spawnStayObjectionCase เขียน
-         L3B_PENDING_LAWYER_DRAFT ตรงตั้งแต่สร้างเคสลูก ไม่ใช่ผล advance() ของ
-         ขั้นก่อนหน้าใน STAY_STEPS จึงฮาร์ดโค้ดค่าจริงตรงนี้เหมือน 10-2-15) */
+      /* ขั้นก่อนหน้าคือ LAW0098 (ประธานกรรมการ ป.ป.ท. ลงนาม ที่ 10-3b-02) —
+         เหมือน 10-3b-02 ระบุ statusCode ของขั้นก่อนหน้าตรงๆ แทนการไล่ index
+         ใน Activity103.STEPS เพราะ STAY_STEPS เป็นคนละอาเรย์ */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        currentCase = Activity103.getCase(id, "L3B_PENDING_LAWYER_DRAFT");
+        const prev = Activity103.stepByCode("LAW0098");
+        const found = Activity103.getCase(id, prev ? prev.statusCode : null);
 
-        if (!currentCase || !Activity103.isStayObjectionCase(currentCase)) {
+        if (!found || !Activity103.isStayObjectionCase(found)) {
           currentCase = null;
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
           return;
         }
+        currentCase = found;
         populate();
       }
 
-      function doneAndBack(text) {
-        Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: text,
-          timer: 1900,
-          showConfirmButton: false,
-        }).then(ECMIS103.goInbox);
+      function todayISO() {
+        return new Date().toISOString().split("T")[0];
       }
 
       function populate() {
@@ -635,41 +650,35 @@
         ECMIS103.setText("f_parentCaseId", c.l3ParentCaseId);
         ECMIS103.setText("f_caseNo", c.id);
         ECMIS103.setText("f_courtName", c.courtName);
-        const courtSel = document.getElementById("in_courtNameForm");
-        courtSel.value = c.courtName || "";
-        if (courtSel.value !== c.courtName) {
-          /* ชื่อศาลของเคสไม่ตรงกับตัวเลือกในลิสต์ (เช่นกรอกเป็น "อื่นๆ" ไว้
-             ตั้งแต่ขั้นก่อนหน้า) — เลือก OTHER แล้วเติมชื่อเดิมลงช่องข้อความ */
-          courtSel.value = "OTHER";
-          document.getElementById("in_courtNameFormOtherText").value =
-            c.courtName || "";
-        }
-        toggleStayCourtNameOtherInput();
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.renderAttachments(
+          "f_stayObjectionFiles",
+          c.l3StayObjectionAttachments,
+        );
+        ECMIS103.renderAttachments(
+          "f_staySupportingFiles",
+          c.l3StayObjectionSupportingAttachments,
+        );
+        ECMIS103.setText("f_chairmanNotes", c.l3StayObjectionChairmanNotes);
+
+        document.getElementById("in_sentDate").value = todayISO();
+        document.getElementById("in_handDate").value = todayISO();
+        toggleSendMethod();
       }
 
-      function toggleStayCourtNameOtherInput() {
-        const select = document.getElementById("in_courtNameForm");
-        const otherDiv = document.getElementById("div_stayCourtNameOther");
-        if (select && otherDiv) {
-          otherDiv.style.display = select.value === "OTHER" ? "block" : "none";
-        }
+      function toggleSendMethod() {
+        const method = document.getElementById("in_sendMethod").value;
+        document
+          .getElementById("grp_postFields")
+          .classList.toggle("d-none", method !== "post");
+        document
+          .getElementById("grp_handFields")
+          .classList.toggle("d-none", method !== "hand");
       }
 
-      function getStayCourtNameValue() {
-        const select = document.getElementById("in_courtNameForm");
-        if (select && select.value === "OTHER") {
-          const otherText = document.getElementById(
-            "in_courtNameFormOtherText",
-          );
-          return otherText ? otherText.value.trim() : "";
-        }
-        return select ? select.value : "";
-      }
-
-      function handleStayObjectionDocChange(input) {
+      function handleDocCopyChange(input) {
         if (!input.files || !input.files.length) return;
         const maxSizeBytes = 100 * 1024 * 1024;
         const allowedExts = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
@@ -694,25 +703,25 @@
             });
             return;
           }
-          stayObjectionDocFiles.push(file);
+          docCopyFiles.push(file);
         });
         input.value = "";
-        renderStayObjectionDocList();
+        renderDocCopyList();
       }
 
-      function removeStayObjectionDoc(index) {
-        stayObjectionDocFiles.splice(index, 1);
-        renderStayObjectionDocList();
+      function removeDocCopy(index) {
+        docCopyFiles.splice(index, 1);
+        renderDocCopyList();
       }
 
-      function renderStayObjectionDocList() {
-        const listEl = document.getElementById("stayObjectionDocList");
+      function renderDocCopyList() {
+        const listEl = document.getElementById("docCopyList");
         if (!listEl) return;
-        if (!stayObjectionDocFiles.length) {
+        if (!docCopyFiles.length) {
           listEl.innerHTML = "";
           return;
         }
-        listEl.innerHTML = stayObjectionDocFiles
+        listEl.innerHTML = docCopyFiles
           .map((file, idx) => {
             const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
             return (
@@ -722,7 +731,7 @@
               ' <span style="color: #94a3b8">(' +
               sizeMb +
               ' MB)</span></div>' +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeStayObjectionDoc(' +
+              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeDocCopy(' +
               idx +
               ')"><i class="fa-solid fa-trash-can"></i></button>' +
               "</div>"
@@ -731,110 +740,125 @@
           .join("");
       }
 
-      function handleStayAttachmentsChange(input) {
-        if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          if (file.size > maxSizeBytes) {
-            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          stayAttachedFiles.push(file);
-        });
-        input.value = "";
-        renderStayAttachmentsList();
-      }
-
-      function removeStayAttachment(index) {
-        stayAttachedFiles.splice(index, 1);
-        renderStayAttachmentsList();
-      }
-
-      function renderStayAttachmentsList() {
-        const listEl = document.getElementById("stayAttachmentsList");
-        if (!listEl) return;
-        if (!stayAttachedFiles.length) {
-          listEl.innerHTML = "";
-          return;
-        }
-        listEl.innerHTML = stayAttachedFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return (
-              '<div class="l3-attachment-row">' +
-              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
-              file.name +
-              ' <span style="color: #94a3b8">(' +
-              sizeMb +
-              ' MB)</span></div>' +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeStayAttachment(' +
-              idx +
-              ')"><i class="fa-solid fa-trash-can"></i></button>' +
-              "</div>"
-            );
-          })
-          .join("");
+      function doneAndBack(text) {
+        Swal.fire({
+          icon: "success",
+          title: "ปิดสำนวนสำเร็จ",
+          text: text,
+          timer: 2200,
+          showConfirmButton: false,
+        }).then(ECMIS103.goInbox);
       }
 
       function submitForm() {
-        if (!stayObjectionDocFiles.length) {
+        const method = document.getElementById("in_sendMethod").value;
+        if (!method) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาแนบคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
+            text: "กรุณาเลือกวิธีการจัดส่ง",
             confirmButtonColor: "#1e3a8a",
           });
           return;
         }
-        if (!getStayCourtNameValue()) {
+        if (!docCopyFiles.length) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุชื่อศาล (อื่นๆ)",
+            text: "กรุณาแนบสำเนาหนังสือนำส่งศาลอย่างน้อย 1 ไฟล์",
             confirmButtonColor: "#1e3a8a",
           });
-          document.getElementById("in_courtNameFormOtherText").focus();
           return;
         }
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันบันทึกคำชี้แจงคัดค้าน",
-          text: "บันทึกและส่งต่อให้ประธานกรรมการ ป.ป.ท. ลงนาม",
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันและส่งต่อ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          Activity103.advance(currentCase.id, STEP_CODE, {
-            courtName: getStayCourtNameValue(),
-            l3StayObjectionAttachments: stayObjectionDocFiles.map(
-              (f) => f.name,
-            ),
-            l3StayObjectionSupportingAttachments: stayAttachedFiles.map(
-              (f) => f.name,
-            ),
+        const notes =
+          document.getElementById("in_closeNotes").value.trim() || "-";
+        const docCopies = docCopyFiles.map((f) => f.name);
+
+        if (method === "hand") {
+          const handDate = document.getElementById("in_handDate").value;
+          if (!handDate) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุวันที่นำส่งด้วยตนเอง",
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          const handLocation = document
+            .getElementById("in_handLocation")
+            .value.trim();
+          if (!handLocation) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: "กรุณาระบุสถานที่นำส่ง",
+              confirmButtonColor: "#1e3a8a",
+            });
+            document.getElementById("in_handLocation").focus();
+            return;
+          }
+
+          ECMIS103.openSignatureModal(
+            {
+              title: "ลงนามยืนยันส่งคำชี้แจงคัดค้านและปิดสำนวน",
+              signer: ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-CASELEGAL-2569-103B",
+            },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(currentCase.id, STEP_CODE, {
+                l3StayDispatchMethod: "hand",
+                l3StayHandDeliveryDate: handDate,
+                l3StayHandDeliveryLocation: handLocation,
+                l3StayDispatchDate: null,
+                l3StayDispatchEmsTracking: null,
+                l3StayDispatchDocCopies: docCopies,
+                l3StayCloseNotes: notes,
+              });
+              doneAndBack(
+                "ส่งคำชี้แจงคัดค้านต่อศาลปกครองและปิดสำนวนเรียบร้อยแล้ว — จบขั้นตอนของสาขาคำขอทุเลาการบังคับคดี",
+              );
+            },
+          );
+          return;
+        }
+
+        const sentDate = document.getElementById("in_sentDate").value;
+        if (!sentDate) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุวันที่ส่ง",
+            confirmButtonColor: "#1e3a8a",
           });
-          doneAndBack("บันทึกคำชี้แจงคัดค้านเรียบร้อยแล้ว");
-        });
+          return;
+        }
+
+        ECMIS103.openSignatureModal(
+          {
+            title: "ลงนามยืนยันส่งคำชี้แจงคัดค้านและปิดสำนวน",
+            signer: ECMIS103.signerLabel("case_legal_officer"),
+            certId: "PACC-CASELEGAL-2569-103B",
+          },
+          (image) => {
+            Activity103.sign(currentCase.id, STEP_CODE, image);
+            Activity103.advance(currentCase.id, STEP_CODE, {
+              l3StayDispatchMethod: "post",
+              l3StayDispatchDate: sentDate,
+              l3StayDispatchEmsTracking:
+                document.getElementById("in_emsTracking").value.trim() ||
+                "-",
+              l3StayHandDeliveryDate: null,
+              l3StayHandDeliveryLocation: null,
+              l3StayDispatchDocCopies: docCopies,
+              l3StayCloseNotes: notes,
+            });
+            doneAndBack(
+              "ส่งคำชี้แจงคัดค้านต่อศาลปกครองและปิดสำนวนเรียบร้อยแล้ว — จบขั้นตอนของสาขาคำขอทุเลาการบังคับคดี",
+            );
+          },
+        );
       }
 
       /* ---- shell chrome (theme / font size / dropdown) ---- */

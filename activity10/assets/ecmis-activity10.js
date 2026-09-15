@@ -7,7 +7,7 @@
   "use strict";
 
   // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v56_merge_10-3-lose_into_mockup10";
+  const DATA_VERSION = "v59_add_post_court_stay_order_sample";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -2835,6 +2835,7 @@
       category: "10.3",
       categoryName: "คดีศาลปกครอง",
       l3ParentCaseId: "คดีปกครอง-100097/2569",
+      paccCaseNo: "ปค. 0012/2569-ท",
       courtName: "ศาลปกครองกลาง",
       blackCaseNo: "อ. 210/2569",
       redCaseNo: "-",
@@ -2852,6 +2853,266 @@
       statusBadge: "bg-primary text-white",
       l3Step: null,
       l3StepSeq: 0,
+    },
+
+    /* ตัวอย่างเคสแม่-ลูกคำขอทุเลาฯ เพิ่มอีก 2 คู่ (นอกเหนือจาก 100097/100097-B
+       ด้านบน) เพื่อให้การจัดกลุ่มแบบ indent ใน 01-work-inbox.html (ดูฟังก์ชัน
+       groupParentChildCases103) มีตัวอย่างให้ทดสอบหลายคู่ วางไว้คนละขั้นของ
+       Part 1 (LAW0093/LAW0095) เพื่อให้เห็นว่าใช้ได้ไม่ว่าจะ login เป็นบทบาทไหน */
+    {
+      id: "คดีปกครอง-100098/2569",
+      title:
+        "นายสมบูรณ์ ยุติธรรม (ผู้ฟ้องคดี) ยื่นฟ้อง เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท. (ผู้ถูกฟ้องคดี)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 211/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายสมบูรณ์ ยุติธรรม"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายสมบูรณ์ ยุติธรรม",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      courtSarabanNo: "สบ.0100/2569",
+      courtRemark: "-",
+      receivingUnit: "กองกฎหมาย",
+      attachmentFileNames: [
+        "หมายเรียกศาลปกครอง_คดี100098.pdf",
+        "สำเนาคำฟ้อง_100098.pdf",
+      ],
+      lawReceiveNo: "0100/2569",
+      centralSarabanNo: "2569/4502",
+      paccCaseNo: "ปค. 0013/2569",
+      blackNo: "อ. 211/2569",
+      redNo: "-",
+      dateReceived: getDateWithOffset(-7),
+      dueDate: getDateWithOffset(23),
+      workflowStep: 5,
+      officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+      assignedRole: "dir_legal",
+      status: "ผอ.กองกฎหมายลงนามผ่านเรื่อง",
+      statusCode: "L3_PENDING_DIRECTOR_SIGN",
+      statusBadge: "bg-primary text-white",
+      l3Step: "LAW0093",
+      l3StepSeq: 5,
+      l3ReviewNotes:
+        "ตรวจสอบคำฟ้องแล้วพบว่าคำสั่งพักราชการดำเนินการตามขั้นตอนที่กฎหมายกำหนดโดยชอบ",
+      l3HasStayRequest: true,
+      l3RelatedCaseNo: "",
+      l3OpinionText:
+        "เห็นควรจัดทำคำให้การคัดค้านคำฟ้อง โดยยืนยันว่าคำสั่งพักราชการเป็นไปตามขั้นตอนที่กำหนดครบถ้วนทุกประการ",
+      l3OpinionAttachments: [],
+    },
+    {
+      id: "คดีปกครอง-100098-B/2569",
+      title:
+        "คำขอทุเลาการบังคับคดี — ศาลปกครองกลาง (เกี่ยวข้องกับ อ. 211/2569)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      l3ParentCaseId: "คดีปกครอง-100098/2569",
+      paccCaseNo: "ปค. 0013/2569-ท",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 211/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายสมบูรณ์ ยุติธรรม"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายสมบูรณ์ ยุติธรรม",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      dateReceived: getDateWithOffset(-2),
+      dueDate: getDateWithOffset(13),
+      officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+      assignedRole: "case_legal_officer",
+      status: "นิติกรจัดทำคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_LAWYER_DRAFT",
+      statusBadge: "bg-primary text-white",
+      l3Step: null,
+      l3StepSeq: 0,
+    },
+    {
+      id: "คดีปกครอง-100099/2569",
+      title:
+        "นางสาวพรทิพย์ มั่นคง (ผู้ฟ้องคดี) ยื่นฟ้อง เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท. (ผู้ถูกฟ้องคดี)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 212/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นางสาวพรทิพย์ มั่นคง"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นางสาวพรทิพย์ มั่นคง",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      courtSarabanNo: "สบ.0101/2569",
+      courtRemark: "-",
+      receivingUnit: "กองกฎหมาย",
+      attachmentFileNames: [
+        "หมายเรียกศาลปกครอง_คดี100099.pdf",
+        "สำเนาคำฟ้อง_100099.pdf",
+      ],
+      lawReceiveNo: "0101/2569",
+      centralSarabanNo: "2569/4503",
+      paccCaseNo: "ปค. 0014/2569",
+      blackNo: "อ. 212/2569",
+      redNo: "-",
+      dateReceived: getDateWithOffset(-9),
+      dueDate: getDateWithOffset(21),
+      workflowStep: 7,
+      officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย)",
+      assignedRole: "admin_legal",
+      status: "รอเสนอบอร์ด",
+      statusCode: "L3_READY_FOR_BOARD",
+      statusBadge: "bg-primary text-white",
+      l3Step: "LAW0095",
+      l3StepSeq: 7,
+      l3ReviewNotes:
+        "ตรวจสอบคำฟ้องแล้วพบว่าคำสั่งลงโทษทางวินัยดำเนินการตามขั้นตอนที่กฎหมายกำหนดโดยชอบ",
+      l3HasStayRequest: true,
+      l3RelatedCaseNo: "",
+      l3OpinionText:
+        "เห็นควรจัดทำคำให้การคัดค้านคำฟ้อง โดยยืนยันว่าคำสั่งลงโทษทางวินัยเป็นไปตามขั้นตอนที่กำหนดครบถ้วนทุกประการ",
+      l3OpinionAttachments: [],
+    },
+    {
+      id: "คดีปกครอง-100099-B/2569",
+      title:
+        "คำขอทุเลาการบังคับคดี — ศาลปกครองกลาง (เกี่ยวข้องกับ อ. 212/2569)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      l3ParentCaseId: "คดีปกครอง-100099/2569",
+      paccCaseNo: "ปค. 0014/2569-ท",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 212/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นางสาวพรทิพย์ มั่นคง"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นางสาวพรทิพย์ มั่นคง",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      dateReceived: getDateWithOffset(-3),
+      dueDate: getDateWithOffset(12),
+      officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+      assignedRole: "case_legal_officer",
+      status: "นิติกรจัดทำคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_LAWYER_DRAFT",
+      statusBadge: "bg-primary text-white",
+      l3Step: null,
+      l3StepSeq: 0,
+    },
+
+    /* เคสแม่-ลูกคำขอทุเลาฯ อีก 1 คู่ — ต่างจาก 3 คู่ด้านบนตรงที่เคสลูกเดินสาย
+       Part 1b (LAW0097-0099) จบครบแล้ว (L3B_CLOSED) พร้อมข้อมูลที่แต่ละขั้น
+       ใน 10-3b-01/02/03 จะบันทึกไว้ (เอกสารแนบ/ลายเซ็น/บันทึกปิดสำนวน) แล้ว
+       ใส่ฟิลด์ l3CourtStayOrder* เพิ่มไว้ล่วงหน้าเพื่อจำลองว่าศาลปกครองได้
+       วินิจฉัย/มีคำสั่งทุเลาฯ แล้ว — เตรียมไว้ให้ Part 3 (LAW0100-0102, ธุรการ
+       รับคำสั่งศาล → นิติกรจำแนก 2 ทาง) ใช้ทดสอบเมื่อ implement ต่อ ยังไม่มี
+       หน้ารองรับฟิลด์นี้ (statusCode คงเป็น L3B_CLOSED เป็น black box ต่อไป
+       เหมือนเดิม ไม่ได้เดินสถานะใหม่เพราะยังไม่มี statusCode ของ Part 3) */
+    {
+      id: "คดีปกครอง-100100/2569",
+      title:
+        "นายประเสริฐ สัตย์ซื่อ (ผู้ฟ้องคดี) ยื่นฟ้อง เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท. (ผู้ถูกฟ้องคดี)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 213/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายประเสริฐ สัตย์ซื่อ"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายประเสริฐ สัตย์ซื่อ",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      courtSarabanNo: "สบ.0102/2569",
+      courtRemark: "-",
+      receivingUnit: "กองกฎหมาย",
+      attachmentFileNames: [
+        "หมายเรียกศาลปกครอง_คดี100100.pdf",
+        "สำเนาคำฟ้อง_100100.pdf",
+      ],
+      lawReceiveNo: "0102/2569",
+      centralSarabanNo: "2569/4504",
+      paccCaseNo: "ปค. 0015/2569",
+      blackNo: "อ. 213/2569",
+      redNo: "-",
+      dateReceived: getDateWithOffset(-30),
+      dueDate: getDateWithOffset(0),
+      workflowStep: 4,
+      officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+      assignedRole: "case_group_director",
+      status: "ผอ.กลุ่มงานพิจารณาเห็นชอบ",
+      statusCode: "L3_PENDING_GROUP_APPROVE",
+      statusBadge: "bg-primary text-white",
+      l3Step: "LAW0090",
+      l3StepSeq: 4,
+      l3ReviewNotes:
+        "ตรวจสอบคำฟ้องแล้วพบว่าคำสั่งเพิกถอนใบอนุญาตดำเนินการตามขั้นตอนที่กฎหมายกำหนดโดยชอบ",
+      l3HasStayRequest: true,
+      l3RelatedCaseNo: "",
+      l3OpinionText:
+        "เห็นควรจัดทำคำให้การคัดค้านคำฟ้อง โดยยืนยันว่าคำสั่งเพิกถอนใบอนุญาตเป็นไปตามขั้นตอนที่กำหนดครบถ้วนทุกประการ",
+      l3OpinionAttachments: [],
+    },
+    {
+      id: "คดีปกครอง-100100-B/2569",
+      title:
+        "คำขอทุเลาการบังคับคดี — ศาลปกครองกลาง (เกี่ยวข้องกับ อ. 213/2569)",
+      category: "10.3",
+      categoryName: "คดีศาลปกครอง",
+      l3ParentCaseId: "คดีปกครอง-100100/2569",
+      paccCaseNo: "ปค. 0015/2569-ท",
+      courtName: "ศาลปกครองกลาง",
+      blackCaseNo: "อ. 213/2569",
+      redCaseNo: "-",
+      orderedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
+      plaintiffs: ["นายประเสริฐ สัตย์ซื่อ"],
+      defendants: ["เลขาธิการคณะกรรมการ ป.ป.ท.", "สำนักงาน ป.ป.ท."],
+      accuser: "นายประเสริฐ สัตย์ซื่อ",
+      accused: "เลขาธิการคณะกรรมการ ป.ป.ท., สำนักงาน ป.ป.ท.",
+      dateReceived: getDateWithOffset(-26),
+      dueDate: getDateWithOffset(-5),
+      officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+      assignedRole: "case_legal_officer",
+      status: "ส่งคำชี้แจงคัดค้านต่อศาลแล้ว",
+      statusCode: "L3B_CLOSED",
+      statusBadge: "bg-secondary text-white",
+      l3Step: "LAW0099",
+      l3StepSeq: 3,
+      /* ---- LAW0097 (10-3b-01) — นิติกร แนบคำชี้แจงคัดค้าน ---- */
+      l3StayObjectionAttachments: ["คำชี้แจงคัดค้าน_100100-B.pdf"],
+      l3StayObjectionSupportingAttachments: [
+        "พยานหลักฐานประกอบคำชี้แจง_100100-B.pdf",
+      ],
+      /* ---- LAW0098 (10-3b-02) — ประธานกรรมการ ป.ป.ท. ลงนาม ---- */
+      l3StayObjectionChairmanNotes: "เห็นชอบตามที่นิติกรเสนอ ลงนามคัดค้านได้",
+      /* ---- LAW0099 (10-3b-03) — นิติกร ส่งศาล/ปิดสำนวน ---- */
+      l3StayDispatchMethod: "post",
+      l3StayDispatchDate: getDateWithOffset(-20),
+      l3StayDispatchEmsTracking: "EG100100569TH",
+      l3StayHandDeliveryDate: null,
+      l3StayHandDeliveryLocation: null,
+      l3StayDispatchDocCopies: ["สำเนาหนังสือนำส่งศาล_100100-B.pdf"],
+      l3StayCloseNotes:
+        "ส่งคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดีต่อศาลปกครองเรียบร้อยแล้ว บันทึกปิดสำนวนของสาขาคำขอทุเลาฯ",
+      l3Signatures: {
+        LAW0098: {
+          image: "",
+          signedAt: getDateWithOffset(-22),
+        },
+        LAW0099: {
+          image: "",
+          signedAt: getDateWithOffset(-20),
+        },
+      },
+      /* ---- Part 3 (LAW0100-0102, ยังไม่ implement) — ข้อมูลจำลองว่าศาล
+         ปกครองวินิจฉัย/มีคำสั่งแล้ว เตรียมไว้ให้หน้าธุรการรับคำสั่งศาล +
+         นิติกรจำแนกทางใช้ทดสอบเมื่อ implement — ไม่มีหน้าอ่านฟิลด์นี้ตอนนี้ */
+      l3CourtStayOrderReceivedDate: getDateWithOffset(-2),
+      l3CourtStayOrderNo: "คส. 45/2569",
+      l3CourtStayOrderDate: getDateWithOffset(-4),
+      l3CourtStayResult: "GRANTED",
+      l3CourtStayOrderFileNames: [
+        "คำสั่งศาลเรื่องทุเลาการบังคับคดี_100100.pdf",
+      ],
     },
 
     /* ------------------------------------------------------------ 10.3v
