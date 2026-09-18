@@ -58,7 +58,6 @@
       .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
       textarea.form-control { height: auto; resize: vertical; padding: 10px 12px; }
       .read-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-title); font-size: 0.9em; min-height: 38px; display: flex; align-items: center; }
-      .read-box-textarea { min-height: 70px; align-items: flex-start; white-space: pre-line; }
       .font-monospace { font-family: monospace; }
 
       .form-actions { padding: 16px 20px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; border-radius: 10px; margin-bottom: 20px; }
@@ -95,7 +94,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ผอ.กองบริหารคดี พิจารณาเรื่องอุทธรณ์</span>
+            <span style="color: var(--text-title); font-weight: 600">ผอ.กองบริหารคดี มอบหมาย</span>
           </div>
         </div>
 
@@ -138,18 +137,25 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
-          <div class="stepper" id="stepperPart1"></div>
-          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
-          <div class="stepper" id="stepperPart2"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> Flow อุทธรณ์ (ขั้นตอนหลัก)</div>
+          <div class="stepper" id="stepperAppeal"></div>
+          <button type="button" class="btn btn-secondary" id="stepperAccordionToggle" onclick="ECMIS102.toggleStepperAccordion()" style="margin-top: 14px; height: 32px; font-size: 0.85em">
+            <i class="fa-solid fa-chevron-down me-1" id="stepperAccordionIcon"></i>แสดงขั้นตอนก่อนยื่นอุทธรณ์ (สายเดิมที่ปิดสำนวนแล้ว)
+          </button>
+          <div id="stepperAccordionBody" class="d-none" style="margin-top: 14px">
+            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+            <div class="stepper" id="stepperPart1"></div>
+            <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ (ก่อนยื่นอุทธรณ์)</div>
+            <div class="stepper" id="stepperPart2"></div>
+          </div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังธุรการกองบริหารคดีรับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบที่หน้า
-            <a href="10-2-appeal-01-legal-admin-intake.html">รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ</a>
+            คำร้องจะมาถึงขั้นตอนนี้เมื่อธุรการกองบริหารคดีบันทึกรับเรื่องอุทธรณ์แล้ว (ต่อจากหน้า
+            <a href="10-2-appeal-01-legal-admin-intake.html">ธุรการกองบริหารคดี รับเรื่องอุทธรณ์</a>)
           </div>
         </div>
 
@@ -157,13 +163,13 @@
           <div class="l2-note l2-note-info">
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              คำอุทธรณ์นี้ถูกบันทึกเข้าสู่ระบบเรียบร้อยแล้ว ผู้อำนวยการกองบริหารคดีพิจารณาเรื่องเบื้องต้นและมอบหมายให้ผู้อำนวยการกลุ่มงานบริหารติดตามคดีดำเนินการต่อ
+              ธุรการกองบริหารคดีบันทึกรับหนังสืออุทธรณ์เรียบร้อยแล้ว ผอ.กองบริหารคดีพิจารณาเรื่องอุทธรณ์นี้และมอบหมายให้ผอ.กลุ่มงานบริหารติดตามคดีดำเนินการต่อ (มอบหมายนิติกรเจ้าของสำนวน)
             </div>
           </div>
 
           <div class="form-card">
             <div class="form-card-header">
-              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>ข้อมูลคำอุทธรณ์</span>
+              <span><i class="fa-solid fa-file-lines text-primary me-2"></i>ข้อมูลคำร้องเดิม</span>
               <span class="badge" style="background: #dbeafe; color: #1e3a8a"><i class="fa-solid fa-hashtag me-1"></i><span id="f_caseNo">-</span></span>
             </div>
             <div class="form-card-body">
@@ -177,80 +183,44 @@
                   <div class="read-box" id="f_requesterName">-</div>
                 </div>
                 <div class="form-group">
-                  <label>มติเดิม</label>
-                  <div class="read-box" id="f_resolution">-</div>
+                  <label>ผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficer">-</div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div class="form-card">
-            <div class="form-card-header">
-              <span><i class="fa-solid fa-inbox text-primary me-2"></i>ข้อมูลจากขั้นตอนก่อนหน้า (ธุรการกองบริหารคดี)</span>
-            </div>
-            <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขที่หนังสือรับ</label>
-                  <div class="read-box font-monospace" id="f_receiveNo">-</div>
-                </div>
-                <div class="form-group">
-                  <label>วันที่ลงรับ</label>
-                  <div class="read-box font-monospace" id="f_receiveDate">-</div>
-                </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เลขที่หนังสือรับอุทธรณ์</label>
+                <div class="read-box font-monospace" id="f_appealReceiveNo">-</div>
               </div>
               <div class="form-group">
                 <label>ช่องทางยื่นอุทธรณ์</label>
-                <div class="read-box" id="f_channel">-</div>
+                <div class="read-box" id="f_appealChannel">-</div>
               </div>
-              <div class="form-group">
-                <label>หมายเหตุ (ธุรการ)</label>
-                <div class="read-box" id="f_receiveNotes">-</div>
-              </div>
-              <div class="form-group">
-                <label>เอกสารแนบ</label>
-                <div id="f_attachments"></div>
-              </div>
-              <div class="form-group">
-                <label>เลขที่คำอุทธรณ์ในระบบ</label>
-                <div class="read-box font-monospace" id="f_systemNo">-</div>
-              </div>
-              <div class="form-group">
-                <label>สรุปประเด็นอุทธรณ์</label>
-                <div class="read-box read-box-textarea" id="f_summary">-</div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เอกสารแนบหนังสืออุทธรณ์</label>
+                <div id="f_appealAttachments"></div>
               </div>
             </div>
           </div>
 
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30,58,138,0.05)">
-              <span><i class="fa-solid fa-user-gear text-primary me-2"></i>พิจารณาและมอบหมาย</span>
+              <span><i class="fa-solid fa-user-check text-primary me-2"></i>พิจารณาและมอบหมาย</span>
               <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>ผอ.กองบริหารคดี</span>
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ความเห็นเบื้องต้น <span class="l2-optional">(ไม่บังคับ)</span></label>
-                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุความเห็นเบื้องต้น..."></textarea>
+                <label>มอบหมายให้</label>
+                <div class="read-box" id="f_assignTarget">-</div>
               </div>
               <div class="form-group">
-                <label><span>แนบไฟล์ประกอบ <span class="l2-optional">(ไม่บังคับ)</span></span></label>
-                <div class="l2-file">
-                  <i class="fa-solid fa-paperclip" style="color: #64748b"></i>
-                  <input type="file" id="in_bureauFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="showPickedFile()" multiple />
-                </div>
-                <div id="f_pickedFile" class="l2-optional" style="margin-top: 6px"></div>
-              </div>
-              <div class="form-group">
-                <label>มอบหมายถึง <span style="color: #dc2626">*</span></label>
-                <select id="in_assignTarget" class="form-control">
-                  <option value="case_tracking_director">ผู้อำนวยการกลุ่มงานบริหารติดตามคดี</option>
-                </select>
+                <label>หมายเหตุ (ถ้ามี)</label>
+                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุหมายเหตุ..."></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามและมอบหมาย
+                <i class="fa-solid fa-check me-1"></i>พิจารณาและมอบหมาย
               </button>
             </div>
           </div>
@@ -276,25 +246,22 @@
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* คำร้องที่รอขั้นตอนนี้ = คำร้องที่ธุรการรับเรื่องอุทธรณ์และบันทึกเข้าระบบ
-         แล้วที่หน้า 10-2-appeal-01 — เงื่อนไขต้องเช็คสถานะที่ "ขั้นก่อนหน้า"
-         (L2-APPEAL-INTAKE) เขียนไว้ คือ L2_PENDING_BUREAU_DIRECTOR_ASSIGN
-         (ไม่ใช่ L2_PENDING_TRACKING_DIRECTOR_ASSIGN ซึ่งเป็นค่าที่ "หน้านี้เอง"
-         จะเขียนต่อไปให้หน้าถัดไป — เคยพลาดใช้ค่าเดียวกับ STEP.statusCode
-         ของตัวเองมาก่อน ทำให้หาไม่เจอ) */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
         currentCase = Activity102.getCase(id, "L2_PENDING_BUREAU_DIRECTOR_ASSIGN");
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page, currentCase);
-
         if (!currentCase || currentCase.statusCode !== "L2_PENDING_BUREAU_DIRECTOR_ASSIGN") {
-          document.getElementById("noCaseNotice").classList.remove("d-none");
-          document.getElementById("pageBody").classList.add("d-none");
+          showNoCase();
           return;
         }
-        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase, "stepperAppeal");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
+      }
+
+      function showNoCase() {
+        document.getElementById("noCaseNotice").classList.remove("d-none");
+        document.getElementById("pageBody").classList.add("d-none");
       }
 
       function populate() {
@@ -302,73 +269,33 @@
         document.getElementById("f_caseNo").textContent = c.id;
         document.getElementById("f_title").textContent = c.title || "-";
         document.getElementById("f_requesterName").textContent = c.requesterName || "-";
-        document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
-
-        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้า (10-2-appeal-01) เขียนไว้ — แสดงให้
-           ผอ.กองบริหารคดีเห็นครบก่อนพิจารณา ตามที่ขอให้ทุกหน้าถัดไปแสดง
-           สิ่งที่หน้าก่อนหน้าบันทึกไว้เสมอ */
-        document.getElementById("f_receiveNo").textContent = c.l2AppealReceiveNo || "-";
-        document.getElementById("f_receiveDate").textContent = c.l2AppealReceiveDate || "-";
-        document.getElementById("f_channel").textContent = c.l2AppealChannel || "-";
-        document.getElementById("f_receiveNotes").textContent = c.l2AppealReceiveNotes || "-";
-        ECMIS102.renderAttachments("f_attachments", c.l2AppealAttachmentFileNames);
-        document.getElementById("f_systemNo").textContent = c.l2AppealSystemNo || "-";
-        document.getElementById("f_summary").textContent = c.l2AppealSummary || "-";
-
+        document.getElementById("f_originalOfficer").textContent = c.l2OriginalCaseOfficer || "-";
+        document.getElementById("f_appealReceiveNo").textContent = c.l2AppealReceiveNo || "-";
+        document.getElementById("f_appealChannel").textContent = c.l2AppealChannel || "-";
+        ECMIS102.renderAttachments("f_appealAttachments", c.l2AppealAttachmentFileNames);
+        document.getElementById("f_assignTarget").textContent = ECMIS102.signerLabel("case_tracking_director");
         document.getElementById("in_notes").value = "-";
-        document.getElementById("in_bureauFile").value = "";
-        document.getElementById("f_pickedFile").textContent = "";
-        const targetOpt = document.querySelector('#in_assignTarget option[value="case_tracking_director"]');
-        if (targetOpt) targetOpt.textContent = ECMIS102.signerLabel("case_tracking_director");
-        document.getElementById("in_assignTarget").value = "case_tracking_director";
-      }
-
-      function showPickedFile() {
-        const input = document.getElementById("in_bureauFile");
-        const label = document.getElementById("f_pickedFile");
-        const names = input.files ? Array.from(input.files).map((f) => f.name) : [];
-        label.textContent = names.length ? "ไฟล์ที่เลือก: " + names.join(", ") : "";
       }
 
       function submitForm() {
-        const notes = document.getElementById("in_notes").value.trim() || "-";
-        const fileInput = document.getElementById("in_bureauFile");
-        const attachmentNames = fileInput.files
-          ? Array.from(fileInput.files).map((f) => f.name)
-          : [];
-        const targetSelect = document.getElementById("in_assignTarget");
-        const targetRole = targetSelect.value;
-        const targetName = targetSelect.options[targetSelect.selectedIndex].text;
+        const notes = document.getElementById("in_notes").value.trim();
 
-        ECMIS102.openSignatureModal(
-          {
-            title: "ลงนามพิจารณาและมอบหมาย (ผู้อำนวยการกองบริหารคดี)",
-            signer: ECMIS102.signerLabel("case_bureau_director"),
-            certId: "PACC-CASEBUREAUDIR-2569-102",
-          },
-          (image) => {
-            Activity102.sign(currentCase.id, "appealBureauDirectorAssign", image, {
-              position: "ผู้อำนวยการกองบริหารคดี",
-            });
-            Activity102.advance(currentCase.id, STEP_CODE, {
-              l2AppealBureauDirectorNotes: notes,
-              l2AppealBureauDirectorAttachmentFileNames: attachmentNames,
-              assignedRole: targetRole,
-              officer: ECMIS102.signerLabel(targetRole),
-            });
+        Activity102.advance(currentCase.id, STEP_CODE, {
+          l2AppealBureauDirectorNotes: notes || "-",
+          assignedRole: "case_tracking_director",
+          officer: ECMIS102.signerLabel("case_tracking_director"),
+        });
 
-            Swal.fire({
-              icon: "success",
-              title: "ลงนามและมอบหมายเรียบร้อย",
-              html:
-                '<div class="emd-summary">' +
-                "<p>ลงนามและมอบหมายเรื่องอุทธรณ์ให้ " + targetName + " เรียบร้อยแล้ว</p>" +
-                "<p><strong>ขั้นตอนต่อไป:</strong> ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร</p></div>",
-              confirmButtonColor: "#1e3a8a",
-              confirmButtonText: "กลับหน้าคิวงาน",
-            }).then(ECMIS102.goInbox);
-          },
-        );
+        Swal.fire({
+          icon: "success",
+          title: "มอบหมายเรียบร้อย",
+          html:
+            '<div class="emd-summary">' +
+            "<p>ผอ.กองบริหารคดีพิจารณาและมอบหมายเรื่องอุทธรณ์แล้ว</p>" +
+            "<p><strong>ขั้นตอนต่อไป:</strong> ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร</p></div>",
+          confirmButtonColor: "#1e3a8a",
+          confirmButtonText: "กลับหน้าคิวงาน",
+        }).then(ECMIS102.goInbox);
       }
 
       function toggleTheme() {

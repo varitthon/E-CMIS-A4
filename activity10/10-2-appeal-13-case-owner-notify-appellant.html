@@ -138,10 +138,17 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
-          <div class="stepper" id="stepperPart1"></div>
-          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
-          <div class="stepper" id="stepperPart2"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> Flow อุทธรณ์ (ขั้นตอนหลัก)</div>
+          <div class="stepper" id="stepperAppeal"></div>
+          <button type="button" class="btn btn-secondary" id="stepperAccordionToggle" onclick="ECMIS102.toggleStepperAccordion()" style="margin-top: 14px; height: 32px; font-size: 0.85em">
+            <i class="fa-solid fa-chevron-down me-1" id="stepperAccordionIcon"></i>แสดงขั้นตอนก่อนยื่นอุทธรณ์ (สายเดิมที่ปิดสำนวนแล้ว)
+          </button>
+          <div id="stepperAccordionBody" class="d-none" style="margin-top: 14px">
+            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+            <div class="stepper" id="stepperPart1"></div>
+            <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ (ก่อนยื่นอุทธรณ์)</div>
+            <div class="stepper" id="stepperPart2"></div>
+          </div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
@@ -180,6 +187,40 @@
                   <label>มติเดิม</label>
                   <div class="read-box" id="f_resolution">-</div>
                 </div>
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เลขสำนวนคดีที่เกี่ยวข้อง</label>
+                <div class="read-box font-monospace" id="f_relatedCaseNo">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficer">-</div>
+                </div>
+                <div class="form-group">
+                  <label>สังกัดผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficerOrg">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>มติชี้มูล (คณะอนุกรรมการฯ)</label>
+                <div class="read-box" id="f_resolutionScreening">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติร่างเสนอบอร์ด (ก่อนส่งกิจกรรมที่ 7)</label>
+                <div class="read-box" id="f_resolutionBoardDraft">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติที่บอร์ดตอบกลับ (ใช้ปิดสำนวนเดิม)</label>
+                <div class="read-box" id="f_resolutionBoardReply">-</div>
+              </div>
+              <div class="form-group" id="otherBoardResolutionsGroup" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>มติบอร์ดกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน <span class="l2-optional">(ข้อมูลอ้างอิง)</span></label>
+                <div id="f_otherBoardResolutions"></div>
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เอกสารแนบทั้งหมดของคำร้อง (สำนวนเดิม)</label>
+                <div id="f_origAttachments"></div>
               </div>
             </div>
           </div>
@@ -233,18 +274,13 @@
               <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>นิติกรเจ้าของสำนวน</span>
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>วันที่แจ้งผู้อุทธรณ์ <span style="color: #dc2626">*</span></label>
-                  <input type="date" id="in_notifyDate" class="form-control font-monospace" />
-                </div>
-                <div class="form-group">
-                  <label>ช่องทางแจ้ง <span style="color: #dc2626">*</span></label>
-                  <select id="in_channel" class="form-control" onchange="toggleChannelDetail()">
-                    <option value="ส่วนกลาง">แจ้งที่ส่วนกลาง</option>
-                    <option value="เขต">แจ้งผ่านเขต</option>
-                  </select>
-                </div>
+              <div class="form-group">
+                <label>ช่องทางแจ้ง <span style="color: #dc2626">*</span></label>
+                <select id="in_channel" class="form-control" onchange="toggleChannelDetail()">
+                  <option value="ส่วนกลาง">แจ้งที่ส่วนกลาง</option>
+                  <option value="เขต">แจ้งผ่านเขต</option>
+                  <option value="ไปรษณีย์">ไปรษณีย์</option>
+                </select>
               </div>
               <div class="form-group" id="channelDetailGroup" style="display: none">
                 <label>ระบุเขต</label>
@@ -260,9 +296,42 @@
                   <option value="เขต 9">เขต 9</option>
                 </select>
               </div>
+              <div class="form-group" id="centralFloorGroup" style="display: none">
+                <label>ชั้น <span style="color: #dc2626">*</span></label>
+                <select id="in_centralFloor" class="form-control">
+                  <option value="14">ชั้น 14</option>
+                  <option value="38">ชั้น 38</option>
+                </select>
+              </div>
+              <div class="form-group" id="emsTrackingGroup" style="display: none">
+                <label>เลข EMS - Tracking <span style="color: #dc2626">*</span></label>
+                <input type="text" id="in_emsTracking" class="form-control font-monospace" placeholder="EM000000000TH" />
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เลขส่งหนังสือภายนอก <span style="color: #dc2626">*</span></label>
+                <input type="text" id="in_externalDocNo" class="form-control font-monospace" style="font-weight: 600" />
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วันที่ได้รับมติ <span style="color: #dc2626">*</span></label>
+                  <input type="date" id="in_resolutionReceivedDate" class="form-control font-monospace" />
+                </div>
+                <div class="form-group">
+                  <label>วันที่แจ้งผู้อุทธรณ์ <span style="color: #dc2626">*</span></label>
+                  <input type="date" id="in_resolutionSentDate" class="form-control font-monospace" />
+                </div>
+              </div>
               <div class="form-group">
-                <label>ความเห็นเพิ่มเติม <span class="l2-optional">(ไม่บังคับ)</span></label>
-                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุความเห็นเพิ่มเติม..."></textarea>
+                <label><span>สำเนาหนังสือในระบบ <span style="color: #dc2626">*</span></span></label>
+                <div class="l2-file">
+                  <i class="fa-solid fa-paperclip" style="color: #64748b"></i>
+                  <input type="file" id="in_noticeDocCopy" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="showPickedNoticeDocCopy()" multiple />
+                </div>
+                <div id="f_pickedNoticeDocCopy" class="l2-optional" style="margin-top: 6px"></div>
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>หมายเหตุ <span class="l2-optional">(ไม่บังคับ)</span></label>
+                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุหมายเหตุ..."></textarea>
               </div>
               <div class="form-group">
                 <label>กำหนดผู้อุทธรณ์รับทราบผล</label>
@@ -312,7 +381,7 @@
           document.getElementById("pageBody").classList.add("d-none");
           return;
         }
-        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase, "stepperAppeal");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
@@ -321,6 +390,17 @@
         const channel = document.getElementById("in_channel").value;
         document.getElementById("channelDetailGroup").style.display =
           channel === "เขต" ? "flex" : "none";
+        document.getElementById("centralFloorGroup").style.display =
+          channel === "ส่วนกลาง" ? "flex" : "none";
+        document.getElementById("emsTrackingGroup").style.display =
+          channel === "ไปรษณีย์" ? "flex" : "none";
+      }
+
+      function showPickedNoticeDocCopy() {
+        const input = document.getElementById("in_noticeDocCopy");
+        const label = document.getElementById("f_pickedNoticeDocCopy");
+        const names = input.files ? Array.from(input.files).map((f) => f.name) : [];
+        label.textContent = names.length ? "ไฟล์ที่เลือก: " + names.join(", ") : "";
       }
 
       function addDays(days) {
@@ -353,6 +433,7 @@
         document.getElementById("f_title").textContent = c.title || "-";
         document.getElementById("f_requesterName").textContent = c.requesterName || "-";
         document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
+        ECMIS102.renderOriginalCaseCard(c);
 
         /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01 ถึง 10-2-appeal-12) */
         document.getElementById("f_boardResolutionTypeName").textContent = c.l2AppealBoardResolutionTypeName || "-";
@@ -361,45 +442,63 @@
         document.getElementById("f_noticeDraftNotes").textContent = c.l2AppealNoticeDraftNotes || "-";
         ECMIS102.renderAttachments("f_noticeDraftAttachments", c.l2AppealNoticeDraftAttachmentFileNames);
         ECMIS102.renderSignatureList("f_signatures", c, [
-          { slot: "appealBureauDirectorAssign", title: "ผู้อำนวยการกองบริหารคดี" },
-          { slot: "appealTrackingDirectorAssign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี" },
           { slot: "appealCaseOwnerOpinion", title: "นิติกรเจ้าของสำนวน" },
-          { slot: "appealAgenda", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์" },
           { slot: "appealRuling", title: "คณะอนุกรรมการวินิจฉัยอุทธรณ์" },
-          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (เสนอ)" },
-          { slot: "appealTrackingSign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี (รับรอง)" },
+          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (บันทึกวาระ+เสนอ)" },
           { slot: "appealBureauDirectorBoardPropose", title: "ผู้อำนวยการกองบริหารคดี (เสนอเรื่อง)" },
-          { slot: "appealBoardResolution", title: "ธุรการกองบริหารคดี (บันทึกมติบอร์ด)" },
           { slot: "appealNoticeDraft", title: "เลขานุการกลุ่มงานบริหารติดตามคดี" },
         ]);
         renderNoticeDoc();
 
-        document.getElementById("in_notifyDate").value = new Date().toISOString().slice(0, 10);
         document.getElementById("in_channel").value = "ส่วนกลาง";
         document.getElementById("in_channelDetail").value = "เขต 1";
+        document.getElementById("in_centralFloor").value = "14";
+        document.getElementById("in_emsTracking").value = "";
         toggleChannelDetail();
+        const seq = String(5600 + Math.floor(Math.random() * 400)).padStart(4, "0");
+        document.getElementById("in_externalDocNo").value = "ปป 0002/" + seq;
+        document.getElementById("in_resolutionReceivedDate").value = c.l2AppealBoardReplyDate || addDays(-5);
+        document.getElementById("in_resolutionSentDate").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("in_noticeDocCopy").value = "";
+        document.getElementById("f_pickedNoticeDocCopy").textContent = "";
         document.getElementById("in_notes").value = "-";
         document.getElementById("f_expectedReceiptDate").textContent =
           addDays(5) + " (ภายใน 5 วันนับแต่วันที่แจ้ง)";
       }
 
       function submitForm() {
-        const notifyDate = document.getElementById("in_notifyDate").value;
-        if (!notifyDate) {
+        const channel = document.getElementById("in_channel").value;
+        const channelDetail =
+          channel === "เขต" ? document.getElementById("in_channelDetail").value : "-";
+        const centralFloor = channel === "ส่วนกลาง" ? document.getElementById("in_centralFloor").value : "";
+        const emsTracking = document.getElementById("in_emsTracking").value.trim();
+        const externalDocNo = document.getElementById("in_externalDocNo").value.trim();
+        const resolutionReceivedDate = document.getElementById("in_resolutionReceivedDate").value;
+        const notifyDate = document.getElementById("in_resolutionSentDate").value;
+        const noticeDocCopyInput = document.getElementById("in_noticeDocCopy");
+        const noticeDocCopyFileNames = noticeDocCopyInput.files
+          ? Array.from(noticeDocCopyInput.files).map((f) => f.name)
+          : [];
+        const notes = document.getElementById("in_notes").value.trim() || "-";
+        const expectedReceiptDate = addDays(5);
+
+        if (
+          !notifyDate ||
+          !externalDocNo ||
+          !resolutionReceivedDate ||
+          !noticeDocCopyFileNames.length ||
+          (channel === "ไปรษณีย์" && !emsTracking)
+        ) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุวันที่แจ้งผู้อุทธรณ์",
+            text:
+              "กรุณากรอกวันที่ได้รับมติ วันที่แจ้งผู้อุทธรณ์ เลขส่งหนังสือภายนอก และแนบสำเนาหนังสือในระบบ" +
+              (channel === "ไปรษณีย์" ? " พร้อมเลข EMS - Tracking" : ""),
             confirmButtonColor: "#1e3a8a",
           });
           return;
         }
-
-        const channel = document.getElementById("in_channel").value;
-        const channelDetail =
-          channel === "เขต" ? document.getElementById("in_channelDetail").value : "-";
-        const notes = document.getElementById("in_notes").value.trim() || "-";
-        const expectedReceiptDate = addDays(5);
 
         ECMIS102.openSignatureModal(
           {
@@ -415,6 +514,11 @@
               l2AppealNotifyDate: notifyDate,
               l2AppealNotifyChannel: channel,
               l2AppealNotifyChannelDetail: channelDetail,
+              l2AppealNotifyCentralFloor: centralFloor,
+              l2AppealNotifyEmsTracking: emsTracking,
+              l2AppealNotifyExternalDocNo: externalDocNo,
+              l2AppealResolutionReceivedDate: resolutionReceivedDate,
+              l2AppealNoticeDocCopyFileNames: noticeDocCopyFileNames,
               l2AppealNotifyNotes: notes,
               l2AppealExpectedReceiptDate: expectedReceiptDate,
               statusBadge: "bg-success text-white",

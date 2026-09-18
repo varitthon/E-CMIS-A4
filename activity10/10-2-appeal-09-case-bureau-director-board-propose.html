@@ -138,18 +138,25 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
-          <div class="stepper" id="stepperPart1"></div>
-          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
-          <div class="stepper" id="stepperPart2"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> Flow อุทธรณ์ (ขั้นตอนหลัก)</div>
+          <div class="stepper" id="stepperAppeal"></div>
+          <button type="button" class="btn btn-secondary" id="stepperAccordionToggle" onclick="ECMIS102.toggleStepperAccordion()" style="margin-top: 14px; height: 32px; font-size: 0.85em">
+            <i class="fa-solid fa-chevron-down me-1" id="stepperAccordionIcon"></i>แสดงขั้นตอนก่อนยื่นอุทธรณ์ (สายเดิมที่ปิดสำนวนแล้ว)
+          </button>
+          <div id="stepperAccordionBody" class="d-none" style="margin-top: 14px">
+            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+            <div class="stepper" id="stepperPart1"></div>
+            <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ (ก่อนยื่นอุทธรณ์)</div>
+            <div class="stepper" id="stepperPart2"></div>
+          </div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังผู้อำนวยการกลุ่มงานบริหารติดตามคดีลงนามส่งต่อที่หน้า
-            <a href="10-2-appeal-08-case-tracking-director-sign.html">ผอ.กลุ่มงานบริหารติดตามคดี ลงนามส่งต่อ</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลังฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์เสนอบันทึกที่หน้า
+            <a href="10-2-appeal-07-secretariat-memo.html">ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำบันทึกเสนอ</a>
           </div>
         </div>
 
@@ -157,7 +164,7 @@
           <div class="l2-note l2-note-info">
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              ผู้อำนวยการกลุ่มงานบริหารติดตามคดีลงนามรับรองบันทึกคำวินิจฉัยแล้ว ผู้อำนวยการกองบริหารคดีพิจารณาและลงนามในฐานะผู้เสนอเรื่อง ก่อนนำเข้ากิจกรรมที่ 7
+              ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์เสนอบันทึกคำวินิจฉัยแล้ว ผู้อำนวยการกองบริหารคดีพิจารณา ลงนามในฐานะผู้เสนอเรื่อง และออกเลขส่งยื่นเรื่องเข้ากิจกรรมที่ 7 ในขั้นตอนเดียวกัน
             </div>
           </div>
 
@@ -181,6 +188,40 @@
                   <div class="read-box" id="f_resolution">-</div>
                 </div>
               </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เลขสำนวนคดีที่เกี่ยวข้อง</label>
+                <div class="read-box font-monospace" id="f_relatedCaseNo">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficer">-</div>
+                </div>
+                <div class="form-group">
+                  <label>สังกัดผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficerOrg">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>มติชี้มูล (คณะอนุกรรมการฯ)</label>
+                <div class="read-box" id="f_resolutionScreening">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติร่างเสนอบอร์ด (ก่อนส่งกิจกรรมที่ 7)</label>
+                <div class="read-box" id="f_resolutionBoardDraft">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติที่บอร์ดตอบกลับ (ใช้ปิดสำนวนเดิม)</label>
+                <div class="read-box" id="f_resolutionBoardReply">-</div>
+              </div>
+              <div class="form-group" id="otherBoardResolutionsGroup" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>มติบอร์ดกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน <span class="l2-optional">(ข้อมูลอ้างอิง)</span></label>
+                <div id="f_otherBoardResolutions"></div>
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เอกสารแนบทั้งหมดของคำร้อง (สำนวนเดิม)</label>
+                <div id="f_origAttachments"></div>
+              </div>
             </div>
           </div>
 
@@ -189,12 +230,70 @@
               <span><i class="fa-solid fa-inbox text-primary me-2"></i>ข้อมูลจากขั้นตอนก่อนหน้า</span>
             </div>
             <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือรับ</label>
+                  <div class="read-box font-monospace" id="f_receiveNo">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ลงรับ</label>
+                  <div class="read-box font-monospace" id="f_receiveDate">-</div>
+                </div>
+              </div>
               <div class="form-group">
-                <label>ความเห็นเพิ่มเติม (ผอ.กลุ่มงานบริหารติดตามคดี)</label>
+                <label>เอกสารแนบ (คำอุทธรณ์)</label>
+                <div id="f_attachments"></div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็นนิติกรเจ้าของสำนวน</label>
+                <div class="read-box read-box-textarea" id="f_caseOwnerOpinion">-</div>
+              </div>
+              <div class="form-group">
+                <label>เอกสารแนบ (นิติกร)</label>
+                <div id="f_caseOwnerAttachments"></div>
+              </div>
+              <div class="form-group">
+                <label>แนบไฟล์หนังสือด่วน (นิติกร)</label>
+                <div id="f_urgentLetterFiles"></div>
+              </div>
+              <div class="form-group">
+                <label>แนบไฟล์บันทึกเสนอเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท. (นิติกร)</label>
+                <div id="f_boardProposalMemoFiles"></div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วันที่ประชุม</label>
+                  <div class="read-box font-monospace" id="f_meetingDate">-</div>
+                </div>
+                <div class="form-group">
+                  <label>เลขที่วาระ</label>
+                  <div class="read-box font-monospace" id="f_agendaNo">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>เลขหนังสือส่งภายใน (สารบัญ)</label>
+                <div class="read-box font-monospace" id="f_memoInternalDocNo">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือส่ง</label>
+                  <div class="read-box font-monospace" id="f_boardDispatchDocNo">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ส่ง</label>
+                  <div class="read-box" id="f_boardDispatchDate">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>เอกสารแนบประกอบคำวินิจฉัย</label>
+                <div id="f_rulingAttachments"></div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็นเพิ่มเติม (ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์)</label>
                 <div class="read-box" id="f_trackingSignNotes">-</div>
               </div>
               <div class="form-group">
-                <label>เอกสารแนบ (ผอ.กลุ่มงานบริหารติดตามคดี)</label>
+                <label>เอกสารแนบ (ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์)</label>
                 <div id="f_trackingSignAttachments"></div>
               </div>
               <div class="form-group">
@@ -220,14 +319,14 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ความเห็นเพิ่มเติม <span class="l2-optional">(ไม่บังคับ)</span></label>
-                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุความเห็นเพิ่มเติม..."></textarea>
+                <label>หมายเหตุ <span class="l2-optional">(ไม่บังคับ)</span></label>
+                <textarea id="in_notes" class="form-control" rows="3" placeholder="ระบุหมายเหตุ..."></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามเสนอกิจกรรมที่ 7
+                <i class="fa-solid fa-paper-plane me-1"></i>ลงนามเสนอกิจกรรมที่ 7
               </button>
             </div>
           </div>
@@ -247,7 +346,7 @@
       let currentCase = null;
 
       const RULING_LABELS = {
-        UPHOLD: "เห็นด้วยกับคำสั่งเดิม (ยืนไม่เปิดเผย)",
+        UPHOLD: "เห็นด้วยกับคำสั่งเดิม (ไม่เปิดเผย)",
         REVERSE_FULL: "กลับคำสั่งเดิม (ให้เปิดเผยทั้งหมด)",
         REVERSE_PARTIAL: "กลับคำสั่งบางส่วน (ให้เปิดเผยบางส่วน)",
       };
@@ -273,7 +372,7 @@
           document.getElementById("pageBody").classList.add("d-none");
           return;
         }
-        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase, "stepperAppeal");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
@@ -296,18 +395,29 @@
         document.getElementById("f_title").textContent = c.title || "-";
         document.getElementById("f_requesterName").textContent = c.requesterName || "-";
         document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
+        ECMIS102.renderOriginalCaseCard(c);
 
-        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01 ถึง 10-2-appeal-08) */
-        document.getElementById("f_trackingSignNotes").textContent = c.l2AppealTrackingSignNotes || "-";
-        ECMIS102.renderAttachments("f_trackingSignAttachments", c.l2AppealTrackingSignAttachmentFileNames);
+        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01, 04-07 — appeal-02/03/08
+           ถูกตัดออกจาก flow แล้ว) */
+        document.getElementById("f_receiveNo").textContent = c.l2AppealReceiveNo || "-";
+        document.getElementById("f_receiveDate").textContent = c.l2AppealReceiveDate || "-";
+        ECMIS102.renderAttachments("f_attachments", c.l2AppealAttachmentFileNames);
+        document.getElementById("f_caseOwnerOpinion").textContent = c.l2AppealCaseOwnerOpinion || "-";
+        ECMIS102.renderAttachments("f_caseOwnerAttachments", c.l2AppealCaseOwnerAttachmentFileNames);
+        ECMIS102.renderAttachments("f_urgentLetterFiles", c.l2AppealUrgentLetterFileNames);
+        ECMIS102.renderAttachments("f_boardProposalMemoFiles", c.l2AppealBoardProposalMemoFileNames);
+        document.getElementById("f_meetingDate").textContent = c.l2AppealMeetingDate || "-";
+        document.getElementById("f_agendaNo").textContent = c.l2AppealAgendaNo || "-";
+        document.getElementById("f_memoInternalDocNo").textContent = c.l2AppealMemoInternalDocNo || "-";
+        document.getElementById("f_boardDispatchDocNo").textContent = c.l2AppealBoardDispatchDocNo || "-";
+        document.getElementById("f_boardDispatchDate").textContent = c.l2AppealBoardDispatchDate || "-";
+        ECMIS102.renderAttachments("f_rulingAttachments", c.l2AppealRulingAttachmentFileNames);
+        document.getElementById("f_trackingSignNotes").textContent = c.l2AppealMemoNotes || "-";
+        ECMIS102.renderAttachments("f_trackingSignAttachments", c.l2AppealMemoAttachmentFileNames);
         ECMIS102.renderSignatureList("f_signatures", c, [
-          { slot: "appealBureauDirectorAssign", title: "ผู้อำนวยการกองบริหารคดี" },
-          { slot: "appealTrackingDirectorAssign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี" },
           { slot: "appealCaseOwnerOpinion", title: "นิติกรเจ้าของสำนวน" },
-          { slot: "appealAgenda", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์" },
           { slot: "appealRuling", title: "คณะอนุกรรมการวินิจฉัยอุทธรณ์" },
-          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (เสนอ)" },
-          { slot: "appealTrackingSign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี (รับรอง)" },
+          { slot: "appealSecretariatMemo", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ (บันทึกวาระ+เสนอ)" },
         ]);
         renderMemoDoc();
 
@@ -329,17 +439,15 @@
             });
             Activity102.advance(currentCase.id, STEP_CODE, {
               l2AppealBoardProposeNotes: notes,
-              assignedRole: "case_bureau_admin",
-              officer: ECMIS102.signerLabel("case_bureau_admin"),
             });
 
             Swal.fire({
               icon: "success",
-              title: "ลงนามเสนอเรียบร้อย",
+              title: "ลงนามและยื่นเรื่องเรียบร้อย",
               html:
                 '<div class="emd-summary">' +
                 "<p>ลงนามในฐานะผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
-                "<p><strong>ขั้นตอนต่อไป:</strong> ธุรการกองบริหารคดีออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7</p></div>",
+                "<p><strong>สิ้นสุดขั้นตอนในระบบนี้ชั่วคราว:</strong> รอมติจากกิจกรรมที่ 7 ซึ่งอยู่นอกสโคปของระบบนี้</p></div>",
               confirmButtonColor: "#1e3a8a",
               confirmButtonText: "กลับหน้าคิวงาน",
             }).then(ECMIS102.goInbox);

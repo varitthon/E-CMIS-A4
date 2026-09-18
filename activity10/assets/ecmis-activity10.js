@@ -6,8 +6,14 @@
 (function (global) {
   "use strict";
 
-  // Data Version Key for LocalStorage Sync (v44: แก้ไขถ้อยคำ prosecutorCaseTypeName ให้ตรงกับตัวเลือกหน้า 02)
-  const DATA_VERSION = "v59_add_post_court_stay_order_sample";
+  // Data Version Key for LocalStorage Sync (v61: แก้ sample case คำร้อง-100041/2569
+  // และ 100043-045/2569 ที่ statusCode ค้างอยู่ (L2_PENDING_APPEAL_BOARD_DISPATCH,
+  // L2_APPEAL_BOARD_RESOLVED) กลายเป็นสถานะกำพร้าไม่มี route หลังตัด appeal-10/11
+  // ออกจาก flow — ย้ายไปสถานะที่ยังใช้งานได้จริง (L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE,
+  // L2_PENDING_APPEAL_NOTICE_DRAFT) พร้อมเติม l2AppealMemoInternalDocNo/
+  // BoardReplyDocNo-Date/ResolutionNotes ให้ครบทุกเคสสาย appeal — ต้องขึ้นเวอร์ชัน
+  // ให้ browser ที่มี localStorage เก่าอยู่แล้วโหลดข้อมูลชุดใหม่)
+  const DATA_VERSION = "v63_fix_orphaned_appeal_agenda_status";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -1485,6 +1491,8 @@
       attachmentFileNames: [
         "คำร้องขอเปิดเผยข้อมูล.pdf",
         "หนังสือรับรองสื่อมวลชน.pdf",
+        "หนังสืออุทธรณ์คำสั่งไม่เปิดเผยข้อมูล.pdf",
+        "รายงานการสอบสวนวินัย (ฉบับย่อ) แนบประกอบ.pdf",
       ],
       l2ResolutionType: "DENY",
       l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
@@ -1494,10 +1502,73 @@
       l2DenyAssignDate: getDateWithOffset(-20),
       l2DenyAssignNotes:
         "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป",
+      /* เจ้าของสำนวนไต่สวนเดิม (relatedCaseNo) — คนละคนกับผู้จัดการคำขอเปิดเผยข้อมูลนี้ */
+      l2OriginalCaseOfficer: "นายประดิษฐ์ ไต่สวนเก่ง",
+      l2OriginalCaseOfficerOrg: "กองปราบปรามการทุจริตในภาครัฐ 2",
+      /* มติ 3 ช่วง — ปัจจุบันระบบเก็บ l2ResolutionType เป็นค่าเดียวที่ถูกเขียนทับ
+         ทุกขั้น (10-2-06 → 32 → 31) ฟิลด์ด้านล่างนี้เป็น snapshot จำลองไว้ให้เห็น
+         ว่าแต่ละช่วงเคยให้ความเห็นว่าอย่างไรบ้างก่อนจะสรุปเป็น l2ResolutionType — ตั้งใจ
+         เขียนเนื้อหาให้ต่างกันชัดเจนแต่ละช่วง ไม่ใช่ก็อปข้อความเดียวกันซ้ำ */
+      l2ResolutionAtScreening: "ไม่อนุญาตเปิดเผย",
+      l2ResolutionAtScreeningDetail:
+        "คณะอนุกรรมการพิจารณากลั่นกรองฯ ชี้มูลเบื้องต้นว่าการสอบสวนวินัยยังไม่ถึงที่สุด หากเปิดเผยอาจกระทบกระบวนการทางวินัยที่ยังไม่สิ้นสุด",
+      l2ResolutionAtBoardDraft: "ไม่อนุญาตเปิดเผย (ยืนตามชี้มูล)",
+      l2ResolutionAtBoardDraftDetail:
+        "รองเลขาธิการ ป.ป.ท. ตรวจร่างและให้ความเห็นยืนยันมติชี้มูลเดิม ก่อนเสนอเลขาธิการ ป.ป.ท. ลงนามส่งกิจกรรมที่ 7",
+      l2ResolutionAtBoardReply: "ไม่อนุญาตเปิดเผย",
+      l2ResolutionAtBoardReplyDetail:
+        "คณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) มีมติยืนตามร่างที่เสนอ ไม่อนุญาตเปิดเผยข้อมูล พร้อมมอบหมายกองปราบปรามการทุจริตในภาครัฐ 2 เป็นเจ้าของสำนวนต่อ",
+      /* มติกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน (คดี-100018/2569) — ไว้ดูประกอบ
+         เฉย ๆ ไม่ใช่มติของคำร้องขอเปิดเผยข้อมูลนี้ */
+      l2OtherBoardResolutions: [
+        {
+          activity: "กิจกรรมที่ 7 (รอบที่ 1) — ความเห็นแย้งคำสั่งไม่ฟ้อง",
+          date: getDateWithOffset(-90),
+          resolution: "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
+          detail: "คณะกรรมการ ป.ป.ท. เห็นชอบให้ทำความเห็นแย้งในสำนวนคดี-100018/2569",
+        },
+        {
+          activity: "กิจกรรมที่ 7 (รอบที่ 2) — พิจารณาสำนวนไต่สวนหลัก",
+          date: getDateWithOffset(-45),
+          resolution: "มีมติให้ดำเนินการไต่สวนต่อ และให้ตั้งคณะอนุกรรมการไต่สวนเพิ่มเติม",
+          detail: "คณะกรรมการ ป.ป.ท. เห็นว่าพยานหลักฐานยังไม่เพียงพอ ให้ขยายผลการไต่สวนในสำนวนคดี-100018/2569 ต่อไปอีก 60 วัน",
+        },
+      ],
       statusCode: "L2_PENDING_APPEAL_INTAKE",
       status: "ธุรการกองบริหารคดีรับเรื่องอุทธรณ์และลงทะเบียนรับ",
       assignedRole: "case_bureau_admin",
       officer: "นางนิชาดา ธุรการกิจ",
+    },
+    {
+      /* ตัวอย่างสายเขต (จุดเริ่มต้นทางที่ 2) — ยื่นตรงที่เขต รอเจ้าหน้าที่เขต
+         รับเรื่องที่ 10-2-appeal-01b-district-intake.html แทนธุรการกองบริหารคดี */
+      id: "คำร้อง-100049/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยเอกสารการจัดซื้อจัดจ้างครุภัณฑ์คอมพิวเตอร์ประจำปี",
+      requesterName: "นายอนุชา ทวีทรัพย์",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "เอกสารการจัดซื้อจัดจ้างครุภัณฑ์คอมพิวเตอร์ประจำปี",
+      relatedCaseNo: "คดี-100022/2569",
+      requestChannelName: "ยื่นที่เขต",
+      attachmentFileNames: [
+        "คำร้องขอเปิดเผยข้อมูล.pdf",
+        "หนังสืออุทธรณ์คำสั่งไม่เปิดเผยข้อมูล.pdf",
+      ],
+      l2ResolutionType: "DENY",
+      l2ResolutionTypeName: "ไม่อนุญาตเปิดเผย",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ เห็นว่าเอกสารดังกล่าวเกี่ยวข้องกับกระบวนการจัดซื้อจัดจ้างที่อยู่ระหว่างการตรวจสอบ จึงไม่อนุญาตให้เปิดเผยในชั้นนี้",
+      l2DenyAssignedDept: "กองปราบปรามการทุจริตในภาครัฐ 4",
+      l2DenyAssignDate: getDateWithOffset(-18),
+      l2DenyAssignNotes:
+        "ฝ่ายเลขานุการ คณะอนุกรรมการพิจารณากลั่นกรองฯ ขอส่งคืนต้นฉบับเอกสารมาพร้อมหนังสือฉบับนี้ เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป",
+      l2OriginalCaseOfficer: "นายประดิษฐ์ ไต่สวนเก่ง",
+      l2OriginalCaseOfficerOrg: "กองปราบปรามการทุจริตในภาครัฐ 4",
+      statusCode: "L2_PENDING_APPEAL_INTAKE_DISTRICT",
+      status: "เจ้าหน้าที่เขตรับเรื่องอุทธรณ์และลงทะเบียนรับ",
+      assignedRole: "district_admin",
+      officer: "นายกิตติพงษ์ ดูแลเขต",
     },
     {
       id: "คำร้อง-100033/2569",
@@ -1640,10 +1711,10 @@
       l2AppealCaseOwnerOpinion:
         "นิติกรเจ้าของสำนวนเห็นว่าการสอบสวนวินัยดังกล่าวได้ข้อยุติแล้วในทางปฏิบัติ ไม่ขัดข้องหากจะเปิดเผยข้อมูลตามที่ผู้อุทธรณ์ร้องขอ",
       l2AppealCaseOwnerAttachmentFileNames: [],
-      statusCode: "L2_PENDING_APPEAL_AGENDA",
-      status: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำวาระ",
-      assignedRole: "appeal_subcommittee_secretariat",
-      officer: "นางสาวมาลี เสรีกิจ",
+      statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      assignedRole: "case_bureau_director",
+      officer: "นางปัทมา บริหารกิจ",
     },
     {
       id: "คำร้อง-100037/2569",
@@ -1831,6 +1902,9 @@
       l2AppealMemoAttachmentFileNames: [],
       l2AppealTrackingSignNotes: "-",
       l2AppealTrackingSignAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5511",
+      l2AppealBoardDispatchDocNo: "ปป 0002/5255",
+      l2AppealBoardDispatchDate: getDateWithOffset(-5),
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
       status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
       assignedRole: "case_bureau_director",
@@ -1881,12 +1955,18 @@
       l2AppealMemoAttachmentFileNames: [],
       l2AppealTrackingSignNotes: "-",
       l2AppealTrackingSignAttachmentFileNames: [],
-      l2AppealBoardProposeNotes: "-",
-      l2AppealBoardProposeAttachmentFileNames: [],
-      statusCode: "L2_PENDING_APPEAL_BOARD_DISPATCH",
-      status: "ธุรการกองบริหารคดีออกเลขส่งและยื่นมติบอร์ด",
-      assignedRole: "case_bureau_admin",
-      officer: "นางนิชาดา ธุรการกิจ",
+      /* เดิม statusCode นี้คือ L2_PENDING_APPEAL_BOARD_DISPATCH (รอ appeal-10
+         ออกเลขส่งแยกหน้า) — appeal-10 ถูกตัดออกจาก flow แล้ว (รวมเข้า appeal-07)
+         จึงไม่มีสถานะนี้อีกต่อไป ปรับให้สอดคล้องกับ flow ใหม่: appeal-07 ออกเลขส่ง
+         ให้แล้ว เหลือรอ ผอ.กองบริหารคดี ลงนามเสนอที่ appeal-09 เท่านั้น (เหมือน
+         คำร้อง-100040/2569 ด้านบน) */
+      l2AppealMemoInternalDocNo: "ปป 0002/5498",
+      l2AppealBoardDispatchDocNo: "ปป 0002/5228",
+      l2AppealBoardDispatchDate: getDateWithOffset(-11),
+      statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      assignedRole: "case_bureau_director",
+      officer: "นางปัทมา บริหารกิจ",
     },
     {
       id: "คำร้อง-100042/2569",
@@ -1936,6 +2016,7 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5487",
       l2AppealBoardDispatchDocNo: "ปป 0002/5241",
       l2AppealBoardDispatchDate: getDateWithOffset(-14),
       statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD",
@@ -1990,18 +2071,25 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5476",
       l2AppealBoardDispatchDocNo: "ปป 0002/5219",
       l2AppealBoardDispatchDate: getDateWithOffset(-24),
-      /* มติบอร์ดที่ทราบผลแล้ว (จำลองไว้ล่วงหน้าเพื่อความหลากหลายของข้อมูลทดสอบ —
-         ในสายงานจริง ธุรการจะเป็นผู้กรอกค่านี้ที่หน้า appeal-11 (ยังไม่สร้าง)
-         ไม่ใช่ค่าที่มีอยู่ก่อนตั้งแต่สถานะนี้) สอดคล้องกับมติของคณะอนุกรรมการ
-         วินิจฉัยอุทธรณ์ฯ ที่ appeal-06 (REVERSE_FULL) */
+      /* มติบอร์ดที่ทราบผลแล้ว (จำลองไว้ล่วงหน้าเพื่อความหลากหลายของข้อมูลทดสอบ) —
+         เดิม statusCode นี้คือ L2_APPEAL_BOARD_RESOLVED (สถานะคั่นกลาง รอ appeal-11
+         ธุรการบันทึกมติบอร์ดแยกหน้า) — appeal-11 ถูกตัดออกจาก flow แล้ว ตอนนี้
+         [H2] เขียนค่ามติบอร์ดตรงเข้า case แล้ว route เข้า case_tracking_secretary
+         (appeal-12) ทันที จึงปรับสถานะและผู้รับผิดชอบให้ตรงกับ flow ใหม่ พร้อม
+         เติมฟิลด์ที่ [H2] จะเขียน (BoardReplyDocNo/Date, ResolutionNotes) สอดคล้อง
+         กับมติของคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ ที่ appeal-06 (REVERSE_FULL) */
       l2AppealBoardResolutionType: "DISCLOSE",
       l2AppealBoardResolutionTypeName: "ให้เปิดเผยข้อมูลทั้งหมด",
-      statusCode: "L2_APPEAL_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว",
-      assignedRole: "case_bureau_admin",
-      officer: "นางนิชาดา ธุรการกิจ",
+      l2AppealBoardReplyDocNo: "ปป 0002/5312",
+      l2AppealBoardReplyDate: getDateWithOffset(-10),
+      l2AppealBoardResolutionNotes: "-",
+      statusCode: "L2_PENDING_APPEAL_NOTICE_DRAFT",
+      status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ",
+      assignedRole: "case_tracking_secretary",
+      officer: "นางสาวสุดา คดีเที่ยง",
     },
     {
       id: "คำร้อง-100044/2569",
@@ -2051,16 +2139,21 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5463",
       l2AppealBoardDispatchDocNo: "ปป 0002/5203",
       l2AppealBoardDispatchDate: getDateWithOffset(-19),
       /* มติบอร์ด — สอดคล้องกับมติของคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ ที่ appeal-06
-         (REVERSE_PARTIAL) ดูหมายเหตุที่ 100043 ด้านบน */
+         (REVERSE_PARTIAL) — สถานะปรับตามหมายเหตุที่ 100043 ด้านบน (appeal-11 ถูกตัด
+         ออกจาก flow แล้ว) */
       l2AppealBoardResolutionType: "PARTIAL",
       l2AppealBoardResolutionTypeName: "ให้เปิดเผยข้อมูลบางส่วน",
-      statusCode: "L2_APPEAL_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว",
-      assignedRole: "case_bureau_admin",
-      officer: "นางนิชาดา ธุรการกิจ",
+      l2AppealBoardReplyDocNo: "ปป 0002/5296",
+      l2AppealBoardReplyDate: getDateWithOffset(-15),
+      l2AppealBoardResolutionNotes: "-",
+      statusCode: "L2_PENDING_APPEAL_NOTICE_DRAFT",
+      status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ",
+      assignedRole: "case_tracking_secretary",
+      officer: "นางสาวสุดา คดีเที่ยง",
     },
     {
       id: "คำร้อง-100045/2569",
@@ -2112,16 +2205,21 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5450",
       l2AppealBoardDispatchDocNo: "ปป 0002/5187",
       l2AppealBoardDispatchDate: getDateWithOffset(-15),
       /* มติบอร์ด — สอดคล้องกับมติของคณะอนุกรรมการวินิจฉัยอุทธรณ์ฯ ที่ appeal-06
-         (UPHOLD) ดูหมายเหตุที่ 100043 ด้านบน */
+         (UPHOLD) — สถานะปรับตามหมายเหตุที่ 100043 ด้านบน (appeal-11 ถูกตัดออกจาก
+         flow แล้ว) */
       l2AppealBoardResolutionType: "DENY",
       l2AppealBoardResolutionTypeName: "ไม่เปิดเผยข้อมูล",
-      statusCode: "L2_APPEAL_BOARD_RESOLVED",
-      status: "มติบอร์ดตอบกลับแล้ว",
-      assignedRole: "case_bureau_admin",
-      officer: "นางนิชาดา ธุรการกิจ",
+      l2AppealBoardReplyDocNo: "ปป 0002/5280",
+      l2AppealBoardReplyDate: getDateWithOffset(-20),
+      l2AppealBoardResolutionNotes: "-",
+      statusCode: "L2_PENDING_APPEAL_NOTICE_DRAFT",
+      status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ",
+      assignedRole: "case_tracking_secretary",
+      officer: "นางสาวสุดา คดีเที่ยง",
     },
     {
       id: "คำร้อง-100046/2569",
@@ -2170,6 +2268,7 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5437",
       l2AppealBoardDispatchDocNo: "ปป 0002/5165",
       l2AppealBoardDispatchDate: getDateWithOffset(-29),
       l2AppealBoardResolutionType: "DISCLOSE",
@@ -2229,6 +2328,7 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5424",
       l2AppealBoardDispatchDocNo: "ปป 0002/5152",
       l2AppealBoardDispatchDate: getDateWithOffset(-34),
       l2AppealBoardResolutionType: "DISCLOSE",
@@ -2293,6 +2393,7 @@
       l2AppealTrackingSignAttachmentFileNames: [],
       l2AppealBoardProposeNotes: "-",
       l2AppealBoardProposeAttachmentFileNames: [],
+      l2AppealMemoInternalDocNo: "ปป 0002/5411",
       l2AppealBoardDispatchDocNo: "ปป 0002/5138",
       l2AppealBoardDispatchDate: getDateWithOffset(-39),
       l2AppealBoardResolutionType: "DISCLOSE",

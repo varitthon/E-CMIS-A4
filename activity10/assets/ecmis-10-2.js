@@ -519,6 +519,11 @@
        (10-2-17, L2_CASE_CLOSED_DENY_ASSIGNED) แล้วผู้ยื่นคำขอใช้สิทธิ์อุทธรณ์
        ดูรายละเอียดแผนเต็มที่ docs/10-2-flow4-appeal-plan.md */
     {
+      /* จุดเริ่มต้นทางที่ 1: สาย "ส่วนกลาง" (ผัง TO-BE) — ธุรการกองบริหารคดีรับเรื่อง
+         แล้วส่งต่อให้ ผอ.กองบริหารคดี (appeal-02) → ผอ.กลุ่มงานติดตามคดี (appeal-03)
+         เลือก/มอบหมายนิติกรตามลำดับ (คนละสายกับ "เขต" ที่ส่งตรงถึงนิติกรได้เลย
+         ดู L2-APPEAL-INTAKE-DISTRICT ด้านล่าง) — ทั้งสองสายมาบรรจบที่ precondition
+         เดียวกันของ appeal-04 (L2_PENDING_CASE_OWNER_APPEAL_OPINION) */
       code: "L2-APPEAL-INTAKE",
       seq: 40,
       page: "10-2-appeal-01-legal-admin-intake.html",
@@ -526,61 +531,76 @@
       roleTitle: "ธุรการกองบริหารคดี",
       status: "ผอ.กองบริหารคดีพิจารณาเรื่องอุทธรณ์และมอบหมาย",
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_ASSIGN",
-      label: "[อุทธรณ์] ธุรการกองบริหารคดี รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ E-CMIS",
-      stepName: "[อุทธรณ์] ธุรการ รับเรื่อง+บันทึกระบบ",
+      label: "[อุทธรณ์] ธุรการกองบริหารคดี รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ (สายส่วนกลาง)",
+      stepName: "[อุทธรณ์] ธุรการส่วนกลาง รับเรื่อง",
       includeIf: ["DENY"],
+      intakeChannel: ["CENTRAL"],
+    },
+    {
+      /* จุดเริ่มต้นทางที่ 2: สาย "เขต" (ผัง TO-BE) — เจ้าหน้าที่เขตรับเรื่องแล้วส่งตรง
+         ถึงนิติกรเจ้าของสำนวนได้เลย ไม่ต้องผ่าน ผอ.กองบริหารคดี/ผอ.กลุ่มงานติดตามคดี
+         มอบหมายเหมือนสายส่วนกลาง (สั้นกว่า 2 ขั้น) statusCode ชี้ตรงไปที่ precondition
+         ของ appeal-04 จุดเดียวกับที่สายส่วนกลางมาบรรจบ */
+      code: "L2-APPEAL-INTAKE-DISTRICT",
+      seq: 41,
+      page: "10-2-appeal-01b-district-intake.html",
+      role: "district_admin",
+      roleTitle: "เจ้าหน้าที่เขต",
+      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
+      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
+      label: "[อุทธรณ์] เจ้าหน้าที่เขต รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ (สายเขต)",
+      stepName: "[อุทธรณ์] ธุรการเขต รับเรื่อง",
+      includeIf: ["DENY"],
+      intakeChannel: ["DISTRICT"],
     },
     {
       code: "L2-APPEAL-BUREAU-ASSIGN",
-      seq: 41,
+      seq: 42,
       page: "10-2-appeal-02-case-bureau-director-assign.html",
       role: "case_bureau_director",
       roleTitle: "ผู้อำนวยการกองบริหารคดี",
       status: "ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร",
       statusCode: "L2_PENDING_TRACKING_DIRECTOR_ASSIGN",
-      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาเรื่องอุทธรณ์และมอบหมาย",
+      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาเรื่องอุทธรณ์และมอบหมาย (สายส่วนกลาง)",
       stepName: "[อุทธรณ์] ผอ.กองบริหารคดี มอบหมาย",
       includeIf: ["DENY"],
+      intakeChannel: ["CENTRAL"],
     },
     {
+      /* ผลผลิตชี้ไปที่ precondition เดียวกับ L2-APPEAL-INTAKE-DISTRICT ด้านบน —
+         ทั้งสองสายบรรจบที่นี่ก่อนเข้า appeal-04 */
       code: "L2-APPEAL-TRACKING-ASSIGN",
-      seq: 42,
+      seq: 43,
       page: "10-2-appeal-03-case-tracking-director-assign.html",
       role: "case_tracking_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี",
       status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
       statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
-      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี พิจารณาและมอบหมายนิติกร",
-      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี มอบหมาย",
+      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี พิจารณาและมอบหมายนิติกร (สายส่วนกลาง)",
+      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี มอบหมายนิติกร",
       includeIf: ["DENY"],
+      intakeChannel: ["CENTRAL"],
     },
     {
+      /* เดิมส่งต่อฝ่ายเลขาฯ ให้จัดทำวาระ (appeal-05) ก่อนเข้าคณะอนุกรรมการฯ — สลับ
+         ลำดับตามที่ผู้ใช้ขอ ให้คณะอนุกรรมการฯ วินิจฉัยก่อน แล้วฝ่ายเลขาฯ ค่อยบันทึก
+         วันที่ประชุม/เลขที่วาระรวมกับการเสนอบันทึกทีเดียวที่ appeal-07 (ดู
+         L2-APPEAL-SECRETARIAT-MEMO ด้านล่าง) จึง statusCode ชี้ตรงไปที่ precondition
+         ของ appeal-06 (เดิมเป็นผลผลิตของ appeal-05 ที่ถูกรวมเข้า appeal-07 แล้ว) */
       code: "L2-APPEAL-CASE-OWNER-OPINION",
       seq: 43,
       page: "10-2-appeal-04-case-owner-opinion.html",
       role: "original_officer",
       roleTitle: "นิติกร/นักสืบเจ้าของเรื่อง (เจ้าของสำนวนเดิม)",
-      status: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำวาระ",
-      statusCode: "L2_PENDING_APPEAL_AGENDA",
+      status: "คณะอนุกรรมการวินิจฉัยอุทธรณ์พิจารณาและมีคำวินิจฉัย",
+      statusCode: "L2_PENDING_APPEAL_RULING",
       label: "[อุทธรณ์] นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์และทำความเห็น",
       stepName: "[อุทธรณ์] นิติกร บันทึกความเห็น",
       includeIf: ["DENY"],
     },
     {
-      code: "L2-APPEAL-AGENDA",
-      seq: 44,
-      page: "10-2-appeal-05-secretariat-agenda.html",
-      role: "appeal_subcommittee_secretariat",
-      roleTitle: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์",
-      status: "คณะอนุกรรมการวินิจฉัยอุทธรณ์พิจารณาและมีคำวินิจฉัย",
-      statusCode: "L2_PENDING_APPEAL_RULING",
-      label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำวาระ",
-      stepName: "[อุทธรณ์] เลขาฯ จัดทำวาระ",
-      includeIf: ["DENY"],
-    },
-    {
       code: "L2-APPEAL-RULING",
-      seq: 45,
+      seq: 44,
       page: "10-2-appeal-06-subcommittee-ruling.html",
       role: "appeal_ruling_subcommittee",
       roleTitle: "คณะอนุกรรมการวินิจฉัยอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลหรือข้อเท็จจริง",
@@ -591,71 +611,43 @@
       includeIf: ["DENY"],
     },
     {
+      /* เดิมส่งต่อ ผอ.กลุ่มงานติดตามคดี (appeal-08) ลงนามรับรอง ก่อนถึง ผอ.กองบริหารคดี
+         — ตัดขั้นแทรกนั้นออก (ผู้ใช้ขอ) ส่งตรงถึง ผอ.กองบริหารคดี เลย จึงเปลี่ยน
+         statusCode ให้ตรงกับ precondition ของ appeal-09 (เดิมเป็นผลผลิตของ appeal-08)
+
+         รวมขั้น "เลขาฯ จัดทำวาระ" (appeal-05 เดิม) เข้ากับขั้นนี้ด้วย (ผู้ใช้ขอ) —
+         ฝ่ายเลขาฯ คนเดียวกัน (appeal_subcommittee_secretariat) กรอกวันที่ประชุม/
+         เลขที่วาระ พร้อมกับเสนอบันทึกคำวินิจฉัยในหน้าเดียว/ลายเซ็นเดียว แทนที่จะ
+         แยก 2 หน้า 2 ลายเซ็น — role/precondition (L2_PENDING_APPEAL_MEMO จาก
+         appeal-06) ไม่เปลี่ยน เพราะเดิม appeal-05 อยู่ *ก่อน* appeal-06 แต่ตอนนี้ค่า
+         วันที่ประชุม/เลขที่วาระถูกบันทึก *หลัง* คณะอนุกรรมการฯ วินิจฉัยแล้วแทน */
       code: "L2-APPEAL-SECRETARIAT-MEMO",
-      seq: 46,
+      seq: 45,
       page: "10-2-appeal-07-secretariat-memo.html",
       role: "appeal_subcommittee_secretariat",
       roleTitle: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์",
-      status: "ผอ.กลุ่มงานบริหารติดตามคดีลงนามรับรอง",
-      statusCode: "L2_PENDING_TRACKING_DIRECTOR_SIGN",
-      label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.",
-      stepName: "[อุทธรณ์] เลขาฯ จัดทำบันทึกเสนอ",
-      includeIf: ["DENY"],
-    },
-    {
-      /* ขั้นตอนแทรกใหม่ ไม่มีเลข LAW — ผู้ใช้ระบุให้เพิ่มการลงนามส่งต่อระหว่าง
-         สองระดับผู้อำนวยการ (ผอ.กลุ่มงานบริหารติดตามคดี -> ผอ.กองบริหารคดี)
-         ก่อนนำเรื่องเข้ากิจกรรมที่ 7 */
-      code: "L2-APPEAL-TRACKING-SIGN",
-      seq: 47,
-      page: "10-2-appeal-08-case-tracking-director-sign.html",
-      role: "case_tracking_director",
-      roleTitle: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี",
       status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
-      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี ลงนามส่งต่อ ผอ.กองบริหารคดี",
-      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี ลงนามส่งต่อ",
+      label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ บันทึกวาระการประชุมและจัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.",
+      stepName: "[อุทธรณ์] เลขาฯ บันทึกวาระ+เสนอบันทึก",
       includeIf: ["DENY"],
     },
     {
+      /* เดิมลงนามเสนอ (appeal-09) แล้วส่งต่อธุรการให้ออกเลขส่งแยกหน้า (appeal-10)
+         — ตัดขั้นแยกนั้นออก (ผู้ใช้ขอ) รวมการออกเลขส่ง/วันที่ส่งเข้ามาในฟอร์มนี้
+         เลย จบที่สถานะรอมติบอร์ดตรง ๆ (เดิมเป็นผลผลิตของ appeal-10) — เป็น
+         black-box รอเหตุการณ์ภายนอก [H2] จึงต้องลบ/เติม ROUTES ด้วยมือ (ดูด้านล่าง)
+         appeal-11 (ธุรการบันทึกมติบอร์ด) ก็ตัดออกด้วย — [H2] ใส่ค่ามติบอร์ดตรง ๆ ใน
+         PATCH แล้ว route เข้า case_tracking_secretary (appeal-12) ทันที */
       code: "L2-APPEAL-BOARD-PROPOSE",
       seq: 48,
       page: "10-2-appeal-09-case-bureau-director-board-propose.html",
       role: "case_bureau_director",
       roleTitle: "ผู้อำนวยการกองบริหารคดี",
-      status: "ธุรการกองกฎหมายออกเลขส่งและยื่นมติบอร์ด",
-      statusCode: "L2_PENDING_APPEAL_BOARD_DISPATCH",
-      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาและลงนามในฐานะผู้เสนอเรื่อง",
-      stepName: "[อุทธรณ์] ผอ.กองบริหารคดี ลงนามเสนอ",
-      includeIf: ["DENY"],
-    },
-    {
-      code: "L2-APPEAL-BOARD-DISPATCH",
-      seq: 49,
-      page: "10-2-appeal-10-legal-admin-board-submit.html",
-      role: "case_bureau_admin",
-      roleTitle: "ธุรการกองบริหารคดี",
       status: "รอมติบอร์ดตอบกลับ",
       statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD",
-      label: "[อุทธรณ์] ธุรการกองบริหารคดี ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7",
-      stepName: "[อุทธรณ์] ธุรการ ออกเลขส่ง+ยื่นบอร์ด",
-      includeIf: ["DENY"],
-    },
-    {
-      /* sheet 7 "แจ้งผลอุทธรณ์" (LAW0080-083) เริ่มที่นี่ — precondition ของหน้านี้
-         คือ L2_APPEAL_BOARD_RESOLVED (สถานะคั่นกลาง "มติบอร์ดตอบกลับแล้ว" เพิ่มเข้า
-         APPEAL_STATUS_CODES ด้วยมือด้านล่าง ไม่ใช่ L2_APPEAL_SUBMITTED_TO_BOARD ของ
-         step ก่อนหน้าโดยตรง) ดู docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1 —
-         ต้องเติม/ลบ ROUTES ด้วยมือคู่กัน ดูคอมเมนต์ตรง ROUTES ด้านล่าง */
-      code: "L2-APPEAL-BOARD-RESOLUTION",
-      seq: 50,
-      page: "10-2-appeal-11-legal-admin-board-resolution.html",
-      role: "case_bureau_admin",
-      roleTitle: "ธุรการกองบริหารคดี",
-      status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ",
-      statusCode: "L2_PENDING_APPEAL_NOTICE_DRAFT",
-      label: "[อุทธรณ์] ธุรการกองบริหารคดี บันทึกมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์",
-      stepName: "[อุทธรณ์] ธุรการ บันทึกมติบอร์ด",
+      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณา ลงนามในฐานะผู้เสนอเรื่อง และออกเลขส่งยื่นกิจกรรมที่ 7",
+      stepName: "[อุทธรณ์] ผอ.กองบริหารคดี ลงนามเสนอ+ออกเลขส่ง",
       includeIf: ["DENY"],
     },
     {
@@ -766,6 +758,19 @@
      ไม่มี step ไหนใน STEPS ผลิตออกมาโดยอัตโนมัติ (ยังไม่มีปุ่ม "ยื่นอุทธรณ์" จากคำร้อง
      ที่ปิดสายเดิม ตามค่าเริ่มต้นที่เสนอไว้ในแผน) ต้องเติม route เข้าเองตรงนี้ */
   ROUTES["L2_PENDING_APPEAL_INTAKE"] = "10-2-appeal-01-legal-admin-intake.html";
+  /* จุดเริ่มต้นทางที่ 2 (สายเขต) — เหตุการณ์ภายนอกแบบเดียวกับ L2_PENDING_APPEAL_INTAKE
+     ด้านบน แต่แยกค่าคนละสถานะ ให้ H3 เลือกได้ว่าจะจำลองว่าคำร้องเข้าทางไหน (ดู
+     docs/10-2-full-test-flow.md หัวข้อ 7 — [H3] มี variant ส่วนกลาง/เขต) */
+  ROUTES["L2_PENDING_APPEAL_INTAKE_DISTRICT"] = "10-2-appeal-01b-district-intake.html";
+
+  /* L2-APPEAL-INTAKE-DISTRICT (10-2-appeal-01b) แทรกต่อท้าย L2-APPEAL-INTAKE
+     (10-2-appeal-01) ในอาเรย์พอดี — auto-reduce จึงสร้าง route ผิดโดยบังเอิญ:
+     ROUTES["L2_PENDING_BUREAU_DIRECTOR_ASSIGN"] (ผลผลิตของ appeal-01 สายส่วนกลาง)
+     ไปชี้ที่ appeal-01b (สายเขต) แทนที่จะเป็น appeal-02 (สายส่วนกลางที่ถูกต้อง) —
+     ส่วน ROUTES["L2_PENDING_CASE_OWNER_APPEAL_OPINION"] auto-reduce แก้ให้ถูกเองแล้ว
+     เพราะ L2-APPEAL-TRACKING-ASSIGN (appeal-03) ที่อยู่ถัดไปในอาเรย์ก็ผลิตค่าเดียวกัน
+     นี้ชี้ไปที่ appeal-04 ซ้อนทับ (ลำดับหลังชนะ) จึงไม่ต้องแก้ */
+  ROUTES["L2_PENDING_BUREAU_DIRECTOR_ASSIGN"] = "10-2-appeal-02-case-bureau-director-assign.html";
 
   /* L2-APPEAL-BOARD-RESOLUTION (10-2-appeal-11) ต่อท้าย L2-APPEAL-BOARD-DISPATCH
      (10-2-appeal-10) ในอาเรย์พอดี — auto-reduce ด้านบนจึงสร้าง route ผิดโดยบังเอิญ:
@@ -775,7 +780,11 @@
      docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1) จึงต้องลบ route ที่ผิดทิ้ง แล้วเติม
      route ที่ถูกต้องเข้าเอง */
   delete ROUTES["L2_APPEAL_SUBMITTED_TO_BOARD"];
-  ROUTES["L2_APPEAL_BOARD_RESOLVED"] = "10-2-appeal-11-legal-admin-board-resolution.html";
+  /* appeal-11 (ธุรการบันทึกมติบอร์ด) ถูกตัดออก — [H2] เขียนค่ามติบอร์ดลง case
+     ตรง ๆ แล้ว route เข้า L2_PENDING_APPEAL_NOTICE_DRAFT (precondition ของ
+     appeal-12) ทันที ไม่มี step ไหนใน STEPS ผลิตสถานะนี้ออกมาเองอีกต่อไป
+     (เดิมเป็นผลผลิตของ appeal-11 ที่ถูกลบ) จึงต้องเติม route นี้ด้วยมือ */
+  ROUTES["L2_PENDING_APPEAL_NOTICE_DRAFT"] = "10-2-appeal-12-tracking-secretary-notice-draft.html";
 
   function stepByCode(code) {
     return STEPS.find(function (s) { return s.code === code; }) || null;
@@ -793,13 +802,12 @@
     return s.code.indexOf("L2-APPEAL") === 0;
   }).map(function (s) { return s.statusCode; });
 
-  /* สถานะคั่นกลาง "มติบอร์ดตอบกลับแล้ว" — ไม่ได้มาจาก step ไหนใน STEPS โดยตรง
-     (เป็นเหตุการณ์ภายนอกระบบเหมือน L2_BOARD_RESOLVED_ROUND2 ของสาย Flow 2 Part 1
-     ด้านบน) เกิดขึ้นหลัง L2_APPEAL_SUBMITTED_TO_BOARD (appeal-10 ส่งเรื่องเข้า
-     กิจกรรมที่ 7 แล้ว รอผล) — ยังไม่มีหน้า/ROUTES รองรับ (รอ appeal-11 ตามแผน
-     docs/10-2-flow4-appeal-plan.md หัวข้อ 8.4.1) เติมเข้า APPEAL_STATUS_CODES ด้วย
-     มือให้ isAppealCase()/แบดจ์ "อุทธรณ์" ยังครอบคลุมคำร้องที่อยู่สถานะนี้ */
-  APPEAL_STATUS_CODES.push("L2_APPEAL_BOARD_RESOLVED");
+  /* L2_PENDING_APPEAL_NOTICE_DRAFT ไม่ได้มาจาก step ไหนใน STEPS โดยตรงอีกต่อไป
+     (เดิมเป็นผลผลิตของ appeal-11 ที่ถูกลบ, [H2] เขียนค่านี้ตรง ๆ แทน) เติมเข้า
+     APPEAL_STATUS_CODES ด้วยมือให้ isAppealCase()/แบดจ์ "อุทธรณ์" ยังครอบคลุม
+     คำร้องที่อยู่สถานะนี้ (สถานะคั่นกลาง "มติบอร์ดตอบกลับแล้ว" L2_APPEAL_BOARD_RESOLVED
+     เดิมเลิกใช้แล้วพร้อมกับ appeal-11) */
+  APPEAL_STATUS_CODES.push("L2_PENDING_APPEAL_NOTICE_DRAFT");
 
   function isAppealCase(kase) {
     if (!kase) return false;
@@ -1759,6 +1767,80 @@
       .join("");
   }
 
+  /* การ์ด "ข้อมูลคำร้องเดิม" (มติชี้มูล/ร่างเสนอบอร์ด/บอร์ดตอบกลับ + มติกิจกรรมที่ 7
+     ครั้งอื่น + เอกสารแนบทั้งหมดของสำนวนเดิม) — เดิมมีแค่ appeal-01 ผู้ใช้ขอให้ทุกหน้า
+     ในสาย Flow อุทธรณ์เห็นประวัติสำนวนเดิมนี้เหมือนกันหมด จึงย้ายมาเป็นฟังก์ชันร่วม
+     ใช้กับ populate() ของทุกหน้า appeal-0X */
+  function renderOtherBoardResolutions(containerId, groupId, list) {
+    const el = document.getElementById(containerId);
+    const group = document.getElementById(groupId);
+    if (!el || !group) return;
+    if (!list || !list.length) {
+      group.classList.add("d-none");
+      return;
+    }
+    group.classList.remove("d-none");
+    el.innerHTML = list
+      .map(function (r) {
+        return (
+          '<div class="l2-note l2-note-info" style="margin-bottom: 8px">' +
+          "<i class=\"fa-solid fa-gavel\"></i><div>" +
+          "<strong>" + (r.activity || "-") + "</strong> — " + (r.date || "-") + "<br />" +
+          (r.resolution || "-") +
+          (r.detail ? '<div style="margin-top: 4px; opacity: 0.85">' + r.detail + "</div>" : "") +
+          "</div></div>"
+        );
+      })
+      .join("");
+  }
+
+  /* กรณีคำร้องถูกสร้างเองระหว่างทดสอบ (A1 → DENY → H3) จะไม่มี attachmentFileNames /
+     l2OtherBoardResolutions ที่ hardcode ไว้เฉพาะคำร้องตัวอย่าง — สร้างข้อมูลจำลองที่
+     สมเหตุสมผลให้ทุกคำร้องแทนที่จะโชว์ "-" เปล่า ๆ */
+  function fallbackAttachments() {
+    return ["คำร้องขอเปิดเผยข้อมูล.pdf", "หนังสืออุทธรณ์.pdf"];
+  }
+
+  function fallbackOtherBoardResolutions(kase) {
+    return [
+      {
+        activity: "กิจกรรมที่ 7 — พิจารณาสำนวนไต่สวนหลัก",
+        date: (kase && kase.l2DenyAssignDate) || new Date().toISOString().split("T")[0],
+        resolution: "รับทราบและให้ดำเนินการไต่สวนตามระเบียบต่อไป",
+        detail: "คณะกรรมการ ป.ป.ท. มีมติต่อสำนวน " + ((kase && kase.relatedCaseNo) || "-") + " ไว้อ้างอิงประกอบการพิจารณาอุทธรณ์",
+      },
+    ];
+  }
+
+  /* เรนเดอร์ทุกฟิลด์ของการ์ด "ข้อมูลคำร้องเดิม" ในหน้าเดียว — หน้าเรียกต้องมี read-box
+     ไอดีตรงกับที่ appeal-01 ใช้: f_relatedCaseNo, f_originalOfficer, f_originalOfficerOrg,
+     f_resolutionScreening, f_resolutionBoardDraft, f_resolutionBoardReply,
+     f_otherBoardResolutions (+ group id "otherBoardResolutionsGroup"), f_origAttachments */
+  function renderOriginalCaseCard(kase) {
+    const c = kase;
+    const setText = function (id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+    setText("f_relatedCaseNo", c.relatedCaseNo || "-");
+    setText("f_originalOfficer", c.l2OriginalCaseOfficer || "-");
+    setText("f_originalOfficerOrg", c.l2OriginalCaseOfficerOrg || "-");
+    setText(
+      "f_resolutionScreening",
+      c.l2ResolutionAtScreening ? c.l2ResolutionAtScreening + (c.l2ResolutionAtScreeningDetail ? " — " + c.l2ResolutionAtScreeningDetail : "") : "-",
+    );
+    setText(
+      "f_resolutionBoardDraft",
+      c.l2ResolutionAtBoardDraft ? c.l2ResolutionAtBoardDraft + (c.l2ResolutionAtBoardDraftDetail ? " — " + c.l2ResolutionAtBoardDraftDetail : "") : "-",
+    );
+    setText(
+      "f_resolutionBoardReply",
+      c.l2ResolutionAtBoardReply ? c.l2ResolutionAtBoardReply + (c.l2ResolutionAtBoardReplyDetail ? " — " + c.l2ResolutionAtBoardReplyDetail : "") : "-",
+    );
+    renderOtherBoardResolutions("f_otherBoardResolutions", "otherBoardResolutionsGroup", c.l2OtherBoardResolutions || fallbackOtherBoardResolutions(c));
+    renderAttachments("f_origAttachments", c.attachmentFileNames && c.attachmentFileNames.length ? c.attachmentFileNames : fallbackAttachments());
+  }
+
   /* แสดงลายเซ็นของขั้นตอนก่อนหน้าทั้งหมด (Flow 4 อุทธรณ์) — slots คือ
      [{slot, title}] เรียงตามลำดับที่ลงนามจริง ใช้ร่วมกันตั้งแต่หน้า
      10-2-appeal-03 เป็นต้นไป (10-2-appeal-01 เป็นแค่ธุรการบันทึกรับเรื่อง
@@ -2068,10 +2150,11 @@
      (เริ่มที่ L2-SECGEN-OPINION, 10-2-31 ซึ่งเป็น step จริงใน STEPS แล้ว — เดิม
      เคยเป็น node สังเคราะห์ "บอร์ดมีมติ..." ที่ไม่มีหน้าของตัวเอง ดูประวัติการ
      แก้ไขถ้าต้องย้อนดู) และปิดท้ายด้วยสถานะคดี (l2CaseState) ถ้ามีค่า */
-  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
+  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase, appealPartId) {
     const el1 = document.getElementById(part1ContainerId);
     const el2 = document.getElementById(part2ContainerId);
     if (!el1 || !el2) return;
+    const elAppeal = appealPartId ? document.getElementById(appealPartId) : null;
 
     el1.innerHTML = PART1_STEPS.map(function (step) {
       return (
@@ -2092,16 +2175,36 @@
        ก่อนถึง 10-2-09 ค่านี้ยังไม่มี จึงโชว์ทั้งคู่ไปก่อน (renderStepper แถบเดี่ยว
        ของ Part 1 ตัดทั้งสองออกไปแล้วอยู่ดี ไม่มีผลจนกว่าจะถึง Part 2) */
     const approvalBranch = kase && kase.l2ApprovalBranch;
+    /* จุดเริ่มต้นอุทธรณ์ 2 ทาง (ส่วนกลาง/เขต) — คำร้องแต่ละใบเดินแค่สายเดียว
+       (l2AppealIntakeChannel ถูกตั้งตอน H3 จำลองการยื่นอุทธรณ์) ยังไม่มีค่านี้
+       (คำร้องเก่ายังไม่ผ่านฟีเจอร์นี้) ให้ถือว่าเป็นสายส่วนกลาง (ค่าเริ่มต้นเดิม
+       ก่อนแยกสาย) เหมือนที่ caseState default เป็น INVESTIGATING ด้านบน */
+    const intakeChannel = (kase && kase.l2AppealIntakeChannel) || "CENTRAL";
     const visible = PART2_STEPS.filter(function (s) {
       if (s.approvalBranch && approvalBranch && s.approvalBranch.indexOf(approvalBranch) === -1) return false;
       if (s.caseState && s.caseState.indexOf(caseState) === -1) return false;
+      if (s.intakeChannel && s.intakeChannel.indexOf(intakeChannel) === -1) return false;
       if (!s.includeIf) return true;
       return branch && s.includeIf.indexOf(branch) > -1;
     });
     const curIdx = visible.findIndex(function (s) { return s.code === currentCode; });
-    const stepsHtml = visible.map(function (step, i) {
+    /* คำร้องที่ถูกยื่นอุทธรณ์ (H3) เริ่มกระบวนการใหม่ทั้งหมดตั้งแต่ appeal-01 —
+       ไม่ใช่ขั้นตอนต่อเนื่องจากสาย DENY ที่ปิดสำนวนไปแล้ว (10-2-10/15/16/17)
+       เดิมคั่นด้วยเส้นแบ่งในแถวเดียวกัน — ถ้าหน้านี้ส่ง appealPartId มา (13 หน้า
+       appeal-0X) จะแยกออกเป็นแถวของตัวเองต่างหากแทน (renderStepperAppealSplit) */
+    const appealStartIdx = visible.findIndex(function (s) { return s.code.indexOf("L2-APPEAL") === 0; });
+    const useSplitAppealRow = elAppeal && appealStartIdx > -1;
+
+    const dividerHtml =
+      '<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;' +
+      'padding-top:2px;margin:0 4px;position:relative;z-index:2;flex:0 0 auto" title="เริ่มกระบวนการอุทธรณ์ใหม่">' +
+      '<div style="width:2px;height:36px;background:repeating-linear-gradient(to bottom,#7c3aed 0,#7c3aed 4px,transparent 4px,transparent 8px);margin-bottom:6px"></div>' +
+      '<div style="font-size:0.7em;font-weight:700;color:#7c3aed;white-space:nowrap">▸ เริ่ม Flow อุทธรณ์</div>' +
+      "</div>";
+
+    function stepItemHtml(step, i, displayNo) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
-      const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
+      const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(displayNo);
       /* ตัด prefix "[เปิดเผย/บางส่วน]"/"[ไม่อนุญาต]" ฯลฯ ออกจากป้ายที่แสดงในแถบนี้
          เท่านั้น (แถวนี้แยกสาขาอยู่แล้วด้วย visible ข้างบน จึงไม่จำเป็นต้องย้ำ) —
          ไม่แตะ step.stepName ที่ renderStepper (แถบเดี่ยวเดิม) ยังใช้ค่าดิบอยู่ */
@@ -2112,14 +2215,44 @@
         '<div class="step-label">' + shortLabel + "</div>" +
         "</div>"
       );
-    }).join("");
+    }
+
     const endNode = kase && kase.l2CaseState
       ? '<div class="step-item completed" title="สถานะคดีที่เกี่ยวข้อง">' +
         '<div class="step-circle"><i class="fa-solid fa-flag-checkered"></i></div>' +
         '<div class="step-label">สถานะคดี: ' + labelOf(CASE_STATES, kase.l2CaseState) + "</div>" +
         "</div>"
       : "";
+
+    if (useSplitAppealRow) {
+      /* หน้า appeal-0X — แยก Flow อุทธรณ์ออกเป็นแถวหลักของตัวเอง (นับเลข 1 ใหม่)
+         ส่วนขั้นตอนก่อนอุทธรณ์ (Part 2 เดิม สาย DENY ที่ปิดสำนวนไปแล้ว) เหลือไว้ใน
+         el2 ให้หน้าไปห่อด้วย accordion พับเก็บเอง (ดู toggleStepperAccordion) */
+      const preAppeal = visible.slice(0, appealStartIdx);
+      const appealSteps = visible.slice(appealStartIdx);
+      el2.innerHTML = preAppeal.map(function (step, i) { return stepItemHtml(step, i, i + 1); }).join("") + endNode;
+      elAppeal.innerHTML = appealSteps
+        .map(function (step, i) { return stepItemHtml(step, appealStartIdx + i, i + 1); })
+        .join("");
+      return;
+    }
+
+    const stepsHtml = visible.map(function (step, i) {
+      const isAppealStep = step.code.indexOf("L2-APPEAL") === 0;
+      const displayNo = appealStartIdx > -1 && isAppealStep ? i - appealStartIdx + 1 : i + 1;
+      const prefix = appealStartIdx > -1 && i === appealStartIdx ? dividerHtml : "";
+      return prefix + stepItemHtml(step, i, displayNo);
+    }).join("");
     el2.innerHTML = stepsHtml + endNode;
+  }
+
+  /* พับ/กางแถบขั้นตอนก่อนอุทธรณ์ (accordion body) — ใช้ร่วมกันทุกหน้า appeal-0X */
+  function toggleStepperAccordion() {
+    const body = document.getElementById("stepperAccordionBody");
+    const icon = document.getElementById("stepperAccordionIcon");
+    if (!body) return;
+    const isHidden = body.classList.toggle("d-none");
+    if (icon) icon.className = isHidden ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
   }
 
   /* แบดจ์คู่ "มติ" + "สถานะคดี" — โชว์ให้ชัดว่าคำร้องนี้เป็นสาย/สถานะไหน
@@ -2191,12 +2324,14 @@
     selectedPersonLabel: selectedPersonLabel,
     renderStepper: renderStepper,
     renderStepperV2: renderStepperV2,
+    toggleStepperAccordion: toggleStepperAccordion,
     renderStatusBadges: renderStatusBadges,
     renderSidebarMenu: renderSidebarMenu,
     mountEditor: mountEditor,
     getEditorText: getEditorText,
     getEditorHTML: getEditorHTML,
     renderAttachments: renderAttachments,
+    renderOriginalCaseCard: renderOriginalCaseCard,
     renderSignatureList: renderSignatureList,
     renderMemoDocument: renderMemoDocument,
     renderResolutionSheet: renderResolutionSheet,

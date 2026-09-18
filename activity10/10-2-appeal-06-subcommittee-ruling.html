@@ -138,18 +138,25 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
-          <div class="stepper" id="stepperPart1"></div>
-          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ / อุทธรณ์</div>
-          <div class="stepper" id="stepperPart2"></div>
+          <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> Flow อุทธรณ์ (ขั้นตอนหลัก)</div>
+          <div class="stepper" id="stepperAppeal"></div>
+          <button type="button" class="btn btn-secondary" id="stepperAccordionToggle" onclick="ECMIS102.toggleStepperAccordion()" style="margin-top: 14px; height: 32px; font-size: 0.85em">
+            <i class="fa-solid fa-chevron-down me-1" id="stepperAccordionIcon"></i>แสดงขั้นตอนก่อนยื่นอุทธรณ์ (สายเดิมที่ปิดสำนวนแล้ว)
+          </button>
+          <div id="stepperAccordionBody" class="d-none" style="margin-top: 14px">
+            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+            <div class="stepper" id="stepperPart1"></div>
+            <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ (ก่อนยื่นอุทธรณ์)</div>
+            <div class="stepper" id="stepperPart2"></div>
+          </div>
         </div>
 
         <div id="noCaseNotice" class="l2-note l2-note-warn d-none">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้หลังฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ลงนามบรรจุวาระที่หน้า
-            <a href="10-2-appeal-05-secretariat-agenda.html">ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ จัดทำวาระ</a>
+            คำร้องจะมาถึงขั้นตอนนี้หลังนิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และบันทึกความเห็นที่หน้า
+            <a href="10-2-appeal-04-case-owner-opinion.html">นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์และทำความเห็น</a>
           </div>
         </div>
 
@@ -181,6 +188,40 @@
                   <div class="read-box" id="f_resolution">-</div>
                 </div>
               </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เลขสำนวนคดีที่เกี่ยวข้อง</label>
+                <div class="read-box font-monospace" id="f_relatedCaseNo">-</div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficer">-</div>
+                </div>
+                <div class="form-group">
+                  <label>สังกัดผู้รับผิดชอบสำนวนเดิม</label>
+                  <div class="read-box" id="f_originalOfficerOrg">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>มติชี้มูล (คณะอนุกรรมการฯ)</label>
+                <div class="read-box" id="f_resolutionScreening">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติร่างเสนอบอร์ด (ก่อนส่งกิจกรรมที่ 7)</label>
+                <div class="read-box" id="f_resolutionBoardDraft">-</div>
+              </div>
+              <div class="form-group">
+                <label>มติที่บอร์ดตอบกลับ (ใช้ปิดสำนวนเดิม)</label>
+                <div class="read-box" id="f_resolutionBoardReply">-</div>
+              </div>
+              <div class="form-group" id="otherBoardResolutionsGroup" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>มติบอร์ดกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน <span class="l2-optional">(ข้อมูลอ้างอิง)</span></label>
+                <div id="f_otherBoardResolutions"></div>
+              </div>
+              <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
+                <label>เอกสารแนบทั้งหมดของคำร้อง (สำนวนเดิม)</label>
+                <div id="f_origAttachments"></div>
+              </div>
             </div>
           </div>
 
@@ -208,26 +249,24 @@
                 <div id="f_attachments"></div>
               </div>
               <div class="form-group">
-                <label>เลขที่คำอุทธรณ์ในระบบ</label>
-                <div class="read-box font-monospace" id="f_systemNo">-</div>
-              </div>
-              <div class="form-group">
-                <label>สรุปประเด็นอุทธรณ์</label>
-                <div class="read-box read-box-textarea" id="f_summary">-</div>
+                <label>หมายเหตุจากธุรการ</label>
+                <div class="read-box" id="f_receiveNotes">-</div>
               </div>
               <div class="form-group">
                 <label>ความเห็นนิติกรเจ้าของสำนวน</label>
                 <div class="read-box read-box-textarea" id="f_caseOwnerOpinion">-</div>
               </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>วันที่ประชุม</label>
-                  <div class="read-box font-monospace" id="f_meetingDate">-</div>
-                </div>
-                <div class="form-group">
-                  <label>เลขที่วาระ</label>
-                  <div class="read-box font-monospace" id="f_agendaNo">-</div>
-                </div>
+              <div class="form-group">
+                <label>เอกสารแนบ (นิติกร)</label>
+                <div id="f_caseOwnerAttachments"></div>
+              </div>
+              <div class="form-group">
+                <label>แนบไฟล์หนังสือด่วน (นิติกร)</label>
+                <div id="f_urgentLetterFiles"></div>
+              </div>
+              <div class="form-group">
+                <label>แนบไฟล์บันทึกเสนอเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท. (นิติกร)</label>
+                <div id="f_boardProposalMemoFiles"></div>
               </div>
               <div class="form-group">
                 <label>ลายเซ็นจากขั้นตอนก่อนหน้า</label>
@@ -244,11 +283,7 @@
             <div class="form-card-body">
               <div class="form-group">
                 <label>ผลคำวินิจฉัย <span style="color: #dc2626">*</span></label>
-                <select id="in_rulingType" class="form-control">
-                  <option value="UPHOLD">เห็นด้วยกับคำสั่งเดิม (ยืนไม่เปิดเผย)</option>
-                  <option value="REVERSE_FULL">กลับคำสั่งเดิม (ให้เปิดเผยทั้งหมด)</option>
-                  <option value="REVERSE_PARTIAL">กลับคำสั่งบางส่วน (ให้เปิดเผยบางส่วน)</option>
-                </select>
+                <div class="l2-choice-grid" id="rulingChoices"></div>
               </div>
               <div class="form-group">
                 <label>เหตุผลประกอบคำวินิจฉัย <span style="color: #dc2626">*</span></label>
@@ -285,6 +320,26 @@
       const STEP = Activity102.stepByCode(STEP_CODE);
       let currentCase = null;
 
+      const RULING_TYPES = [
+        { value: "UPHOLD", label: "เห็นด้วยกับคำสั่งเดิม (ไม่เปิดเผย)", color: "#dc2626" },
+        { value: "REVERSE_FULL", label: "กลับคำสั่งเดิม (ให้เปิดเผยทั้งหมด)", color: "#16a34a" },
+        { value: "REVERSE_PARTIAL", label: "กลับคำสั่งบางส่วน (ให้เปิดเผยบางส่วน)", color: "#d97706" },
+      ];
+      let rulingType = "UPHOLD";
+
+      function renderRulingChoices() {
+        document.getElementById("rulingChoices").innerHTML = ECMIS102.choiceGridHtml(
+          RULING_TYPES,
+          rulingType,
+          "selectRulingType",
+        );
+      }
+
+      function selectRulingType(value) {
+        rulingType = value;
+        renderRulingChoices();
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS102.initUserProfile();
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
@@ -292,9 +347,10 @@
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* คำร้องที่รอขั้นตอนนี้ = สถานะที่ "ขั้นก่อนหน้า" (L2-APPEAL-AGENDA)
-         เขียนไว้ คือ L2_PENDING_APPEAL_RULING — ไม่ใช่ statusCode ของ STEP หน้านี้
-         เอง (L2_PENDING_APPEAL_MEMO ซึ่งเป็นค่าที่หน้านี้จะเขียนต่อไปให้หน้าถัดไป) */
+      /* คำร้องที่รอขั้นตอนนี้ = สถานะที่ "ขั้นก่อนหน้า" (L2-APPEAL-CASE-OWNER-OPINION,
+         appeal-04) เขียนไว้ คือ L2_PENDING_APPEAL_RULING — ไม่ใช่ statusCode ของ
+         STEP หน้านี้เอง (L2_PENDING_APPEAL_MEMO ซึ่งเป็นค่าที่หน้านี้จะเขียนต่อไปให้
+         หน้าถัดไป) — appeal-05 (เลขาฯ จัดทำวาระ) เดิมถูกย้ายไปรวมกับ appeal-07 แล้ว */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
         currentCase = Activity102.getCase(id, "L2_PENDING_APPEAL_RULING");
@@ -305,7 +361,7 @@
           document.getElementById("pageBody").classList.add("d-none");
           return;
         }
-        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase);
+        ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase, "stepperAppeal");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
       }
@@ -323,41 +379,39 @@
         document.getElementById("f_title").textContent = c.title || "-";
         document.getElementById("f_requesterName").textContent = c.requesterName || "-";
         document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
+        ECMIS102.renderOriginalCaseCard(c);
 
-        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01 ถึง 10-2-appeal-05) */
+        /* ข้อมูลทั้งหมดที่หน้าก่อนหน้าบันทึกไว้ (10-2-appeal-01, 04 — appeal-02/03/05
+           เดิมถูกตัดออก/ย้ายไปรวมกับ appeal-07 แล้ว) */
         document.getElementById("f_receiveNo").textContent = c.l2AppealReceiveNo || "-";
         document.getElementById("f_receiveDate").textContent = c.l2AppealReceiveDate || "-";
         document.getElementById("f_channel").textContent = c.l2AppealChannel || "-";
         ECMIS102.renderAttachments("f_attachments", c.l2AppealAttachmentFileNames);
-        document.getElementById("f_systemNo").textContent = c.l2AppealSystemNo || "-";
-        document.getElementById("f_summary").textContent = c.l2AppealSummary || "-";
+        document.getElementById("f_receiveNotes").textContent = c.l2AppealReceiveNotes || "-";
         document.getElementById("f_caseOwnerOpinion").textContent = c.l2AppealCaseOwnerOpinion || "-";
-        document.getElementById("f_meetingDate").textContent = c.l2AppealMeetingDate || "-";
-        document.getElementById("f_agendaNo").textContent = c.l2AppealAgendaNo || "-";
+        ECMIS102.renderAttachments("f_caseOwnerAttachments", c.l2AppealCaseOwnerAttachmentFileNames);
+        ECMIS102.renderAttachments("f_urgentLetterFiles", c.l2AppealUrgentLetterFileNames);
+        ECMIS102.renderAttachments("f_boardProposalMemoFiles", c.l2AppealBoardProposalMemoFileNames);
         ECMIS102.renderSignatureList("f_signatures", c, [
-          { slot: "appealBureauDirectorAssign", title: "ผู้อำนวยการกองบริหารคดี" },
-          { slot: "appealTrackingDirectorAssign", title: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี" },
           { slot: "appealCaseOwnerOpinion", title: "นิติกรเจ้าของสำนวน" },
-          { slot: "appealAgenda", title: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์" },
         ]);
 
-        document.getElementById("in_rulingType").value = "UPHOLD";
+        rulingType = "UPHOLD";
+        renderRulingChoices();
         document.getElementById("in_reason").value = "-";
         document.getElementById("in_rulingFile").value = "";
         document.getElementById("f_pickedFile").textContent = "";
       }
 
       function submitForm() {
-        const select = document.getElementById("in_rulingType");
-        const rulingType = select.value;
-        const rulingTypeName = select.options[select.selectedIndex].text;
+        const rulingTypeName = (RULING_TYPES.find((o) => o.value === rulingType) || {}).label || "-";
         const reason = document.getElementById("in_reason").value.trim();
         const fileInput = document.getElementById("in_rulingFile");
         const attachmentNames = fileInput.files
           ? Array.from(fileInput.files).map((f) => f.name)
           : [];
 
-        if (!reason || reason === "-") {
+        if (!reason) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",

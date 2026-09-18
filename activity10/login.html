@@ -487,7 +487,7 @@ const ACTIVE_ROLE_IDS = [
  // กิจกรรม 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร
  'sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen',
  // กิจกรรม 10.2 — Flow 4 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล
- 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary', 'case_bureau_admin',
+ 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary', 'case_bureau_admin', 'district_admin',
  // กิจกรรม 10.3 — คดีศาลปกครอง
  'case_group_director', 'case_legal_officer', 'registry', 'chairman'
 ];
@@ -497,7 +497,7 @@ const ACTIVE_ROLE_IDS = [
 const ROLE_GROUPS = [
  { label: 'กิจกรรมที่ 10.1', ids: ['case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
  { label: 'กิจกรรมที่ 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร', ids: ['sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen'] },
- { label: 'กิจกรรมที่ 10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
+ { label: 'กิจกรรมที่ 10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'district_admin', 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
  { label: 'กิจกรรมที่ 10.3 — คดีศาลปกครอง', ids: ['case_group_director', 'case_legal_officer', 'registry', 'chairman'] },
 ];
 
@@ -550,15 +550,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function selectQuickRole(loginId) {
- const usernameInput = document.getElementById('loginUsername');
- const passwordInput = document.getElementById('loginPassword');
- if (usernameInput) usernameInput.value = loginId;
- if (passwordInput && !passwordInput.value) passwordInput.value = '123456';
- 
- // Highlight input briefly
- usernameInput.focus();
- usernameInput.classList.add('is-valid');
- setTimeout(() => usernameInput.classList.remove('is-valid'), 1000);
+ // คลิก chip บทบาทแล้วเข้าสู่ระบบทันที ไม่ต้องกดปุ่ม "เข้าสู่ระบบ" ซ้ำอีกครั้ง
+ const roleId = ECMIS.roleIdForLogin(loginId);
+ if (!roleId) return;
+
+ sessionStorage.setItem('ecmis_role', roleId);
+ const role = ECMIS.getRole(roleId);
+
+ Swal.fire({
+ icon:'success',
+ title:'เข้าสู่ระบบสำเร็จ',
+ text: `ยินดีต้อนรับ ${role.title} (${role.name})`,
+ confirmButtonColor:'#0a2647',
+ confirmButtonText:'ไปที่หน้าหลัก',
+ timer: 900,
+ timerProgressBar: true
+ }).then(() => { window.location.href = '01-work-inbox.html'; });
 }
 
 // --- Accessibility bar helpers ---

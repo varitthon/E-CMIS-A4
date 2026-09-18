@@ -1,0 +1,6011 @@
+{
+ "schema": "act102",
+ "activity": "10.2",
+ "title_th": "การขอเปิดเผยข้อมูลข่าวสาร",
+ "groups": [
+  {
+   "code": "CORE",
+   "label": "Core, workflow, signatures, attachments & documents"
+  },
+  {
+   "code": "ASSIGN",
+   "label": "Intake routing, opinions & verification (10-2-01..06, 33, 34)"
+  },
+  {
+   "code": "MEMO",
+   "label": "Resolution memo drafting & dispatch to deputy SG / secretary general (10-2-07..09)"
+  },
+  {
+   "code": "DENY",
+   "label": "DENY branch: notice of refusal & handover (10-2-15..17)"
+  },
+  {
+   "code": "CLOSE",
+   "label": "CLOSE branch: notice of closed case & handover (10-2-22..24)"
+  },
+  {
+   "code": "COMMITTEE",
+   "label": "Committee / PACC board round-2 branch (10-2-25..30, 35, 36)"
+  },
+  {
+   "code": "NOTICE",
+   "label": "Disclosure notice to the requester (10-2-11, 37, 13, 14)"
+  },
+  {
+   "code": "APPEAL",
+   "label": "Appeal against a DENY resolution (appeal-01..13)"
+  },
+  {
+   "code": "LOOKUP",
+   "label": "Fixed option lists"
+  },
+  {
+   "code": "BOARD",
+   "label": "ส่ง/รับ กิจกรรมที่ 7 (มาตรฐานกลาง)"
+  },
+  {
+   "code": "EXT7",
+   "label": "กิจกรรมที่ 7 (ตารางกลาง — อ้างอิงภายนอก)"
+  }
+ ],
+ "tables": [
+  {
+   "name": "status",
+   "label_th": "สถานะคำร้อง",
+   "group": "CORE",
+   "description": "lookup of every case/appeal statusCode used by the flow",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(50)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสสถานะ",
+     "source": "ecmis-10-2.js STEPS/ROUTES",
+     "description": "statusCode value"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อสถานะ",
+     "source": "status prop text",
+     "description": "Thai display label"
+    },
+    {
+     "name": "step_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสขั้นตอน",
+     "source": "l2Step",
+     "description": "step code this status enters (LAW00xx / L2-...)"
+    },
+    {
+     "name": "seq",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ลำดับ",
+     "source": "STEPS.seq",
+     "description": "flow sequence number"
+    },
+    {
+     "name": "page",
+     "type": "varchar(120)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หน้าจอ",
+     "source": "STEPS.page / ROUTES",
+     "description": "page file that handles this status"
+    },
+    {
+     "name": "role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้รับผิดชอบ",
+     "source": "STEPS.role",
+     "description": "role that owns this status"
+    },
+    {
+     "name": "is_terminal",
+     "type": "boolean",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "false",
+     "unique": false,
+     "label_th": "สถานะสิ้นสุด",
+     "source": "derived: (terminal) marker in fields-10-2.md",
+     "description": "true for closed/terminal statuses"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "case_file",
+   "label_th": "แฟ้มคำร้องขอเปิดเผยข้อมูลข่าวสาร",
+   "group": "CORE",
+   "description": "one row per disclosure-request case; holds current state and all 1:1 intake/business fields",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสภายใน",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": true,
+     "label_th": "เลขที่คำร้อง",
+     "source": "Activity10.addCase id, e.g. คำร้อง-100010/2569",
+     "description": "business case number"
+    },
+    {
+     "name": "pacc_case_no",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขสำนวน PACC",
+     "source": "02-board-intake.html intakeSearchInput / f_caseId,paccCaseNo",
+     "description": "linked PACC case if selected during intake search"
+    },
+    {
+     "name": "category",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "หมวดหมู่งานกฎหมาย",
+     "source": "in_category / category",
+     "description": "10.2.1 (request) or 10.2.2 (appeal, unused by UI)"
+    },
+    {
+     "name": "category_name",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อหมวดหมู่",
+     "source": "categoryName",
+     "description": "display name of category"
+    },
+    {
+     "name": "status_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": "status.code",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะปัจจุบัน",
+     "source": "statusCode",
+     "description": "current workflow status"
+    },
+    {
+     "name": "status_label",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ข้อความสถานะ",
+     "source": "status",
+     "description": "denormalized display text for statusCode"
+    },
+    {
+     "name": "status_badge",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รูปแบบป้ายสถานะ",
+     "source": "statusBadge",
+     "description": "CSS badge class used by UI"
+    },
+    {
+     "name": "assigned_role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้รับเรื่องถัดไป",
+     "source": "assignedRole",
+     "description": "role id the case is currently routed to"
+    },
+    {
+     "name": "officer_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เจ้าหน้าที่ผู้รับผิดชอบ",
+     "source": "officer",
+     "description": "display name of current assignee"
+    },
+    {
+     "name": "l2_step",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสขั้นตอนปัจจุบัน",
+     "source": "l2Step",
+     "description": "current step code"
+    },
+    {
+     "name": "l2_step_seq",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ลำดับขั้นตอน",
+     "source": "l2StepSeq",
+     "description": "current step sequence number"
+    },
+    {
+     "name": "workflow_step",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขั้นตอน workflow (intake)",
+     "source": "workflowStep",
+     "description": "workflow step counter set at intake"
+    },
+    {
+     "name": "law_receive_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขรับกองกฎหมาย (กกม.)",
+     "source": "02-board-intake f_lawReceiveNo/lawReceiveNo",
+     "description": "legal division receive number"
+    },
+    {
+     "name": "central_saraban_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขสารบรรณกลาง",
+     "source": "02-board-intake in_centralSarabanNo/centralSarabanNo",
+     "description": "central registry number"
+    },
+    {
+     "name": "physical_doc_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่รับเอกสาร",
+     "source": "02-board-intake in_physicalDocDate/physicalDocDate",
+     "description": "physical document receive date"
+    },
+    {
+     "name": "board_admin_officer",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เจ้าหน้าที่ผู้รับเรื่อง",
+     "source": "savePhysicalDocIntake boardAdminOfficer",
+     "description": "officer who logged the physical document"
+    },
+    {
+     "name": "scanned_doc_file",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ไฟล์เอกสารสแกน",
+     "source": "savePhysicalDocIntake scannedDocFile",
+     "description": "scanned document file name (name only)"
+    },
+    {
+     "name": "scanned_status",
+     "type": "varchar(30)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะการสแกน",
+     "source": "savePhysicalDocIntake scannedStatus",
+     "description": "e.g. scanned"
+    },
+    {
+     "name": "accuser",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้กล่าวหา (ผู้ร้อง)",
+     "source": "02-board-intake f_complainant/accuser",
+     "description": "complainant name, carried from a linked PACC case"
+    },
+    {
+     "name": "accused",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้ถูกกล่าวหา",
+     "source": "02-board-intake f_accused/accused",
+     "description": "accused name, carried from a linked PACC case"
+    },
+    {
+     "name": "requester_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้ยื่นคำขอ",
+     "source": "in_requesterName/requesterName",
+     "description": "name of the person requesting disclosure"
+    },
+    {
+     "name": "requester_type_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "requester_type.code",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทผู้ยื่นคำขอ",
+     "source": "in_requesterType/requesterType",
+     "description": "CITIZEN/JURISTIC/AGENCY/OTHER"
+    },
+    {
+     "name": "requester_type_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทผู้ยื่นคำขอ (ข้อความ)",
+     "source": "requesterTypeName",
+     "description": "label, or \"อื่นๆ (text)\" when OTHER"
+    },
+    {
+     "name": "title",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อเรื่อง",
+     "source": "in_disclosureTitle/title",
+     "description": "case title"
+    },
+    {
+     "name": "requested_info",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ข้อมูลข่าวสารที่ขอเปิดเผย",
+     "source": "in_requestedInfo/requestedInfo",
+     "description": "description of requested information"
+    },
+    {
+     "name": "related_case_no",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขสำนวนคดีที่เกี่ยวข้อง",
+     "source": "in_relatedCaseNo/relatedCaseNo",
+     "description": "related case number, or \"-\""
+    },
+    {
+     "name": "request_channel_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "request_channel.code",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ช่องทางการยื่นคำขอ",
+     "source": "in_requestChannel/requestChannel",
+     "description": "CENTRAL/REGION/POST/ELECTRONIC/OTHER"
+    },
+    {
+     "name": "request_channel_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ช่องทาง (ข้อความ)",
+     "source": "requestChannelName",
+     "description": "label + region/other detail folded in"
+    },
+    {
+     "name": "request_channel_region",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เขต",
+     "source": "in_requestChannelRegionSelect/requestChannelRegion",
+     "description": "1..9 when channel is REGION"
+    },
+    {
+     "name": "request_received_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่สำนักงาน ป.ป.ท. ได้รับคำขอ",
+     "source": "in_requestReceivedDate/requestReceivedDate",
+     "description": "date PACC received the request"
+    },
+    {
+     "name": "approval_branch",
+     "type": "varchar(10)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สายอนุมัติ",
+     "source": "10-2-32 in_skipSecgen -> l2ApprovalBranch",
+     "description": "DEPUTY or SECGEN; only set on the skip-secgen branch, see notes"
+    },
+    {
+     "name": "l2_case_state_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "case_state.code",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะคดีที่เกี่ยวข้อง (ปัจจุบัน)",
+     "source": "l2CaseState (latest write)",
+     "description": "latest CLOSED/INVESTIGATING value; history in resolution table"
+    },
+    {
+     "name": "l2_case_state_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะคดี (ข้อความ)",
+     "source": "l2CaseStateName",
+     "description": "display label for l2_case_state_code"
+    },
+    {
+     "name": "l2_resolution_type_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "resolution_type.code",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มติ (ปัจจุบัน)",
+     "source": "l2ResolutionType (latest write)",
+     "description": "latest DISCLOSE/PARTIAL/DENY/OTHER; history in resolution table"
+    },
+    {
+     "name": "l2_resolution_type_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มติ (ข้อความ)",
+     "source": "l2ResolutionTypeName",
+     "description": "display label for l2_resolution_type_code"
+    },
+    {
+     "name": "l2_resolution_other_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มติ - โปรดระบุ (อื่นๆ)",
+     "source": "10-2-06 in_resolutionOther/l2ResolutionOtherDetail",
+     "description": "free text when resolution type is OTHER"
+    },
+    {
+     "name": "l2_resolution_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รายละเอียดมติที่ประชุม (ปัจจุบัน)",
+     "source": "l2ResolutionDetail (latest write)",
+     "description": "latest resolution detail text"
+    },
+    {
+     "name": "l2_committee_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็นคณะอนุกรรมการฯ (ปัจจุบัน)",
+     "source": "l2CommitteeOpinion (latest write)",
+     "description": "latest committee opinion text"
+    },
+    {
+     "name": "l2_redaction_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หมายเหตุการปกปิดข้อมูล (seed only)",
+     "source": "l2RedactionNotes (seed only, no page writes it)",
+     "description": "gap: present in seed data, no page in the mockup writes it"
+    },
+    {
+     "name": "l2_redaction_done",
+     "type": "boolean",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ปกปิดข้อมูลแล้ว (seed only)",
+     "source": "l2RedactionDone (seed only)",
+     "description": "gap: same as above"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "case_no"
+    ]
+   ],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "status_code"
+    ],
+    [
+     "assigned_role"
+    ]
+   ]
+  },
+  {
+   "name": "case_transition",
+   "label_th": "ประวัติการเปลี่ยนสถานะ",
+   "group": "CORE",
+   "description": "append-only history of every submit/return/branch action on a case, preserving send-back rounds",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "from_status_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": "status.code",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะเดิม",
+     "source": "Activity102.advance previous statusCode",
+     "description": "null for the first transition"
+    },
+    {
+     "name": "to_status_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": "status.code",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะใหม่",
+     "source": "Activity102.advance patch.statusCode",
+     "description": "status after the action"
+    },
+    {
+     "name": "action",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "การกระทำ",
+     "source": "derived from page logic",
+     "description": "SUBMIT / RETURN / BRANCH"
+    },
+    {
+     "name": "decision_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสผลการพิจารณา",
+     "source": "e.g. l2VerifyResult, resolution branch outcome",
+     "description": "branch decision that drove this transition, when applicable"
+    },
+    {
+     "name": "note",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หมายเหตุ/เหตุผลส่งกลับ",
+     "source": "e.g. l2CommitteeGroupApproveSendBackReason, l2CommitteeDirectorSendBackReason, l2ReceiveNotes",
+     "description": "send-back reason or branch note; keeps history instead of overwriting"
+    },
+    {
+     "name": "actor_user_id",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสผู้ปฏิบัติงาน",
+     "source": "page session / signer",
+     "description": "external user id of the actor"
+    },
+    {
+     "name": "actor_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อผู้ปฏิบัติงาน",
+     "source": "page session / signer",
+     "description": "display name of the actor"
+    },
+    {
+     "name": "actor_role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้ปฏิบัติงาน",
+     "source": "page session / signer",
+     "description": "role id of the actor"
+    },
+    {
+     "name": "acted_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "เวลาที่ดำเนินการ",
+     "source": "system",
+     "description": "when the action happened"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "case_id",
+     "acted_at"
+    ]
+   ]
+  },
+  {
+   "name": "resolution",
+   "label_th": "มติ/สถานะคดี (ประวัติแต่ละรอบ)",
+   "group": "CORE",
+   "description": "one row per resolution round so the preliminary subcommittee resolution and later deputy-SG/secretary-general final resolution do not overwrite each other",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "round_no",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รอบที่",
+     "source": "derived: 1=subcommittee(10-2-06), 2=deputy_sg or secgen final",
+     "description": "round counter"
+    },
+    {
+     "name": "stage_code",
+     "type": "varchar(30)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ขั้นตอนที่ให้มติ",
+     "source": "step code of the page that wrote it",
+     "description": "SUBCOMMITTEE / DEPUTY_SG / SECGEN"
+    },
+    {
+     "name": "resolution_type_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "resolution_type.code",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "มติที่ประชุม",
+     "source": "resolutionChoices/l2ResolutionType",
+     "description": "DISCLOSE/PARTIAL/DENY/OTHER"
+    },
+    {
+     "name": "resolution_type_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มติ (ข้อความ)",
+     "source": "l2ResolutionTypeName",
+     "description": "display label"
+    },
+    {
+     "name": "resolution_other_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "โปรดระบุ (อื่นๆ)",
+     "source": "in_resolutionOther/l2ResolutionOtherDetail",
+     "description": "free text when OTHER"
+    },
+    {
+     "name": "case_state_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": "case_state.code",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะคดีที่เกี่ยวข้อง",
+     "source": "caseStateChoices/l2CaseState",
+     "description": "CLOSED/INVESTIGATING"
+    },
+    {
+     "name": "case_state_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะคดี (ข้อความ)",
+     "source": "l2CaseStateName",
+     "description": "display label"
+    },
+    {
+     "name": "committee_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็นคณะอนุกรรมการฯ",
+     "source": "in_committeeOpinion/l2CommitteeOpinion",
+     "description": "committee opinion for this round"
+    },
+    {
+     "name": "resolution_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รายละเอียดมติที่ประชุม",
+     "source": "in_resolutionDetail/l2ResolutionDetail",
+     "description": "detail text for this round"
+    },
+    {
+     "name": "opinion_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็นผู้ลงมติ",
+     "source": "10-2-32 in_opinion(๖) / 10-2-31 in_opinion(๗)",
+     "description": "deputy-SG or secretary-general opinion text (round 2 only)"
+    },
+    {
+     "name": "skip_secgen",
+     "type": "boolean",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ข้ามเลขาธิการ ป.ป.ท.",
+     "source": "10-2-32 in_skipSecgen",
+     "description": "true when the deputy SG branch skipped the secretary general"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "case_id",
+     "round_no"
+    ]
+   ],
+   "check_constraints": [
+    "round_no >= 1"
+   ],
+   "indexes": [
+    [
+     "case_id"
+    ]
+   ]
+  },
+  {
+   "name": "document_number",
+   "label_th": "เลขที่หนังสือ/เอกสาร",
+   "group": "CORE",
+   "description": "every issued document number and date (internal memo, deny/close/committee memo, dispatches, notice, appeal doc numbers)",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "appeal_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "appeal.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำอุทธรณ์",
+     "source": "system",
+     "description": "set when the document belongs to an appeal instead of the base case"
+    },
+    {
+     "name": "doc_type",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทเอกสาร",
+     "source": "derived from the issuing step",
+     "description": "INTERNAL_MEMO / DISPATCH / DENY_MEMO / CLOSE_MEMO / COMMITTEE_MEMO / COMMITTEE_DISPATCH / NOTICE / APPEAL_BOARD_DISPATCH / APPEAL_BOARD_REPLY / APPEAL_NOTICE"
+    },
+    {
+     "name": "number_type",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทเลขที่",
+     "source": "derived",
+     "description": "INTERNAL / EXTERNAL / REGISTRY"
+    },
+    {
+     "name": "doc_no",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขที่หนังสือ",
+     "source": "e.g. l2InternalDocNo, l2DispatchNo, l2DenyMemoDocNo, l2CloseMemoDocNo, l2CommitteeMemoDocNo, l2CommitteeDispatchDocNo, l2NoticeDocNo, l2AppealBoardDispatchDocNo, l2AppealBoardReplyDocNo, l2AppealNoticeDraftDocNo",
+     "description": "issued number, format \"ปป 0002/NNNN\" for system-issued ones"
+    },
+    {
+     "name": "doc_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ออกเอกสาร",
+     "source": "e.g. l2InternalDocDate, l2DispatchDate, l2DenyMemoDocDate, ... (Thai string in source, converted to date)",
+     "description": "gap: issueDocNo stores a Thai display string, not ISO; conversion needed on migration"
+    },
+    {
+     "name": "issued_by",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้ออกเลข",
+     "source": "actor of the issuing step",
+     "description": "name of the officer who issued the number"
+    },
+    {
+     "name": "issued_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "เวลาที่ออกเลข",
+     "source": "system",
+     "description": "when the number was issued"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "case_id"
+    ],
+    [
+     "appeal_id"
+    ],
+    [
+     "doc_type"
+    ]
+   ]
+  },
+  {
+   "name": "signature",
+   "label_th": "ลายเซ็น",
+   "group": "CORE",
+   "description": "one row per signed slot (l2Signatures map -> rows), for both the base case and appeal steps",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "appeal_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "appeal.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำอุทธรณ์",
+     "source": "system",
+     "description": "set when the signature belongs to an appeal step"
+    },
+    {
+     "name": "step_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สล็อตลายเซ็น (step code)",
+     "source": "l2Signatures key, e.g. LAW0038, proposer, dirLegalOpinion, deputySgOpinion, secgenOpinion, appealRuling, ...",
+     "description": "slot name; see notes for full slot list"
+    },
+    {
+     "name": "signer_role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้ลงนาม",
+     "source": "derived from the slot / step role (not stored in source)",
+     "description": "role implied by which page opened the signature modal"
+    },
+    {
+     "name": "signer_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อผู้ลงนาม",
+     "source": "not stored in source; gap, see notes",
+     "description": "gap: the mockup never stores the signer name"
+    },
+    {
+     "name": "position_text",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ตำแหน่ง",
+     "source": "l2Signatures[slot].position",
+     "description": "position text printed on the document, when present"
+    },
+    {
+     "name": "sign_method",
+     "type": "varchar(10)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วิธีลงนาม",
+     "source": "ECMIS102.openSignatureModal mode (\"hand\"/\"cert\"); not persisted in the mockup",
+     "description": "gap fixed: HAND or CERT, added because the mockup drops this value"
+    },
+    {
+     "name": "cert_id",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสใบรับรอง",
+     "source": "openSignatureModal({certId}), e.g. PACC-DIRLEGAL-2569-102",
+     "description": "certificate id used for cert-mode signing"
+    },
+    {
+     "name": "image_data",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รูปลายเซ็น",
+     "source": "l2Signatures[slot].image (PNG dataURL)",
+     "description": "signature image, stored as data URL or storage key"
+    },
+    {
+     "name": "opinion_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็นประกอบลายเซ็น",
+     "source": "the flat opinion property tied to this slot, e.g. l2DirLegalOpinion for dirLegalOpinion",
+     "description": "denormalized copy of the opinion carried by this signature, when the slot has one"
+    },
+    {
+     "name": "signed_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เวลาที่ลงนาม",
+     "source": "l2Signatures[slot].signedAt (Thai display string in source)",
+     "description": "gap: source stores a formatted Thai string, converted to timestamptz here"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "case_id",
+     "appeal_id",
+     "step_code"
+    ]
+   ],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "case_id"
+    ],
+    [
+     "appeal_id"
+    ]
+   ]
+  },
+  {
+   "name": "attachment",
+   "label_th": "ไฟล์แนบ",
+   "group": "CORE",
+   "description": "every uploaded file name across the flow (binary content is never stored in the mockup)",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "appeal_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "appeal.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำอุทธรณ์",
+     "source": "system",
+     "description": "set when the attachment belongs to an appeal step"
+    },
+    {
+     "name": "step_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ขั้นตอนที่แนบ",
+     "source": "the step page the field appears on",
+     "description": "e.g. 02-board-intake, LAW0040, appeal-01 ... appeal-12"
+    },
+    {
+     "name": "doc_type",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทไฟล์แนบ",
+     "source": "field id, e.g. in_disclosureAttachments, in_opinionFile, in_appealFile, in_noticeFile(preview only)",
+     "description": "which upload field this came from"
+    },
+    {
+     "name": "file_name",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อไฟล์",
+     "source": "attachmentFileNames[], l2SecretariatOpinionFile, l2Appeal*AttachmentFileNames[], scannedDocFile",
+     "description": "original file name only, no binary"
+    },
+    {
+     "name": "storage_key",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ตำแหน่งจัดเก็บ",
+     "source": "not implemented in the mockup",
+     "description": "gap fixed: storage location for a real backend"
+    },
+    {
+     "name": "mime_type",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชนิดไฟล์",
+     "source": "not stored in the mockup",
+     "description": "gap fixed"
+    },
+    {
+     "name": "size_bytes",
+     "type": "bigint",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขนาดไฟล์",
+     "source": "not stored in the mockup",
+     "description": "gap fixed"
+    },
+    {
+     "name": "uploaded_user_id",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสผู้ปฏิบัติงาน",
+     "source": "system",
+     "description": "external user id of the actor"
+    },
+    {
+     "name": "uploaded_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อผู้ปฏิบัติงาน",
+     "source": "system",
+     "description": "display name of the actor"
+    },
+    {
+     "name": "uploaded_role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้ปฏิบัติงาน",
+     "source": "system",
+     "description": "role id of the actor"
+    },
+    {
+     "name": "uploaded_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "เวลาที่แนบไฟล์",
+     "source": "system",
+     "description": "upload time"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "case_id",
+     "step_code"
+    ],
+    [
+     "appeal_id",
+     "step_code"
+    ]
+   ]
+  },
+  {
+   "name": "director_assign",
+   "label_th": "มอบหมายโดย ผอ.กองกฎหมาย",
+   "group": "ASSIGN",
+   "description": "1:1 fields from 10-2-01 legal-director-assign",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "assign_target_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "มอบหมายให้",
+     "source": "10-2-01 in_assignTarget/l2DirectorAssignTarget",
+     "description": "name of the group director assigned to"
+    },
+    {
+     "name": "order_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่สั่งการ",
+     "source": "10-2-01 in_orderDate/l2DirectorOrderDate",
+     "description": "order date"
+    },
+    {
+     "name": "order_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ข้อสั่งการ/ความเห็นของ ผอ.กองกฎหมาย",
+     "source": "10-2-01 in_orderNotes/l2DirectorOrderNotes",
+     "description": "director instructions"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "group_assign",
+   "label_th": "มอบหมายโดยผู้อำนวยการกลุ่ม",
+   "group": "ASSIGN",
+   "description": "1:1 fields from 10-2-02 group-director-assign",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "legal_issues",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเด็นกฎหมายที่ต้องพิจารณา",
+     "source": "10-2-02 in_legalIssues/l2LegalIssues",
+     "description": "legal issues to consider"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "secretariat_opinion",
+   "label_th": "ความเห็นฝ่ายเลขานุการ",
+   "group": "ASSIGN",
+   "description": "1:1 fields from 10-2-03 secretariat-opinion",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "opinion_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความคิดเห็นคณะอนุกรรมการ",
+     "source": "10-2-03 in_opinionNotes/l2SecretariatOpinion",
+     "description": "secretariat opinion; a matching attachment row holds in_opinionFile"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "group_verify",
+   "label_th": "ผลการตรวจสอบของผู้อำนวยการกลุ่ม (ตามรอบ)",
+   "group": "ASSIGN",
+   "description": "round history for 10-2-04 group-director-verify, since a REVISE result sends the case back to 10-2-03 and the page can be revisited",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "round_no",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รอบที่",
+     "source": "derived: incremented on each REVISE loop",
+     "description": "round counter"
+    },
+    {
+     "name": "verify_result",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลการตรวจสอบ",
+     "source": "10-2-04 verifyChoices/l2VerifyResult",
+     "description": "COMPLETE or REVISE"
+    },
+    {
+     "name": "verify_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็นประกอบการตรวจสอบ",
+     "source": "10-2-04 in_verifyNotes/l2VerifyNotes",
+     "description": "notes for this round"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "case_id",
+     "round_no"
+    ]
+   ],
+   "check_constraints": [
+    "verify_result in ('COMPLETE','REVISE')",
+    "round_no >= 1"
+   ],
+   "indexes": [
+    [
+     "case_id"
+    ]
+   ]
+  },
+  {
+   "name": "meeting",
+   "label_th": "การประชุมคณะอนุกรรมการกลั่นกรอง",
+   "group": "ASSIGN",
+   "description": "1:1 subcommittee meeting/agenda fields set at 10-2-05 and read back at 10-2-06/07",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "meeting_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "การประชุมครั้งที่",
+     "source": "10-2-05 in_meetingNo/l2MeetingNo",
+     "description": "e.g. 8/2569"
+    },
+    {
+     "name": "meeting_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เมื่อวันที่",
+     "source": "10-2-05 in_meetingDate/l2MeetingDate",
+     "description": "meeting date"
+    },
+    {
+     "name": "meeting_venue",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ณ ห้องประชุม",
+     "source": "10-2-05 in_meetingVenue/l2MeetingVenue",
+     "description": "venue"
+    },
+    {
+     "name": "agenda_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ระเบียบวาระที่",
+     "source": "10-2-05 in_agendaNo/l2AgendaNo",
+     "description": "e.g. 4.1"
+    },
+    {
+     "name": "agenda_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หมายเหตุการจัดส่งเอกสาร",
+     "source": "10-2-05 in_agendaNotes/l2AgendaNotes",
+     "description": "notes about circulating meeting documents"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "precomment",
+   "label_th": "ความเห็นก่อนจัดทำหนังสือเสนอ",
+   "group": "ASSIGN",
+   "description": "1:1 admin/director pre-comments from 10-2-33 and 10-2-34, inserted before the resolution document is drafted",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "admin_comment",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ธุรการกองกฎหมาย)",
+     "source": "10-2-33 in_adminComment/l2AdminPreComment",
+     "description": "admin_legal comment"
+    },
+    {
+     "name": "dirlegal_comment",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ผอ.กองกฎหมาย)",
+     "source": "10-2-34 in_dirComment/l2DirLegalPreComment",
+     "description": "dir_legal comment"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "resolution_memo",
+   "label_th": "บันทึกเสนอเลขาธิการฯ (หนังสือหลัก)",
+   "group": "MEMO",
+   "description": "1:1 body of the main proposal memo drafted at 10-2-07 and opined on at 10-2-08; doc number lives in document_number",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "division_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่วนราชการ",
+     "source": "10-2-07 in_divisionName/l2DivisionName",
+     "description": "issuing division"
+    },
+    {
+     "name": "division_phone",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "โทร.",
+     "source": "10-2-07 in_divisionPhone/l2DivisionPhone",
+     "description": "contact phone"
+    },
+    {
+     "name": "doc_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ (บันทึก)",
+     "source": "10-2-07 in_docDate/l2DocDate",
+     "description": "memo body date field (separate from issued document_number.doc_date)"
+    },
+    {
+     "name": "addressed_to",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรียน",
+     "source": "10-2-07 in_addressedTo/l2AddressedTo",
+     "description": "addressee"
+    },
+    {
+     "name": "subject",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรื่อง",
+     "source": "10-2-07 in_subject/l2Subject",
+     "description": "memo subject"
+    },
+    {
+     "name": "data_owner",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้รับผิดชอบข้อมูลข่าวสาร",
+     "source": "renderResolutionSheet l2DataOwner (read-only default, never written)",
+     "description": "gap: field is displayed with a default but no input writes it"
+    },
+    {
+     "name": "resolution_facts",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "๒. ข้อเท็จจริง (ใบมติ)",
+     "source": "10-2-07 in_resolutionFacts/l2ResolutionFacts",
+     "description": "facts section of the resolution sheet"
+    },
+    {
+     "name": "background",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "๑. เรื่องเดิม",
+     "source": "10-2-07 in_background/l2Background (rich text)",
+     "description": "memo background section"
+    },
+    {
+     "name": "facts",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "๒. ข้อเท็จจริง — มติที่ประชุม",
+     "source": "10-2-07 in_facts/l2Facts (rich text)",
+     "description": "memo facts section"
+    },
+    {
+     "name": "legal_basis",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "๓. ข้อกฎหมาย ระเบียบ ประกาศ และคำสั่ง",
+     "source": "10-2-07 in_legalBasis/l2LegalBasis (rich text)",
+     "description": "legal basis section"
+    },
+    {
+     "name": "considerations",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "๔. ข้อพิจารณา",
+     "source": "10-2-07 in_considerations/l2Considerations (rich text)",
+     "description": "considerations section"
+    },
+    {
+     "name": "dir_legal_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๕. ความเห็นผู้อำนวยการกองกฎหมาย",
+     "source": "10-2-08 in_dirLegalOpinion/l2DirLegalOpinion",
+     "description": "director opinion added at 10-2-08"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "dispatch",
+   "label_th": "การนำส่งหนังสือถึงรองเลขาธิการ/เลขาธิการ",
+   "group": "MEMO",
+   "description": "1:1 fields from 10-2-09 legal-admin-dispatch",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "dispatch_target",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเสนอต่อไปยัง",
+     "source": "10-2-09 static text -> l2DispatchTarget",
+     "description": "recipient of the dispatch, e.g. รองเลขาธิการ ..."
+    },
+    {
+     "name": "dispatch_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บันทึกข้อความนำส่ง/หมายเหตุ",
+     "source": "10-2-09 in_dispatchNotes/l2DispatchNotes",
+     "description": "dispatch cover note"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "deny_case",
+   "label_th": "สำนวนแจ้งมติไม่อนุญาตเปิดเผย",
+   "group": "DENY",
+   "description": "1:1 fields for the DENY branch (10-2-15/16/17); doc number lives in document_number as DENY_MEMO",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "division_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่วนราชการ",
+     "source": "10-2-15 in_divisionName/l2DivisionName",
+     "description": "issuing division (shared column name with resolution_memo/close_case)"
+    },
+    {
+     "name": "division_phone",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "โทร.",
+     "source": "10-2-15 in_divisionPhone/l2DivisionPhone",
+     "description": "contact phone"
+    },
+    {
+     "name": "addressed_to",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เรียน",
+     "source": "10-2-15 in_addressedTo/l2DenyMemoAddressedTo",
+     "description": "addressee, may be blank"
+    },
+    {
+     "name": "deny_memo_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "มติที่ประชุม (เนื้อหาบันทึกแจ้งมติ)",
+     "source": "10-2-15 in_denyMemoText/l2DenyMemoText (rich text saved as text)",
+     "description": "body of the deny notice memo"
+    },
+    {
+     "name": "assign_dept",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มอบหมายให้กอง/สำนักเจ้าของสำนวน",
+     "source": "10-2-17 in_assignDept(+OtherText)/l2DenyAssignedDept",
+     "description": "department the closed case is handed to"
+    },
+    {
+     "name": "assign_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "source": "10-2-17 in_dispatchDate/l2DenyAssignDate",
+     "description": "assignment dispatch date"
+    },
+    {
+     "name": "assign_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บันทึกข้อความนำส่ง",
+     "source": "10-2-17 in_dispatchNotes/l2DenyAssignNotes",
+     "description": "assignment cover note"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "close_case",
+   "label_th": "สำนวนปิดคดี (อนุญาต/บางส่วน + คดีเสร็จสิ้น)",
+   "group": "CLOSE",
+   "description": "1:1 fields for the CLOSE branch (10-2-22/23/24), taken when resolution is DISCLOSE/PARTIAL and case state is CLOSED; doc number lives in document_number as CLOSE_MEMO",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "division_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่วนราชการ",
+     "source": "10-2-22 in_divisionName/l2DivisionName",
+     "description": "issuing division"
+    },
+    {
+     "name": "division_phone",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "โทร.",
+     "source": "10-2-22 in_divisionPhone/l2DivisionPhone",
+     "description": "contact phone"
+    },
+    {
+     "name": "addressed_to",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เรียน",
+     "source": "10-2-22 in_addressedTo/l2CloseMemoAddressedTo",
+     "description": "addressee, may be blank"
+    },
+    {
+     "name": "close_memo_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "มติที่ประชุม (เนื้อหาบันทึกแจ้งมติ)",
+     "source": "10-2-22 in_closeMemoText/l2CloseMemoText (rich text saved as text)",
+     "description": "body of the close notice memo"
+    },
+    {
+     "name": "assign_dept",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "มอบหมายให้กอง/สำนักเจ้าของสำนวน",
+     "source": "10-2-24 in_assignDept(+OtherText)/l2CloseAssignedDept",
+     "description": "department the closed case is handed to"
+    },
+    {
+     "name": "assign_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "source": "10-2-24 in_dispatchDate/l2CloseAssignDate",
+     "description": "assignment dispatch date"
+    },
+    {
+     "name": "assign_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บันทึกข้อความนำส่ง",
+     "source": "10-2-24 in_dispatchNotes/l2CloseAssignNotes",
+     "description": "assignment cover note"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "committee_memo",
+   "label_th": "บันทึกเสนอคณะกรรมการ ป.ป.ท. (รอบ 2, ตามรอบ)",
+   "group": "COMMITTEE",
+   "description": "round history for 10-2-25/26/27, since a send-back from either the group director or the legal director resets the draft and re-runs the same 3 steps (source note: unsign + statusCode reset)",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "round_no",
+     "type": "int",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รอบที่",
+     "source": "derived: incremented on each send-back at 10-2-26/27",
+     "description": "round counter"
+    },
+    {
+     "name": "data_owner",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๕. ผู้รับผิดชอบข้อมูลข่าวสาร",
+     "source": "10-2-25 in_dataOwner/l2CommitteeSheetDataOwner",
+     "description": "data owner for the attach sheet"
+    },
+    {
+     "name": "sheet_facts",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๒. ข้อเท็จจริง (sheet)",
+     "source": "10-2-25 in_facts/l2CommitteeSheetFacts (rich text)",
+     "description": "facts on the attach sheet"
+    },
+    {
+     "name": "division_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่วนราชการ",
+     "source": "10-2-25 in_divisionName/l2CommitteeMemoDivisionName",
+     "description": "issuing division"
+    },
+    {
+     "name": "division_phone",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "โทร.",
+     "source": "10-2-25 in_divisionPhone/l2CommitteeMemoDivisionPhone",
+     "description": "contact phone"
+    },
+    {
+     "name": "meeting_venue",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ณ ห้องประชุม",
+     "source": "10-2-25 in_meetingVenue/l2CommitteeMemoMeetingVenue",
+     "description": "venue text repeated for this memo"
+    },
+    {
+     "name": "addressed_to",
+     "type": "varchar(300)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เรียน",
+     "source": "10-2-25 in_addressedTo/l2CommitteeMemoAddressedTo",
+     "description": "addressee"
+    },
+    {
+     "name": "background",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๑. เรื่องเดิม",
+     "source": "10-2-25 in_background/l2CommitteeMemoBackground",
+     "description": "background section"
+    },
+    {
+     "name": "legal_basis",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๓. ข้อกฎหมาย",
+     "source": "10-2-25 in_legalBasis/l2CommitteeMemoLegalBasis",
+     "description": "legal basis section"
+    },
+    {
+     "name": "considerations",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๔. ข้อพิจารณา",
+     "source": "10-2-25 in_considerations/l2CommitteeMemoConsiderations",
+     "description": "considerations section"
+    },
+    {
+     "name": "resolution_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๒. ข้อเท็จจริง — มติที่ประชุมโดยละเอียด",
+     "source": "10-2-25 in_meetingResolution/l2CommitteeMemoResolutionText (rich text)",
+     "description": "detailed meeting resolution text"
+    },
+    {
+     "name": "group_approve_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ผอ.กลุ่มงานความเห็นแย้ง)",
+     "source": "10-2-27 in_opinion/l2CommitteeGroupApproveOpinion",
+     "description": "group director opinion for this round"
+    },
+    {
+     "name": "director_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "๕. ความเห็นผู้อำนวยการกองกฎหมาย",
+     "source": "10-2-26 in_opinion/l2CommitteeDirectorOpinionText",
+     "description": "legal director opinion for this round"
+    },
+    {
+     "name": "send_back_reason",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เหตุผลที่ส่งกลับ",
+     "source": "l2CommitteeGroupApproveSendBackReason (10-2-27) or l2CommitteeDirectorSendBackReason (10-2-26)",
+     "description": "reason recorded when this round was sent back; also duplicated into case_transition.note"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "case_id",
+     "round_no"
+    ]
+   ],
+   "check_constraints": [
+    "round_no >= 1"
+   ],
+   "indexes": [
+    [
+     "case_id"
+    ]
+   ]
+  },
+  {
+   "name": "committee_dispatch",
+   "label_th": "นำส่งหนังสือถึงคณะกรรมการ ป.ป.ท. (รอบ 2)",
+   "group": "COMMITTEE",
+   "description": "1:1 fields from 10-2-29; doc number lives in document_number as COMMITTEE_DISPATCH",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "dispatch_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บันทึกข้อความนำส่ง",
+     "source": "10-2-29 in_dispatchNotes/l2CommitteeDispatchNotes",
+     "description": "dispatch cover note"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "tbl_law2_board_ack",
+   "label_th": "การรับทราบมติคณะกรรมการ ป.ป.ท. (รอบ 2)",
+   "group": "BOARD",
+   "description": "LAW-internal acknowledgement of the round-2 board resolution; the resolution itself is in tbl_board_submission.",
+   "columns": [
+    {
+     "name": "ba2_case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "ba2_receive_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หมายเหตุ",
+     "source": "10-2-30 in_receiveNotesRound2/l2ReceiveNotesRound2",
+     "description": "receiving notes"
+    },
+    {
+     "name": "ba2_dirlegal_ack_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ผอ.กองกฎหมาย รับทราบ)",
+     "source": "10-2-35 in_opinion/l2BoardDirLegalAckOpinion",
+     "description": "legal director acknowledgement opinion"
+    },
+    {
+     "name": "ba2_groupdir_ack_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ผอ.กลุ่มงาน รับทราบ)",
+     "source": "10-2-36 in_opinion/l2BoardGroupDirAckOpinion",
+     "description": "group director acknowledgement opinion"
+    },
+    {
+     "name": "created_datetime",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "วันเวลาที่สร้างข้อมูล",
+     "source": "system",
+     "description": "Standard audit column (กิจกรรมที่ 7 convention)"
+    },
+    {
+     "name": "created_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้สร้างข้อมูล",
+     "source": "system",
+     "description": "Staff id from the user system"
+    },
+    {
+     "name": "updated_datetime",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันเวลาแก้ไขล่าสุด",
+     "source": "system",
+     "description": "Standard audit column"
+    },
+    {
+     "name": "updated_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้แก้ไขล่าสุด",
+     "source": "system",
+     "description": "Staff id from the user system"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "notice",
+   "label_th": "หนังสือแจ้งมติต่อผู้ยื่นคำขอ",
+   "group": "NOTICE",
+   "description": "1:1 fields covering 10-2-11 (draft), 10-2-37 (group director review), 10-2-13 (sign), 10-2-14 (dispatch); doc number lives in document_number as NOTICE",
+   "columns": [
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": true,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้อง",
+     "source": "system",
+     "description": ""
+    },
+    {
+     "name": "division_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่วนราชการ",
+     "source": "10-2-11 in_divisionName/l2DivisionName",
+     "description": "issuing division"
+    },
+    {
+     "name": "division_phone",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "โทร.",
+     "source": "10-2-11 in_divisionPhone/l2DivisionPhone",
+     "description": "contact phone"
+    },
+    {
+     "name": "recipient",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรียน (ผู้ยื่นคำขอ)",
+     "source": "10-2-11 in_noticeRecipient/l2NoticeRecipient",
+     "description": "requester name, prefilled"
+    },
+    {
+     "name": "body_html",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เนื้อหาหนังสือแจ้งมติ",
+     "source": "10-2-11 in_noticeBody/l2NoticeBody (rich text saved as HTML)",
+     "description": "notice body, stored as HTML unlike most other rich-text fields"
+    },
+    {
+     "name": "appointment_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "นัดหมายตรวจดู/คัดถ่ายเอกสาร",
+     "source": "10-2-11 in_appointmentDate/l2NoticeAppointmentDate",
+     "description": "appointment date, used for PARTIAL disclosure"
+    },
+    {
+     "name": "groupdir_opinion",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น (ผอ.กลุ่มงานความเห็นแย้ง)",
+     "source": "10-2-37 in_opinion/l2NoticeGroupDirOpinion",
+     "description": "group director review opinion"
+    },
+    {
+     "name": "dispatch_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ส่งหนังสือ",
+     "source": "10-2-14 in_dispatchDate/l2NoticeDispatchDate",
+     "description": "final dispatch date to the requester"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "appeal",
+   "label_th": "คำอุทธรณ์",
+   "group": "APPEAL",
+   "description": "one row per appeal against a DENY resolution; modelled as its own table (design decision, see notes) even though the mockup writes appeal fields onto the same request record",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำร้องเดิม",
+     "source": "system (same record as the DENY case in the mockup)",
+     "description": "the original disclosure request this appeal is against"
+    },
+    {
+     "name": "appeal_system_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": true,
+     "label_th": "เลขที่คำอุทธรณ์ในระบบ",
+     "source": "appeal-01 in_systemNo/l2AppealSystemNo",
+     "description": "e.g. อธ-100033/2569"
+    },
+    {
+     "name": "status_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": "status.code",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สถานะคำอุทธรณ์",
+     "source": "statusCode while isAppealCase() is true (L2-APPEAL-* range)",
+     "description": "appeal-specific status, independent of case_file.status_code so the base case can stay closed"
+    },
+    {
+     "name": "receive_no",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขที่หนังสือรับ",
+     "source": "appeal-01 in_receiveNo/l2AppealReceiveNo",
+     "description": "receiving document number"
+    },
+    {
+     "name": "receive_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ลงรับ",
+     "source": "appeal-01 in_receiveDate/l2AppealReceiveDate",
+     "description": "receiving date"
+    },
+    {
+     "name": "channel_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ช่องทางยื่นอุทธรณ์",
+     "source": "appeal-01 in_channel/l2AppealChannel",
+     "description": "ส่วนกลาง or เขต"
+    },
+    {
+     "name": "channel_detail",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เขต",
+     "source": "appeal-01 in_channelDetail/l2AppealChannelDetail",
+     "description": "region number when channel is เขต"
+    },
+    {
+     "name": "receive_notes",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "หมายเหตุ",
+     "source": "appeal-01 in_notes/l2AppealReceiveNotes",
+     "description": "intake notes, default \"-\""
+    },
+    {
+     "name": "summary",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "สรุปประเด็นอุทธรณ์",
+     "source": "appeal-01 in_summary/l2AppealSummary",
+     "description": "appeal summary"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "appeal_system_no"
+    ]
+   ],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "case_id"
+    ],
+    [
+     "status_code"
+    ]
+   ]
+  },
+  {
+   "name": "appeal_step",
+   "label_th": "ขั้นตอนคำอุทธรณ์ (รายขั้นตอน)",
+   "group": "APPEAL",
+   "description": "one row per appeal step (appeal-02..13) holding that step notes/decision/dates; generalized instead of one table per page since each step is mostly a note plus 0-2 typed values",
+   "columns": [
+    {
+     "name": "id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "surrogate key"
+    },
+    {
+     "name": "appeal_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "appeal.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสคำอุทธรณ์",
+     "source": "system",
+     "description": "parent appeal"
+    },
+    {
+     "name": "step_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสขั้นตอน",
+     "source": "L2-APPEAL-* step code",
+     "description": "e.g. L2-APPEAL-BUREAU-ASSIGN, L2-APPEAL-RULING"
+    },
+    {
+     "name": "ref_no",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขที่/รหัสอ้างอิง",
+     "source": "e.g. appeal-05 in_agendaNo/l2AppealAgendaNo",
+     "description": "short reference value such as an agenda number"
+    },
+    {
+     "name": "result_code",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสผล",
+     "source": "e.g. appeal-06 in_rulingType/l2AppealRulingType, appeal-11 resolutionChoices/l2AppealBoardResolutionType",
+     "description": "ruling type (UPHOLD/REVERSE_FULL/REVERSE_PARTIAL) or board appeal resolution type (DISCLOSE/PARTIAL/DENY)"
+    },
+    {
+     "name": "result_label",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผล (ข้อความ)",
+     "source": "e.g. l2AppealBoardResolutionTypeName",
+     "description": "display label for result_code"
+    },
+    {
+     "name": "note_text",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ความเห็น/หมายเหตุ",
+     "source": "e.g. l2AppealBureauDirectorNotes, l2AppealCaseOwnerOpinion, l2AppealRulingReason, l2AppealMemoNotes, l2AppealTrackingSignNotes, l2AppealBoardProposeNotes, l2AppealBoardResolutionNotes, l2AppealNoticeDraftNotes, l2AppealNotifyNotes",
+     "description": "the opinion/notes textarea for this step"
+    },
+    {
+     "name": "channel_code",
+     "type": "varchar(20)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ช่องทาง",
+     "source": "appeal-13 in_channel/l2AppealNotifyChannel",
+     "description": "notification channel, ส่วนกลาง/เขต"
+    },
+    {
+     "name": "channel_detail",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เขต",
+     "source": "appeal-13 in_channelDetail/l2AppealNotifyChannelDetail",
+     "description": "region detail for the channel"
+    },
+    {
+     "name": "date_1",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ (1)",
+     "source": "e.g. appeal-03 l2AppealDeadlineNotify, appeal-05 l2AppealMeetingDate, appeal-13 in_notifyDate/l2AppealNotifyDate",
+     "description": "primary computed/entered date for this step"
+    },
+    {
+     "name": "date_2",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันที่ (2)",
+     "source": "e.g. appeal-03 l2AppealDeadlineOpinion, appeal-13 l2AppealExpectedReceiptDate (today+5, computed)",
+     "description": "secondary computed/entered date for this step"
+    },
+    {
+     "name": "actor_user_id",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสผู้ปฏิบัติงาน",
+     "source": "signature/session for that step",
+     "description": "external user id of the actor"
+    },
+    {
+     "name": "actor_name",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อผู้ปฏิบัติงาน",
+     "source": "signature/session for that step",
+     "description": "display name of the actor"
+    },
+    {
+     "name": "actor_role",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "บทบาทผู้ปฏิบัติงาน",
+     "source": "signature/session for that step",
+     "description": "role id of the actor"
+    },
+    {
+     "name": "acted_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "เวลาที่ดำเนินการ",
+     "source": "system",
+     "description": "when the step was completed"
+    },
+    {
+     "name": "created_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "สร้างเมื่อ",
+     "source": "system",
+     "description": "row creation timestamp"
+    },
+    {
+     "name": "created_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "สร้างโดย",
+     "source": "system",
+     "description": "actor user id who created the row"
+    },
+    {
+     "name": "updated_at",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขเมื่อ",
+     "source": "system",
+     "description": "last update timestamp"
+    },
+    {
+     "name": "updated_by",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "แก้ไขโดย",
+     "source": "system",
+     "description": "actor user id who last updated the row"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "appeal_id",
+     "step_code"
+    ]
+   ],
+   "check_constraints": [],
+   "indexes": [
+    [
+     "appeal_id"
+    ]
+   ]
+  },
+  {
+   "name": "resolution_type",
+   "label_th": "ประเภทมติ",
+   "group": "LOOKUP",
+   "description": "RESOLUTION_TYPES enum from ecmis-10-2.js: DISCLOSE/PARTIAL/DENY/OTHER",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "case_state",
+   "label_th": "สถานะคดีที่เกี่ยวข้อง",
+   "group": "LOOKUP",
+   "description": "CASE_STATES enum: CLOSED/INVESTIGATING",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "requester_type",
+   "label_th": "ประเภทผู้ยื่นคำขอ",
+   "group": "LOOKUP",
+   "description": "02-board-intake in_requesterType options: CITIZEN/JURISTIC/AGENCY/OTHER",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "request_channel",
+   "label_th": "ช่องทางการยื่นคำขอ",
+   "group": "LOOKUP",
+   "description": "02-board-intake in_requestChannel options: CENTRAL/REGION/POST/ELECTRONIC/OTHER",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "appeal_ruling_type",
+   "label_th": "ผลคำวินิจฉัยอุทธรณ์",
+   "group": "LOOKUP",
+   "description": "appeal-06/07 RULING_LABELS: UPHOLD/REVERSE_FULL/REVERSE_PARTIAL",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "appeal_board_resolution_type",
+   "label_th": "มติคณะกรรมการต่ออุทธรณ์",
+   "group": "LOOKUP",
+   "description": "BOARD_APPEAL_RESOLUTION_TYPES enum: DISCLOSE/PARTIAL/DENY",
+   "columns": [
+    {
+     "name": "code",
+     "type": "varchar(20)",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "enum constant",
+     "description": "enum code"
+    },
+    {
+     "name": "label_th",
+     "type": "varchar(200)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ชื่อภาษาไทย",
+     "source": "enum label",
+     "description": "Thai display label"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  },
+  {
+   "name": "tbl_law2_board_link",
+   "label_th": "การส่งเรื่องเข้ากิจกรรมที่ 7 (เชื่อม tbl_board_submission)",
+   "group": "BOARD",
+   "description": "One row per submission from this sub-activity to กิจกรรมที่ 7; the resolution itself is read from tbl_board_submission.",
+   "columns": [
+    {
+     "name": "lb2_id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัส",
+     "source": "system",
+     "description": "Primary key"
+    },
+    {
+     "name": "lb2_case_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "case_file.id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "แฟ้มคดี",
+     "source": "system",
+     "description": "Case sent to the board"
+    },
+    {
+     "name": "lb2_appeal_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "appeal.id",
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "คำอุทธรณ์",
+     "source": "system",
+     "description": "Set for appeal submissions (S102-3)"
+    },
+    {
+     "name": "lb2_send_point",
+     "type": "varchar(10)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "จุดส่ง",
+     "source": "ecmis-activity10-act7-handoffs.xlsx",
+     "description": "Handoff point id ('S102-1', 'S102-2', 'S102-3')"
+    },
+    {
+     "name": "lb2_round_no",
+     "type": "smallint",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "1",
+     "unique": false,
+     "label_th": "ครั้งที่ส่ง",
+     "source": "system",
+     "description": "Resubmission counter for the same point"
+    },
+    {
+     "name": "lb2_send_step_code",
+     "type": "varchar(10)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ขั้นตอนส่ง (LAW)",
+     "source": "TO-BE UserFlow V1.0.1",
+     "description": "TO-BE LAW step that submits"
+    },
+    {
+     "name": "lb2_receive_step_code",
+     "type": "varchar(10)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขั้นตอนรับผล (LAW)",
+     "source": "TO-BE UserFlow V1.0.1",
+     "description": "TO-BE LAW step that receives the resolution"
+    },
+    {
+     "name": "lb2_tbs_id",
+     "type": "bigint",
+     "pk": false,
+     "fk": "tbl_board_submission.tbs_id",
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "รหัสเรื่องเสนอ (กิจกรรมที่ 7)",
+     "source": "system",
+     "description": "tbl_board_submission.tbs_id (cross-module, no FK constraint)"
+    },
+    {
+     "name": "lb2_submission_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เลขที่เรื่องเสนอ",
+     "source": "system",
+     "description": "Copy of tbs_submission_no for display"
+    },
+    {
+     "name": "lb2_matter_type",
+     "type": "varchar(3)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ประเภทเรื่องที่เสนอ",
+     "source": "system",
+     "description": "tbs_matter_type code (LAW block still to be registered with กิจกรรมที่ 7)"
+    },
+    {
+     "name": "created_datetime",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": "now()",
+     "unique": false,
+     "label_th": "วันเวลาที่สร้างข้อมูล",
+     "source": "system",
+     "description": "Standard audit column (กิจกรรมที่ 7 convention)"
+    },
+    {
+     "name": "created_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้สร้างข้อมูล",
+     "source": "system",
+     "description": "Staff id from the user system"
+    },
+    {
+     "name": "updated_datetime",
+     "type": "timestamptz",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "วันเวลาแก้ไขล่าสุด",
+     "source": "system",
+     "description": "Standard audit column"
+    },
+    {
+     "name": "updated_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผู้แก้ไขล่าสุด",
+     "source": "system",
+     "description": "Staff id from the user system"
+    }
+   ],
+   "unique_constraints": [
+    [
+     "lb2_tbs_id"
+    ],
+    [
+     "lb2_case_id",
+     "lb2_send_point",
+     "lb2_round_no"
+    ]
+   ],
+   "check_constraints": [
+    "lb2_send_point in ('S102-1', 'S102-2', 'S102-3')",
+    "lb2_round_no >= 1"
+   ],
+   "indexes": [
+    [
+     "lb2_case_id"
+    ]
+   ]
+  },
+  {
+   "name": "tbl_board_submission",
+   "label_th": "เรื่องที่ส่งเข้าคณะกรรมการ ป.ป.ท. และผลมติ (ตารางกลาง)",
+   "group": "EXT7",
+   "external": true,
+   "description": "Shared กิจกรรมที่ 7 table (not created by LAW). LAW links to it by tbs_id without a foreign key.",
+   "columns": [
+    {
+     "name": "tbs_id",
+     "type": "bigserial",
+     "pk": true,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "คีย์",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสของเรื่องที่ส่งเข้าคณะกรรมการ ระบบออกเลขให้อัตโนมัติ เช่น 1, 2, 3"
+    },
+    {
+     "name": "tbs_submission_no",
+     "type": "varchar(50)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "คีย์",
+     "source": "data_dictionary_board_submission V2",
+     "description": "เลขที่เรื่องเสนอ ไม่ซ้ำกันทั้งระบบ เช่น BRD-2569-00001"
+    },
+    {
+     "name": "tbs_source_module",
+     "type": "varchar(3)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรื่องต้นทาง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสกิจกรรมที่ส่งเรื่อง 3 ตัวอักษร เช่น CMP = กิจกรรมที่ 4 ระบบรับเรื่องร้องเรียน, ACC = กิจกรรมที่ 5 สำนวนไต่สวน, LAW = กิจกรรมที่ 10"
+    },
+    {
+     "name": "tbs_source_ref_type",
+     "type": "varchar(30)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรื่องต้นทาง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ประเภทระเบียนต้นทางที่กิจกรรมนั้นกำหนด ใช้คู่กับ tbs_source_module เพื่อระบุตารางปลายทาง เช่น COMPLAINT = เรื่องร้องเรียน, CASE = สำนวนไต่สวน, EXTENSION_REQUEST = คำขอขยายเวลาไต่สวน"
+    },
+    {
+     "name": "tbs_source_ref_id",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "เรื่องต้นทาง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสของระเบียนต้นทางในตารางที่ระบุโดยสองฟิลด์ข้างต้น เช่น 3318 หมายถึง tbl_acc_case.tac_id = 3318 เมื่อ tbs_source_module = ACC และ tbs_source_ref_type = CASE ไม่มี Foreign Key เพราะอ้างข้ามกิจกรรม"
+    },
+    {
+     "name": "tbs_source_case_ref",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "เรื่องต้นทาง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "เลขอ้างอิงของเรื่องต้นทางที่ใช้แสดงผล สำเนาไว้เพื่อไม่ต้องเชื่อมข้ามกิจกรรม เช่น ร-2569-010452 (เลขเรื่องร้องเรียน), สน-2569-003318 (เลขสำนวน)"
+    },
+    {
+     "name": "tbs_matter_type",
+     "type": "varchar(3)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ประเภทเรื่องที่เสนอ 3 หลัก หลักร้อยคือบล็อกของกิจกรรมต้นทาง เช่น 101 = พิจารณาเรื่องตามมาตรา 18/1(ข) ที่ ป.ป.ท. ไม่รับไว้ดำเนินการ, 201 = พิจารณารายงานการไต่สวนเบื้องต้น (รายงาน 213), 203 = พิจารณาคำขอขยายเวลาไต่สวนเกินจำนวนครั้งที่กำหนด, 901 = พิจารณาเรื่องอื่น ๆ ใช้ได้ทุกกิจกรรม"
+    },
+    {
+     "name": "tbs_target_board",
+     "type": "varchar(3)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ประเภทของคณะปลายทางที่เสนอเข้าพิจารณา เช่น 100 = คณะกรรมการ ป.ป.ท., 200 = คณะอนุกรรมการกลั่นกรองเรื่องร้องเรียน, 300 = คณะอนุกรรมการสนับสนุนเลขาธิการ, 900 = คณะอื่น ปล่อยว่างได้เมื่อกิจกรรมต้นทางยังไม่ทราบ กรณีนั้นกิจกรรมที่ 7 เป็นผู้กำหนดและปรับค่ากลับมา และแก้ไขค่าที่กิจกรรมต้นทางระบุไว้ได้เสมอ"
+    },
+    {
+     "name": "tbs_target_board_set",
+     "type": "smallint",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ชุดที่ของคณะปลายทาง ใช้เฉพาะคณะที่มีหลายชุด เช่น 3 หมายถึงคณะอนุกรรมการกลั่นกรองเรื่องร้องเรียน ชุดที่ 3 เมื่อ tbs_target_board = 200 ปล่อยว่างสำหรับคณะที่มีชุดเดียว (tbs_target_board = 100 หรือ 300)"
+    },
+    {
+     "name": "tbs_is_urgent",
+     "type": "boolean",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ขอบรรจุวาระเร่งด่วนหรือไม่ เช่น True = เร่งด่วน ต้องมีหนังสือขอบรรจุวาระด่วนแนบ, False = ปกติ (ค่าเริ่มต้น False)"
+    },
+    {
+     "name": "tbs_submit_doc_ref",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสเอกสารหลักที่เสนอ อ้างถึงตารางเอกสารของกิจกรรมต้นทางตามที่ระบุใน tbs_source_module เช่น 5521 หมายถึง tbl_acc_document.tad_id = 5521 (รายงาน 213) เมื่อ tbs_source_module = ACC"
+    },
+    {
+     "name": "tbs_submitted_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาที่ส่งเรื่องเข้าคณะกรรมการ ใช้เริ่มนับระยะเวลารอผล เช่น 2026-08-05 14:30"
+    },
+    {
+     "name": "tbs_submitted_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ผู้ส่งเรื่อง รหัสเจ้าหน้าที่จากระบบผู้ใช้งาน เช่น 2210"
+    },
+    {
+     "name": "tbs_status",
+     "type": "char(1)",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ส่งเรื่อง",
+     "source": "data_dictionary_board_submission V2",
+     "description": "สถานะของเรื่องที่เสนอ เช่น 1 = ส่งแล้ว รอผล, 2 = รอเอกสารเพิ่มเติม, 3 = ได้รับผลแล้ว, 4 = ถอน/ยกเลิก"
+    },
+    {
+     "name": "tbs_doc_request_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขอเอกสารเพิ่ม",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รายละเอียดสิ่งที่ต้องแก้ไขหรือแนบเพิ่มของคำขอครั้งล่าสุด เช่น แนบบันทึกถ้อยคำพยานปากที่ 2 และบันทึกเสนอตามลำดับชั้นฉบับลงนามครบ"
+    },
+    {
+     "name": "tbs_doc_request_type_codes",
+     "type": "varchar(3)[]",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขอเอกสารเพิ่ม",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสประเภทเอกสารที่ต้องแนบเพิ่มของคำขอครั้งล่าสุด ใช้รหัสจากตารางประเภทเอกสารของกิจกรรมต้นทาง จึงต้องอ่านคู่กับ tbs_source_module เสมอ เช่น {301,401} เมื่อ tbs_source_module = ACC หมายถึง 301 บันทึกถ้อยคำ และ 401 บันทึกเสนอตามลำดับชั้น"
+    },
+    {
+     "name": "tbs_doc_request_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขอเอกสารเพิ่ม",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาที่คณะกรรมการแจ้งขอเอกสารเพิ่มครั้งล่าสุด เช่น 2026-08-18 11:00"
+    },
+    {
+     "name": "tbs_doc_request_due_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขอเอกสารเพิ่ม",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันครบกำหนดส่งเอกสารเพิ่มเติม เช่น 2026-08-25"
+    },
+    {
+     "name": "tbs_doc_resubmitted_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ขอเอกสารเพิ่ม",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาที่ส่งเอกสารเพิ่มเติมกลับไป เมื่อส่งแล้ว tbs_status กลับเป็น 1 เช่น 2026-08-18 10:40"
+    },
+    {
+     "name": "tbs_resolution_result",
+     "type": "varchar(3)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ผลมติ 3 หลัก เช่น 001 = เห็นชอบ/อนุมัติตามที่เสนอ, 002 = ไม่เห็นชอบ/ไม่อนุมัติ, 204 = ชี้มูลความผิดทางอาญาและทางวินัย, 901 = มติอื่น รหัส 001–005 และ 901 ใช้ได้ทุกกิจกรรม ส่วนหลักร้อยอื่นเป็นผลเฉพาะกิจกรรม"
+    },
+    {
+     "name": "tbs_resolution_ref",
+     "type": "varchar(100)",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "เลขอ้างอิงมติหรือเลขที่หนังสือแจ้งมติ เช่น มติ ป.ป.ท. 12/2569"
+    },
+    {
+     "name": "tbs_resolution_date",
+     "type": "date",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันที่คณะกรรมการมีมติ ใช้เป็นวันเริ่มนับกรอบเวลาขั้นถัดไปของกิจกรรมต้นทาง เช่น 2026-07-20"
+    },
+    {
+     "name": "tbs_resolution_detail",
+     "type": "text",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "สาระของมติและข้อสั่งการ เช่น เห็นชอบตามที่เสนอ ให้ดำเนินการขั้นถัดไปและแจ้งผู้เกี่ยวข้องทราบภายใน 15 วัน"
+    },
+    {
+     "name": "tbs_resolution_doc_ref",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "รหัสไฟล์หนังสือแจ้งมติ อ้างถึงตารางเอกสารของกิจกรรมต้นทางตามที่ระบุใน tbs_source_module เช่น 88410 หมายถึง tbl_cmp_attach_file.tca_id = 88410 เมื่อ tbs_source_module = CMP"
+    },
+    {
+     "name": "tbs_resolution_received_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ผลจากคณะกรรมการ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาที่ได้รับผลมติกลับมา เช่น 2026-07-22 09:00"
+    },
+    {
+     "name": "created_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": false,
+     "default": null,
+     "unique": false,
+     "label_th": "ระบบ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาที่สร้างข้อมูล ค่าเริ่มต้น CURRENT_TIMESTAMP เช่น 2026-07-02 10:15"
+    },
+    {
+     "name": "created_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ระบบ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ผู้สร้างข้อมูล รหัสเจ้าหน้าที่จากระบบผู้ใช้งาน เช่น 1204"
+    },
+    {
+     "name": "updated_datetime",
+     "type": "timestamp",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ระบบ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "วันเวลาแก้ไขข้อมูลล่าสุด เช่น 2026-07-22 09:00"
+    },
+    {
+     "name": "updated_by",
+     "type": "integer",
+     "pk": false,
+     "fk": null,
+     "nullable": true,
+     "default": null,
+     "unique": false,
+     "label_th": "ระบบ",
+     "source": "data_dictionary_board_submission V2",
+     "description": "ผู้แก้ไขข้อมูลล่าสุด รหัสเจ้าหน้าที่จากระบบผู้ใช้งาน เช่น 1204"
+    }
+   ],
+   "unique_constraints": [],
+   "check_constraints": [],
+   "indexes": []
+  }
+ ],
+ "enums": [
+  {
+   "table": "status",
+   "rows": [
+    {
+     "code": "L2_PENDING_DIRECTOR_ASSIGN",
+     "label_th": "ผอ.กองกฎหมายพิจารณาสั่งการ",
+     "extra": {
+      "step_code": "LAW0037",
+      "page": "02-board-intake.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_GROUP_ASSIGN",
+     "label_th": "ผอ.กลุ่มงานมอบหมายเจ้าหน้าที่",
+     "extra": {
+      "step_code": "LAW0038",
+      "page": "10-2-01-legal-director-assign.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_SECRETARIAT_OPINION",
+     "label_th": "ฝ่ายเลขานุการเสนอความเห็น",
+     "extra": {
+      "step_code": "LAW0039",
+      "page": "10-2-02-group-director-assign.html",
+      "role": "group_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_GROUP_VERIFY",
+     "label_th": "ผอ.กลุ่มงานตรวจสอบความเห็น",
+     "extra": {
+      "step_code": "LAW0040",
+      "page": "10-2-03-secretariat-opinion.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_AGENDA",
+     "label_th": "ฝ่ายเลขานุการจัดวาระการประชุม",
+     "extra": {
+      "step_code": "LAW0041",
+      "page": "10-2-04-group-director-verify.html",
+      "role": "group_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_SUBCOMMITTEE",
+     "label_th": "รอคณะอนุกรรมการกลั่นกรองพิจารณา",
+     "extra": {
+      "step_code": "LAW0042-0043",
+      "page": "10-2-05-secretariat-agenda.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_RESOLUTION_DOC",
+     "label_th": "รอจัดทำหนังสือแจ้งมติ",
+     "extra": {
+      "step_code": "LAW0044",
+      "page": "10-2-06-subcommittee-resolution.html",
+      "role": "subcommittee_screen",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DIRLEGAL_PRECOMMENT",
+     "label_th": "ผอ.กองกฎหมายให้ความเห็นเบื้องต้น",
+     "extra": {
+      "step_code": "L2-ADMIN-PRECOMMENT",
+      "page": "10-2-33-legal-admin-comment.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_SECRETARIAT_DRAFT",
+     "label_th": "ฝ่ายเลขานุการจัดทำบันทึกเสนอ",
+     "extra": {
+      "step_code": "L2-DIRLEGAL-PRECOMMENT",
+      "page": "10-2-34-legal-director-comment.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DIRLEGAL_OPINION",
+     "label_th": "ผอ.กองกฎหมายให้ความเห็น",
+     "extra": {
+      "step_code": "LAW0045-0046",
+      "page": "10-2-07-secretariat-resolution-doc.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DISPATCH",
+     "label_th": "ธุรการกองกฎหมายนำส่งหนังสือ",
+     "extra": {
+      "step_code": "LAW0045.1",
+      "page": "10-2-08-legal-director-propose.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DEPUTY_SG_OPINION",
+     "label_th": "รองเลขาธิการฯ พิจารณาให้ความเห็นและลงนาม",
+     "extra": {
+      "step_code": "L2-DISPATCH",
+      "page": "10-2-09-legal-admin-dispatch.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_DEPUTY_SG_RESOLVED",
+     "label_th": "รองเลขาธิการฯ ลงมติแล้ว (ข้ามเลขาธิการ)",
+     "extra": {
+      "step_code": "L2-DEPUTY-SG-OPINION",
+      "page": "10-2-32-deputy-sg-opinion-sign.html",
+      "role": "deputy_sg",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_SECGEN_OPINION",
+     "label_th": "เลขาธิการฯ พิจารณาให้ความเห็นและลงนาม",
+     "extra": {
+      "step_code": "L2-DEPUTY-SG-OPINION",
+      "page": "10-2-32-deputy-sg-opinion-sign.html",
+      "role": "secgen",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_SECGEN_RESOLVED",
+     "label_th": "เลขาธิการฯ ลงมติแล้ว",
+     "extra": {
+      "step_code": "L2-SECGEN-OPINION",
+      "page": "10-2-31-secgen-opinion-sign.html",
+      "role": "secgen",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_NOTICE_DRAFT",
+     "label_th": "ฝ่ายเลขานุการยกร่างหนังสือแจ้งมติ",
+     "extra": {
+      "step_code": "L2-RECEIVE-OUTCOME",
+      "page": "10-2-10-legal-admin-receive-outcome.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DENY_MEMO",
+     "label_th": "ฝ่ายเลขานุการจัดทำบันทึกแจ้งมติไม่อนุญาต",
+     "extra": {
+      "step_code": "L2-DENY-MEMO",
+      "page": "10-2-15-secretariat-deny-memo.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DENY_PROPOSE",
+     "label_th": "ผอ.กองกฎหมายเสนอเรื่อง (ไม่อนุญาต)",
+     "extra": {
+      "step_code": "L2-DENY-PROPOSE",
+      "page": "10-2-16-legal-director-deny-propose.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DENY_DISPATCH_COMMITTEE",
+     "label_th": "ธุรการนำส่งและมอบหมายกอง/สำนัก",
+     "extra": {
+      "step_code": "L2-DENY-DISPATCH-COMMITTEE",
+      "page": "10-2-17-legal-admin-deny-dispatch-committee.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_CASE_CLOSED_DENY_ASSIGNED",
+     "label_th": "คดีเสร็จสิ้น (ไม่อนุญาต, มอบหมายแล้ว)",
+     "extra": {
+      "step_code": "L2-DENY-DISPATCH-COMMITTEE",
+      "page": "10-2-17-legal-admin-deny-dispatch-committee.html",
+      "role": "admin_legal",
+      "is_terminal": true
+     }
+    },
+    {
+     "code": "L2_PENDING_CLOSE_MEMO",
+     "label_th": "ฝ่ายเลขานุการจัดทำบันทึกแจ้งมติ (ปิดคดี)",
+     "extra": {
+      "step_code": "L2-CLOSE-MEMO",
+      "page": "10-2-22-secretariat-close-memo.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_CLOSE_PROPOSE",
+     "label_th": "ผอ.กองกฎหมายเสนอเรื่อง (ปิดคดี)",
+     "extra": {
+      "step_code": "L2-CLOSE-PROPOSE",
+      "page": "10-2-23-legal-director-close-propose.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_CLOSE_DISPATCH_COMMITTEE",
+     "label_th": "ธุรการนำส่งและมอบหมายกอง/สำนัก (ปิดคดี)",
+     "extra": {
+      "step_code": "L2-CLOSE-DISPATCH-COMMITTEE",
+      "page": "10-2-24-legal-admin-close-dispatch.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_CASE_CLOSED_DISCLOSE_ASSIGNED",
+     "label_th": "คดีเสร็จสิ้น (อนุญาต/บางส่วน, มอบหมายแล้ว)",
+     "extra": {
+      "step_code": "L2-CLOSE-DISPATCH-COMMITTEE",
+      "page": "10-2-24-legal-admin-close-dispatch.html",
+      "role": "admin_legal",
+      "is_terminal": true
+     }
+    },
+    {
+     "code": "L2_PENDING_COMMITTEE_MEMO_DRAFT",
+     "label_th": "ฝ่ายเลขานุการยกร่างบันทึกเสนอคณะกรรมการ",
+     "extra": {
+      "step_code": "L2-COMMITTEE-MEMO-DRAFT",
+      "page": "10-2-25-secretariat-committee-memo-draft.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
+     "label_th": "ผอ.กลุ่มงานความเห็นแย้งพิจารณา",
+     "extra": {
+      "step_code": "L2-COMMITTEE-GROUP-APPROVE",
+      "page": "10-2-27-group-director-committee-approve.html",
+      "role": "group_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED",
+     "label_th": "ผอ.กองกฎหมายให้ความเห็น (เสนอคณะกรรมการ)",
+     "extra": {
+      "step_code": "L2-COMMITTEE-DIRECTOR-OPINION",
+      "page": "10-2-26-legal-director-committee-opinion.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_COMMITTEE_DISPATCH",
+     "label_th": "ธุรการนำส่งหนังสือถึงคณะกรรมการ ป.ป.ท.",
+     "extra": {
+      "step_code": "L2-COMMITTEE-DISPATCH",
+      "page": "10-2-29-legal-admin-committee-dispatch.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_READY_FOR_BOARD_ROUND2",
+     "label_th": "รอคณะกรรมการ ป.ป.ท. พิจารณา (รอบ 2)",
+     "extra": {
+      "step_code": "L2-COMMITTEE-DISPATCH",
+      "page": "10-2-30-legal-admin-receive-board-round2.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_BOARD_RESOLVED_ROUND2",
+     "label_th": "คณะกรรมการ ป.ป.ท. มีมติแล้ว (รอบ 2, ตั้งค่าจากภายนอก)",
+     "extra": {
+      "step_code": "L2-RECEIVE-BOARD-ROUND2",
+      "page": "10-2-30-legal-admin-receive-board-round2.html",
+      "role": "admin_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_DIRLEGAL_BOARD_ACK",
+     "label_th": "ผอ.กองกฎหมายรับทราบมติคณะกรรมการ",
+     "extra": {
+      "step_code": "L2-BOARD-DIRLEGAL-ACK",
+      "page": "10-2-35-legal-director-board-ack.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_GROUPDIR_BOARD_ACK",
+     "label_th": "ผอ.กลุ่มงานรับทราบมติคณะกรรมการ",
+     "extra": {
+      "step_code": "L2-BOARD-GROUPDIR-ACK",
+      "page": "10-2-36-group-director-board-ack.html",
+      "role": "group_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_NOTICE_GROUPDIR_REVIEW",
+     "label_th": "ผอ.กลุ่มงานตรวจทานหนังสือแจ้งมติ",
+     "extra": {
+      "step_code": "L2-NOTICE-DRAFT",
+      "page": "10-2-11-secretariat-disclose-partial-notice-draft.html",
+      "role": "sub_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_NOTICE_SIGN",
+     "label_th": "ผอ.กองกฎหมายลงนามหนังสือแจ้งมติ",
+     "extra": {
+      "step_code": "L2-NOTICE-GROUPDIR-REVIEW",
+      "page": "10-2-37-group-director-notice-review.html",
+      "role": "group_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_NOTICE_DISPATCH",
+     "label_th": "ธุรการนำส่งหนังสือแจ้งมติ",
+     "extra": {
+      "step_code": "L2-NOTICE-SIGN",
+      "page": "10-2-13-legal-director-disclose-partial-notice-sign.html",
+      "role": "dir_legal",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_CASE_CLOSED_NOTICE_SENT",
+     "label_th": "คดีเสร็จสิ้น (แจ้งมติแล้ว)",
+     "extra": {
+      "step_code": "L2-NOTICE-DISPATCH",
+      "page": "10-2-14-legal-admin-disclose-partial-notice-dispatch.html",
+      "role": "admin_legal",
+      "is_terminal": true
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_INTAKE",
+     "label_th": "รอลงรับคำอุทธรณ์ (ตั้งค่าจากภายนอก)",
+     "extra": {
+      "step_code": "L2-APPEAL-INTAKE",
+      "page": "10-2-appeal-01-legal-admin-intake.html",
+      "role": "case_bureau_admin",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_BUREAU_DIRECTOR_ASSIGN",
+     "label_th": "ผอ.กองบริหารคดีมอบหมาย",
+     "extra": {
+      "step_code": "L2-APPEAL-INTAKE",
+      "page": "10-2-appeal-01-legal-admin-intake.html",
+      "role": "case_bureau_admin",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_TRACKING_DIRECTOR_ASSIGN",
+     "label_th": "ผอ.ติดตามคดีมอบหมาย",
+     "extra": {
+      "step_code": "L2-APPEAL-BUREAU-ASSIGN",
+      "page": "10-2-appeal-02.html",
+      "role": "case_bureau_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
+     "label_th": "นิติกรเจ้าของสำนวนให้ความเห็น",
+     "extra": {
+      "step_code": "L2-APPEAL-TRACKING-ASSIGN",
+      "page": "10-2-appeal-03.html",
+      "role": "case_tracking_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_AGENDA",
+     "label_th": "ฝ่ายเลขานุการจัดวาระอุทธรณ์",
+     "extra": {
+      "step_code": "L2-APPEAL-CASE-OWNER-OPINION",
+      "page": "10-2-appeal-04.html",
+      "role": "original_officer",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_RULING",
+     "label_th": "คณะอนุกรรมการวินิจฉัยอุทธรณ์พิจารณา",
+     "extra": {
+      "step_code": "L2-APPEAL-AGENDA",
+      "page": "10-2-appeal-05.html",
+      "role": "appeal_subcommittee_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_MEMO",
+     "label_th": "ฝ่ายเลขานุการจัดทำบันทึกคำวินิจฉัย",
+     "extra": {
+      "step_code": "L2-APPEAL-RULING",
+      "page": "10-2-appeal-06.html",
+      "role": "appeal_ruling_subcommittee",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_TRACKING_DIRECTOR_SIGN",
+     "label_th": "ผอ.ติดตามคดีลงนาม",
+     "extra": {
+      "step_code": "L2-APPEAL-SECRETARIAT-MEMO",
+      "page": "10-2-appeal-07.html",
+      "role": "appeal_subcommittee_secretariat",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
+     "label_th": "ผอ.กองบริหารคดีเสนอต่อคณะกรรมการ",
+     "extra": {
+      "step_code": "L2-APPEAL-TRACKING-SIGN",
+      "page": "10-2-appeal-08.html",
+      "role": "case_tracking_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_BOARD_DISPATCH",
+     "label_th": "ธุรการนำส่งเรื่องต่อคณะกรรมการ",
+     "extra": {
+      "step_code": "L2-APPEAL-BOARD-PROPOSE",
+      "page": "10-2-appeal-09.html",
+      "role": "case_bureau_director",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_APPEAL_SUBMITTED_TO_BOARD",
+     "label_th": "ส่งคณะกรรมการ ป.ป.ท. แล้ว (รอ Activity 7)",
+     "extra": {
+      "step_code": "L2-APPEAL-BOARD-DISPATCH",
+      "page": "10-2-appeal-10.html",
+      "role": "case_bureau_admin",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_APPEAL_BOARD_RESOLVED",
+     "label_th": "คณะกรรมการมีมติต่ออุทธรณ์แล้ว (ตั้งค่าจากภายนอก)",
+     "extra": {
+      "step_code": "L2-APPEAL-BOARD-RESOLUTION",
+      "page": "10-2-appeal-11.html",
+      "role": "case_bureau_admin",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_NOTICE_DRAFT",
+     "label_th": "ฝ่ายเลขานุการยกร่างหนังสือแจ้งผลอุทธรณ์",
+     "extra": {
+      "step_code": "L2-APPEAL-BOARD-RESOLUTION",
+      "page": "10-2-appeal-11.html",
+      "role": "case_bureau_admin",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_PENDING_APPEAL_CASE_OWNER_NOTIFY",
+     "label_th": "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์",
+     "extra": {
+      "step_code": "L2-APPEAL-NOTICE-DRAFT-2",
+      "page": "10-2-appeal-12.html",
+      "role": "case_tracking_secretary",
+      "is_terminal": false
+     }
+    },
+    {
+     "code": "L2_APPEAL_CASE_CLOSED_NOTIFIED",
+     "label_th": "คำอุทธรณ์เสร็จสิ้น (แจ้งผลแล้ว)",
+     "extra": {
+      "step_code": "L2-APPEAL-CASE-OWNER-NOTIFY",
+      "page": "10-2-appeal-13.html",
+      "role": "original_officer",
+      "is_terminal": true
+     }
+    }
+   ]
+  },
+  {
+   "table": "resolution_type",
+   "rows": [
+    {
+     "code": "DISCLOSE",
+     "label_th": "อนุญาตเปิดเผย",
+     "extra": {
+      "tbs_resolution_result": "L11"
+     }
+    },
+    {
+     "code": "PARTIAL",
+     "label_th": "อนุญาตเปิดเผยบางส่วน",
+     "extra": {
+      "tbs_resolution_result": "L12"
+     }
+    },
+    {
+     "code": "DENY",
+     "label_th": "ไม่อนุญาตเปิดเผย",
+     "extra": {
+      "tbs_resolution_result": "L13"
+     }
+    },
+    {
+     "code": "OTHER",
+     "label_th": "อื่นๆ",
+     "extra": {
+      "tbs_resolution_result": "901"
+     }
+    }
+   ]
+  },
+  {
+   "table": "case_state",
+   "rows": [
+    {
+     "code": "CLOSED",
+     "label_th": "คดีเสร็จสิ้นแล้ว"
+    },
+    {
+     "code": "INVESTIGATING",
+     "label_th": "อยู่ระหว่างไต่สวน"
+    }
+   ]
+  },
+  {
+   "table": "requester_type",
+   "rows": [
+    {
+     "code": "CITIZEN",
+     "label_th": "ประชาชน"
+    },
+    {
+     "code": "JURISTIC",
+     "label_th": "นิติบุคคล"
+    },
+    {
+     "code": "AGENCY",
+     "label_th": "หน่วยงานของรัฐ"
+    },
+    {
+     "code": "OTHER",
+     "label_th": "อื่นๆ"
+    }
+   ]
+  },
+  {
+   "table": "request_channel",
+   "rows": [
+    {
+     "code": "CENTRAL",
+     "label_th": "ยื่นที่ส่วนกลาง/ศรร."
+    },
+    {
+     "code": "REGION",
+     "label_th": "ยื่นที่สำนักงาน ป.ป.ท. เขต"
+    },
+    {
+     "code": "POST",
+     "label_th": "ไปรษณีย์"
+    },
+    {
+     "code": "ELECTRONIC",
+     "label_th": "อิเล็กทรอนิกส์"
+    },
+    {
+     "code": "OTHER",
+     "label_th": "อื่นๆ"
+    }
+   ]
+  },
+  {
+   "table": "appeal_ruling_type",
+   "rows": [
+    {
+     "code": "UPHOLD",
+     "label_th": "ยืนตามมติเดิม"
+    },
+    {
+     "code": "REVERSE_FULL",
+     "label_th": "กลับมติเดิมทั้งหมด"
+    },
+    {
+     "code": "REVERSE_PARTIAL",
+     "label_th": "กลับมติเดิมบางส่วน"
+    }
+   ]
+  },
+  {
+   "table": "appeal_board_resolution_type",
+   "rows": [
+    {
+     "code": "DISCLOSE",
+     "label_th": "ให้เปิดเผยข้อมูลทั้งหมด",
+     "extra": {
+      "tbs_resolution_result": "L21"
+     }
+    },
+    {
+     "code": "PARTIAL",
+     "label_th": "ให้เปิดเผยข้อมูลบางส่วน",
+     "extra": {
+      "tbs_resolution_result": "L22"
+     }
+    },
+    {
+     "code": "DENY",
+     "label_th": "ไม่เปิดเผยข้อมูล",
+     "extra": {
+      "tbs_resolution_result": "L23"
+     }
+    }
+   ]
+  }
+ ],
+ "flow_map": [
+  {
+   "page": "02-board-intake.html",
+   "role": "admin_legal",
+   "reads": [],
+   "writes": [
+    "case_file",
+    "attachment",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-01-legal-director-assign.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file"
+   ],
+   "writes": [
+    "director_assign",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-02-group-director-assign.html",
+   "role": "group_director",
+   "reads": [
+    "case_file",
+    "director_assign"
+   ],
+   "writes": [
+    "group_assign",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-03-secretariat-opinion.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "group_assign"
+   ],
+   "writes": [
+    "secretariat_opinion",
+    "attachment",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-04-group-director-verify.html",
+   "role": "group_director",
+   "reads": [
+    "case_file",
+    "secretariat_opinion"
+   ],
+   "writes": [
+    "group_verify",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-05-secretariat-agenda.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file"
+   ],
+   "writes": [
+    "meeting",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-06-subcommittee-resolution.html",
+   "role": "subcommittee_screen",
+   "reads": [
+    "case_file",
+    "meeting",
+    "secretariat_opinion"
+   ],
+   "writes": [
+    "resolution",
+    "case_file",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-33-legal-admin-comment.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file"
+   ],
+   "writes": [
+    "precomment",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-34-legal-director-comment.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "precomment"
+   ],
+   "writes": [
+    "precomment",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-07-secretariat-resolution-doc.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "meeting",
+    "resolution"
+   ],
+   "writes": [
+    "resolution_memo",
+    "document_number",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-08-legal-director-propose.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "resolution_memo"
+   ],
+   "writes": [
+    "resolution_memo",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-09-legal-admin-dispatch.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "resolution_memo"
+   ],
+   "writes": [
+    "dispatch",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-32-deputy-sg-opinion-sign.html",
+   "role": "deputy_sg",
+   "reads": [
+    "case_file",
+    "resolution_memo"
+   ],
+   "writes": [
+    "resolution",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-31-secgen-opinion-sign.html",
+   "role": "secgen",
+   "reads": [
+    "case_file",
+    "resolution_memo"
+   ],
+   "writes": [
+    "resolution",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-10-legal-admin-receive-outcome.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "resolution"
+   ],
+   "writes": [
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-15-secretariat-deny-memo.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "resolution"
+   ],
+   "writes": [
+    "deny_case",
+    "document_number",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-16-legal-director-deny-propose.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "deny_case"
+   ],
+   "writes": [
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-17-legal-admin-deny-dispatch-committee.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "deny_case"
+   ],
+   "writes": [
+    "deny_case",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-22-secretariat-close-memo.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "resolution"
+   ],
+   "writes": [
+    "close_case",
+    "document_number",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-23-legal-director-close-propose.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "close_case"
+   ],
+   "writes": [
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-24-legal-admin-close-dispatch.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "close_case"
+   ],
+   "writes": [
+    "close_case",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-25-secretariat-committee-memo-draft.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "resolution"
+   ],
+   "writes": [
+    "committee_memo",
+    "document_number",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-27-group-director-committee-approve.html",
+   "role": "group_director",
+   "reads": [
+    "case_file",
+    "committee_memo"
+   ],
+   "writes": [
+    "committee_memo",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-26-legal-director-committee-opinion.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "committee_memo"
+   ],
+   "writes": [
+    "committee_memo",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-29-legal-admin-committee-dispatch.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "committee_memo"
+   ],
+   "writes": [
+    "committee_dispatch",
+    "document_number",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-30-legal-admin-receive-board-round2.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "committee_dispatch"
+   ],
+   "writes": [
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-35-legal-director-board-ack.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission"
+   ],
+   "writes": [
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission",
+    "signature",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-36-group-director-board-ack.html",
+   "role": "group_director",
+   "reads": [
+    "case_file",
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission"
+   ],
+   "writes": [
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-11-secretariat-disclose-partial-notice-draft.html",
+   "role": "sub_secretariat",
+   "reads": [
+    "case_file",
+    "tbl_law2_board_ack",
+    "tbl_law2_board_link",
+    "tbl_board_submission"
+   ],
+   "writes": [
+    "notice",
+    "document_number",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-37-group-director-notice-review.html",
+   "role": "group_director",
+   "reads": [
+    "case_file",
+    "notice"
+   ],
+   "writes": [
+    "notice",
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-13-legal-director-disclose-partial-notice-sign.html",
+   "role": "dir_legal",
+   "reads": [
+    "case_file",
+    "notice"
+   ],
+   "writes": [
+    "signature",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-14-legal-admin-disclose-partial-notice-dispatch.html",
+   "role": "admin_legal",
+   "reads": [
+    "case_file",
+    "notice"
+   ],
+   "writes": [
+    "notice",
+    "document_number",
+    "case_file",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-01-legal-admin-intake.html",
+   "role": "case_bureau_admin",
+   "reads": [
+    "case_file"
+   ],
+   "writes": [
+    "appeal",
+    "attachment",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-02.html",
+   "role": "case_bureau_director",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-03.html",
+   "role": "case_tracking_director",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-04.html",
+   "role": "original_officer",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-05.html",
+   "role": "appeal_subcommittee_secretariat",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-06.html",
+   "role": "appeal_ruling_subcommittee",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-07.html",
+   "role": "appeal_subcommittee_secretariat",
+   "reads": [
+    "appeal",
+    "appeal_step"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-08.html",
+   "role": "case_tracking_director",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-09.html",
+   "role": "case_bureau_director",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-10.html",
+   "role": "case_bureau_admin",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "document_number",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-11.html",
+   "role": "case_bureau_admin",
+   "reads": [
+    "appeal"
+   ],
+   "writes": [
+    "appeal_step",
+    "document_number",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-12.html",
+   "role": "case_tracking_secretary",
+   "reads": [
+    "appeal",
+    "appeal_step"
+   ],
+   "writes": [
+    "appeal_step",
+    "document_number",
+    "attachment",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  },
+  {
+   "page": "10-2-appeal-13.html",
+   "role": "original_officer",
+   "reads": [
+    "appeal",
+    "appeal_step"
+   ],
+   "writes": [
+    "appeal_step",
+    "signature",
+    "appeal",
+    "case_transition"
+   ]
+  }
+ ],
+ "notes": [
+  "Flow branches: after the deputy-SG/secretary-general resolution (10-2-32/31), 10-2-10 branches on resolution_type DENY -> deny_case, else on case_state: CLOSED -> close_case, INVESTIGATING -> committee_memo/committee_dispatch/board_round2 -> notice. Modelled with separate per-branch tables (deny_case, close_case, notice) plus the shared committee/board-round-2 tables.",
+  "Preliminary resolution (10-2-06, round_no=1, stage SUBCOMMITTEE) and the final resolution (10-2-32 DEPUTY or 10-2-31 SECGEN, round_no=2) overwrite the same l2Resolution*/l2CaseState* fields in the mockup. Fixed by giving each round its own row in the resolution table; case_file keeps only the latest values for convenient reads.",
+  "Send-back loops at 10-2-04 (REVISE -> back to 10-2-03) and at 10-2-26/10-2-27 (send back -> back to 10-2-25, unsigning the prior signer) overwrite l2VerifyResult/l2VerifyNotes and the committee memo fields respectively in the mockup. Fixed with group_verify.round_no and committee_memo.round_no so every round is preserved; the send-back reason is also duplicated onto case_transition.note for a single chronological audit trail.",
+  "10-2-09 legal-admin-dispatch does not set l2ApprovalBranch; only 10-2-32 (when in_skipSecgen is checked) writes l2ApprovalBranch=DEPUTY. 10-2-31 (secretary-general path) never writes l2ApprovalBranch even though seed data shows SECGEN. Modelled case_file.approval_branch as nullable and populated by 10-2-32 only; a migration/back-fill rule (secgen path -> SECGEN) is left as an open question.",
+  "l2Signatures has about 34 named slots (LAW0038 ... appealNotifyAppellant), collapsed into one signature table keyed by (case_id or appeal_id, step_code) instead of one column per slot.",
+  "ECMIS102.openSignatureModal reports mode (\"hand\" or \"cert\") to the caller but the mockup never persists it into l2Signatures. Added signature.sign_method to close that gap; source pages do not populate it today.",
+  "The signer name is never stored in the mockup (only the signature image and, for cert mode, a certId not saved either). signature.signer_name and signature.cert_id are added as gap-fix columns and will be null for data migrated from the current mockup.",
+  "About 12 file-name arrays across steps (attachmentFileNames, l2SecretariatOpinionFile, l2Appeal*AttachmentFileNames, scannedDocFile) are unified into one attachment table. Files picked at 10-2-11 (in_noticeFile), 10-2-15 (in_denyMemoFile) and 10-2-22 (in_closeMemoFile) are shown in a preview only and never saved by the mockup; the attachment table can hold them once a real upload endpoint exists.",
+  "9 document number/date pairs (internal memo, dispatch, deny memo, close memo, committee memo, committee dispatch, notice, appeal board dispatch/reply, appeal notice) are unified into one document_number table with doc_type distinguishing them, instead of 9 separate column pairs.",
+  "Appeal (Flow 4) is modelled as its own appeal table (1:N from case_file) plus appeal_step (1:N from appeal), instead of writing l2Appeal* fields onto the same request row as the mockup does. This is a deliberate design decision: it lets one request have more than one appeal and keeps the appeal status_code independent from the base case status_code (which stays L2_CASE_CLOSED_DENY_ASSIGNED). signature/attachment/document_number gained a nullable appeal_id so appeal-step signatures, files and doc numbers can be linked to the appeal instead of the case.",
+  "No page in the mockup starts an appeal: entry status L2_PENDING_APPEAL_INTAKE is only ever set by seed data (no \"start appeal\" button exists on any DENY case screen). The DB still supports it (appeal.status_code can be set to L2_PENDING_APPEAL_INTAKE by an external process or a future button).",
+  "The appeal board result (l2AppealBoardResolutionType at appeal-11, which can reverse the original DENY) is never written back onto the original request/resolution in the mockup. appeal_step.result_code stores it, but case_file.l2_resolution_type_code is left untouched; a real system likely needs an explicit reconciliation step, left as an open question.",
+  "L2_BOARD_RESOLVED_ROUND2, L2_PENDING_APPEAL_INTAKE and L2_APPEAL_BOARD_RESOLVED are statuses no page writes (set externally by Activity 7 or missing UI); they are still included in the status lookup because seed data and ROUTES reference them.",
+  "l2BoardApprovalRef/l2BoardApprovalDate (shown read-only at 10-2-11) and l2RedactionNotes/l2RedactionDone exist only in seed data with no writer page in the mockup; kept as nullable case_file columns and flagged as gaps rather than dropped, since the brief asks to persist everything that passes through the flow including known gaps.",
+  "issueDocNo()/issueInternalDocNo() and signedAt store Thai-formatted display strings (e.g. \"3 กันยายน 2569\", \"3 กันยายน 2569(BE) เวลา HH:mm น.\") rather than ISO values. document_number.doc_date and signature.signed_at are typed date/timestamptz per the brief convention; a conversion step is required when migrating the mockup seed data.",
+  "Seed data has duplicate ids (คำร้อง-100033/2569, 100034, 100035, 100038 each appear twice, once in the appeal set and once in the committee/round-2 set); case_file.case_no is declared unique, so seed migration must de-duplicate or disambiguate these before loading.",
+  "The 01-work-inbox.html mock rows use a legacy, non-L2_ status vocabulary (FORWARDED_DIVISION, PENDING_OPINION, ...) that does not match the STEPS/ROUTES statusCode values used everywhere else; these are treated as a display-only legacy source and are not modelled as DB rows.",
+  "[มาตรฐานกิจกรรมที่ 7] ลบ case_file.l2_board_approval_ref/date และ board_round2.approval_ref/approval_date/resolution_text — อ่านจาก tbl_board_submission.tbs_resolution_ref/date/detail; board_round2 เปลี่ยนชื่อเป็น tbl_law2_board_ack (คงเฉพาะการรับทราบภายใน)",
+  "[มาตรฐานกิจกรรมที่ 7] ตาราง resolution คงไว้สำหรับมติคณะอนุกรรมการกลั่นกรอง (ภายใน) และ case_state ซึ่งตารางกลางไม่มีฟิลด์รองรับ; มติรอบเลขาธิการ/รองเลขาธิการ (S102-1) และมติอุทธรณ์ (S102-3) รับจาก tbl_board_submission — appeal_step แถว appeal-10/11 ไม่ต้องเก็บเลขมติ/ผลซ้ำ",
+  "[มาตรฐานกิจกรรมที่ 7] เสนอรหัส tbs_resolution_result ของ LAW (ยังไม่ได้ลงทะเบียน): resolution_type → L11 เปิดเผย, L12 บางส่วน, L13 ไม่อนุญาต, OTHER → 901; appeal_board_resolution_type → L21/L22/L23 (ดูคอลัมน์ Extra ในชีต Enums)"
+ ]
+}

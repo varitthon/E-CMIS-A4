@@ -1,0 +1,1888 @@
+{
+ "points": [
+  {
+   "id": "S101-1",
+   "activity": "10.1",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S101-1 Send board R1",
+   "action_th": "ธุรการกองกฎหมายออกเลขส่งและส่งเสนอผู้บริหาร (รองเลขาธิการ ป.ป.ท.) รอบ 1",
+   "page": "09-legal-admin-dispatch.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "PENDING_DISPATCH",
+   "status_after": "PENDING_DEPUTY_SG",
+   "previous_steps": "02(intake)->04->05->06->07->08(dir_legal approve)->09",
+   "next_steps": "01-work-inbox.html button signExecutiveRound1 (deputy_sg) -> engine signExecutiveDocRound1 -> 10",
+   "pair_id": "R101-1",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือส่งกองกฎหมาย (เลขส่ง กม.)",
+     "field_id": "in_adminDispatchNo",
+     "property": "adminDispatchNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "09-legal-admin-dispatch.html",
+     "note": "default 2569/0452, manual entry not running number"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "field_id": "in_adminDispatchDate",
+     "property": "-",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "09-legal-admin-dispatch.html",
+     "note": "collected but NOT persisted; engine stamps today's date as adminDispatchDate instead"
+    },
+    {
+     "category": "PAGE_DECISION",
+     "label_th": "ส่งเสนอต่อไปยัง",
+     "field_id": "in_adminDispatchTarget",
+     "property": "adminDispatchTarget",
+     "type": "select",
+     "required": "Y",
+     "options": "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.) [only option]",
+     "origin": "09-legal-admin-dispatch.html",
+     "note": "UI display elsewhere says 'เลขาธิการ ป.ป.ท. (ผ่าน รองเลขาธิการ ป.ป.ท.)' but dropdown only offers deputy_sg (see C4 in 10-1 handoff doc)"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "บันทึกข้อความนำส่ง / หมายเหตุเพิ่มเติม",
+     "field_id": "in_adminDispatchNotes",
+     "property": "adminDispatchNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "09-legal-admin-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขสำนวน / เลขสารบรรณกลาง / เลขรับกองกฎหมาย",
+     "field_id": "-",
+     "property": "id, centralSarabanNo, lawReceiveNo",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "02-board-intake.html",
+     "note": "carried case identifiers shown read-only on 09"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ความเห็นนิติกร (ร่างความเห็น)",
+     "field_id": "-",
+     "property": "opinionType, legalOpinionDraft, opinionDraftFile",
+     "type": "text/filename",
+     "required": "-",
+     "options": "",
+     "origin": "06-officer-opinion.html",
+     "note": "carried into memo shown at 09"
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายมือชื่อ ผอ.กลุ่มงาน / ผอ.กอง",
+     "field_id": "-",
+     "property": "groupDirectorApprovalSignature, legalDirectorApprovalSignature",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "07/08",
+     "note": "signature chain carried to executive"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ข้อสั่งการ ผอ.กอง (คำสั่งเห็นชอบ)",
+     "field_id": "-",
+     "property": "legalDirectorEndorsement, legalDirectorApprovalNotes",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "08-legal-director-approval.html",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "ผลลงนามของผู้บริหาร (รองเลขาธิการฯ) รับกลับ",
+     "field_id": "-",
+     "property": "signedBy, signedExecutiveOrder, signedDocFile, boardMeetingNo, boardMeetingDate, boardResolution, boardResolutionDetail",
+     "type": "text/filename",
+     "required": "-",
+     "options": "",
+     "origin": "01-work-inbox.html inbox action signExecutiveRound1 (engine signExecutiveDocRound1, js:4639-4667)",
+     "note": "HARD-CODED by engine, no real input UI; board meeting data fabricated (see issues)"
+    }
+   ],
+   "issues": [
+    "Label/activity number for this board/executive step could not be confirmed as 'กิจกรรมที่ 7' anywhere in the 10.1 code; only 10.2/10.3 code literally references 'กิจกรรมที่ 7'. Destination is variably called 'ผู้บริหาร', 'คกก. ป.ป.ท.', 'เลขาธิการ ป.ป.ท.', 'รองเลขาธิการ ป.ป.ท.' (see 10-1-handoff-board-secgen-oag.md C1-C6, C11).",
+    "There is no real board/committee page or role reached; deputy_sg clicks 'sign' in the shared work-inbox and the engine (signExecutiveDocRound1) fabricates the board resolution fields (boardMeetingNo, boardResolution, etc.) with no input UI.",
+    "in_adminDispatchDate is collected but not persisted (engine uses today's date instead)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0008",
+     "text": "ตรวจสอบความถูกต้องครบถ้วนของบันทึกความเห็น และลงนามผ่านเรื่อง",
+     "tobe": "TO-BE 10.1 › 1. รับเรื่องจากอัยการ - เสนอมติบอร์ด",
+     "part": "ขั้นก่อนหน้า (หน้า 08)"
+    },
+    {
+     "code": "LAW0009",
+     "text": "ออกเลขส่งหนังสือภายใน",
+     "tobe": "TO-BE 10.1 › 1. รับเรื่องจากอัยการ - เสนอมติบอร์ด",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0010",
+     "text": "ส่งเรื่องเข้ามติบอร์ด เพื่อออกมติเห็นชอบ หรือ เห็นแย้ง",
+     "tobe": "TO-BE 10.1 › 1. รับเรื่องจากอัยการ - เสนอมติบอร์ด",
+     "part": "ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": "",
+   "confirm_basis": "TO-BE 10.1 ระบุ 'ส่งเรื่องเข้ามติบอร์ด' และ TO-BE 10.2 หน้า 2 ระบุ 'มติบอร์ด (กิจกรรมที่ 7)' จึงถือว่าเป็นกิจกรรมที่ 7 — แต่โค้ดม็อกอัป 10.1 ยังไม่ใช้คำว่ากิจกรรมที่ 7"
+  },
+  {
+   "id": "R101-1",
+   "activity": "10.1",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R101-1 Receive board R1",
+   "action_th": "ธุรการกองกฎหมายรับผลมติคณะกรรมการ ป.ป.ท. และส่งต่อ ผอ.กองกฎหมาย",
+   "page": "10-legal-admin-resolution.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "RETURNED_FROM_EXEC",
+   "status_after": "PENDING_DIRECTOR_RESOLUTION",
+   "previous_steps": "09(send)->inbox signExecutiveRound1->10",
+   "next_steps": "11(dir_legal)->12(group_director)->13(legal_officer)",
+   "pair_id": "S101-1",
+   "data": [
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "การประชุมครั้งที่",
+     "field_id": "f_meetingNo",
+     "property": "boardMeetingNo",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1 (fabricated, default '14/2569')",
+     "note": "display only, no input"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "วันที่ประชุมมีมติ",
+     "field_id": "f_boardMeetingDate",
+     "property": "boardMeetingDate",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1",
+     "note": "display only"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "ผลมติคณะกรรมการ",
+     "field_id": "f_boardResolution",
+     "property": "boardResolution",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1",
+     "note": "single hard-coded value 'เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ'; no 'not approved' branch exists"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "รายละเอียดมติการประชุม / ข้อสั่งการ",
+     "field_id": "f_boardResolutionDetail",
+     "property": "boardResolutionDetail",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "ส่งเสนอต่อไปยัง (ผอ.กองกฎหมาย)",
+     "field_id": "-",
+     "property": "-",
+     "type": "text readonly",
+     "required": "Y",
+     "options": "นายนภัส สอนดี",
+     "origin": "10-legal-admin-resolution.html",
+     "note": "fixed target"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "บันทึกการส่งต่อ / หมายเหตุถึง ผอ.กองกฎหมาย",
+     "field_id": "in_finalDispatchNotes",
+     "property": "finalDispatchNotes, adminResolutionIntakeNotes, adminResolutionNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-legal-admin-resolution.html",
+     "note": "value duplicated into 2 properties"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "หนังสือผลมติ (ไฟล์)",
+     "field_id": "-",
+     "property": "signedDocFile",
+     "type": "filename",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1 ('หนังสือผลมติ_2569_006.pdf')",
+     "note": "file name carried but NOT shown/rendered on page 10 itself (only shown starting page 13)"
+    }
+   ],
+   "issues": [
+    "Same board-label ambiguity as S101-1 — cannot confirm 'กิจกรรมที่ 7' terminology in 10.1 code.",
+    "Board resolution data received here is entirely fabricated by the engine at the prior inbox step; there is no real committee page/output to trace back to."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0011",
+     "text": "ทำรายงานสรุปมติ คณะกรรมการป.ป.ท.",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "ฝั่งกิจกรรมที่ 7 (ผลมติ)"
+    },
+    {
+     "code": "LAW0012",
+     "text": "รับเรื่องเพื่อ ดำเนินการแจ้งผล",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0013",
+     "text": "พิจารณาและมอบหมายงาน",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "ขั้นถัดไป (หน้า 11)"
+    }
+   ],
+   "law_note": "",
+   "confirm_basis": "TO-BE 10.1 ระบุ 'ส่งเรื่องเข้ามติบอร์ด' และ TO-BE 10.2 หน้า 2 ระบุ 'มติบอร์ด (กิจกรรมที่ 7)' จึงถือว่าเป็นกิจกรรมที่ 7 — แต่โค้ดม็อกอัป 10.1 ยังไม่ใช้คำว่ากิจกรรมที่ 7"
+  },
+  {
+   "id": "S101-2",
+   "activity": "10.1",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S101-2 Send board R2",
+   "action_th": "ธุรการกองกฎหมายออกเลขหนังสือส่งภายในและเสนอผู้บริหารลงนามหนังสือทางการ (รอบ 2)",
+   "page": "16-legal-admin-final-dispatch.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "PENDING_FINAL_DISPATCH_ROUND2",
+   "status_after": "SUBMITTED_TO_EXEC_ROUND2",
+   "previous_steps": "10(receive R1)->11->12->13(officer final doc)->14(group review)->15(director review)->16",
+   "next_steps": "01-work-inbox.html button signExecutiveRound2 (deputy_sg) -> engine signExecutiveDocRound2 -> 17",
+   "pair_id": "R101-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือส่งภายใน",
+     "field_id": "in_finalDispatchNo",
+     "property": "finalDispatchRound2No",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "16-legal-admin-final-dispatch.html",
+     "note": "default 0088/2569"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ออกเลขหนังสือส่ง",
+     "field_id": "in_finalDispatchDate",
+     "property": "finalDispatchRound2Date",
+     "type": "date",
+     "required": "N",
+     "options": "",
+     "origin": "16-legal-admin-final-dispatch.html",
+     "note": "field is always empty in practice; engine uses today's date"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ / บันทึกการส่งเสนอผู้บริหาร",
+     "field_id": "in_finalDispatchNotes",
+     "property": "finalDispatchRound2Notes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "16-legal-admin-final-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "ส่งเสนอผู้บริหารเพื่อลงนามหนังสือทางการ (readonly target)",
+     "field_id": "-",
+     "property": "-",
+     "type": "text readonly",
+     "required": "-",
+     "options": "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)",
+     "origin": "16-legal-admin-final-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ความเห็นตามผลมติ / หัวข้อ / สรุปประเด็น หนังสือความเห็นฉบับสมบูรณ์",
+     "field_id": "-",
+     "property": "finalOpinionType, finalDocSubject, officialDocHeading, finalDocSummary, finalDocFile, finalDocNo",
+     "type": "text/filename",
+     "required": "-",
+     "options": "",
+     "origin": "13-officer-final-doc.html",
+     "note": "finalDocNo default 'ปปท. 0014/พิเศษ/2569' with no input control"
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายมือชื่อ ผอ.กลุ่มงาน / ผอ.กอง (ตรวจหนังสือ)",
+     "field_id": "-",
+     "property": "groupDirectorFinalReviewSignature, legalDirectorFinalReviewSignature",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "14/15",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "มติ/ผู้ลงนามรอบ 1",
+     "field_id": "-",
+     "property": "signedBy, signedExecutiveOrder",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound1 (H1)",
+     "note": "carried through as context"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "ผลลงนามหนังสือฉบับสมบูรณ์ของผู้บริหาร รับกลับ",
+     "field_id": "-",
+     "property": "signedPresidentName, signedExecutiveDate, signedDocFile, executiveSignNotesRound2",
+     "type": "text/filename",
+     "required": "-",
+     "options": "",
+     "origin": "01-work-inbox.html inbox signExecutiveRound2 (engine signExecutiveDocRound2, js:4670)",
+     "note": "signedDocFile overwrites round-1 file name; no signature image captured, confirm-dialog only"
+    }
+   ],
+   "issues": [
+    "Same 'กิจกรรมที่ 7' label ambiguity as S101-1.",
+    "'ประธาน' wording used elsewhere (page 17) for this same signer is ambiguous — could mean ประธานกรรมการ ป.ป.ท. or just รองเลขาธิการฯ (see C5 in 10-1 handoff doc); the actual signer name stored is always นายสุรพงษ์ วัฒนา (deputy_sg).",
+    "in_finalDispatchDate collected but not persisted."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0017",
+     "text": "ตรวจสอบและผ่านเรื่อง",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "ขั้นก่อนหน้า (หน้า 15)"
+    },
+    {
+     "code": "LAW0018",
+     "text": "ออกเลขส่งหนังสือภายใน",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0019",
+     "text": "ส่งเรื่องเข้ามติบอร์ด ลงนาม",
+     "tobe": "TO-BE 10.1 › 2. มติบอร์ด - แจ้งผลเห็นชอบ",
+     "part": "ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": "",
+   "confirm_basis": "TO-BE 10.1 ระบุ 'ส่งเรื่องเข้ามติบอร์ด' และ TO-BE 10.2 หน้า 2 ระบุ 'มติบอร์ด (กิจกรรมที่ 7)' จึงถือว่าเป็นกิจกรรมที่ 7 — แต่โค้ดม็อกอัป 10.1 ยังไม่ใช้คำว่ากิจกรรมที่ 7"
+  },
+  {
+   "id": "R101-2",
+   "activity": "10.1",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R101-2 Receive signed doc",
+   "action_th": "ธุรการตรวจสอบหนังสือลงนามแล้ว ออกเลขส่งภายนอก และส่งต่อนิติกร",
+   "page": "17-legal-admin-external-dispatch-receive.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "PENDING_ADMIN_SIGNED_RECEIVE (or SUBMITTED_TO_EXEC_ROUND2)",
+   "status_after": "PENDING_OFFICER_EXTERNAL_DISPATCH",
+   "previous_steps": "16(send)->inbox signExecutiveRound2->17",
+   "next_steps": "18-officer-external-dispatch.html (send to prosecutor/OAG)",
+   "pair_id": "S101-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ตรวจสอบและส่งต่อ",
+     "field_id": "in_verifyDate",
+     "property": "externalDispatchDate, adminVerifiedDate",
+     "type": "date",
+     "required": "N",
+     "options": "",
+     "origin": "17-legal-admin-external-dispatch-receive.html",
+     "note": "defaults today"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ / บันทึกการส่งต่อนิติกร",
+     "field_id": "in_adminVerifyNotes",
+     "property": "adminVerificationNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "17-legal-admin-external-dispatch-receive.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_DECISION",
+     "label_th": "ส่งหนังสือไปที่ (derived)",
+     "field_id": "dispatchTargetDerived",
+     "property": "dispatchTarget",
+     "type": "derived/readonly",
+     "required": "Y",
+     "options": "เห็นชอบ->อัยการต้นทาง / เห็นแย้ง->อสส.และอัยการต้นทาง",
+     "origin": "17-legal-admin-external-dispatch-receive.html getRequiredRecipients",
+     "note": "system-computed, not user-typed"
+    },
+    {
+     "category": "DOC_NUMBER",
+     "label_th": "เลขที่หนังสือส่งภายนอก",
+     "field_id": "-",
+     "property": "externalDispatchNo",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "verifyData (hard-coded 'ที่ ปปท 0014/1245', no input control)",
+     "note": "HARD-CODED, not a real input; also inconsistent with the number stamped on the dispatch letter at page 18 (0014/1288 / 1290)"
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ผู้ลงนาม (ผู้บริหาร)",
+     "field_id": "-",
+     "property": "signedPresidentName",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound2 (H3)",
+     "note": "page 17 labels this 'ประธานลงนามแล้ว' even though the name is the deputy_sg (see issues)"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ไฟล์หนังสือความเห็นแย้งฉบับลงนามสมบูรณ์",
+     "field_id": "-",
+     "property": "signedDocFile",
+     "type": "filename",
+     "required": "-",
+     "options": "",
+     "origin": "inbox signExecutiveDocRound2",
+     "note": "displayed here as having ตราครุฑ + เลขส่งภายนอก + ลายเซ็น"
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขที่หนังสือส่งภายใน/วันที่ (รอบ 2)",
+     "field_id": "-",
+     "property": "finalDispatchRound2No, finalDispatchRound2Date",
+     "type": "text/date",
+     "required": "-",
+     "options": "",
+     "origin": "16-legal-admin-final-dispatch.html",
+     "note": "carried for reference"
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขที่หนังสืออัยการเดิม / หน่วยงานต้นทาง",
+     "field_id": "-",
+     "property": "docNo, source",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "02-board-intake.html",
+     "note": "needed to compute dispatchTargetDerived"
+    }
+   ],
+   "issues": [
+    "Same 'กิจกรรมที่ 7' label ambiguity as S101-1.",
+    "'ประธาน' (chairman) wording is misleading — the actual signer stored is always the deputy_sg, not a board chairman (C5 in 10-1 handoff doc).",
+    "externalDispatchNo is a hard-coded string with no real input field, and it disagrees with the document numbers generated at page 18."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0019",
+     "text": "ผลมติจากบอร์ด (LAW0019)",
+     "tobe": "TO-BE 10.1 › 3. ส่งหนังสือ - แยกตามผลมติบอร์ด",
+     "part": "ฝั่งกิจกรรมที่ 7 (ผลมติ)"
+    },
+    {
+     "code": "LAW0020",
+     "text": "ออกเลขหนังสือส่งภายนอก",
+     "tobe": "TO-BE 10.1 › 3. ส่งหนังสือ - แยกตามผลมติบอร์ด",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0021",
+     "text": "รับหนังสือฉบับที่ลงนามและมีเลขส่งเรียบร้อย",
+     "tobe": "TO-BE 10.1 › 3. ส่งหนังสือ - แยกตามผลมติบอร์ด",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0022",
+     "text": "รับหนังสือและตรวจสอบความเรียบร้อย",
+     "tobe": "TO-BE 10.1 › 3. ส่งหนังสือ - แยกตามผลมติบอร์ด",
+     "part": "ขั้นถัดไป (หน้า 18)"
+    }
+   ],
+   "law_note": "",
+   "confirm_basis": "TO-BE 10.1 ระบุ 'ส่งเรื่องเข้ามติบอร์ด' และ TO-BE 10.2 หน้า 2 ระบุ 'มติบอร์ด (กิจกรรมที่ 7)' จึงถือว่าเป็นกิจกรรมที่ 7 — แต่โค้ดม็อกอัป 10.1 ยังไม่ใช้คำว่ากิจกรรมที่ 7"
+  },
+  {
+   "id": "S102-1",
+   "activity": "10.2",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S102-1 Send deputy/secgen",
+   "action_th": "ธุรการกองกฎหมายออกเลขส่งและเสนอรองเลขาธิการ/เลขาธิการ ป.ป.ท. เพื่อนำเรื่องเข้ากิจกรรมที่ 7",
+   "page": "10-2-09-legal-admin-dispatch.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L2_PENDING_DISPATCH",
+   "status_after": "L2_PENDING_DEPUTY_SG_OPINION",
+   "previous_steps": "02(intake)->10-2-01..08 (director/group/secretariat/subcommittee/precomment/resolution-doc/director-propose)",
+   "next_steps": "10-2-32-deputy-sg-opinion-sign.html (deputy_sg) -- if skip checkbox unchecked, may forward to 10-2-31-secgen-opinion-sign.html (secgen) -> 10-2-10 (receive outcome)",
+   "pair_id": "R102-1",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือส่งกองกฎหมาย (ปี พ.ศ./เลขส่ง)",
+     "field_id": "in_dispatchNo",
+     "property": "l2DispatchNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-09-legal-admin-dispatch.html",
+     "note": "manual entry e.g. 2569/0452"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "field_id": "in_dispatchDate",
+     "property": "l2DispatchDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-09-legal-admin-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "ส่งเสนอต่อไปยัง (fixed)",
+     "field_id": "-",
+     "property": "l2DispatchTarget",
+     "type": "text (static)",
+     "required": "-",
+     "options": "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท.)",
+     "origin": "10-2-09-legal-admin-dispatch.html",
+     "note": "engine hardcodes next status to L2_PENDING_DEPUTY_SG_OPINION regardless; does NOT set l2ApprovalBranch here"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "บันทึกข้อความนำส่ง / หมายเหตุ",
+     "field_id": "in_dispatchNotes",
+     "property": "l2DispatchNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-2-09-legal-admin-dispatch.html",
+     "note": "has default text"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "บันทึกเสนอเลขาธิการฯ (memo, sections ๑-๕)",
+     "field_id": "-",
+     "property": "l2InternalDocNo, l2InternalDocDate, l2Subject, l2Background, l2Facts, l2LegalBasis, l2Considerations, l2DirLegalOpinion",
+     "type": "text/rich text",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-07-secretariat-resolution-doc.html / 10-2-08-legal-director-propose.html",
+     "note": "internal doc number issued via issueInternalDocNo"
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นผู้เสนอเรื่อง (อนุกรรมการเลขาฯ) และ ผอ.กองกฎหมาย",
+     "field_id": "-",
+     "property": "l2Signatures.proposer, l2Signatures.dirLegalOpinion",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-07 / 10-2-08",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "มติเบื้องต้นคณะอนุกรรมการฯ",
+     "field_id": "-",
+     "property": "l2ResolutionType, l2ResolutionTypeName, l2ResolutionDetail, l2CaseState, l2CaseStateName",
+     "type": "enum/text",
+     "required": "-",
+     "options": "DISCLOSE/PARTIAL/DENY/OTHER; CLOSED/INVESTIGATING",
+     "origin": "10-2-06-subcommittee-resolution.html",
+     "note": "preliminary values, overwritten later by 10-2-31/32 (deputy/secgen opinion)"
+    }
+   ],
+   "issues": [
+    "Confirmed 'กิจกรรมที่ 7' terminology: assets/ecmis-shell.js lines ~694-699 objective text for this page reads '...เพื่อนำเรื่องเข้ากิจกรรมที่ 7 อีกรอบ' (round-2 wording quoted; the first-round 10-2-09 page shares the same downstream flow into deputy_sg/secgen opinion).",
+    "Resulting status is hardcoded to L2_PENDING_DEPUTY_SG_OPINION on this page; the L2_PENDING_SECGEN_OPINION branch is only reached later, from within 10-2-32 (deputy_sg opinion page) if the 'ข้ามเลขาธิการ' checkbox is left unchecked — not set directly by S102-1 itself as the task brief implies."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0045",
+     "text": "จัดทำผลมติคณะอนุกรรมการพิจารณากลั่นกรองฯ",
+     "tobe": "TO-BE 10.2 › 1. คำขอเปิดเผยข้อมูล – มติคณะอนุกรรมการ",
+     "part": "ขั้นก่อนหน้า (10-2-07)"
+    },
+    {
+     "code": "LAW0046",
+     "text": "ออกเลขหนังสือส่งภายใน",
+     "tobe": "TO-BE 10.2 › 1. คำขอเปิดเผยข้อมูล – มติคณะอนุกรรมการ",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0047",
+     "text": "พิจารณาให้ความเห็นและลงนาม (รองเลขาธิการ ป.ป.ท. ที่กำกับดูแลกองกฎหมาย)",
+     "tobe": "TO-BE 10.2 › 1. คำขอเปิดเผยข้อมูล – มติคณะอนุกรรมการ",
+     "part": "ขั้นถัดไป (10-2-32)"
+    },
+    {
+     "code": "LAW0048",
+     "text": "ยื่นมติบอร์ด พิจารณาเห็นชอบและลงนาม (เลขาธิการคณะกรรมการ ป.ป.ท.)",
+     "tobe": "TO-BE 10.2 › 1. คำขอเปิดเผยข้อมูล – มติคณะอนุกรรมการ",
+     "part": "ส่งเข้ากิจกรรมที่ 7 (10-2-31)"
+    }
+   ],
+   "law_note": "ม็อกอัปใช้รหัสภายใน L2-DISPATCH (ไม่มีเลข LAW) สำหรับหน้า 10-2-09 — ตาม TO-BE ตรงกับ LAW0046"
+  },
+  {
+   "id": "R102-1",
+   "activity": "10.2",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R102-1 Receive outcome",
+   "action_th": "ธุรการกองกฎหมายรับผลความเห็น/มติจากรองเลขาธิการ (หรือเลขาธิการ) และส่งต่อฝ่ายเลขานุการ",
+   "page": "10-2-10-legal-admin-receive-outcome.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L2_DEPUTY_SG_RESOLVED or L2_SECGEN_RESOLVED",
+   "status_after": "L2_PENDING_DENY_MEMO / L2_PENDING_CLOSE_MEMO / L2_PENDING_COMMITTEE_MEMO_DRAFT (branches on l2ResolutionType and l2CaseState)",
+   "previous_steps": "10-2-09(send)->10-2-32(deputy_sg opinion) and/or 10-2-31(secgen opinion)->10-2-10",
+   "next_steps": "branch: DENY->10-2-15; DISCLOSE/PARTIAL+CLOSED->10-2-22; DISCLOSE/PARTIAL+INVESTIGATING->10-2-25 (committee/board round 2 branch, eventually S102-2)",
+   "pair_id": "S102-1",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_receiveNotes",
+     "property": "l2ReceiveNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-2-10-legal-admin-receive-outcome.html",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "มติ (final)",
+     "field_id": "-",
+     "property": "l2ResolutionType, l2ResolutionTypeName, l2ResolutionDetail",
+     "type": "enum/text (display)",
+     "required": "-",
+     "options": "DISCLOSE/PARTIAL/DENY/OTHER",
+     "origin": "10-2-32-deputy-sg-opinion-sign.html or 10-2-31-secgen-opinion-sign.html",
+     "note": "overwrites the preliminary subcommittee resolution from 10-2-06"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "สถานะคดีที่เกี่ยวข้อง",
+     "field_id": "-",
+     "property": "l2CaseState, l2CaseStateName",
+     "type": "enum/text (display)",
+     "required": "-",
+     "options": "CLOSED/INVESTIGATING",
+     "origin": "10-2-32 / 10-2-31",
+     "note": "drives the branch taken from this page"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "ความเห็นรองเลขาธิการ / เลขาธิการ",
+     "field_id": "-",
+     "property": "l2DeputySgOpinion / l2SecgenOpinion",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-32 / 10-2-31",
+     "note": "whichever branch signed"
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นรองเลขาธิการ / เลขาธิการ",
+     "field_id": "-",
+     "property": "l2Signatures.deputySgOpinion / l2Signatures.secgenOpinion",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-32 / 10-2-31",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "ชื่อเรื่อง / ผู้ยื่นคำขอ",
+     "field_id": "-",
+     "property": "title, requesterName",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "02-board-intake.html",
+     "note": "displayed read-only"
+    }
+   ],
+   "issues": [
+    "l2ApprovalBranch (DEPUTY vs SECGEN) is set at 10-2-32, not consistently at 10-2-09/10-2-31; per fields-10-2.md 10-2-31 (secgen page) does NOT write l2ApprovalBranch even though seed data assumes 'SECGEN' -- a minor data-consistency gap noted in source."
+   ],
+   "law_refs": [
+    {
+     "code": "—",
+     "text": "มติบอร์ด (กิจกรรมที่ 7) → แยกทางดำเนินการ",
+     "tobe": "TO-BE 10.2 › 2. มติบอร์ด – แยกทางดำเนินการ",
+     "part": "ฝั่งกิจกรรมที่ 7 (ผลมติ)"
+    },
+    {
+     "code": "LAW0049",
+     "text": "รับมติที่เลขาธิการคณะกรรมการ ป.ป.ท. เห็นชอบ (ไม่อนุญาตเปิดเผย)",
+     "tobe": "TO-BE 10.2 › 3. ไม่อนุญาตเปิดเผย",
+     "part": "จุดนี้ — สาขา DENY"
+    },
+    {
+     "code": "LAW0053",
+     "text": "รับมติที่เลขาธิการคณะกรรมการ ป.ป.ท. เห็นชอบ (อยู่ระหว่างไต่สวน)",
+     "tobe": "TO-BE 10.2 › 4. อยู่ระหว่างไต่สวน",
+     "part": "จุดนี้ — สาขา INVESTIGATING"
+    },
+    {
+     "code": "LAW0058",
+     "text": "รับมติบอร์ด (คดีเสร็จสิ้นแล้ว)",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "จุดนี้ — สาขา CLOSED"
+    }
+   ],
+   "law_note": "ม็อกอัปรับผลที่หน้าเดียว (10-2-10) แล้วแยกสาขา — TO-BE แยกเป็น 3 จุดรับ LAW0049 / LAW0053 / LAW0058"
+  },
+  {
+   "id": "S102-2",
+   "activity": "10.2",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S102-2 Send board R2",
+   "action_th": "ธุรการกองกฎหมายออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท. เพื่อนำเรื่องเข้ากิจกรรมที่ 7 อีกรอบ (คดีเปิดเผย/เปิดเผยบางส่วน อยู่ระหว่างไต่สวน)",
+   "page": "10-2-29-legal-admin-committee-dispatch.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L2_PENDING_COMMITTEE_DISPATCH",
+   "status_after": "L2_READY_FOR_BOARD_ROUND2",
+   "previous_steps": "10-2-10(receive outcome, DISCLOSE/PARTIAL+INVESTIGATING branch)->10-2-25(secretariat memo draft)->10-2-27(group director approve)->10-2-26(director opinion)->10-2-29",
+   "next_steps": "external event 'มติบอร์ดตอบกลับแล้ว' (กิจกรรมที่ 7 รอบ 2) -> 10-2-30-legal-admin-receive-board-round2.html",
+   "pair_id": "R102-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "field_id": "in_dispatchDate",
+     "property": "l2CommitteeDispatchDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-29-legal-admin-committee-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "บันทึกข้อความนำส่ง",
+     "field_id": "in_dispatchNotes",
+     "property": "l2CommitteeDispatchNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-2-29-legal-admin-committee-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "DOC_NUMBER",
+     "label_th": "เลขที่หนังสือส่ง (auto-suggest)",
+     "field_id": "-",
+     "property": "l2CommitteeDispatchDocNo, l2CommitteeDispatchDocDate",
+     "type": "text/date",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-29-legal-admin-committee-dispatch.html via Activity102.issueDocNo",
+     "note": "format 'ปป 0002/NNNN'"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "แผ่นแนบ + บันทึกมติ (round 2 memo)",
+     "field_id": "-",
+     "property": "l2CommitteeSheetFacts, l2CommitteeMemoBackground, l2CommitteeMemoLegalBasis, l2CommitteeMemoConsiderations, l2CommitteeMemoResolutionText, l2CommitteeMemoDocNo, l2CommitteeMemoDocDate",
+     "type": "text/rich text",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-25-secretariat-committee-memo-draft.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ความเห็น ผอ.กลุ่มงาน / ผอ.กองกฎหมาย",
+     "field_id": "-",
+     "property": "l2CommitteeGroupApproveOpinion, l2CommitteeDirectorOpinionText",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-27-group-director-committee-approve.html / 10-2-26-legal-director-committee-opinion.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นฝ่ายเลขานุการ / ผอ.กลุ่มงาน / ผอ.กอง",
+     "field_id": "-",
+     "property": "l2Signatures.committeeMemoProposer, l2Signatures.committeeGroupApprove, l2Signatures.committeeDirectorOpinion",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-25/27/26",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "มติเดิม (จากรอบ 1)",
+     "field_id": "-",
+     "property": "l2ResolutionType, l2ResolutionTypeName, l2ResolutionDetail",
+     "type": "enum/text",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-32/31 via 10-2-10",
+     "note": "displayed for context"
+    }
+   ],
+   "issues": [
+    "Confirmed: assets/ecmis-shell.js line ~696 objective text: 'ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท. เพื่อนำเรื่องเข้ากิจกรรมที่ 7 อีกรอบ' for page 10-2-29-legal-admin-committee-dispatch.html.",
+    "This dispatch goes to 'รองเลขาธิการ ป.ป.ท.' as an intermediate step per the shell.js note, but no on-page field captures who it is routed to (no in_dispatchTarget control found in the fields extraction) -- worth confirming in the live HTML if exact routing text is needed."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0059",
+     "text": "จัดทำบันทึกและมติคณะอนุกรรมการพิจารณากลั่นกรอง",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ขั้นก่อนหน้า (10-2-25)"
+    },
+    {
+     "code": "LAW0060",
+     "text": "ลงนาม",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ขั้นก่อนหน้า (10-2-27 / 10-2-26)"
+    },
+    {
+     "code": "LAW0061",
+     "text": "ออกเลขหนังสือส่งภายใน",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0062",
+     "text": "พิจารณาเสนอเลขาธิการคณะกรรมการ ป.ป.ท.และลงนาม (รองเลขาธิการ)",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ส่งต่อ"
+    },
+    {
+     "code": "LAW0063",
+     "text": "มติบอร์ด พิจารณาเห็นชอบและลงนาม เพื่อเสนอคณะกรรมการ ป.ป.ท.",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": "⚠ ไม่ตรงกัน: TO-BE วางรอบเสนอบอร์ดครั้งที่ 2 ไว้ในสาขา 'คดีเสร็จสิ้นแล้ว' (LAW0058–0068) แต่ม็อกอัปทำไว้ในสาขา 'อยู่ระหว่างไต่สวน' (10-2-25 ถึง 10-2-30) — ต้องยืนยันว่าสาขาใดถูกต้อง"
+  },
+  {
+   "id": "R102-2",
+   "activity": "10.2",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R102-2 Receive board R2",
+   "action_th": "ธุรการกองกฎหมายรับมติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7 รอบ 2) และส่งต่อ ผอ.กองกฎหมายรับทราบ",
+   "page": "10-2-30-legal-admin-receive-board-round2.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L2_BOARD_RESOLVED_ROUND2 (or L2_READY_FOR_BOARD_ROUND2)",
+   "status_after": "L2_PENDING_DIRLEGAL_BOARD_ACK",
+   "previous_steps": "10-2-29(send)->external board meeting (no page)->10-2-30",
+   "next_steps": "10-2-35-legal-director-board-ack.html->10-2-36-group-director-board-ack.html->10-2-11(notice draft)",
+   "pair_id": "S102-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือ/รหัสอ้างอิงมติคณะกรรมการ ป.ป.ท.",
+     "field_id": "in_boardApprovalRefRound2",
+     "property": "l2BoardApprovalRefRound2",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-30-legal-admin-receive-board-round2.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ได้รับแจ้งมติ",
+     "field_id": "in_boardApprovalDateRound2",
+     "property": "l2BoardApprovalDateRound2",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-30-legal-admin-receive-board-round2.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "มติคณะกรรมการ ป.ป.ท.",
+     "field_id": "in_boardResolutionRound2Text",
+     "property": "l2BoardResolutionRound2Text",
+     "type": "textarea",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-30-legal-admin-receive-board-round2.html",
+     "note": "free text entry of the board's actual resolution (RECEIVED_RESULT content, typed manually by admin)"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_receiveNotesRound2",
+     "property": "l2ReceiveNotesRound2",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-2-30-legal-admin-receive-board-round2.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "เลขที่หนังสือส่ง / วันที่ส่ง (ที่ส่งเสนอบอร์ด)",
+     "field_id": "-",
+     "property": "l2CommitteeDispatchDocNo, l2CommitteeDispatchDate",
+     "type": "text/date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-29-legal-admin-committee-dispatch.html",
+     "note": "echoed for reference"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "บันทึกมติ + แผ่นแนบ (memo/sheet)",
+     "field_id": "-",
+     "property": "l2CommitteeMemoDocNo, l2CommitteeMemoDocDate",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-2-25-secretariat-committee-memo-draft.html",
+     "note": ""
+    }
+   ],
+   "issues": [
+    "Confirmed: this page is the counterpart of the 'กิจกรรมที่ 7 อีกรอบ' dispatch at S102-2, per shell.js relatedRequirements for 10-2-29/10-2-30.",
+    "l9/board resolution fields (in_boardApprovalRefRound2 etc.) are free-text manual entry -- there is no structured selection of board decision type on this page (contrast with S102-3/R102-3 appeal flow which does have a structured resolutionChoices control)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0063",
+     "text": "มติบอร์ด (ผลการพิจารณาของคณะกรรมการ ป.ป.ท.)",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ฝั่งกิจกรรมที่ 7 (ผลมติ)"
+    },
+    {
+     "code": "LAW0064",
+     "text": "รับมติและเสนอ",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0065",
+     "text": "มอบหมายฝ่ายเลขานุการ",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ขั้นถัดไป (10-2-35 / 10-2-36)"
+    },
+    {
+     "code": "LAW0066",
+     "text": "ฝ่ายเลขาคณะอนุกรรมการกลั่นกรองจัดทำบันทึกแจ้งมติ",
+     "tobe": "TO-BE 10.2 › 5. คดีเสร็จสิ้นแล้ว",
+     "part": "ขั้นถัดไป (10-2-11)"
+    }
+   ],
+   "law_note": "⚠ ไม่ตรงกัน: TO-BE วางรอบเสนอบอร์ดครั้งที่ 2 ไว้ในสาขา 'คดีเสร็จสิ้นแล้ว' (LAW0058–0068) แต่ม็อกอัปทำไว้ในสาขา 'อยู่ระหว่างไต่สวน' (10-2-25 ถึง 10-2-30) — ต้องยืนยันว่าสาขาใดถูกต้อง"
+  },
+  {
+   "id": "S102-3",
+   "activity": "10.2",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S102-3 Send appeal board",
+   "action_th": "ธุรการกองบริหารคดีออกเลขหนังสือส่งและยื่นเรื่องอุทธรณ์เข้ากิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท. เต็มคณะ) อย่างเป็นทางการ",
+   "page": "10-2-appeal-10-legal-admin-board-submit.html",
+   "role": "case_bureau_admin",
+   "role_th": "ธุรการกองบริหารคดี",
+   "status_before": "L2_PENDING_APPEAL_BOARD_DISPATCH",
+   "status_after": "L2_APPEAL_SUBMITTED_TO_BOARD",
+   "previous_steps": "appeal-01..08 (intake->bureau assign->tracking assign->case owner opinion->agenda->ruling->secretariat memo->tracking director sign)->appeal-09(bureau director board propose)->appeal-10",
+   "next_steps": "waits for real committee result (no route/page exists yet for L2_APPEAL_SUBMITTED_TO_BOARD) -> external event 'ทราบมติ' -> appeal-11",
+   "pair_id": "R102-3",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือส่ง (auto-suggest)",
+     "field_id": "in_docNo",
+     "property": "l2AppealBoardDispatchDocNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-appeal-10-legal-admin-board-submit.html",
+     "note": "manual, auto-suggested"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ส่ง",
+     "field_id": "in_docDate",
+     "property": "l2AppealBoardDispatchDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-appeal-10-legal-admin-board-submit.html",
+     "note": "auto default"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "บันทึกคำวินิจฉัยอุทธรณ์ + ลายเซ็นสะสม",
+     "field_id": "-",
+     "property": "l2AppealRulingType, l2AppealRulingReason, l2AppealMemoNotes, l2AppealTrackingSignNotes, l2AppealBoardProposeNotes",
+     "type": "text",
+     "required": "-",
+     "options": "UPHOLD/REVERSE_FULL/REVERSE_PARTIAL",
+     "origin": "appeal-06/07/08/09",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นสะสมทุกขั้นก่อนหน้า",
+     "field_id": "-",
+     "property": "l2Signatures.appealRuling, l2Signatures.appealSecretariatMemo, l2Signatures.appealTrackingSign, l2Signatures.appealBureauDirectorBoardPropose",
+     "type": "image_dataurl",
+     "required": "-",
+     "options": "",
+     "origin": "appeal-06/07/08/09",
+     "note": "cumulative signature list rendered on this page"
+    },
+    {
+     "category": "CARRIED_ATTACHMENT",
+     "label_th": "เอกสารแนบสะสม (สำเนาหนังสืออุทธรณ์ ฯลฯ)",
+     "field_id": "-",
+     "property": "l2AppealAttachmentFileNames[], l2AppealRulingAttachmentFileNames[], l2AppealMemoAttachmentFileNames[]",
+     "type": "text[] (filenames only)",
+     "required": "-",
+     "options": "",
+     "origin": "appeal-01/06/07",
+     "note": "binary never stored, names only"
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขที่คำอุทธรณ์ในระบบ / เลขรับเรื่อง",
+     "field_id": "-",
+     "property": "l2AppealSystemNo, l2AppealReceiveNo",
+     "type": "text",
+     "required": "-",
+     "options": "",
+     "origin": "appeal-01-legal-admin-intake.html",
+     "note": ""
+    }
+   ],
+   "issues": [
+    "Confirmed: shell.js line ~416 objective text: 'ออกเลขหนังสือส่งและยื่นเรื่องอุทธรณ์เข้ากิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท. เต็มคณะ) อย่างเป็นทางการ' and workflow note line 423: 'คำร้องจะรอผลจริงจากกิจกรรมที่ 7 (สถานะ L2_APPEAL_SUBMITTED_TO_BOARD ยังไม่มี route ต่อ จนกว่าจะ \"ทราบมติ\")'.",
+    "No signature is captured on this page ('ไม่มีลายเซ็น เป็นงานธุรการออกเลขส่ง' per shell.js).",
+    "L2_APPEAL_SUBMITTED_TO_BOARD has no ROUTES entry in code -- confirming this is a genuine external wait state with no polling/callback page until appeal-11 is manually opened."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0077",
+     "text": "จัดทำบันทึกและเสนอเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท.",
+     "tobe": "TO-BE 10.2 › 6. อุทธรณ์คำสั่ง",
+     "part": "ขั้นก่อนหน้า (appeal-07/08)"
+    },
+    {
+     "code": "LAW0078",
+     "text": "พิจารณาเรื่องและนำเรื่องเข้า กิจกรรมที่ 7",
+     "tobe": "TO-BE 10.2 › 6. อุทธรณ์คำสั่ง",
+     "part": "ขั้นก่อนหน้า (appeal-09)"
+    },
+    {
+     "code": "LAW0079",
+     "text": "ยื่นมติบอร์ด",
+     "tobe": "TO-BE 10.2 › 6. อุทธรณ์คำสั่ง",
+     "part": "จุดนี้ — ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": ""
+  },
+  {
+   "id": "R102-3",
+   "activity": "10.2",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R102-3 Receive appeal result",
+   "action_th": "ธุรการกองบริหารคดีบันทึกมติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) ที่ตอบกลับคำอุทธรณ์เข้าสู่ระบบ",
+   "page": "10-2-appeal-11-legal-admin-board-resolution.html",
+   "role": "case_bureau_admin",
+   "role_th": "ธุรการกองบริหารคดี",
+   "status_before": "L2_APPEAL_BOARD_RESOLVED",
+   "status_after": "L2_PENDING_APPEAL_NOTICE_DRAFT",
+   "previous_steps": "appeal-10(send)->external board meeting (no page, only seed sets L2_APPEAL_BOARD_RESOLVED)->appeal-11",
+   "next_steps": "appeal-12-tracking-secretary-notice-draft.html->appeal-13-case-owner-notify-appellant.html (terminal L2_APPEAL_CASE_CLOSED_NOTIFIED)",
+   "pair_id": "S102-3",
+   "data": [
+    {
+     "category": "PAGE_DECISION",
+     "label_th": "ผลมติ",
+     "field_id": "resolutionChoices",
+     "property": "l2AppealBoardResolutionType, l2AppealBoardResolutionTypeName",
+     "type": "radio grid",
+     "required": "Y",
+     "options": "DISCLOSE=ให้เปิดเผยข้อมูลทั้งหมด / PARTIAL=ให้เปิดเผยข้อมูลบางส่วน / DENY=ไม่เปิดเผยข้อมูล",
+     "origin": "10-2-appeal-11-legal-admin-board-resolution.html",
+     "note": "BOARD_APPEAL_RESOLUTION_TYPES enum"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือตอบกลับจากกิจกรรมที่ 7",
+     "field_id": "in_replyDocNo",
+     "property": "l2AppealBoardReplyDocNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-appeal-11-legal-admin-board-resolution.html",
+     "note": "suggested format 'ปป 0002/NNNN'"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ตอบกลับ",
+     "field_id": "in_replyDate",
+     "property": "l2AppealBoardReplyDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-appeal-11-legal-admin-board-resolution.html",
+     "note": "auto-suggest"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "ความเห็นเพิ่มเติม",
+     "field_id": "in_notes",
+     "property": "l2AppealBoardResolutionNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-2-appeal-11-legal-admin-board-resolution.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นธุรการกองบริหารคดี",
+     "field_id": "-",
+     "property": "l2Signatures.appealBoardResolution (position 'ธุรการกองบริหารคดี')",
+     "type": "image_dataurl",
+     "required": "Y",
+     "options": "",
+     "origin": "10-2-appeal-11-legal-admin-board-resolution.html",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "มติเดิม (สายคำร้องต้นทาง)",
+     "field_id": "-",
+     "property": "l2ResolutionTypeName",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "original request (DENY) resolution",
+     "note": "the appeal result can reverse this original resolution but is not automatically written back to it"
+    }
+   ],
+   "issues": [
+    "Confirmed: shell.js line ~433 objective text: 'บันทึกมติคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) ที่ตอบกลับคำอุทธรณ์นี้เข้าสู่ระบบ'.",
+    "L2_APPEAL_BOARD_RESOLVED is only ever set in seed data -- no real page/button transitions a case into this status from L2_APPEAL_SUBMITTED_TO_BOARD; per fields-10-2.md this is effectively a manual/external data entry point standing in for the real Activity 7 callback.",
+    "l2AppealBoardResolutionType can logically reverse the original DENY resolution but this is never written back onto the base l2ResolutionType* fields of the original request (per fields-10-2.md section 7)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0080",
+     "text": "ส่งมติคณะกรรมการ",
+     "tobe": "TO-BE 10.2 › 7. แจ้งผลอุธรณ์",
+     "part": "ฝั่งกิจกรรมที่ 7 / จุดนี้"
+    },
+    {
+     "code": "LAW0081",
+     "text": "ทำหนังสือแจ้งผลมติและส่งสำเนามติ",
+     "tobe": "TO-BE 10.2 › 7. แจ้งผลอุธรณ์",
+     "part": "ขั้นถัดไป (appeal-12)"
+    },
+    {
+     "code": "LAW0082",
+     "text": "แจ้งผลคำวินิจฉัยตามมติคณะกรรมการ ป.ป.ท ให้ผู้อุทธรณ์ภายใน 5 วัน",
+     "tobe": "TO-BE 10.2 › 7. แจ้งผลอุธรณ์",
+     "part": "ขั้นถัดไป (appeal-13)"
+    }
+   ],
+   "law_note": ""
+  },
+  {
+   "id": "S103-1",
+   "activity": "10.3",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S103-1 Send board (lawsuit)",
+   "action_th": "ธุรการกองกฎหมายออกเลขส่งภายในและส่งมติเสนอบอร์ด (คำฟ้อง/รับสำนวนคดีศาลปกครอง)",
+   "page": "10-3-09-legal-admin-dispatch.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L3_PENDING_ADMIN_DISPATCH",
+   "status_after": "L3_READY_FOR_BOARD",
+   "previous_steps": "02-board-intake(10.3)->10-3-02(LAW0088)->10-3-03(LAW0089)->10-3-04(LAW0090)->10-3-07(LAW0093)->10-3-08(LAW0094)->10-3-09",
+   "next_steps": "external board meeting (no page) -> 10-3-10-legal-admin-resolution-notice.html",
+   "pair_id": "R103-1",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่หนังสือส่งภายใน",
+     "field_id": "in_internalDocNo",
+     "property": "l3InternalDocNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-09-legal-admin-dispatch.html",
+     "note": "placeholder 'ปป 0003/4451'; manual or via Activity103.issueDocNo"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_dispatchNotes",
+     "property": "l3DispatchNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-3-09-legal-admin-dispatch.html",
+     "note": ""
+    },
+    {
+     "category": "DOC_NUMBER",
+     "label_th": "วันที่ออกหนังสือส่ง",
+     "field_id": "-",
+     "property": "l3InternalDocDate",
+     "type": "date (display f_dispatchDate)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3-09-legal-admin-dispatch.html via Activity103.issueDocNo",
+     "note": "set together with l3InternalDocNo"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ความเห็นทางกฎหมาย (สำนวน)",
+     "field_id": "-",
+     "property": "l3OpinionText",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3-04-lawyer-review-complaint.html and subsequent group/director approvals",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "ศาล / เลขคดีดำ / โจทก์ / จำเลย",
+     "field_id": "-",
+     "property": "courtName, blackCaseNo, plaintiffs, defendants",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "02-board-intake.html (10.3 branch)",
+     "note": "carried case identifiers echoed on this page"
+    }
+   ],
+   "issues": [
+    "Unlike 10.2, the literal string 'กิจกรรมที่ 7' was NOT found anywhere in assets/ecmis-10-3.js (grep returned no matches); the task brief marks 10.3 confirmed:true, so this is followed, but the board-forwarding language here uses 'บอร์ด'/'คณะกรรมการ ป.ป.ท.' rather than the literal 'กิจกรรมที่ 7' phrase seen in 10.2's ecmis-10-2.js / ecmis-shell.js. Recommend spot-checking assets/ecmis-shell.js objective text for the 10-3-* pages directly if exact wording is required.",
+    "No signature is captured on this page (administrative dispatch only)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0094",
+     "text": "ตรวจสอบความถูกต้องครบถ้วนของบันทึกความเห็น และลงนามผ่านเรื่อง",
+     "tobe": "TO-BE 10.3 › 1. รับคำฟ้อง - สรุปความเห็นเสนอบอร์ด",
+     "part": "ขั้นก่อนหน้า (10-3-08)"
+    },
+    {
+     "code": "LAW0095",
+     "text": "ออกเลขส่งหนังสือภายใน",
+     "tobe": "TO-BE 10.3 › 1. รับคำฟ้อง - สรุปความเห็นเสนอบอร์ด",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0096",
+     "text": "ส่งมติไปกิจกรรมที่ 7",
+     "tobe": "TO-BE 10.3 › 1. รับคำฟ้อง - สรุปความเห็นเสนอบอร์ด",
+     "part": "ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": ""
+  },
+  {
+   "id": "R103-1",
+   "activity": "10.3",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R103-1 Receive board notice",
+   "action_th": "ธุรการกองกฎหมายรับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท. (การตอบรับสำนวนคดี/ขอขยายเวลา)",
+   "page": "10-3-10-legal-admin-resolution-notice.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L3_READY_FOR_BOARD",
+   "status_after": "L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN",
+   "previous_steps": "10-3-09(send)->external board meeting->10-3-10",
+   "next_steps": "10-3-11-legal-director-assign-resolution.html->10-3-12(group director approve)->10-3-13(lawyer extension request)",
+   "pair_id": "S103-1",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "ครั้งที่ประชุม",
+     "field_id": "in_meetingNo",
+     "property": "l3BoardResolution.meetingNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": "e.g. 41/2569"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ประชุม",
+     "field_id": "in_meetingDate",
+     "property": "l3BoardResolution.meetingDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วาระที่",
+     "field_id": "in_agendaNo",
+     "property": "l3BoardResolution.agendaNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": "e.g. 5.41"
+    },
+    {
+     "category": "PAGE_DECISION",
+     "label_th": "สาระสำคัญของมติ",
+     "field_id": "in_resolutionText",
+     "property": "l3BoardResolution.text (result=RESOLUTION_RESULT)",
+     "type": "textarea",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": "free text; e.g. 'มอบอำนาจให้ผู้อำนวยการกองกฎหมายขอขยายระยะเวลายื่นคำให้การ...'"
+    },
+    {
+     "category": "CARRIED_ATTACHMENT",
+     "label_th": "แนบรายงานสรุปมติ",
+     "field_id": "in_resolutionReport",
+     "property": "l3BoardResolution.reportFileNames[]",
+     "type": "file multiple (filenames only)",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": "combines presetReportNames + user-picked file names"
+    },
+    {
+     "category": "DOC_NUMBER",
+     "label_th": "เลขที่หนังสือแจ้งผล / วันที่แจ้งผล",
+     "field_id": "in_noticeDocNo / in_noticeDate",
+     "property": "l3ResolutionNotice.docNo, l3ResolutionNotice.docDate",
+     "type": "text/date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_DECISION",
+     "label_th": "แจ้งถึง นิติกร กลุ่มงานคดี",
+     "field_id": "in_notifyLawyer",
+     "property": "l3ResolutionNotice.recipients, assignedRole=dir_legal (next step)",
+     "type": "select",
+     "required": "Y",
+     "options": "list of case_legal_officer persons",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_noticeNotes",
+     "property": "l3ResolutionNotice.notes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_SIGNATURE",
+     "label_th": "ลายเซ็นธุรการกองกฎหมาย",
+     "field_id": "-",
+     "property": "l3Signatures[STEP_CODE]",
+     "type": "image_dataurl",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3-10-legal-admin-resolution-notice.html signature modal (certId PACC-ADMINLEGAL-2569-103)",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขที่หนังสือส่งภายใน / วันที่ (จากการส่งรอบก่อน)",
+     "field_id": "-",
+     "property": "l3InternalDocNo, l3InternalDocDate",
+     "type": "text/date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3-09-legal-admin-dispatch.html",
+     "note": "echoed for reference"
+    }
+   ],
+   "issues": [
+    "RECEIVED_RESULT here (l3BoardResolution.*) is entered manually by the admin_legal user, not auto-populated from any external board-system feed -- i.e., this page IS the human data-entry point standing in for the real board response.",
+    "Same 'กิจกรรมที่ 7' label caveat as S103-1 (literal phrase not found in ecmis-10-3.js)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0103",
+     "text": "รับเรื่องมติจากบอร์ด ผ่านระบบ E-CMIS เพื่อดำเนินการแจ้งผล",
+     "tobe": "TO-BE 10.3 › 4. จัดทำคำให้การแก้คำฟ้อง",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0104",
+     "text": "พิจารณาเเละเห็นชอบ",
+     "tobe": "TO-BE 10.3 › 4. จัดทำคำให้การแก้คำฟ้อง",
+     "part": "ขั้นถัดไป"
+    },
+    {
+     "code": "LAW0105",
+     "text": "พิจารณาและมอบหมายงาน",
+     "tobe": "TO-BE 10.3 › 4. จัดทำคำให้การแก้คำฟ้อง",
+     "part": "ขั้นถัดไป"
+    }
+   ],
+   "law_note": "ม็อกอัปใช้รหัสภายใน L3-19 สำหรับหน้า 10-3-10 — ตาม TO-BE ตรงกับ LAW0103"
+  },
+  {
+   "id": "S103-2",
+   "activity": "10.3",
+   "direction": "SEND",
+   "confirmed": true,
+   "sheet_title": "S103-2 Send appeal proposal",
+   "action_th": "ธุรการกองกฎหมายส่งมติเสนอบอร์ด (เสนอความเห็นควรอุทธรณ์คำพิพากษา)",
+   "page": "10-3v-28-legal-admin-board-propose.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L9_PENDING_DOC_SEND",
+   "status_after": "L9_PROPOSED_TO_BOARD",
+   "previous_steps": "10-3v-00(verdict intake)->...->10-3v-06(director decide APPEAL_CONSIDER)->10-3v-16..20(consider appeal)->10-3v-22..25/10-3v-26/27(board proposal draft LAW0157B group review, director sign)->10-3v-28",
+   "next_steps": "external board decision (no page writes it; only seed data has l9BoardMeetingDate/l9BoardResolutionNo/l9BoardDecision) -> branch: APPEAL->10-3v-29 (R103-2A); NO_APPEAL->10-3v-37 (R103-2B)",
+   "pair_id": "R103-2A,R103-2B",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขที่บันทึกส่งภายใน",
+     "field_id": "in_externalDocNo",
+     "property": "l9InternalDocNo",
+     "type": "text",
+     "required": "N",
+     "options": "",
+     "origin": "10-3v-28-legal-admin-board-propose.html",
+     "note": "defaults to '-' if blank"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่ส่งมติเสนอบอร์ด",
+     "field_id": "in_dispatchDate",
+     "property": "l9SentDate",
+     "type": "date",
+     "required": "N",
+     "options": "",
+     "origin": "10-3v-28-legal-admin-board-propose.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_dispatchNotes",
+     "property": "l9SendNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-3v-28-legal-admin-board-propose.html",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "เลขทะเบียนคดี / ประเด็นคำพิพากษา",
+     "field_id": "-",
+     "property": "l8CaseRegNo, l8VerdictIssues",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3v-19-lawyer-register.html / earlier verdict analysis",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_ATTACHMENT",
+     "label_th": "เอกสารร่างความเห็น",
+     "field_id": "-",
+     "property": "l8OpinionAttachments",
+     "type": "file[] (display)",
+     "required": "-",
+     "options": "",
+     "origin": "appeal-consider drafting steps (10-3v-16..20)",
+     "note": "filenames only"
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ความเห็นตรวจสอบ ผอ.กลุ่มงาน / ลงนาม ผอ.กอง",
+     "field_id": "-",
+     "property": "l9GroupApproveNotes, l9DirectorApproveNotes",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3v-26/27 (board proposal draft & sign steps)",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "ศาล / เลขคดีดำ / โจทก์ / จำเลย",
+     "field_id": "-",
+     "property": "courtName, blackCaseNo, plaintiffs, defendants",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "02-board-intake / original case",
+     "note": ""
+    }
+   ],
+   "issues": [
+    "No signature capture on this dispatch page (administrative-only, per pattern seen elsewhere in 10.3).",
+    "Board decision fields (l9BoardMeetingDate, l9BoardResolutionNo, l9BoardDecision APPEAL/NO_APPEAL, l9BoardNotes) exist ONLY in seed data -- no page in the 10.3 mockup writes them; this is the same 'fabricated board result' pattern as 10.1's inbox signing, confirming the external-board step is not actually implemented as a page in either 10.1 or 10.3.",
+    "Literal 'กิจกรรมที่ 7' text not found in ecmis-10-3.js (see S103-1 issue note)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0149",
+     "text": "ทำบันทึกสรุปความเห็น",
+     "tobe": "TO-BE 10.3 › 9. เสนอมติอุทธรณ์ต่อบอร์ด",
+     "part": "ขั้นก่อนหน้า"
+    },
+    {
+     "code": "LAW0150",
+     "text": "พิจารณาความเห็นเเละลงนามเห็นชอบ",
+     "tobe": "TO-BE 10.3 › 9. เสนอมติอุทธรณ์ต่อบอร์ด",
+     "part": "ขั้นก่อนหน้า (10-3v-26)"
+    },
+    {
+     "code": "LAW0151",
+     "text": "พิจารณาความเห็นเเละลงนามเห็นชอบ",
+     "tobe": "TO-BE 10.3 › 9. เสนอมติอุทธรณ์ต่อบอร์ด",
+     "part": "ขั้นก่อนหน้า (10-3v-27)"
+    },
+    {
+     "code": "LAW0152",
+     "text": "ส่งมติไปกิจกรรมที่ 7",
+     "tobe": "TO-BE 10.3 › 9. เสนอมติอุทธรณ์ต่อบอร์ด",
+     "part": "จุดนี้ — ส่งเข้ากิจกรรมที่ 7"
+    }
+   ],
+   "law_note": ""
+  },
+  {
+   "id": "R103-2A",
+   "activity": "10.3",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R103-2A Receive appeal approved",
+   "action_th": "ธุรการกองกฎหมายรับหนังสือแจ้งมติบอร์ดเห็นชอบให้อุทธรณ์ และมอบหมายงาน",
+   "page": "10-3v-29-legal-admin-board-appeal-intake.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L9_BOARD_APPROVED_APPEAL",
+   "status_after": "L9A_PENDING_DIRECTOR_ASSIGN",
+   "previous_steps": "10-3v-28(send)->external board decision APPEAL (seed-only)->10-3v-29",
+   "next_steps": "10-3v-30(director assign2)->10-3v-31(group assign2)->10-3v-32..36 (draft/review/sign/send appeal, ends L9A_SENT_TO_PROSECUTOR)",
+   "pair_id": "S103-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขรับเรื่อง (สารบรรณ)",
+     "field_id": "in_receiveNo",
+     "property": "l9aReceiveNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3v-29-legal-admin-board-appeal-intake.html",
+     "note": "e.g. 2569/4611"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่รับเรื่อง",
+     "field_id": "in_receiveDate",
+     "property": "l9aReceiveDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3v-29-legal-admin-board-appeal-intake.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_intakeNotes",
+     "property": "l9aIntakeNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-3v-29-legal-admin-board-appeal-intake.html",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "เลขที่มติบอร์ด",
+     "field_id": "f_boardResolutionNo",
+     "property": "l9BoardResolutionNo",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only -- no page writes it",
+     "note": "fabricated/seed-only, same gap as 10.1 board resolution"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "วันที่ประชุมบอร์ด",
+     "field_id": "f_boardMeetingDate",
+     "property": "l9BoardMeetingDate",
+     "type": "date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "หมายเหตุมติบอร์ด",
+     "field_id": "f_boardNotes",
+     "property": "l9BoardNotes",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "เลขที่บันทึกส่งภายใน / วันที่ส่ง (มติเสนอบอร์ด)",
+     "field_id": "-",
+     "property": "l9InternalDocNo, l9SentDate",
+     "type": "text/date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "10-3v-28-legal-admin-board-propose.html",
+     "note": "echoed for reference"
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขคดีดำ / เลขคดีแดง / โจทก์ / จำเลย / วันที่พิพากษา",
+     "field_id": "-",
+     "property": "blackCaseNo, redCaseNo, plaintiffs, defendants, verdictDate",
+     "type": "text/date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "original case + verdict record",
+     "note": ""
+    }
+   ],
+   "issues": [
+    "l9BoardResolutionNo / l9BoardMeetingDate / l9BoardNotes are seed-only values with no writer page anywhere in 10.3, confirming the actual board (กิจกรรมที่ 7 equivalent) step is unimplemented in code and only its downstream intake page exists.",
+    "pair_id is shared with R103-2B per task instructions (S103-2 branches to either R103-2A or R103-2B depending on l9BoardDecision, never both)."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0153",
+     "text": "รับเรื่องเพื่อ ดำเนินการแจ้งผล (บอร์ดเห็นชอบให้อุทธรณ์)",
+     "tobe": "TO-BE 10.3 › 10. ดำเนินการอุทธรณ์ต่อศาลปกครองสูงสุด",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0154",
+     "text": "พิจารณาเเละเห็นชอบ",
+     "tobe": "TO-BE 10.3 › 10. ดำเนินการอุทธรณ์ต่อศาลปกครองสูงสุด",
+     "part": "ขั้นถัดไป"
+    },
+    {
+     "code": "LAW0155",
+     "text": "พิจารณาและมอบหมายงาน",
+     "tobe": "TO-BE 10.3 › 10. ดำเนินการอุทธรณ์ต่อศาลปกครองสูงสุด",
+     "part": "ขั้นถัดไป"
+    }
+   ],
+   "law_note": "ม็อกอัปใช้รหัสภายใน L9A_INTAKE สำหรับหน้า 10-3v-29 — ตาม TO-BE ตรงกับ LAW0153"
+  },
+  {
+   "id": "R103-2B",
+   "activity": "10.3",
+   "direction": "RECEIVE",
+   "confirmed": true,
+   "sheet_title": "R103-2B Receive no-appeal",
+   "action_th": "ธุรการกองกฎหมายรับหนังสือแจ้งมติบอร์ดเห็นชอบไม่อุทธรณ์ และมอบหมายงาน",
+   "page": "10-3v-37-legal-admin-no-appeal-intake.html",
+   "role": "admin_legal",
+   "role_th": "เจ้าหน้าที่ธุรการกองกฎหมาย",
+   "status_before": "L9_BOARD_APPROVED_NO_APPEAL",
+   "status_after": "L9B_PENDING_DIRECTOR_ASSIGN1",
+   "previous_steps": "10-3v-28(send)->external board decision NO_APPEAL (seed-only)->10-3v-37",
+   "next_steps": "10-3v-38(legal director assign3)->... (ends L9B_CLOSED)",
+   "pair_id": "S103-2",
+   "data": [
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "เลขรับเรื่อง (สารบรรณ)",
+     "field_id": "in_receiveNo",
+     "property": "l9bReceiveNo",
+     "type": "text",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3v-37-legal-admin-no-appeal-intake.html",
+     "note": "e.g. 2569/4711"
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "วันที่รับเรื่อง",
+     "field_id": "in_receiveDate",
+     "property": "l9bReceiveDate",
+     "type": "date",
+     "required": "Y",
+     "options": "",
+     "origin": "10-3v-37-legal-admin-no-appeal-intake.html",
+     "note": ""
+    },
+    {
+     "category": "PAGE_INPUT",
+     "label_th": "หมายเหตุ",
+     "field_id": "in_intakeNotes",
+     "property": "l9bIntakeNotes",
+     "type": "textarea",
+     "required": "N",
+     "options": "",
+     "origin": "10-3v-37-legal-admin-no-appeal-intake.html",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "เลขที่มติบอร์ด",
+     "field_id": "f_boardResolutionNo",
+     "property": "l9BoardResolutionNo",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only -- no page writes it",
+     "note": "same field reused from S103-2/R103-2A; fabricated/seed-only"
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "วันที่ประชุมบอร์ด",
+     "field_id": "f_boardMeetingDate",
+     "property": "l9BoardMeetingDate",
+     "type": "date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only",
+     "note": ""
+    },
+    {
+     "category": "RECEIVED_RESULT",
+     "label_th": "หมายเหตุมติบอร์ด",
+     "field_id": "f_boardNotes",
+     "property": "l9BoardNotes",
+     "type": "text (display)",
+     "required": "-",
+     "options": "",
+     "origin": "seed data only",
+     "note": ""
+    },
+    {
+     "category": "CARRIED_DOCUMENT",
+     "label_th": "ประเด็นคำพิพากษา / เอกสารแนบร่างความเห็น",
+     "field_id": "-",
+     "property": "l8VerdictIssues, l8OpinionAttachments",
+     "type": "text/file[] (display)",
+     "required": "-",
+     "options": "",
+     "origin": "appeal-consider drafting steps (10-3v-16..20)",
+     "note": ""
+    },
+    {
+     "category": "CASE_REF",
+     "label_th": "เลขคดีดำ / เลขคดีแดง / โจทก์ / จำเลย / วันที่พิพากษา",
+     "field_id": "-",
+     "property": "blackCaseNo, redCaseNo, plaintiffs, defendants, verdictDate",
+     "type": "text/date (display)",
+     "required": "-",
+     "options": "",
+     "origin": "original case + verdict record",
+     "note": ""
+    }
+   ],
+   "issues": [
+    "Same seed-only board-result gap as R103-2A.",
+    "pair_id shared with R103-2A -- S103-2 is a single send point that branches into exactly one of these two receive points depending on the (unimplemented) board decision."
+   ],
+   "law_refs": [
+    {
+     "code": "LAW0164",
+     "text": "รับเรื่องเพื่อ ดำเนินการแจ้งผล (บอร์ดเห็นชอบไม่อุทธรณ์)",
+     "tobe": "TO-BE 10.3 › 11. แจ้งความประสงค์ไม่อุทธรณ์",
+     "part": "จุดนี้"
+    },
+    {
+     "code": "LAW0165",
+     "text": "พิจารณาเเละเห็นชอบ",
+     "tobe": "TO-BE 10.3 › 11. แจ้งความประสงค์ไม่อุทธรณ์",
+     "part": "ขั้นถัดไป"
+    },
+    {
+     "code": "LAW0166",
+     "text": "พิจารณาและมอบหมายงาน",
+     "tobe": "TO-BE 10.3 › 11. แจ้งความประสงค์ไม่อุทธรณ์",
+     "part": "ขั้นถัดไป"
+    }
+   ],
+   "law_note": "ม็อกอัปใช้รหัสภายใน L9B_INTAKE สำหรับหน้า 10-3v-37 — ตาม TO-BE ตรงกับ LAW0164"
+  }
+ ]
+}

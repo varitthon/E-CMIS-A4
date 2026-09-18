@@ -67,8 +67,9 @@ B. 15 → 16 → 17  ■ ปิด     C. 22 → 23 → 24  ■ ปิด       
    │                                                           ⚡ [H1] มติบอร์ดตอบกลับ
    ⚡ [H3] ผู้ร้องยื่นอุทธรณ์                                        → 30 → 35 → 36 → 11 → 37 → 13 → 14  ■ ปิด
    ▼
-E. appeal-01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10
-   ⚡ [H2] มติบอร์ดตอบกลับ → appeal-11 → 12 → 13  ■ ปิด
+E. appeal-01 (เลือกนิติกรเอง) → 04 → 06 (วินิจฉัยก่อน) → 07 (บรรจุวาระ+เสนอ รวมหน้า) → 09 (ลงนาม+ออกเลขส่ง)
+   ⚡ [H2] มติบอร์ดตอบกลับ → appeal-12 → 13  ■ ปิด
+   (appeal-02/03/08/10/11 ถูกตัดออก, appeal-05 ถูกรวมเข้า appeal-07 แล้ว — เหลือ 7 หน้า)
 ```
 
 ⚡ = จุดส่งต่อที่**ไม่มีหน้าในระบบ** ต้องจำลองด้วย console snippet (หัวข้อ 7)
@@ -176,7 +177,7 @@ E. appeal-01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10
 | จุด | เหตุการณ์จริง | `FROM` | `TO` | `PATCH` | ขั้นถัดไป |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **H1** | คณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7 รอบ 2) มีมติ | `L2_READY_FOR_BOARD_ROUND2` | `L2_BOARD_RESOLVED_ROUND2` | `{ status: "มติบอร์ด ตอบกลับแล้ว", assignedRole: "admin_legal" }` | D5 `Kanda.R` |
-| **H2** | คณะกรรมการ ป.ป.ท. มีมติต่อคำอุทธรณ์ | `L2_APPEAL_SUBMITTED_TO_BOARD` | `L2_APPEAL_BOARD_RESOLVED` | `{ status: "มติบอร์ดตอบกลับแล้ว", assignedRole: "case_bureau_admin" }` | E11 `Nichada.T` |
+| **H2** | คณะกรรมการ ป.ป.ท. มีมติต่อคำอุทธรณ์ (ส่งตรงเข้าคิวเลขานุการฯ ไม่ผ่านธุรการอีกขั้น — appeal-11 เดิมถูกตัดออก) | `L2_APPEAL_SUBMITTED_TO_BOARD` | `L2_PENDING_APPEAL_NOTICE_DRAFT` | `{ status: "เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ", assignedRole: "case_tracking_secretary", l2AppealBoardResolutionType: "DISCLOSE", l2AppealBoardResolutionTypeName: "ให้เปิดเผยข้อมูลทั้งหมด", l2AppealBoardReplyDocNo: "ปป 0002/5301", l2AppealBoardReplyDate: "2569-09-18", l2AppealBoardResolutionNotes: "-" }` | appeal-12 `Suda.K` |
 | **H3** | ผู้ยื่นคำขอยื่นอุทธรณ์คำสั่งไม่เปิดเผย | `L2_CASE_CLOSED_DENY_ASSIGNED` | `L2_PENDING_APPEAL_INTAKE` | `{ status: "รอรับเรื่องอุทธรณ์", assignedRole: "case_bureau_admin" }` | E1 `Nichada.T` |
 
 > ถ้า snippet แจ้ง "สถานะปัจจุบันคือ ..." แปลว่ายังเดินขั้นก่อนหน้าไม่ครบ — ห้ามแก้ `FROM` เพื่อบังคับข้าม
@@ -187,20 +188,16 @@ E. appeal-01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10
 
 **เงื่อนไขเริ่มต้น:** คำร้องจบสาย B (`L2_CASE_CLOSED_DENY_ASSIGNED`) แล้วรัน snippet **[H3]**
 
+> ⚠️ **เปลี่ยนแปลง (2569-09-18):** ตัดขั้นตอน appeal-02, 03, 08, 10, 11 ออกจาก flow แล้ว และรวม appeal-05 (บรรจุวาระ) เข้ากับ appeal-07 (เสนอบันทึก) เป็นหน้าเดียว พร้อมสลับให้คณะอนุกรรมการฯ วินิจฉัย (06) มาก่อนขั้นบรรจุวาระ (13 หน้า → **7 หน้า**) — ธุรการเลือกนิติกรเองที่ appeal-01, ฝ่ายเลขาฯ บันทึกวาระ+เสนอบันทึกในหน้าเดียวที่ appeal-07 (หลังคณะอนุกรรมการฯ วินิจฉัยแล้ว), ผอ.กองบริหารคดีลงนามเสนอ+ออกเลขส่งในหน้าเดียวที่ appeal-09, และ [H2] เขียนมติบอร์ดตรงเข้าคิวเลขานุการฯ (appeal-12) โดยไม่ผ่านธุรการอีกขั้น
+
 | # | LAW | Login | หน้า | การกระทำ | ลงนาม | สถานะหลังกด | ผล |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :---: |
-| E1 | LAW0069–0071 | `Nichada.T` | `10-2-appeal-01-legal-admin-intake.html` (หรือปุ่ม **รับเรื่องอุทธรณ์** ใน inbox) | เลือกคำร้อง → เลขที่หนังสือรับ / วันที่ลงรับ / เลขที่คำอุทธรณ์ / ช่องทาง / สรุปประเด็นอุทธรณ์ → **บันทึกรับเรื่องอุทธรณ์และเข้าสู่ระบบ** | ➖ | `L2_PENDING_BUREAU_DIRECTOR_ASSIGN` | |
-| E2 | LAW0072 | `Pattama.B` | `10-2-appeal-02-case-bureau-director-assign.html` | เลือกผู้รับมอบหมาย → **ลงนามและมอบหมาย** | ✅ | `L2_PENDING_TRACKING_DIRECTOR_ASSIGN` | |
-| E3 | LAW0073 | `Wichai.T` | `10-2-appeal-03-case-tracking-director-assign.html` | เลือกนิติกร → **ลงนามและมอบหมายนิติกร** | ✅ | `L2_PENDING_CASE_OWNER_APPEAL_OPINION` | |
-| E4 | LAW0074 | `Somchai.J` | `10-2-appeal-04-case-owner-opinion.html` | แจ้งผู้อุทธรณ์ (3 วัน) + ทำความเห็น (10 วัน) → **ลงนามและส่งต่อ** | ✅ | `L2_PENDING_APPEAL_AGENDA` | |
-| E5 | LAW0075 | `Malee.S` | `10-2-appeal-05-secretariat-agenda.html` | วันที่ประชุม + เลขที่วาระ → **ลงนามและบรรจุวาระ** | ✅ | `L2_PENDING_APPEAL_RULING` | |
-| E6 | LAW0076 | `Sompong.V` | `10-2-appeal-06-subcommittee-ruling.html` | เลือกคำวินิจฉัย (ยืนไม่เปิดเผย / กลับทั้งหมด / กลับบางส่วน) + เหตุผล → **ลงนามและบันทึกคำวินิจฉัย** | ✅ | `L2_PENDING_APPEAL_MEMO` | |
-| E7 | LAW0077 | `Malee.S` | `10-2-appeal-07-secretariat-memo.html` | ตรวจบันทึก → **ลงนามและเสนอ** | ✅ | `L2_PENDING_TRACKING_DIRECTOR_SIGN` | |
-| E8 | *(ใหม่)* | `Wichai.T` | `10-2-appeal-08-case-tracking-director-sign.html` | **ลงนามส่งต่อ ผอ.กองบริหารคดี** | ✅ | `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` | |
-| E9 | LAW0078 | `Pattama.B` | `10-2-appeal-09-case-bureau-director-board-propose.html` | **ลงนามเสนอกิจกรรมที่ 7** | ✅ | `L2_PENDING_APPEAL_BOARD_DISPATCH` | |
-| E10 | LAW0079 | `Nichada.T` | `10-2-appeal-10-legal-admin-board-submit.html` | เลขที่หนังสือส่ง + วันที่ส่ง → **ออกเลขส่งและยื่นมติบอร์ด** | ➖ | `L2_APPEAL_SUBMITTED_TO_BOARD` *(รอบอร์ด)* | |
-| ⚡ H2 | — | — | *console* | snippet **[H2]** | — | `L2_APPEAL_BOARD_RESOLVED` | |
-| E11 | LAW0080 | `Nichada.T` | `10-2-appeal-11-legal-admin-board-resolution.html` | เลือกมติคณะกรรมการ (เปิดเผยทั้งหมด / บางส่วน / ไม่เปิดเผย) + เลขที่/วันที่หนังสือตอบกลับ → **ลงนามและบันทึกมติคณะกรรมการ** | ✅ | `L2_PENDING_APPEAL_NOTICE_DRAFT` | |
+| E1 | LAW0069–0071 | `Nichada.T` | `10-2-appeal-01-legal-admin-intake.html` (หรือปุ่ม **รับเรื่องอุทธรณ์** ใน inbox) | เลือกคำร้อง → เลขที่หนังสือรับ (เลขสารบัญ) / วันที่ลงรับ / ช่องทาง (เขต/walk-in/ไปรษณีย์/อิเล็กทรอนิกส์) / เลือกนิติกรเจ้าของเรื่อง (default = เจ้าของสำนวนเดิม) → **บันทึกรับเรื่องอุทธรณ์และเข้าสู่ระบบ** | ➖ | `L2_PENDING_CASE_OWNER_APPEAL_OPINION` | |
+| E4 | LAW0074 | `Somchai.J` | `10-2-appeal-04-case-owner-opinion.html` | แจ้งผู้อุทธรณ์ (3 วัน) + ทำความเห็น (10 วัน) → **ลงนามและส่งต่อ** | ✅ | `L2_PENDING_APPEAL_RULING` | |
+| E6 | LAW0076 | `Sompong.V` | `10-2-appeal-06-subcommittee-ruling.html` | เลือกคำวินิจฉัย (ไม่เปิดเผย / กลับทั้งหมด / กลับบางส่วน) + เหตุผล → **ลงนามและบันทึกคำวินิจฉัย** | ✅ | `L2_PENDING_APPEAL_MEMO` | |
+| E7 | LAW0075+0077 | `Malee.S` | `10-2-appeal-07-secretariat-memo.html` | วันที่ประชุม + เลขที่วาระ + ตรวจบันทึก → **ลงนามบันทึกวาระและเสนอ** | ✅ | `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` | |
+| E9 | LAW0078+0079 | `Pattama.B` | `10-2-appeal-09-case-bureau-director-board-propose.html` | ความเห็นเพิ่มเติม + เลขที่หนังสือส่ง/วันที่ส่ง → **ลงนามเสนอ + ออกเลขส่งยื่นกิจกรรมที่ 7** | ✅ | `L2_APPEAL_SUBMITTED_TO_BOARD` *(รอบอร์ด)* | |
+| ⚡ H2 | — | — | *console* | snippet **[H2]** — เขียนมติบอร์ดตรงเข้า case | — | `L2_PENDING_APPEAL_NOTICE_DRAFT` | |
 | E12 | LAW0081 | `Suda.K` | `10-2-appeal-12-tracking-secretary-notice-draft.html` | เลขที่ + วันที่หนังสือแจ้งผลมติ → **ลงนามและส่งหนังสือแจ้งผลมติ** | ✅ | `L2_PENDING_APPEAL_CASE_OWNER_NOTIFY` | |
 | E13 | LAW0082–0083 | `Somchai.J` | `10-2-appeal-13-case-owner-notify-appellant.html` | วันที่แจ้ง + ช่องทาง → **ลงนามและแจ้งผลผู้อุทธรณ์** | ✅ | `L2_APPEAL_CASE_CLOSED_NOTIFIED` **■ สิ้นสุดทั้ง Flow 10.2** | |
 
