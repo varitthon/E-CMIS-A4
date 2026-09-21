@@ -796,6 +796,7 @@
     <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
     <script src="assets/ecmis-shell.js?v=20260904_6"></script>
     <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20260921_1"></script>
 
     <script>
       const STEP_CODE = "L3-32";
@@ -813,6 +814,10 @@
         ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
         loadCase();
         if (!viewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+        ECMIS103CaseEdit.mount({
+          getCase: function () { return currentCase; },
+          onSaved: function (c) { currentCase = c; },
+        });
       });
 
       function loadCase() {

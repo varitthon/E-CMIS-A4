@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ธุรการกองกฎหมาย ให้ความเห็นเบื้องต้นและลงนาม | E-CMIS กิจกรรมที่ 10.2
+      ธุรการกองกฎหมาย รับเรื่อง | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -94,7 +94,7 @@
           <button class="btn-toggle-menu" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
           <div class="breadcrumb">
             <span>🏠 หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
-            <span style="color: var(--text-title); font-weight: 600">ธุรการกองกฎหมาย ให้ความเห็นเบื้องต้น</span>
+            <span style="color: var(--text-title); font-weight: 600">ธุรการกองกฎหมาย รับเรื่อง</span>
           </div>
         </div>
 
@@ -198,14 +198,14 @@
 
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
-              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>ความเห็นเบื้องต้นหลังคณะอนุกรรมการฯ มีมติ</span>
+              <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>รับเรื่องหลังคณะอนุกรรมการฯ มีมติ</span>
               <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span>
             </div>
             <div class="form-card-body">
               <div class="form-group">
                 <label>
                   <span
-                    >ความเห็น
+                    >หมายเหตุ <span class="l2-optional">(ไม่บังคับ)</span>
                     <button
                       type="button"
                       class="btn-mic"
@@ -220,14 +220,14 @@
                   id="in_adminComment"
                   class="form-control"
                   rows="4"
-                  placeholder="ระบุความเห็น..."
+                  placeholder="ระบุหมายเหตุ (ถ้ามี)..."
                 ></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ย้อนกลับ</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-pen-nib me-1"></i>ให้ความเห็นและลงนาม
+                <i class="fa-solid fa-inbox me-1"></i>รับเรื่องและส่ง ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -288,31 +288,21 @@
       function submitForm() {
         const notes = document.getElementById("in_adminComment").value.trim();
 
-        ECMIS102.openSignatureModal(
-          {
-            title: "ลงนามให้ความเห็นเบื้องต้น (ธุรการกองกฎหมาย)",
-            signer: ECMIS102.signerLabel("admin_legal"),
-            certId: "PACC-ADMINLEGAL-2569-102",
-          },
-          (image) => {
-            Activity102.sign(currentCase.id, STEP_CODE, image);
-            Activity102.advance(currentCase.id, STEP_CODE, {
-              l2AdminPreComment: notes,
-              assignedRole: "dir_legal",
-              officer: ECMIS102.signerLabel("dir_legal"),
-            });
+        Activity102.advance(currentCase.id, STEP_CODE, {
+          l2AdminPreComment: notes,
+          assignedRole: "dir_legal",
+          officer: ECMIS102.signerLabel("dir_legal"),
+        });
 
-            Swal.fire({
-              icon: "success",
-              title: "ให้ความเห็นและลงนามเรียบร้อย",
-              html:
-                '<div class="emd-summary">' +
-                "<p><strong>ขั้นตอนต่อไป:</strong> ผู้อำนวยการกองกฎหมาย ให้ความเห็นเบื้องต้น</p></div>",
-              confirmButtonColor: "#1e3a8a",
-              confirmButtonText: "กลับหน้าคิวงาน",
-            }).then(ECMIS102.goInbox);
-          },
-        );
+        Swal.fire({
+          icon: "success",
+          title: "รับเรื่องเรียบร้อย",
+          html:
+            '<div class="emd-summary">' +
+            "<p><strong>ขั้นตอนต่อไป:</strong> ผู้อำนวยการกองกฎหมาย มอบหมาย</p></div>",
+          confirmButtonColor: "#1e3a8a",
+          confirmButtonText: "กลับหน้าคิวงาน",
+        }).then(ECMIS102.goInbox);
       }
 
       function toggleTheme() {
