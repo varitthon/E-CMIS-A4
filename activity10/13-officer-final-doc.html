@@ -1204,7 +1204,10 @@
              setElText(
                "f_signedOrder",
                currentCase.signedExecutiveOrder
-                 ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง`
+                 ? /* มติที่ลงนามรอบ 1 อาจมีคำว่า "…ให้ทำความเห็นแย้ง" อยู่แล้ว — ไม่ต่อซ้ำ */
+                   currentCase.signedExecutiveOrder.includes("ความเห็นแย้ง")
+                   ? currentCase.signedExecutiveOrder
+                   : `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง`
                  : "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง",
              );
              setElText(
@@ -1322,7 +1325,14 @@
       let opinionType = 'เห็นชอบตามคำสั่งไม่ฟ้องของพนักงานอัยการ (ยุติเรื่อง)';
       let defaultFile = 'ร่างหนังสือเห็นชอบคำสั่งไม่ฟ้อง.pdf';
       if (isDissent) {
-      opinionType = (currentCase && currentCase.signedExecutiveOrder) ? `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ` : 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ';
+      /* มติรอบ 1 อาจเป็น "เห็นชอบ" หรือ "เห็นชอบให้ทำความเห็นแย้ง" อยู่แล้ว — ต่อท้ายเฉพาะส่วนที่ยังไม่มี
+         (ข้อความนี้มีคำว่า "เห็นชอบ" ได้ จึงต้องตัดสินผลด้วย Activity10.isAgreedOpinion ซึ่งตรวจ "เห็นแย้ง" ก่อน) */
+      const execOrder = (currentCase && currentCase.signedExecutiveOrder) || '';
+      opinionType = !execOrder
+        ? 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ'
+        : execOrder.includes('ความเห็นแย้ง')
+          ? `${execOrder}คำสั่งไม่ฟ้องของพนักงานอัยการ`
+          : `${execOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ`;
       defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
       } else if (isOther) {
       const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();

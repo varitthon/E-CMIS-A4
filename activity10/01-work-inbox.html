@@ -2180,10 +2180,10 @@
           if (
             sc === "PENDING_ADMIN_OAG_VERDICT_INTAKE" ||
             (sc === "DISPATCHED_TO_PROSECUTOR" &&
-              (c.dispatchRecipientType === "attorney_general" ||
-                c.dispatchScenario === "case_disagreed" ||
-                (c.finalOpinionType &&
-                  c.finalOpinionType.includes("เห็นแย้ง"))))
+              /* c มาจาก getAllDatabaseCases() ซึ่งเป็นแถวตาราง — ผลการพิจารณาอยู่ใน c.raw */
+              ((c.raw || c).dispatchRecipientType === "attorney_general" ||
+                (c.raw || c).dispatchScenario === "case_disagreed" ||
+                String((c.raw || c).finalOpinionType || "").includes("เห็นแย้ง")))
           ) {
             window.location.href = `19-legal-admin-oag-verdict-intake.html?id=${encodeURIComponent(c.id)}`;
           } else if (
@@ -2641,10 +2641,10 @@
           if (
             statusCode === "PENDING_ADMIN_OAG_VERDICT_INTAKE" ||
             (statusCode === "DISPATCHED_TO_PROSECUTOR" &&
-              (item.dispatchRecipientType === "attorney_general" ||
-                item.dispatchScenario === "case_disagreed" ||
-                (item.finalOpinionType &&
-                  item.finalOpinionType.includes("เห็นแย้ง"))))
+              /* ฟิลด์ผลการพิจารณาอยู่ในระเบียนเคสจริง (item.raw) ไม่ได้คัดลอกมาในแถวตาราง */
+              ((item.raw || item).dispatchRecipientType === "attorney_general" ||
+                (item.raw || item).dispatchScenario === "case_disagreed" ||
+                String((item.raw || item).finalOpinionType || "").includes("เห็นแย้ง")))
           ) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="รับผลคำวินิจฉัย อสส. และ ส่งต่อ ผอ.กอง">ดำเนินการ</button>`;
           }

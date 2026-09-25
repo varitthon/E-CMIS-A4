@@ -2769,7 +2769,7 @@
         },
       },
       statusCode: "L2_READY_FOR_BOARD_ROUND2",
-      status: "มติบอร์ด ตอบกลับแล้ว",
+      status: "รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
@@ -2822,7 +2822,7 @@
         },
       },
       statusCode: "L2_READY_FOR_BOARD_ROUND2",
-      status: "มติบอร์ด ตอบกลับแล้ว",
+      status: "รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
@@ -4458,6 +4458,14 @@
        ไม่มีผลการพิจารณา ให้ถือเป็นเห็นแย้งไว้ก่อน เพราะการส่งเกินยังแก้ได้
        แต่การไม่ได้ส่งให้ อสส. ทำให้สำนวนไปไม่ถึงผู้มีอำนาจชี้ขาด
        opinionOverride ใช้เฉพาะปุ่มทดสอบที่หน้า 18 */
+    /* ความเห็นฉบับสมบูรณ์ (finalOpinionType) เป็น "เห็นชอบ" (ยุติเรื่อง) หรือไม่
+       ต้องตรวจ "เห็นแย้ง" ก่อน เพราะข้อความกรณีเห็นแย้งที่อ้างมติบอร์ดขึ้นต้นด้วย
+       "เห็นชอบให้ทำความเห็นแย้ง…" ซึ่งมีคำว่า "เห็นชอบ" อยู่ด้วย */
+    isAgreedOpinion(opinionText) {
+      const text = String(opinionText || "");
+      return !text.includes("เห็นแย้ง") && text.includes("เห็นชอบ");
+    },
+
     getRequiredRecipients(caseItem, opinionOverride) {
       const item = caseItem || {};
       const prosecutor = {
@@ -4469,7 +4477,7 @@
       let agreed;
       if (opinionOverride === "AGREED") agreed = true;
       else if (opinionOverride === "DISAGREED") agreed = false;
-      else agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+      else agreed = this.isAgreedOpinion(item.finalOpinionType);
 
       return agreed ? [prosecutor] : [oag, prosecutor];
     },
@@ -5606,7 +5614,7 @@
       else item.dispatchRecipients.push(entry);
 
       /* ค่าที่ Flow 4 ใช้ตัดสินเส้นทาง ต้องคงรูปเดิมทุกประการ */
-      const agreed = String(item.finalOpinionType || "").includes("เห็นชอบ");
+      const agreed = this.isAgreedOpinion(item.finalOpinionType);
       item.dispatchScenario = agreed ? "case_agreed" : "case_disagreed";
       item.dispatchRecipientType = agreed
         ? "prosecutor_origin"
