@@ -2865,22 +2865,13 @@
       let selectedIntakeCaseData = null;
 
       function selectIntakeCase(caseId) {
-        const cases = Activity10.getCases ? Activity10.getCases() : [];
+        /* ค้นจากฐานข้อมูลสำนวน ป.ป.ท. ชุดเดียวกับตารางผลค้นหาเท่านั้น และเทียบ id ตรงตัว
+           เดิมค้นเคสในระบบก่อนโดยเทียบแค่เลข (เช่น 100007/2569) ทำให้ไปหยิบเคสอื่นที่เลขซ้ำ
+           (คดี-100007/2569 แทน คำร้อง-100007/2569) แล้วตอนบันทึกเขียนทับเคสนั้น */
         const dbCases = Activity10.getPaccIntakeDatabase
           ? Activity10.getPaccIntakeDatabase()
           : [];
-        let target = cases.find(
-          (c) =>
-            c.id === caseId ||
-            c.id.replace(/^.*?-/, "") === caseId.replace(/^.*?-/, ""),
-        );
-        if (!target) {
-          target = dbCases.find(
-            (c) =>
-              c.id === caseId ||
-              c.id.replace(/^.*?-/, "") === caseId.replace(/^.*?-/, ""),
-          );
-        }
+        const target = dbCases.find((c) => c.id === caseId);
         if (!target) return;
         selectedIntakeCaseData = target;
 
@@ -3325,7 +3316,9 @@
               ...l2Fields,
               ...l3Fields,
               ...routing,
-              id: selectedIntakeCaseData ? selectedIntakeCaseData.id : null,
+              /* ไม่ส่ง id และ paccCaseNo ของสำนวนที่ค้นเจอเข้า addCase เพราะ addCase จะถือว่า
+                 เป็นเคสเดิม (id หรือ paccCaseNo ตรงกัน) แล้วเขียนทับเคสที่กำลังดำเนินการอยู่
+                 เคสรับเรื่องใหม่ต้องได้เลขของตัวเองเสมอ แล้วค่อยผูกสำนวนเดิมหลังสร้าง (ด้านล่าง) */
               category: category,
               title: finalTitle,
               source: source,
@@ -3344,9 +3337,6 @@
               accused: isCourtCase
                 ? l3Fields.defendants.join(", ") || "-"
                 : accused,
-              paccCaseNo: selectedIntakeCaseData
-                ? selectedIntakeCaseData.paccCaseNo
-                : "",
               lawReceiveNo: lawReceiveNo,
               centralSarabanNo: centralSarabanNo,
               physicalDocDate: physicalDocDate,
@@ -3355,6 +3345,14 @@
               officer: "นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)",
               workflowStep: 3,
             });
+
+            // ผูกสำนวน ป.ป.ท. เดิมที่เลือกจากผลค้นหา (อ้างอิงเท่านั้น ไม่รวมเคส)
+            if (selectedIntakeCaseData) {
+              Activity10.updateCase(newCase.id, {
+                paccCaseNo: selectedIntakeCaseData.paccCaseNo || "",
+                paccSourceId: selectedIntakeCaseData.id,
+              });
+            }
 
             Activity10.savePhysicalDocIntake(newCase.id, {
               centralSarabanNo: centralSarabanNo,

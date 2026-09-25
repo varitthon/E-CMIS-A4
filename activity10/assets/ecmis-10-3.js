@@ -1497,7 +1497,9 @@
     spawnStayObjectionCase: function (parentCase) {
       if (!parentCase) return null;
       const childId = parentCase.id.replace(/\/(\d{4})$/, "-B/$1");
-      const existing = Activity10.getCaseById(childId);
+      /* ต้องหาแบบตรงตัวเท่านั้น — getCaseById() คืน cases[0] เมื่อไม่พบ id ทำให้เดิมคิดว่า
+         มีเคสลูกอยู่แล้วทุกครั้ง และไม่เคยสร้างเคสลูกให้คำฟ้องใหม่เลย */
+      const existing = Activity10.getCases().find(function (c) { return c.id === childId; });
       if (existing) return existing;
       return Activity10.addCase({
         id: childId,
@@ -1882,7 +1884,12 @@
       const endIdx = flow.findIndex(function (s) { return s.code === endCode; });
       if (endIdx >= 0) flow = flow.slice(0, endIdx + 1);
     }
-    el.innerHTML = flow.map(function (step, i) {
+    el.innerHTML = stepItemsHtml(flow, curIdx);
+  }
+
+  /* วงกลมขั้นตอนของแถบ stepper — ก่อน curIdx = เสร็จแล้ว, curIdx = ขั้นปัจจุบัน */
+  function stepItemsHtml(flow, curIdx) {
+    return flow.map(function (step, i) {
       const cls = i < curIdx ? "completed" : i === curIdx ? "active" : "";
       const inner = i < curIdx ? '<i class="fa-solid fa-check"></i>' : String(i + 1);
       return (
@@ -1892,6 +1899,28 @@
         "</div>"
       );
     }).join("");
+  }
+
+  /* แถบขั้นตอน 2 แถวของหน้า Part 4 (10-3-10 … 10-3-25 เรียกใช้ แต่เดิมไม่มีฟังก์ชันนี้ ทำให้หน้า error ตั้งแต่โหลด)
+     แถวบน = Part 1 ก่อนคณะกรรมการ ป.ป.ท. มีมติ (เสร็จแล้วทั้งหมด)
+     แถวล่าง = ANSWER_STEPS แสดงเฉพาะผู้ลงนามหนังสือนำส่งที่เลือกไว้ที่ 10-3-17
+     (L3-27A เลขาธิการ เป็นค่าเริ่มต้น / L3-27B รองเลขาธิการ)
+     currentCode = null (โหมดดูอย่างเดียว) → ถือว่าขั้นล่าสุดของคดี (l3Step) เสร็จแล้ว */
+  function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
+    const el1 = document.getElementById(part1ContainerId);
+    const el2 = document.getElementById(part2ContainerId);
+    if (!el1 || !el2) return;
+    const signer = kase && kase.l3CoverLetterSignerRole;
+    const answer = ANSWER_STEPS.filter(function (s) {
+      if (s.code === "L3-27A") return signer !== "deputy_sg";
+      if (s.code === "L3-27B") return signer === "deputy_sg";
+      return true;
+    });
+    const code = currentCode || (kase && kase.l3Step) || null;
+    let curIdx = answer.findIndex(function (s) { return s.code === code; });
+    if (!currentCode && curIdx >= 0) curIdx += 1;
+    el1.innerHTML = stepItemsHtml(STEPS, STEPS.length);
+    el2.innerHTML = stepItemsHtml(answer, curIdx);
   }
 
   /* สร้าง HTML ของบรรทัด "ขั้นตอนถัดไป" ใต้ stepper-card — รับ statusCode ที่ขั้น
@@ -2098,6 +2127,7 @@
     setHtml: setHtml,
     goInbox: goInbox,
     renderStepper: renderStepper,
+    renderStepperV2: renderStepperV2,
     nextStepNoteHtml: nextStepNoteHtml,
     renderSidebarMenu: renderSidebarMenu,
     renderAttachments: renderAttachments,
