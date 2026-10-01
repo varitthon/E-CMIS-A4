@@ -325,7 +325,7 @@
                 <label><span>สำเนาหนังสือในระบบ <span style="color: #dc2626">*</span></span></label>
                 <div class="l2-file">
                   <i class="fa-solid fa-paperclip" style="color: #64748b"></i>
-                  <input type="file" id="in_noticeDocCopy" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="showPickedNoticeDocCopy()" multiple />
+                  <input type="file" id="in_noticeDocCopy" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onchange="showPickedNoticeDocCopy()" multiple />
                 </div>
                 <div id="f_pickedNoticeDocCopy" class="l2-optional" style="margin-top: 6px"></div>
               </div>
@@ -351,9 +351,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260909_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260909_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "L2-APPEAL-CASE-OWNER-NOTIFY";
@@ -431,7 +431,8 @@
         const c = currentCase;
         document.getElementById("f_caseNo").textContent = c.id;
         document.getElementById("f_title").textContent = c.title || "-";
-        document.getElementById("f_requesterName").textContent = c.requesterName || "-";
+        ECMIS102.renderCaseMeta(c);
+        document.getElementById("f_requesterName").textContent = c.l2AppellantName || c.requesterName || "-";
         document.getElementById("f_resolution").textContent = c.l2ResolutionTypeName || "-";
         ECMIS102.renderOriginalCaseCard(c);
 

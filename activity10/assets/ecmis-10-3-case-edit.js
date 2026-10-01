@@ -45,6 +45,21 @@
     return '<input type="' + (type || "text") + '" id="' + id + '" class="form-control" value="' + esc(value) + '" ' + (extra || "") + " />";
   }
 
+  /* select จากรายการ {code, name} (สถานะ 10.3.3.1 / 10.3.4.1) */
+  function codeSelectHtml(id, list, value) {
+    return (
+      '<select id="' + id + '" class="form-control">' +
+      list.map(function (s) {
+        return '<option value="' + esc(s.code) + '"' + (s.code === value ? " selected" : "") + ">" + esc(s.name) + "</option>";
+      }).join("") + "</select>"
+    );
+  }
+
+  function levelOptions() {
+    var levels = global.Activity10.COURT_LEVELS;
+    return Object.keys(levels).map(function (k) { return { code: k, name: levels[k] }; });
+  }
+
   function textarea(id, value, rows) {
     return '<textarea id="' + id + '" class="form-control" rows="' + rows + '">' + esc(value) + "</textarea>";
   }
@@ -59,18 +74,28 @@
   }
 
   function buildForm(c) {
+    var st = global.Activity103.effectiveStatus(c);
+    /* ปีงบประมาณ: อ่านอย่างเดียวเมื่อคำนวณ/มีค่าอยู่แล้ว ถ้าไม่มีวันที่รับเรื่องให้กรอกเองได้ */
+    var fiscalValue = c.fiscalYear || global.Activity10.fiscalYearOf(c.courtReceivedDate) || "";
     return (
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">' +
       field("ชื่อหมาย", selectHtml("ce_summonsName", SUMMONS_OPTIONS, c.summonsName), true) +
       field("ศาล", selectHtml("ce_courtName", COURT_OPTIONS, c.courtName), true) +
+      field("ปีงบประมาณที่รับเรื่อง", input("ce_fiscalYear", fiscalValue, "number", 'min="2500" max="2700" step="1"' + (fiscalValue ? " readonly" : "")), false) +
       field("สั่งถึง", selectHtml("ce_orderedTo", ORDERED_TO_OPTIONS, c.orderedTo), true) +
       field("หมายเลขคดีดำ", input("ce_blackCaseNo", c.blackCaseNo), true) +
       field("หมายเลขคดีแดง", input("ce_redCaseNo", c.redCaseNo), false) +
       field("ศาลให้ทำภายใน .... วัน (เวลาที่ศาลสั่ง)", input("ce_courtDeadlineDays", c.courtDeadlineDays, "number", 'min="1" step="1"'), true) +
       field("วันที่สำนักงาน ป.ป.ท. รับเรื่อง", input("ce_courtReceivedDate", c.courtReceivedDate, "date"), true) +
-      field("เลขสารบัญ", input("ce_courtSarabanNo", c.courtSarabanNo), true) +
+      field("เลขสารบัญ", input("ce_courtSarabanNo", c.courtSarabanNo), false) +
       field("ผู้ฟ้อง (บรรทัดละ 1 ราย)", textarea("ce_plaintiffs", (c.plaintiffs || []).join("\n"), 3), true) +
       field("ผู้ถูกฟ้อง (บรรทัดละ 1 ราย)", textarea("ce_defendants", (c.defendants || []).join("\n"), 3), true) +
+      field("ผู้ร้องสอด (บรรทัดละ 1 ราย)", textarea("ce_intervenors", (c.intervenors || []).join("\n"), 3), false) +
+      field("มูลเหตุแห่งการฟ้องคดี", textarea("ce_causeOfSuit", c.causeOfSuit, 3), false) +
+      field("ประเภทการดำเนินการ (สถานะ)", codeSelectHtml("ce_opStatusType", global.Activity10.L3_OP_STATUS, st.opStatusType) +
+        input("ce_opStatusOther", st.opStatusOther, "text", 'placeholder="ระบุ (กรณีเลือกอื่นๆ)" style="margin-top:6px"'), false) +
+      field("สถานะทางคดี", codeSelectHtml("ce_caseStatus", global.Activity10.L3_CASE_STATUS, st.caseStatus) +
+        input("ce_caseStatusOther", st.caseStatusOther, "text", 'placeholder="ระบุ (กรณีเลือกอื่นๆ)" style="margin-top:6px"'), false) +
       "</div>" +
       field("หมายเหตุ", textarea("ce_courtRemark", c.courtRemark, 2), false)
     );
@@ -96,6 +121,14 @@
       plaintiffs: lines("ce_plaintiffs"),
       defendants: lines("ce_defendants"),
       courtRemark: v("ce_courtRemark"),
+      courtLevel: v("ce_courtName") === "ศาลปกครองสูงสุด" ? "SUPREME" : "FIRST",
+      fiscalYear: v("ce_fiscalYear"),
+      intervenors: lines("ce_intervenors"),
+      causeOfSuit: v("ce_causeOfSuit"),
+      opStatusType: v("ce_opStatusType"),
+      opStatusOther: v("ce_opStatusType") === "OTHER" ? v("ce_opStatusOther") : "",
+      caseStatus: v("ce_caseStatus"),
+      caseStatusOther: v("ce_caseStatus") === "OTHER" ? v("ce_caseStatusOther") : "",
     };
   }
 
@@ -107,9 +140,10 @@
       [d.blackCaseNo, "กรุณาระบุหมายเลขคดีดำ"],
       [d.courtDeadlineDays, "กรุณาระบุจำนวนวันที่ศาลให้ทำ"],
       [d.courtReceivedDate, "กรุณาระบุวันที่สำนักงาน ป.ป.ท. รับเรื่อง"],
-      [d.courtSarabanNo, "กรุณาระบุเลขสารบัญ"],
       [d.plaintiffs.length ? "1" : "", "กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 ราย"],
       [d.defendants.length ? "1" : "", "กรุณาระบุผู้ถูกฟ้องอย่างน้อย 1 ราย"],
+      [d.opStatusType !== "OTHER" || d.opStatusOther ? "1" : "", "กรุณาระบุการดำเนินการ (อื่นๆ)"],
+      [d.caseStatus !== "OTHER" || d.caseStatusOther ? "1" : "", "กรุณาระบุสถานะทางคดี (อื่นๆ)"],
     ];
     for (var i = 0; i < checks.length; i++) {
       if (!checks[i][0]) return checks[i][1];
@@ -122,6 +156,14 @@
     var A = global.Activity10;
     var rec = sourceRecord(cur);
     var joined = function (a) { return a.join(", ") || "-"; };
+    /* สถานะเป็นของเคสที่เปิดอยู่ (เคสลูกทุเลามีสถานะของตัวเอง) — เก็บประวัติด้วย */
+    var statusChange = global.Activity103.buildStatusChange(cur, {
+      opStatusType: d.opStatusType,
+      opStatusOther: d.opStatusOther,
+      caseStatus: d.caseStatus,
+      caseStatusOther: d.caseStatusOther,
+    }, global.ECMIS103.signerLabel(global.ECMIS103.currentRoleId()));
+    if (statusChange) A.updateCase(cur.id, statusChange);
     A.updateCase(rec.id, {
       summonsName: d.summonsName,
       courtName: d.courtName,
@@ -132,6 +174,11 @@
       courtReceivedDate: d.courtReceivedDate,
       courtSarabanNo: d.courtSarabanNo,
       courtRemark: d.courtRemark,
+      courtLevel: d.courtLevel,
+      courtLevelName: A.courtLevelName(d.courtLevel),
+      fiscalYear: d.fiscalYear,
+      intervenors: d.intervenors,
+      causeOfSuit: d.causeOfSuit,
       plaintiffs: d.plaintiffs,
       defendants: d.defendants,
       accuser: joined(d.plaintiffs),
@@ -174,6 +221,9 @@
     });
     if (document.getElementById("f_plaintiffs")) E.renderPartyList("f_plaintiffs", c.plaintiffs);
     if (document.getElementById("f_defendants")) E.renderPartyList("f_defendants", c.defendants);
+    if (document.getElementById("l3StatusPanel")) {
+      E.renderStatusPanel("l3StatusPanel", c.id, {});
+    }
   }
 
   function openEditor(opts) {

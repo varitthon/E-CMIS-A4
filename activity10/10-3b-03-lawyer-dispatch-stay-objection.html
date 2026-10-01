@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260910_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
     <style>
       h1,
@@ -561,7 +561,7 @@
                   <input
                     type="file"
                     id="in_docCopyFiles"
-                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                     multiple
                     onchange="handleDocCopyChange(this)"
                   />
@@ -605,10 +605,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20260921_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "LAW0099";
@@ -686,14 +686,14 @@
       function handleDocCopyChange(input) {
         if (!input.files || !input.files.length) return;
         const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
+        const allowedExts = ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"];
         Array.from(input.files).forEach((file) => {
           const ext = file.name.split(".").pop().toLowerCase();
           if (!allowedExts.includes(ext)) {
             Swal.fire({
               icon: "warning",
               title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, PNG, JPG, JPEG)`,
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
               confirmButtonColor: "#1e3a8a",
             });
             return;

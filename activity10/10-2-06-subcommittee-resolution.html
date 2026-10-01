@@ -666,6 +666,11 @@
                   placeholder="ระบุรายละเอียดมติที่ประชุม..."
                 ></textarea>
               </div>
+              <div class="form-group">
+                <label>เอกสารแนบ <span class="l2-optional">(แนบได้หลายไฟล์: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG)</span></label>
+                <input type="file" id="in_subcommitteeFiles" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="ECMIS102.renderFileNames('in_subcommitteeFiles', 'subcommitteeFilesList')" />
+                <div id="subcommitteeFilesList" style="margin-top: 8px"></div>
+              </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
@@ -685,13 +690,13 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260904_4"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-2.js?v=20260903_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "LAW0044";
@@ -728,6 +733,7 @@
         ECMIS102.setText("f_lawReceiveNo", c.lawReceiveNo);
         ECMIS102.setText("f_title", c.title);
         ECMIS102.setText("f_requesterName", c.requesterName);
+        ECMIS102.renderCaseMeta(c);
         ECMIS102.setText("f_requesterType", c.requesterTypeName);
         ECMIS102.setText("f_requestedInfo", c.requestedInfo);
         ECMIS102.setText("f_relatedCaseNo", c.relatedCaseNo);
@@ -889,6 +895,7 @@
               l2ResolutionOtherDetail: otherDetail,
               l2CommitteeOpinion: opinion,
               l2ResolutionDetail: detail,
+              l2SubcommitteeFiles: ECMIS102.fileNamesOf("in_subcommitteeFiles"),
               assignedRole: "admin_legal",
               officer: ECMIS102.signerLabel("admin_legal"),
             });

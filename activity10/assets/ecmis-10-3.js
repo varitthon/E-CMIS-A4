@@ -1341,7 +1341,163 @@
     return formatThaiDate(dt) + " " + hh + ":" + mm + " น.";
   }
 
+  /* ------------------------------------------- TOR 10.3.3.1 / 10.3.4.1 STATUS
+     ค่าตั้งต้นตามขั้นตอนงาน — ตั้งเฉพาะขั้นที่บ่งบอกสถานะชัดเจน ขั้นอื่นคงค่าเดิมไว้
+     เพื่อให้ค่าที่ผู้ใช้เลือกเองที่แผง "บันทึกสถานะ" ไม่ถูกทับตอนเดินงานต่อ */
+  const OP_STATUS_BY_STATUS_CODE = {
+    L3_READY_FOR_BOARD: "BOARD_AUTHORIZE",
+    L9_PROPOSED_TO_BOARD: "BOARD_AUTHORIZE",
+    L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN: "IN_PROGRESS",
+    L3V_PENDING_DIRECTOR_ASSIGN: "IN_PROGRESS",
+    L7_PENDING_DIRECTOR_ASSIGN: "IN_PROGRESS",
+    L8_PENDING_DIRECTOR_ASSIGN1: "IN_PROGRESS",
+    L9A_PENDING_DIRECTOR_ASSIGN: "IN_PROGRESS",
+    L9B_PENDING_DIRECTOR_ASSIGN1: "IN_PROGRESS",
+    L3_PENDING_LAWYER_TRACK_STATUS: "SENT_TO_PROSECUTOR",
+    L3_AWAITING_JUDGMENT: "SENT_TO_PROSECUTOR",
+    L7_SENT_TO_PROSECUTOR: "SENT_TO_PROSECUTOR",
+    L10_SENT_TO_PROSECUTOR: "SENT_TO_PROSECUTOR",
+    L9A_SENT_TO_PROSECUTOR: "SENT_TO_PROSECUTOR",
+  };
+  const CASE_STATUS_BY_STATUS_CODE = {
+    L7_SENT_TO_PROSECUTOR: "SUPREME_PENDING",
+    L10_SENT_TO_PROSECUTOR: "SUPREME_PENDING",
+    L9A_SENT_TO_PROSECUTOR: "SUPREME_PENDING",
+    L3V_CLOSED: "FINAL",
+    L9B_CLOSED: "FINAL",
+    L10_SUPREME_JUDGED: "FINAL",
+    L9A_SUPREME_JUDGED: "FINAL",
+  };
+  const STATUS_FIELDS = ["opStatusType", "opStatusOther", "caseStatus", "caseStatusOther"];
+
+  function initialCaseStatus(kase) {
+    return kase && kase.courtLevel === "SUPREME" ? "SUPREME_PENDING" : "FIRST_PENDING";
+  }
+
+  function defaultStatusPatch(statusCode, kase) {
+    const cur = kase || {};
+    const patch = {};
+    const op = OP_STATUS_BY_STATUS_CODE[statusCode];
+    if (op) {
+      patch.opStatusType = op;
+      patch.opStatusOther = "";
+    } else if (!cur.opStatusType) {
+      patch.opStatusType = "IN_PROGRESS";
+    }
+    const cs = CASE_STATUS_BY_STATUS_CODE[statusCode];
+    if (cs) {
+      patch.caseStatus = cs;
+      patch.caseStatusOther = "";
+    } else if (!cur.caseStatus) {
+      patch.caseStatus = initialCaseStatus(cur);
+    }
+    return patch;
+  }
+
+  /* เคสเดิม (seed) ที่ยังไม่มีฟิลด์สถานะ — คำนวณจาก statusCode เพื่อแสดงผล */
+  function effectiveStatus(kase) {
+    const cur = kase || {};
+    return {
+      opStatusType:
+        cur.opStatusType || OP_STATUS_BY_STATUS_CODE[cur.statusCode] || "IN_PROGRESS",
+      opStatusOther: cur.opStatusOther || "",
+      caseStatus:
+        cur.caseStatus || CASE_STATUS_BY_STATUS_CODE[cur.statusCode] || initialCaseStatus(cur),
+      caseStatusOther: cur.caseStatusOther || "",
+    };
+  }
+
+  /* คืน patch ของฟิลด์ที่เปลี่ยน + ประวัติต่อท้าย (ไม่แก้ array เดิม) หรือ null ถ้าไม่เปลี่ยน */
+  function buildStatusChange(kase, next, by, at) {
+    const cur = kase || {};
+    const when = at || new Date().toISOString();
+    const patch = {};
+    const entries = [];
+    STATUS_FIELDS.forEach(function (field) {
+      if (!(field in (next || {}))) return;
+      const from = cur[field] || "";
+      const to = next[field] || "";
+      if (from === to) return;
+      patch[field] = to;
+      entries.push({ at: when, by: by || "-", field: field, from: from, to: to });
+    });
+    if (!entries.length) return null;
+    patch.l3StatusHistory = (cur.l3StatusHistory || []).concat(entries);
+    return patch;
+  }
+
+  /* TOR 10.3.4.2 ผลคำพิพากษาศาลปกครองสูงสุด — บันทึกบนหน้าส่งคำอุทธรณ์เดิม
+     (10-3v-25 / 10-3v-36) แล้วปิดสายงานด้วยสถานะ *_SUPREME_JUDGED */
+  const SUPREME_RESULTS = {
+    WIN: "ชนะคดี",
+    LOSE: "แพ้คดี",
+    PARTIAL: "แพ้คดีบางส่วน",
+  };
+  const SUPREME_JUDGED_STATUS = {
+    L10_SENT_TO_PROSECUTOR: "L10_SUPREME_JUDGED",
+    L9A_SENT_TO_PROSECUTOR: "L9A_SUPREME_JUDGED",
+  };
+
+  function buildSupremeJudgmentPatch(kase, data, by, at) {
+    const cur = kase || {};
+    const when = at || new Date().toISOString();
+    const d = data || {};
+    const judgment = {
+      date: d.date || "",
+      blackNo: d.blackNo || "",
+      redNo: d.redNo || "",
+      result: d.result || "",
+      resultName: SUPREME_RESULTS[d.result] || "",
+      summary: d.summary || "",
+      fileNames: (d.fileNames || []).slice(),
+      recordedBy: by || "-",
+      recordedAt: when,
+    };
+    const statusChange =
+      buildStatusChange(cur, { caseStatus: "FINAL", caseStatusOther: "" }, by, when) || {};
+    return Object.assign({}, statusChange, {
+      l3SupremeJudgment: judgment,
+      status: "บันทึกผลคำพิพากษาศาลปกครองสูงสุดแล้ว (คดีถึงที่สุด)",
+      statusCode: SUPREME_JUDGED_STATUS[cur.statusCode] || "L10_SUPREME_JUDGED",
+      statusBadge: "bg-success text-white",
+    });
+  }
+
+  /* หลังส่งคำอุทธรณ์แล้ว นิติกรกลับมาบันทึกผลศาลปกครองสูงสุดที่หน้าเดิม */
+  ROUTES["L10_SENT_TO_PROSECUTOR"] = "10-3v-25-lawyer-send-appeal.html";
+  ROUTES["L9A_SENT_TO_PROSECUTOR"] = "10-3v-36-lawyer-send-appeal2.html";
+
+  /* สถานะที่บันทึกผลศาลปกครองสูงสุดแล้ว — ไม่มีขั้นที่ต้องทำต่อ (ไม่อยู่ใน ROUTES
+     เพื่อไม่ให้เกิดปุ่ม "ดำเนินการ") แต่ eye icon เปิดหน้าเดิมแบบดูอย่างเดียว
+     (?view=1) เพื่อดูผลที่บันทึกไว้ */
+  const VIEW_ROUTES = {
+    L10_SUPREME_JUDGED: "10-3v-25-lawyer-send-appeal.html",
+    L9A_SUPREME_JUDGED: "10-3v-36-lawyer-send-appeal2.html",
+  };
+
   const Activity103 = {
+    VIEW_ROUTES: VIEW_ROUTES,
+    SUPREME_RESULTS: SUPREME_RESULTS,
+    defaultStatusPatch: defaultStatusPatch,
+    effectiveStatus: effectiveStatus,
+    buildStatusChange: buildStatusChange,
+    buildSupremeJudgmentPatch: buildSupremeJudgmentPatch,
+
+    /* บันทึกสถานะที่ผู้ใช้เลือกเองจากแผง "บันทึกสถานะ" */
+    setStatus: function (caseId, next, by, extra) {
+      const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
+      if (!kase) return null;
+      const change = buildStatusChange(kase, next, by);
+      if (!change && !extra) return kase;
+      return Activity10.updateCase(caseId, Object.assign({}, change || {}, extra || {}));
+    },
+
+    recordSupremeJudgment: function (caseId, data, by) {
+      const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
+      if (!kase) return null;
+      return Activity10.updateCase(caseId, buildSupremeJudgmentPatch(kase, data, by));
+    },
+
     STEPS: STEPS,
     COURT_ORDER_STEPS: COURT_ORDER_STEPS,
     COURT_ORDER_BRANCHES: COURT_ORDER_BRANCHES,
@@ -1443,6 +1599,14 @@
     advance: function (caseId, stepCode, patch) {
       const step = stepByCode(stepCode);
       if (!step) return null;
+      const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
+      const statusChange = kase
+        ? buildStatusChange(
+            kase,
+            defaultStatusPatch(step.statusCode, kase),
+            "ระบบ (ตามขั้นตอนงาน)",
+          )
+        : null;
       const next = Object.assign(
         {
           status: step.status,
@@ -1451,6 +1615,7 @@
           l3Step: step.code,
           l3StepSeq: step.seq,
         },
+        statusChange || {},
         patch || {},
       );
       return Activity10.updateCase(caseId, next);
@@ -2111,6 +2276,262 @@
     }
   }
 
+  /* ------------------------------------------------ STATUS PANEL (TOR 10.3.3 / 10.3.4)
+     แผง "บันทึกสถานะ" ใช้ร่วมกันในหน้านิติกร/ธุรการ 10.3 — ค่าตั้งต้นมาจากขั้นตอนงาน
+     (Activity103.advance) ผู้ใช้เลือกทับได้ และเลือก "อื่นๆ" พร้อมระบุข้อความได้ */
+  function escText(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function statusOptionsHtml(list, value) {
+    return list.map(function (s) {
+      return '<option value="' + s.code + '"' + (s.code === value ? " selected" : "") + ">" +
+        escText(s.name) + "</option>";
+    }).join("");
+  }
+
+  const STATUS_FIELD_LABEL = {
+    opStatusType: "ประเภทการดำเนินการ",
+    opStatusOther: "ระบุการดำเนินการ (อื่นๆ)",
+    caseStatus: "สถานะทางคดี",
+    caseStatusOther: "ระบุสถานะทางคดี (อื่นๆ)",
+  };
+
+  function statusValueName(field, code) {
+    if (field === "opStatusType") return Activity10.l3StatusName(Activity10.L3_OP_STATUS, code) || "-";
+    if (field === "caseStatus") return Activity10.l3StatusName(Activity10.L3_CASE_STATUS, code) || "-";
+    return code || "-";
+  }
+
+  function statusHistoryHtml(kase) {
+    const list = (kase.l3StatusHistory || []).slice(-5).reverse();
+    if (!list.length) return '<div class="l3-optional" style="font-size:.82em">ยังไม่มีประวัติการเปลี่ยนสถานะ</div>';
+    return list.map(function (h) {
+      const when = h.at ? formatThaiDateTime(new Date(h.at)) : "-";
+      return '<div class="l3-status-history-row"><span>' + escText(when) + " · " + escText(h.by) +
+        "</span><span>" + escText(STATUS_FIELD_LABEL[h.field] || h.field) + ": " +
+        escText(statusValueName(h.field, h.from)) + " → <strong>" +
+        escText(statusValueName(h.field, h.to)) + "</strong></span></div>";
+    }).join("");
+  }
+
+  function statusPanelHtml(kase, readOnly) {
+    const s = effectiveStatus(kase);
+    const dis = readOnly ? " disabled" : "";
+    const letters = kase.opLetterFileNames || [];
+    return (
+      '<div class="form-card l3-status-panel"><div class="form-card-header"><span>' +
+      '<i class="fa-solid fa-list-check text-primary me-2"></i>บันทึกสถานะการดำเนินงานคดีปกครอง</span>' +
+      '<span class="badge" style="background:#dbeafe;color:#1e3a8a">ตั้งค่าตามขั้นตอนงาน · แก้ไขได้</span></div>' +
+      '<div class="form-card-body"><div class="form-grid-2">' +
+      '<div class="form-group"><label>ประเภทการดำเนินการ</label>' +
+      '<select id="l3sp_op" class="form-control"' + dis + ">" + statusOptionsHtml(Activity10.L3_OP_STATUS, s.opStatusType) + "</select>" +
+      '<input type="text" id="l3sp_opOther" class="form-control mt-2" placeholder="ระบุการดำเนินการ..." value="' + escText(s.opStatusOther) + '"' + dis + " />" +
+      '<div id="l3sp_letterGroup" class="mt-2"><label style="font-size:.85em">แนบหนังสือส่งถึงพนักงานอัยการ</label>' +
+      (readOnly ? "" : '<input type="file" id="l3sp_letter" class="form-control" multiple accept="' + (global.ECMIS_DOC_ACCEPT || ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg") + '" />') +
+      '<div id="l3sp_letterList" class="mt-1" style="font-size:.82em">' +
+      (letters.length ? letters.map(function (n) { return '<div><i class="fa-solid fa-paperclip me-1"></i>' + escText(n) + "</div>"; }).join("") : "") +
+      "</div></div></div>" +
+      '<div class="form-group"><label>สถานะทางคดี</label>' +
+      '<select id="l3sp_case" class="form-control"' + dis + ">" + statusOptionsHtml(Activity10.L3_CASE_STATUS, s.caseStatus) + "</select>" +
+      '<input type="text" id="l3sp_caseOther" class="form-control mt-2" placeholder="ระบุสถานะทางคดี..." value="' + escText(s.caseStatusOther) + '"' + dis + " />" +
+      "</div></div>" +
+      (readOnly ? "" : '<div style="text-align:right"><button type="button" id="l3sp_save" class="btn btn-secondary"><i class="fa-solid fa-floppy-disk me-1"></i>บันทึกสถานะ</button></div>') +
+      '<div class="l3-status-history"><div style="font-weight:600;font-size:.85em;margin:10px 0 4px">ประวัติการเปลี่ยนสถานะล่าสุด</div>' +
+      statusHistoryHtml(kase) + "</div></div></div>"
+    );
+  }
+
+  function toggleStatusPanelInputs() {
+    const op = document.getElementById("l3sp_op");
+    const cs = document.getElementById("l3sp_case");
+    if (!op || !cs) return;
+    document.getElementById("l3sp_opOther").classList.toggle("d-none", op.value !== "OTHER");
+    document.getElementById("l3sp_caseOther").classList.toggle("d-none", cs.value !== "OTHER");
+    document.getElementById("l3sp_letterGroup").classList.toggle("d-none", op.value !== "SENT_TO_PROSECUTOR");
+  }
+
+  function readStatusPanel(kase) {
+    const v = function (id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : "";
+    };
+    const op = v("l3sp_op");
+    const cs = v("l3sp_case");
+    const fileEl = document.getElementById("l3sp_letter");
+    const newFiles = fileEl && fileEl.files ? Array.from(fileEl.files).map(function (f) { return f.name; }) : [];
+    const letters = (kase.opLetterFileNames || []).concat(newFiles);
+    if (op === "OTHER" && !v("l3sp_opOther")) return { error: "กรุณาระบุการดำเนินการ (อื่นๆ)" };
+    if (cs === "OTHER" && !v("l3sp_caseOther")) return { error: "กรุณาระบุสถานะทางคดี (อื่นๆ)" };
+    if (op === "SENT_TO_PROSECUTOR" && kase.opStatusType !== "SENT_TO_PROSECUTOR" && !letters.length) {
+      return { error: "กรุณาแนบหนังสือส่งถึงพนักงานอัยการ" };
+    }
+    return {
+      next: {
+        opStatusType: op,
+        opStatusOther: op === "OTHER" ? v("l3sp_opOther") : "",
+        caseStatus: cs,
+        caseStatusOther: cs === "OTHER" ? v("l3sp_caseOther") : "",
+      },
+      extra: newFiles.length ? { opLetterFileNames: letters } : null,
+    };
+  }
+
+  function renderStatusPanel(containerId, caseId, opts) {
+    const host = document.getElementById(containerId);
+    if (!host) return;
+    const cfg = opts || {};
+    const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
+    if (!kase) {
+      host.innerHTML = "";
+      return;
+    }
+    host.innerHTML = statusPanelHtml(kase, !!cfg.readOnly);
+    toggleStatusPanelInputs();
+    if (cfg.readOnly) return;
+    document.getElementById("l3sp_op").addEventListener("change", toggleStatusPanelInputs);
+    document.getElementById("l3sp_case").addEventListener("change", toggleStatusPanelInputs);
+    document.getElementById("l3sp_save").addEventListener("click", function () {
+      const read = readStatusPanel(kase);
+      if (read.error) {
+        Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: read.error, confirmButtonColor: "#1e3a8a" });
+        return;
+      }
+      const updated = Activity103.setStatus(caseId, read.next, signerLabel(currentRoleId()), read.extra);
+      renderStatusPanel(containerId, caseId, cfg);
+      if (cfg.onSaved) cfg.onSaved(updated);
+      Swal.fire({ icon: "success", title: "บันทึกสถานะแล้ว", timer: 1400, showConfirmButton: false });
+    });
+  }
+
+  /* ----------------------------------------- SUPREME COURT RESULT (TOR 10.3.4.2)
+     แสดงบนหน้าส่งคำอุทธรณ์ (10-3v-25 / 10-3v-36) เมื่อคดีส่งคำอุทธรณ์แล้ว */
+  function supremeResultFormHtml(kase) {
+    const results = Object.keys(SUPREME_RESULTS).map(function (code) {
+      /* label แบบ inline-flex + ระยะห่างคงที่ — ไม่พึ่ง Bootstrap และกัน .form-group label ที่เป็น block/กว้างเต็มแถว */
+      return '<label style="display:inline-flex;align-items:center;gap:6px;width:auto;margin:0 18px 6px 0;font-weight:400;cursor:pointer">' +
+        '<input type="radio" name="l3sr_result" value="' + code + '" style="width:auto;margin:0;flex:none" />' +
+        "<span>" + SUPREME_RESULTS[code] + "</span></label>";
+    }).join("");
+    return (
+      '<div class="form-card" style="border:2px solid #1e3a8a"><div class="form-card-header" style="background:rgba(30,58,138,.05)">' +
+      '<span><i class="fa-solid fa-scale-balanced text-primary me-2"></i>บันทึกผลคำพิพากษาศาลปกครองสูงสุด</span>' +
+      '<span class="badge" style="background:#1e3a8a;color:#fff"><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span></div>' +
+      '<div class="form-card-body"><div class="form-grid-2">' +
+      '<div class="form-group"><label>วันที่ศาลปกครองสูงสุดมีคำพิพากษา</label>' +
+      '<input type="date" id="l3sr_date" class="form-control font-monospace" lang="th-TH-u-ca-buddhist" /></div>' +
+      '<div class="form-group"><label>ผลคำพิพากษา <span style="color:#dc2626">*</span></label><div>' + results + "</div></div>" +
+      '<div class="form-group"><label>หมายเลขคดีดำ (ศาลปกครองสูงสุด)</label>' +
+      '<input type="text" id="l3sr_black" class="form-control font-monospace" placeholder="เช่น อ. 12/2570" value="' + escText(kase.blackCaseNo || "") + '" /></div>' +
+      '<div class="form-group"><label>หมายเลขคดีแดง (ศาลปกครองสูงสุด)</label>' +
+      '<input type="text" id="l3sr_red" class="form-control font-monospace" placeholder="เช่น อ. 45/2570" value="' + escText(kase.redCaseNo || "") + '" /></div>' +
+      "</div>" +
+      '<div class="form-group"><label>สรุปผลคำพิพากษา</label><textarea id="l3sr_summary" class="form-control" rows="3" maxlength="2000"></textarea></div>' +
+      '<div class="form-group"><label>แนบคำพิพากษาศาลปกครองสูงสุด <span style="color:#dc2626">*</span></label>' +
+      '<input type="file" id="l3sr_files" class="form-control" multiple accept="' +
+      (global.ECMIS_DOC_ACCEPT || ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg") + '" /></div>' +
+      '<div style="text-align:right"><button type="button" id="l3sr_save" class="btn btn-primary">' +
+      '<i class="fa-solid fa-floppy-disk me-1"></i>บันทึกผลคำพิพากษา (คดีถึงที่สุด)</button></div>' +
+      "</div></div>"
+    );
+  }
+
+  function supremeResultSummaryHtml(j) {
+    const row = function (label, val) {
+      return '<div class="form-group"><label>' + label + '</label><div class="read-box">' + escText(val || "-") + "</div></div>";
+    };
+    return (
+      '<div class="form-card"><div class="form-card-header"><span><i class="fa-solid fa-scale-balanced text-primary me-2"></i>' +
+      'ผลคำพิพากษาศาลปกครองสูงสุด</span><span class="badge" style="background:#dcfce7;color:#166534">คดีถึงที่สุด</span></div>' +
+      '<div class="form-card-body"><div class="form-grid-2">' +
+      row("วันที่มีคำพิพากษา", j.date ? formatThaiDate(parseISODate(j.date)) : "-") + row("ผลคำพิพากษา", j.resultName) +
+      row("หมายเลขคดีดำ", j.blackNo) + row("หมายเลขคดีแดง", j.redNo) + "</div>" +
+      row("สรุปผลคำพิพากษา", j.summary) + '<div class="form-group"><label>เอกสารแนบ</label><div id="l3sr_attachments"></div></div>' +
+      "</div></div>"
+    );
+  }
+
+  function readSupremeResultForm() {
+    const v = function (id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : "";
+    };
+    const checked = document.querySelector('input[name="l3sr_result"]:checked');
+    const fileEl = document.getElementById("l3sr_files");
+    const fileNames = fileEl && fileEl.files ? Array.from(fileEl.files).map(function (f) { return f.name; }) : [];
+    if (!checked) return { error: "กรุณาเลือกผลคำพิพากษา" };
+    if (!fileNames.length) return { error: "กรุณาแนบคำพิพากษาศาลปกครองสูงสุดอย่างน้อย 1 ไฟล์" };
+    return {
+      data: {
+        date: v("l3sr_date"),
+        blackNo: v("l3sr_black"),
+        redNo: v("l3sr_red"),
+        result: checked.value,
+        summary: v("l3sr_summary"),
+        fileNames: fileNames,
+      },
+    };
+  }
+
+  function renderSupremeResultPanel(containerId, caseId, opts) {
+    const host = document.getElementById(containerId);
+    if (!host) return;
+    const cfg = opts || {};
+    const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
+    if (!kase) {
+      host.innerHTML = "";
+      return;
+    }
+    if (kase.l3SupremeJudgment) {
+      host.innerHTML = supremeResultSummaryHtml(kase.l3SupremeJudgment);
+      renderAttachments("l3sr_attachments", kase.l3SupremeJudgment.fileNames);
+      return;
+    }
+    host.innerHTML = supremeResultFormHtml(kase);
+    document.getElementById("l3sr_save").addEventListener("click", function () {
+      const read = readSupremeResultForm();
+      if (read.error) {
+        Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: read.error, confirmButtonColor: "#1e3a8a" });
+        return;
+      }
+      Swal.fire({
+        icon: "question",
+        title: "ยืนยันบันทึกผลคำพิพากษา",
+        text: "ผล: " + SUPREME_RESULTS[read.data.result] + " ระบบจะบันทึกสถานะทางคดีเป็น \"คดีถึงที่สุด\"",
+        showCancelButton: true,
+        confirmButtonText: "ยืนยันบันทึก",
+        cancelButtonText: "ยกเลิก",
+        confirmButtonColor: "#1e3a8a",
+        cancelButtonColor: "#64748b",
+      }).then(function (res) {
+        if (!res.isConfirmed) return;
+        const updated = Activity103.recordSupremeJudgment(caseId, read.data, signerLabel(currentRoleId()));
+        if (cfg.onSaved) cfg.onSaved(updated);
+      });
+    });
+  }
+
+  /* TOR 10.3.2 เติมรายชื่อนิติกรลงใน select[data-lawyer-select] ทุกตัวในหน้า
+     (value คงเป็นบทบาท case_legal_officer — หน้ามอบหมายอ่านชื่อจากข้อความตัวเลือก) */
+  function fillLawyerSelects() {
+    document.querySelectorAll("select[data-lawyer-select]").forEach(function (sel) {
+      const role = sel.getAttribute("data-lawyer-select") || "case_legal_officer";
+      sel.innerHTML = Activity10.CASE_LAWYERS.map(function (name) {
+        return '<option value="' + role + '">' + escText(name) + "</option>";
+      }).join("");
+    });
+  }
+
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fillLawyerSelects);
+    } else {
+      fillLawyerSelects();
+    }
+  }
+
   /* -------------------------------------------------------------- EXPORTS */
   global.Activity103 = Activity103;
   global.ECMIS103 = {
@@ -2140,5 +2561,8 @@
     initDocZoom: initDocZoom,
     setDocViewMode: setDocViewMode,
     focusFirstField: focusFirstField,
+    renderStatusPanel: renderStatusPanel,
+    renderSupremeResultPanel: renderSupremeResultPanel,
+    fillLawyerSelects: fillLawyerSelects,
   };
 })(window);

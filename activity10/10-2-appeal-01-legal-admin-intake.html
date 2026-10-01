@@ -186,7 +186,7 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>ผู้ยื่นคำขอ (ผู้อุทธรณ์)</label>
-                  <div class="read-box" id="f_requesterName">-</div>
+                  <input type="text" class="form-control" id="in_appellantName" placeholder="ชื่อผู้อุทธรณ์ (แก้ไขได้)" />
                 </div>
                 <div class="form-group">
                   <label>เลขสำนวนคดีที่เกี่ยวข้อง</label>
@@ -293,7 +293,7 @@
                 <label><span>เอกสารแนบ (สำเนาหนังสืออุทธรณ์) <span class="l2-optional">(ไม่บังคับ — แนบได้หลายไฟล์ ไฟล์ขนาดใหญ่ได้)</span></span></label>
                 <div class="l2-file">
                   <i class="fa-solid fa-paperclip" style="color: #64748b"></i>
-                  <input type="file" id="in_appealFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="showPickedFile()" multiple />
+                  <input type="file" id="in_appealFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onchange="showPickedFile()" multiple />
                 </div>
                 <div id="f_pickedFile" style="margin-top: 8px"></div>
               </div>
@@ -311,9 +311,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260909_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260909_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "L2-APPEAL-INTAKE";
@@ -455,7 +455,8 @@
         const c = currentCase;
         document.getElementById("f_caseNo").textContent = c.id;
         document.getElementById("f_title").textContent = c.title || "-";
-        document.getElementById("f_requesterName").textContent = c.requesterName || "-";
+        ECMIS102.renderCaseMeta(c);
+        document.getElementById("in_appellantName").value = c.l2AppellantName || c.requesterName || "";
         ECMIS102.renderOriginalCaseCard(c);
 
         document.getElementById("in_receiveDate").value = todayISO();
@@ -520,7 +521,12 @@
           channel === "mail" ? "ไปรษณีย์ (EMS " + channelEms + ")" :
           "อิเล็กทรอนิกส์ (" + channelEmail + ")";
 
+        const appellantName =
+          document.getElementById("in_appellantName").value.trim() ||
+          currentCase.l2AppellantName || currentCase.requesterName || "";
+
         Activity102.advance(currentCase.id, STEP_CODE, {
+          l2AppellantName: appellantName,
           l2AppealReceiveNo: receiveNo,
           l2AppealReceiveDate: receiveDate,
           l2AppealChannel: channelLabel,

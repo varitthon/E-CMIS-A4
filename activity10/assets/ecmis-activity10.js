@@ -4654,9 +4654,22 @@
           courtOrder: "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ",
           division: "กองกฎหมาย (กอท.)",
           statuteLimitation: "15 ปี (หมดอายุความ 28 ก.ค. 2584)",
+          courtName: "",
+          prescriptionDate: "",
+          prescriptionDaysLeft: null,
         };
 
       const seed = PACC_INTAKE_DATABASE.find((ic) => ic.id === c.id);
+
+      /* TOR 10.1.1.2: ฟิลด์จริงจากหน้ารับเรื่อง (plaintiffs[]/defendants[]/courtBlackNo/…)
+         มาก่อนค่า fallback เดิมของเดโม */
+      const joinParties = (list) =>
+        (Array.isArray(list) ? list : [])
+          .map((x) => String(x || "").trim())
+          .filter(Boolean)
+          .join(", ");
+      const realPlaintiff = joinParties(c.plaintiffs);
+      const realDefendant = joinParties(c.defendants);
 
       return {
         accuser:
@@ -4667,20 +4680,31 @@
           (seed
             ? seed.accused
             : "นายสมชาย ทุจริตมั่น (อดีตผู้อำนวยการส่วนจัดซื้อจัดจ้าง)"),
-        plaintiff: c.accuser || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
-        defendant: c.accused || "นายสมชาย ทุจริตมั่น",
+        plaintiff:
+          realPlaintiff || c.accuser || "พนักงานอัยการ / สำนักงาน ป.ป.ท.",
+        defendant: realDefendant || c.accused || "นายสมชาย ทุจริตมั่น",
         paccCaseNo:
           c.paccCaseNo ||
           (seed && seed.paccCaseNo ? seed.paccCaseNo : "0012/2568"),
         blackNo:
-          c.blackNo || (seed && seed.blackNo ? seed.blackNo : "อ. 104/2569"),
-        redNo: c.redNo || (seed && seed.redNo ? seed.redNo : "อ. 308/2569"),
+          c.courtBlackNo ||
+          c.blackNo ||
+          (seed && seed.blackNo ? seed.blackNo : "อ. 104/2569"),
+        redNo:
+          c.courtRedNo ||
+          c.redNo ||
+          (seed && seed.redNo ? seed.redNo : "อ. 308/2569"),
+        courtName: c.courtName || "",
+        prescriptionDate: c.prescriptionDate || "",
+        prescriptionDaysLeft: Activity10.prescriptionDaysLeft(
+          c.prescriptionDate,
+        ),
         courtOrder:
           c.courtOrder ||
           (seed && seed.courtOrder
             ? seed.courtOrder
             : "คำสั่งไม่ฟ้องพนักงานอัยการพิเศษฯ"),
-        division: "กองกฎหมาย (กอท.)",
+        division: Activity10.responsibleUnitOf(c.officer),
         statuteLimitation:
           c.statuteLimitation ||
           (seed && seed.statuteLimitation
@@ -4726,6 +4750,1043 @@
         return `<span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>เหลือ ${days} วัน</span>`;
       }
     },
+
+    /* TOR 10.3.1.2 ปีงบประมาณ (1 ต.ค.–30 ก.ย.) จากวันที่ ISO แบบ ค.ศ. หรือ พ.ศ.
+       คืนปี พ.ศ. เป็นสตริง เช่น "2025-10-01" → "2569" (ว่างถ้ารูปแบบไม่ถูกต้อง) */
+    fiscalYearOf(dateStr) {
+      const m = String(dateStr || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (!m) return "";
+      let year = parseInt(m[1], 10);
+      if (year < 2400) year += 543;
+      const month = parseInt(m[2], 10);
+      return String(month >= 10 ? year + 1 : year);
+    },
+
+    /* ================= TOR 10.1 (P3) — ข้อมูลสำนวน / คำพิพากษา / มติ / แจ้งภายใน =================
+       ไม่แก้ schema: ทุกฟิลด์ map ลงคอลัมน์เดิม (ดู docs/tor10-p1-db-flow-changes.md §2, §7.6) */
+
+    /* 10.1.1.2(7) วันคงเหลือของอายุความ (ติดลบ = เลยกำหนดแล้ว, null = ไม่มีวันที่) */
+    prescriptionDaysLeft(dateStr, today) {
+      const m = String(dateStr || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (!m) return null;
+      let year = parseInt(m[1], 10);
+      if (year > 2500) year -= 543;
+      const target = new Date(year, parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+      if (isNaN(target.getTime())) return null;
+      const base = today ? new Date(today) : new Date();
+      base.setHours(0, 0, 0, 0);
+      return Math.round((target.getTime() - base.getTime()) / 86400000);
+    },
+
+    /* 10.1.1.2(6) หน่วยงานรับผิดชอบ = หน่วยงานของนิติกรผู้รับผิดชอบ (ไม่มีช่องเลือกแยก) */
+    responsibleUnitOf(officerText) {
+      return /กลุ่มงานคดี/.test(String(officerText || ""))
+        ? "กลุ่มงานคดี กองกฎหมาย (กอท.)"
+        : "กองกฎหมาย (กอท.)";
+    },
+
+    /* 10.1.4 / 10.1.10.2–4 ชั้นของคำสั่ง/คำพิพากษา
+       DB: tbl_law_criminal_court_judgment.tlccj_stage */
+    JUDGMENT_LEVELS: [
+      { code: "PROSECUTOR", name: "คำสั่งพนักงานอัยการ" },
+      { code: "FIRST", name: "ศาลชั้นต้น" },
+      { code: "APPEAL", name: "ศาลอุทธรณ์" },
+      { code: "SUPREME", name: "ศาลฎีกา" },
+    ],
+    judgmentLevelName(code) {
+      const lv = Activity10.JUDGMENT_LEVELS.find((l) => l.code === code);
+      return lv ? lv.name : "";
+    },
+
+    /* ตัวสร้าง patch (pure) — ต่อท้าย judgments[] แบบ immutable; ไม่ผ่าน → null */
+    buildJudgmentPatch(kase, j, by, when) {
+      const src = j || {};
+      const clean = (v) => String(v == null ? "" : v).trim();
+      if (!Activity10.judgmentLevelName(src.level)) return null;
+      if (!clean(src.result)) return null;
+      const item = {
+        level: src.level,
+        issuer: clean(src.issuer),
+        blackNo: clean(src.blackNo),
+        redNo: clean(src.redNo),
+        date: clean(src.date),
+        result: clean(src.result),
+        summary: clean(src.summary),
+        isFinal: !!src.isFinal,
+        fileNames: (src.fileNames || []).map(clean).filter(Boolean),
+        recordedBy: by || "",
+        recordedAt: when || new Date().toISOString(),
+      };
+      const prev = (kase && kase.judgments) || [];
+      return { judgments: prev.concat([item]) };
+    },
+
+    addJudgment(caseId, j, by) {
+      const kase = Activity10.findCaseById(caseId);
+      if (!kase) return null;
+      const patch = Activity10.buildJudgmentPatch(kase, j, by);
+      return patch ? Activity10.updateCase(caseId, patch) : null;
+    },
+
+    /* 10.1.5 มติคณะกรรมการ ป.ป.ท. — ตรวจค่าที่ผู้ใช้กรอก แล้วคืน patch ของเคส
+       DB: tbl_law_criminal_board_link → tbl_board_submission */
+    BOARD_RESOLUTION_TYPES: [
+      { code: "AGREE", name: "เห็นชอบ" },
+      { code: "DISAGREE", name: "ไม่เห็นชอบ" },
+      { code: "OTHER", name: "อื่นๆ" },
+    ],
+    buildBoardResolutionPatch(input) {
+      const src = input || {};
+      const clean = (v) => String(v == null ? "" : v).trim();
+      const type = Activity10.BOARD_RESOLUTION_TYPES.find((x) => x.code === src.type);
+      const errors = [];
+      if (!type) errors.push("เลือกประเภทมติ");
+      if (type && type.code === "OTHER" && !clean(src.other))
+        errors.push("ระบุมติ (อื่นๆ)");
+      if (errors.length) return { ok: false, errors: errors, patch: null };
+      const other = type.code === "OTHER" ? clean(src.other) : "";
+      return {
+        ok: true,
+        errors: [],
+        patch: {
+          boardMeetingNo: clean(src.meetingNo),
+          boardMeetingDate: clean(src.meetingDate),
+          boardAgendaNo: clean(src.agendaNo),
+          boardResolutionType: type.code,
+          boardResolutionOther: other,
+          boardResolution: clean(src.text) || other || type.name,
+          /* รายละเอียดมติ (หน้า 11/12/14 แสดง) — ถ้าไม่กรอก สร้างจากประเภทมติ
+             เพื่อไม่ให้ข้อความตั้งต้นของเอนจินขัดกับมติที่ผู้ใช้เลือก */
+          boardResolutionDetail:
+            clean(src.text) ||
+            "ที่ประชุมคณะกรรมการ ป.ป.ท." +
+              (clean(src.meetingNo) ? " ครั้งที่ " + clean(src.meetingNo) : "") +
+              " มีมติ" +
+              (other || type.name),
+          boardResolutionFiles: (src.fileNames || []).map(clean).filter(Boolean),
+        },
+      };
+    },
+
+    /* 10.1.9 หน่วยงานภายในสำนักงาน ป.ป.ท. ที่แจ้งผลได้
+       DB: tbl_law_criminal_dispatch_recipient (tlcdr_recipient_type = 9) */
+    INTERNAL_UNITS: []
+      .concat([
+        "กองบริหารคดี (กบค.)",
+        "กองกฎหมาย (กอท.)",
+        "ศูนย์ปฏิบัติการต่อต้านการทุจริต (ศปท.)",
+      ])
+      .concat(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => "สำนักงาน ป.ป.ท. เขต " + n),
+      )
+      .concat(
+        [1, 2, 3, 4, 5, 6].map((n) => "กองปราบปรามการทุจริตภาครัฐ " + n),
+      ),
+    buildInternalNoticePatch(kase, n, by, when) {
+      const src = n || {};
+      const clean = (v) => String(v == null ? "" : v).trim();
+      const units = (src.units || [])
+        .map(clean)
+        .filter((u, i, arr) => u && arr.indexOf(u) === i);
+      if (!units.length || !clean(src.subject)) return null;
+      const item = {
+        units: units,
+        docNo: clean(src.docNo),
+        date: clean(src.date),
+        subject: clean(src.subject),
+        detail: clean(src.detail),
+        fileNames: (src.fileNames || []).map(clean).filter(Boolean),
+        createdBy: by || "",
+        createdAt: when || new Date().toISOString(),
+      };
+      const prev = (kase && kase.internalNotices) || [];
+      return { internalNotices: prev.concat([item]) };
+    },
+    addInternalNotice(caseId, n, by) {
+      const kase = Activity10.findCaseById(caseId);
+      if (!kase) return null;
+      const patch = Activity10.buildInternalNoticePatch(kase, n, by);
+      return patch ? Activity10.updateCase(caseId, patch) : null;
+    },
+
+    /* ================= TOR 10.1.8 / 10.1.10 / 10.1.11 (P3-B5/B6, P4) =================
+       ตัวสร้างรายงาน/สารบบ/สถิติ — pure function อ่านจาก cases[] ล้วน ๆ ไม่แก้ schema
+       (query จากคอลัมน์เดิม; ผลวิเคราะห์ → tbl_law_criminal_judgment_analysis, ดู docs §7.6)
+       สมมติฐาน: ทุกสำนวน 10.1 ถือเป็นสำนวนที่ชี้มูลแล้ว (เข้าขอบเขต 10.1.11) */
+
+    /* สำนวน 10.1 = category ว่าง หรือ "10.1" */
+    isCase101(c) {
+      return !!c && (!c.category || c.category === "10.1");
+    },
+
+    /* ปีงบประมาณจากวันที่แรกที่มีค่าใช้ได้ */
+    firstFiscalYear(dates) {
+      for (let i = 0; i < dates.length; i++) {
+        const fy = Activity10.fiscalYearOf(dates[i]);
+        if (fy) return fy;
+      }
+      return "";
+    },
+
+    /* คำพิพากษาล่าสุดตามวันที่ — คืน {index, item} (วันที่เท่ากัน/ว่าง ถือรายการที่บันทึกทีหลัง) */
+    latestJudgmentOf(kase) {
+      const list = (kase && kase.judgments) || [];
+      let best = null;
+      list.forEach((j, i) => {
+        if (!best || String(j.date || "") >= String(best.item.date || ""))
+          best = { index: i, item: j };
+      });
+      return best;
+    },
+
+    /* สำนวนที่ "ชี้มูล" = สำนวน 10.1 ที่มีมติคณะกรรมการ (ขอบเขตของผลวิเคราะห์ 10.1.11 และรายงาน 10.1.8) */
+    isChiMoonCase(c) {
+      return (
+        Activity10.isCase101(c) &&
+        !!(c.boardMeetingNo || c.boardResolutionType || c.boardResolution)
+      );
+    },
+
+    /* บทบาทสายกฎหมาย/ผู้บริหารที่เห็นสารบบ รายงาน และผลวิเคราะห์คำพิพากษา (รวมชื่อ login เดิมผ่าน ALERT_ROLE_ALIASES) */
+    LEGAL_VIEW_ROLES: ["admin_legal", "dir_legal", "group_director", "legal_officer", "deputy_sg", "secgen"],
+    isLegalViewRole(roleId) {
+      const r = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
+      return Activity10.LEGAL_VIEW_ROLES.indexOf(r) >= 0;
+    },
+
+    /* แปลงวันที่หลายรูปแบบเป็น ISO ค.ศ. "yyyy-mm-dd" — รองรับ ISO (ค.ศ./พ.ศ.), dd-mm-yyyy,
+       "24 ส.ค. 2569" / "24 สิงหาคม 2569", Date; อ่านไม่ได้คืน "" */
+    parseCaseDateIso(v) {
+      if (v == null || v === "") return "";
+      const pad = (n) => String(n).padStart(2, "0");
+      const build = (y, m, d) => {
+        y = Number(y);
+        m = Number(m);
+        d = Number(d);
+        if (y > 2400) y -= 543;
+        const dt = new Date(y, m - 1, d);
+        if (isNaN(dt.getTime()) || dt.getMonth() !== m - 1) return "";
+        return y + "-" + pad(m) + "-" + pad(d);
+      };
+      if (v instanceof Date) {
+        return isNaN(v.getTime())
+          ? ""
+          : v.getFullYear() + "-" + pad(v.getMonth() + 1) + "-" + pad(v.getDate());
+      }
+      const s = String(v).trim();
+      let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (m) return build(m[1], m[2], m[3]);
+      m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+      if (m) return build(m[3], m[2], m[1]);
+      m = s.match(/^(\d{1,2})\s+(\S+?)\s+(\d{4})$/);
+      if (m) {
+        const MONTHS = [
+          ["ม.ค.", "มกราคม"], ["ก.พ.", "กุมภาพันธ์"], ["มี.ค.", "มีนาคม"],
+          ["เม.ย.", "เมษายน"], ["พ.ค.", "พฤษภาคม"], ["มิ.ย.", "มิถุนายน"],
+          ["ก.ค.", "กรกฎาคม"], ["ส.ค.", "สิงหาคม"], ["ก.ย.", "กันยายน"],
+          ["ต.ค.", "ตุลาคม"], ["พ.ย.", "พฤศจิกายน"], ["ธ.ค.", "ธันวาคม"],
+        ];
+        const tok = m[2].replace(/\.$/, "");
+        const idx = MONTHS.findIndex((p) => p[0].replace(/\.$/, "") === tok || p[1] === tok);
+        return idx >= 0 ? build(m[3], idx + 1, m[1]) : "";
+      }
+      return "";
+    },
+
+    /* สำนวนปิดแล้ว = isCompleted หรือ statusCode มี COMPLETED/CLOSED */
+    isCaseClosed(c) {
+      return (
+        !!c && (c.isCompleted === true || /COMPLETED|CLOSED/.test(String(c.statusCode || "")))
+      );
+    },
+
+    /* จำนวนวันเต็มจากวันที่ ISO ถึง today (Date/ISO; ไม่ระบุ = วันนี้); ไม่มีวันที่ → null */
+    daysSinceIso(iso, today) {
+      const a = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!a) return null;
+      const t = Activity10.parseCaseDateIso(today instanceof Date || today ? today : new Date());
+      const b = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!b) return null;
+      const ms = (m) => Date.UTC(+m[1], +m[2] - 1, +m[3]);
+      return Math.round((ms(b) - ms(a)) / 86400000);
+    },
+
+    /* 10.1.8 เกินกำหนดเมื่อพ้น N วันนับจากวันที่มติและยังไม่ปิดเรื่อง */
+    RESOLUTION_OVERDUE_DAYS: 30,
+
+    /* 10.1.8 ไทม์ไลน์การดำเนินการหลังมติ — [{date ISO, label, kind}] เรียงเก่า→ใหม่
+       ไม่มีตารางประวัติสถานะ จึงรวบรวมจากวันที่ที่แต่ละขั้นบันทึกไว้ในสำนวน
+       (ส่งหนังสือ/คำวินิจฉัย อสส./คำพิพากษา/แจ้งภายใน/ปิดเรื่อง) แสดงเฉพาะวันที่ตั้งแต่วันประชุมเป็นต้นไป */
+    buildResolutionActions(c) {
+      const k = c || {};
+      const meeting = Activity10.parseCaseDateIso(k.boardMeetingDate);
+      const out = [];
+      const push = (date, label, kind) => {
+        const iso = Activity10.parseCaseDateIso(date);
+        if (!iso || (meeting && iso < meeting)) return;
+        out.push({ date: iso, label: label, kind: kind });
+      };
+      const recips = Array.isArray(k.dispatchRecipients) ? k.dispatchRecipients : [];
+      push(k.adminDispatchDate, "ธุรการส่งเรื่องเพื่อตรวจสอบ" + (k.adminDispatchNo ? " (" + k.adminDispatchNo + ")" : ""), "DISPATCH");
+      push(k.finalDispatchDate, "ธุรการเสนอผลมติ" + (k.finalDispatchNo ? " (" + k.finalDispatchNo + ")" : ""), "DISPATCH");
+      if (recips.length) {
+        recips.forEach((r) =>
+          push(r.sentDate, "ส่งหนังสือถึง " + (r.name || r.key || "หน่วยงานภายนอก"), "DISPATCH"),
+        );
+      } else {
+        push(k.dispatchDate, "ส่งหนังสือภายนอก" + (k.externalDispatchNo ? " (" + k.externalDispatchNo + ")" : ""), "DISPATCH");
+      }
+      push(k.oagVerdictReceiveDate, "รับคำวินิจฉัยชี้ขาดจาก อสส.", "OAG");
+      if (k.oagVerdictDate) {
+        const dec =
+          k.oagVerdictDecisionText ||
+          (k.oagVerdictDecision === "PROSECUTE" ? "ให้ฟ้อง" : k.oagVerdictDecision === "NON_PROSECUTE" ? "ไม่ฟ้อง" : "");
+        push(k.oagVerdictDate, "คำวินิจฉัยชี้ขาด อสส." + (dec ? ": " + dec : ""), "OAG");
+      }
+      (k.judgments || []).forEach((j) =>
+        push(j.date, "คำสั่ง/คำพิพากษา " + Activity10.judgmentLevelName(j.level) + (j.result ? ": " + j.result : ""), "JUDGMENT"),
+      );
+      (k.internalNotices || []).forEach((n) =>
+        push(n.date, "แจ้งหน่วยงานภายใน" + (n.subject ? ": " + n.subject : ""), "NOTICE"),
+      );
+      if (Activity10.isCaseClosed(k)) push(k.caseClosedDate || k.caseClosedNotifyDate, "ปิดเรื่อง", "CLOSED");
+      return out
+        .map((a, i) => ({ a: a, i: i }))
+        .sort((x, y) => (x.a.date < y.a.date ? -1 : x.a.date > y.a.date ? 1 : x.i - y.i))
+        .map((x) => x.a);
+    },
+
+    /* 10.1.8 รายงานผลตามมติคณะกรรมการ — filter: {fiscalYear, type, meetingNo, status}
+       status: progress = ยังไม่ปิด (รวมเกินกำหนด) · closed = ปิดแล้ว · overdue = ยังไม่ปิดและพ้น 30 วันจากมติ
+       today = วันอ้างอิงนับวัน (ค่าเริ่มต้น = วันนี้) */
+    buildBoardResolutionReport(cases, filter, today) {
+      const f = filter || {};
+      const typeName = (code) => {
+        const t = Activity10.BOARD_RESOLUTION_TYPES.find((x) => x.code === code);
+        return t ? t.name : "";
+      };
+      return (cases || [])
+        .filter(Activity10.isChiMoonCase)
+        .map((c) => {
+          const latest = Activity10.latestJudgmentOf(c);
+          const meetingIso = Activity10.parseCaseDateIso(c.boardMeetingDate);
+          const closed = Activity10.isCaseClosed(c);
+          const days = meetingIso ? Activity10.daysSinceIso(meetingIso, today) : null;
+          const overdue = !closed && days != null && days > Activity10.RESOLUTION_OVERDUE_DAYS;
+          const actions = Activity10.buildResolutionActions(c);
+          const closedAct = actions.filter((a) => a.kind === "CLOSED")[0];
+          return {
+            statusKey: closed ? "closed" : overdue ? "overdue" : "progress",
+            isClosed: closed,
+            isOverdue: overdue,
+            daysSinceResolution: days,
+            meetingDateIso: meetingIso,
+            closedDate: closedAct ? closedAct.date : "",
+            oagVerdictDate: c.oagVerdictDate || "",
+            actions: actions,
+            caseId: c.id,
+            title: c.title || "",
+            meetingNo: c.boardMeetingNo || "",
+            meetingDate: c.boardMeetingDate || "",
+            agendaNo: c.boardAgendaNo || "",
+            resolutionType: c.boardResolutionType || "",
+            resolutionTypeName: typeName(c.boardResolutionType),
+            resolutionText: c.boardResolution || "",
+            fiscalYear: Activity10.firstFiscalYear([meetingIso, Activity10.parseCaseDateIso(c.dateReceived)]),
+            status: c.status || "",
+            judgmentCount: (c.judgments || []).length,
+            latestJudgment: latest
+              ? {
+                  levelName: Activity10.judgmentLevelName(latest.item.level),
+                  result: latest.item.result || "",
+                  date: latest.item.date || "",
+                }
+              : null,
+            noticeCount: (c.internalNotices || []).length,
+            noticeSubjects: (c.internalNotices || []).map((n) => n.subject || ""),
+          };
+        })
+        .filter((r) => !f.fiscalYear || r.fiscalYear === String(f.fiscalYear))
+        .filter((r) => !f.type || r.resolutionType === f.type)
+        .filter((r) => !f.meetingNo || r.meetingNo === String(f.meetingNo))
+        .filter(
+          (r) =>
+            !f.status ||
+            (f.status === "closed" && r.isClosed) ||
+            (f.status === "progress" && !r.isClosed) ||
+            (f.status === "overdue" && r.isOverdue),
+        );
+    },
+
+    /* 10.1.8 จัดกลุ่มแถวรายงานตามการประชุม (ครั้งที่ + วันที่) เรียงประชุมล่าสุดก่อน
+       แต่ละกลุ่ม: total / closed / inProgress (ยังไม่ปิด รวมเกินกำหนด) / overdue / agendaNos */
+    groupBoardReportByMeeting(rows) {
+      const groups = [];
+      const byKey = {};
+      (rows || []).forEach((r) => {
+        const key = (r.meetingNo || "") + "|" + (r.meetingDateIso || r.meetingDate || "");
+        let g = byKey[key];
+        if (!g) {
+          g = byKey[key] = {
+            key: key,
+            meetingNo: r.meetingNo || "",
+            meetingDate: r.meetingDate || "",
+            meetingDateIso: r.meetingDateIso || "",
+            agendaNos: [],
+            total: 0,
+            closed: 0,
+            inProgress: 0,
+            overdue: 0,
+            rows: [],
+          };
+          groups.push(g);
+        }
+        g.total++;
+        if (r.isClosed) g.closed++;
+        else g.inProgress++;
+        if (r.isOverdue) g.overdue++;
+        if (r.agendaNo && g.agendaNos.indexOf(r.agendaNo) < 0) g.agendaNos.push(r.agendaNo);
+        g.rows.push(r);
+      });
+      return groups
+        .map((g, i) => ({ g: g, i: i }))
+        .sort((a, b) =>
+          a.g.meetingDateIso === b.g.meetingDateIso
+            ? a.i - b.i
+            : a.g.meetingDateIso < b.g.meetingDateIso
+              ? 1
+              : -1,
+        )
+        .map((x) => x.g);
+    },
+
+    /* 10.1.8 ตารางเดียวสำหรับพิมพ์/Word/Excel: แถวหัวหมวดต่อการประชุม ตามด้วยแถวสำนวนของครั้งนั้น
+       (array ของ array — แถวแรกเป็นหัวตาราง; ทุกแถวมีจำนวนคอลัมน์เท่ากัน) */
+    BOARD_REPORT_HEADERS: [
+      "ครั้งที่/วันที่ประชุม",
+      "วาระ",
+      "เลขสำนวน",
+      "มติ",
+      "ปีงบฯ",
+      "สถานะ",
+      "วันนับจากมติ",
+      "การดำเนินการหลังมติ",
+    ],
+    boardReportTableRows(groups) {
+      const H = Activity10.BOARD_REPORT_HEADERS;
+      const fmt = (iso) => (iso ? Activity10.formatDisplayDate(iso) : "-");
+      const pad = (cells) => cells.concat(new Array(H.length - cells.length).fill(""));
+      const out = [H.slice()];
+      (groups || []).forEach((g) => {
+        out.push(
+          pad([
+            "ประชุมครั้งที่ " + (g.meetingNo || "-") + " วันที่ " + fmt(g.meetingDateIso) +
+              " | วาระ " + (g.agendaNos.join(", ") || "-") +
+              " | ทั้งหมด " + g.total + " ปิดแล้ว " + g.closed +
+              " อยู่ระหว่างดำเนินการ " + g.inProgress +
+              (g.overdue ? " (เกินกำหนด " + g.overdue + ")" : ""),
+          ]),
+        );
+        g.rows.forEach((r) => {
+          const state = r.isClosed ? "ปิดเรื่องแล้ว" : r.isOverdue ? "เกินกำหนด" : "อยู่ระหว่างดำเนินการ";
+          out.push([
+            "",
+            r.agendaNo || "",
+            r.caseId + " " + r.title,
+            (r.resolutionTypeName || "") + (r.resolutionText ? " " + r.resolutionText : ""),
+            r.fiscalYear || "",
+            state + (r.status ? " (" + r.status + ")" : ""),
+            r.daysSinceResolution == null ? "-" : String(r.daysSinceResolution),
+            r.actions.map((a) => fmt(a.date) + " " + a.label).join("; ") || "-",
+          ]);
+        });
+      });
+      return out;
+    },
+
+    /* 10.1.10 สารบบคำวินิจฉัย/คำพิพากษา — หนึ่งแถวต่อเอกสาร (อสส./รายชั้น/มติ) */
+    REGISTRY_KINDS: [
+      { code: "OAG", name: "คำวินิจฉัยชี้ขาด อสส." },
+      { code: "PROSECUTOR", name: "คำสั่งพนักงานอัยการ" },
+      { code: "FIRST", name: "ศาลชั้นต้น" },
+      { code: "APPEAL", name: "ศาลอุทธรณ์" },
+      { code: "SUPREME", name: "ศาลฎีกา" },
+      { code: "BOARD", name: "มติคณะกรรมการ ป.ป.ท." },
+    ],
+    buildJudgmentRegistry(cases) {
+      const kindName = (code) => {
+        const k = Activity10.REGISTRY_KINDS.find((x) => x.code === code);
+        return k ? k.name : code;
+      };
+      const out = [];
+      (cases || []).filter(Activity10.isCase101).forEach((c) => {
+        const base = {
+          caseId: c.id,
+          title: c.title || "",
+          accuser: c.accuser || "",
+          accused: c.accused || "",
+          searchText: Activity10.caseSearchText(c),
+        };
+        const push = (kind, extra) =>
+          out.push(
+            Object.assign(
+              {},
+              base,
+              {
+                kind: kind,
+                kindName: kindName(kind),
+                blackNo: "",
+                redNo: "",
+                refNo: "",
+                date: "",
+                result: "",
+                summary: "",
+                isFinal: false,
+                fileNames: [],
+              },
+              extra,
+            ),
+          );
+        if (c.oagVerdictNo || c.oagVerdictDecision) {
+          push("OAG", {
+            blackNo: c.oagVerdictNo || "",
+            refNo: c.oagVerdictNo || "",
+            date: c.oagVerdictDate || "",
+            result:
+              c.oagVerdictDecisionText ||
+              (c.oagVerdictDecision === "PROSECUTE"
+                ? "ให้ฟ้อง"
+                : c.oagVerdictDecision === "NON_PROSECUTE"
+                  ? "ไม่ฟ้อง"
+                  : ""),
+            summary: c.oagVerdictSummary || "",
+            fileNames: c.oagVerdictFile ? [c.oagVerdictFile] : [],
+          });
+        }
+        (c.judgments || []).forEach((j) =>
+          push(j.level, {
+            blackNo: j.blackNo || "",
+            redNo: j.redNo || "",
+            refNo: j.blackNo || "",
+            date: j.date || "",
+            result: j.result || "",
+            summary: j.summary || "",
+            isFinal: !!j.isFinal,
+            fileNames: (j.fileNames || []).slice(),
+          }),
+        );
+        if (c.boardMeetingNo || c.boardResolutionType || c.boardResolution) {
+          const t = Activity10.BOARD_RESOLUTION_TYPES.find(
+            (x) => x.code === c.boardResolutionType,
+          );
+          push("BOARD", {
+            refNo: c.boardMeetingNo ? "ครั้งที่ " + c.boardMeetingNo : "",
+            date: c.boardMeetingDate || "",
+            result: t ? t.name : c.boardResolution || "",
+            summary: c.boardResolution || "",
+            fileNames: (c.boardResolutionFiles || []).slice(),
+          });
+        }
+      });
+      /* วันที่ล่าสุดก่อน — ไม่มีวันที่ไว้ท้าย; ลำดับเดิมคงไว้เมื่อวันที่เท่ากัน */
+      return out
+        .map((r, i) => ({ r: r, i: i }))
+        .sort((a, b) => {
+          const da = a.r.date || "";
+          const db = b.r.date || "";
+          if (!da !== !db) return da ? -1 : 1;
+          if (da !== db) return da < db ? 1 : -1;
+          return a.i - b.i;
+        })
+        .map((x) => x.r);
+    },
+
+    /* TOR 10.1.10.8 / 10.2.7.4: ข้อความค้นหารวมของสำนวน (ตัวพิมพ์เล็ก) — เลขดำ/แดงของศาล (ทุกชื่อฟิลด์)
+       ผู้ร้องสอด คู่กรณีทั้งหมด ผู้ขอ/เลขคำขอที่เกี่ยวข้อง และเลขดำ/แดงของคำพิพากษา
+       รับสำนวนตรง ๆ หรือแถว inbox ที่เก็บสำนวนไว้ใน .raw */
+    CASE_SEARCH_FIELDS: [
+      "id", "caseNo", "reqNo", "lawNo", "title", "accuser", "accused", "reqUser", "officer",
+      "courtBlackNo", "courtRedNo", "blackCaseNo", "redCaseNo", "blackNo", "redNo",
+      "requesterName", "relatedRequestNo",
+    ],
+    CASE_SEARCH_LISTS: ["intervenors", "plaintiffs", "defendants"],
+    caseSearchText(kase) {
+      if (!kase) return "";
+      const parts = [];
+      const take = (src) => {
+        if (!src) return;
+        Activity10.CASE_SEARCH_FIELDS.forEach((k) => {
+          if (src[k] != null && typeof src[k] !== "object") parts.push(String(src[k]));
+        });
+        Activity10.CASE_SEARCH_LISTS.forEach((k) => {
+          (Array.isArray(src[k]) ? src[k] : []).forEach((v) => parts.push(String(v == null ? "" : v)));
+        });
+        (Array.isArray(src.judgments) ? src.judgments : []).forEach((j) => {
+          if (j) parts.push(String(j.blackNo || ""), String(j.redNo || ""));
+        });
+      };
+      take(kase);
+      if (kase.raw && kase.raw !== kase) take(kase.raw);
+      return parts.filter(Boolean).join(" ").toLowerCase();
+    },
+    matchesCaseSearch(kase, query) {
+      const q = String(query == null ? "" : query).trim().toLowerCase();
+      return !q || Activity10.caseSearchText(kase).indexOf(q) >= 0;
+    },
+
+    /* 10.1.10.8 กรองสารบบ — filter: {kind, q} (q ค้นเลขสำนวน/ผู้ถูกกล่าวหา/ผู้กล่าวหา/เลขดำ-แดง) */
+    filterJudgmentRegistry(records, filter) {
+      const f = filter || {};
+      const q = String(f.q || "").trim().toLowerCase();
+      return (records || []).filter((r) => {
+        if (f.kind && r.kind !== f.kind) return false;
+        if (!q) return true;
+        return [r.caseId, r.accused, r.accuser, r.blackNo, r.redNo, r.title, r.searchText].some(
+          (v) => String(v || "").toLowerCase().indexOf(q) >= 0,
+        );
+      });
+    },
+
+    /* 10.1.11.1 ผลวิเคราะห์คำพิพากษา — DB: tbl_law_criminal_judgment_analysis
+       (tlcja_input_method 1=FORM 2=IMPORT, tlcja_issue, tlcja_judgment_summary, tlcja_analysis,
+        tlcja_recommendation, tlccj_id ← judgmentRef, tlcja_analyst_id, tlcja_analysis_date)
+       รับ input เดี่ยวหรือ array; รายการที่ขาดประเด็น/ผลวิเคราะห์ถูกข้าม; ไม่เหลือเลย → null */
+    ANALYSIS_TEMPLATE_HEADERS: [
+      "ประเด็นแห่งคดี",
+      "สรุปคำพิพากษา",
+      "ผลการวิเคราะห์",
+      "ข้อเสนอแนะ",
+      "ชั้นคำพิพากษา",
+      "ผู้วิเคราะห์",
+      "วันที่วิเคราะห์",
+    ],
+    buildJudgmentAnalysisPatch(kase, input, by, when) {
+      if (!input) return null;
+      const clean = (v) => String(v == null ? "" : v).trim();
+      const prev = (kase && kase.judgmentAnalyses) || [];
+      const added = [];
+      (Array.isArray(input) ? input : [input]).forEach((src) => {
+        if (!src || !clean(src.analysis)) return; /* ประเด็นแห่งคดีไม่บังคับ */
+        const n = prev.length + added.length + 1;
+        added.push({
+          id: "JA-" + String(n).padStart(3, "0"),
+          judgmentRef: clean(src.judgmentRef),
+          issue: clean(src.issue),
+          summary: clean(src.summary),
+          analysis: clean(src.analysis),
+          recommendation: clean(src.recommendation),
+          analyst: clean(src.analyst) || by || "",
+          date: clean(src.date),
+          inputMethod: src.inputMethod === "IMPORT" ? "IMPORT" : "FORM",
+          fileNames: (src.fileNames || []).map(clean).filter(Boolean),
+          createdAt: when || new Date().toISOString(),
+        });
+      });
+      return added.length ? { judgmentAnalyses: prev.concat(added) } : null;
+    },
+    addJudgmentAnalysis(caseId, input, by) {
+      const kase = Activity10.findCaseById(caseId);
+      if (!kase) return null;
+      const patch = Activity10.buildJudgmentAnalysisPatch(kase, input, by);
+      return patch ? Activity10.updateCase(caseId, patch) : null;
+    },
+
+    /* แถวจากแม่แบบ Excel (sheet_to_json คีย์ = ANALYSIS_TEMPLATE_HEADERS) → รายการผลวิเคราะห์
+       คืน {items, errors:[{row, message}]} — row นับเป็นเลขแถวในไฟล์ (หัวตาราง = แถว 1) */
+    mapAnalysisImportRows(rows, kase) {
+      const H = Activity10.ANALYSIS_TEMPLATE_HEADERS;
+      const out = { items: [], errors: [] };
+      if (!Array.isArray(rows)) return out;
+      const clean = (v) => String(v == null ? "" : v).trim();
+      const levelCode = (text) => {
+        const s = clean(text);
+        if (!s) return "";
+        const hit = Activity10.JUDGMENT_LEVELS.find(
+          (l) => l.name === s || l.code === s.toUpperCase() || l.name.indexOf(s) >= 0,
+        );
+        return hit ? hit.code : "";
+      };
+      const toIso = (v) => {
+        if (typeof v === "number" && v > 20000) {
+          return new Date(Math.round((v - 25569) * 86400000)).toISOString().slice(0, 10);
+        }
+        if (v instanceof Date && !isNaN(v.getTime())) return v.toISOString().slice(0, 10);
+        return clean(v);
+      };
+      rows.forEach((row, i) => {
+        const r = row || {};
+        const issue = clean(r[H[0]]);
+        const analysis = clean(r[H[2]]);
+        if (!H.some((h) => clean(r[h]))) return;
+        if (!analysis) {
+          out.errors.push({
+            row: i + 2,
+            message: 'ต้องระบุ "' + H[2] + '"',
+          });
+          return;
+        }
+        let ref = "";
+        const code = levelCode(r[H[4]]);
+        if (code) {
+          const list = (kase && kase.judgments) || [];
+          for (let k = list.length - 1; k >= 0; k--) {
+            if (list[k].level === code) {
+              ref = String(k);
+              break;
+            }
+          }
+        }
+        out.items.push({
+          judgmentRef: ref,
+          issue: issue,
+          summary: clean(r[H[1]]),
+          analysis: analysis,
+          recommendation: clean(r[H[3]]),
+          analyst: clean(r[H[5]]),
+          date: toIso(r[H[6]]),
+          inputMethod: "IMPORT",
+          fileNames: [],
+        });
+      });
+      return out;
+    },
+
+    /* 10.1.11.2 จัดกลุ่มข้อความผลคำพิพากษาเป็นประเภทสถิติ (ลำดับเงื่อนไขสำคัญ: "ไม่มีความผิด" ก่อน "มีความผิด") */
+    JUDGMENT_OUTCOMES: [
+      { code: "CONVICT", name: "ลงโทษ/มีความผิด" },
+      { code: "ACQUIT", name: "ยกฟ้อง/ไม่มีความผิด" },
+      { code: "NON_PROSECUTE", name: "สั่งไม่ฟ้อง" },
+      { code: "PROSECUTE", name: "สั่งฟ้อง" },
+      { code: "OTHER", name: "อื่นๆ" },
+    ],
+    judgmentOutcomeOf(result) {
+      const s = String(result || "");
+      if (/ไม่มีความผิด|ยกฟ้อง|ยกคำร้อง/.test(s)) return "ACQUIT";
+      if (/ไม่ฟ้อง/.test(s)) return "NON_PROSECUTE";
+      if (/ลงโทษ|จำคุก|ปรับ|มีความผิด/.test(s)) return "CONVICT";
+      if (/ฟ้อง/.test(s)) return "PROSECUTE";
+      return "OTHER";
+    },
+
+    /* 10.1.11.2 รายงานเชิงปริมาณ — filter: {fiscalYear} (ปีงบประมาณของวันที่คำพิพากษา, fallback วันที่รับเรื่อง) */
+    buildJudgmentStats(cases, filter) {
+      const f = filter || {};
+      const emptyOutcomes = () =>
+        Activity10.JUDGMENT_OUTCOMES.reduce((o, x) => {
+          o[x.code] = 0;
+          return o;
+        }, {});
+      const levels = Activity10.JUDGMENT_LEVELS.map((l) => ({
+        code: l.code,
+        name: l.name,
+        total: 0,
+        outcomes: emptyOutcomes(),
+        results: {},
+      }));
+      const stats = {
+        totalCases: 0,
+        totalJudgments: 0,
+        finalCount: 0,
+        analysisCount: 0,
+        levels: levels,
+        outcomes: emptyOutcomes(),
+        byFiscalYear: [],
+      };
+      const byFy = {};
+      (cases || []).filter(Activity10.isCase101).forEach((c) => {
+        let counted = false;
+        (c.judgments || []).forEach((j) => {
+          const fy = Activity10.firstFiscalYear([j.date, c.dateReceived]);
+          if (f.fiscalYear && fy !== String(f.fiscalYear)) return;
+          const lv = levels.find((l) => l.code === j.level);
+          if (!lv) return;
+          const oc = Activity10.judgmentOutcomeOf(j.result);
+          lv.total++;
+          lv.outcomes[oc]++;
+          const key = String(j.result || "").trim() || "(ไม่ระบุ)";
+          lv.results[key] = (lv.results[key] || 0) + 1;
+          stats.outcomes[oc]++;
+          stats.totalJudgments++;
+          if (j.isFinal) stats.finalCount++;
+          if (fy) byFy[fy] = (byFy[fy] || 0) + 1;
+          counted = true;
+        });
+        if (counted) stats.totalCases++;
+        (c.judgmentAnalyses || []).forEach((a) => {
+          const fy = Activity10.firstFiscalYear([a.date, c.dateReceived]);
+          if (!f.fiscalYear || fy === String(f.fiscalYear)) stats.analysisCount++;
+        });
+      });
+      stats.byFiscalYear = Object.keys(byFy)
+        .sort()
+        .map((k) => ({ fiscalYear: k, total: byFy[k] }));
+      return stats;
+    },
+
+    /* 10.1.11.3 สรุปคดีชั้นศาล — หนึ่งแถวต่อสำนวนที่มีคำสั่ง/คำพิพากษา */
+    buildCourtCaseSummaryRows(cases) {
+      return (cases || [])
+        .filter(Activity10.isCase101)
+        .filter((c) => (c.judgments || []).length)
+        .map((c) => {
+          const latest = Activity10.latestJudgmentOf(c).item;
+          return {
+            caseId: c.id,
+            title: c.title || "",
+            plaintiff: (c.plaintiffs || []).join(", ") || c.accuser || "",
+            defendant: (c.defendants || []).join(", ") || c.accused || "",
+            courtName: c.courtName || latest.issuer || "",
+            blackNo: c.courtBlackNo || latest.blackNo || "",
+            redNo: c.courtRedNo || latest.redNo || "",
+            judgmentCount: c.judgments.length,
+            latestLevelName: Activity10.judgmentLevelName(latest.level),
+            latestResult: latest.result || "",
+            latestDate: latest.date || "",
+            isFinal: c.judgments.some((j) => j.isFinal),
+          };
+        });
+    },
+
+    /* 10.1.11.2 (เชิงคุณภาพ) แตกผลวิเคราะห์เป็นแถว — filter: {fiscalYear} */
+    buildAnalysisReportRows(cases, filter) {
+      const f = filter || {};
+      const rows = [];
+      (cases || []).filter(Activity10.isCase101).forEach((c) => {
+        (c.judgmentAnalyses || []).forEach((a) => {
+          const fy = Activity10.firstFiscalYear([a.date, c.dateReceived]);
+          if (f.fiscalYear && fy !== String(f.fiscalYear)) return;
+          const hasRef = a.judgmentRef !== "" && a.judgmentRef != null;
+          const j = hasRef ? (c.judgments || [])[Number(a.judgmentRef)] : null;
+          rows.push({
+            caseId: c.id,
+            title: c.title || "",
+            levelName: j ? Activity10.judgmentLevelName(j.level) : "",
+            judgmentResult: j ? j.result || "" : "",
+            issue: a.issue,
+            summary: a.summary || (j ? j.summary || "" : ""),
+            analysis: a.analysis,
+            recommendation: a.recommendation,
+            analyst: a.analyst,
+            date: a.date,
+            inputMethod: a.inputMethod,
+            fileNames: (a.fileNames || []).slice(),
+          });
+        });
+      });
+      return rows;
+    },
+
+    /* ================= TOR 10.1.6 / 10.2.4 — การแจ้งเตือน (P6) =================
+       ไม่มีตารางใหม่: คำนวณสดจากคอลัมน์วันที่ครบกำหนดเดิมของแต่ละสำนวน
+       (SLA = officerDeadline/dueDate, อายุความ = prescriptionDate, คำให้การศาล = computeAnswerDeadline,
+       อุทธรณ์ = วันที่รับ +3/+10 วัน, หนังสือแจ้งภายใน = internalNotices[])
+       สถานะอ่าน/ยังไม่อ่านเก็บฝั่งเบราว์เซอร์เท่านั้น (ดู ecmis-shell.js) */
+
+    /* บทบาทที่เห็นทุกสำนวน (ธุรการ/ผอ.กองกฎหมาย รวมชื่อ login เดิม) */
+    ALERT_ALL_CASE_ROLES: ["admin_legal", "Kanda.R", "dir_legal", "Napas.S"],
+    ALERT_ROLE_ALIASES: {
+      "Kanda.R": "admin_legal",
+      "Napas.S": "dir_legal",
+      "Arnon.C": "group_director",
+      "Nattapol.B": "legal_officer",
+      "Surapong.W": "deputy_sg",
+      "Pimchanok.T": "sub_secretariat",
+      "Kitti.P": "subcommittee_screen",
+      "Apichat.S": "secgen",
+    },
+
+    /* หน่วยงานของผู้ใช้ตรงกับหน่วยที่ระบุในหนังสือแจ้งหรือไม่ (ตัดวงเล็บ/ปรับ "สนง." = "สำนักงาน") */
+    unitMatches(noticeUnit, myUnit) {
+      const norm = (u) =>
+        String(u || "")
+          .replace(/\(.*?\)/g, "")
+          .replace(/สนง\./g, "สำนักงาน")
+          .replace(/\s+/g, "")
+          .trim();
+      const a = norm(noticeUnit);
+      const b = norm(myUnit);
+      if (!a || !b) return false;
+      return a === b || a.startsWith(b) || b.startsWith(a);
+    },
+
+    /* คืนรายการแจ้งเตือน [{id, caseId, kind, level, title, detail, daysLeft, href}]
+       kind: sla | prescription | court | appeal | notice · level: danger | warning | info
+       opts.unit = หน่วยงานของผู้ใช้ (ใช้จับคู่หนังสือแจ้งภายใน) */
+    buildAlerts(cases, roleId, today, opts) {
+      const unit = (opts && opts.unit) || "";
+      const role = Activity10.ALERT_ROLE_ALIASES[roleId] || roleId;
+      const seesAll = Activity10.ALERT_ALL_CASE_ROLES.indexOf(roleId) >= 0;
+      const base = today ? new Date(today) : new Date();
+      base.setHours(0, 0, 0, 0);
+      const A103 = typeof window !== "undefined" ? window.Activity103 : null;
+      const out = [];
+      const isoOf = (d) => {
+        const p = (n) => String(n).padStart(2, "0");
+        return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+      };
+      const addDaysISO = (iso, n) => {
+        const m = String(iso || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (!m) return "";
+        let y = parseInt(m[1], 10);
+        if (y > 2500) y -= 543;
+        return isoOf(new Date(y, parseInt(m[2], 10) - 1, parseInt(m[3], 10) + n));
+      };
+      const left = (iso) => Activity10.prescriptionDaysLeft(iso, base);
+      const whenText = (d) =>
+        d < 0 ? "เกินกำหนด " + Math.abs(d) + " วัน" : d === 0 ? "ครบกำหนดวันนี้" : "เหลือ " + d + " วัน";
+      const slaLevel = (d) => (d <= 7 ? "danger" : d <= 15 ? "warning" : null);
+      const push = (c, kind, level, title, detail, daysLeft, suffix) => {
+        if (!level) return;
+        out.push({
+          id: c.id + ":" + kind + (suffix ? ":" + suffix : "") + ":" + level,
+          caseId: c.id,
+          kind: kind,
+          level: level,
+          title: title,
+          detail: detail,
+          daysLeft: daysLeft,
+          href: "01-work-inbox.html?alert=" + encodeURIComponent(c.id),
+        });
+      };
+
+      (cases || []).forEach((c) => {
+        if (!c || !c.id) return;
+        const label = c.title ? c.id + " " + c.title : c.id;
+
+        /* หนังสือแจ้งจากหน่วยงานอื่น: ส่งถึงหน่วยของผู้ใช้ ไม่ขึ้นกับสิทธิ์เห็นสำนวน */
+        (c.internalNotices || []).forEach((n, i) => {
+          if (!(n.units || []).some((u) => Activity10.unitMatches(u, unit))) return;
+          out.push({
+            id: c.id + ":notice:" + i,
+            caseId: c.id,
+            kind: "notice",
+            level: "info",
+            title: "หนังสือแจ้งจากหน่วยงานอื่น: " + (n.subject || "-"),
+            detail: "สำนวน " + label + (n.docNo ? " · ที่ " + n.docNo : ""),
+            daysLeft: null,
+            href: "01-work-inbox.html?tab=notices",
+          });
+        });
+
+        if (!seesAll && c.assignedRole !== role && c.assignedRole !== roleId) return;
+        if (/COMPLETED|CLOSED/.test(String(c.statusCode || ""))) return;
+
+        const isCourt = !!(A103 && A103.isCourtCase && A103.isCourtCase(c));
+        const ans = isCourt && A103.computeAnswerDeadline ? A103.computeAnswerDeadline(c) : null;
+        if (ans) {
+          const d = Math.round((ans.currentDue - base) / 86400000);
+          push(c, "court", slaLevel(d), "กำหนดยื่นคำให้การต่อศาล · " + whenText(d), "สำนวน " + label, d);
+        } else {
+          const iso = c.officerDeadline || c.dueDate;
+          const d = left(iso);
+          if (d !== null)
+            push(c, "sla", slaLevel(d), "กรอบเวลาดำเนินการ · " + whenText(d), "สำนวน " + label, d);
+        }
+
+        const pd = left(c.prescriptionDate);
+        if (pd !== null) {
+          const lv = pd <= 30 ? "danger" : pd <= 90 ? "warning" : null;
+          push(
+            c,
+            "prescription",
+            lv,
+            pd < 0 ? "อายุความสิ้นสุดแล้ว (เกิน " + Math.abs(pd) + " วัน)" : "อายุความใกล้สิ้นสุด · " + whenText(pd),
+            "สำนวน " + label,
+            pd,
+          );
+        }
+
+        /* 10.2.2 อุทธรณ์: แจ้งผู้อุทธรณ์ภายใน 3 วัน / ความเห็นเจ้าของสำนวนภายใน 10 วัน นับจากวันที่รับ */
+        if (c.statusCode === "L2_PENDING_CASE_OWNER_APPEAL_OPINION" && c.l2AppealReceiveDate) {
+          [
+            ["notify", 3, "กำหนดแจ้งผู้อุทธรณ์"],
+            ["opinion", 10, "กำหนดทำความเห็นเจ้าของสำนวน"],
+          ].forEach((x) => {
+            const d = left(addDaysISO(c.l2AppealReceiveDate, x[1]));
+            if (d === null) return;
+            push(c, "appeal", d <= 2 ? "danger" : d <= 7 ? "warning" : null, x[2] + " · " + whenText(d), "คำอุทธรณ์ " + label, d, x[0]);
+          });
+        }
+      });
+
+      const rank = { danger: 0, warning: 1, info: 2 };
+      return out.sort(
+        (a, b) =>
+          rank[a.level] - rank[b.level] ||
+          (a.daysLeft === null ? 9999 : a.daysLeft) - (b.daysLeft === null ? 9999 : b.daysLeft),
+      );
+    },
+
+    /* ร่างหัวเรื่อง/ข้อความหนังสือแจ้งหน่วยงานภายในจากคำพิพากษาล่าสุดของสำนวน */
+    buildInternalNoticeMemo(kase) {
+      const c = kase || {};
+      const list = c.judgments || [];
+      const last = list.length ? list[list.length - 1] : null;
+      const title = c.title || c.id || "สำนวนคดี";
+      if (!last) {
+        return {
+          subject: "แจ้งผลการดำเนินคดี " + title,
+          detail: "ขอแจ้งผลการดำเนินคดี " + title + " เพื่อทราบ",
+        };
+      }
+      const lv = last.issuer || Activity10.judgmentLevelName(last.level);
+      const nos = [
+        last.blackNo ? "คดีหมายเลขดำที่ " + last.blackNo : "",
+        last.redNo ? "หมายเลขแดงที่ " + last.redNo : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      return {
+        subject: "แจ้งผลคำพิพากษา/คำสั่ง (" + lv + ") " + title,
+        detail:
+          "ขอแจ้งผลคำพิพากษา/คำสั่งของ" + lv +
+          (last.date ? " ลงวันที่ " + last.date : "") +
+          (nos ? " " + nos : "") +
+          " ผลการพิจารณา: " + last.result +
+          (last.summary ? "\nสรุปสาระสำคัญ: " + last.summary : "") +
+          (last.isFinal ? "\n(คดีถึงที่สุดแล้ว)" : "") +
+          "\nจึงเรียนมาเพื่อทราบ",
+      };
+    },
+
+    /* TOR 10.3.1.1(2) ประเภทคดีศาลปกครอง */
+    COURT_LEVELS: {
+      FIRST: "ศาลปกครองชั้นต้น",
+      SUPREME: "ศาลปกครองสูงสุด",
+    },
+    courtLevelName(code) {
+      return Activity10.COURT_LEVELS[code] || "";
+    },
+
+    /* TOR 10.3.3.1 ประเภทการบันทึกสถานะการดำเนินการ */
+    L3_OP_STATUS: [
+      { code: "BOARD_AUTHORIZE", name: "เสนอคณะกรรมการ ป.ป.ท. เพื่อพิจารณามอบอำนาจ" },
+      { code: "IN_PROGRESS", name: "อยู่ระหว่างการดำเนินการของกลุ่มงานคดี" },
+      { code: "SENT_TO_PROSECUTOR", name: "จัดส่งสำนวนคดีปกครองพร้อมเอกสารให้พนักงานอัยการผู้รับมอบอำนาจ" },
+      { code: "OTHER", name: "อื่นๆ" },
+    ],
+    /* TOR 10.3.4.1 ประเภทสถานะทางคดี */
+    L3_CASE_STATUS: [
+      { code: "FIRST_PENDING", name: "อยู่ระหว่างพิจารณาของศาลปกครองชั้นต้น" },
+      { code: "SUPREME_PENDING", name: "อยู่ระหว่างพิจารณาของศาลปกครองสูงสุด" },
+      { code: "FINAL", name: "คดีถึงที่สุด" },
+      { code: "STRUCK_OUT", name: "จำหน่ายคดี" },
+      { code: "OTHER", name: "อื่นๆ" },
+    ],
+    l3StatusName(list, code, otherText) {
+      const item = (list || []).find((s) => s.code === code);
+      if (!item) return "";
+      return code === "OTHER" && otherText ? "อื่นๆ: " + otherText : item.name;
+    },
+
+    /* TOR 10.3.2 นิติกรกลุ่มงานคดีที่มอบหมายได้ — ทุกคนใช้บทบาท case_legal_officer
+       (inbox แยกงานตามบทบาท ชื่อใช้แสดงผลเท่านั้น) คนแรกคือนิติกรเดิมของ demo */
+    CASE_LAWYERS: [
+      "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+      "นางสาวพิมพ์ชนก ศรีสุข (นิติกร กลุ่มงานคดี)",
+      "นายธนวัฒน์ มั่นคง (นิติกรชำนาญการ กลุ่มงานคดี)",
+      "นางวรรณา ใจงาม (นิติกรชำนาญการพิเศษ กลุ่มงานคดี)",
+    ],
 
     addCase(newCaseData) {
       const cases = loadCases();
@@ -4831,8 +5892,9 @@
         statuteLimitation: newCaseData.statuteLimitation || "15 ปี",
         slaTotalDays: newCaseData.slaTotalDays || 15,
         slaDaysRemaining: newCaseData.slaTotalDays || 15,
+        dateReceived:
+          newCaseData.dateReceived || new Date().toISOString().split("T")[0],
         slaAlert: "sla-normal",
-        dateReceived: new Date().toISOString().split("T")[0],
         dueDate: newCaseData.dueDate || getDateWithOffset(15),
         workflowStep:
           newCaseData.workflowStep || (newCaseData.lawReceiveNo ? 3 : 2),

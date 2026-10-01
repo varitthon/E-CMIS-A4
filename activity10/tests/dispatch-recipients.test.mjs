@@ -10,7 +10,9 @@ const src = fs.readFileSync(
 );
 const sandbox = {};
 new Function("window", src)(sandbox);
-const { getRequiredRecipients } = sandbox.Activity10;
+const getRequiredRecipients = sandbox.Activity10.getRequiredRecipients.bind(
+  sandbox.Activity10,
+); /* เมธอดใช้ this.isAgreedOpinion จึงต้อง bind */
 
 let passed = 0;
 const t = (name, fn) => {

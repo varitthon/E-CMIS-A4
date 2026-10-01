@@ -104,6 +104,25 @@
         margin-top: 2px;
       }
 
+      /* ตัวกรอง "มุมมอง" ของหน้าคิวงาน — ดูวิธีเพิ่มมุมมองที่หัวสคริปต์ (#inboxViewSelect) */
+      .inbox-view-bar {
+        margin-bottom: 14px;
+      }
+      .inbox-view-bar .filter-grid .form-group {
+        flex: 0 0 360px;
+        max-width: 100%;
+      }
+      .inbox-tab-hidden {
+        display: none !important;
+      }
+      /* ป้ายสถานะแบบพิลล์ในตารางรายงาน/สารบบ: เรียงบรรทัดเดียวกัน ขนาดเท่ากับ .badge อื่น */
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+
       .filter-card {
         background: var(--bg-card);
         border-radius: 8px;
@@ -760,12 +779,28 @@
           </div>
         </div>
 
+        <!-- ตัวกรองมุมมองของหน้าคิวงาน: ค่า option = ชื่อพาเนล data-inbox-panel="X" -->
+        <div class="filter-card inbox-view-bar" id="inboxViewBar">
+          <div class="filter-grid">
+            <div class="form-group">
+              <label for="inboxViewSelect">มุมมอง</label>
+              <select id="inboxViewSelect" class="form-control">
+                <option value="cases">งานในคิว</option>
+                <option value="notices" id="noticeViewOption">หนังสือแจ้งจากหน่วยงานอื่น</option>
+                <!-- มุมมองรายงาน/สารบบ 10.1 (เห็นเฉพาะสายงานกฎหมาย — ซ่อนโดย ECMIS101Reports.applyRoleVisibility) -->
+                <option value="board-report">รายงานผลตามมติคณะกรรมการ</option>
+                <option value="registry">สารบบคำวินิจฉัย/คำพิพากษา</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- Empty state before a category is chosen -->
-        <div class="empty-state-card" id="emptyState">
+        <div class="empty-state-card" id="emptyState" data-inbox-panel="cases">
           เลือกประเภทงานด้านบนเพื่อดูรายการ
         </div>
 
-        <div id="inboxDetail" style="display: none">
+        <div id="inboxDetail" style="display: none" data-inbox-panel="cases">
           <!-- Filter & Search Card -->
           <div class="filter-card">
             <div class="filter-grid">
@@ -860,6 +895,33 @@
             </div>
           </div>
         </div>
+
+        <!-- มุมมอง: หนังสือแจ้งจากหน่วยงานอื่น (TOR 10.1.9 / 10.2.6) -->
+        <div class="table-card inbox-tab-hidden" id="noticePanel" data-inbox-panel="notices">
+          <div class="table-title-bar">
+            <span>หนังสือแจ้งจากหน่วยงานอื่นถึงหน่วยงานของท่าน</span>
+            <span class="badge" style="background: #e2e8f0; color: #334155" id="noticeBadgeCount">0 รายการ</span>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>เลขสำนวน</th>
+                  <th>เรื่อง</th>
+                  <th>ที่หนังสือ</th>
+                  <th>วันที่</th>
+                  <th>แจ้งถึงหน่วยงาน</th>
+                  <th>การดำเนินการ</th>
+                </tr>
+              </thead>
+              <tbody id="noticeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- มุมมอง: รายงานผลตามมติ (10.1.8) / สารบบคำวินิจฉัย (10.1.10) — เรนเดอร์โดย assets/ecmis-10-1-reports.js -->
+        <div class="table-card inbox-tab-hidden" id="boardReportPanel" data-inbox-panel="board-report"></div>
+        <div class="table-card inbox-tab-hidden" id="registryPanel" data-inbox-panel="registry"></div>
       </div>
     </div>
 
@@ -867,11 +929,106 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
-    <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-export.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-1-reports.js?v=20261002_1"></script>
     <script>
+      /* กลไกมุมมองของหน้าคิวงาน (ตัวกรอง "มุมมอง" = <select id="inboxViewSelect">)
+         - ตัวเลือก:  <option value="ชื่อ"> ใน #inboxViewSelect
+         - พาเนล:     องค์ประกอบใดก็ได้ที่มี data-inbox-panel="ชื่อ" (หลายตัวต่อมุมมองได้)
+         - showInboxTab(name) สลับ class .inbox-tab-hidden ของพาเนลทั้งหมด จึงไม่ชนกับ
+           การสลับ style.display ของโค้ดเดิม (selectCategory ฯลฯ) และตั้งค่า select ให้ตรงกัน
+           (ถ้าตัวเลือกถูกซ่อนตามบทบาทจะกลับไปมุมมอง "cases")
+         - เพิ่มมุมมองใหม่: เพิ่ม <option> + พาเนลใน HTML แล้วลงทะเบียน renderer ที่ INBOX_TAB_RENDERERS[ชื่อ]
+           (เรียกทุกครั้งที่เปลี่ยนมุมมอง) — เปิดมุมมองตั้งต้นผ่าน ?tab=ชื่อ (เช่น ?tab=notices) */
+      const INBOX_TAB_RENDERERS = {};
+      function showInboxTab(name) {
+        const select = document.getElementById("inboxViewSelect");
+        const opt = select && select.querySelector('option[value="' + name + '"]');
+        if (!opt || opt.disabled) name = "cases";
+        if (select) select.value = name;
+        document.querySelectorAll("[data-inbox-panel]").forEach((p) => {
+          p.classList.toggle("inbox-tab-hidden", p.getAttribute("data-inbox-panel") !== name);
+        });
+        if (INBOX_TAB_RENDERERS[name]) INBOX_TAB_RENDERERS[name]();
+      }
+      document.getElementById("inboxViewSelect").addEventListener("change", (e) => showInboxTab(e.target.value));
+
+      /* หนังสือแจ้งจากหน่วยงานอื่น: ดึงจาก Activity10.buildAlerts (kind = notice)
+         แล้วหาตัวหนังสือจริงจาก internalNotices[i] ของสำนวน (id = <caseId>:notice:<i>) */
+      function getNoticeRows() {
+        if (typeof Activity10 === "undefined" || !Activity10.buildAlerts) return [];
+        const unit = typeof window.ecmisCurrentUnit === "function" ? window.ecmisCurrentUnit() : "";
+        const cases = Activity10.getCases();
+        return Activity10.buildAlerts(cases, getCurrentRole(), new Date(), { unit })
+          .filter((a) => a.kind === "notice")
+          .map((a) => {
+            const idx = parseInt(a.id.split(":notice:")[1], 10);
+            const kase = cases.find((c) => c.id === a.caseId) || {};
+            return { caseId: a.caseId, notice: (kase.internalNotices || [])[idx] || {} };
+          });
+      }
+      function escNotice(v) {
+        return String(v == null ? "" : v).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+      }
+      function updateNoticeViewCount(count) {
+        const n = count == null ? getNoticeRows().length : count;
+        document.getElementById("noticeViewOption").textContent =
+          "หนังสือแจ้งจากหน่วยงานอื่น" + (n ? " (" + n + ")" : "");
+      }
+      function renderNoticeTab() {
+        const rows = getNoticeRows();
+        const body = document.getElementById("noticeTableBody");
+        document.getElementById("noticeBadgeCount").textContent = rows.length + " รายการ";
+        updateNoticeViewCount(rows.length);
+        body.innerHTML = rows.length
+          ? rows
+              .map((r) => {
+                const n = r.notice;
+                const date = n.date && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(n.date) : n.date || "-";
+                return (
+                  "<tr><td>" + escNotice(r.caseId) + "</td>" +
+                  "<td>" + escNotice(n.subject || "-") + "</td>" +
+                  "<td>" + escNotice(n.docNo || "-") + "</td>" +
+                  "<td>" + escNotice(date) + "</td>" +
+                  "<td>" + escNotice((n.units || []).join(", ") || "-") + "</td>" +
+                  '<td><button class="btn btn-outline" data-open-notice-case="' + escNotice(r.caseId) + '">เปิดสำนวน</button></td></tr>'
+                );
+              })
+              .join("")
+          : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:20px">ไม่มีหนังสือแจ้งจากหน่วยงานอื่น</td></tr>';
+      }
+      INBOX_TAB_RENDERERS.notices = renderNoticeTab;
+      ECMIS101Reports.register(INBOX_TAB_RENDERERS);
+      try {
+        updateNoticeViewCount();
+      } catch (e) {
+        /* ข้อมูลยังไม่พร้อม — จะอัปเดตเมื่อเปิดมุมมองหนังสือแจ้ง */
+      }
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-open-notice-case]");
+        if (b) viewCaseDetail(b.getAttribute("data-open-notice-case"));
+      });
+
+      /* ลิงก์จากการแจ้งเตือน: ?alert=<เลขสำนวน> เปิดหมวดของสำนวนแล้วกรองด้วยเลขสำนวน,
+         ?tab=notices เปิดมุมมองหนังสือแจ้ง (ตัวกรอง "มุมมอง") */
+      function applyInboxUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const alertId = params.get("alert");
+        if (alertId) {
+          const row = getAllDatabaseCases().find((c) => c.id === alertId);
+          if (row && row.type) {
+            if (currentCategory !== row.type) selectCategory(row.type);
+            document.getElementById("searchInput").value = alertId;
+            onSearchChange();
+          }
+        }
+        if (params.get("tab")) showInboxTab(params.get("tab"));
+      }
+
       const PAGE_SIZE = 10;
       let currentPage = 1;
       let currentCategory = null;
@@ -1722,7 +1879,23 @@
         menuEl.innerHTML = itemsHtml;
       }
 
+      /* TOR 10.2.7.3: กรองคำร้อง 10.2 ตามกติกาสิทธิ์ (Activity102.VISIBILITY_RULES)
+         ครอบทั้งรายการ ตัวนับ ตัวกรองสถานะ และการค้นหา เพราะทุกจุดเรียกผ่านฟังก์ชันนี้ */
       function getCasesForRole(allCases) {
+        const rows = getCasesForRoleBase(allCases);
+        if (typeof Activity102 === "undefined" || !Activity102.canView102)
+          return rows;
+        const roleId = getCurrentRole();
+        const unit =
+          typeof ECMIS102 !== "undefined" && ECMIS102.currentUnit
+            ? ECMIS102.currentUnit()
+            : "";
+        return rows.filter((c) =>
+          Activity102.canView102(c.raw || c, roleId, unit),
+        );
+      }
+
+      function getCasesForRoleBase(allCases) {
         const roleId = getCurrentRole();
         if (roleId === "admin_legal" || roleId === "Kanda.R") {
           // ธุรการกองกฎหมาย ดูแลทะเบียนคุมสำนวนทั้งหมดของกองกฎหมาย สามารถดูรายละเอียดสำนวนและเอกสารอัยการ (หน้า 03) ได้ทุกสำนวน
@@ -2124,6 +2297,29 @@
         });
       }
 
+      /* ยื่นอุทธรณ์จากคำขอที่ปิดแล้ว (DENY/PARTIAL) → L2_PENDING_APPEAL_INTAKE
+         ให้ 10-2-appeal-01 รับต่อ ผู้อุทธรณ์ตั้งต้นจากผู้ยื่นคำขอเดิมและแก้ได้ */
+      function fileAppealFromInbox(caseId) {
+        const kase = Activity10.getCaseById(caseId);
+        if (!Activity102.canFileAppeal(kase)) return;
+        /* ไม่ใช้ popup กรอกข้อมูลแล้ว — ตั้งสถานะรอรับเรื่องอุทธรณ์ (ชื่อผู้อุทธรณ์ตั้งต้นจากผู้ยื่นคำขอเดิม)
+           แล้วพาไปหน้า 10-2-appeal-01 ซึ่งมีช่องผู้อุทธรณ์/หน่วยงานที่แก้ไขได้ */
+        Swal.fire({
+          icon: "question",
+          title: "ยื่นอุทธรณ์ " + caseId,
+          text: "ระบบจะส่งเรื่องเข้าคิวรับเรื่องอุทธรณ์และเปิดหน้ารับเรื่องอุทธรณ์",
+          showCancelButton: true,
+          confirmButtonText: "ยื่นอุทธรณ์",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          Activity102.fileAppeal(caseId, {}, getCurrentRole());
+          window.location.href =
+            "10-2-appeal-01-legal-admin-intake.html?id=" + encodeURIComponent(caseId);
+        });
+      }
+
       function handleCaseAction(caseId) {
         const roleId = getCurrentRole();
         const allCases = getAllDatabaseCases();
@@ -2474,6 +2670,24 @@
          (มี l3ProposedBranch จาก LAW0128) ไม่ผูกกับสถานะปัจจุบัน — ให้คงอยู่ต่อ
          แม้เคสจะเดินเข้า Part 7/8 ไปแล้ว (ไม่ใช่แค่ตอนอยู่ที่สถานะเปลี่ยนผ่าน
          3 ทางหลัง LAW0128 เหมือนเดิม) ใช้ VERDICT_BRANCHES.label ที่มีอยู่แล้ว */
+      /* TOR 10.3.3.1 / 10.3.4.1 สถานะทางคดีและประเภทการดำเนินการ (ค่าตามขั้นตอนงาน
+         หรือที่ผู้ใช้บันทึกเองในแผงบันทึกสถานะ) — แสดงต่อท้ายสถานะงานของแถวคดีปกครอง */
+      function caseStatusBadge103(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isCourtCase(kase)) return "";
+        const esc = (s) =>
+          String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        const st = Activity103.effectiveStatus(kase);
+        const caseName = Activity10.l3StatusName(Activity10.L3_CASE_STATUS, st.caseStatus, st.caseStatusOther);
+        const opName = Activity10.l3StatusName(Activity10.L3_OP_STATUS, st.opStatusType, st.opStatusOther);
+        return ` <span class="badge" style="background:#f0f9ff; color:#075985; border:1px solid #bae6fd; font-weight:600;" title="การดำเนินการ: ${esc(opName)}">${esc(caseName)}</span>`;
+      }
+
       function verdictBranchBadge(item) {
         const kase = item && item.raw;
         if (!kase || typeof Activity103 === "undefined") return "";
@@ -2616,7 +2830,13 @@
           if (nextStep && nextStep.role === roleId) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep.label}">ดำเนินการ</button>`;
           }
-          return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคำร้อง">${svgEyeIcon}</button>`;
+          /* TOR 10.2.1.1(2): คำขอที่จบด้วย ไม่อนุญาต/อนุญาตบางส่วน ยื่นอุทธรณ์ต่อได้ */
+          const appealBtn =
+            (roleId === "admin_legal" || roleId === "Kanda.R" || roleId === "case_bureau_admin") &&
+            Activity102.canFileAppeal(item.raw || item)
+              ? `<button class="btn-action-primary" style="margin-right:6px" onclick="fileAppealFromInbox('${caseId}')" title="ยื่นอุทธรณ์คำสั่งไม่อนุญาต/เปิดเผยบางส่วน">ยื่นอุทธรณ์</button>`
+              : "";
+          return `${appealBtn}<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคำร้อง">${svgEyeIcon}</button>`;
         }
 
         /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง (LAW0085-LAW0096)
@@ -2632,7 +2852,8 @@
           if (nextStep3 && nextStep3.role === roleId) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="${nextStep3.label}">ดำเนินการ</button>`;
           }
-          const viewArg = nextPage3 ? `'${nextPage3}'` : "null";
+          const viewPage3 = nextPage3 || Activity103.VIEW_ROUTES[statusCode];
+          const viewArg = viewPage3 ? `'${viewPage3}'` : "null";
           return `<button class="action-btn" onclick="viewCourtCase('${caseId}', ${viewArg})" title="ดูรายละเอียดคดี (ดูอย่างเดียว)">${svgEyeIcon}</button>`;
         }
 
@@ -2790,6 +3011,7 @@
         if (searchVal !== "") {
           filteredData = filteredData.filter(
             (d) =>
+              (d.id && String(d.id).toLowerCase().includes(searchVal)) ||
               (d.caseNo && d.caseNo.toLowerCase().includes(searchVal)) ||
               (d.reqNo && d.reqNo.toLowerCase().includes(searchVal)) ||
               (d.lawNo && d.lawNo.toLowerCase().includes(searchVal)) ||
@@ -2798,7 +3020,9 @@
               (d.accused && d.accused.toLowerCase().includes(searchVal)) ||
               (d.reqUser && d.reqUser.toLowerCase().includes(searchVal)) ||
               (d.officer && d.officer.toLowerCase().includes(searchVal)) ||
-              (d.status && d.status.toLowerCase().includes(searchVal)),
+              (d.status && d.status.toLowerCase().includes(searchVal)) ||
+              /* TOR 10.1.10.8/10.2.7.4: เลขดำ/แดง ผู้ร้องสอด คู่กรณีทุกราย ผู้ขอ เลขคำขอที่เกี่ยวข้อง */
+              Activity10.matchesCaseSearch(d, searchVal),
           );
         }
 
@@ -2933,7 +3157,7 @@
  <td style="max-width:200px;">${renderSummonsBadge103(item)}</td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${caseStatusBadge103(item)}${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`;
@@ -2995,6 +3219,8 @@
         updateRoleDisplay();
         updateCardCounts();
         selectCategory("10.1");
+        renderNoticeTab();
+        applyInboxUrlParams();
       };
     </script>
   </body>

@@ -320,7 +320,7 @@
  </div>
 
  <div class="form-group" style="margin-bottom: 0;">
- <label>ไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF)</label>
+ <label>ไฟล์หนังสือคำวินิจฉัยชี้ขาดฉบับเต็มของ อสส. (PDF, Word, Excel)</label>
  <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
  <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
  <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
@@ -380,8 +380,8 @@
  </div>
 
  <div class="form-group" style="margin-bottom: 0;">
- <label>แนบไฟล์หนังสือ / คำพิพากษาจากพนักงานอัยการ (PDF)</label>
- <input type="file" id="in_prosecutorResultFile" class="form-control" accept=".pdf,.doc,.docx" style="height:auto; padding:6px 12px;">
+ <label>แนบไฟล์หนังสือ / คำพิพากษาจากพนักงานอัยการ (PDF, Word, Excel)</label>
+ <input type="file" id="in_prosecutorResultFile" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="height:auto; padding:6px 12px;">
  </div>
  </div>
 
@@ -463,7 +463,7 @@
  </div>
 
  <div class="form-group">
- <label>แนบไฟล์หนังสือแจ้งกองบริหารคดี (PDF) <span style="color:#dc2626;">*</span></label>
+ <label>แนบไฟล์หนังสือแจ้งกองบริหารคดี (PDF, Word, Excel) <span style="color:#dc2626;">*</span></label>
  <div class="read-box" style="display:flex; justify-content:space-between; align-items:center;">
  <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
  <i class="fa-solid fa-file-pdf text-danger" style="font-size:1.2em;"></i>
@@ -492,8 +492,10 @@
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
- <script src="assets/ecmis-shell.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+ <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-export.js?v=20261002_1"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
 
  <script>
  let currentCase = null;
@@ -728,6 +730,32 @@
  }
 
  Activity10.submitOfficerFinalCaseClosedNotification(currentCase.id, payload);
+ // TOR 10.1.9: หนังสือแจ้งในฟอร์มนี้นับเป็นรายการแจ้งผลหน่วยงานภายใน (ไม่ต้องกรอกซ้ำในป๊อปอัป)
+ Activity10.addInternalNotice(currentCase.id, {
+   units: [notifyTarget].filter(Boolean),
+   docNo: notifyDocNo,
+   date: notifyDate,
+   subject: (document.getElementById('in_notifySubject') || {}).value || '',
+   detail: officerNotes,
+   fileNames: [payload.caseClosedNotifyFile].filter(Boolean)
+ }, 'นิติกร');
+
+ // TOR 10.1.4: ผลจากพนักงานอัยการที่กรอกไว้ ถูกบันทึกเป็นรายการคำสั่ง/คำพิพากษาของสำนวนด้วย
+ // (ชั้นตามระดับศาลของสำนวน) — ส่วน prosecutorResult* ด้านบนยังคงไว้ตามเดิม
+ if (payload.prosecutorResultTypeName) {
+ const resFile = document.getElementById('in_prosecutorResultFile');
+ Activity10.addJudgment(currentCase.id, {
+ level: { '2': 'APPEAL', '3': 'SUPREME' }[currentCase.prosecutorLevel] || 'FIRST',
+ issuer: currentCase.courtName || currentCase.prosecutorLevelName || '',
+ blackNo: currentCase.courtBlackNo || '',
+ redNo: currentCase.courtRedNo || '',
+ date: payload.prosecutorResultDate || '',
+ result: payload.prosecutorResultTypeName,
+ summary: payload.prosecutorResultSummary || '',
+ isFinal: false,
+ fileNames: resFile && resFile.files ? Array.from(resFile.files).map((f) => f.name) : []
+ }, 'นิติกร');
+ }
 
  Swal.fire({
  icon: 'success',

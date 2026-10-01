@@ -192,17 +192,26 @@
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>เลขที่หนังสือ/รหัสอ้างอิงมติคณะกรรมการ ป.ป.ท. <span style="color: #dc2626">*</span></label>
+                  <label>เลขที่หนังสือ/รหัสอ้างอิงมติคณะกรรมการ ป.ป.ท.</label>
                   <input type="text" class="form-control font-monospace" id="in_boardApprovalRefRound2" placeholder="เช่น ปป 0001/ว.145" />
                 </div>
                 <div class="form-group">
-                  <label>วันที่ได้รับแจ้งมติ <span style="color: #dc2626">*</span></label>
+                  <label>วันที่ได้รับแจ้งมติ</label>
                   <input type="date" class="form-control font-monospace" id="in_boardApprovalDateRound2" />
                 </div>
               </div>
               <div class="form-group">
-                <label>มติคณะกรรมการ ป.ป.ท. <span style="color: #dc2626">*</span></label>
+                <label>ประเภทมติคณะกรรมการ ป.ป.ท. <span style="color: #dc2626">*</span></label>
+                <select id="in_boardResolutionRound2Type" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label>มติคณะกรรมการ ป.ป.ท. (รายละเอียด)</label>
                 <textarea id="in_boardResolutionRound2Text" class="form-control" rows="3" placeholder="ระบุมติของคณะกรรมการ ป.ป.ท. ตามที่ได้รับแจ้งกลับมาจากกิจกรรมที่ 7..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>เอกสารมติ/หนังสือแจ้งมติ <span class="l2-optional">(แนบได้หลายไฟล์)</span></label>
+                <input type="file" id="in_boardRound2Files" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="ECMIS102.renderFileNames('in_boardRound2Files', 'boardRound2FilesList')" />
+                <div id="boardRound2FilesList" style="margin-top: 8px"></div>
               </div>
               <div class="form-group">
                 <label>หมายเหตุ</label>
@@ -222,9 +231,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js"></script>
-    <script src="assets/ecmis-10-2.js?v=20260907_5"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "L2-RECEIVE-BOARD-ROUND2";
@@ -278,6 +287,11 @@
       }
 
       function populate() {
+        document.getElementById("in_boardResolutionRound2Type").innerHTML =
+          '<option value="">เลือกประเภทมติ</option>' +
+          Activity102.RESOLUTION_TYPES.map(
+            (r) => '<option value="' + r.value + '">' + r.label + "</option>",
+          ).join("");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         renderMemoDoc();
         document.getElementById("committeeSheet").innerHTML =
@@ -299,20 +313,16 @@
 
       function submitReceive() {
         const ref = document.getElementById("in_boardApprovalRefRound2").value.trim();
-        if (!ref) {
-          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุเลขที่หนังสือ/รหัสอ้างอิงมติคณะกรรมการ ป.ป.ท.", confirmButtonColor: "#1e3a8a" });
-          return;
-        }
         const date = document.getElementById("in_boardApprovalDateRound2").value;
-        if (!date) {
-          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุวันที่ได้รับแจ้งมติ", confirmButtonColor: "#1e3a8a" });
+        const decision = Activity102.buildDecisionPatch({
+          type: document.getElementById("in_boardResolutionRound2Type").value,
+          text: document.getElementById("in_boardResolutionRound2Text").value,
+        });
+        if (!decision) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาเลือกประเภทมติของคณะกรรมการ ป.ป.ท.", confirmButtonColor: "#1e3a8a" });
           return;
         }
-        const resolutionText = document.getElementById("in_boardResolutionRound2Text").value.trim();
-        if (!resolutionText) {
-          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุมติของคณะกรรมการ ป.ป.ท.", confirmButtonColor: "#1e3a8a" });
-          return;
-        }
+        const resolutionText = decision.text || decision.typeName;
         const notes = document.getElementById("in_receiveNotesRound2").value.trim();
 
         Swal.fire({
@@ -334,6 +344,9 @@
             l2BoardApprovalRefRound2: ref,
             l2BoardApprovalDateRound2: date,
             l2BoardResolutionRound2Text: resolutionText,
+            l2BoardResolutionRound2Type: decision.type,
+            l2BoardResolutionRound2TypeName: decision.typeName,
+            l2BoardRound2Files: ECMIS102.fileNamesOf("in_boardRound2Files"),
             l2ReceiveNotesRound2: notes,
             assignedRole: "dir_legal",
             officer: ECMIS102.signerLabel("dir_legal"),

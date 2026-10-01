@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260910_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
     <style>
       h1,
@@ -550,6 +550,8 @@
             </div>
           </div>
 
+          <!-- TOR 10.3.3 / 10.3.4 บันทึกสถานะ (ECMIS103.renderStatusPanel) -->
+          <div id="l3StatusPanel"></div>
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
@@ -674,10 +676,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20260916_1"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260916_1"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20260921_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
 
     <script>
       const STEP_CODE = "LAW0090";
@@ -708,6 +710,10 @@
           return;
         }
         populate();
+        ECMIS103.renderStatusPanel("l3StatusPanel", currentCase.id, {
+          readOnly: new URLSearchParams(window.location.search).get("view") === "1",
+          onSaved: function (c) { currentCase = c; },
+        });
       }
 
       function populateCommon() {

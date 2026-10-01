@@ -25,7 +25,7 @@
     />
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260915_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
     <style>
       h1, h2, h3, h4, h5, h6, .brand, .topbar { font-family: "Prompt", sans-serif; }
@@ -162,7 +162,9 @@
             </div>
           </div>
 
-          <div class="form-card" style="border: 2px solid #1e3a8a">
+          <!-- TOR 10.3.4.2 บันทึกผลคำพิพากษาศาลปกครองสูงสุด (หลังส่งคำอุทธรณ์แล้ว) -->
+          <div id="supremeResultPanel"></div>
+          <div class="form-card" id="sendCard" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
               <span><i class="fa-solid fa-paper-plane text-primary me-2"></i>ส่งหนังสือและคำอุทธรณ์ไปสำนักงานคดีปกครอง</span>
               <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span>
@@ -234,15 +236,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20260915_2"></script>
-    <script src="assets/ecmis-shell.js?v=20260904_6"></script>
-    <script src="assets/ecmis-10-3.js?v=20260915_21"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
 
     <script>
       /* LAW0160B — นิติกร ส่งหนังสือและคำอุทธรณ์ไปสำนักงานคดีปกครอง (Branch A
          มติบอร์ด, สายคู่ขนานกับ LAW0160 ของ Part 8a→10a) เป็น terminal step
          เคสมาจาก 10-3v-35 ที่สถานะ L9A_PENDING_LAWYER_SEND — ไม่มี route ต่อ
          (black box ไปกิจกรรมอื่น/Page 10 LAW0161 ที่ยังไม่ implement)
+         หลังส่งแล้ว (L9A_SENT_TO_PROSECUTOR) หน้าเดียวกันนี้ใช้บันทึกผลคำพิพากษา
+         ศาลปกครองสูงสุด (TOR 10.3.4.2) → L9A_SUPREME_JUDGED คดีถึงที่สุด
          ต่างจาก 10-3v-25 เดิม: หน้านี้ต้องลงนาม (ตามที่ตกลง — ทุกขั้นตอน
          ยกเว้นธุรการต้องเซ็น) ดู docs/10.3 mockup/flow-page-10.md */
       const STEP_CODE = "LAW0160B";
@@ -254,13 +258,15 @@
         ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
         ECMIS103.renderStepper("stepper", STEP_CODE);
         document.getElementById("nextStepNote").innerHTML =
-          ECMIS103.nextStepNoteHtml(STEP.statusCode, {
-            fallbackLabel: "สำนักงานคดีปกครอง (อัยการ) ยื่นคำอุทธรณ์ต่อศาลปกครองสูงสุด (LAW0161)",
-          });
+          "ขั้นตอนถัดไป: สำนักงานคดีปกครอง (อัยการ) ยื่นคำอุทธรณ์ต่อศาลปกครองสูงสุด เมื่อศาลมีคำพิพากษา <strong>นิติกร กลุ่มงานคดี</strong> กลับมาบันทึกผลที่หน้านี้";
         loadCase();
         const isViewOnly = ECMIS103.applyViewOnlyMode();
         if (!isViewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
       });
+
+      /* รับทั้งเคสที่รอส่ง และเคสที่ส่งแล้ว (บันทึก/ดูผลศาลปกครองสูงสุด TOR 10.3.4.2) */
+      const SUPREME_STAGE_STATUSES = ["L9A_SENT_TO_PROSECUTOR", "L9A_SUPREME_JUDGED"];
+      const SEND_PAGE_STATUSES = ["L9A_PENDING_LAWYER_SEND"].concat(SUPREME_STAGE_STATUSES);
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
@@ -270,7 +276,7 @@
         currentCase =
           found &&
           Activity103.isVerdictCase(found) &&
-          found.statusCode === "L9A_PENDING_LAWYER_SEND"
+          SEND_PAGE_STATUSES.includes(found.statusCode)
             ? found
             : null;
 
@@ -280,6 +286,25 @@
           return;
         }
         populate();
+        if (SUPREME_STAGE_STATUSES.includes(currentCase.statusCode)) showSupremeStage();
+      }
+
+      /* ส่งคำอุทธรณ์แล้ว — ซ่อนฟอร์มส่ง แสดงแผงบันทึกผลคำพิพากษาศาลปกครองสูงสุด */
+      function showSupremeStage() {
+        document.getElementById("sendCard").classList.add("d-none");
+        document.getElementById("nextStepNote").innerHTML =
+          "ส่งคำอุทธรณ์แล้ว เมื่อศาลปกครองสูงสุดมีคำพิพากษา <strong>นิติกร กลุ่มงานคดี</strong> บันทึกผลคำพิพากษาด้านล่าง";
+        ECMIS103.renderSupremeResultPanel("supremeResultPanel", currentCase.id, {
+          onSaved: function () {
+            Swal.fire({
+              icon: "success",
+              title: "บันทึกผลคำพิพากษาแล้ว",
+              text: "บันทึกผลคำพิพากษาศาลปกครองสูงสุด และสถานะทางคดี \"คดีถึงที่สุด\" เรียบร้อย",
+              timer: 2200,
+              showConfirmButton: false,
+            }).then(ECMIS103.goInbox);
+          },
+        });
       }
 
       function todayISO() {
@@ -455,7 +480,7 @@
                 l9aDocCopyFiles: docCopies,
                 l9aSendNotes: notes,
               });
-              doneAndBack("ลงนามและส่งคำอุทธรณ์ไปสำนักงานคดีปกครองเรียบร้อยแล้ว — จบขั้นตอนของกิจกรรมที่ 10.3 (สายมติบอร์ด)");
+              doneAndBack("ลงนามและส่งคำอุทธรณ์ไปสำนักงานคดีปกครองเรียบร้อยแล้ว เมื่อศาลปกครองสูงสุดมีคำพิพากษา ให้กลับมาบันทึกผลที่หน้านี้");
             },
           );
           return;
@@ -490,7 +515,7 @@
               l9aDocCopyFiles: docCopies,
               l9aSendNotes: notes,
             });
-            doneAndBack("ลงนามและส่งคำอุทธรณ์ไปสำนักงานคดีปกครองเรียบร้อยแล้ว — จบขั้นตอนของกิจกรรมที่ 10.3 (สายมติบอร์ด)");
+            doneAndBack("ลงนามและส่งคำอุทธรณ์ไปสำนักงานคดีปกครองเรียบร้อยแล้ว เมื่อศาลปกครองสูงสุดมีคำพิพากษา ให้กลับมาบันทึกผลที่หน้านี้");
           },
         );
       }

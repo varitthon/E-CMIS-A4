@@ -134,8 +134,143 @@
     renderNotifications();
   }
 
+  /* ==========================================================================
+     การแจ้งเตือน (TOR 10.1.6 / 10.2.4) — สร้างสดจากข้อมูลสำนวนด้วย
+     Activity10.buildAlerts (ไม่มีตาราง); สถานะอ่านเก็บใน localStorage
+     คีย์ ecmis_alert_read_<role> (อาร์เรย์ของ alert id). ถ้าไม่มี Activity10
+     (เช่นหน้า login) ใช้รายการคงที่ NOTIF_BY_ROLE เดิมเป็น fallback */
+  const ALERT_READ_PREFIX = 'ecmis_alert_read_';
+  const ALERT_MAX_SHOWN = 30;
+  const LEGAL_DIV_UNIT = 'กองกฎหมาย (กอท.)';
+  const LEGAL_DIV_ROLES = ['admin_legal', 'Kanda.R', 'dir_legal', 'Napas.S', 'group_director', 'Arnon.C', 'legal_officer', 'Nattapol.B'];
+  const LEVEL_STYLE = {
+    danger: { color: '#dc2626', dot: '🔴' },
+    warning: { color: '#b45309', dot: '🟠' },
+    info: { color: '#2563eb', dot: '📨' }
+  };
+
+  function escHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function readAlertSet(roleId) {
+    try {
+      const raw = global.localStorage.getItem(ALERT_READ_PREFIX + roleId);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function writeAlertSet(roleId, set) {
+    try {
+      global.localStorage.setItem(ALERT_READ_PREFIX + roleId, JSON.stringify(Array.from(set)));
+    } catch (e) { /* โหมด private/เต็ม: แจ้งเตือนยังแสดงได้ แค่จำสถานะอ่านไม่ได้ */ }
+  }
+
+  /* หน่วยงานของผู้ใช้ปัจจุบัน ใช้จับคู่หนังสือแจ้งภายใน (10.1.9 / 10.2.6) */
+  function currentUnit(roleId) {
+    if (global.ECMIS102 && typeof global.ECMIS102.currentUnit === 'function') {
+      const u = global.ECMIS102.currentUnit();
+      if (u) return u;
+    }
+    const registry = (global.ECMIS && global.ECMIS.ROLES) || [];
+    const r = registry.find(function (x) { return x.id === roleId || x.login === roleId; });
+    if (r && (r.org || r.group)) return r.org || r.group;
+    return LEGAL_DIV_ROLES.indexOf(roleId) >= 0 ? LEGAL_DIV_UNIT : '';
+  }
+
+  function computeAlerts(roleId) {
+    try {
+      return global.Activity10.buildAlerts(global.Activity10.getCases(), roleId, new Date(), { unit: currentUnit(roleId) });
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function setBadges(count) {
+    document.querySelectorAll('.noti-badge').forEach(function (el) {
+      el.innerText = count;
+      el.style.display = count > 0 ? '' : 'none';
+    });
+  }
+
+  /* หน้าส่วนใหญ่มีแค่กระดิ่ง + ตัวเลขคงที่ ไม่มี dropdown — สร้างให้ตอนรันไทม์
+     เพื่อไม่ต้องแก้ HTML ทีละหน้า (หน้าคิวงานมี dropdown ของตัวเองอยู่แล้ว) */
+  function ensureNotifUi() {
+    if (document.getElementById('notifDropdown')) return;
+    const badge = document.querySelector('.noti-badge');
+    const bell = badge && badge.closest('.circle-icon-btn');
+    if (!bell) return;
+    const group = bell.parentNode;
+    const menu = document.createElement('div');
+    menu.className = 'notif-dropdown-menu';
+    menu.id = 'notifDropdown';
+    menu.innerHTML = '<div class="notif-dropdown-header"><span>การแจ้งเตือน</span></div><div id="notifListContainer"></div>';
+    group.parentNode.insertBefore(menu, group.nextSibling);
+    bell.addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggleNotifDropdown();
+    });
+  }
+
+  function renderAlertList(container, alerts, readSet) {
+    const shown = alerts.slice(0, ALERT_MAX_SHOWN);
+    if (!shown.length) {
+      container.innerHTML = '<div class="notif-item"><span>ไม่มีรายการแจ้งเตือน</span></div>';
+      return;
+    }
+    container.innerHTML = shown.map(function (a) {
+      const st = LEVEL_STYLE[a.level] || LEVEL_STYLE.info;
+      const isRead = readSet.has(a.id);
+      return '<div class="notif-item" data-alert-id="' + escHtml(a.id) + '" data-href="' + escHtml(a.href) + '"'
+        + ' style="cursor:pointer;' + (isRead ? 'opacity:.6;' : 'background:rgba(37,99,235,.05);') + '">'
+        + '<strong style="color:' + st.color + ';">' + st.dot + ' ' + escHtml(a.title) + '</strong>'
+        + '<span>' + escHtml(a.detail) + '</span>'
+        + '</div>';
+    }).join('') + (alerts.length > shown.length
+      ? '<div class="notif-item"><span>และอีก ' + (alerts.length - shown.length) + ' รายการ</span></div>' : '');
+  }
+
   function renderNotifications() {
     const roleId = getCurrentRole();
+    if (!global.Activity10 || typeof global.Activity10.buildAlerts !== 'function') {
+      renderStaticNotifications(roleId);
+      return;
+    }
+    ensureNotifUi();
+    const container = document.getElementById('notifListContainer');
+    const alerts = computeAlerts(roleId);
+    const readSet = readAlertSet(roleId);
+    const unread = alerts.filter(function (a) { return !readSet.has(a.id); }).length;
+    setBadges(unread);
+    if (!container) return;
+
+    const header = document.querySelector('#notifDropdown .notif-dropdown-header');
+    if (header) {
+      header.innerHTML = '<span>การแจ้งเตือน (' + alerts.length + ')</span>'
+        + '<span id="notifMarkAllRead" style="font-size:0.8em;color:#2563eb;cursor:pointer;">อ่านทั้งหมด</span>';
+      header.querySelector('#notifMarkAllRead').onclick = function (e) {
+        e.stopPropagation();
+        writeAlertSet(roleId, new Set(alerts.map(function (a) { return a.id; })));
+        renderNotifications();
+      };
+    }
+    renderAlertList(container, alerts, readSet);
+    container.onclick = function (e) {
+      const item = e.target.closest('.notif-item[data-alert-id]');
+      if (!item) return;
+      const set = readAlertSet(roleId);
+      set.add(item.getAttribute('data-alert-id'));
+      writeAlertSet(roleId, set);
+      global.location.href = item.getAttribute('data-href');
+    };
+  }
+
+  function renderStaticNotifications(roleId) {
     const container = document.getElementById('notifListContainer');
     const badge = document.getElementById('topbarNotiBadge');
     if (!container) return;
@@ -790,13 +925,40 @@
     injectPageInfoIcon();
   }
 
+  /* TOR 10.1.10.6 / 10.2.7.1 / 10.3.4.2(3): every upload must take Word, Excel
+     and PDF. Pages set accept= inline; this fills in any input that was missed
+     (e.g. built later by page JS) so the list can't drift again. */
+  const DOC_ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg';
+
+  function applyDocAccept(root) {
+    (root || document).querySelectorAll('input[type="file"]').forEach(function (el) {
+      const acc = el.getAttribute('accept') || '';
+      if (!/\.xlsx/.test(acc) || !/\.docx/.test(acc) || !/\.pdf/.test(acc)) {
+        el.setAttribute('accept', DOC_ACCEPT);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { applyDocAccept(); });
+  } else {
+    applyDocAccept();
+  }
+
   global.getCurrentRole = getCurrentRole;
+  /* หน้าที่ไม่เรียก updateRoleDisplay() เอง ก็ยังได้แจ้งเตือนจริง */
+  document.addEventListener('DOMContentLoaded', function () {
+    if (global.Activity10 && document.querySelector('.noti-badge')) renderNotifications();
+  });
   global.updateRoleDisplay = updateRoleDisplay;
   global.renderNotifications = renderNotifications;
+  global.ecmisCurrentUnit = function () { return currentUnit(getCurrentRole()); };
   global.toggleProfileDropdown = toggleProfileDropdown;
   global.toggleNotifDropdown = toggleNotifDropdown;
   global.confirmLogout = confirmLogout;
   global.toggleSidebar = toggleSidebar;
   global.changeFontSize = changeFontSize;
   global.toggleTheme = toggleTheme;
+  global.ECMIS_DOC_ACCEPT = DOC_ACCEPT;
+  global.applyDocAccept = applyDocAccept;
 })(window);

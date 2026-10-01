@@ -962,7 +962,9 @@
       '<div class="l2-doc-title">มติคณะกรรมการ ป.ป.ท.</div>' +
       row("เลขที่หนังสือ/รหัสอ้างอิง", c.l2BoardApprovalRefRound2) +
       row("วันที่ได้รับแจ้งมติ", formatThaiDate(c.l2BoardApprovalDateRound2)) +
+      (c.l2BoardResolutionRound2TypeName ? row("ประเภทมติ", c.l2BoardResolutionRound2TypeName) : "") +
       section("มติคณะกรรมการ ป.ป.ท.", c.l2BoardResolutionRound2Text) +
+      ((c.l2BoardRound2Files || []).length ? section("เอกสารแนบ", c.l2BoardRound2Files.join(", ")) : "") +
       (c.l2ReceiveNotesRound2 ? section("หมายเหตุ", c.l2ReceiveNotesRound2) : "")
     );
   }
@@ -1198,6 +1200,13 @@
         "มติที่ประชุม",
         (c.l2ResolutionTypeName || "") + " — " + (c.l2ResolutionDetail || ""),
       ) +
+      /* 10.2.7.1 เอกสารแนบที่เก็บไว้กับมติ (เฉพาะที่มี) */
+      ((c.l2SubcommitteeFiles || []).length
+        ? section("เอกสารแนบมติคณะอนุกรรมการฯ", c.l2SubcommitteeFiles.join(", "))
+        : "") +
+      ((c.l2SecgenFiles || []).length
+        ? section("เอกสารแนบความเห็นเลขาธิการ ป.ป.ท.", c.l2SecgenFiles.join(", "))
+        : "") +
       row(
         "๕. ผู้รับผิดชอบข้อมูลข่าวสาร",
         c.l2DataOwner || "กองกฎหมาย สำนักงาน ป.ป.ท.",
@@ -1253,18 +1262,227 @@
       return String(cat).indexOf("10.2") === 0;
     },
 
+    /* ================= TOR 10.2 (P5) — ต้นทาง/กำหนดเวลา/อุทธรณ์/สิทธิ์เข้าถึง =================
+       ฟิลด์ทั้งหมดในเคสแมปกับคอลัมน์ที่มีอยู่แล้ว (ไม่เพิ่มตาราง) ดู docs/tor10-p1-db-flow-changes.md §4 */
+
+    /* ครบกำหนดดำเนินการ = วันที่รับ + 15 วัน (คำขอ) / + 30 วัน (อุทธรณ์ 10.2.2)
+       รับ ISO ค.ศ. หรือ พ.ศ. คืน ISO ค.ศ. (ว่างถ้ารูปแบบไม่ถูกต้อง)
+       DB: tldr_due_date / tldap_due_date */
+    computeDueDate: function (receivedISO, category) {
+      const m = String(receivedISO || "").match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (!m) return "";
+      let year = parseInt(m[1], 10);
+      if (year > 2500) year -= 543;
+      const days = category === "10.2.2" ? 30 : 15;
+      const d = new Date(Date.UTC(year, parseInt(m[2], 10) - 1, parseInt(m[3], 10) + days));
+      if (isNaN(d.getTime())) return "";
+      return d.toISOString().split("T")[0];
+    },
+
+    /* โซนต้นทาง: ส่วนกลาง หรือ เขต 1–9 */
+    SOURCE_ZONES: [{ value: "CENTRAL", label: "ส่วนกลาง" }].concat(
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (n) {
+        return { value: "R" + n, label: "สำนักงาน ป.ป.ท. เขต " + n };
+      }),
+    ),
+
+    /* หน่วยงานที่เสนอ (10.2.1.2(2)) — เขต: ชื่อเขต (tcz_id) · ส่วนกลาง: ชื่อหน่วย (tldr_channel_other) */
+    sourceUnitName: function (src) {
+      const s = src || {};
+      const zone = String(s.zone || "");
+      const rm = zone.match(/^R(\d)$/);
+      if (rm) return "สำนักงาน ป.ป.ท. เขต " + rm[1];
+      if (zone !== "CENTRAL") return "";
+      return s.unit === "OTHER" ? String(s.unitOther || "").trim() : String(s.unit || "").trim();
+    },
+    sourceUnitLabel: function (src) {
+      const s = src || {};
+      const name = Activity102.sourceUnitName(s);
+      if (String(s.zone || "") === "CENTRAL") return name ? "ส่วนกลาง: " + name : "ส่วนกลาง";
+      return name;
+    },
+
+    /* ฟิลด์ต้นทาง/วันที่รับ/ครบกำหนดที่ intake 10.2 เขียนลงเคส
+       วันที่รับใช้ค่าที่กรอก (ไม่ใช่วันนี้) เพื่อให้ SLA นับจากวันที่รับจริง */
+    buildIntakeSourcePatch: function (f) {
+      const src = f || {};
+      const received = String(src.receivedDate || "").trim();
+      const due = String(src.dueDate || "").trim() || Activity102.computeDueDate(received, src.category);
+      return {
+        sourceZone: src.zone || "",
+        sourceUnit: Activity102.sourceUnitName(src),
+        source: Activity102.sourceUnitLabel(src),
+        requestReceivedDate: received,
+        dateReceived: received,
+        dueDate: due,
+      };
+    },
+
+    /* ยื่นอุทธรณ์ (10.2.1.1(2)) — คำขอที่จบด้วย DENY/PARTIAL และปิดสำนวนแล้ว */
+    canFileAppeal: function (kase) {
+      if (!kase || !Activity102.isDisclosureCase(kase)) return false;
+      if (String(kase.category || "") === "10.2.2") return false;
+      if (kase.l2ResolutionType !== "DENY" && kase.l2ResolutionType !== "PARTIAL") return false;
+      if (isAppealCase(kase) || kase.l2AppealFiledAt) return false;
+      return String(kase.statusCode || "").indexOf("L2_CASE_CLOSED") === 0;
+    },
+    buildAppealIntakePatch: function (kase, f, by, when) {
+      if (!Activity102.canFileAppeal(kase)) return null;
+      const src = f || {};
+      const clean = function (v) { return String(v == null ? "" : v).trim(); };
+      return {
+        status: "ธุรการกองบริหารคดีรับเรื่องอุทธรณ์และลงทะเบียนรับ",
+        statusCode: "L2_PENDING_APPEAL_INTAKE",
+        statusBadge: "bg-primary text-white",
+        assignedRole: "case_bureau_admin",
+        officer: "นางนิชาดา ธุรการกิจ",
+        l2AppellantName: clean(src.appellantName) || clean(kase.requesterName),
+        l2AppellantAgency: clean(src.appellantAgency),
+        l2AppealFiledFromStatus: kase.statusCode,
+        l2AppealFiledBy: by || "",
+        l2AppealFiledAt: when || new Date().toISOString(),
+      };
+    },
+    fileAppeal: function (caseId, f, by) {
+      const kase = Activity10.getCaseById(caseId);
+      if (!kase || kase.id !== caseId) return null;
+      const patch = Activity102.buildAppealIntakePatch(kase, f, by);
+      return patch ? Activity10.updateCase(caseId, patch) : null;
+    },
+
+    /* ประเภทมติ + ข้อความ (10.2.5) — ใช้ชนิดเดียวกับคณะอนุกรรมการ (RESOLUTION_TYPES)
+       DB: *_resolution_type_id (RESOLUTION_TYPE) + รายละเอียดเป็นข้อความ */
+    buildDecisionPatch: function (d) {
+      const src = d || {};
+      const type = RESOLUTION_TYPES.find(function (r) { return r.value === src.type; });
+      if (!type) return null;
+      return { type: type.value, typeName: type.label, text: String(src.text || "").trim() };
+    },
+
+    /* ---- 10.2.7.3 สิทธิ์การมองเห็นตามกติกา (ไม่มีตารางรายเรื่อง) ----
+       all    : เห็นทุกเรื่องและเอกสารลับ
+       byStep : เห็นเรื่องที่มอบหมายถึงตน หรือที่เดินถึงขั้นของตนแล้ว
+       byUnit : เห็นเฉพาะเรื่องที่หน่วยตนเป็นผู้เสนอ (sourceUnit) หรือมอบหมายถึงตน
+       บทบาทที่ไม่อยู่ในรายการ = คงพฤติกรรมเดิม (เห็นได้) เพื่อไม่ให้ demo เดิมเสีย
+       ⚠️ ต้องให้ ป.ป.ท. ยืนยันกติกา */
+    VISIBILITY_RULES: {
+      all: ["admin_legal", "dir_legal", "group_director"],
+      byStep: ["sub_secretariat", "subcommittee_screen", "secgen", "deputy_sg"],
+      byUnit: ["district_admin"],
+      confidentialRoles: ["admin_legal", "dir_legal", "group_director"],
+      aliases: {
+        "Kanda.R": "admin_legal",
+        "Napas.S": "dir_legal",
+        "Arnon.C": "group_director",
+        "Surapong.W": "deputy_sg",
+        "Pimchanok.T": "sub_secretariat",
+        "Kitti.P": "subcommittee_screen",
+        "Apichat.S": "secgen",
+      },
+    },
+    normalizeRole102: function (roleId) {
+      return Activity102.VISIBILITY_RULES.aliases[roleId] || roleId;
+    },
+    canView102: function (kase, roleId, unit) {
+      if (!kase || !Activity102.isDisclosureCase(kase)) return true;
+      const rules = Activity102.VISIBILITY_RULES;
+      const role = Activity102.normalizeRole102(roleId);
+      if (rules.all.indexOf(role) > -1) return true;
+      const assigned = kase.assignedRole === role || kase.assignedRole === roleId;
+      if (rules.byStep.indexOf(role) > -1) {
+        if (assigned) return true;
+        const seqs = STEPS.filter(function (s) { return s.role === role; }).map(function (s) { return s.seq; });
+        const first = seqs.length ? Math.min.apply(null, seqs) : Infinity;
+        return typeof kase.l2StepSeq === "number" && kase.l2StepSeq >= first;
+      }
+      if (rules.byUnit.indexOf(role) > -1) {
+        if (!kase.sourceUnit || assigned) return true;
+        return !!unit && kase.sourceUnit === unit;
+      }
+      return true;
+    },
+    /* ตัดสินสิทธิ์เปิดหน้า 10.2 ด้วย URL ตรง (10.2.7.3) — คืน {allowed, logEntry}
+       ถ้าปฏิเสธจะมี logEntry (action = DENIED_OPEN) ให้บันทึกลง l2AccessLog */
+    pageAccessDecision: function (kase, roleId, unit, ctx) {
+      if (Activity102.canView102(kase, roleId, unit)) return { allowed: true, logEntry: null };
+      const c = ctx || {};
+      return {
+        allowed: false,
+        logEntry: {
+          action: "DENIED_OPEN",
+          roleId: roleId,
+          unit: unit || "",
+          who: c.who || "",
+          page: c.page || "",
+        },
+      };
+    },
+
+    /* 10.2 ส่งหนังสือให้หน่วยงานภายใน → เพิ่มลง internalNotices[] ของสำนวน
+       (ให้ปรากฏใน buildAlerts ชนิด notice และมุมมอง "หนังสือแจ้งจากหน่วยงานอื่น")
+       DB: tbl_law_criminal_dispatch_recipient (type 9) — ไม่เพิ่มคอลัมน์ใหม่
+       คืน patch {internalNotices} หรือ null เมื่อขั้นนั้นไม่ได้ส่งหน่วยภายใน/ไม่มีหน่วยปลายทาง */
+    DISPATCH_NOTICE_STEPS: {
+      "L2-DENY-DISPATCH-COMMITTEE": {
+        unit: "l2DenyAssignedDept", date: "l2DenyAssignDate", detail: "l2DenyAssignNotes",
+        docNo: "l2DenyMemoDocNo", subject: "แจ้งผลการพิจารณาไม่อนุญาตเปิดเผยข้อมูล",
+      },
+      "L2-CLOSE-DISPATCH-COMMITTEE": {
+        unit: "l2CloseAssignedDept", date: "l2CloseAssignDate", detail: "l2CloseAssignNotes",
+        docNo: "l2CloseMemoDocNo", subject: "แจ้งผลการพิจารณายุติ/ปิดเรื่องคำขอเปิดเผยข้อมูล",
+      },
+    },
+    buildDispatchNoticePatch: function (kase, stepCode, patch, by, when) {
+      const map = Activity102.DISPATCH_NOTICE_STEPS[stepCode];
+      if (!map || !kase) return null;
+      const src = patch || {};
+      const unit = String(src[map.unit] || "").trim();
+      if (!unit) return null;
+      const title = String(kase.title || "").trim();
+      return global.Activity10.buildInternalNoticePatch(
+        kase,
+        {
+          units: [unit],
+          docNo: src[map.docNo] || kase[map.docNo] || kase.l2InternalDocNo || "",
+          date: src[map.date] || "",
+          subject: map.subject + (title ? " — " + title : ""),
+          detail: src[map.detail] || "",
+        },
+        by,
+        when,
+      );
+    },
+    canOpenFile102: function (kase, fileName, roleId, unit) {
+      if (!Activity102.canView102(kase, roleId, unit)) return false;
+      const conf = (kase && kase.l2ConfidentialFiles) || [];
+      if (conf.indexOf(fileName) < 0) return true;
+      return Activity102.VISIBILITY_RULES.confidentialRoles.indexOf(Activity102.normalizeRole102(roleId)) > -1;
+    },
+    /* บันทึกการเปิดดู → tbl_law_disclosure_access_log */
+    buildAccessLogPatch: function (kase, entry, when) {
+      const prev = (kase && kase.l2AccessLog) || [];
+      const e = Object.assign({}, entry || {}, { at: when || new Date().toISOString() });
+      return { l2AccessLog: prev.concat([e]) };
+    },
+    logAccess: function (caseId, entry) {
+      const kase = Activity10.getCaseById(caseId);
+      if (!kase || kase.id !== caseId) return null;
+      return Activity10.updateCase(caseId, Activity102.buildAccessLogPatch(kase, entry));
+    },
+
     /* Activity10.getCaseById() falls back to cases[0] when the id is unknown,
        which would silently open a 10.1 case here. Filter to 10.2 first. */
     getCase: function (caseId, fallbackStatusCode) {
       const all = (Activity10.getCases && Activity10.getCases()) || [];
       const pool = all.filter(Activity102.isDisclosureCase);
       const exact = caseId && pool.find(function (c) { return c.id === caseId; });
-      if (exact) return exact;
-      return (
+      const found =
+        exact ||
         pool.find(function (c) { return c.statusCode === fallbackStatusCode; }) ||
         pool[0] ||
-        null
-      );
+        null;
+      lastLoadedCase = found; /* ให้ autoInitPage ใช้เคสเดียวกับที่หน้ากำลังเปิด */
+      return found;
     },
 
     /* เดินงานไปขั้นถัดไปตามตาราง STEPS — ใช้ร่วมกันทุกหน้า */
@@ -1281,7 +1499,10 @@
         },
         patch || {},
       );
-      return Activity10.updateCase(caseId, next);
+      /* 10.2 ส่งหนังสือให้หน่วยงานภายใน → ลง internalNotices[] ด้วย (ไม่ต้องแก้ทุกหน้า) */
+      const kase = Activity10.findCaseById(caseId);
+      const notice = Activity102.buildDispatchNoticePatch(kase, stepCode, next, currentRoleName());
+      return Activity10.updateCase(caseId, notice ? Object.assign(next, notice) : next);
     },
 
     /* บันทึกลายเซ็นลงช่องของบทบาทที่กำลังลงนามอยู่ */
@@ -1339,6 +1560,14 @@
   };
 
   /* ---------------------------------------------------------- USER PROFILE */
+  /* เคสล่าสุดที่หน้านี้โหลดผ่าน Activity102.getCase (ใช้โดย autoInitPage) */
+  let lastLoadedCase = null;
+
+  function currentRoleName() {
+    const r = currentRole();
+    return r ? r.name : "";
+  }
+
   function currentRoleId() {
     return sessionStorage.getItem("ecmis_role") || "admin_legal";
   }
@@ -1875,13 +2104,182 @@
 
   /* เปิด/ดาวน์โหลดไฟล์จริงไม่ได้ในmockup นี้ — แสดง toast แทน (ใช้แบบเดียวกับ
      07-group-director-approval.html ที่มีปุ่ม "ดาวน์โหลดร่าง" อยู่แล้ว) */
+  /* TOR 10.2.7.3 — ตรวจสิทธิ์ตามกติกา (Activity102.canOpenFile102) ก่อนเปิดไฟล์
+     แล้วบันทึกการเปิดดูลง l2AccessLog (→ tbl_law_disclosure_access_log)
+     เคสที่กำลังเปิดอยู่มาจาก renderCaseMeta() ถ้าไม่มีให้ใช้ ?id= ของหน้า */
+  let activeCase = null;
+
+  function currentUnit() {
+    const r = currentRole();
+    return r ? r.org || r.group || "" : "";
+  }
+
+  function resolveActiveCase() {
+    if (activeCase) return activeCase;
+    const id = new URLSearchParams(global.location.search).get("id");
+    return id ? Activity102.getCase(id) : null;
+  }
+
   function mockOpenFile(name) {
+    const kase = resolveActiveCase();
+    const roleId = currentRoleId();
+    if (kase && !Activity102.canOpenFile102(kase, name, roleId, currentUnit())) {
+      Swal.fire({
+        icon: "error",
+        title: "ไม่มีสิทธิ์",
+        text: "บทบาทหรือหน่วยงานของท่านไม่มีสิทธิ์เปิดเอกสารนี้ตามกติกาการเปิดเผยข้อมูล",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+    if (kase) {
+      Activity102.logAccess(kase.id, {
+        action: "OPEN_FILE",
+        file: name,
+        roleId: roleId,
+        unit: currentUnit(),
+        who: signerLabel(roleId),
+      });
+    }
     Swal.fire({
       icon: "info",
       title: "เปิดไฟล์ " + name + "...",
       timer: 1200,
       showConfirmButton: false,
     });
+  }
+
+  /* แถบข้อมูลหัวเรื่อง 10.2 (10.2.1.2): วันที่รับ / ครบกำหนด / หน่วยงานที่เสนอ
+     แทรกก่อนช่อง "ชื่อเรื่อง" (#f_title) ของหน้า — เรียกจาก populateCommon()
+     และบันทึกการเปิดดูเรื่อง 1 ครั้งต่อเรื่องต่อ session */
+  function renderCaseMeta(kase) {
+    if (!kase) return;
+    activeCase = kase;
+    const titleEl = document.getElementById("f_title");
+    const group = titleEl && titleEl.closest ? titleEl.closest(".form-group") : null;
+    /* หน้าที่ไม่มี #f_title (เช่น 10-2-09, 10-2-13…37): แทรกไว้บนสุดของการ์ดข้อมูลหลัก/พื้นที่เนื้อหา */
+    const host = group ? null : document.getElementById("pageBody") || document.querySelector(".content");
+    if ((group && group.parentNode) || host) {
+      const old = document.getElementById("l2CaseMeta");
+      if (old) old.remove();
+      const box = document.createElement("div");
+      box.id = "l2CaseMeta";
+      box.className = "form-grid-2";
+      const cell = function (label, val) {
+        return (
+          '<div class="form-group"><label>' + label + '</label><div class="read-box">' +
+          (val || "-") + "</div></div>"
+        );
+      };
+      const unit = kase.sourceUnit
+        ? Activity102.sourceUnitLabel({ zone: kase.sourceZone, unit: kase.sourceUnit })
+        : kase.source || "";
+      box.innerHTML =
+        cell("วันที่ได้รับเรื่อง", kase.requestReceivedDate || kase.dateReceived) +
+        cell("ครบกำหนดดำเนินการ", kase.dueDate) +
+        cell("หน่วยงานที่เสนอ", unit || kase.source);
+      if (group) {
+        group.parentNode.insertBefore(box, group);
+      } else {
+        box.className = "form-card";
+        box.innerHTML = '<div class="form-card-body"><div class="form-grid-2">' + box.innerHTML + "</div></div>";
+        host.insertBefore(box, host.firstChild);
+      }
+    }
+    if (!enforcePageAccess(kase)) return;
+    try {
+      const key = "l2view_" + kase.id;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        const roleId = currentRoleId();
+        Activity102.logAccess(kase.id, {
+          action: "VIEW",
+          roleId: roleId,
+          unit: currentUnit(),
+          who: signerLabel(roleId),
+        });
+      }
+    } catch (e) {
+      /* sessionStorage ใช้ไม่ได้ → ข้ามการบันทึกเปิดดู */
+    }
+  }
+
+  /* TOR 10.2.7.3 — บล็อกการเปิดหน้า 10.2 ด้วย URL ตรงเมื่อบทบาทไม่มีสิทธิ์เห็นเรื่อง
+     (Activity102.canView102): บันทึก l2AccessLog (DENIED_OPEN) แล้วแจ้งและส่งกลับหน้าคิวงาน
+     ตรวจเฉพาะเมื่อ URL ระบุ ?id= (กันเดโมที่เปิดหน้าตรง ๆ โดยไม่ระบุเรื่อง) */
+  let accessDenied = false;
+  function enforcePageAccess(kase) {
+    if (accessDenied) return false;
+    if (!kase || !new URLSearchParams(global.location.search).get("id")) return true;
+    const roleId = currentRoleId();
+    const page = String(global.location.pathname || "").split("/").pop();
+    const d = Activity102.pageAccessDecision(kase, roleId, currentUnit(), {
+      page: page,
+      who: signerLabel(roleId),
+    });
+    if (d.allowed) return true;
+    accessDenied = true;
+    try {
+      Activity102.logAccess(kase.id, d.logEntry);
+    } catch (e) {
+      /* บันทึก log ไม่ได้ → ยังคงบล็อกการเข้าถึง */
+    }
+    const body = document.getElementById("pageBody");
+    if (body) body.classList.add("d-none");
+    Swal.fire({
+      icon: "error",
+      title: "ไม่มีสิทธิ์เข้าถึง",
+      text: "บทบาทหรือหน่วยงานของท่านไม่มีสิทธิ์เปิดเรื่องนี้ตามกติกาการเปิดเผยข้อมูล",
+      confirmButtonColor: "#1e3a8a",
+      allowOutsideClick: false,
+    }).then(goInbox);
+    return false;
+  }
+
+  /* เรียกครั้งเดียวจาก initUserProfile() ที่ทุกหน้า 10-2-xx ใช้อยู่แล้ว — รอให้สคริปต์ของหน้าโหลดเคส
+     (Activity102.getCase) เสร็จก่อน แล้วใส่แถบหัวเรื่อง (ถ้าหน้ายังไม่ได้เรียก renderCaseMeta) และตรวจสิทธิ์ */
+  let autoInitScheduled = false;
+  function autoInitPage() {
+    if (autoInitScheduled) return;
+    autoInitScheduled = true;
+    setTimeout(function () {
+      const kase = lastLoadedCase;
+      if (!kase || !document.getElementById("pageBody")) return;
+      if (document.getElementById("l2CaseMeta")) enforcePageAccess(kase);
+      else renderCaseMeta(kase);
+    }, 0);
+  }
+
+  /* TOR 10.2.6 — เติมรายการ "สำนักงาน ป.ป.ท. เขต 1–9" จากรายการหน่วยกลาง
+     (Activity10.INTERNAL_UNITS) ลง select ที่มี option ว่างเป็นจุดยึด [data-region-anchor] */
+  function fillRegionOptions(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel || !global.Activity10) return;
+    const anchor = sel.querySelector("[data-region-anchor]");
+    const regions = global.Activity10.INTERNAL_UNITS.filter(function (u) {
+      return u.indexOf("สำนักงาน ป.ป.ท. เขต") === 0;
+    });
+    const html = regions
+      .map(function (u) { return '<option value="' + u + '">' + u + "</option>"; })
+      .join("");
+    if (anchor) anchor.insertAdjacentHTML("afterend", html);
+    if (anchor) anchor.remove();
+  }
+
+  /* ชื่อไฟล์จาก <input type=file multiple> + แสดงรายการ (mockup เก็บแค่ชื่อไฟล์) */
+  function fileNamesOf(inputId) {
+    const el = document.getElementById(inputId);
+    return el && el.files ? Array.from(el.files).map(function (f) { return f.name; }) : [];
+  }
+
+  function renderFileNames(inputId, listId) {
+    const el = document.getElementById(listId);
+    if (!el) return;
+    el.innerHTML = fileNamesOf(inputId)
+      .map(function (n) {
+        return '<div class="l2-attachment-row"><div class="l2-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' + n + "</div></div>";
+      })
+      .join("");
   }
 
   function setHtml(id, html) {
@@ -2005,6 +2403,7 @@
 
   /* หัวโปรไฟล์มุมขวาบน — ทุกหน้า 10.2 เรียกตอน DOMContentLoaded */
   function initUserProfile() {
+    autoInitPage(); /* แถบหัวเรื่อง + ตรวจสิทธิ์เปิดหน้า 10.2 (ทุกหน้าเรียกฟังก์ชันนี้) */
     const role = currentRole();
     if (!role) return;
     const shortName = String(role.name || "")
@@ -2343,6 +2742,11 @@
     renderBoardResolutionCard: renderBoardResolutionCard,
     renderNoticeDoc: renderNoticeDoc,
     mockOpenFile: mockOpenFile,
+    renderCaseMeta: renderCaseMeta,
+    currentUnit: currentUnit,
+    fileNamesOf: fileNamesOf,
+    fillRegionOptions: fillRegionOptions,
+    renderFileNames: renderFileNames,
     zoomDoc: zoomDoc,
     initDocZoom: initDocZoom,
     setDocViewMode: setDocViewMode,
