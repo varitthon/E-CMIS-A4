@@ -8,7 +8,7 @@ the important one — those are decisions only the working group can make, and t
 blocking nothing until someone rules on them.
 
 Related: [`meeting-01092026-changes.md`](meeting-01092026-changes.md) ·
-[`qa-guide-4-flows.md`](qa-guide-4-flows.md) ·
+[`qa-guide-4-flows.md`](backup-test-flow-2026-10-02/qa-guide-4-flows.md) ·
 [`qa-batch-a-meeting-01092026.md`](qa-batch-a-meeting-01092026.md)
 
 ---

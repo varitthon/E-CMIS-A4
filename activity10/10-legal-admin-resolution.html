@@ -909,11 +909,12 @@
                 />
               </div>
 
-              <!-- TOR 10.1.5 มติคณะกรรมการ ป.ป.ท. — ธุรการบันทึกตามที่ได้รับแจ้งจริง
-                   (ค่าตั้งต้นจากระบบแก้ไขได้, ค่าที่กรอกเป็นค่าที่ใช้)
+              <!-- B1 (P10) ผลพิจารณาจากกิจกรรมที่ 7 (bypass) — บันทึกผ่านป๊อปอัปเดียวกันทุกจุดเชื่อม
+                   แทนฟอร์มกรอกมติเดิม (TOR 10.1.5): ป๊อปอัปเรียก
+                   Activity10.buildBoardResolutionPatch แล้ว submitLegalAdminResolutionIntake
                    DB: tbl_law_criminal_board_link → tbl_board_submission -->
               <div
-                id="boardResolutionForm"
+                id="act7ResultBlock"
                 style="
                   border: 1px solid var(--border-color);
                   border-radius: 10px;
@@ -922,43 +923,13 @@
                 "
               >
                 <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 10px">
-                  <i class="fa-solid fa-users me-1 text-primary"></i>บันทึกมติคณะกรรมการ ป.ป.ท.
+                  <i class="fa-solid fa-users me-1 text-primary"></i>ผลพิจารณาจากกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.)
+                  <span class="badge" style="background: #e2e8f0; color: #475569">บันทึกแทนกิจกรรมที่ 7</span>
                 </div>
-                <div class="form-grid-3" style="margin-bottom: 10px">
-                  <div class="form-group">
-                    <label>การประชุมครั้งที่</label>
-                    <input type="text" id="in_boardMeetingNo" class="form-control font-monospace" placeholder="เช่น 14/2569" />
-                  </div>
-                  <div class="form-group">
-                    <label>วันที่ประชุม</label>
-                    <input type="date" id="in_boardMeetingDate" class="form-control" />
-                  </div>
-                  <div class="form-group">
-                    <label>ระเบียบวาระที่</label>
-                    <input type="text" id="in_boardAgendaNo" class="form-control font-monospace" placeholder="เช่น 5.2" />
-                  </div>
-                </div>
-                <div class="form-grid-2" style="margin-bottom: 10px">
-                  <div class="form-group">
-                    <label>ประเภทมติ <span style="color: #dc2626">*</span></label>
-                    <select id="in_boardResolutionType" class="form-control" onchange="toggleBoardResolutionOther()">
-                      <option value="AGREE">เห็นชอบ</option>
-                      <option value="DISAGREE">ไม่เห็นชอบ</option>
-                      <option value="OTHER">อื่นๆ</option>
-                    </select>
-                    <div id="div_boardResolutionOther" style="display: none; margin-top: 8px">
-                      <input type="text" id="in_boardResolutionOther" class="form-control" placeholder="ระบุมติ (อื่นๆ)..." />
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label>แนบไฟล์มติ/รายงานการประชุม</label>
-                    <input type="file" id="in_boardResolutionFile" class="form-control" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="height: auto; padding: 6px 12px" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>รายละเอียดมติ / ข้อสั่งการ</label>
-                  <textarea id="in_boardResolutionText" class="form-control" rows="3" placeholder="ระบุมติของคณะกรรมการ ป.ป.ท. ตามที่ได้รับแจ้ง..."></textarea>
-                </div>
+                <div id="act7Summary"></div>
+                <button type="button" class="btn btn-primary" id="btnAct7Save" onclick="openAct7Popup()">
+                  <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาจากกิจกรรมที่ 7
+                </button>
               </div>
 
               <div class="form-group">
@@ -974,32 +945,6 @@
                 />
               </div>
 
-              <div class="form-group">
-                <label>
-                  <span
-                    >บันทึกการส่งต่อ / หมายเหตุถึง ผอ.กองกฎหมาย
-                    <button
-                      type="button"
-                      class="btn-mic"
-                      id="btnMicAdminRes"
-                      onclick="
-                        toggleSpeechToText('in_finalDispatchNotes', this)
-                      "
-                      title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
-                    >
-                      <i class="fa-solid fa-microphone"></i>
-                    </button>
-                  </span>
-                </label>
-                <textarea
-                  id="in_finalDispatchNotes"
-                  class="form-control font-monospace"
-                  rows="3"
-                  placeholder="ระบุบันทึกข้อความ..."
-                >
-ได้รับผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว มีมติเห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ จึงกราบเรียนเสนอ ผอ.กองกฎหมาย เพื่อโปรดพิจารณาและมีคำสั่งการมอบหมายกลุ่มงานความเห็นแย้งดำเนินการจัดทำหนังสือตามมติต่อไป</textarea
-                >
-              </div>
             </div>
 
             <!-- Action Buttons -->
@@ -1009,11 +954,12 @@
               </a>
               <button
                 type="button"
-                class="btn btn-primary"
-                onclick="submitAdminResolutionIntake()"
+                class="btn btn-success d-none"
+                id="btnForwardSaved"
+                onclick="forwardSavedResult()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึกรับผลมติ และ
-                ส่งต่อ ผอ.กองกฎหมาย
+                <i class="fa-solid fa-paper-plane me-1"></i>รับผลมติและส่งต่อ
+                ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -1024,12 +970,13 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
     <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       let currentCase = null;
@@ -1138,23 +1085,22 @@
         );
         setElText("f_level", currentCase.prosecutorLevelName || "ศาลชั้นต้น");
 
-        setElText("f_meetingNo", currentCase.boardMeetingNo || "14/2569");
+        setElText("f_meetingNo", currentCase.boardMeetingNo || "-");
         setElText(
           "f_boardMeetingDate",
-          (currentCase.boardMeetingDate ? Activity10.formatDisplayDate(currentCase.boardMeetingDate) : "") || "12 ส.ค. 2569",
+          (currentCase.boardMeetingDate ? Activity10.formatDisplayDate(currentCase.boardMeetingDate) : "") || "-",
         );
         setElText(
           "f_boardResolution",
-          currentCase.boardResolution ||
-            "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
+          currentCase.boardResolution || "ยังไม่ได้บันทึกผลมติ (รอผลจากกิจกรรมที่ 7)",
         );
         setElText(
           "f_boardResolutionDetail",
-          currentCase.boardResolutionDetail ||
-            "ที่ประชุมคณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงประกอบบันทึกความเห็นของกองกฎหมายแล้ว มีมติเป็นเอกฉันท์เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
+          currentCase.boardResolutionDetail || "-",
         );
 
-        prefillBoardResolutionForm();
+        renderAct7Summary();
+        renderForwardButton();
 
         // Check if Legal Admin has already processed resolution intake
         const isAlreadyIntaked =
@@ -1220,93 +1166,45 @@
           .replace(/"/g, "&quot;");
       }
 
-      function toggleBoardResolutionOther() {
-        const sel = document.getElementById("in_boardResolutionType");
-        const box = document.getElementById("div_boardResolutionOther");
-        if (sel && box) box.style.display = sel.value === "OTHER" ? "block" : "none";
+      /* B1 (P10) — สรุปผลพิจารณาจากกิจกรรมที่ 7 ที่บันทึกไว้ + ป๊อปอัปบันทึกผล
+         (ป๊อปอัปเขียนมติ + signedExecutiveOrder แล้วส่งต่อ ผอ.กองกฎหมายให้เอง) */
+      function renderAct7Summary() {
+        const host = document.getElementById("act7Summary");
+        if (host && currentCase)
+          host.innerHTML = ECMIS_ACT7_HELPERS.summaryHtml("B1", currentCase);
       }
 
-      function prefillBoardResolutionForm() {
-        const form = document.getElementById("boardResolutionForm");
-        if (!form || !currentCase) return;
-        const set = (id, v) => {
-          const el = document.getElementById(id);
-          if (el && v != null) el.value = v;
-        };
-        set("in_boardMeetingNo", currentCase.boardMeetingNo || "");
-        set(
-          "in_boardMeetingDate",
-          /^\d{4}-\d{2}-\d{2}/.test(currentCase.boardMeetingDate || "")
-            ? currentCase.boardMeetingDate.slice(0, 10)
-            : "",
-        );
-        set("in_boardAgendaNo", currentCase.boardAgendaNo || "");
-        set("in_boardResolutionType", currentCase.boardResolutionType || "AGREE");
-        set("in_boardResolutionOther", currentCase.boardResolutionOther || "");
-        set(
-          "in_boardResolutionText",
-          currentCase.boardResolutionDetail || currentCase.boardResolution || "",
-        );
-        toggleBoardResolutionOther();
+      /* P12 (B1): ถ้าผลมติถูกบันทึกแล้วจากป๊อปอัปหลังรองเลขาธิการลงนาม (บันทึกผลทันที)
+         ธุรการรับผลมติและส่งต่อ ผอ.กองกฎหมายได้เลยโดยไม่ต้องกรอกซ้ำ */
+      function renderForwardButton() {
+        const btn = document.getElementById("btnForwardSaved");
+        if (!btn || !currentCase) return;
+        const saved = ECMIS_ACT7_HELPERS.hasSavedResult("B1", currentCase);
+        const pending = currentCase.statusCode === "RETURNED_FROM_EXEC";
+        btn.classList.toggle("d-none", !(saved && pending));
       }
 
-      function submitAdminResolutionIntake() {
+      function forwardSavedResult() {
         if (!currentCase) return;
-
-        const notes = document
-          .getElementById("in_finalDispatchNotes")
-          .value.trim();
-
-        /* TOR 10.1.5 — ค่าที่ธุรการกรอกเป็นค่าที่ใช้ (ไม่ใช้ค่าตั้งต้นของเอนจินทับ) */
-        const val = (id) => {
-          const el = document.getElementById(id);
-          return el ? el.value : "";
-        };
-        const fileEl = document.getElementById("in_boardResolutionFile");
-        const resolution = Activity10.buildBoardResolutionPatch({
-          meetingNo: val("in_boardMeetingNo"),
-          meetingDate: val("in_boardMeetingDate"),
-          agendaNo: val("in_boardAgendaNo"),
-          type: val("in_boardResolutionType"),
-          other: val("in_boardResolutionOther"),
-          text: val("in_boardResolutionText"),
-          fileNames: fileEl && fileEl.files
-            ? Array.from(fileEl.files).map((f) => f.name)
-            : [],
-        });
-        if (!resolution.ok) {
-          Swal.fire({
-            icon: "warning",
-            title: "กรุณากรอกข้อมูลมติให้ครบถ้วน",
-            text: resolution.errors.join(" · "),
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
-        const resolutionPatch = Object.assign({}, resolution.patch);
-        if (!resolutionPatch.boardResolutionFiles.length && currentCase.boardResolutionFiles)
-          resolutionPatch.boardResolutionFiles = currentCase.boardResolutionFiles;
-
+        const notes =
+          "ได้รับผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว จึงกราบเรียนเสนอ ผอ.กองกฎหมาย " +
+          "เพื่อโปรดพิจารณาและมีคำสั่งการมอบหมายกลุ่มงานความเห็นแย้งดำเนินการตามมติต่อไป";
+        Activity10.submitLegalAdminResolutionIntake(currentCase.id, notes);
         Swal.fire({
-          icon: "question",
-          title: "ยืนยันบันทึกรับผลมติ\nและส่งต่อ?",
-          html: `
- <div class="emd-summary">
- <p><strong>การประชุมครั้งที่:</strong> ${escapeHtml(resolutionPatch.boardMeetingNo)}</p>
- <p><strong>ผลมติ:</strong> ${escapeHtml(resolutionPatch.boardResolution)}</p>
- <p><strong>ส่งเสนอต่อ:</strong> นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)</p>
- </div>
- `,
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันบันทึก และ ส่งต่อ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (res.isConfirmed) {
-            Activity10.updateCase(currentCase.id, resolutionPatch);
-            Activity10.submitLegalAdminResolutionIntake(currentCase.id, notes);
+          icon: "success",
+          title: "บันทึกรับผลมติสำเร็จ!",
+          text: "ส่งเรื่องให้ ผอ.กองกฎหมาย สั่งการตามผลมติเรียบร้อยแล้ว",
+          timer: 1600,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "01-work-inbox.html";
+        });
+      }
 
+      function openAct7Popup() {
+        if (!currentCase) return;
+        openAct7DecisionPopup(currentCase.id, "B1", {
+          onSaved: () => {
             Swal.fire({
               icon: "success",
               title: "บันทึกรับผลมติสำเร็จ!",
@@ -1316,7 +1214,7 @@
             }).then(() => {
               window.location.href = "01-work-inbox.html";
             });
-          }
+          },
         });
       }
 

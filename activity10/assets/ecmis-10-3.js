@@ -1367,6 +1367,7 @@
     L9B_CLOSED: "FINAL",
     L10_SUPREME_JUDGED: "FINAL",
     L9A_SUPREME_JUDGED: "FINAL",
+    L7_SUPREME_JUDGED: "FINAL",
   };
   const STATUS_FIELDS = ["opStatusType", "opStatusOther", "caseStatus", "caseStatusOther"];
 
@@ -1436,6 +1437,7 @@
   const SUPREME_JUDGED_STATUS = {
     L10_SENT_TO_PROSECUTOR: "L10_SUPREME_JUDGED",
     L9A_SENT_TO_PROSECUTOR: "L9A_SUPREME_JUDGED",
+    L7_SENT_TO_PROSECUTOR: "L7_SUPREME_JUDGED",
   };
 
   function buildSupremeJudgmentPatch(kase, data, by, at) {
@@ -1466,6 +1468,9 @@
   /* หลังส่งคำอุทธรณ์แล้ว นิติกรกลับมาบันทึกผลศาลปกครองสูงสุดที่หน้าเดิม */
   ROUTES["L10_SENT_TO_PROSECUTOR"] = "10-3v-25-lawyer-send-appeal.html";
   ROUTES["L9A_SENT_TO_PROSECUTOR"] = "10-3v-36-lawyer-send-appeal2.html";
+  /* B7 (P10) Part 7 — หลังส่งคำแก้อุทธรณ์ (10-3v-15) นิติกรกลับมาบันทึกผลศาลปกครอง
+     สูงสุดที่หน้าเดิม ใช้การ์ดผลเดียวกับ 10-3v-25/36 → L7_SUPREME_JUDGED (คดีถึงที่สุด) */
+  ROUTES["L7_SENT_TO_PROSECUTOR"] = "10-3v-15-lawyer-send-appeal-reply.html";
 
   /* สถานะที่บันทึกผลศาลปกครองสูงสุดแล้ว — ไม่มีขั้นที่ต้องทำต่อ (ไม่อยู่ใน ROUTES
      เพื่อไม่ให้เกิดปุ่ม "ดำเนินการ") แต่ eye icon เปิดหน้าเดิมแบบดูอย่างเดียว
@@ -1473,6 +1478,7 @@
   const VIEW_ROUTES = {
     L10_SUPREME_JUDGED: "10-3v-25-lawyer-send-appeal.html",
     L9A_SUPREME_JUDGED: "10-3v-36-lawyer-send-appeal2.html",
+    L7_SUPREME_JUDGED: "10-3v-15-lawyer-send-appeal-reply.html",
   };
 
   const Activity103 = {

@@ -929,10 +929,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
     <script src="assets/ecmis-export.js?v=20261001_1"></script>
     <script src="assets/ecmis-10-1-reports.js?v=20261002_1"></script>
     <script>
@@ -2480,7 +2481,7 @@
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: "ลงนามและส่งผลมติคืนกองกฎหมาย",
+          confirmButtonText: "ลงนามและเสนอ คกก. ป.ป.ท.",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#15803d",
           cancelButtonColor: "#64748b",
@@ -2492,16 +2493,32 @@
             ) {
               Activity10.signExecutiveDocRound1(c.id);
             }
-            Swal.fire({
-              icon: "success",
-              title: "ลงนามรอบที่ 1 สำเร็จ!",
-              text: "ส่งผลมติกลับไปยังธุรการกองกฎหมาย เรียบร้อยแล้ว",
-              timer: 1500,
-              showConfirmButton: false,
-            }).then(() => {
+            /* P12 (B1): ลงนามเสนอ คกก. ป.ป.ท. = ขาออกเข้ากิจกรรมที่ 7 — สวิตช์ ON เปิดป๊อปอัปจำลองผลมติ
+               [บันทึกผลทันที] เติมผลมติแล้วธุรการรับที่หน้า 10 / [ภายหลัง] ค้างรอ (ธุรการบันทึกที่หน้า 10) */
+            const refresh = () => {
               updateCardCounts();
               renderTable();
-            });
+            };
+            const finish = () =>
+              Swal.fire({
+                icon: "success",
+                title: "ลงนามรอบที่ 1 สำเร็จ!",
+                text: "เสนอ คกก. ป.ป.ท. (กิจกรรมที่ 7) เรียบร้อยแล้ว — รอผลมติ",
+                timer: 1500,
+                showConfirmButton: false,
+              }).then(refresh);
+            const afterSave = () =>
+              Swal.fire({
+                icon: "success",
+                title: "บันทึกผลมติแล้ว",
+                text: "บันทึกมติ คกก. ป.ป.ท. แทนกิจกรรมที่ 7 — ธุรการกองกฎหมายรับผลมติต่อ",
+                timer: 1600,
+                showConfirmButton: false,
+              }).then(refresh);
+            const prompted =
+              typeof promptAct7AfterOutbound === "function" &&
+              promptAct7AfterOutbound(c.id, "B1", finish, { afterSave });
+            if (!prompted) finish();
           }
         });
       }
@@ -2816,9 +2833,58 @@
         return `<span class="badge-danger-sla" style="color:${slaColor(item)};">${item.slaText}</span>`;
       }
 
+      /* P10 — แถวที่รอกิจกรรมที่ 7 (B4/B5 = มติบอร์ด, B6 = รอศาลมีคำพิพากษา):
+         ป้ายสีเทาบอกสถานะรอ; ปุ่ม "ดำเนินการ" ขึ้นเมื่อสวิตช์ bypass เปิดและเป็นบทบาทผู้ส่ง
+         (B4/B5 เปิดป๊อปอัปบันทึกผล, B6 เปิด 10-3v-00 พร้อมเชื่อมคดีเดิม) ปิดสวิตช์ = ไอคอนตาเดิม */
+      function act7WaitBadge(item) {
+        if (typeof ECMIS_ACT7_HELPERS === "undefined") return "";
+        const info = ECMIS_ACT7_HELPERS.act7WaitInfo(item);
+        return info
+          ? ` <span class="badge" style="background:#e2e8f0; color:#475569; border:1px solid #cbd5e1; font-weight:600;" title="รอผลจากกิจกรรมที่ 7">${info.badge}</span>`
+          : "";
+      }
+
+      function act7ActionButton(item, roleId, caseId) {
+        if (typeof ECMIS_ACT7_HELPERS === "undefined") return "";
+        const act = ECMIS_ACT7_HELPERS.act7InboxAction(item, roleId, ECMIS_ACT7.isOn());
+        if (!act) return "";
+        const title = act.linkId === "B6"
+          ? "รับหนังสือแจ้งผลคำพิพากษา (รับคำพิพากษา)"
+          : "บันทึกผลพิจารณาจากกิจกรรมที่ 7 (bypass)";
+        return `<button class="btn-action-primary" onclick="openAct7FromInbox('${caseId}', '${act.linkId}')" title="${title}">ดำเนินการ</button>`;
+      }
+
+      function openAct7FromInbox(caseId, linkId) {
+        const link = ACT7_LINKS[linkId];
+        if (!link) return;
+        if (!link.popup) {
+          window.location.href = `${link.page}?origin=${encodeURIComponent(caseId)}`;
+          return;
+        }
+        openAct7DecisionPopup(caseId, linkId, {
+          onSaved: () => {
+            Swal.fire({
+              icon: "success",
+              title: "บันทึกผลพิจารณาแล้ว",
+              text: "บันทึกมติคณะกรรมการ ป.ป.ท. แทนกิจกรรมที่ 7 เรียบร้อย",
+              timer: 1600,
+              showConfirmButton: false,
+            }).then(() => window.location.reload());
+          },
+        });
+      }
+
+      /* สลับสวิตช์ในเมนูโปรไฟล์ → วาดตารางใหม่ให้ปุ่ม/ไอคอนเปลี่ยนทันที */
+      document.addEventListener("ecmis-act7-change", () => {
+        if (typeof renderTable === "function") renderTable();
+      });
+
       function getActionButton(item, roleId) {
         const caseId = item.id || item.caseNo;
         const statusCode = item.statusCode || "";
+
+        const act7Btn = act7ActionButton(item, roleId, caseId);
+        if (act7Btn) return act7Btn;
 
         /* กิจกรรม 10.2 — ปุ่ม "ดำเนินการ" ขึ้นเมื่อบทบาทปัจจุบันเป็นเจ้าของขั้นตอนถัดไป */
         if (
@@ -3086,7 +3152,7 @@
  <td>${item.accuser}</td>
  <td>${item.accused}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${act7WaitBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
@@ -3121,7 +3187,7 @@
  <td style="max-width:220px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.reqUser || item.accuser || "-"}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${resolutionBadge(item)}${caseStateBadge(item)}${act7WaitBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`,
@@ -3157,7 +3223,7 @@
  <td style="max-width:200px;">${renderSummonsBadge103(item)}</td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${caseStatusBadge103(item)}${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${caseStatusBadge103(item)}${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}${act7WaitBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`;

@@ -336,9 +336,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260909_1"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       const STEP_CODE = "L2-APPEAL-BOARD-PROPOSE";
@@ -442,16 +443,20 @@
               l2AppealBoardProposeNotes: notes,
             });
 
-            Swal.fire({
-              icon: "success",
-              title: "ลงนามและยื่นเรื่องเรียบร้อย",
-              html:
-                '<div class="emd-summary">' +
-                "<p>ลงนามในฐานะผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
-                "<p><strong>สิ้นสุดขั้นตอนในระบบนี้ชั่วคราว:</strong> รอมติจากกิจกรรมที่ 7 ซึ่งอยู่นอกสโคปของระบบนี้</p></div>",
-              confirmButtonColor: "#1e3a8a",
-              confirmButtonText: "กลับหน้าคิวงาน",
-            }).then(ECMIS102.goInbox);
+            const finish = () =>
+              Swal.fire({
+                icon: "success",
+                title: "ลงนามและยื่นเรื่องเรียบร้อย",
+                html:
+                  '<div class="emd-summary">' +
+                  "<p>ลงนามในฐานะผู้เสนอเรื่องเรียบร้อยแล้ว</p>" +
+                  "<p><strong>สิ้นสุดขั้นตอนในระบบนี้ชั่วคราว:</strong> รอมติจากกิจกรรมที่ 7 ซึ่งอยู่นอกสโคปของระบบนี้</p></div>",
+                confirmButtonColor: "#1e3a8a",
+                confirmButtonText: "กลับหน้าคิวงาน",
+              }).then(ECMIS102.goInbox);
+            /* P12 (B4): สวิตช์ ON → ป๊อปอัปจำลองมติบอร์ดต่อคำอุทธรณ์หลังยื่นเรื่อง
+               [บันทึกผลทันที] → L2_PENDING_APPEAL_NOTICE_DRAFT / [ภายหลัง] → ค้าง L2_APPEAL_SUBMITTED_TO_BOARD */
+            if (!promptAct7AfterOutbound(currentCase.id, "B4", finish)) finish();
           },
         );
       }

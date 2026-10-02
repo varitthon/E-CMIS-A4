@@ -813,8 +813,6 @@
                   <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
                   <option value="10.2.2">10.2.2 คำอุทธรณ์คำสั่งไม่อนุญาตให้เปิดเผยข้อมูล</option>
                   <option value="10.3">คดีศาลปกครอง</option>
-
-                  <option value="10.1">คดียุติธรรม</option>
                 </select>
               </div>
               <div class="form-group" id="div_prosecutorCaseType">
@@ -1416,7 +1414,6 @@
                     class="form-control"
                     onchange="
                       toggleCourtNameOtherInput();
-                      syncCourtLevelFromName();
                       updateLivePreview();
                     "
                   >
@@ -2011,10 +2008,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const roleId = ECMIS.currentRoleId
@@ -2159,15 +2156,6 @@
             otherDiv.style.display = "none";
           }
         }
-      }
-
-      /* TOR 10.3.1.1(2): ประเภทคดีตามชื่อศาล — ศาลปกครองสูงสุด = สูงสุด นอกนั้นชั้นต้น
-         (ผู้ใช้เปลี่ยนเองได้หลังจากนี้) */
-      function syncCourtLevelFromName() {
-        const name = document.getElementById("in_courtName");
-        const level = document.getElementById("in_courtLevel");
-        if (!name || !level) return;
-        level.value = name.value === "ศาลปกครองสูงสุด" ? "SUPREME" : "FIRST";
       }
 
       /* TOR 10.3.1.2: ปีงบประมาณตามวันที่รับเรื่อง จนกว่าผู้ใช้จะแก้ช่องเอง */
@@ -3248,6 +3236,7 @@
             (c.redNo && c.redNo.toLowerCase().includes(q)) ||
             (c.accuser && c.accuser.toLowerCase().includes(q)) ||
             (c.accused && c.accused.toLowerCase().includes(q)) ||
+            (c.section && c.section.toLowerCase().includes(q)) ||
             c.title.toLowerCase().includes(q);
 
           const matchesBlackNo =
@@ -3290,6 +3279,7 @@
  <th>ชื่อผู้กล่าวหา</th>
  <th>ชื่อผู้ถูกกล่าวหา</th>
  <th>เรื่องสำนวน</th>
+ <th>มาตรา</th>
  </tr>
  </thead>
  <tbody>
@@ -3302,11 +3292,12 @@
  <tr id="${safeRowId}" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
  <td>
  <strong class="font-monospace" style="color:var(--text-title);">${cleanId}</strong>
- ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
+ ${c.paccCaseNo && c.paccCaseNo !== cleanId ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
  </td>
  <td>${c.accuser || "-"}</td>
  <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
  <td>${c.title}</td>
+ <td style="white-space:nowrap;">${c.section || "-"}</td>
  </tr>
  `;
         });
@@ -3346,8 +3337,16 @@
         if (document.getElementById("in_source"))
           document.getElementById("in_source").value =
             target.source || "สำนักงาน ป.ป.ท.";
-        if (document.getElementById("in_category") && target.category) {
-          document.getElementById("in_category").value = target.category;
+        /* คงประเภทที่ผู้ใช้เลือกไว้ (เช่น 10.2.2 / 10.3) — ตั้งตามสำนวนเฉพาะเมื่อยังว่างหรืออยู่ที่ค่าเริ่มต้น 10.1
+           (เดิมเขียนทับเป็น 10.1 ทำให้บล็อกของ 10.2.2/10.3 หายและเติมเลขคำขอเดิมไม่ได้) */
+        const intakeCatEl = document.getElementById("in_category");
+        if (
+          intakeCatEl &&
+          target.category &&
+          (!intakeCatEl.value || intakeCatEl.value === "10.1") &&
+          Array.from(intakeCatEl.options).some((o) => o.value === target.category)
+        ) {
+          intakeCatEl.value = target.category;
           if (typeof toggleProsecutorCaseTypeDiv === "function")
             toggleProsecutorCaseTypeDiv();
         }
@@ -3880,7 +3879,10 @@
               timer: 1800,
               showConfirmButton: false,
             }).then(() => {
-              window.location.href = "01-work-inbox.html";
+              /* ?alert= ให้ inbox เปิดหมวดของเคสใหม่ (10.2/10.3) แทนหมวด 10.1 ค่าเริ่มต้น
+                 ไม่งั้นเคสที่เพิ่งรับเข้าดูเหมือนหายไป */
+              window.location.href =
+                "01-work-inbox.html?alert=" + encodeURIComponent(newCase.id);
             });
           }
         });

@@ -8,7 +8,7 @@
 > **แหล่งข้อมูลหลัก (ยึดโค้ดเป็นหลัก):** `assets/ecmis-10-2.js` (`STEPS` / `ROUTES`) + patch `Activity102.advance()` ในแต่ละหน้า
 >
 > **หมายเหตุ LAW index:** ไม่มี `*` = เขียนอยู่ใน HTML ของหน้า · มี `*` = อนุมานจากเอกสาร
-> `FT` = [10-2-full-test-flow.md](../activity10/docs/10-2-full-test-flow.md) · `AT` = [10-2-appeal-test-flow.md](../activity10/docs/10-2-appeal-test-flow.md) · `P2` = [10-2-part2-page-reference.md](../activity10/docs/10-2-part2-page-reference.md) · `DIO` = `10.2 mockup/TO-BE10.2-swimlane-split.drawio`
+> `FT` = [10-2-full-test-flow.md](../activity10/docs/backup-test-flow-2026-10-02/10-2-full-test-flow.md) · `AT` = [10-2-appeal-test-flow.md](../activity10/docs/backup-test-flow-2026-10-02/10-2-appeal-test-flow.md) · `P2` = [10-2-part2-page-reference.md](../activity10/docs/10-2-part2-page-reference.md) · `DIO` = `10.2 mockup/TO-BE10.2-swimlane-split.drawio`
 > "(ใหม่)" = ขั้นตอนที่เพิ่มใน TO-BE ไม่มีรหัส LAW ใน AS-IS
 >
 > **สัญลักษณ์ในผัง:** กล่องทึบ = มีหน้าจอ · กล่องเส้นประสีเทา = ⬛ ไม่มีหน้าจอ (ภายนอก / ระบบจำลอง / ยังไม่สร้าง) ·
@@ -135,6 +135,7 @@ flowchart TD
 | D3 | ผอ.กองกฎหมาย `dir_legal` | `10-2-26-legal-director-committee-opinion.html` | L2-COMMITTEE-DIRECTOR-OPINION (seq 29) | `L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED` → `L2_PENDING_COMMITTEE_DISPATCH` / → `L2_PENDING_COMMITTEE_DIRECTOR_OPINION` (ส่งกลับ) | ก่อน: «ผอ.กองกฎหมายพิจารณาให้ความเห็น»<br>หลัง: «ธุรการกองกฎหมายออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.» / «ผอ.กองกฎหมายพิจารณาให้ความเห็น»<br>＋ B1 B2 | LAW0060* (FT) | ให้ความเห็นในบันทึกเสนอเลขาธิการ + ลงนาม | ✔ 10-2-29 · ✘ กลับ 10-2-27 |
 | D4 | ธุรการกองกฎหมาย `admin_legal` | `10-2-29-legal-admin-committee-dispatch.html` | L2-COMMITTEE-DISPATCH (seq 32) | `L2_PENDING_COMMITTEE_DISPATCH` → `L2_READY_FOR_BOARD_ROUND2` | ก่อน: «ธุรการกองกฎหมายออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.»<br>หลัง: «รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)»<br>＋ B1 B2 | LAW0061–0062* (FT) | ออกเลขส่งเสนอรองเลขาฯ (กิจกรรม 7 รอบ 2) | ⬛ รอบอร์ด (H1 = LAW0063* เขียน `L2_BOARD_RESOLVED_ROUND2`) → 10-2-30 |
 | N6 | คณะกรรมการ ป.ป.ท. (บอร์ด) | ⬛ ไม่มีหน้าจอ | LAW0063 | `L2_READY_FOR_BOARD_ROUND2` → `L2_BOARD_RESOLVED_ROUND2` (console snippet H1) | ก่อน: «รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)»<br>หลัง: «มติบอร์ด ตอบกลับแล้ว» (console snippet)<br>＋ B1 B2 | LAW0063* (DIO, FT) | บอร์ดพิจารณามติ เห็นชอบและลงนาม | 10-2-30 |
+| B2 | ธุรการกองกฎหมาย `admin_legal` (**ป๊อปอัป bypass แทนกิจกรรมที่ 7**) | `10-2-30-legal-admin-receive-board-round2.html` → ปุ่มบันทึกผลพิจารณา → ป๊อปอัป B2 | บันทึกผลพิจารณาจากกิจกรรมที่ 7 (จุด B2 · แทน H1) | `L2_READY_FOR_BOARD_ROUND2` → `L2_PENDING_DIRLEGAL_BOARD_ACK` (ผ่านเอนจิน `L2-RECEIVE-BOARD-ROUND2` · `assignedRole = dir_legal`) | ก่อน: «รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)»<br>หลัง: «ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.» | LAW0063* / LAW0064* | เลือกมติ (อนุญาตเปิดเผย / เปิดเผยบางส่วน / ไม่อนุญาต / อื่นๆ) * · เลขที่หนังสือแจ้งมติ * · วันที่หนังสือ * · (รายละเอียด · แนบไฟล์ · หมายเหตุ) · เตือน (ไม่บล็อก) ถ้ามติไม่ตรงผลคณะอนุกรรมการฯ · ใช้ได้เสมอ · ป๊อปอัป bypass `openAct7DecisionPopup` (`assets/ecmis-act7-bypass.js`) · ผลบันทึกใน `act7History` · ภาพ `video/output/act7-screens/` | 10-2-35 |
 | D5 | ธุรการกองกฎหมาย `admin_legal` | `10-2-30-legal-admin-receive-board-round2.html` | L2-RECEIVE-BOARD-ROUND2 (seq 33) | `L2_BOARD_RESOLVED_ROUND2` → `L2_PENDING_DIRLEGAL_BOARD_ACK` | ก่อน: «มติบอร์ด ตอบกลับแล้ว»<br>หลัง: «ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.»<br>＋ B1 B2 | LAW0064* (FT) | บันทึกรับมติคณะกรรมการ ป.ป.ท. | 10-2-35 |
 | D6 | ผอ.กองกฎหมาย `dir_legal` | `10-2-35-legal-director-board-ack.html` | L2-BOARD-DIRLEGAL-ACK (seq 34) | `L2_PENDING_DIRLEGAL_BOARD_ACK` → `L2_PENDING_GROUPDIR_BOARD_ACK` | ก่อน: «ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.»<br>หลัง: «ผอ.กลุ่มงานความเห็นแย้งรับทราบมติคณะกรรมการ ป.ป.ท.»<br>＋ B1 B2 | LAW0065* (FT) | รับทราบมติบอร์ด + ลงนาม | 10-2-36 |
 | D7 | ผอ.กลุ่มงาน `group_director` | `10-2-36-group-director-board-ack.html` | L2-BOARD-GROUPDIR-ACK (seq 35) | `L2_PENDING_GROUPDIR_BOARD_ACK` → `L2_PENDING_NOTICE_DRAFT` | ก่อน: «ผอ.กลุ่มงานความเห็นแย้งรับทราบมติคณะกรรมการ ป.ป.ท.»<br>หลัง: «ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติ»<br>＋ B1 B2 | — (ใหม่) | รับทราบมติบอร์ด + ลงนาม | 10-2-11 |
@@ -150,7 +151,7 @@ flowchart TD
 | ประเภท | statusCode |
 | --- | --- |
 | 🏁 Terminal | `L2_CASE_CLOSED_DENY_ASSIGNED` (B) · `L2_CASE_CLOSED_DISCLOSE_ASSIGNED` (C) · `L2_CASE_CLOSED_NOTICE_SENT` (D) · (อุทธรณ์: ดูเอกสาร 10.2 อุทธรณ์) |
-| ⬛ รอภายนอก (ไม่มีหน้า — ใช้ console snippet) | `L2_READY_FOR_BOARD_ROUND2` → H1 → `L2_BOARD_RESOLVED_ROUND2` · `L2_CASE_CLOSED_DENY_ASSIGNED` → H3 → เอกสาร 10.2 อุทธรณ์ |
+| ⬛ รอภายนอก (ไม่มีหน้า — ใช้ console snippet) | `L2_READY_FOR_BOARD_ROUND2` → H1 → `L2_BOARD_RESOLVED_ROUND2` (หรือบันทึกด้วยป๊อปอัป bypass B2 ที่ 10-2-30 ได้เลยโดยไม่ต้องใช้ snippet) · `L2_CASE_CLOSED_DENY_ASSIGNED` → H3 → เอกสาร 10.2 อุทธรณ์ |
 
 ## เลขหน้าที่หายไป (ตัด / รวม / ไม่ได้สร้าง)
 
@@ -188,3 +189,9 @@ flowchart TD
 | Upload | ทุกช่องแนบไฟล์รับ PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG | ทุกหน้า | `tbl_law_disclosure_document` |
 
 **ยังไม่อยู่ในรอบนี้:** สถิติ/แดชบอร์ด (10.2.7.2)
+
+### หมายเหตุ P12 — ป๊อปอัปผลจากกิจกรรมที่ 7 ทันทีหลังขั้นตอนขาออก (2026-10-02)
+
+**จุดเชื่อม B2 (ขาออก):** `10-2-29-legal-admin-committee-dispatch.html` หลังยืนยันออกเลขส่ง (สถานะ `L2_READY_FOR_BOARD_ROUND2`) · สวิตช์เปิด → ป๊อปอัป B2 ทันที: [บันทึกผลทันที] → `L2_PENDING_DIRLEGAL_BOARD_ACK` (ข้าม `10-2-30` ที่ธุรการ) · [ภายหลัง] → ค้าง `L2_READY_FOR_BOARD_ROUND2` แล้วแสดงข้อความเดิม «ออกเลขส่งเรียบร้อย» · สวิตช์ปิด = ไม่มีป๊อปอัป
+
+รายละเอียด/กรณีทดสอบ: `activity10/docs/test-flow.md` §8.9 · ภาพ `video/output/act7-outbound/`

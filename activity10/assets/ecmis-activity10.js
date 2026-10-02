@@ -13,7 +13,7 @@
   // L2_PENDING_APPEAL_NOTICE_DRAFT) พร้อมเติม l2AppealMemoInternalDocNo/
   // BoardReplyDocNo-Date/ResolutionNotes ให้ครบทุกเคสสาย appeal — ต้องขึ้นเวอร์ชัน
   // ให้ browser ที่มี localStorage เก่าอยู่แล้วโหลดข้อมูลชุดใหม่)
-  const DATA_VERSION = "v63_fix_orphaned_appeal_agenda_status";
+  const DATA_VERSION = "v64_p11_l8_verdict_issues";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -3896,6 +3896,7 @@
       l3Step: "LAW0127",
       l3StepSeq: 5,
       l3VerdictIssues: "ประเด็นความชอบด้วยกฎหมายของคำสั่งเพิกถอนใบอนุญาตก่อสร้าง",
+      l8VerdictIssues: "ประเด็นความชอบด้วยกฎหมายของคำสั่งเพิกถอนใบอนุญาตก่อสร้าง",
       l3VerdictResult: "แพ้",
       l3VerdictSummary:
         "ศาลพิพากษายกฟ้อง เนื่องจากคำสั่งเพิกถอนใบอนุญาตก่อสร้างดำเนินการตามหลักเกณฑ์ที่กฎหมายกำหนดโดยชอบ",
@@ -3976,6 +3977,7 @@
       l3Step: "LAW0127",
       l3StepSeq: 5,
       l3VerdictIssues: "ประเด็นความชอบด้วยกฎหมายของคำสั่งยุติการให้สวัสดิการ",
+      l8VerdictIssues: "ประเด็นความชอบด้วยกฎหมายของคำสั่งยุติการให้สวัสดิการ",
       l3VerdictResult: "แพ้",
       l3VerdictSummary:
         "ศาลพิพากษายกฟ้อง เนื่องจากคำสั่งยุติการให้สวัสดิการดำเนินการตามหลักเกณฑ์ที่กฎหมายกำหนดโดยชอบ",
@@ -4293,6 +4295,20 @@
       redNo: "-",
       centralSarabanNo: "2569/4475",
     },
+    /* สำนวนเรื่องร้องเรียน ป.ป.ท. — ไม่ระบุ category เพื่อให้เลือกแล้วคงหมวดที่ธุรการเลือกไว้
+       section = มาตราที่ร้องเรียน (แสดงในคอลัมน์ "มาตรา" ของผลค้นหาหน้า 02) */
+    {
+      id: "สำนวน-0005/2569",
+      title:
+        "เรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครองโดยไม่ออกใบเสร็จ และนำเงินเข้ากองทุนส่วนตัว เพื่อแลกกับสิทธิ์ในการรับนักเรียนเข้าศึกษาต่อ",
+      accuser: "นายสมชาย รักความยุติธรรม",
+      accused: "นายสมศักดิ์ หาผลประโยชน์",
+      accusedPosition: "",
+      section: "18/1 ก",
+      paccCaseNo: "0005/2569",
+      blackNo: "-",
+      redNo: "-",
+    },
   ];
 
   /* Recompose a split name + position back into "Name (Position)".
@@ -4464,6 +4480,19 @@
     isAgreedOpinion(opinionText) {
       const text = String(opinionText || "");
       return !text.includes("เห็นแย้ง") && text.includes("เห็นชอบ");
+    },
+
+    /* P10/C3: ข้อความมติผู้บริหาร (signedExecutiveOrder) → ข้อความที่แสดงในหน้า 13–16
+       ต่อท้าย "ให้ทำความเห็นแย้ง" เฉพาะมติเห็นชอบ (AGREE หรือเคสเดิมที่ยังไม่มี
+       boardResolutionType) และข้อความยังไม่มีคำว่า "ความเห็นแย้ง" — ไม่เห็นชอบ/อื่นๆ
+       แสดงตามข้อความจริงที่บันทึก */
+    signedOrderDisplay(caseItem, suffix) {
+      const item = caseItem || {};
+      const order = String(item.signedExecutiveOrder || "");
+      if (!order || order.includes("ความเห็นแย้ง")) return order;
+      const type = item.boardResolutionType;
+      if (type && type !== "AGREE") return order;
+      return order + (suffix == null ? "ให้ทำความเห็นแย้ง" : suffix);
     },
 
     getRequiredRecipients(caseItem, opinionOverride) {
@@ -5596,15 +5625,22 @@
     },
 
     /* หน่วยงานของผู้ใช้ตรงกับหน่วยที่ระบุในหนังสือแจ้งหรือไม่ (ตัดวงเล็บ/ปรับ "สนง." = "สำนักงาน") */
+    normalizeUnit(u) {
+      return String(u || "")
+        .replace(/\(.*?\)/g, "")
+        .replace(/สนง\./g, "สำนักงาน")
+        .replace(/\s+/g, "")
+        .trim();
+    },
+    /* เทียบหน่วยงานแบบตรงตัวหลัง normalize (ใช้กับสิทธิ์เข้าถึง — ไม่ใช้ startsWith) */
+    unitsEqual(a, b) {
+      const x = Activity10.normalizeUnit(a);
+      const y = Activity10.normalizeUnit(b);
+      return !!x && !!y && x === y;
+    },
     unitMatches(noticeUnit, myUnit) {
-      const norm = (u) =>
-        String(u || "")
-          .replace(/\(.*?\)/g, "")
-          .replace(/สนง\./g, "สำนักงาน")
-          .replace(/\s+/g, "")
-          .trim();
-      const a = norm(noticeUnit);
-      const b = norm(myUnit);
+      const a = Activity10.normalizeUnit(noticeUnit);
+      const b = Activity10.normalizeUnit(myUnit);
       if (!a || !b) return false;
       return a === b || a.startsWith(b) || b.startsWith(a);
     },
@@ -6571,17 +6607,9 @@
         item.signedBy =
           "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)";
         item.signedDate = formatDisplayDate(new Date());
-        item.signedExecutiveOrder = "เห็นชอบให้ทำความเห็นแย้ง";
-        item.signedDocFile = "หนังสือผลมติ_2569_006.pdf";
-        item.boardResolution =
-          item.boardResolution ||
-          "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
-        item.boardResolutionDetail =
-          item.boardResolutionDetail ||
-          "ที่ประชุมคณะกรรมการ ป.ป.ท. มีมติเห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ";
-        item.boardMeetingNo = item.boardMeetingNo || "14/2569";
-        item.boardMeetingDate =
-          item.boardMeetingDate || formatDisplayDate(new Date());
+        /* P12: ลงนามเสนอ คกก. ป.ป.ท. เท่านั้น — ไม่เขียนผลมติตายตัว (ครั้งที่ประชุม/มติ/ข้อสั่งการ)
+           ผลมติมาจากกิจกรรมที่ 7 (ป๊อปอัป B1 หลังลงนาม หรือธุรการบันทึกที่หน้า 10);
+           เคสตัวอย่างที่มีมติอยู่แล้วคงค่าเดิม */
         item.executiveSignNotesRound1 =
           signedNotes ||
           "ลงนามเรียบร้อยแล้ว ส่งคืนกองกฎหมายเพื่อดำเนินการตามมติ";

@@ -807,9 +807,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
 
     <script>
       /* LAW0119 — ธุรการกองกฎหมาย รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
@@ -835,7 +835,21 @@
         });
         renderCourtPlaintiffList();
         renderCourtDefendantList();
+        prefillOriginFromQuery();
       });
+
+      /* B6 (P10): inbox [รับคำพิพากษา] (คดีที่ L3_AWAITING_JUDGMENT) เปิดหน้านี้ด้วย
+         ?origin=<เลขคดีเดิม> → เชื่อมคดีรับคำฟ้องเดิม (l3OriginCaseId) และคัดลอก
+         ศาล/เลขคดีดำ/คู่ความให้เหมือนที่การค้นหาด้านล่างทำ */
+      function prefillOriginFromQuery() {
+        const origin = new URLSearchParams(window.location.search).get("origin");
+        if (!origin) return;
+        const c = Activity10.getCases().find((x) => x.id === origin);
+        if (!c) return;
+        const search = document.getElementById("in_originBlackNo");
+        if (search) search.value = c.blackCaseNo || c.id;
+        selectOriginCourtCase(c.id);
+      }
 
       /* ประทับวันที่ลงทะเบียนอัตโนมัติครั้งแรกที่พิมพ์เลขทะเบียนคดี (ถ้ายังไม่ระบุ)
          ผู้ใช้แก้วันที่เองได้ตลอดผ่านช่อง in_regDate (แทนปุ่ม "ออกเลขทะเบียน" ที่ตัดออก) */

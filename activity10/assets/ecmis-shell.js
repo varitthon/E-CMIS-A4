@@ -132,6 +132,7 @@
 
     if (typeof global.renderSidebarMenu === 'function') global.renderSidebarMenu();
     renderNotifications();
+    renderAct7Switch();
   }
 
   /* ==========================================================================
@@ -944,6 +945,64 @@
   } else {
     applyDocAccept();
   }
+
+  /* ==========================================================================
+     P10 — สวิตช์ "จำลองผลจากกิจกรรมที่ 7 (bypass)" ในเมนูโปรไฟล์ (ทุกหน้า)
+     แสดงเฉพาะบทบาทที่ส่งเรื่องเข้ากิจกรรมที่ 7 (ธุรการกองกฎหมาย / ธุรการกองบริหารคดี /
+     ธุรการเขต) เก็บใน localStorage คีย์ ecmis_act7_bypass ("0" = ปิด; ไม่มีคีย์ = เปิด)
+     ECMIS_ACT7.isOn() ใช้ตัดสินว่าจะแสดงปุ่มบันทึกผลแทนกิจกรรมที่ 7 หรือไม่
+     (ตรรกะเดียวกับ assets/ecmis-act7-bypass.js — ไฟล์นั้นไม่ทับถ้ามีตัวนี้อยู่แล้ว) */
+  const ACT7_KEY = 'ecmis_act7_bypass';
+  const ACT7_ROLES = ['admin_legal', 'case_bureau_admin', 'district_admin'];
+  if (!global.ECMIS_ACT7) {
+    global.ECMIS_ACT7 = {
+      KEY: ACT7_KEY,
+      roles: ACT7_ROLES.slice(),
+      isOn: function () {
+        try {
+          const v = global.localStorage.getItem(ACT7_KEY);
+          return v === null || v === undefined ? true : v !== '0';
+        } catch (e) { return true; }
+      },
+      setOn: function (on) {
+        try { global.localStorage.setItem(ACT7_KEY, on ? '1' : '0'); } catch (e) { /* จำค่าไม่ได้ */ }
+        try {
+          document.dispatchEvent(new global.CustomEvent('ecmis-act7-change', { detail: { on: !!on } }));
+        } catch (e) { /* ไม่มี DOM */ }
+      },
+      canSeeSwitch: function (roleId) {
+        return ACT7_ROLES.indexOf(roleId === 'Kanda.R' ? 'admin_legal' : roleId) >= 0;
+      }
+    };
+  }
+
+  function renderAct7Switch() {
+    const body = document.querySelector('#profileDropdown .profile-dropdown-body');
+    if (!body) return;
+    const act7 = global.ECMIS_ACT7;
+    let box = document.getElementById('act7SwitchBox');
+    if (!act7.canSeeSwitch(getCurrentRole())) {
+      if (box) box.remove();
+      return;
+    }
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'act7SwitchBox';
+      box.style.cssText = 'margin-top:10px;padding:8px 10px;border:1px dashed #94a3b8;border-radius:8px;font-size:0.85em';
+      box.innerHTML = '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-weight:600">'
+        + '<input type="checkbox" id="act7SwitchInput" style="width:auto;margin:0" />'
+        + '<span>จำลองผลจากกิจกรรมที่ 7 (bypass)</span></label>'
+        + '<div style="margin-top:4px;color:#64748b;font-size:0.9em">เปิด = ธุรการบันทึกผลพิจารณาแทนกิจกรรมที่ 7 ได้ในระบบนี้</div>';
+      const note = body.querySelector('.profile-note');
+      body.insertBefore(box, note || null);
+      box.querySelector('input').addEventListener('change', function (e) {
+        global.ECMIS_ACT7.setOn(e.target.checked);
+      });
+    }
+    box.querySelector('input').checked = act7.isOn();
+  }
+  document.addEventListener('DOMContentLoaded', renderAct7Switch);
+  global.renderAct7Switch = renderAct7Switch;
 
   global.getCurrentRole = getCurrentRole;
   /* หน้าที่ไม่เรียก updateRoleDisplay() เอง ก็ยังได้แจ้งเตือนจริง */

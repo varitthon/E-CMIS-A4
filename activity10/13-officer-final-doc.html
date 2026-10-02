@@ -1081,11 +1081,11 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
     <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
 
     <script>
@@ -1204,12 +1204,10 @@
              );
              setElText(
                "f_signedOrder",
-               currentCase.signedExecutiveOrder
-                 ? /* มติที่ลงนามรอบ 1 อาจมีคำว่า "…ให้ทำความเห็นแย้ง" อยู่แล้ว — ไม่ต่อซ้ำ */
-                   currentCase.signedExecutiveOrder.includes("ความเห็นแย้ง")
-                   ? currentCase.signedExecutiveOrder
-                   : `${currentCase.signedExecutiveOrder}ให้ทำความเห็นแย้ง`
-                 : "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง",
+               /* มติที่ลงนามรอบ 1 อาจมีคำว่า "…ให้ทำความเห็นแย้ง" อยู่แล้ว — ไม่ต่อซ้ำ
+                  และต่อท้ายเฉพาะมติเห็นชอบ (P10/C3) */
+               Activity10.signedOrderDisplay(currentCase) ||
+                 "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้อง",
              );
              setElText(
                "f_signedDocFile",
@@ -1333,7 +1331,7 @@
         ? 'เห็นควรทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ'
         : execOrder.includes('ความเห็นแย้ง')
           ? `${execOrder}คำสั่งไม่ฟ้องของพนักงานอัยการ`
-          : `${execOrder}ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ`;
+          : Activity10.signedOrderDisplay(currentCase, 'ให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ');
       defaultFile = 'ร่างหนังสือความเห็นแย้ง_เสนออัยการสูงสุด.pdf';
       } else if (isOther) {
       const otherSpecify = document.getElementById('in_opinionOtherSpecify')?.value.trim();

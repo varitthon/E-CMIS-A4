@@ -6,10 +6,10 @@
 > ไฟล์คู่: [activity10-flow-10.2.md](activity10-flow-10.2.md) · [activity10-flow-10.3.md](activity10-flow-10.3.md) · [activity10-flow-10.2-appeal.md](activity10-flow-10.2-appeal.md)
 >
 > **แหล่งข้อมูล:** transition functions ใน `assets/ecmis-activity10.js` (ประมาณบรรทัด 4939–5797), routing `handleCaseAction` ใน `01-work-inbox.html`,
-> `02-board-intake.html` (routing บรรทัด ~3305–3322), [qa-guide-4-flows.md](../activity10/docs/qa-guide-4-flows.md), [10-1-handoff-board-secgen-oag.md](../activity10/docs/10-1-handoff-board-secgen-oag.md)
+> `02-board-intake.html` (routing บรรทัด ~3305–3322), [qa-guide-4-flows.md](../activity10/docs/backup-test-flow-2026-10-02/qa-guide-4-flows.md), [10-1-handoff-board-secgen-oag.md](../activity10/docs/10-1-handoff-board-secgen-oag.md)
 >
 > **หมายเหตุ LAW index:** ไม่มีหน้าใดใน 10.1 เขียนรหัส LAW ของ 10.1 ไว้ในหน้า — ทุกรหัสเป็นการอนุมาน (`*`) — วงเล็บท้ายบอกแหล่งที่มา
-> `(Q)` = [qa-guide-4-flows.md](../activity10/docs/qa-guide-4-flows.md) (Flow 1 = LAW0001–0010, Flow 2 = 0011–0019, Flow 3 = 0020–0025, Flow 4 = 0026–0032)
+> `(Q)` = [qa-guide-4-flows.md](../activity10/docs/backup-test-flow-2026-10-02/qa-guide-4-flows.md) (Flow 1 = LAW0001–0010, Flow 2 = 0011–0019, Flow 3 = 0020–0025, Flow 4 = 0026–0032)
 > `(M)` = [meeting-01092026-changes.md](../activity10/docs/meeting-01092026-changes.md) (สาขา LAW0023/0024/0025)
 >
 > **statusCode:** หน้าไม่ได้เขียน statusCode เอง แต่เรียกฟังก์ชันใน `ecmis-activity10.js` — ค่าด้านล่างคือค่าที่ฟังก์ชันเขียนจริง
@@ -77,6 +77,7 @@ flowchart LR
 | # | Role | Page | Step | statusCode (from → to) | Inbox label (ก่อน → หลัง) | LAW index | Action (TH) | Next page / branch |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | N2 | คณะกรรมการ ป.ป.ท. / กองบริหารคดี (ภายนอก) | ⬛ ไม่มีหน้าจอ | LAW0011 | จำลองโดย engine ตอนกดปุ่ม 10a (เขียนมติ default) → `RETURNED_FROM_EXEC` | หลัง: «ธุรการรับผลมติ» | LAW0011* (Q) | บอร์ดมีมติ กองบริหารคดีทำรายงานสรุปมติส่งกลับ | 10 |
+| B1 | ธุรการกองกฎหมาย `admin_legal` (**ป๊อปอัป bypass แทนกิจกรรมที่ 7**) | `10-legal-admin-resolution.html` → ปุ่มบันทึกผลพิจารณา → ป๊อปอัป B1 | บันทึกผลพิจารณาจากกิจกรรมที่ 7 (จุด B1) | `RETURNED_FROM_EXEC` → `PENDING_DIRECTOR_RESOLUTION` (ป๊อปอัปเขียนมติ + `signedExecutiveOrder` แล้วส่งต่อ ผอ.กองกฎหมายในครั้งเดียว · `assignedRole = dir_legal`) | ก่อน: «ธุรการรับผลมติ»<br>หลัง: «เสนอผลมติ ผอ.กองกฎหมาย» | LAW0011* / LAW0012* (Q) | เลือกมติ (เห็นชอบ / ไม่เห็นชอบ / อื่นๆ+ข้อความ) * · ครั้งที่ประชุม * · วันที่ประชุม * · (วาระที่ · เลขที่/วันที่หนังสือแจ้งมติ · รายละเอียด · แนบไฟล์ · หมายเหตุ) · ใช้ได้เสมอ (ไม่ขึ้นกับสวิตช์) · ป๊อปอัป bypass `openAct7DecisionPopup` (`assets/ecmis-act7-bypass.js`) · ผลบันทึกใน `act7History` · ภาพ `video/output/act7-screens/` | 11 |
 | 10 | ธุรการกองกฎหมาย `admin_legal` | `10-legal-admin-resolution.html` | 10. ธุรการ รับผลมติ · step 10 | `RETURNED_FROM_EXEC` → `PENDING_DIRECTOR_RESOLUTION` | ก่อน: «ธุรการรับผลมติ»<br>หลัง: «เสนอผลมติ ผอ.กองกฎหมาย» | LAW0012* (Q) | รับผลมติ คกก. ป.ป.ท. ส่งต่อ ผอ.กอง · **ฟอร์มมติ (10.1.5):** ครั้งที่ประชุม · วันที่ · ระเบียบวาระ · ประเภทมติ (เห็นชอบ/ไม่เห็นชอบ/อื่นๆ+ข้อความ) · รายละเอียด · แนบไฟล์ — ค่าที่กรอกเป็นค่าที่ใช้ (ค่าของเอนจินเป็นแค่ค่าตั้งต้น) แสดงต่อที่หน้า 10/11/12 | 11 |
 | 11 | ผอ.กองกฎหมาย `dir_legal` | `11-legal-director-resolution.html` | 11. ผอ.กอง สั่งการตามมติ · step 11 | `PENDING_DIRECTOR_RESOLUTION` → `PENDING_GROUP_RESOLUTION` | ก่อน: «เสนอผลมติ ผอ.กองกฎหมาย»<br>หลัง: «ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ» | LAW0013* (Q) | สั่งการ ผอ.กลุ่ม ดำเนินการตามมติ | 12 |
 | 12 | ผอ.กลุ่มงาน `group_director` | `12-group-director-resolution.html` | 12. ผอ.กลุ่ม มอบหมาย · step 12 | `PENDING_GROUP_RESOLUTION` → `PENDING_OFFICER_FINAL_DOC` | ก่อน: «ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ»<br>หลัง: «นิติกรจัดทำหนังสือความเห็นตามมติ» | LAW0014* (Q) | มอบหมายนิติกรจัดทำหนังสือตามมติ | 13 |
@@ -165,3 +166,9 @@ flowchart LR
 | `FORWARDED_DIVISION` | `01-work-inbox.html`, `dasdbord.html`, `assets/ecmis-app.js` | ใช้ในการกรอง/นับสถิติเท่านั้น |
 | `FINAL_DISPATCHED` | `assets/ecmis-activity10.js` (`stampSignature`) | ฟังก์ชัน legacy ที่ไม่มีหน้าเรียกใช้ |
 | `L3V_DECIDED`, `L8_DECIDED` | `assets/ecmis-10-3.js` (`STEPS`) | ค่าตั้งต้นของ STEPS ที่ 10-3v-06 / 10-3v-20 เขียนทับด้วยตาราง branch เสมอ — ดู [activity10-flow-10.3.md](activity10-flow-10.3.md) |
+
+### หมายเหตุ P12 — ป๊อปอัปผลจากกิจกรรมที่ 7 ทันทีหลังขั้นตอนขาออก (2026-10-02)
+
+**จุดเชื่อม B1 (ขาออก):** ที่ `01-work-inbox.html` รองเลขาธิการ `deputy_sg` กด «ลงนาม» (`signExecutiveRound1`) — ปุ่มยืนยันคือ «ลงนามและเสนอ คกก. ป.ป.ท.» · `Activity10.signExecutiveDocRound1` คงสถานะ `RETURNED_FROM_EXEC` / `admin_legal` + ผู้ลงนาม/วันที่ แต่ **ไม่เขียนผลมติตายตัว** (`boardResolution`, `boardResolutionDetail`, `boardMeetingNo` 14/2569, `boardMeetingDate`, `signedExecutiveOrder`, `signedDocFile`) · เมื่อสวิตช์ bypass เปิด จะเด้งป๊อปอัปกิจกรรมที่ 7 ทันที: [บันทึกผลทันที] เขียนผลมติผ่าน `buildBoardResolutionPatch` + `signedExecutiveOrder` (คง `RETURNED_FROM_EXEC` — ธุรการรับที่หน้า 10 เห็นผลที่เติมแล้ว และกด «รับผลมติและส่งต่อ ผอ.กองกฎหมาย» ได้เลย) · [ภายหลัง] ธุรการบันทึกที่หน้า 10 เหมือนเดิม (หน้า 10 แสดง «ยังไม่ได้บันทึกผลมติ»)
+
+รายละเอียด/กรณีทดสอบ: `activity10/docs/test-flow.md` §8.9 · ภาพ `video/output/act7-outbound/`

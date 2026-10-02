@@ -1383,6 +1383,18 @@
     normalizeRole102: function (roleId) {
       return Activity102.VISIBILITY_RULES.aliases[roleId] || roleId;
     },
+    /* ลำดับขั้น (seq) ของสำนวน — ใช้ l2StepSeq ถ้ามี ไม่มี (เช่น seed ตัวอย่าง) ให้หาจาก
+       statusCode: seq สูงสุดระหว่าง (ก) ขั้นที่ผลิตสถานะนี้ใน STEPS (ข) ขั้นที่หน้าถัดไป
+       ตาม ROUTES รับช่วง (ขั้นที่ "ค้างอยู่") ไม่พบทั้งสองทาง = null */
+    stepSeqOfCase: function (kase) {
+      if (!kase) return null;
+      if (typeof kase.l2StepSeq === "number") return kase.l2StepSeq;
+      const seqs = STEPS.filter(function (s) { return s.statusCode === kase.statusCode; })
+        .map(function (s) { return s.seq; });
+      const pending = ROUTES[kase.statusCode] ? stepByPage(ROUTES[kase.statusCode]) : null;
+      if (pending) seqs.push(pending.seq);
+      return seqs.length ? Math.max.apply(null, seqs) : null;
+    },
     canView102: function (kase, roleId, unit) {
       if (!kase || !Activity102.isDisclosureCase(kase)) return true;
       const rules = Activity102.VISIBILITY_RULES;
@@ -1393,11 +1405,12 @@
         if (assigned) return true;
         const seqs = STEPS.filter(function (s) { return s.role === role; }).map(function (s) { return s.seq; });
         const first = seqs.length ? Math.min.apply(null, seqs) : Infinity;
-        return typeof kase.l2StepSeq === "number" && kase.l2StepSeq >= first;
+        const seq = Activity102.stepSeqOfCase(kase);
+        return seq !== null && seq >= first;
       }
       if (rules.byUnit.indexOf(role) > -1) {
         if (!kase.sourceUnit || assigned) return true;
-        return !!unit && kase.sourceUnit === unit;
+        return global.Activity10.unitsEqual(kase.sourceUnit, unit);
       }
       return true;
     },
@@ -2051,7 +2064,7 @@
       const el = document.getElementById(id);
       if (el) el.textContent = val;
     };
-    setText("f_relatedCaseNo", c.relatedCaseNo || "-");
+    setText("f_relatedCaseNo", c.relatedRequestNo || c.relatedCaseNo || "-");
     setText("f_originalOfficer", c.l2OriginalCaseOfficer || "-");
     setText("f_originalOfficerOrg", c.l2OriginalCaseOfficerOrg || "-");
     setText(

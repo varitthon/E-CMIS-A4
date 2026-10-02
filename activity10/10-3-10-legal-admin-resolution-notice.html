@@ -496,9 +496,13 @@
               >
             </div>
             <div class="form-card-body">
+              <!-- B3 (P10): ผลพิจารณาจากกิจกรรมที่ 7 (มติมอบอำนาจ) บันทึกผ่านป๊อปอัปเดียวกันทุกจุดเชื่อม
+                   แทนฟอร์มเดิม — ป๊อปอัปเขียน l3BoardResolution / l3ResolutionNotice / l3ResolutionNoticeDocNo
+                   แล้วลงนาม + Activity103.advance(L3-19) → ผอ.กองกฎหมาย -->
               <div class="l3-section-title">
                 <i class="fa-solid fa-gavel text-primary"></i>
-                รายงานสรุปมติคณะกรรมการ ป.ป.ท. (จากกองบริหารคดี)
+                ผลพิจารณาจากกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.)
+                <span class="badge" style="background: #e2e8f0; color: #475569">บันทึกแทนกิจกรรมที่ 7</span>
               </div>
               <div id="incomingReportNote" class="l3-note l3-note-info d-none">
                 <i class="fa-solid fa-inbox"></i>
@@ -506,137 +510,16 @@
                   <strong>ได้รับรายงานสรุปมติแล้ว</strong><br />
                   จาก <span id="f_incomingReportedBy">-</span> เมื่อ
                   <span id="f_incomingReportDate">-</span>
-                  — ระบบเติมข้อมูลด้านล่างให้แล้ว กรุณาตรวจสอบกับรายงานก่อนบันทึก
+                  — ระบบเติมข้อมูลในป๊อปอัปให้แล้ว กรุณาตรวจสอบกับรายงานก่อนบันทึก
                 </div>
               </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >ครั้งที่ประชุม <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_meetingNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น 41/2569"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >วันที่ประชุม <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="date"
-                    id="in_meetingDate"
-                    class="form-control"
-                    lang="th-TH-u-ca-buddhist"
-                  />
-                </div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>วาระที่ <span style="color: #dc2626">*</span></label>
-                  <input
-                    type="text"
-                    id="in_agendaNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น 5.41"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>ผลมติ</label>
-                  <div class="read-box" id="f_resolutionResult">
-                    มีมติมอบอำนาจ
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label
-                  >สาระสำคัญของมติ <span style="color: #dc2626">*</span></label
-                >
-                <textarea
-                  id="in_resolutionText"
-                  class="form-control"
-                  rows="4"
-                  placeholder="สรุปข้อมติตามรายงานสรุปมติ เช่น มอบอำนาจให้ผู้อำนวยการกองกฎหมายขอขยายระยะเวลายื่นคำให้การ และมอบหมายพนักงานอัยการเป็นผู้แก้ต่างคดี..."
-                ></textarea>
-              </div>
-              <div class="form-group">
-                <label
-                  >แนบรายงานสรุปมติ <span style="color: #dc2626">*</span></label
-                >
-                <div class="l3-upload-box">
-                  <input
-                    type="file"
-                    id="in_resolutionReport"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleReportChange(this)"
-                  />
-                </div>
-                <div id="reportList" style="margin-top: 8px"></div>
-              </div>
-
-              <hr class="l3-divider" />
-
-              <div class="l3-section-title">
-                <i class="fa-solid fa-bullhorn text-primary"></i>
-                การแจ้งผลมติ
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >เลขที่หนังสือแจ้งผล
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_noticeDocNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น ปป 0003/4501"
-                    style="font-weight: 700; color: #1e3a8a"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >วันที่แจ้งผล <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="date"
-                    id="in_noticeDate"
-                    class="form-control"
-                    lang="th-TH-u-ca-buddhist"
-                  />
-                </div>
-              </div>
-              <div class="form-group">
-                <label
-                  >แจ้งถึง นิติกร กลุ่มงานคดี
-                  <span style="color: #dc2626">*</span></label
-                >
-                <select id="in_notifyLawyer" class="form-control">
-                  <option value="">-- เลือกนิติกร --</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>หมายเหตุ</label>
-                <textarea
-                  id="in_noticeNotes"
-                  class="form-control"
-                  rows="2"
-                  placeholder="ระบุหมายเหตุ (ถ้ามี)..."
-                ></textarea>
-              </div>
+              <div id="act7Summary" style="margin-bottom: 12px"></div>
+              <button type="button" class="btn btn-primary" id="btnAct7Save" onclick="openAct7Popup()">
+                <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาจากกิจกรรมที่ 7
+              </button>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ แจ้งผล
-              </button>
             </div>
           </div>
         </div>
@@ -645,14 +528,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       const STEP_CODE = "L3-19";
       const STEP = Activity103.stepByCode(STEP_CODE);
-      const RESOLUTION_RESULT = "มีมติมอบอำนาจ";
       let currentCase = null;
       let viewOnly = false;
       const LAWYERS = [
@@ -660,8 +543,6 @@
         "นางสาวสุดา คดีเที่ยง (นิติกร กลุ่มงานคดี)",
         "นางสาวพิมพ์ชนก ธรรมรักษ์ (นิติกร กลุ่มงานคดี)",
       ];
-      let reportFiles = [];
-      let presetReportNames = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -703,34 +584,19 @@
         }
       }
 
+      /* เคสที่แจ้งผลแล้ว (ดูอย่างเดียว) — แสดงสรุปผลที่บันทึกไว้ และซ่อนปุ่มบันทึก */
       function fillSavedValues() {
-        const r = currentCase.l3BoardResolution || {};
-        const n = currentCase.l3ResolutionNotice || {};
-        document.getElementById("in_meetingNo").value = r.meetingNo || "";
-        document.getElementById("in_meetingDate").value = r.meetingDate || "";
-        document.getElementById("in_agendaNo").value = r.agendaNo || "";
-        document.getElementById("in_resolutionText").value = r.text || "";
-        presetReportNames = (r.reportFileNames || []).slice();
-        reportFiles = [];
-        renderReportList();
-        document.getElementById("in_noticeDocNo").value = n.docNo || "";
-        document.getElementById("in_noticeDate").value = n.docDate || "";
-        document.getElementById("in_noticeNotes").value = n.notes || "";
-        const lawyer = (n.recipients || []).find((x) => x.role === "case_legal_officer");
-        document.getElementById("in_notifyLawyer").value = lawyer ? lawyer.name : "";
+        renderAct7Summary();
+        document.getElementById("btnAct7Save").classList.add("d-none");
         document.getElementById("incomingReportNote").classList.add("d-none");
       }
 
-      function esc(t) {
-        return String(t == null ? "" : t)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      function todayISO() {
-        return new Date().toISOString().split("T")[0];
+      function renderAct7Summary() {
+        const host = document.getElementById("act7Summary");
+        if (host && currentCase)
+          host.innerHTML = ECMIS_ACT7_HELPERS.hasSavedResult("B3", currentCase)
+            ? ECMIS_ACT7_HELPERS.summaryHtml("B3", currentCase)
+            : "";
       }
 
       function populate() {
@@ -745,20 +611,11 @@
         ECMIS103.setText("f_internalDocNo", c.l3InternalDocNo);
         ECMIS103.setText("f_internalDocDate", c.l3InternalDocDate);
         ECMIS103.setText("f_opinionText", c.l3OpinionText);
-        renderLawyerOptions(c.officer);
-        document.getElementById("in_noticeDate").value = todayISO();
-        if (c.l3ResolutionNoticeDocNo) document.getElementById("in_noticeDocNo").value = c.l3ResolutionNoticeDocNo;
         prefillIncomingReport(c.l3IncomingBoardReport);
       }
 
       function prefillIncomingReport(report) {
         if (!report) return;
-        document.getElementById("in_meetingNo").value = report.meetingNo || "";
-        document.getElementById("in_meetingDate").value = report.meetingDate || "";
-        document.getElementById("in_agendaNo").value = report.agendaNo || "";
-        document.getElementById("in_resolutionText").value = report.text || "";
-        presetReportNames = (report.reportFileNames || []).slice();
-        renderReportList();
         ECMIS103.setText("f_incomingReportedBy", report.reportedBy);
         ECMIS103.setText(
           "f_incomingReportDate",
@@ -767,177 +624,22 @@
         document.getElementById("incomingReportNote").classList.remove("d-none");
       }
 
-      function handleReportChange(input) {
-        if (!input.files || !input.files.length) return;
-        const allowed = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowed.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          if (file.size > 100 * 1024 * 1024) {
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          reportFiles.push(file);
-        });
-        input.value = "";
-        renderReportList();
-      }
-
-      function removeReport(index) {
-        reportFiles.splice(index, 1);
-        renderReportList();
-      }
-
-      function removePresetReport(index) {
-        presetReportNames.splice(index, 1);
-        renderReportList();
-      }
-
-      function renderReportList() {
-        const el = document.getElementById("reportList");
-        const presetRows = presetReportNames
-          .map(
-            (name, idx) => `
- <div class="l3-attachment-row">
- <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)} <span style="color:#94a3b8;">(จากกองบริหารคดี)</span></div>
- <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removePresetReport(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
- </div>`,
-          )
-          .join("");
-        el.innerHTML = presetRows + reportFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return `
- <div class="l3-attachment-row">
- <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></div>
- <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeReport(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
- </div>`;
-          })
-          .join("");
-      }
-
-      function renderLawyerOptions(selected) {
-        const names = LAWYERS.slice();
-        if (selected && !names.includes(selected)) names.unshift(selected);
-        const el = document.getElementById("in_notifyLawyer");
-        el.innerHTML =
-          '<option value="">-- เลือกนิติกร --</option>' +
-          names.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
-        el.value = selected || "";
-      }
-
-      function warn(title, text, focusId) {
-        Swal.fire({
-          icon: "warning",
-          title: title,
-          text: text,
-          confirmButtonColor: "#1e3a8a",
-        });
-        if (focusId) document.getElementById(focusId).focus();
-      }
-
-      function formatISODate(iso) {
-        return iso ? ECMIS103.formatThaiDate(iso) : "-";
-      }
-
-      function submitForm() {
+      function openAct7Popup() {
         if (!currentCase) return;
-
-        const v = (id) => document.getElementById(id).value.trim();
-        const meetingNo = v("in_meetingNo");
-        const meetingDate = v("in_meetingDate");
-        const agendaNo = v("in_agendaNo");
-        const resolutionText = v("in_resolutionText");
-        const noticeDocNo = v("in_noticeDocNo");
-        const noticeDate = v("in_noticeDate");
-        const noticeNotes = v("in_noticeNotes") || "-";
-
-        if (!meetingNo) return warn("กรุณากรอกครั้งที่ประชุม", "กรุณากรอกครั้งที่ประชุมคณะกรรมการ ป.ป.ท. ตามรายงานสรุปมติ", "in_meetingNo");
-        if (!meetingDate) return warn("กรุณาระบุวันที่ประชุม", "กรุณาระบุวันที่ประชุมคณะกรรมการ ป.ป.ท.", "in_meetingDate");
-        if (!agendaNo) return warn("กรุณากรอกวาระที่", "กรุณากรอกวาระที่พิจารณาเรื่องนี้", "in_agendaNo");
-        if (!resolutionText) return warn("กรุณาระบุสาระสำคัญของมติ", "กรุณาสรุปข้อมติตามรายงานสรุปมติ", "in_resolutionText");
-        if (!reportFiles.length && !presetReportNames.length) return warn("กรุณาแนบรายงานสรุปมติ", "กรุณาแนบไฟล์รายงานสรุปมติจากกองบริหารคดีอย่างน้อย 1 ไฟล์");
-        if (!noticeDocNo) return warn("กรุณากรอกเลขที่หนังสือแจ้งผล", "กรุณากรอกเลขที่หนังสือแจ้งผล", "in_noticeDocNo");
-        if (!noticeDate) return warn("กรุณาระบุวันที่แจ้งผล", "กรุณาระบุวันที่แจ้งผลมติ", "in_noticeDate");
-        const lawyerName = v("in_notifyLawyer");
-        if (!lawyerName) return warn("กรุณาเลือกนิติกร", "กรุณาเลือกนิติกร กลุ่มงานคดี ที่ต้องการแจ้งผลมติ", "in_notifyLawyer");
-
-        const recipients = [{ role: "case_legal_officer", label: "นิติกร กลุ่มงานคดี", name: lawyerName }];
-
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันการรับเรื่องและแจ้งผลมติ?",
-          html: `
- <div class="emd-summary">
- <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
- <p><strong>มติคณะกรรมการ ป.ป.ท.:</strong> ครั้งที่ ${esc(meetingNo)} วันที่ ${esc(formatISODate(meetingDate))} วาระที่ ${esc(agendaNo)}</p>
- <p><strong>ผลมติ:</strong> ${RESOLUTION_RESULT}</p>
- <p><strong>เลขที่หนังสือแจ้งผล:</strong> ${esc(noticeDocNo)}</p>
- <p><strong>แจ้งถึง:</strong> ${recipients.map((r) => esc(r.label + " — " + r.name)).join("<br/>")}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ผอ.กองกฎหมาย พิจารณาและมอบหมายงาน</p>
- </div>
- `,
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันบันทึกและแจ้งผล",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#16a34a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          ECMIS103.openSignatureModal(
-            {
-              title: "ลงนามบันทึกรับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.",
-              signer: ECMIS103.signerLabel("admin_legal"),
-              certId: "PACC-ADMINLEGAL-2569-103",
-            },
-            (image) => {
-              const now = new Date();
-              Activity103.sign(currentCase.id, STEP_CODE, image);
-              Activity103.advance(currentCase.id, STEP_CODE, {
-                l3BoardResolution: {
-                  meetingNo: meetingNo,
-                  meetingDate: meetingDate,
-                  agendaNo: agendaNo,
-                  result: RESOLUTION_RESULT,
-                  text: resolutionText,
-                  reportFileNames: presetReportNames.concat(reportFiles.map((f) => f.name)),
-                },
-                l3ResolutionNotice: {
-                  docNo: noticeDocNo,
-                  docDate: noticeDate,
-                  recipients: recipients,
-                  notifiedBy: ECMIS103.signerLabel("admin_legal"),
-                  notifiedAt: ECMIS103.formatThaiDateTime(now),
-                  notes: noticeNotes,
-                  acknowledgedBy: null,
-                  acknowledgedAt: null,
-                },
-                l3ResolutionNoticeDocNo: noticeDocNo,
-                assignedRole: "dir_legal",
-              });
-
-              Swal.fire({
-                icon: "success",
-                title: "รับเรื่องและแจ้งผลมติสำเร็จ!",
-                text: `แจ้งผลมติคณะกรรมการ ป.ป.ท. ด้วยหนังสือเลขที่ ${noticeDocNo} ถึง ${lawyerName} เรียบร้อยแล้ว`,
-                timer: 2000,
-                showConfirmButton: false,
-              }).then(ECMIS103.goInbox);
-            },
-          );
+        openAct7DecisionPopup(currentCase.id, "B3", {
+          lawyers: LAWYERS,
+          onSaved: (updated) => {
+            const no = (updated && updated.l3ResolutionNoticeDocNo) || "";
+            const lawyer = updated && updated.l3ResolutionNotice && updated.l3ResolutionNotice.recipients[0]
+              ? updated.l3ResolutionNotice.recipients[0].name : "";
+            Swal.fire({
+              icon: "success",
+              title: "รับเรื่องและแจ้งผลมติสำเร็จ!",
+              text: `แจ้งผลมติคณะกรรมการ ป.ป.ท. ด้วยหนังสือเลขที่ ${no} ถึง ${lawyer} เรียบร้อยแล้ว`,
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(ECMIS103.goInbox);
+          },
         });
       }
 

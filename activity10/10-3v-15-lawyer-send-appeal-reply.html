@@ -426,7 +426,9 @@
             </div>
           </div>
 
-          <div class="form-card" style="border: 2px solid #1e3a8a">
+          <!-- B7 (P10) / TOR 10.3.4.2 บันทึกผลคำพิพากษาศาลปกครองสูงสุด (หลังส่งคำแก้อุทธรณ์แล้ว) -->
+          <div id="supremeResultPanel"></div>
+          <div class="form-card" id="sendCard" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
@@ -582,19 +584,23 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
     <script src="assets/ecmis-capture.js"></script>
 
     <script>
       /* LAW0141 — นิติกร ส่งหนังสือและคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง (Part 7)
-         เคสมาจาก 10-3v-14 ที่สถานะ L7_PENDING_LAWYER_SEND — เป็น terminal step
-         ไม่มี route ต่อ (black box ไปกิจกรรมอื่น/Page 10 LAW0161) ดู
-         docs/10.3 mockup/implementation-plan-part7.md (open item #4) */
+         เคสมาจาก 10-3v-14 ที่สถานะ L7_PENDING_LAWYER_SEND — ส่งแล้วเป็นสถานะรอผล
+         (L7_SENT_TO_PROSECUTOR, black box ไปกิจกรรมอื่น/Page 10 LAW0161) ดู
+         docs/10.3 mockup/implementation-plan-part7.md (open item #4)
+         B7 (P10): หลังส่งแล้ว หน้านี้ใช้บันทึกผลศาลปกครองสูงสุด (TOR 10.3.4.2) →
+         L7_SUPREME_JUDGED คดีถึงที่สุด เหมือน 10-3v-25 / 10-3v-36 */
       const STEP_CODE = "LAW0141";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
+      const SUPREME_STAGE_STATUSES = ["L7_SENT_TO_PROSECUTOR", "L7_SUPREME_JUDGED"];
+      const SEND_PAGE_STATUSES = ["L7_PENDING_LAWYER_SEND"].concat(SUPREME_STAGE_STATUSES);
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -612,11 +618,12 @@
         const prev = Activity103.APPEAL_STEPS[idx - 1];
         const found = Activity103.getCase(id, prev ? prev.statusCode : null);
         /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
-           คำพิพากษาที่อยู่สถานะ L7_PENDING_LAWYER_SEND เท่านั้น */
+           คำพิพากษาที่อยู่สถานะ L7_PENDING_LAWYER_SEND (รอส่ง) หรือส่งแล้ว
+           (B7: บันทึก/ดูผลศาลปกครองสูงสุด) เท่านั้น */
         currentCase =
           found &&
           Activity103.isVerdictCase(found) &&
-          found.statusCode === "L7_PENDING_LAWYER_SEND"
+          SEND_PAGE_STATUSES.includes(found.statusCode)
             ? found
             : null;
 
@@ -626,6 +633,24 @@
           return;
         }
         populate();
+        if (SUPREME_STAGE_STATUSES.includes(currentCase.statusCode)) showSupremeStage();
+      }
+
+      /* ส่งคำแก้อุทธรณ์แล้ว — ซ่อนฟอร์มส่ง แสดงแผงบันทึกผลคำพิพากษาศาลปกครองสูงสุด
+         (การ์ดเดียวกับ 10-3v-25 / 10-3v-36) → L7_SUPREME_JUDGED คดีถึงที่สุด */
+      function showSupremeStage() {
+        document.getElementById("sendCard").classList.add("d-none");
+        ECMIS103.renderSupremeResultPanel("supremeResultPanel", currentCase.id, {
+          onSaved: function () {
+            Swal.fire({
+              icon: "success",
+              title: "บันทึกผลคำพิพากษาแล้ว",
+              text: "บันทึกผลคำพิพากษาศาลปกครองสูงสุด และสถานะทางคดี \"คดีถึงที่สุด\" เรียบร้อย",
+              timer: 2200,
+              showConfirmButton: false,
+            }).then(ECMIS103.goInbox);
+          },
+        });
       }
 
       function todayISO() {

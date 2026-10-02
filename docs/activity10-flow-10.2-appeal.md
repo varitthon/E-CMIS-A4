@@ -8,7 +8,7 @@
 > **แหล่งข้อมูลหลัก (ยึดโค้ดเป็นหลัก):** `assets/ecmis-10-2.js` (`STEPS` / `ROUTES`) + patch `Activity102.advance()` ในแต่ละหน้า
 >
 > **หมายเหตุ LAW index:** ไม่มี `*` = เขียนอยู่ใน HTML ของหน้า · มี `*` = อนุมานจากเอกสาร
-> `FT` = [10-2-full-test-flow.md](../activity10/docs/10-2-full-test-flow.md) · `AT` = [10-2-appeal-test-flow.md](../activity10/docs/10-2-appeal-test-flow.md) · `P2` = [10-2-part2-page-reference.md](../activity10/docs/10-2-part2-page-reference.md) · `DIO` = `10.2 mockup/TO-BE10.2-swimlane-split.drawio`
+> `FT` = [10-2-full-test-flow.md](../activity10/docs/backup-test-flow-2026-10-02/10-2-full-test-flow.md) · `AT` = [10-2-appeal-test-flow.md](../activity10/docs/backup-test-flow-2026-10-02/10-2-appeal-test-flow.md) · `P2` = [10-2-part2-page-reference.md](../activity10/docs/10-2-part2-page-reference.md) · `DIO` = `10.2 mockup/TO-BE10.2-swimlane-split.drawio`
 > "(ใหม่)" = ขั้นตอนที่เพิ่มใน TO-BE ไม่มีรหัส LAW ใน AS-IS
 >
 > **สัญลักษณ์ในผัง:** กล่องทึบ = มีหน้าจอ · กล่องเส้นประสีเทา = ⬛ ไม่มีหน้าจอ (ภายนอก / ระบบจำลอง / ยังไม่สร้าง) ·
@@ -70,6 +70,7 @@ flowchart TD
 | E6 | คณะอนุฯ วินิจฉัยอุทธรณ์ `appeal_ruling_subcommittee` | `10-2-appeal-06-subcommittee-ruling.html` | L2-APPEAL-RULING (seq 44) · บันทึก `l2AppealRulingType` | `L2_PENDING_APPEAL_RULING` → `L2_PENDING_APPEAL_MEMO` | ก่อน: «คณะอนุกรรมการวินิจฉัยอุทธรณ์พิจารณาและมีคำวินิจฉัย»<br>หลัง: «ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.»<br>＋ B1 B2 | LAW0076* | มีคำวินิจฉัยอุทธรณ์ + ลงนาม | appeal-07 |
 | E7 | ฝ่ายเลขาคณะอนุฯ วินิจฉัยอุทธรณ์ `appeal_subcommittee_secretariat` | `10-2-appeal-07-secretariat-memo.html` | L2-APPEAL-SECRETARIAT-MEMO (seq 45) | `L2_PENDING_APPEAL_MEMO` → `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` | ก่อน: «ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์จัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.»<br>หลัง: «ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7»<br>＋ B1 B2 | LAW0075*, 0077* (FT) | บันทึกวาระประชุม + จัดทำบันทึกเสนอคณะกรรมการ | appeal-09 |
 | E9 | ผอ.กองบริหารคดี `case_bureau_director` | `10-2-appeal-09-case-bureau-director-board-propose.html` | L2-APPEAL-BOARD-PROPOSE (seq 48) | `L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE` → `L2_APPEAL_SUBMITTED_TO_BOARD` | ก่อน: «ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7»<br>หลัง: «รอมติบอร์ดตอบกลับ»<br>＋ B1 B2 | LAW0078*, 0079* (FT) | ลงนามผู้เสนอ + ออกเลขส่งยื่นกิจกรรม 7 | ⬛ รอบอร์ด (H2 ≈ LAW0080 เขียน `L2_PENDING_APPEAL_NOTICE_DRAFT`) → appeal-12 |
+| B4 | ธุรการกองบริหารคดี `case_bureau_admin` / ธุรการกองกฎหมาย `admin_legal` (**ป๊อปอัป bypass แทนกิจกรรมที่ 7**) | `01-work-inbox.html` ปุ่ม «ดำเนินการ» → ป๊อปอัป B4 | บันทึกผลพิจารณาจากกิจกรรมที่ 7 (จุด B4 · แทน H2/appeal-11) | `L2_APPEAL_SUBMITTED_TO_BOARD` → `L2_PENDING_APPEAL_NOTICE_DRAFT` (`assignedRole = case_tracking_secretary`) | ก่อน: «รอมติบอร์ดตอบกลับ» + ป้ายเทา «ระหว่างรอกิจกรรมที่ 7»<br>หลัง: «เลขานุการกลุ่มงานบริหารติดตามคดีจัดทำหนังสือแจ้งผลมติ» | LAW0080* | เลือกมติ (ให้เปิดเผยทั้งหมด / บางส่วน / ไม่เปิดเผย) * · เลขที่หนังสือแจ้งมติ * · วันที่หนังสือ * · (ความเห็นเพิ่มเติม) · เตือน (ไม่บล็อก) ถ้าไม่สอดคล้องผลวินิจฉัยอุทธรณ์ · **ต้องเปิดสวิตช์** «จำลองผลจากกิจกรรมที่ 7 (bypass)» (ปิด = ไม่มีปุ่ม เหลือไอคอนตา) · ป๊อปอัป bypass `openAct7DecisionPopup` (`assets/ecmis-act7-bypass.js`) · ผลบันทึกใน `act7History` · ภาพ `video/output/act7-screens/` | appeal-12 |
 
 ## Appeal Flow 2 — แจ้งผลมติผู้อุทธรณ์ (LAW0080–0083)
 
@@ -93,7 +94,7 @@ flowchart LR
 | ประเภท | statusCode |
 | --- | --- |
 | 🏁 Terminal | `L2_APPEAL_CASE_CLOSED_NOTIFIED` |
-| ⬛ รอภายนอก (ไม่มีหน้า — ใช้ console snippet) | `L2_CASE_CLOSED_DENY_ASSIGNED` → H3 → `L2_PENDING_APPEAL_INTAKE` / `L2_PENDING_APPEAL_INTAKE_DISTRICT` · `L2_APPEAL_SUBMITTED_TO_BOARD` → H2 → `L2_PENDING_APPEAL_NOTICE_DRAFT` |
+| ⬛ รอภายนอก (ไม่มีหน้า — ใช้ console snippet) | `L2_CASE_CLOSED_DENY_ASSIGNED` → H3 → `L2_PENDING_APPEAL_INTAKE` / `L2_PENDING_APPEAL_INTAKE_DISTRICT` · `L2_APPEAL_SUBMITTED_TO_BOARD` → H2 → `L2_PENDING_APPEAL_NOTICE_DRAFT` (H2 แทนด้วยป๊อปอัป bypass B4 ที่คิวงานแล้ว) |
 
 ## เลขหน้าที่หายไป (ตัด / รวม / ไม่ได้สร้าง)
 
@@ -102,7 +103,7 @@ flowchart LR
 | appeal-05 (LAW0075) | รวมเข้า appeal-07 | commit `97a07de` + STEPS comment |
 | appeal-08 | ตัด (ไม่มี LAW) | commit `97a07de` |
 | appeal-10 (LAW0079) | รวมเข้า appeal-09 | commit `97a07de` |
-| appeal-11 (LAW0080) | แทนด้วย snippet H2 | commit `97a07de` |
+| appeal-11 (LAW0080) | แทนด้วย snippet H2 → ป๊อปอัป bypass B4 (คิวงาน) | commit `97a07de` |
 
 **รหัส LAW ใน drawio ที่ไม่มีหน้าของตัวเอง:** LAW0069 (H3), LAW0080 (H2), LAW0083 (รวมใน appeal-13)
 
@@ -110,3 +111,9 @@ flowchart LR
 
 1. **เอกสารเก่า:** `10-2-full-test-flow.md` ยังบอก appeal-01 → 04 ตรง (ปัจจุบัน appeal-01 → 02 → 03 → 04 และมีช่องทางเขต 01b) · `10-2-flow4-appeal-plan.md` ยังใช้ `L2_PENDING_APPEAL_BOARD_DISPATCH`
 2. **appeal-06** บันทึกคำวินิจฉัย (`l2AppealRulingType`) แต่ไม่แยกสถานะตามผลวินิจฉัย — ทุกผลไป appeal-07 เหมือนกัน
+
+### หมายเหตุ P12 — ป๊อปอัปผลจากกิจกรรมที่ 7 ทันทีหลังขั้นตอนขาออก (2026-10-02)
+
+**จุดเชื่อม B4 (ขาออก):** `10-2-appeal-09-case-bureau-director-board-propose.html` หลังลงนามและยื่นเรื่อง (สถานะ `L2_APPEAL_SUBMITTED_TO_BOARD`) · สวิตช์เปิด → ป๊อปอัป B4 ทันที: [บันทึกผลทันที] → `L2_PENDING_APPEAL_NOTICE_DRAFT` / `case_tracking_secretary` · [ภายหลัง] → ค้าง `L2_APPEAL_SUBMITTED_TO_BOARD` (ป้ายรอ + ปุ่ม «ดำเนินการ» ที่ inbox ธุรการเหมือนเดิม) · สวิตช์ปิด = ไม่มีป๊อปอัป
+
+รายละเอียด/กรณีทดสอบ: `activity10/docs/test-flow.md` §8.9 · ภาพ `video/output/act7-outbound/`

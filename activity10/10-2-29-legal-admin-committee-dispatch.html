@@ -221,9 +221,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       const STEP_CODE = "L2-COMMITTEE-DISPATCH";
@@ -304,15 +305,19 @@
             l2CommitteeDispatchNotes: notes,
           });
 
-          Swal.fire({
-            icon: "success",
-            title: "ออกเลขส่งเรียบร้อย",
-            html:
-              '<div class="emd-summary"><p><strong>เลขที่หนังสือ:</strong> ' + docNo + "</p>" +
-              "<p>คำร้องนี้อยู่ระหว่างรอมติบอร์ดจากกิจกรรมที่ 7</p></div>",
-            confirmButtonColor: "#1e3a8a",
-            confirmButtonText: "กลับหน้าคิวงาน",
-          }).then(ECMIS102.goInbox);
+          const finish = () =>
+            Swal.fire({
+              icon: "success",
+              title: "ออกเลขส่งเรียบร้อย",
+              html:
+                '<div class="emd-summary"><p><strong>เลขที่หนังสือ:</strong> ' + docNo + "</p>" +
+                "<p>คำร้องนี้อยู่ระหว่างรอมติบอร์ดจากกิจกรรมที่ 7</p></div>",
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "กลับหน้าคิวงาน",
+            }).then(ECMIS102.goInbox);
+          /* P12 (B2): สวิตช์ ON → ป๊อปอัปจำลองผลมติบอร์ดรอบ 2 ทันทีหลังส่ง
+             [บันทึกผลทันที] → L2_PENDING_DIRLEGAL_BOARD_ACK / [ภายหลัง] → ค้างรอ แล้วแสดงข้อความเดิม */
+          if (!promptAct7AfterOutbound(currentCase.id, "B2", finish)) finish();
         });
       }
 

@@ -490,9 +490,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       const STEP_CODE = "LAW0095";
@@ -604,9 +605,13 @@
             l3InternalDocDate: docDate,
             l3DispatchNotes: notes,
           });
-          doneAndBack(
-            "ส่งมติเสนอบอร์ดเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด (กิจกรรมที่ 7)",
-          );
+          const finish = () =>
+            doneAndBack(
+              "ส่งมติเสนอบอร์ดเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด (กิจกรรมที่ 7)",
+            );
+          /* P12 (B3): สวิตช์ ON → ป๊อปอัปจำลองมติมอบอำนาจหลังส่ง; [บันทึกผลทันที] → 10-3-10 ผ่านไปแล้ว
+             (ข้ามลายเซ็นธุรการ) / [ภายหลัง] → ค้าง L3_READY_FOR_BOARD */
+          if (!promptAct7AfterOutbound(currentCase.id, "B3", finish)) finish();
         });
       }
 

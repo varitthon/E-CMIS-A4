@@ -450,7 +450,32 @@
             </div>
           </div>
 
-          <div class="form-card" style="border: 2px solid #1e3a8a">
+          <!-- B5 (P10): หลังส่งมติเสนอบอร์ดแล้ว (L9_PROPOSED_TO_BOARD) หน้านี้รอผลกิจกรรมที่ 7 —
+               สวิตช์ bypass เปิด + ธุรการกองกฎหมาย → ปุ่มบันทึกผลพิจารณาแทนกิจกรรมที่ 7 -->
+          <div class="form-card d-none" id="act7Card" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
+                >ผลพิจารณาจากกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.)</span
+              >
+              <span class="badge" style="background: #e2e8f0; color: #475569"
+                >บันทึกแทนกิจกรรมที่ 7</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="read-box" id="act7WaitNote">
+                ส่งมติเสนอบอร์ดแล้ว — ระหว่างรอกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.) พิจารณา
+              </div>
+              <button type="button" class="btn btn-primary d-none" id="btnAct7Save" onclick="openAct7Popup()" style="margin-top: 12px">
+                <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาจากกิจกรรมที่ 7
+              </button>
+            </div>
+          </div>
+
+          <div class="form-card" id="sendCard" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
@@ -516,9 +541,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       /* LAW0152 — ธุรการกองกฎหมาย ส่งมติเสนอบอร์ด (Part 9) — เป็น terminal
@@ -551,11 +577,13 @@
         const prev = Activity103.APPEAL_BOARD_STEPS[idx - 1];
         const found = Activity103.getCase(id, prev ? prev.statusCode : null);
         /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
-           คำพิพากษาที่อยู่สถานะ L9_PENDING_DOC_SEND เท่านั้น */
+           คำพิพากษาที่อยู่สถานะ L9_PENDING_DOC_SEND (รอส่ง) หรือ L9_PROPOSED_TO_BOARD
+           (ส่งแล้ว รอกิจกรรมที่ 7 — B5) เท่านั้น */
         currentCase =
           found &&
           Activity103.isVerdictCase(found) &&
-          found.statusCode === "L9_PENDING_DOC_SEND"
+          (found.statusCode === "L9_PENDING_DOC_SEND" ||
+            found.statusCode === "L9_PROPOSED_TO_BOARD")
             ? found
             : null;
 
@@ -565,6 +593,34 @@
           return;
         }
         populate();
+        applyAct7State();
+      }
+
+      /* B5 (P10) — รอกิจกรรมที่ 7: ซ่อนฟอร์มส่ง แสดงการ์ดรอผล + ปุ่มบันทึกผล (สวิตช์ ON + ธุรการกองกฎหมาย) */
+      function applyAct7State() {
+        const waiting = currentCase && currentCase.statusCode === "L9_PROPOSED_TO_BOARD";
+        document.getElementById("sendCard").classList.toggle("d-none", !!waiting);
+        document.getElementById("act7Card").classList.toggle("d-none", !waiting);
+        if (!waiting) return;
+        const role = sessionStorage.getItem("ecmis_role") || "admin_legal";
+        const canAct = ECMIS_ACT7_HELPERS.act7CanAct("B5", role, ECMIS_ACT7.isOn());
+        document.getElementById("btnAct7Save").classList.toggle("d-none", !canAct);
+      }
+      document.addEventListener("ecmis-act7-change", applyAct7State);
+
+      function openAct7Popup() {
+        if (!currentCase) return;
+        openAct7DecisionPopup(currentCase.id, "B5", {
+          onSaved: () => {
+            Swal.fire({
+              icon: "success",
+              title: "บันทึกผลพิจารณาแล้ว",
+              text: "บันทึกมติคณะกรรมการ ป.ป.ท. แทนกิจกรรมที่ 7 เรียบร้อย — ส่งต่อธุรการรับหนังสือแจ้งมติ",
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(ECMIS103.goInbox);
+          },
+        });
       }
 
       function todayISO() {
@@ -622,7 +678,10 @@
             l9SentDate: docDate,
             l9SendNotes: notes,
           });
-          doneAndBack("ส่งมติอุทธรณ์เสนอบอร์ดเรียบร้อยแล้ว");
+          const finish = () => doneAndBack("ส่งมติอุทธรณ์เสนอบอร์ดเรียบร้อยแล้ว");
+          /* P12 (B5): สวิตช์ ON → ป๊อปอัปจำลองมติบอร์ด (อุทธรณ์/ไม่อุทธรณ์) หลังส่ง
+             [บันทึกผลทันที] → L9_BOARD_APPROVED_* / [ภายหลัง] → ค้าง L9_PROPOSED_TO_BOARD */
+          if (!promptAct7AfterOutbound(currentCase.id, "B5", finish)) finish();
         });
       }
 

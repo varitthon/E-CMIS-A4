@@ -190,39 +190,22 @@
               <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-paper-plane me-1"></i>ธุรการกองกฎหมาย</span>
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขที่หนังสือ/รหัสอ้างอิงมติคณะกรรมการ ป.ป.ท.</label>
-                  <input type="text" class="form-control font-monospace" id="in_boardApprovalRefRound2" placeholder="เช่น ปป 0001/ว.145" />
-                </div>
-                <div class="form-group">
-                  <label>วันที่ได้รับแจ้งมติ</label>
-                  <input type="date" class="form-control font-monospace" id="in_boardApprovalDateRound2" />
-                </div>
+              <!-- B2 (P10): ผลพิจารณาจากกิจกรรมที่ 7 บันทึกผ่านป๊อปอัปเดียวกันทุกจุดเชื่อม แทนฟอร์มเดิม
+                   ป๊อปอัปเขียน l2BoardApprovalRef/DateRound2, l2BoardResolutionRound2Text/Type, l2BoardRound2Files,
+                   l2ReceiveNotesRound2 แล้ว Activity102.advance → ผอ.กองกฎหมายรับทราบ -->
+              <div style="margin-bottom: 10px">
+                <span class="badge" style="background: #e2e8f0; color: #475569">บันทึกแทนกิจกรรมที่ 7</span>
               </div>
-              <div class="form-group">
-                <label>ประเภทมติคณะกรรมการ ป.ป.ท. <span style="color: #dc2626">*</span></label>
-                <select id="in_boardResolutionRound2Type" class="form-control"></select>
+              <div id="act7Summary" class="read-box" style="margin-bottom: 12px">
+                ยังไม่ได้บันทึกผลพิจารณาจากกิจกรรมที่ 7 — มติที่คณะอนุกรรมการฯ ลงไว้:
+                <strong id="act7PriorType">-</strong>
               </div>
-              <div class="form-group">
-                <label>มติคณะกรรมการ ป.ป.ท. (รายละเอียด)</label>
-                <textarea id="in_boardResolutionRound2Text" class="form-control" rows="3" placeholder="ระบุมติของคณะกรรมการ ป.ป.ท. ตามที่ได้รับแจ้งกลับมาจากกิจกรรมที่ 7..."></textarea>
-              </div>
-              <div class="form-group">
-                <label>เอกสารมติ/หนังสือแจ้งมติ <span class="l2-optional">(แนบได้หลายไฟล์)</span></label>
-                <input type="file" id="in_boardRound2Files" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="ECMIS102.renderFileNames('in_boardRound2Files', 'boardRound2FilesList')" />
-                <div id="boardRound2FilesList" style="margin-top: 8px"></div>
-              </div>
-              <div class="form-group">
-                <label>หมายเหตุ</label>
-                <textarea id="in_receiveNotesRound2" class="form-control" rows="2" placeholder="ระบุหมายเหตุ (ถ้ามี)"></textarea>
-              </div>
+              <button type="button" class="btn btn-primary" id="btnAct7Save" onclick="openAct7Popup()">
+                <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาจากกิจกรรมที่ 7
+              </button>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button type="button" class="btn btn-primary" onclick="submitReceive()">
-                <i class="fa-solid fa-forward me-1"></i>บันทึก และส่งเสนอฝ่ายเลขานุการฯ
-              </button>
             </div>
           </div>
         </div>
@@ -231,9 +214,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-shell.js?v=20261002_3"></script>
+    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
 
     <script>
       const STEP_CODE = "L2-RECEIVE-BOARD-ROUND2";
@@ -243,8 +227,6 @@
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS102.initUserProfile();
         ECMIS102.renderSidebarMenu("sidebarMenu", STEP.page);
-        setDefaultDate();
-        setFieldDefaults();
         loadCase();
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
@@ -268,30 +250,9 @@
         populate();
       }
 
-      function todayISO() {
-        return new Date().toISOString().split("T")[0];
-      }
-
-      function setDefaultDate() {
-        const el = document.getElementById("in_boardApprovalDateRound2");
-        if (el) el.value = todayISO();
-      }
-
-      function setFieldDefaults() {
-        ["in_boardApprovalRefRound2", "in_boardResolutionRound2Text", "in_receiveNotesRound2"].forEach(
-          (id) => {
-            const el = document.getElementById(id);
-            if (el) el.value = "-";
-          },
-        );
-      }
-
       function populate() {
-        document.getElementById("in_boardResolutionRound2Type").innerHTML =
-          '<option value="">เลือกประเภทมติ</option>' +
-          Activity102.RESOLUTION_TYPES.map(
-            (r) => '<option value="' + r.value + '">' + r.label + "</option>",
-          ).join("");
+        const prior = Activity102.RESOLUTION_TYPES.find((r) => r.value === currentCase.l2ResolutionType);
+        document.getElementById("act7PriorType").textContent = prior ? prior.label : "-";
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         renderMemoDoc();
         document.getElementById("committeeSheet").innerHTML =
@@ -311,54 +272,18 @@
           ECMIS102.formatThaiDate(c.l2CommitteeDispatchDate) + "</span></div>";
       }
 
-      function submitReceive() {
-        const ref = document.getElementById("in_boardApprovalRefRound2").value.trim();
-        const date = document.getElementById("in_boardApprovalDateRound2").value;
-        const decision = Activity102.buildDecisionPatch({
-          type: document.getElementById("in_boardResolutionRound2Type").value,
-          text: document.getElementById("in_boardResolutionRound2Text").value,
-        });
-        if (!decision) {
-          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาเลือกประเภทมติของคณะกรรมการ ป.ป.ท.", confirmButtonColor: "#1e3a8a" });
-          return;
-        }
-        const resolutionText = decision.text || decision.typeName;
-        const notes = document.getElementById("in_receiveNotesRound2").value.trim();
-
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันการบันทึกรับมติ?",
-          html:
-            '<div class="emd-summary">' +
-            "<p><strong>อ้างอิงมติ:</strong> " + ref + "</p>" +
-            "<p><strong>ขั้นตอนต่อไป:</strong> ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.</p></div>",
-          showCancelButton: true,
-          confirmButtonText: "ยืนยัน",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-
-          Activity102.advance(currentCase.id, STEP_CODE, {
-            l2BoardApprovalRefRound2: ref,
-            l2BoardApprovalDateRound2: date,
-            l2BoardResolutionRound2Text: resolutionText,
-            l2BoardResolutionRound2Type: decision.type,
-            l2BoardResolutionRound2TypeName: decision.typeName,
-            l2BoardRound2Files: ECMIS102.fileNamesOf("in_boardRound2Files"),
-            l2ReceiveNotesRound2: notes,
-            assignedRole: "dir_legal",
-            officer: ECMIS102.signerLabel("dir_legal"),
-          });
-
-          Swal.fire({
-            icon: "success",
-            title: "บันทึกรับมติเรียบร้อย",
-            text: "ส่งเสนอ ผอ.กองกฎหมาย รับทราบต่อแล้ว",
-            confirmButtonColor: "#1e3a8a",
-            confirmButtonText: "กลับหน้าคิวงาน",
-          }).then(ECMIS102.goInbox);
+      function openAct7Popup() {
+        if (!currentCase) return;
+        openAct7DecisionPopup(currentCase.id, "B2", {
+          onSaved: () => {
+            Swal.fire({
+              icon: "success",
+              title: "บันทึกรับมติเรียบร้อย",
+              text: "ส่งเสนอ ผอ.กองกฎหมาย รับทราบต่อแล้ว",
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "กลับหน้าคิวงาน",
+            }).then(ECMIS102.goInbox);
+          },
         });
       }
 
