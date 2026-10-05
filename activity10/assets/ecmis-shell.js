@@ -14,6 +14,16 @@
 
   let fontSizeLevel = 0;
 
+  /* โหมดสาธิต: สวิตช์ "เติมข้อมูลตัวอย่าง (สำนวน 0005/2569)" — โหลดจากโฟลเดอร์เดียวกับไฟล์นี้
+     ทุกหน้าที่ใช้ shell ได้ทันทีโดยไม่ต้องแก้ <script> ในแต่ละหน้า */
+  (function loadDemoCase() {
+    const self = document.currentScript && document.currentScript.src;
+    if (!self || global.ECMIS_DEMO) return;
+    const s = document.createElement('script');
+    s.src = self.replace(/ecmis-shell\.js[^/]*$/, 'ecmis-demo-case.js?v=20261005_4');
+    document.head.appendChild(s);
+  })();
+
   const ROLE_DISPLAY = {
     'admin_legal': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
     'Kanda.R': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
@@ -1003,6 +1013,125 @@
   }
   document.addEventListener('DOMContentLoaded', renderAct7Switch);
   global.renderAct7Switch = renderAct7Switch;
+
+  /* ==========================================================================
+     สลับบทบาทจากเมนูโปรไฟล์ (คลิกชื่อผู้ใช้ ไม่ต้องออกจากระบบ) — ชุดบทบาทเดียวกับ ROLE_GROUPS ใน login.html
+     (แก้กลุ่มบทบาทที่นั่นแล้วต้องแก้ที่นี่คู่กัน) เปลี่ยนแล้วไปหน้ารายการงานของบทบาทใหม่ */
+  const SWITCHER_GROUPS = [
+    { label: 'กิจกรรมที่ 10.1', ids: ['case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
+    { label: '10.2 — คำขอเปิดเผยข้อมูลข่าวสาร', ids: ['sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen'] },
+    { label: '10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'district_admin', 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
+    { label: '10.3 — คดีศาลปกครอง', ids: ['case_group_director', 'case_legal_officer', 'registry', 'chairman'] }
+  ];
+  const ROLE_LEGACY_IDS = {
+    'Kanda.R': 'admin_legal', 'Napas.S': 'dir_legal', 'Arnon.C': 'group_director',
+    'Nattapol.B': 'legal_officer', 'Surapong.W': 'deputy_sg', 'Apichat.S': 'secgen'
+  };
+
+  function switchRole(roleId) {
+    if (!roleId || roleId === getCurrentRole()) return;
+    sessionStorage.setItem('ecmis_role', roleId);
+    window.location.href = '01-work-inbox.html';
+  }
+
+  /* สไตล์รายการบทบาท — ฉีดจาก JS เพื่อไม่ต้องแก้ <link> css ในทุกหน้า; ใช้ตัวแปรสีเดิมจึงรองรับโหมดมืด */
+  const ROLE_SWITCH_CSS = ''
+    + '#profileDropdown.profile-dropdown-menu{width:340px}'
+    + '.role-switch-title{width:100%;border:1px solid var(--border-color);background:var(--bg-body);border-radius:8px;padding:7px 10px;margin-bottom:6px;font:inherit;font-size:.8em;font-weight:700;color:var(--text-title);display:flex;align-items:center;gap:6px;cursor:pointer;text-align:left}'
+    + '.role-switch-title:hover,.role-switch-title:focus-visible{border-color:#2563eb;outline:none}'
+    + '.role-switch-title .role-switch-chev{margin-left:auto;color:#64748b;transition:transform .15s}'
+    + '#roleSwitchBox.is-collapsed .role-switch-list{display:none}'
+    + '#roleSwitchBox.is-collapsed .role-switch-chev{transform:rotate(-90deg)}'
+    + '.role-switch-list{max-height:min(46vh,360px);overflow-y:auto;border:1px solid var(--border-color);border-radius:8px;padding:4px;margin-bottom:6px}'
+    + '.role-switch-group{font-size:.72em;font-weight:700;color:#1e3a8a;padding:6px 8px 2px;position:sticky;top:-4px;background:var(--bg-card)}'
+    + '.role-switch-item{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:left;padding:6px 8px;border-radius:6px;cursor:pointer;color:inherit;font:inherit}'
+    + '.role-switch-item:hover,.role-switch-item:focus-visible{background:var(--bg-body);outline:none}'
+    + '.role-switch-item.is-current{background:rgba(37,99,235,.10);cursor:default}'
+    + '.role-switch-av{flex:0 0 30px;height:30px;border-radius:50%;background:#e2e8f0;color:#1e3a8a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}'
+    + '.role-switch-item.is-current .role-switch-av{background:#2563eb;color:#fff}'
+    + '.role-switch-text{min-width:0;flex:1;line-height:1.3}'
+    + '.role-switch-name{display:block;font-weight:700;font-size:.86em;color:var(--text-title)}'
+    + '.role-switch-role{display:block;font-size:.76em;color:#64748b}'
+    + '.role-switch-check{color:#2563eb;font-size:.85em}';
+
+  function roleInitial(name) {
+    return String(name || '').replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim().charAt(0) || '?';
+  }
+
+  function roleItemHtml(r, current) {
+    const isCur = r.id === current;
+    return '<button type="button" class="role-switch-item' + (isCur ? ' is-current' : '') + '" data-role="' + escHtml(r.id) + '"'
+      + (isCur ? ' aria-current="true"' : '') + ' title="' + escHtml(r.org || '') + '">'
+      + '<span class="role-switch-av">' + escHtml(roleInitial(r.name)) + '</span>'
+      + '<span class="role-switch-text"><span class="role-switch-name">' + escHtml(r.name) + '</span>'
+      + '<span class="role-switch-role">' + escHtml(r.title) + '</span></span>'
+      + (isCur ? '<i class="fa-solid fa-check role-switch-check"></i>' : '')
+      + '</button>';
+  }
+
+  /* แสดง/ซ่อนรายการบทบาท — ค่าตั้งต้นซ่อน (เมนูสั้น) จำค่าล่าสุดใน localStorage คีย์ ecmis_role_list_open */
+  const ROLE_LIST_KEY = 'ecmis_role_list_open';
+  function isRoleListOpen() {
+    try { return global.localStorage.getItem(ROLE_LIST_KEY) === '1'; } catch (e) { return false; }
+  }
+  function setRoleListOpen(open) {
+    try { global.localStorage.setItem(ROLE_LIST_KEY, open ? '1' : '0'); } catch (e) { /* จำค่าไม่ได้ */ }
+    const box = document.getElementById('roleSwitchBox');
+    if (!box) return;
+    box.classList.toggle('is-collapsed', !open);
+    const btn = box.querySelector('.role-switch-title');
+    if (btn) {
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.title = open ? 'ซ่อนรายการบทบาท' : 'แสดงรายการบทบาท';
+    }
+  }
+
+  /* รายการ "สลับบทบาท" ในเมนูโปรไฟล์ (คลิกชื่อผู้ใช้) — ชื่อบรรทัดแรก ตำแหน่งบรรทัดที่สอง จัดกลุ่มตามกิจกรรม */
+  function renderRoleSwitcher() {
+    const body = document.querySelector('#profileDropdown .profile-dropdown-body');
+    const registry = (global.ECMIS && global.ECMIS.ROLES) || [];
+    if (!body || !registry.length) return;
+    if (!document.getElementById('roleSwitchStyle')) {
+      const st = document.createElement('style');
+      st.id = 'roleSwitchStyle';
+      st.textContent = ROLE_SWITCH_CSS;
+      document.head.appendChild(st);
+    }
+    const current = ROLE_LEGACY_IDS[getCurrentRole()] || getCurrentRole();
+    const groups = SWITCHER_GROUPS.map(function (g) {
+      const items = g.ids.map(function (id) {
+        const r = registry.find(function (x) { return x.id === id; });
+        return r ? roleItemHtml(r, current) : '';
+      }).join('');
+      return items ? '<div class="role-switch-group">' + escHtml(g.label) + '</div>' + items : '';
+    }).join('');
+
+    let box = document.getElementById('roleSwitchBox');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'roleSwitchBox';
+      const card = body.querySelector('.profile-card');
+      body.insertBefore(box, card ? card.nextSibling : body.firstChild);
+      box.addEventListener('click', function (e) {
+        if (e.target.closest('.role-switch-title')) {
+          setRoleListOpen(box.classList.contains('is-collapsed'));
+          return;
+        }
+        const item = e.target.closest('.role-switch-item');
+        if (item) switchRole(item.getAttribute('data-role'));
+      });
+    }
+    const cur = resolveRoleDisplay(getCurrentRole());
+    box.innerHTML = '<button type="button" class="role-switch-title" aria-controls="roleSwitchList">'
+      + '<i class="fa-solid fa-user-gear"></i><span>สลับบทบาท <span style="font-weight:400;color:#64748b">· ' + escHtml(cur.role) + '</span></span>'
+      + '<i class="fa-solid fa-chevron-down role-switch-chev"></i></button>'
+      + '<div class="role-switch-list" id="roleSwitchList" role="list">' + groups + '</div>';
+    setRoleListOpen(isRoleListOpen());
+    const note = body.querySelector('.profile-note');
+    if (note) note.style.display = 'none';
+  }
+  document.addEventListener('DOMContentLoaded', renderRoleSwitcher);
+  global.renderRoleSwitcher = renderRoleSwitcher;
 
   global.getCurrentRole = getCurrentRole;
   /* หน้าที่ไม่เรียก updateRoleDisplay() เอง ก็ยังได้แจ้งเตือนจริง */
