@@ -284,6 +284,46 @@
           transform: scale(1);
         }
       }
+
+      /* Decision Choice Cards — เหมือนหน้า 08: 2 การ์ดซ้าย/ขวา radio อยู่หน้าข้อความ */
+      .decision-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      /* .decision-grid นำหน้า เพื่อชนะ ".form-group label" (justify-content: space-between) ของหน้า */
+      .decision-grid .decision-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-bottom: 0;
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+      .decision-card:hover {
+        border-color: #93c5fd;
+        background: rgba(37, 99, 235, 0.02);
+      }
+      .decision-card.active-approve {
+        border-color: #1e3a8a;
+        background: rgba(30, 58, 138, 0.05);
+      }
+      .decision-card.active-return {
+        border-color: #dc2626;
+        background: rgba(220, 38, 38, 0.05);
+      }
+      @media (max-width: 1024px) {
+        .decision-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
