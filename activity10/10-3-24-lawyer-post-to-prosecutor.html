@@ -665,10 +665,6 @@
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>รายการที่รับแล้ว</label>
-                  <div class="read-box read-box-textarea" id="f_originalChecklist">-</div>
-                </div>
-                <div class="form-group">
                   <label>วันที่รับเอกสารฉบับจริง</label>
                   <div class="read-box" id="f_originalSets">-</div>
                 </div>
@@ -996,11 +992,6 @@
         document.getElementById("in_postDate").max = Activity103.toISODate(new Date());
         document.getElementById("in_postAddress").value = prosecutorOffice(c).replace(/^อธิบดีอัยการ\s*/, "");
         const o = c.l3AnswerOriginals || {};
-        const origLabels = { answer: "คำให้การแก้คำฟ้อง ฉบับจริง", letter: "หนังสือนำส่ง ฉบับจริง", evidence: "พยานหลักฐานและเอกสารประกอบ", copy: "สำเนาคู่ฉบับเก็บในสำนวน" };
-        ECMIS103.setText(
-          "f_originalChecklist",
-          Object.keys(origLabels).map((k) => ((o.checklist || {})[k] ? "✔ " : "✘ ") + origLabels[k]).join("\n"),
-        );
         ECMIS103.setText("f_originalSets", o.collectedDate);
         ECMIS103.renderAttachments("f_originalScans", o.extraNames || o.scanNames);
         ECMIS103.setText("f_adminCollectedBy", o.collectedBy || ECMIS103.signerLabel("admin_legal"));

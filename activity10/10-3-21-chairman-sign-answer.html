@@ -643,23 +643,6 @@
                   เมื่อลงนามแล้วระบบจะส่งให้ธุรการกองกฎหมายรวบรวมเอกสารฉบับจริงที่ลงนามครบถ้วน
                 </div>
               </div>
-              <div class="form-group">
-                <label><span>รายการตรวจสอบก่อนลงนาม <span style="color: #dc2626">*</span></span></label>
-                <div>
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_checkedAnswer" />
-                    <label for="in_checkedAnswer">ตรวจคำให้การแก้คำฟ้องและคำขอท้ายคำให้การแล้ว</label>
-                  </div>
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_checkedEvidence" />
-                    <label for="in_checkedEvidence">ตรวจพยานหลักฐานและเอกสารประกอบคำให้การแล้ว</label>
-                  </div>
-                  <div class="l3-checkbox-row">
-                    <input type="checkbox" id="in_checkedLetter" />
-                    <label for="in_checkedLetter">รับทราบหนังสือนำส่งถึงสำนักงานคดีปกครอง (ลงนามและออกเลขแล้ว)</label>
-                  </div>
-                </div>
-              </div>
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>ลงนามในฐานะ</label>
@@ -737,9 +720,6 @@
 
       function fillSavedValues() {
         const cs = currentCase.l3AnswerChairmanSigning || {};
-        document.getElementById("in_checkedAnswer").checked = !!cs.checkedAnswer;
-        document.getElementById("in_checkedEvidence").checked = !!cs.checkedEvidence;
-        document.getElementById("in_checkedLetter").checked = !!cs.checkedLetter;
         document.getElementById("in_chairmanNotes").value = cs.notes && cs.notes !== "-" ? cs.notes : "";
       }
 
@@ -873,11 +853,6 @@
 
       function submitForm() {
         if (!currentCase) return;
-        const checkedAnswer = document.getElementById("in_checkedAnswer").checked;
-        const checkedEvidence = document.getElementById("in_checkedEvidence").checked;
-        const checkedLetter = document.getElementById("in_checkedLetter").checked;
-        if (!checkedAnswer || !checkedEvidence || !checkedLetter)
-          return warn("กรุณาตรวจสอบเอกสารให้ครบ", "กรุณาติ๊กรายการตรวจสอบก่อนลงนามให้ครบทั้ง 3 รายการ");
         const notes = document.getElementById("in_chairmanNotes").value.trim() || "-";
         const signer = ECMIS103.signerLabel("chairman");
         const forwardTo = ECMIS103.signerLabel("admin_legal");
@@ -915,9 +890,6 @@
               Activity103.sign(currentCase.id, STEP_CODE, image);
               Activity103.advance(currentCase.id, STEP_CODE, {
                 l3AnswerChairmanSigning: {
-                  checkedAnswer: checkedAnswer,
-                  checkedEvidence: checkedEvidence,
-                  checkedLetter: checkedLetter,
                   notes: notes,
                   signedBy: signer,
                   signedAt: signedAt,
