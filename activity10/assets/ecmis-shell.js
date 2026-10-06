@@ -14,13 +14,13 @@
 
   let fontSizeLevel = 0;
 
-  /* โหมดสาธิต: สวิตช์ "เติมข้อมูลตัวอย่าง (สำนวน 0005/2569)" — โหลดจากโฟลเดอร์เดียวกับไฟล์นี้
+  /* โหมดสาธิต: สวิตช์ "เติมข้อมูลตัวอย่าง (สำนวน 0001/2569)" — โหลดจากโฟลเดอร์เดียวกับไฟล์นี้
      ทุกหน้าที่ใช้ shell ได้ทันทีโดยไม่ต้องแก้ <script> ในแต่ละหน้า */
   (function loadDemoCase() {
     const self = document.currentScript && document.currentScript.src;
     if (!self || global.ECMIS_DEMO) return;
     const s = document.createElement('script');
-    s.src = self.replace(/ecmis-shell\.js[^/]*$/, 'ecmis-demo-case.js?v=20261005_4');
+    s.src = self.replace(/ecmis-shell\.js[^/]*$/, 'ecmis-demo-case.js?v=20261006_2');
     document.head.appendChild(s);
   })();
 

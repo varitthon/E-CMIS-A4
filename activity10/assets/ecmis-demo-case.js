@@ -1,4 +1,4 @@
-/* ECMIS — เติมข้อมูลตัวอย่าง "สำนวน 0005/2569" ทุกหน้า (โหมดสาธิต)
+/* ECMIS — เติมข้อมูลตัวอย่าง "สำนวน 0001/2569" ทุกหน้า (โหมดสาธิต)
 
    สวิตช์ในเมนูโปรไฟล์ (ทุกบทบาท) แบบเดียวกับ "จำลองผลจากกิจกรรมที่ 7"
    เก็บใน localStorage คีย์ ecmis_demo_case ("1" = เปิด; ไม่มีคีย์ = ปิด)
@@ -7,13 +7,15 @@
      · ช่องในหน้า, ฟอร์มที่สร้างด้วย JS และป๊อปอัป (เฝ้าด้วย MutationObserver)
      · dropdown ที่ยังไม่เลือก → ตัวเลือกจริงตัวแรก (ข้าม "-- เลือก --" / อื่นๆ)
      · ช่องแนบไฟล์ → ไฟล์ PDF จำลอง เพื่อให้ผ่านการตรวจไฟล์บังคับ
-     · หน้า 02 รับเรื่อง → ค้นหาและเลือกสำนวน 0005/2569 ให้อัตโนมัติ
+     · หน้า 02 รับเรื่อง → ค้นหาและเลือกสำนวน 0001/2569 ให้อัตโนมัติ
+     · ป๊อปอัป "ผลพิจารณาจากกิจกรรมที่ 7" → ค่าต่อจุดเชื่อม B1–B5 ตาม Excel "กจ10 เส้นทาง"
+       (มติ / ครั้งที่ / วาระ / เลขหนังสือแจ้งมติ / ความเห็นที่ประชุม) — มติของ B2 ตั้งเป็น "ไม่อนุญาต" ทับค่าที่ป๊อปอัปเติมไว้
    ปิดสวิตช์ = หยุดเติม (ค่าที่เติมไปแล้วคงอยู่)
 
    ข้อมูลที่เกี่ยวข้อง (สมมติ เพื่อสาธิตเท่านั้น):
-     10.1   สำนวน 0005/2569 ผ่านอัยการ → ความเห็นแย้ง
-     10.2   นายสมชาย ขอเปิดเผยรายงานผลการตรวจสอบข้อเท็จจริงของสำนวน แล้วอุทธรณ์
-     10.3   นายสมศักดิ์ ฟ้อง สำนักงาน ป.ป.ท. ต่อศาลปกครองกลาง ขอเพิกถอนมติในสำนวน
+     10.1   สำนวน 0001/2569 (สูบบุหรี่ในที่ทำงาน) ผ่านอัยการ → ความเห็นแย้ง
+     10.2   ตรีรุด หล่อจัง ขอเปิดเผยรายงานผลการตรวจสอบข้อเท็จจริงของสำนวน แล้วอุทธรณ์
+     10.3   ณัฐกานต์ แพนดอร่า ฟ้อง สำนักงาน ป.ป.ท. ต่อศาลปกครองกลาง ขอเพิกถอนมติในสำนวน
 
    ตัวช่วยล้วน (ไม่แตะ DOM) ส่งออกที่ ECMIS_DEMO_HELPERS เพื่อทดสอบ:
      tests/demo-case.test.mjs
@@ -24,22 +26,25 @@
   const SWITCH_KEY = "ecmis_demo_case";
   const INTAKE_PAGE = "02-board-intake.html";
 
-  /* ------------------------------------------------------------ CASE DATA */
+  /* ------------------------------------------------------------ CASE DATA
+     ตรงกับสำนวนคดีเดิม "สำนวน-0001/2569" ใน PACC_INTAKE_DATABASE (ecmis-activity10.js)
+     ข้อความตัวอย่างทั้งหมดด้านล่างสร้างจาก CASE — เปลี่ยนสำนวนสาธิตแก้ที่นี่ที่เดียว */
   const CASE = {
-    id: "สำนวน-0005/2569",
-    no: "0005/2569",
-    complainant: "นายสมชาย รักความยุติธรรม",
-    accused: "นายสมศักดิ์ หาผลประโยชน์",
-    accusedPosition: "ผู้อำนวยการสถานศึกษา",
-    subject:
-      "เรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครองโดยไม่ออกใบเสร็จ และนำเงินเข้ากองทุนส่วนตัว เพื่อแลกกับสิทธิ์ในการรับนักเรียนเข้าศึกษาต่อ",
+    id: "สำนวน-0001/2569",
+    no: "0001/2569",
+    complainant: "ตรีรุด หล่อจัง",
+    accused: "ณัฐกานต์ แพนดอร่า",
+    subject: "สูบบุหรี่ในที่ทำงาน",
+    allegation: "ทุจริตการจัดซื้อจัดจ้าง",
     section: "18/1 ก",
     prosecutorUnit: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
     crimCourt: "ศาลอาญาคดีทุจริตและประพฤติมิชอบกลาง",
     adminCourt: "ศาลปกครองกลาง",
-    email: "somchai.r@example.com",
+    email: "treerut.l@example.com",
     phone: "0 2142 3584",
   };
+  const REF = "สำนวน " + CASE.no;
+  const NO_FILE = CASE.no.replace("/", "-");
 
   const NO = {
     lawReceive: "0021/2569",
@@ -61,24 +66,26 @@
   };
 
   const TEXT = {
-    shortSubject: "กรณีเรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครอง (สำนวน 0005/2569)",
+    shortSubject: "กรณี" + CASE.subject + " (" + REF + ")",
     summary:
-      "นายสมชาย รักความยุติธรรม ร้องเรียนว่า นายสมศักดิ์ หาผลประโยชน์ เรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครองนักเรียนโดยไม่ออกใบเสร็จรับเงิน และนำเงินเข้ากองทุนส่วนตัว เพื่อแลกกับสิทธิ์ในการรับนักเรียนเข้าศึกษาต่อ (มาตรา 18/1 ก)",
+      CASE.complainant + " ร้องเรียนว่า " + CASE.accused + " " + CASE.subject
+      + " ประเด็นการกล่าวหา: " + CASE.allegation + " (มาตรา " + CASE.section + ")",
     opinion:
-      "พิจารณาแล้ว กรณีนายสมศักดิ์ หาผลประโยชน์ เรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครองโดยไม่ออกใบเสร็จ (สำนวน 0005/2569 มาตรา 18/1 ก) ข้อเท็จจริงและพยานหลักฐานรับฟังได้ เห็นควรดำเนินการตามที่เสนอ",
-    order:
-      "มอบหมายดำเนินการสำนวน 0005/2569 ตรวจสอบพยานหลักฐานให้ครบถ้วน และรายงานผลภายในกำหนด",
-    note: "สำนวน 0005/2569 — เอกสารครบถ้วน ดำเนินการตามขั้นตอนต่อไป",
-    disclosure:
-      "ขอเปิดเผยรายงานผลการตรวจสอบข้อเท็จจริง สำนวน 0005/2569 กรณีเรียกรับเงิน “แป๊ะเจี๊ยะ”",
+      "พิจารณาแล้ว กรณี" + CASE.accused + " " + CASE.subject + " ประเด็น" + CASE.allegation
+      + " (" + REF + " มาตรา " + CASE.section + ") ข้อเท็จจริงและพยานหลักฐานรับฟังได้ เห็นควรดำเนินการตามที่เสนอ",
+    order: "มอบหมายดำเนินการ" + REF + " ตรวจสอบพยานหลักฐานให้ครบถ้วน และรายงานผลภายในกำหนด",
+    note: REF + " — เอกสารครบถ้วน ดำเนินการตามขั้นตอนต่อไป",
+    disclosure: "ขอเปิดเผยรายงานผลการตรวจสอบข้อเท็จจริง " + REF + " กรณี" + CASE.subject,
     requestedInfo:
-      "สำเนารายงานผลการตรวจสอบข้อเท็จจริงและมติที่เกี่ยวข้องกับสำนวน 0005/2569 (เฉพาะส่วนที่ไม่กระทบสิทธิบุคคลอื่น)",
-    suit:
-      "นายสมศักดิ์ หาผลประโยชน์ ฟ้องสำนักงาน ป.ป.ท. ขอให้เพิกถอนมติคณะกรรมการ ป.ป.ท. ในสำนวน 0005/2569",
-    verdict:
-      "ศาลพิพากษายกฟ้อง เนื่องจากมติคณะกรรมการ ป.ป.ท. ในสำนวน 0005/2569 ชอบด้วยกฎหมาย",
-    offenseBasis:
-      "เจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ เรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครอง",
+      "สำเนารายงานผลการตรวจสอบข้อเท็จจริงและมติที่เกี่ยวข้องกับ" + REF + " (เฉพาะส่วนที่ไม่กระทบสิทธิบุคคลอื่น)",
+    suit: CASE.accused + " ฟ้องสำนักงาน ป.ป.ท. ขอให้เพิกถอนมติคณะกรรมการ ป.ป.ท. ใน" + REF,
+    /* 10.3 ศาลปกครองชั้นต้น ป.ป.ท. แพ้ → เสนอบอร์ด B5 · ศาลปกครองสูงสุดพิพากษากลับ (ตาม Excel) */
+    verdictLost:
+      "ศาลปกครองกลางพิพากษาให้เพิกถอนมติคณะกรรมการ ป.ป.ท. ใน" + REF + " (ป.ป.ท. แพ้คดี)",
+    supremeVerdict:
+      "ศาลปกครองสูงสุดพิพากษากลับคำพิพากษาศาลปกครองชั้นต้น ให้ยกฟ้อง เนื่องจากมติคณะกรรมการ ป.ป.ท. ใน" + REF + " ชอบด้วยกฎหมาย",
+    verdict: "ศาลพิพากษายกฟ้อง เนื่องจากมติคณะกรรมการ ป.ป.ท. ใน" + REF + " ชอบด้วยกฎหมาย",
+    offenseBasis: "เจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ กรณี" + CASE.allegation,
     address:
       "สำนักงานคดีปกครองกลาง ถนนแจ้งวัฒนะ แขวงทุ่งสองห้อง เขตหลักสี่ กรุงเทพฯ 10210",
     venue: "ห้องประชุม 1 ชั้น 28 สำนักงาน ป.ป.ท.",
@@ -147,14 +154,14 @@
     in_appellantName: CASE.complainant,
     in_noticeRecipient: CASE.complainant,
     in_addressedTo: "เลขาธิการคณะกรรมการ ป.ป.ท.",
-    in_dataOwner: "สำนักบริหารคดี (เจ้าของสำนวน 0005/2569)",
+    in_dataOwner: "สำนักบริหารคดี (เจ้าของ" + REF + ")",
     in_background: TEXT.summary,
     in_legalBasis:
       "พระราชบัญญัติข้อมูลข่าวสารของราชการ พ.ศ. 2540 มาตรา 15 และระเบียบที่เกี่ยวข้อง",
     in_considerations: TEXT.opinion,
     in_resolutionFacts: TEXT.summary,
     in_resolutionDetail:
-      "ที่ประชุมมีมติให้เปิดเผยรายงานผลการตรวจสอบข้อเท็จจริง สำนวน 0005/2569 บางส่วน โดยปกปิดข้อมูลส่วนบุคคลของพยาน",
+      "ที่ประชุมมีมติให้เปิดเผยรายงานผลการตรวจสอบข้อเท็จจริง " + REF + " บางส่วน โดยปกปิดข้อมูลส่วนบุคคลของพยาน",
     in_resolutionOther: "เปิดเผยบางส่วน",
     in_committeeOpinion: TEXT.opinion,
     in_reason:
@@ -191,7 +198,7 @@
     in_handRecipient: "นางสาวพรทิพย์ ใจดี (เจ้าหน้าที่สารบรรณ สำนักงานอัยการสูงสุด)",
     in_emsRecipientLabel: "สำนักงานอัยการสูงสุด",
     in_prosecutorAckNo: "อส 0027(ชม)/1234",
-    in_verdictSummary: TEXT.verdict,
+    in_verdictSummary: TEXT.verdictLost,
     in_verdictIssues: TEXT.suit,
     in_closeAction: "ไม่มีการชดใช้ค่าเสียหาย",
     /* 10.1 ความเห็นแย้ง → ผลคดี */
@@ -202,12 +209,12 @@
     in_oagReceiveDocNo: "อส 0001/4588",
     in_oagVerdictNo: "อส 0001/6789",
     in_oagVerdictSummary:
-      "อัยการสูงสุดชี้ขาดให้ฟ้องนายสมศักดิ์ หาผลประโยชน์ ตามความเห็นแย้งของสำนักงาน ป.ป.ท.",
+      "อัยการสูงสุดชี้ขาดให้ฟ้อง" + CASE.accused + " ตามความเห็นแย้งของสำนักงาน ป.ป.ท.",
     in_notifySubject: "แจ้งผลคดี " + TEXT.shortSubject,
     in_notifyTarget: "กองบริหารคดี สำนักงาน ป.ป.ท.",
     in_prosecutorResultNo: "อส 0025/1290",
     in_prosecutorResultSummary:
-      "ศาลพิพากษาลงโทษนายสมศักดิ์ หาผลประโยชน์ ฐานเรียกรับเงิน “แป๊ะเจี๊ยะ” จากผู้ปกครอง",
+      "ศาลพิพากษาลงโทษ" + CASE.accused + " ฐาน" + CASE.allegation,
     in_directorAction: "รับทราบผลมติ และมอบหมายดำเนินการต่อ",
     in_groupDirectorAction: "รับทราบผลมติ และมอบหมายนิติกรดำเนินการต่อ",
     in_opinionOtherSpecify: "ขอเอกสารพยานหลักฐานเพิ่มเติม",
@@ -219,7 +226,7 @@
     /* ป๊อปอัปผลศาลสูงสุด (10.3) / วิเคราะห์คำพิพากษา (10.1) */
     l3sr_black: "อ. 12/2570",
     l3sr_red: "อ. 45/2570",
-    l3sr_summary: TEXT.verdict,
+    l3sr_summary: TEXT.supremeVerdict,
     ja_issue: TEXT.suit,
     jd_summary: TEXT.verdict,
   };
@@ -261,6 +268,63 @@
     return !!id && (EXACT[id] !== undefined || EXACT[baseId(id)] !== undefined);
   }
 
+  /* ------------------------------------------------------------ กิจกรรมที่ 7 (ป๊อปอัป ecmis-act7-bypass.js)
+     ค่าต่อจุดเชื่อม ตรงกับ Excel "กจ10 เส้นทาง" (ข้อมูลตอบกลับจากกิจกรรม 7) · คีย์ = id ช่องหลัง "act7_"
+     detail = ความเห็นที่ประชุม (ข้อความอิสระ) · วันที่ประชุม/วันที่หนังสือ ใช้วันที่ทดสอบ (ไม่อยู่ในตารางนี้)
+     decision / lawyer เป็น select — เติมทับค่าที่ป๊อปอัปเลือกไว้ให้ (fillSelect) */
+  const ACT7 = {
+    B1: {
+      decision: "AGREE", meetingNo: "6/2570", agendaNo: "3.2", noticeNo: "ปปท 0004/0110",
+      detail: "คณะกรรมการ ป.ป.ท. พิจารณาแล้ว เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ "
+        + "และส่งเรื่องให้อัยการสูงสุดพิจารณาชี้ขาดตามกฎหมาย",
+      file: "มติ_ครั้งที่6-2570_วาระ3.2.pdf",
+    },
+    B2: {
+      decision: "DENY", noticeNo: "ปปท 0004/0104",
+      detail: "คณะกรรมการ ป.ป.ท. พิจารณาแล้ว ไม่อนุญาตให้เปิดเผยรายงานผลการตรวจสอบข้อเท็จจริงใน" + REF
+        + " เนื่องจากคดียังอยู่ระหว่างไต่สวน การเปิดเผยอาจกระทบต่อการไต่สวนและพยาน",
+      file: "มติ_ครั้งที่44-2569_วาระ4.2.pdf",
+    },
+    B3: {
+      decision: "AUTHORIZE", meetingNo: "10/2570", agendaNo: "4.12", noticeNo: "ปปท 0004/0112",
+      detail: "คณะกรรมการ ป.ป.ท. มีมติมอบอำนาจให้กองกฎหมาย สำนักงาน ป.ป.ท. ดำเนินคดีปกครองแทนคณะกรรมการ ป.ป.ท. "
+        + "ในคดีหมายเลขดำที่ " + NO.adminBlack + " ที่" + CASE.accused + " เป็นผู้ฟ้องคดี",
+      file: "มติ_ครั้งที่10-2570_วาระ4.12.pdf",
+      lawyer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
+    },
+    B4: {
+      decision: "DENY", noticeNo: "ปปท 0004/0111",
+      detail: "คณะกรรมการ ป.ป.ท. พิจารณาคำอุทธรณ์แล้ว เห็นพ้องกับคำวินิจฉัยของคณะอนุกรรมการวินิจฉัยอุทธรณ์ "
+        + "ยืนตามคำสั่งเดิม ไม่เปิดเผยข้อมูล เนื่องจากคดียังอยู่ระหว่างไต่สวน",
+    },
+    B5: {
+      decision: "APPEAL", meetingNo: "ม.20-4.5/2570",
+      detail: "คณะกรรมการ ป.ป.ท. พิจารณาแล้ว ไม่เห็นพ้องกับความเห็นของนิติกร ให้ยื่นอุทธรณ์คำพิพากษาศาลปกครองกลาง "
+        + "คดีหมายเลขแดงที่ " + NO.adminRed + " ต่อศาลปกครองสูงสุด",
+    },
+  };
+  /* ป๊อปอัปแสดงชื่อมติของจุดเชื่อม (link.title) — B5 ต้องเช็กก่อน B4 เพราะมีคำว่า "อุทธรณ์" เหมือนกัน */
+  const ACT7_TITLES = [
+    ["B5", "(อุทธรณ์/ไม่อุทธรณ์)"],
+    ["B4", "ต่อคำอุทธรณ์"],
+    ["B3", "(มอบอำนาจ)"],
+    ["B2", "(รอบ 2)"],
+    ["B1", "(ความเห็นแย้ง)"],
+  ];
+  function act7LinkFromText(text) {
+    const s = String(text || "");
+    if (s.indexOf("มติคณะกรรมการ ป.ป.ท.") < 0) return null;
+    const hit = ACT7_TITLES.find(function (t) { return s.indexOf(t[1]) >= 0; });
+    return hit ? hit[0] : null;
+  }
+  /* ค่าของช่อง act7_* ในป๊อปอัปที่ระบุจุดได้ — undefined = ไม่มีค่าเฉพาะ (ใช้กฎเดิม) */
+  function act7ValueFor(field) {
+    const key = field.id || "";
+    if (!field.act7 || key.indexOf("act7_") !== 0) return undefined;
+    const v = ACT7[field.act7];
+    return v ? v[key.slice(5)] : undefined;
+  }
+
   /* ค่า "หมายเลขคดีแดง" มีเฉพาะหน้าที่ศาลตัดสินแล้ว (10.3v / ผลคำพิพากษา) */
   function isVerdictPage(page) {
     return /10-3v-|verdict|judg/i.test(page || "");
@@ -291,6 +355,8 @@
     if (type === "email") return CASE.email;
     if (type === "tel") return CASE.phone;
 
+    const act7 = act7ValueFor(field);
+    if (act7 !== undefined) return act7;
     if (/(redno|redcaseno)$/i.test(key)) {
       if (/crim/i.test(key)) return NO.crimRed;
       return isVerdictPage(field.page) ? NO.adminRed : null;
@@ -333,11 +399,13 @@
     [/draft/i, "ร่างเอกสาร"],
   ];
   function fileNameFor(field) {
+    const act7File = act7ValueFor(Object.assign({}, field, { id: "act7_file" }));
+    if (act7File) return act7File;
     const key = (field.id || field.name || "") + " " + (field.label || "");
     for (let i = 0; i < FILE_RULES.length; i++) {
-      if (FILE_RULES[i][0].test(key)) return FILE_RULES[i][1] + "_สำนวน_0005-2569.pdf";
+      if (FILE_RULES[i][0].test(key)) return FILE_RULES[i][1] + "_สำนวน_" + NO_FILE + ".pdf";
     }
-    return "เอกสารประกอบ_สำนวน_0005-2569.pdf";
+    return "เอกสารประกอบ_สำนวน_" + NO_FILE + ".pdf";
   }
 
   global.ECMIS_DEMO_HELPERS = {
@@ -350,6 +418,8 @@
     valueFor: valueFor,
     pickOption: pickOption,
     fileNameFor: fileNameFor,
+    ACT7: ACT7,
+    act7LinkFromText: act7LinkFromText,
   };
 
   /* ------------------------------------------------------------ SWITCH */
@@ -397,6 +467,13 @@
     return lab ? lab.textContent.trim() : "";
   }
 
+  /* ช่อง act7_* อยู่ในป๊อปอัป SweetAlert ของกิจกรรมที่ 7 → อ่านชื่อมติในป๊อปอัปเพื่อรู้จุดเชื่อม */
+  function act7LinkOf(el) {
+    if (!el.id || el.id.indexOf("act7_") !== 0) return null;
+    const popup = el.closest(".swal2-popup");
+    return popup ? act7LinkFromText(popup.textContent) : null;
+  }
+
   function describe(el) {
     return {
       id: el.id || "",
@@ -405,6 +482,7 @@
       type: (el.getAttribute("type") || "").toLowerCase(),
       label: labelText(el),
       page: currentPage(),
+      act7: act7LinkOf(el),
     };
   }
 
@@ -426,7 +504,8 @@
     if (el.disabled || (el.files && el.files.length)) return;
     if (!isVisible(el) && !isVisible(el.parentElement)) return;
     const field = describe(el);
-    const key = field.id || field.name || field.label || "file";
+    /* ป๊อปอัปกิจกรรมที่ 7 ใช้ id act7_files ซ้ำทุกจุดเชื่อม → แยกคีย์ตามจุด */
+    const key = (field.id || field.name || field.label || "file") + (field.act7 ? "@" + field.act7 : "");
     if (filledFileKeys.has(key)) return;
     filledFileKeys.add(key);
     try {
@@ -438,7 +517,22 @@
     } catch (e) { /* เบราว์เซอร์ไม่รองรับ DataTransfer → ข้ามช่องนี้ */ }
   }
 
+  /* select ของป๊อปอัปกิจกรรมที่ 7 (มติ / นิติกร) — ตั้งตามค่าต่อจุดเชื่อม แม้ป๊อปอัปเลือกค่าเริ่มต้นไว้แล้ว
+     (เช่น B2 เติมมติของคณะอนุกรรมการ) แต่ไม่ทับค่าที่ผู้ใช้เปลี่ยนเอง (ตัวเลือกปัจจุบันไม่ใช่ค่าเริ่มต้น) */
+  function fillAct7Select(el) {
+    const wanted = act7ValueFor(describe(el));
+    if (wanted === undefined) return false;
+    const current = el.options[el.selectedIndex];
+    const untouched = el.value === "" || (current && current.defaultSelected);
+    const exists = Array.from(el.options).some(function (o) { return o.value === wanted; });
+    if (!untouched || !exists) return el.value !== "";
+    el.dataset.demoFilled = "1";
+    if (el.value !== wanted) setValue(el, wanted);
+    return true;
+  }
+
   function fillSelect(el) {
+    if (fillAct7Select(el)) return;
     if (el.value !== "") return;
     const value = pickOption(
       Array.from(el.options).map(function (o) {
@@ -487,7 +581,7 @@
     });
   }
 
-  /* หน้า 02: ค้นหาและเลือกสำนวน 0005/2569 ครั้งเดียวต่อการเปิดหน้า */
+  /* หน้า 02: ค้นหาและเลือกสำนวนสาธิต (CASE) ครั้งเดียวต่อการเปิดหน้า */
   let intakePrepared = false;
   function prepareIntake() {
     if (intakePrepared || currentPage() !== INTAKE_PAGE) return;
@@ -535,7 +629,7 @@
       box.style.cssText = "margin-top:10px;padding:8px 10px;border:1px dashed #94a3b8;border-radius:8px;font-size:0.85em";
       box.innerHTML = '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-weight:600">'
         + '<input type="checkbox" id="demoCaseSwitchInput" style="width:auto;margin:0" />'
-        + "<span>เติมข้อมูลตัวอย่าง (สำนวน 0005/2569)</span></label>"
+        + "<span>เติมข้อมูลตัวอย่าง (" + REF + ")</span></label>"
         + '<div style="margin-top:4px;color:#64748b;font-size:0.9em">เปิด = กรอกช่องที่ว่างในทุกหน้าด้วยข้อมูลสำนวนตัวอย่าง (ไม่ทับค่าที่กรอกแล้ว)</div>';
       const note = body.querySelector(".profile-note");
       body.insertBefore(box, note || null);

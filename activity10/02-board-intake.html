@@ -311,6 +311,54 @@
         gap: 6px;
         font-size: 0.95em;
       }
+      /* ส่วนพับได้ "ข้อมูลจากการรับเรื่องร้องเรียน" ในการ์ดรายละเอียดสำนวน */
+      .complaint-intake-box {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-card);
+        margin-top: 4px;
+      }
+      .complaint-intake-box > summary {
+        cursor: pointer;
+        padding: 10px 14px;
+        font-weight: 700;
+        color: #1e3a8a;
+        font-size: 0.92em;
+      }
+      .complaint-intake-box > summary:hover { background: var(--bg-body); }
+      .complaint-intake-hint {
+        font-weight: 400;
+        color: #64748b;
+        font-size: 0.85em;
+        margin-left: 6px;
+      }
+      #complaintIntakeBody { padding: 0 14px 12px; }
+      .complaint-intake-group {
+        font-weight: 700;
+        font-size: 0.82em;
+        color: #64748b;
+        margin: 10px 0 6px;
+        border-bottom: 1px dashed var(--border-color);
+        padding-bottom: 4px;
+      }
+      .complaint-intake-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 8px 16px;
+        margin: 0;
+      }
+      .complaint-intake-grid dt {
+        font-weight: 400;
+        font-size: 0.78em;
+        color: #64748b;
+      }
+      .complaint-intake-grid dd {
+        margin: 0;
+        font-weight: 600;
+        font-size: 0.88em;
+        color: var(--text-title);
+        word-break: break-word;
+      }
 
       .d-none {
         display: none !important;
@@ -709,6 +757,16 @@
                   />
                 </div>
               </div>
+              <!-- ข้อมูลต้นทางจากการรับเรื่องร้องเรียน (ศรร./กองบริหารคดี) — แสดงเฉพาะสำนวนที่มี complaintIntake
+                   พับไว้ก่อน กดหัวข้อเพื่อดู; อ่านอย่างเดียว เติมโดย renderComplaintIntake() -->
+              <details id="complaintIntakeBox" class="complaint-intake-box d-none">
+                <summary>
+                  <i class="fa-solid fa-inbox me-1"></i>ข้อมูลจากการรับเรื่องร้องเรียน
+                  (ศรร. / กองบริหารคดี)
+                  <span class="complaint-intake-hint">กดเพื่อแสดง/ซ่อน</span>
+                </summary>
+                <div id="complaintIntakeBody"></div>
+              </details>
             </div>
 
             <hr
@@ -2008,9 +2066,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261002_5"></script>
+    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261005_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
     <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -3237,6 +3295,9 @@
             (c.accuser && c.accuser.toLowerCase().includes(q)) ||
             (c.accused && c.accused.toLowerCase().includes(q)) ||
             (c.section && c.section.toLowerCase().includes(q)) ||
+            /* สำนวนจากการรับเรื่องร้องเรียน: ค้นด้วยเลขรับ/เลขติดตาม/PIN/เลขสารบัญได้ด้วย */
+            (Activity10.paccIntakeSearchText &&
+              Activity10.paccIntakeSearchText(c).includes(q)) ||
             c.title.toLowerCase().includes(q);
 
           const matchesBlackNo =
@@ -3390,6 +3451,8 @@
         )
           requesterEl.value = target.accuser || "";
 
+        renderComplaintIntake(target);
+
         // Hide search results panel after selecting
         const resultsContainer = document.getElementById("intakeSearchResults");
         if (resultsContainer) {
@@ -3416,6 +3479,28 @@
           timer: 1500,
           showConfirmButton: false,
         });
+      }
+
+      /* ส่วนพับได้ "ข้อมูลจากการรับเรื่องร้องเรียน" ในการ์ดรายละเอียด — ซ่อนเมื่อสำนวนไม่มี complaintIntake */
+      function renderComplaintIntake(target) {
+        const box = document.getElementById("complaintIntakeBox");
+        const body = document.getElementById("complaintIntakeBody");
+        if (!box || !body) return;
+        const groups = Activity10.complaintIntakeGroups
+          ? Activity10.complaintIntakeGroups(target)
+          : [];
+        box.classList.toggle("d-none", groups.length === 0);
+        box.open = false;
+        const esc = (v) =>
+          String(v).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+        body.innerHTML = groups
+          .map(
+            (g) =>
+              `<div class="complaint-intake-group">${esc(g.title)}</div><dl class="complaint-intake-grid">` +
+              g.rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("") +
+              `</dl>`,
+          )
+          .join("");
       }
 
       function handleIntakeSearchKeyup(e) {

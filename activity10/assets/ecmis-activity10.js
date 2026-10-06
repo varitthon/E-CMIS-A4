@@ -4309,7 +4309,93 @@
       blackNo: "-",
       redNo: "-",
     },
+    /* สำนวนคดีเดิมจากการรับเรื่องร้องเรียน (ศรร. → กองบริหารคดี) — ใช้เลือกตอนรับเรื่องหน้า 02
+       complaintIntake = ข้อมูลต้นทางทั้งชุด แสดงแบบพับได้ในการ์ดรายละเอียด (complaintIntakeGroups)
+       และค้นหาได้ด้วยเลขรับ/เลขติดตาม/PIN/เลขสารบัญ (paccIntakeSearchText) */
+    {
+      id: "สำนวน-0001/2569",
+      title: "สูบบุหรี่ในที่ทำงาน",
+      accuser: "ตรีรุด หล่อจัง",
+      accused: "ณัฐกานต์ แพนดอร่า",
+      accusedPosition: "",
+      section: "18/1 ก",
+      paccCaseNo: "0001/2569",
+      blackNo: "-",
+      redNo: "-",
+      complaintIntake: {
+        complainantPhone: "0812345678",
+        incidentDate: getDateWithOffset(0),
+        incidentPlace: "กรุงเทพ",
+        province: "กรุงเทพ",
+        requestedAction: "ตรวจสอบพฤติกรรม",
+        adminOpinion: "ควรพิจารณา",
+        caseAdmin: "สมชาย ใจดี",
+        intakeOfficer: "ดวงใจ ชอบกินผัก",
+        allegation: "ทุจริตการจัดซื้อจัดจ้าง",
+        intakeOfficerOpinion: "ควรพิจารณา",
+        centerDirector: "นายเจษฎา ร้อนเงิน",
+        centerDirectorOpinion: "ควรพิจารณา",
+        caseBureauDirector: "กรรชัย กำเนิดทอง",
+        caseBureauDirectorOpinion: "ควรพิจารณา",
+        centerSarabanNo: "0021/2569",
+        complaintReceiveNo: "0005/2569",
+        trackingNo: "690005",
+        trackingPin: "891097",
+        centerOutSarabanNo: "0004.2/0022",
+        caseBureauSarabanNo: "0004/0031",
+        emsTrackingNo: "ED123456789",
+        mainOfficer: "",
+        assistantOfficer: "",
+      },
+    },
   ];
+
+  /* การ์ด "ข้อมูลจากการรับเรื่องร้องเรียน" — กลุ่มหัวข้อ + [ป้าย, คีย์] ตามลำดับคอลัมน์ต้นทาง */
+  const COMPLAINT_INTAKE_LAYOUT = [
+    ["ผู้ร้องเรียนและเหตุการณ์", [
+      ["ชื่อผู้ร้องเรียน", "@accuser"], ["เบอร์โทร", "complainantPhone"],
+      ["ผู้ถูกร้องเรียน", "@accused"], ["เรื่องที่ร้องเรียน", "@title"],
+      ["วันเวลาที่เกิดเหตุ", "incidentDate"], ["สถานที่เกิดเหตุ", "incidentPlace"],
+      ["จังหวัด", "province"], ["ความประสงค์ให้สำนักงาน ป.ป.ท. ดำเนินการ", "requestedAction"],
+    ]],
+    ["การพิจารณาเบื้องต้น", [
+      ["ธุรการคดี", "caseAdmin"], ["ความเห็นธุรการ (ตรวจเบื้องต้น — ส่งต่อให้เจ้าหน้าที่รับเรื่อง)", "adminOpinion"],
+      ["เจ้าหน้าที่รับเรื่อง ศรร.", "intakeOfficer"], ["มาตรา", "@section"],
+      ["ประเด็นการกล่าวหา/ร้องเรียน", "allegation"], ["ความเห็นเจ้าหน้าที่รับเรื่อง", "intakeOfficerOpinion"],
+      ["ผอ.ศรร.", "centerDirector"], ["ความเห็น ผู้อำนวยการศูนย์รับเรื่องร้องเรียน", "centerDirectorOpinion"],
+      ["ผอ.กองบริหารคดี", "caseBureauDirector"], ["ความเห็น ผู้อำนวยการกองบริหารคดี", "caseBureauDirectorOpinion"],
+    ]],
+    ["เลขที่และการติดตาม", [
+      ["เลขสารบัญของ ศรร.", "centerSarabanNo"], ["เลขรับเรื่องร้องเรียน", "complaintReceiveNo"],
+      ["เลขติดตาม", "trackingNo"], ["รหัสติดตามเรื่องร้องเรียน (PIN)", "trackingPin"],
+      ["หมายเลขสำนวน", "@paccCaseNo"], ["เลขสารบัญขาออก ศรร.", "centerOutSarabanNo"],
+      ["เลขสารบัญ กองบริหารคดี", "caseBureauSarabanNo"], ["เลข EMS / เลขติดตามการส่ง", "emsTrackingNo"],
+    ]],
+    ["ผู้รับผิดชอบสำนวน", [
+      ["ผู้รับผิดชอบสำนวนหลัก", "mainOfficer"], ["ผู้รับผิดชอบสำนวนผู้ช่วย", "assistantOfficer"],
+    ]],
+  ];
+
+  /* สำนวน → [{ title, rows: [[label, value]] }] หรือ [] ถ้าไม่มีข้อมูลรับเรื่องร้องเรียน
+     "@key" = อ่านจากระดับสำนวน, วันที่แสดงเป็น พ.ศ., ค่าว่าง = "-" */
+  function complaintIntakeGroups(c) {
+    const ci = c && c.complaintIntake;
+    if (!ci) return [];
+    return COMPLAINT_INTAKE_LAYOUT.map(([title, fields]) => ({
+      title,
+      rows: fields.map(([label, key]) => {
+        let v = key.charAt(0) === "@" ? c[key.slice(1)] : ci[key];
+        if (key === "incidentDate" && v) v = formatDisplayDate(v);
+        return [label, v ? String(v) : "-"];
+      }),
+    }));
+  }
+
+  /* ข้อความสำหรับค้นหา: เลขรับ / เลขติดตาม / PIN / เลขสารบัญ / EMS / ชื่อผู้เกี่ยวข้อง */
+  function paccIntakeSearchText(c) {
+    const ci = (c && c.complaintIntake) || {};
+    return Object.keys(ci).map((k) => String(ci[k] || "")).join(" ").toLowerCase();
+  }
 
   /* Recompose a split name + position back into "Name (Position)".
      Used by list views that render the combined string; the workflow
@@ -4468,6 +4554,8 @@
     getPaccIntakeDatabase() {
       return PACC_INTAKE_DATABASE;
     },
+    complaintIntakeGroups,
+    paccIntakeSearchText,
 
     /* หน่วยงานผู้รับหนังสือ กำหนดจากผลการพิจารณาของนิติกร ไม่ใช่ให้ธุรการเลือก
        ตามมติที่ประชุม 01/09/2569: เห็นชอบแจ้งอัยการต้นทาง เห็นแย้งแจ้งทั้ง อสส. และอัยการ
