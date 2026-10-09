@@ -17,7 +17,9 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       body {
@@ -429,38 +431,6 @@
     </style>
   </head>
   <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span
-            >E-CMIS
-            <small>ระบบกฎหมายในทางคดี</small>
-          </span>
-        </a>
-        <ul class="menu" id="sidebarMenu">
-          <li>
-            <a href="01-work-inbox.html"
-              ><i class="fa-solid fa-scale-balanced"></i>
-              <span>งานกฎหมายในทางคดี</span></a
-            >
-          </li>
-          <li class="active">
-            <a href="02-board-intake.html"
-              ><i class="fa-solid fa-inbox"></i>
-              <span>บันทึกรับเรื่องเข้าระบบ</span></a
-            >
-          </li>
-        </ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          ระบบงานคดี กิจกรรมที่ 10
-        </div>
-      </div>
-    </div>
 
     <!-- Main Content Area -->
     <div class="main">
@@ -544,14 +514,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -869,7 +831,7 @@
                 >
                   <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
                   <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
-                  <option value="10.3">คดีศาลปกครอง</option>
+                  <option value="10.3">คดีปกครอง</option>
                 </select>
               </div>
               <div class="form-group" id="div_prosecutorCaseType">
@@ -1420,7 +1382,7 @@
               </div>
             </div>
 
-            <!-- ========== เฉพาะหมวด 10.3 คดีศาลปกครอง ==========
+            <!-- ========== เฉพาะหมวด 10.3 คดีปกครอง ==========
                  แสดงแทนช่องเฉพาะงานอัยการ เมื่อเลือกหมวดหมู่ = 10.3 -->
             <div id="div_courtCase" style="display: none">
               <div class="form-grid-2">
@@ -1832,7 +1794,7 @@
                       style="font-size: 0.78em; color: #64748b; margin-top: 4px"
                     >
                       เมื่อแนบหมายฉบับนี้
-                      ผอ.กองกฎหมายจะแก้ไขรายละเอียดคดีศาลปกครองได้ที่ขั้นตอนลงนามมอบหมาย
+                      ผอ.กองกฎหมายจะแก้ไขรายละเอียดคดีปกครองได้ที่ขั้นตอนลงนามมอบหมาย
                     </div>
                   </div>
                 </div>
@@ -2067,8 +2029,8 @@
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20261008_1"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const roleId = ECMIS.currentRoleId
@@ -2200,7 +2162,7 @@
         }
       }
 
-      /* "อื่นๆ" ในช่องศาล (เฉพาะบล็อกคดีศาลปกครอง) */
+      /* "อื่นๆ" ในช่องศาล (เฉพาะบล็อกคดีปกครอง) */
       function toggleCourtNameOtherInput() {
         const select = document.getElementById("in_courtName");
         const otherDiv = document.getElementById("div_courtNameOther");
@@ -2226,7 +2188,7 @@
         if (year) fy.value = year;
       }
 
-      /* "อื่นๆ" ในช่องสั่งถึง (เฉพาะบล็อกคดีศาลปกครอง) */
+      /* "อื่นๆ" ในช่องสั่งถึง (เฉพาะบล็อกคดีปกครอง) */
       function toggleOrderedToOtherInput() {
         const select = document.getElementById("in_orderedTo");
         const otherDiv = document.getElementById("div_orderedToOther");
@@ -2241,7 +2203,7 @@
         }
       }
 
-      /* "อื่นๆ" ในช่องชื่อหมาย (เฉพาะบล็อกคดีศาลปกครอง) */
+      /* "อื่นๆ" ในช่องชื่อหมาย (เฉพาะบล็อกคดีปกครอง) */
       function toggleSummonsNameOtherInput() {
         const select = document.getElementById("in_summonsName");
         const otherDiv = document.getElementById("div_summonsNameOther");
@@ -2400,7 +2362,7 @@
           }
         }
 
-        /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร หรือคดีศาลปกครอง */
+        /* ช่องเฉพาะงานอัยการ ใช้ไม่ได้กับคำขอเปิดเผยข้อมูลข่าวสาร หรือคดีปกครอง */
         const hideProsecutorOnly = isDisclosure || isCourtCase;
         show("grp_docNo", !hideProsecutorOnly);
         show("grp_prosecutorLevel", !hideProsecutorOnly);
@@ -2446,7 +2408,7 @@
           header.innerText = isDisclosure
             ? "📋 รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร"
             : isCourtCase
-              ? "📋 รายละเอียดคดีศาลปกครอง"
+              ? "📋 รายละเอียดคดีปกครอง"
               : "📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ";
         }
 
@@ -2460,7 +2422,7 @@
         updateLivePreview();
       }
 
-      /* ผู้ฟ้อง/ผู้ถูกฟ้อง (คดีศาลปกครอง) — เพิ่มได้หลายรายการ */
+      /* ผู้ฟ้อง/ผู้ถูกฟ้อง (คดีปกครอง) — เพิ่มได้หลายรายการ */
       let courtPlaintiffs = ["นายสมชาย ใจดี"];
       let courtDefendants = ["อธิบดีกรมการปกครอง"];
 
@@ -2613,7 +2575,7 @@
         return out;
       }
 
-      /* เอกสารเพิ่มเติม (คดีศาลปกครอง) — แนบได้หลายไฟล์ */
+      /* เอกสารเพิ่มเติม (คดีปกครอง) — แนบได้หลายไฟล์ */
       let courtAttachedFiles = [];
 
       function handleCourtAttachmentsChange(input) {
@@ -2769,7 +2731,7 @@
           .join("");
       }
 
-      /* ค่าที่กรอกในบล็อกคดีศาลปกครอง พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
+      /* ค่าที่กรอกในบล็อกคดีปกครอง พร้อมชื่อที่ใช้แสดงผลในหน้าถัดไป */
       function collectCourtCaseFields() {
         const val = (id) => {
           const el = document.getElementById(id);
@@ -2819,7 +2781,7 @@
         };
       }
 
-      /* ตรวจความครบถ้วนของบล็อกคดีศาลปกครอง ก่อนบันทึก */
+      /* ตรวจความครบถ้วนของบล็อกคดีปกครอง ก่อนบันทึก */
       function validateCourtCaseFields() {
         const checks = [
           ["in_courtName", "กรุณาระบุศาล"],
@@ -3848,7 +3810,7 @@
           if (res.isConfirmed) {
             /* จุดแยกเส้นทาง: 10.2.1 เข้าสายงานคำขอเปิดเผยข้อมูลข่าวสาร
                (สถานะ L2_* ให้หน้า 01-work-inbox ส่งต่อไป 10-2-01)
-               10.3 เข้าสายงานคดีศาลปกครอง (สถานะ L3_* ส่งต่อไป 10-3-02) */
+               10.3 เข้าสายงานคดีปกครอง (สถานะ L3_* ส่งต่อไป 10-3-02) */
             const l2Fields = isDisclosure ? collectDisclosureFields() : {};
             /* ต้นทางของ 10.2 มาจากโซน/หน่วยที่เลือก (l2Fields.source) ส่วนเรื่องอื่นยังใช้ช่องข้อความเดิม */
             const source = isDisclosure

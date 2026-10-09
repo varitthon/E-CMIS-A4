@@ -1,0 +1,371 @@
+/* ==========================================================================
+   E-CMIS กิจกรรมที่ 10 — แถบเมนูข้างซ้าย (sidebar) ที่ JS สร้างทั้งหมด
+   รูปแบบเดียวกับ intake-investigation/assets/ecmis-sidebar.css (ก4/ก5):
+   ขนาด 260px ↔ 68px, off-canvas เมื่อจอ ≤ 900px, ซ่อนตอนพิมพ์
+   หน้าไม่มี markup ของ sidebar แล้ว — assets/ecmis-sidebar.js สร้าง <aside> ให้
+   ========================================================================== */
+:root {
+  --ecmis-sidebar-width: 260px;
+  --ecmis-sidebar-mini-width: 68px;
+  --ecmis-sidebar-current-width: var(--ecmis-sidebar-width);
+}
+
+body.ecmis-sidebar-enabled {
+  --ecmis-sidebar-current-width: var(--ecmis-sidebar-width);
+}
+
+body.ecmis-sidebar-enabled.ecmis-sidebar-collapsed {
+  --ecmis-sidebar-current-width: var(--ecmis-sidebar-mini-width);
+}
+
+body.ecmis-sidebar-enabled > .main {
+  margin-left: var(--ecmis-sidebar-current-width);
+  transition: margin-left 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.ecmis-sidebar {
+  position: fixed;
+  z-index: 1050;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: var(--ecmis-sidebar-current-width);
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(180deg, #0d1b3e 0%, #1a2f6b 60%, #1e3575 100%);
+  box-shadow: 4px 0 24px rgba(13, 27, 62, 0.3);
+  transition:
+    width 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+body.dark-mode .ecmis-sidebar {
+  background: linear-gradient(180deg, #060b18 0%, #0d1730 60%, #111d3b 100%);
+}
+
+.ecmis-sidebar-brand {
+  display: flex;
+  min-height: 84px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  color: #fff;
+  text-decoration: none;
+}
+
+.ecmis-sidebar-logo {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.ecmis-sidebar-brand-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ecmis-sidebar-brand-text strong,
+.ecmis-sidebar-brand-text small {
+  display: block;
+}
+
+.ecmis-sidebar-brand-text strong {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.ecmis-sidebar-brand-text small {
+  margin-top: 2px;
+  color: #c9a84c;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+/* สลับหมวดงาน 10.1 / 10.2 / 10.3 (แทนสวิตช์ ก4/ก5 ของ intake) */
+.ecmis-sidebar-switch {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 4px;
+  margin: 12px 10px 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ecmis-sidebar-switch-btn {
+  display: flex;
+  min-height: 44px;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 1px;
+  padding: 6px 4px;
+  border-radius: 7px;
+  color: rgba(232, 238, 247, 0.72);
+  font:
+    600 11px "Sarabun",
+    sans-serif;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.25;
+}
+
+.ecmis-sidebar-switch-btn strong {
+  font-size: 13px;
+}
+
+.ecmis-sidebar-switch-btn:hover,
+.ecmis-sidebar-switch-btn:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.ecmis-sidebar-switch-btn.active {
+  color: #17263a;
+  background: linear-gradient(135deg, #e8c96a, #d3ad4e);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-switch {
+  display: none;
+}
+
+/* ไม่มีรายการเมนู — ดันส่วนท้ายลงล่างสุด */
+.ecmis-sidebar-spacer {
+  flex: 1;
+}
+
+.ecmis-sidebar-footer {
+  padding: 12px 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.ecmis-sidebar-user {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ecmis-sidebar-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border: 2px solid #c9a84c;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a4a8f, #3b6cc7);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ecmis-sidebar-user-copy {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ecmis-sidebar-user-copy strong,
+.ecmis-sidebar-user-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ecmis-sidebar-user-copy strong {
+  font-size: 12.5px;
+}
+
+.ecmis-sidebar-user-copy small {
+  color: #b8c4d8;
+  font-size: 10.5px;
+}
+
+/* แถวปุ่ม: ย่อ/ขยาย + ปุ่ม ⓘ ข้อมูลหน้า (ecmis-shell.js เติมเข้ามา) */
+.ecmis-sidebar-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ecmis-sidebar-toggle {
+  display: grid;
+  height: 34px;
+  flex: 1;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.ecmis-sidebar-toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ecmis-sidebar-toggle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 0.3s ease;
+}
+
+.ecmis-sidebar-tools .page-info-btn {
+  margin-top: 0;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 8px;
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-toggle svg {
+  transform: rotate(180deg);
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-tools {
+  flex-direction: column;
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-toggle {
+  width: 100%;
+  flex: 0 0 34px;
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-brand-text,
+.ecmis-sidebar-collapsed .ecmis-sidebar-label,
+.ecmis-sidebar-collapsed .ecmis-sidebar-user-copy {
+  display: none;
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-brand {
+  justify-content: center;
+  padding-inline: 12px;
+}
+
+.ecmis-sidebar-collapsed .ecmis-sidebar-user {
+  justify-content: center;
+  padding-inline: 5px;
+  background: transparent;
+}
+
+.ecmis-sidebar-logout {
+  display: flex;
+  width: 100%;
+  height: 34px;
+  margin-top: 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.ecmis-sidebar-logout:hover {
+  background: rgba(190, 60, 55, 0.28);
+  color: #ffdcd9;
+}
+
+.ecmis-sidebar-logout svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ecmis-sidebar-toggle:focus-visible,
+.ecmis-sidebar-logout:focus-visible,
+.ecmis-sidebar-brand:focus-visible {
+  outline: 2px solid #e8c96a;
+  outline-offset: 2px;
+}
+
+.ecmis-sidebar-overlay {
+  position: fixed;
+  z-index: 1045;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+  border: 0;
+  background: rgba(4, 17, 36, 0.52);
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+@media (max-width: 900px) {
+  body.ecmis-sidebar-enabled,
+  body.ecmis-sidebar-enabled.ecmis-sidebar-collapsed {
+    --ecmis-sidebar-current-width: 0px;
+  }
+
+  .ecmis-sidebar {
+    width: min(82vw, 280px);
+    transform: translateX(-105%);
+  }
+
+  /* บนมือถือแสดงเต็มเสมอ แม้เคยย่อไว้บนเดสก์ท็อป */
+  .ecmis-sidebar-collapsed .ecmis-sidebar-switch {
+    display: grid;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-brand-text,
+  .ecmis-sidebar-collapsed .ecmis-sidebar-user-copy {
+    display: block;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-label {
+    display: inline;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-brand {
+    justify-content: flex-start;
+  }
+
+  .ecmis-sidebar-mobile-open .ecmis-sidebar {
+    transform: translateX(0);
+  }
+
+  .ecmis-sidebar-mobile-open .ecmis-sidebar-overlay {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .ecmis-sidebar-toggle {
+    display: none;
+  }
+}
+
+@media print {
+  .ecmis-sidebar,
+  .ecmis-sidebar-overlay {
+    display: none !important;
+  }
+
+  body.ecmis-sidebar-enabled > .main {
+    margin-left: 0 !important;
+  }
+}

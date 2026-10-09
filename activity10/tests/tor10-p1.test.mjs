@@ -1,6 +1,6 @@
 /* หน่วยทดสอบ TOR 10 — Phase P1 (ดู docs/tor10-change-plan.md)
    - Activity10.fiscalYearOf        ปีงบประมาณ (ต.ค.–ก.ย.) TOR 10.3.1.2
-   - Activity10.courtLevelName      ประเภทคดีศาลปกครอง TOR 10.3.1.1(2)
+   - Activity10.courtLevelName      ประเภทคดีปกครอง TOR 10.3.1.1(2)
    - Activity10.l3StatusName        ชื่อสถานะ 10.3.3.1 / 10.3.4.1 (+ อื่นๆ)
    - Activity10.CASE_LAWYERS        รายชื่อนิติกรกลุ่มงานคดี TOR 10.3.2
    - Activity103.defaultStatusPatch ค่าสถานะตั้งต้นตามขั้นตอนงาน (auto + override)

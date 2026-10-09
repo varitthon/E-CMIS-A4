@@ -17,7 +17,9 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       body {
@@ -527,39 +529,6 @@
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span
-            >E-CMIS
-            <small>ระบบกฎหมายในทางคดี</small>
-          </span>
-        </a>
-        <ul class="menu" id="sidebarMenu">
-          <li class="active">
-            <a href="01-work-inbox.html"
-              ><i class="fa-solid fa-scale-balanced"></i>
-              <span>งานกฎหมายในทางคดี</span></a
-            >
-          </li>
-          <li>
-            <a href="02-board-intake.html"
-              ><i class="fa-solid fa-inbox"></i>
-              <span>บันทึกรับเรื่องเข้าระบบ</span></a
-            >
-          </li>
-        </ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          ระบบงานคดี กิจกรรมที่ 10
-        </div>
-      </div>
-    </div>
-
     <!-- Main Content Area -->
     <div class="main">
       <!-- Topbar -->
@@ -678,14 +647,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -704,7 +665,7 @@
               onclick="resetDemoData()"
               title="รีเซ็ตข้อมูลตัวอย่าง"
             >
-              <i class="fa-solid fa-rotate me-1"></i>รีเซ็ต
+              <i class="fa-solid fa-rotate me-1"></i>รีเฟรช
             </button>
             <button
               class="btn btn-outline"
@@ -786,7 +747,9 @@
               <label for="inboxViewSelect">มุมมอง</label>
               <select id="inboxViewSelect" class="form-control">
                 <option value="cases">งานในคิว</option>
-                <option value="notices" id="noticeViewOption">หนังสือแจ้งจากหน่วยงานอื่น</option>
+                <option value="notices" id="noticeViewOption">
+                  หนังสือแจ้งจากหน่วยงานอื่น
+                </option>
                 <!-- มุมมองรายงาน/สารบบ 10.1 (เห็นเฉพาะสายงานกฎหมาย — ซ่อนโดย ECMIS101Reports.applyRoleVisibility) -->
                 <option value="board-report">รายงานผลตามมติคณะกรรมการ</option>
                 <option value="registry">สารบบคำวินิจฉัย/คำพิพากษา</option>
@@ -897,10 +860,19 @@
         </div>
 
         <!-- มุมมอง: หนังสือแจ้งจากหน่วยงานอื่น (TOR 10.1.9 / 10.2.6) -->
-        <div class="table-card inbox-tab-hidden" id="noticePanel" data-inbox-panel="notices">
+        <div
+          class="table-card inbox-tab-hidden"
+          id="noticePanel"
+          data-inbox-panel="notices"
+        >
           <div class="table-title-bar">
             <span>หนังสือแจ้งจากหน่วยงานอื่นถึงหน่วยงานของท่าน</span>
-            <span class="badge" style="background: #e2e8f0; color: #334155" id="noticeBadgeCount">0 รายการ</span>
+            <span
+              class="badge"
+              style="background: #e2e8f0; color: #334155"
+              id="noticeBadgeCount"
+              >0 รายการ</span
+            >
           </div>
           <div class="table-responsive">
             <table>
@@ -920,8 +892,16 @@
         </div>
 
         <!-- มุมมอง: รายงานผลตามมติ (10.1.8) / สารบบคำวินิจฉัย (10.1.10) — เรนเดอร์โดย assets/ecmis-10-1-reports.js -->
-        <div class="table-card inbox-tab-hidden" id="boardReportPanel" data-inbox-panel="board-report"></div>
-        <div class="table-card inbox-tab-hidden" id="registryPanel" data-inbox-panel="registry"></div>
+        <div
+          class="table-card inbox-tab-hidden"
+          id="boardReportPanel"
+          data-inbox-panel="board-report"
+        ></div>
+        <div
+          class="table-card inbox-tab-hidden"
+          id="registryPanel"
+          data-inbox-panel="registry"
+        ></div>
       </div>
     </div>
 
@@ -930,9 +910,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-2.js?v=20261002_4"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-2.js?v=20261008_1"></script>
+    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
     <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
     <script src="assets/ecmis-export.js?v=20261001_1"></script>
     <script src="assets/ecmis-10-1-reports.js?v=20261002_1"></script>
@@ -948,32 +928,57 @@
       const INBOX_TAB_RENDERERS = {};
       function showInboxTab(name) {
         const select = document.getElementById("inboxViewSelect");
-        const opt = select && select.querySelector('option[value="' + name + '"]');
+        const opt =
+          select && select.querySelector('option[value="' + name + '"]');
         if (!opt || opt.disabled) name = "cases";
         if (select) select.value = name;
         document.querySelectorAll("[data-inbox-panel]").forEach((p) => {
-          p.classList.toggle("inbox-tab-hidden", p.getAttribute("data-inbox-panel") !== name);
+          p.classList.toggle(
+            "inbox-tab-hidden",
+            p.getAttribute("data-inbox-panel") !== name,
+          );
         });
         if (INBOX_TAB_RENDERERS[name]) INBOX_TAB_RENDERERS[name]();
       }
-      document.getElementById("inboxViewSelect").addEventListener("change", (e) => showInboxTab(e.target.value));
+      document
+        .getElementById("inboxViewSelect")
+        .addEventListener("change", (e) => showInboxTab(e.target.value));
 
       /* หนังสือแจ้งจากหน่วยงานอื่น: ดึงจาก Activity10.buildAlerts (kind = notice)
          แล้วหาตัวหนังสือจริงจาก internalNotices[i] ของสำนวน (id = <caseId>:notice:<i>) */
       function getNoticeRows() {
-        if (typeof Activity10 === "undefined" || !Activity10.buildAlerts) return [];
-        const unit = typeof window.ecmisCurrentUnit === "function" ? window.ecmisCurrentUnit() : "";
+        if (typeof Activity10 === "undefined" || !Activity10.buildAlerts)
+          return [];
+        const unit =
+          typeof window.ecmisCurrentUnit === "function"
+            ? window.ecmisCurrentUnit()
+            : "";
         const cases = Activity10.getCases();
-        return Activity10.buildAlerts(cases, getCurrentRole(), new Date(), { unit })
+        return Activity10.buildAlerts(cases, getCurrentRole(), new Date(), {
+          unit,
+        })
           .filter((a) => a.kind === "notice")
           .map((a) => {
             const idx = parseInt(a.id.split(":notice:")[1], 10);
             const kase = cases.find((c) => c.id === a.caseId) || {};
-            return { caseId: a.caseId, notice: (kase.internalNotices || [])[idx] || {} };
+            return {
+              caseId: a.caseId,
+              notice: (kase.internalNotices || [])[idx] || {},
+            };
           });
       }
       function escNotice(v) {
-        return String(v == null ? "" : v).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+        return String(v == null ? "" : v).replace(
+          /[&<>"']/g,
+          (ch) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[ch],
+        );
       }
       function updateNoticeViewCount(count) {
         const n = count == null ? getNoticeRows().length : count;
@@ -983,20 +988,36 @@
       function renderNoticeTab() {
         const rows = getNoticeRows();
         const body = document.getElementById("noticeTableBody");
-        document.getElementById("noticeBadgeCount").textContent = rows.length + " รายการ";
+        document.getElementById("noticeBadgeCount").textContent =
+          rows.length + " รายการ";
         updateNoticeViewCount(rows.length);
         body.innerHTML = rows.length
           ? rows
               .map((r) => {
                 const n = r.notice;
-                const date = n.date && Activity10.formatDisplayDate ? Activity10.formatDisplayDate(n.date) : n.date || "-";
+                const date =
+                  n.date && Activity10.formatDisplayDate
+                    ? Activity10.formatDisplayDate(n.date)
+                    : n.date || "-";
                 return (
-                  "<tr><td>" + escNotice(r.caseId) + "</td>" +
-                  "<td>" + escNotice(n.subject || "-") + "</td>" +
-                  "<td>" + escNotice(n.docNo || "-") + "</td>" +
-                  "<td>" + escNotice(date) + "</td>" +
-                  "<td>" + escNotice((n.units || []).join(", ") || "-") + "</td>" +
-                  '<td><button class="btn btn-outline" data-open-notice-case="' + escNotice(r.caseId) + '">เปิดสำนวน</button></td></tr>'
+                  "<tr><td>" +
+                  escNotice(r.caseId) +
+                  "</td>" +
+                  "<td>" +
+                  escNotice(n.subject || "-") +
+                  "</td>" +
+                  "<td>" +
+                  escNotice(n.docNo || "-") +
+                  "</td>" +
+                  "<td>" +
+                  escNotice(date) +
+                  "</td>" +
+                  "<td>" +
+                  escNotice((n.units || []).join(", ") || "-") +
+                  "</td>" +
+                  '<td><button class="btn btn-outline" data-open-notice-case="' +
+                  escNotice(r.caseId) +
+                  '">เปิดสำนวน</button></td></tr>'
                 );
               })
               .join("")
@@ -1028,6 +1049,10 @@
           }
         }
         if (params.get("tab")) showInboxTab(params.get("tab"));
+        /* ?cat=10.1|10.2|10.3 จากแท็บหมวดงานใน sidebar (assets/ecmis-sidebar.js) */
+        const cat = params.get("cat");
+        if (CATEGORY_CARD_ID[cat] && currentCategory !== cat)
+          selectCategory(cat);
       }
 
       const PAGE_SIZE = 10;
@@ -1460,7 +1485,7 @@
           slaDays: 99,
         },
 
-        // --- 10.3 คดีศาลปกครอง (ครบ 10 สถานะ) ---
+        // --- 10.3 คดีปกครอง (ครบ 10 สถานะ) ---
         {
           id: "คดีปกครอง-100201/2569",
           type: "10.3",
@@ -1637,7 +1662,8 @@
         list.forEach((d) => {
           const parentId = d.raw && d.raw.l3ParentCaseId;
           if (parentId && byId.has(parentId)) {
-            if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
+            if (!childrenByParent.has(parentId))
+              childrenByParent.set(parentId, []);
             childrenByParent.get(parentId).push(d);
           } else {
             standalone.push(d);
@@ -2206,6 +2232,7 @@
           document.getElementById("inboxDetail").style.display = "none";
           document.getElementById("emptyState").style.display = "";
           updateCategoryScopedButtons();
+          if (window.ECMISSidebar) ECMISSidebar.setActiveCategory(null);
           return;
         }
 
@@ -2217,6 +2244,7 @@
         updateDynamicFilter(cat);
         updateCategoryScopedButtons();
         renderTable();
+        if (window.ECMISSidebar) ECMISSidebar.setActiveCategory(cat);
       }
 
       /* ปุ่มที่ผูกกับหมวดหมู่งานหนึ่ง ๆ เท่านั้น (เช่น ปุ่มทดสอบ Flow 4 ผูกกับ
@@ -2227,7 +2255,7 @@
           btnAppeal.style.display = currentCategory === "10.2" ? "" : "none";
         }
         /* ปุ่ม "บันทึกผลพิพากษา" (LAW0119, ทางลัดไป 02-board-intake พร้อมเลือก
-           ประเภทเรื่อง = รับผลคำพิพากษา) โชว์เฉพาะตอนเลือกหมวด "คดีศาลปกครอง"
+           ประเภทเรื่อง = รับผลคำพิพากษา) โชว์เฉพาะตอนเลือกหมวด "คดีปกครอง"
            และเฉพาะบทบาทธุรการกองกฎหมายที่มีสิทธิ์รับเรื่องเข้าระบบ */
         const btnVerdict = document.getElementById("btnVerdictIntake");
         if (btnVerdict) {
@@ -2272,7 +2300,7 @@
         window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
       }
 
-      /* eye icon ของคดีศาลปกครอง (กิจกรรมที่ 10.3) — พาไปหน้าขั้นตอนปัจจุบันของ
+      /* eye icon ของคดีปกครอง (กิจกรรมที่ 10.3) — พาไปหน้าขั้นตอนปัจจุบันของ
          เคสแบบดูอย่างเดียว (?view=1) แทนที่จะพาไปหน้า 03-prosecutor-doc.html
          ที่เป็นของกิจกรรมอื่นและไม่รู้จักเคส 10.3 (ดู ECMIS103.applyViewOnlyMode
          ใน ecmis-10-3.js) ถ้ายังไม่มีหน้าขั้นตอนถัดไป (terminal/ยังไม่ implement)
@@ -2317,7 +2345,8 @@
           if (!res.isConfirmed) return;
           Activity102.fileAppeal(caseId, {}, getCurrentRole());
           window.location.href =
-            "10-2-appeal-01-legal-admin-intake.html?id=" + encodeURIComponent(caseId);
+            "10-2-appeal-01-legal-admin-intake.html?id=" +
+            encodeURIComponent(caseId);
         });
       }
 
@@ -2353,7 +2382,7 @@
           return;
         }
 
-        /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง เหมือน 10.2 ด้านบน */
+        /* กิจกรรม 10.3 (คดีปกครอง) — เดินไฟล์ของตัวเอง เหมือน 10.2 ด้านบน */
         if (typeof Activity103 !== "undefined" && Activity103.isCourtCase(c)) {
           const page3 = Activity103.ROUTES[sc];
           if (page3) {
@@ -2380,7 +2409,9 @@
               /* c มาจาก getAllDatabaseCases() ซึ่งเป็นแถวตาราง — ผลการพิจารณาอยู่ใน c.raw */
               ((c.raw || c).dispatchRecipientType === "attorney_general" ||
                 (c.raw || c).dispatchScenario === "case_disagreed" ||
-                String((c.raw || c).finalOpinionType || "").includes("เห็นแย้ง")))
+                String((c.raw || c).finalOpinionType || "").includes(
+                  "เห็นแย้ง",
+                )))
           ) {
             window.location.href = `19-legal-admin-oag-verdict-intake.html?id=${encodeURIComponent(c.id)}`;
           } else if (
@@ -2700,8 +2731,16 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
         const st = Activity103.effectiveStatus(kase);
-        const caseName = Activity10.l3StatusName(Activity10.L3_CASE_STATUS, st.caseStatus, st.caseStatusOther);
-        const opName = Activity10.l3StatusName(Activity10.L3_OP_STATUS, st.opStatusType, st.opStatusOther);
+        const caseName = Activity10.l3StatusName(
+          Activity10.L3_CASE_STATUS,
+          st.caseStatus,
+          st.caseStatusOther,
+        );
+        const opName = Activity10.l3StatusName(
+          Activity10.L3_OP_STATUS,
+          st.opStatusType,
+          st.opStatusOther,
+        );
         return ` <span class="badge" style="background:#f0f9ff; color:#075985; border:1px solid #bae6fd; font-weight:600;" title="การดำเนินการ: ${esc(opName)}">${esc(caseName)}</span>`;
       }
 
@@ -2784,7 +2823,9 @@
         const kase = item && item.raw;
         if (!kase || !kase.l9BoardDecision) return "";
         const isAppeal = kase.l9BoardDecision === "APPEAL";
-        const label = isAppeal ? "มติบอร์ดเห็นชอบให้อุทธรณ์" : "มติบอร์ดเห็นชอบไม่อุทธรณ์";
+        const label = isAppeal
+          ? "มติบอร์ดเห็นชอบให้อุทธรณ์"
+          : "มติบอร์ดเห็นชอบไม่อุทธรณ์";
         const bg = isAppeal ? "#dcfce7" : "#fee2e2";
         const fg = isAppeal ? "#15803d" : "#b91c1c";
         const border = isAppeal ? "#86efac" : "#fca5a5";
@@ -2846,11 +2887,16 @@
 
       function act7ActionButton(item, roleId, caseId) {
         if (typeof ECMIS_ACT7_HELPERS === "undefined") return "";
-        const act = ECMIS_ACT7_HELPERS.act7InboxAction(item, roleId, ECMIS_ACT7.isOn());
+        const act = ECMIS_ACT7_HELPERS.act7InboxAction(
+          item,
+          roleId,
+          ECMIS_ACT7.isOn(),
+        );
         if (!act) return "";
-        const title = act.linkId === "B6"
-          ? "รับหนังสือแจ้งผลคำพิพากษา (รับคำพิพากษา)"
-          : "บันทึกผลพิจารณาจากกิจกรรมที่ 7 (bypass)";
+        const title =
+          act.linkId === "B6"
+            ? "รับหนังสือแจ้งผลคำพิพากษา (รับคำพิพากษา)"
+            : "บันทึกผลพิจารณาจากกิจกรรมที่ 7 (bypass)";
         return `<button class="btn-action-primary" onclick="openAct7FromInbox('${caseId}', '${act.linkId}')" title="${title}">ดำเนินการ</button>`;
       }
 
@@ -2898,14 +2944,16 @@
           }
           /* TOR 10.2.1.1(2): คำขอที่จบด้วย ไม่อนุญาต/อนุญาตบางส่วน ยื่นอุทธรณ์ต่อได้ */
           const appealBtn =
-            (roleId === "admin_legal" || roleId === "Kanda.R" || roleId === "case_bureau_admin") &&
+            (roleId === "admin_legal" ||
+              roleId === "Kanda.R" ||
+              roleId === "case_bureau_admin") &&
             Activity102.canFileAppeal(item.raw || item)
               ? `<button class="btn-action-primary" style="margin-right:6px" onclick="fileAppealFromInbox('${caseId}')" title="ยื่นอุทธรณ์คำสั่งไม่อนุญาต/เปิดเผยบางส่วน">ยื่นอุทธรณ์</button>`
               : "";
           return `${appealBtn}<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดคำร้อง">${svgEyeIcon}</button>`;
         }
 
-        /* กิจกรรม 10.3 (คดีศาลปกครอง) — เดินไฟล์ของตัวเอง (LAW0085-LAW0096)
+        /* กิจกรรม 10.3 (คดีปกครอง) — เดินไฟล์ของตัวเอง (LAW0085-LAW0096)
            เหมือน 10.2 ด้านบน ไม่ให้ตกลงไปในบันไดบทบาทของ 10.1 ด้านล่าง */
         if (
           typeof Activity103 !== "undefined" &&
@@ -2929,9 +2977,12 @@
             statusCode === "PENDING_ADMIN_OAG_VERDICT_INTAKE" ||
             (statusCode === "DISPATCHED_TO_PROSECUTOR" &&
               /* ฟิลด์ผลการพิจารณาอยู่ในระเบียนเคสจริง (item.raw) ไม่ได้คัดลอกมาในแถวตาราง */
-              ((item.raw || item).dispatchRecipientType === "attorney_general" ||
+              ((item.raw || item).dispatchRecipientType ===
+                "attorney_general" ||
                 (item.raw || item).dispatchScenario === "case_disagreed" ||
-                String((item.raw || item).finalOpinionType || "").includes("เห็นแย้ง")))
+                String((item.raw || item).finalOpinionType || "").includes(
+                  "เห็นแย้ง",
+                )))
           ) {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="รับผลคำวินิจฉัย อสส. และ ส่งต่อ ผอ.กอง">ดำเนินการ</button>`;
           }
@@ -3140,7 +3191,7 @@
 
           body.innerHTML =
             paginatedData.length === 0
-              ? `<tr><td colspan="10" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
+              ? `<tr><td colspan="10" style="text-align:center; padding: 30px; color:#64748b;"><i class="mb-2 opacity-50 fa-solid fa-inbox fa-2x d-block"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
               : paginatedData
                   .map(
                     (item) => `
@@ -3176,7 +3227,7 @@
 
           body.innerHTML =
             paginatedData.length === 0
-              ? `<tr><td colspan="9" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
+              ? `<tr><td colspan="9" style="text-align:center; padding: 30px; color:#64748b;"><i class="mb-2 opacity-50 fa-solid fa-inbox fa-2x d-block"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
               : paginatedData
                   .map(
                     (item) => `
@@ -3194,7 +3245,7 @@
                   )
                   .join("");
         }
-        // 3. หัวคอลัมน์กล่อง 10.3 (คดีศาลปกครอง)
+        // 3. หัวคอลัมน์กล่อง 10.3 (คดีปกครอง)
         else if (cat === "10.3") {
           header.innerHTML = `
  <tr>
@@ -3210,12 +3261,10 @@
 
           body.innerHTML =
             paginatedData.length === 0
-              ? `<tr><td colspan="8" style="text-align:center; padding: 30px; color:#64748b;"><i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
+              ? `<tr><td colspan="8" style="text-align:center; padding: 30px; color:#64748b;"><i class="mb-2 opacity-50 fa-solid fa-inbox fa-2x d-block"></i>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`
               : paginatedData
                   .map((item) => {
-                    const isChild103 = !!(
-                      item.raw && item.raw.l3ParentCaseId
-                    );
+                    const isChild103 = !!(item.raw && item.raw.l3ParentCaseId);
                     return `
  <tr${isChild103 ? ' style="background:rgba(30,58,138,0.035);"' : ""}>
  <td>${isChild103 ? `<i class="fa-solid fa-turn-up fa-rotate-90 me-1" style="color:#94a3b8; font-size:0.85em;" title="เคสลูกของ ${item.raw.l3ParentCaseId}"></i>` : ""}<strong style="color:var(--text-title); font-family:monospace; font-size:1.02em;${isChild103 ? " margin-left:14px;" : ""}">${item.caseNo}</strong></td>

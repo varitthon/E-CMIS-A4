@@ -23,7 +23,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
@@ -263,21 +265,6 @@
     </style>
   </head>
   <body>
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
-        </a>
-        <ul class="menu" id="sidebarMenu"></ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          กิจกรรมที่ 10.3 — คดีศาลปกครอง
-        </div>
-      </div>
-    </div>
 
     <div class="main">
       <div class="topbar">
@@ -290,7 +277,7 @@
             ☰
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร ส่งคำชี้แจงคัดค้านต่อศาลปกครอง</span
             >
@@ -351,14 +338,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -451,6 +430,17 @@
               <div class="form-group">
                 <label>เอกสารประกอบเพิ่มเติม</label>
                 <div id="f_staySupportingFiles"></div>
+              </div>
+              <div class="form-group">
+                <label
+                  ><span
+                    >แนบไฟล์ร่างคำชี้แจง (ลงนามแล้ว)
+                    <span style="font-weight: 400; color: #64748b"
+                      >(ลงนามสดในเอกสารเท่านั้น)</span
+                    ></span
+                  ></label
+                >
+                <div id="f_staySignedFiles"></div>
               </div>
               <div class="form-group">
                 <label>ความเห็น / ข้อสั่งการของประธานกรรมการ ป.ป.ท.</label>
@@ -606,8 +596,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
     <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
 
     <script>
@@ -665,6 +655,10 @@
         ECMIS103.renderAttachments(
           "f_staySupportingFiles",
           c.l3StayObjectionSupportingAttachments,
+        );
+        ECMIS103.renderAttachments(
+          "f_staySignedFiles",
+          c.l3StayObjectionSignedAttachments,
         );
         ECMIS103.setText("f_chairmanNotes", c.l3StayObjectionChairmanNotes);
 

@@ -16,7 +16,7 @@
 | 2 | หน้าสำหรับขั้น "เสนอ" (ผอ.กลุ่มงานคดี, ระหว่าง LAW0087→LAW0088) | **ไม่สร้างหน้าแยก** — auto-transition (ไม่มี queue/การตัดสินใจจริงให้ทำที่จุดนี้) |
 | 3 | รูปแบบเลขคดีตัวอย่าง | Placeholder แบบ 10.2 — `คดี-100XXX/2569` |
 | 4 | หน้าเสนอบอร์ด ("กิจกรรมที่ 7") | ยังไม่มีหน้าจริงในระบบ — Part 1 จบที่สถานะ `L3_READY_FOR_BOARD` เป็น black box ไปก่อน |
-| 5 | **หน้ารับเรื่อง (LAW0085, LAW0086)** | **ไม่สร้างไฟล์ใหม่ — ต่อขยาย `02-board-intake.html` ที่มีอยู่แล้ว** เพราะเป็นหน้ารับเรื่องกลางที่ใช้ร่วมกันทุกหมวดงาน (`in_category` dropdown มี option `"10.3" → "คดีศาลปกครอง"` อยู่แล้ว แต่ยังไม่มี field group เฉพาะ เหมือนที่ `div_disclosureRequest` มีไว้สำหรับ 10.2.1) — ต้องเพิ่ม `div_courtCase` block ที่โผล่มาเมื่อเลือกหมวด 10.3 |
+| 5 | **หน้ารับเรื่อง (LAW0085, LAW0086)** | **ไม่สร้างไฟล์ใหม่ — ต่อขยาย `02-board-intake.html` ที่มีอยู่แล้ว** เพราะเป็นหน้ารับเรื่องกลางที่ใช้ร่วมกันทุกหมวดงาน (`in_category` dropdown มี option `"10.3" → "คดีปกครอง"` อยู่แล้ว แต่ยังไม่มี field group เฉพาะ เหมือนที่ `div_disclosureRequest` มีไว้สำหรับ 10.2.1) — ต้องเพิ่ม `div_courtCase` block ที่โผล่มาเมื่อเลือกหมวด 10.3 |
 | 6 | **สายมอบหมายหลังจากรับเรื่อง (ผอ.กองกฎหมาย → ผอ.กลุ่มงานคดี → นิติกร)** | **ต้องเป็นหน้าแยกครบทุกขั้น ห้าม auto-skip ข้ามระดับ** — ตรงกับ stepper 4 ขั้นที่ `02-board-intake.html` มีอยู่แล้ว (ธุรการ → ผอ.กองกฎหมาย → ผอ.กลุ่มงาน → นิติกร) คนละจุดกับ "เสนอ" ในข้อ 2 (ข้อ 2 คือขาขึ้นนิติกร→กอง ก่อนจะรับเรื่อง ส่วนข้อนี้คือขาลงหลังรับเรื่องแล้ว) |
 
 ### สมมติฐานที่ตั้งไว้ (โปรดยืนยัน)
@@ -27,7 +27,7 @@
 
 | # | ไฟล์ | สถานะไฟล์ | บทบาท | ครอบคลุม LAW# | ทำอะไร | สถานะ (`statusCode`) ก่อนหน้านี้ | หมายเหตุ |
 |---|---|---|---|---|---|---|---|
-| 1 | `02-board-intake.html` | **แก้ไขไฟล์เดิม** | ธุรการกองกฎหมาย (E-CMIS) | LAW0085, LAW0086 (+ครอบคลุม LAW0087) | เพิ่ม `div_courtCase` field group (เลขคดีปกครอง, ศาลที่รับคำฟ้อง, วันที่รับหมายเรียก, แนบสำเนาคำฟ้อง) ที่แสดงเมื่อเลือก "คดีศาลปกครอง" — ส่งต่อผอ.กองกฎหมายเหมือนหมวดอื่น | `L3_PENDING_ADMIN_RECEIVE` | ใช้ `submitReceiveAndForward()` เดิม เพิ่มแค่ field group และปรับ payload ให้มี `l3*` fields |
+| 1 | `02-board-intake.html` | **แก้ไขไฟล์เดิม** | ธุรการกองกฎหมาย (E-CMIS) | LAW0085, LAW0086 (+ครอบคลุม LAW0087) | เพิ่ม `div_courtCase` field group (เลขคดีปกครอง, ศาลที่รับคำฟ้อง, วันที่รับหมายเรียก, แนบสำเนาคำฟ้อง) ที่แสดงเมื่อเลือก "คดีปกครอง" — ส่งต่อผอ.กองกฎหมายเหมือนหมวดอื่น | `L3_PENDING_ADMIN_RECEIVE` | ใช้ `submitReceiveAndForward()` เดิม เพิ่มแค่ field group และปรับ payload ให้มี `l3*` fields |
 | 2 | `10-3-02-legal-director-assign.html` | ใหม่ | ผอ.กองกฎหมาย | LAW0088 | ลงนามมอบหมาย (เข้าสู่กลุ่มงานคดี) | `L3_PENDING_DIRECTOR_ASSIGN` | ใช้ sign modal จาก 08-legal-director-approval.html |
 | 3 | `10-3-03-group-director-assign.html` | ใหม่ | ผอ.กลุ่มงานคดี | LAW0089 | มอบหมายนิติกรผู้รับผิดชอบ | `L3_PENDING_GROUP_ASSIGN` | |
 | 4 | `10-3-04-lawyer-review-complaint.html` | ใหม่ | นิติกร กลุ่มงานคดี | LAW0090 + decision | ตรวจสอบคำฟ้องหามูลเหตุคดี + checkbox "มีคำขอทุเลาการบังคับคดีมาด้วยหรือไม่" | `L3_PENDING_LAWYER_REVIEW` | ถ้าติ๊ก → สร้างงานคู่ขนานสถานะ `L3_STAY_REQUEST_PENDING` ไปหา Part 2 (นอก scope แผนนี้) |
@@ -39,7 +39,7 @@
 
 **Status ที่ขับเคลื่อน Part 1:** `L3_PENDING_ADMIN_RECEIVE` → `L3_PENDING_DIRECTOR_ASSIGN` → `L3_PENDING_GROUP_ASSIGN` → `L3_PENDING_LAWYER_REVIEW` → `L3_PENDING_ADMIN_COORDINATE` → `L3_PENDING_LAWYER_OPINION` → `L3_PENDING_GROUP_APPROVE` → `L3_PENDING_DIRECTOR_SIGN` → `L3_PENDING_ADMIN_DISPATCH` → `L3_READY_FOR_BOARD`
 
-## `div_courtCase` field spec (สำหรับ `02-board-intake.html` เมื่อเลือกหมวด "คดีศาลปกครอง")
+## `div_courtCase` field spec (สำหรับ `02-board-intake.html` เมื่อเลือกหมวด "คดีปกครอง")
 
 | # | Field | Element ID | Type | Required | หมายเหตุ |
 |---|---|---|---|---|---|
@@ -78,7 +78,7 @@
 
 ## Verification plan (หลัง implement)
 
-1. Serve `activity10/` ผ่าน preview, ทดสอบเลือก "คดีศาลปกครอง" ใน `02-board-intake.html` แล้วไล่ทดสอบไฟล์ 2→9 ด้วยเคสตัวอย่าง
+1. Serve `activity10/` ผ่าน preview, ทดสอบเลือก "คดีปกครอง" ใน `02-board-intake.html` แล้วไล่ทดสอบไฟล์ 2→9 ด้วยเคสตัวอย่าง
 2. ทดสอบ branch คำขอทุเลาฯ ในไฟล์ 4 (ติ๊ก checkbox แล้วเช็คว่าสร้างสถานะคู่ขนานถูกต้อง)
 3. ทดสอบ sign modal ในไฟล์ 2, 8 (ทั้งโหมดเซ็นมือและลายเซ็นดิจิทัล)
 4. เช็ค console error, เช็คแบดจ์สถานะและ filter "คดีปกครอง" ใน `01-work-inbox.html` ถูกต้องทุก step

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;padding:0;overflow:hidden} iframe{width:1400px;height:1000px;border:0;display:block}</style>
+</head>
+<body>
+<script>
+  var params = new URLSearchParams(window.location.search);
+  var role = params.get("role");
+  var target = params.get("target");
+  var cat = params.get("cat");
+  if (role) sessionStorage.setItem("ecmis_role", role);
+
+  var seedjson = params.get("seedjson");
+
+  if (seedjson && target) {
+    // Inject a throwaway case via the app's own Activity10.addCase() API so a
+    // page with no matching sample case can still show real populated data.
+    var iframe = document.createElement("iframe");
+    iframe.src = target;
+    var seeded = false;
+    iframe.onload = function () {
+      try {
+        var win = iframe.contentWindow;
+        if (!seeded && win.Activity10 && win.Activity10.addCase) {
+          seeded = true;
+          var data = JSON.parse(decodeURIComponent(atob(seedjson)));
+          var created = win.Activity10.addCase(data);
+          var newId = created && created.id ? created.id : data.id;
+          iframe.src = target + (target.indexOf("?") >= 0 ? "&" : "?") + "id=" + encodeURIComponent(newId);
+        }
+      } catch (e) {
+        document.title = "BOOTSTRAP_ERROR: " + e.message;
+      }
+    };
+    document.body.appendChild(iframe);
+  } else if (cat && target) {
+    var iframe2 = document.createElement("iframe");
+    iframe2.src = target;
+    iframe2.onload = function () {
+      try {
+        var win = iframe2.contentWindow;
+        var doc = iframe2.contentDocument;
+        var sel = doc.getElementById("in_category");
+        if (sel) {
+          sel.value = cat;
+          if (win.toggleProsecutorCaseTypeDiv) win.toggleProsecutorCaseTypeDiv();
+        }
+      } catch (e) {}
+    };
+    document.body.appendChild(iframe2);
+  } else if (target) {
+    window.location.href = target;
+  }
+</script>
+</body>
+</html>

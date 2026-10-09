@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>
+      ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS
+      กิจกรรมที่ 10.3
+    </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,7 +26,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
@@ -245,24 +250,40 @@
       .d-none {
         display: none !important;
       }
+
+      .upload-box {
+        border: 2px dashed var(--border-color);
+        padding: 16px;
+        border-radius: 6px;
+        text-align: center;
+        background: var(--bg-body);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .upload-box input[type="file"] {
+        flex: 1;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+      .info-box {
+        background: #fffbeb;
+        border: 1px solid #fef3c7;
+        border-radius: 6px;
+        padding: 10px 14px;
+        display: flex;
+        gap: 10px;
+        color: #92400e;
+        font-size: 0.76em;
+      }
+      body.dark-mode .info-box {
+        background: #3b2d12;
+        border-color: #78350f;
+        color: #fde68a;
+      }
     </style>
   </head>
   <body>
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
-        </a>
-        <ul class="menu" id="sidebarMenu"></ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          กิจกรรมที่ 10.3 — คดีศาลปกครอง
-        </div>
-      </div>
-    </div>
 
     <div class="main">
       <div class="topbar">
@@ -275,7 +296,7 @@
             ☰
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน</span
             >
@@ -336,14 +357,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -369,7 +382,11 @@
         <div id="pageBody">
           <div
             class="l3-note"
-            style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a"
+            style="
+              background: #eff6ff;
+              border: 1px solid #bfdbfe;
+              color: #1e3a8a;
+            "
           >
             <i class="fa-solid fa-circle-info"></i>
             <div>
@@ -446,11 +463,43 @@
                 >ตรวจสอบและลงนามคำชี้แจงคัดค้าน</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i
-                >ประธานกรรมการ ป.ป.ท.</span
+                ><i class="fa-solid fa-user-tie me-1"></i>ประธานกรรมการ
+                ป.ป.ท.</span
               >
             </div>
             <div class="form-card-body">
+              <div class="form-group">
+                <label
+                  ><span
+                    >แนบไฟล์ร่างคำชี้แจงที่ลงนามแล้ว <br /><span
+                      style="font-weight: 400; color: #64748b"
+                      >(ลงนามสดในเอกสารเท่านั้น)</span
+                    >
+                  </span>
+                  <span style="color: #dc2626">*</span></label
+                >
+                <div class="upload-box">
+                  <input
+                    type="file"
+                    id="in_signedDraftFiles"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleSignedDraftChange(this)"
+                  />
+                </div>
+                <div id="signedDraftList" style="margin-top: 8px"></div>
+                <div
+                  class="info-box"
+                  style="margin-top: 10px; margin-bottom: 0"
+                >
+                  <div>
+                    <b>ข้อกำหนดการแนบไฟล์:</b><br />
+                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
+                    JPEG<br />
+                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
+                  </div>
+                </div>
+              </div>
               <div class="form-group">
                 <label>ความเห็น / ข้อสั่งการเพิ่มเติม</label>
                 <textarea
@@ -470,8 +519,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามคำชี้แจงคัดค้าน
-                และ ส่งนิติกรส่งศาล
+                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามคำชี้แจงคัดค้าน และ
+                ส่งนิติกรส่งศาล
               </button>
             </div>
           </div>
@@ -483,13 +532,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
 
     <script>
       const STEP_CODE = "LAW0098";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
+      let signedDraftFiles = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -546,7 +596,87 @@
         }).then(ECMIS103.goInbox);
       }
 
+      function handleSignedDraftChange(input) {
+        if (!input.files || !input.files.length) return;
+        const maxSizeBytes = 100 * 1024 * 1024;
+        const allowedExts = [
+          "pdf",
+          "doc",
+          "docx",
+          "xls",
+          "xlsx",
+          "png",
+          "jpg",
+          "jpeg",
+        ];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowedExts.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > maxSizeBytes) {
+            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          signedDraftFiles.push(file);
+        });
+        input.value = "";
+        renderSignedDraftList();
+      }
+
+      function removeSignedDraft(index) {
+        signedDraftFiles.splice(index, 1);
+        renderSignedDraftList();
+      }
+
+      function renderSignedDraftList() {
+        const listEl = document.getElementById("signedDraftList");
+        if (!listEl) return;
+        if (!signedDraftFiles.length) {
+          listEl.innerHTML = "";
+          return;
+        }
+        listEl.innerHTML = signedDraftFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return (
+              '<div class="l3-attachment-row">' +
+              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
+              file.name +
+              ' <span style="color: #94a3b8">(' +
+              sizeMb +
+              " MB)</span></div>" +
+              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeSignedDraft(' +
+              idx +
+              ')"><i class="fa-solid fa-trash-can"></i></button>' +
+              "</div>"
+            );
+          })
+          .join("");
+      }
+
       function submitForm() {
+        if (!signedDraftFiles.length) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาแนบไฟล์ร่างคำชี้แจง (ลงนามแล้ว)",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
         const notes =
           document.getElementById("in_signNotes").value.trim() || "-";
 
@@ -560,6 +690,9 @@
             Activity103.sign(currentCase.id, STEP_CODE, image);
             Activity103.advance(currentCase.id, STEP_CODE, {
               l3StayObjectionChairmanNotes: notes,
+              l3StayObjectionSignedAttachments: signedDraftFiles.map(
+                (f) => f.name,
+              ),
             });
             doneAndBack("ลงนามคำชี้แจงคัดค้านเรียบร้อยแล้ว");
           },

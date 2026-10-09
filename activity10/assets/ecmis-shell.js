@@ -43,7 +43,7 @@
     admin_legal: [
       { title: '📨 ผลมติจากผู้บริหารลงนามแล้ว', text: 'สำนวน 0038/2568 ผู้บริหารลงนามแล้ว รอธุรการส่งหนังสือถึงอัยการสูงสุด', icon: '🔴', urgent: true },
       { title: '📋 คำร้องขอเปิดเผยข้อมูลข่าวสาร', text: 'คำร้อง 100101/2569 เข้าสู่ระบบแล้ว ส่งกอง/สำนักที่รับผิดชอบ', icon: '📨', urgent: false },
-      { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง 100207/2569 รอส่งพนักงานอัยการดำเนินคดีแทน', icon: '⚖️', urgent: false }
+      { title: '🏛️ คดีปกครอง', text: 'คดีปกครอง 100207/2569 รอส่งพนักงานอัยการดำเนินคดีแทน', icon: '⚖️', urgent: false }
     ],
     legal_officer: [
       { title: '🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 2 วัน)', text: 'สำนวน คดี-100001/2569 ครบกำหนดยกร่างความเห็น', icon: '🔴', urgent: true },
@@ -53,17 +53,17 @@
     dir_legal: [
       { title: '🔴 มอบหมายสำนวนคดีใหม่', text: 'สำนวน คดี-100003/2569 รอมอบหมายกลุ่มงาน', icon: '🔴', urgent: true },
       { title: '📋 ตรวจพิจารณาความเห็น', text: 'สำนวน คดี-100004/2569 รอ ผอ.กอง ตรวจพิจารณาและสั่งการ', icon: '📋', urgent: false },
-      { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100205/2569 เสนอ ผอ.กองกฎหมาย ตรวจ', icon: '🏛️', urgent: false }
+      { title: '🏛️ คดีปกครอง', text: 'คดีปกครอง-100205/2569 เสนอ ผอ.กองกฎหมาย ตรวจ', icon: '🏛️', urgent: false }
     ],
     group_director: [
       { title: '🔴 มอบหมายนิติกร', text: 'สำนวน คดี-100002/2569 รอ ผอ.กลุ่มงาน มอบหมายนิติกร', icon: '🔴', urgent: true },
       { title: '📋 ตรวจร่างความเห็นนิติกร', text: 'สำนวน คดี-100004/2569 เสนอ ผอ.กลุ่ม ตรวจร่างความเห็น', icon: '📋', urgent: false },
-      { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100204/2569 เสนอ ผอ.กลุ่ม ตรวจร่างคำให้การ', icon: '🏛️', urgent: false }
+      { title: '🏛️ คดีปกครอง', text: 'คดีปกครอง-100204/2569 เสนอ ผอ.กลุ่ม ตรวจร่างคำให้การ', icon: '🏛️', urgent: false }
     ],
     deputy_sg: [
       { title: '🔴 รอลงนามความเห็นแย้ง', text: 'สำนวน คดี-100006/2569 เสนอผู้บริหารลงนาม', icon: '🔴', urgent: true },
       { title: '📨 คำร้องขอเปิดเผยข้อมูล', text: 'คำร้อง-100105/2569 เสนอผู้บริหารเห็นชอบมติ', icon: '📨', urgent: false },
-      { title: '🏛️ คดีศาลปกครอง', text: 'คดีปกครอง-100206/2569 เสนอผู้บริหารลงนามคำให้การ', icon: '🏛️', urgent: false }
+      { title: '🏛️ คดีปกครอง', text: 'คดีปกครอง-100206/2569 เสนอผู้บริหารลงนามคำให้การ', icon: '🏛️', urgent: false }
     ],
     sub_secretariat: [
       { title: '🔴 รอจัดทำรายงานความเห็นเสนอคณะอนุกรรมการฯ', text: 'คำร้อง-100301/2569 ได้รับมอบหมายจาก ผอ.กลุ่มงานความเห็นแย้ง', icon: '🔴', urgent: true },
@@ -140,7 +140,7 @@
     if (cardTitle) cardTitle.innerText = cur.role;
     if (cardOrg && cur.org) cardOrg.innerText = cur.org + ' · สำนักงาน ป.ป.ท.';
 
-    if (typeof global.renderSidebarMenu === 'function') global.renderSidebarMenu();
+    if (global.ECMISSidebar) global.ECMISSidebar.render();
     renderNotifications();
     renderAct7Switch();
   }
@@ -331,8 +331,9 @@
     });
   }
 
+  /* ปุ่ม ☰ บน topbar — sidebar สร้างโดย assets/ecmis-sidebar.js (มือถือ = drawer, เดสก์ท็อป = ย่อ/ขยาย) */
   function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('collapsed');
+    if (global.ECMISSidebar) global.ECMISSidebar.toggle();
   }
 
   function changeFontSize(dir) {
@@ -918,7 +919,7 @@
   }
 
   function injectPageInfoIcon() {
-    const host = document.querySelector('.sidebar-bottom');
+    const host = document.querySelector('.ecmis-sidebar-tools');
     if (!host || document.querySelector('.page-info-btn')) return;
     injectPageInfoStyles();
     const btn = document.createElement('button');
@@ -1021,7 +1022,7 @@
     { label: 'กิจกรรมที่ 10.1', ids: ['case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
     { label: '10.2 — คำขอเปิดเผยข้อมูลข่าวสาร', ids: ['sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen'] },
     { label: '10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'district_admin', 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
-    { label: '10.3 — คดีศาลปกครอง', ids: ['case_group_director', 'case_legal_officer', 'registry', 'chairman'] }
+    { label: '10.3 — คดีปกครอง', ids: ['case_group_director', 'case_legal_officer', 'chairman'] }
   ];
   const ROLE_LEGACY_IDS = {
     'Kanda.R': 'admin_legal', 'Napas.S': 'dir_legal', 'Arnon.C': 'group_director',
@@ -1134,6 +1135,8 @@
   global.renderRoleSwitcher = renderRoleSwitcher;
 
   global.getCurrentRole = getCurrentRole;
+  global.ecmisRoleDisplay = resolveRoleDisplay;
+  global.injectPageInfoIcon = injectPageInfoIcon;
   /* หน้าที่ไม่เรียก updateRoleDisplay() เอง ก็ยังได้แจ้งเตือนจริง */
   document.addEventListener('DOMContentLoaded', function () {
     if (global.Activity10 && document.querySelector('.noti-badge')) renderNotifications();

@@ -23,7 +23,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
@@ -248,21 +250,6 @@
     </style>
   </head>
   <body>
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
-        </a>
-        <ul class="menu" id="sidebarMenu"></ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          กิจกรรมที่ 10.3 — คดีศาลปกครอง
-        </div>
-      </div>
-    </div>
 
     <div class="main">
       <div class="topbar">
@@ -275,7 +262,7 @@
             ☰
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร รวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง</span
             >
@@ -336,14 +323,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -391,7 +370,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >รายละเอียดคดีศาลปกครอง</span
+                >รายละเอียดคดีปกครอง</span
               >
               <span class="badge" style="background: #dbeafe; color: #1e3a8a"
                 ><i class="fa-solid fa-hashtag me-1"></i
@@ -588,7 +567,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-hashtag text-primary me-2"></i
-                >การออกเลขหนังสือส่งออก (สารบรรณกลาง)</span
+                >เลขหนังสือส่งออก (ระบบออกอัตโนมัติ)</span
               >
               <span class="badge" style="background: #fee2e2; color: #b91c1c" id="f_urgencyBadge">-</span>
             </div>
@@ -601,22 +580,6 @@
                 <div class="form-group">
                   <label>ลงวันที่</label>
                   <div class="read-box" id="f_externalDocDate">-</div>
-                </div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ผู้ออกเลข</label>
-                  <div class="l3-sig-preview">
-                    <img id="f_registrySigImg" alt="ลายมือชื่อสารบรรณกลาง" class="d-none" />
-                    <div class="l3-sig-preview-meta">
-                      <div><strong id="f_registrySignedBy">-</strong></div>
-                      <div>ออกเลขเมื่อ <span id="f_registrySignedAt">-</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>หมายเหตุสารบรรณกลาง</label>
-                  <div class="read-box read-box-textarea" id="f_registryNotes">-</div>
                 </div>
               </div>
             </div>
@@ -808,8 +771,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
     <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
 
     <script>
@@ -1028,15 +991,6 @@
         ECMIS103.setText("f_externalDocNo", c.l3AnswerExternalDocNo);
         ECMIS103.setText("f_externalDocDate", c.l3AnswerExternalDocDate);
         ECMIS103.setText("f_urgencyBadge", c.l3AnswerUrgency || "-");
-        ECMIS103.setText("f_registryNotes", c.l3AnswerRegistryNotes);
-        const regSig = (c.l3Signatures || {})["L3-28"];
-        ECMIS103.setText("f_registrySignedBy", ECMIS103.signerLabel("registry"));
-        ECMIS103.setText("f_registrySignedAt", regSig && regSig.signedAt);
-        const regImg = document.getElementById("f_registrySigImg");
-        if (regSig && regSig.image) {
-          regImg.src = regSig.image;
-          regImg.classList.remove("d-none");
-        }
         const cs = c.l3CoverLetterSigning || {};
         const coverSig = (c.l3Signatures || {})[cs.signerRole === "deputy_sg" ? "L3-27B" : "L3-27A"];
         ECMIS103.setText("f_coverSignedBy", cs.signedBy || c.l3CoverLetterSignerName);

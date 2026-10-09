@@ -23,7 +23,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20260908_2" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
+    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
 
@@ -248,21 +250,6 @@
     </style>
   </head>
   <body>
-    <div class="sidebar" id="sidebar">
-      <div>
-        <a href="01-work-inbox.html" class="brand">
-          <img src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />
-          <span>E-CMIS <small>ระบบกฎหมายในทางคดี</small></span>
-        </a>
-        <ul class="menu" id="sidebarMenu"></ul>
-      </div>
-      <div class="sidebar-bottom">
-        <div>สำนักงาน ป.ป.ท.</div>
-        <div style="font-size: 0.9em; opacity: 0.7">
-          กิจกรรมที่ 10.3 — คดีศาลปกครอง
-        </div>
-      </div>
-    </div>
 
     <div class="main">
       <div class="topbar">
@@ -275,7 +262,7 @@
             ☰
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีศาลปกครอง</span> /
+            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง</span
             >
@@ -336,14 +323,6 @@
                   กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
                 >
               </div>
-              <a
-                href="login.html"
-                onclick="confirmLogout(event)"
-                class="logout-link"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>ออกจากระบบ</span>
-              </a>
             </div>
           </div>
         </div>
@@ -393,7 +372,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >รายละเอียดคดีศาลปกครอง</span
+                >รายละเอียดคดีปกครอง</span
               >
               <span class="badge" style="background: #dbeafe; color: #1e3a8a"
                 ><i class="fa-solid fa-hashtag me-1"></i
@@ -628,11 +607,11 @@
                 </div>
                 <div class="form-group" id="forwardToSection">
                   <label
-                    >ส่งต่อให้ (สารบรรณกลาง)
+                    >ส่งต่อให้ (ประธานกรรมการ ป.ป.ท. ลงนามคำให้การ)
                     <span style="color: #dc2626">*</span></label
                   >
                   <select id="in_forwardTo" class="form-control">
-                    <option value="">-- เลือกเจ้าหน้าที่สารบรรณกลาง --</option>
+                    <option value="">-- เลือกผู้ลงนามในคำให้การ --</option>
                   </select>
                 </div>
               </div>
@@ -640,7 +619,7 @@
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
               <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
-                <i class="fa-solid fa-signature me-1"></i>ลงนามหนังสือนำส่ง และ ส่งสารบรรณกลาง
+                <i class="fa-solid fa-signature me-1"></i>ลงนามหนังสือนำส่ง และ ส่งประธานกรรมการ
               </button>
             </div>
           </div>
@@ -651,8 +630,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/ecmis-app.js?v=20260904_6"></script>
     <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261006_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261002_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
 
     <script>
       const STEP_CODE = "L3-27A";
@@ -709,15 +688,13 @@
         if (r.forwardTo) renderRegistryOptions(r.forwardTo);
       }
 
-      function renderRegistryOptions(selected) {
-        const names = [
-          ECMIS103.signerLabel("registry"),
-          "นางสาววิภา ทะเบียนดี (สารบรรณกลาง)",
-        ];
+      /* ไม่มีขั้นสารบรรณกลางแล้ว — ลงนามแล้วระบบออกเลขหนังสือส่งออกให้ และส่งประธานกรรมการ */
+      function renderChairmanOptions(selected) {
+        const names = [ECMIS103.signerLabel("chairman")];
         if (selected && !names.includes(selected)) names.unshift(selected);
         const el = document.getElementById("in_forwardTo");
         el.innerHTML =
-          '<option value="">-- เลือกเจ้าหน้าที่สารบรรณกลาง --</option>' +
+          '<option value="">-- เลือกผู้ลงนามในคำให้การ --</option>' +
           names.map((x) => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
         el.value = selected || "";
       }
@@ -741,7 +718,7 @@
         document.getElementById("notesRequired").classList.toggle("d-none", !isReturn);
         document.getElementById("btnSubmit").innerHTML = isReturn
           ? '<i class="fa-solid fa-rotate-left me-1"></i>ลงนาม และ ส่งกลับนิติกรแก้ไข'
-          : '<i class="fa-solid fa-signature me-1"></i>ลงนามหนังสือนำส่ง และ ส่งสารบรรณกลาง';
+          : '<i class="fa-solid fa-signature me-1"></i>ลงนามหนังสือนำส่ง และ ส่งประธานกรรมการ';
       }
 
       function selectedSigner() {
@@ -800,7 +777,7 @@
         ECMIS103.setText("f_proposedSigner", c.l3CoverLetterSignerName);
         ECMIS103.setText("f_dispatchNotes", c.l3AnswerDispatchNotes);
         ECMIS103.setText("f_signerName", ECMIS103.signerLabel(SIGNER_ROLE));
-        renderRegistryOptions(ECMIS103.signerLabel("registry"));
+        renderChairmanOptions(ECMIS103.signerLabel("chairman"));
 
         const sigs = c.l3Signatures || {};
         const reviewText = (r, code) =>
@@ -863,13 +840,13 @@
         if (isReturn && !opinionRaw) {
           return warn("กรุณาระบุความเห็น", "กรณีไม่เห็นชอบ กรุณาระบุประเด็นที่ต้องให้นิติกรแก้ไข");
         }
-        const registryTo = document.getElementById("in_forwardTo").value;
-        if (!isReturn && !registryTo) {
-          return warn("กรุณาเลือกผู้รับเรื่อง", "กรุณาเลือกเจ้าหน้าที่สารบรรณกลางที่ต้องการส่งต่อ");
+        const chairmanTo = document.getElementById("in_forwardTo").value;
+        if (!isReturn && !chairmanTo) {
+          return warn("กรุณาเลือกผู้รับเรื่อง", "กรุณาเลือกผู้ลงนามในคำให้การ (ประธานกรรมการ ป.ป.ท.)");
         }
         const opinion = opinionRaw || "-";
         const docs = currentCase.l3AnswerDocs || {};
-        const forwardTo = isReturn ? (currentCase.officer || ECMIS103.signerLabel("case_legal_officer")) : registryTo;
+        const forwardTo = isReturn ? (currentCase.officer || ECMIS103.signerLabel("case_legal_officer")) : chairmanTo;
         const label = (d) => (d === "APPROVE" ? "เห็นชอบ" : "ไม่เห็นชอบ");
         const dueText = document.getElementById("f_currentDue").textContent + " (" + document.getElementById("f_daysLeft").textContent + ")";
 
@@ -886,7 +863,7 @@
  <p><strong>ความเห็น:</strong> ${esc(opinion)}</p>
  <p><strong>ผู้ลงนาม:</strong> ${esc(signerFullLabel())}</p>
  <p><strong>ส่งต่อให้:</strong> ${esc(forwardTo)}</p>
- <p class="${isReturn ? "emd-strong-bad" : "emd-strong-ok"}"><strong>สถานะ:</strong> ${isReturn ? "ส่งกลับ นิติกร แก้ไขร่างคำให้การ" : "ส่ง สารบรรณกลาง ออกเลขหนังสือส่งออก"}</p>
+ <p class="${isReturn ? "emd-strong-bad" : "emd-strong-ok"}"><strong>สถานะ:</strong> ${isReturn ? "ส่งกลับ นิติกร แก้ไขร่างคำให้การ" : "ระบบออกเลขหนังสือส่งออกอัตโนมัติ แล้วส่ง ประธานกรรมการ ป.ป.ท. ลงนามคำให้การ"}</p>
  </div>
  `,
           showCancelButton: true,
@@ -909,7 +886,7 @@
                 checkedAnswer: decisionAnswer === "APPROVE",
                 checkedLetter: decisionLetter === "APPROVE",
                 opinion: opinion,
-                forwardTo: isReturn ? "" : registryTo,
+                forwardTo: isReturn ? "" : chairmanTo,
                 signerRole: SIGNER_ROLE,
                 signedBy: signerFullLabel(),
                 signedAt: ECMIS103.formatThaiDateTime(new Date()),
@@ -934,10 +911,11 @@
                   assignedRole: "case_legal_officer",
                 });
               } else {
-                Activity103.advance(currentCase.id, STEP_CODE, {
+                const updated = Activity103.advance(currentCase.id, STEP_CODE, {
                   l3CoverLetterSigning: signing,
-                  assignedRole: "registry",
+                  assignedRole: "chairman",
                 });
+                currentCase.l3AnswerExternalDocNo = updated && updated.l3AnswerExternalDocNo;
               }
 
               Swal.fire({
@@ -945,7 +923,7 @@
                 title: isReturn ? "ส่งกลับแก้ไขสำเร็จ!" : "ลงนามหนังสือนำส่งสำเร็จ!",
                 text: isReturn
                   ? "ส่งร่างคำให้การกลับให้ " + forwardTo + " แก้ไขเรียบร้อยแล้ว"
-                  : "ส่งหนังสือนำส่งและคำให้การให้ " + forwardTo + " ออกเลขหนังสือส่งออกเรียบร้อยแล้ว",
+                  : "หนังสือส่งออกเลขที่ " + (currentCase.l3AnswerExternalDocNo || "-") + " — ส่งคำให้การให้ " + forwardTo + " ลงนามแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);

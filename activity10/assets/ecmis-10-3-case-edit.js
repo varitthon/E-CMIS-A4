@@ -1,5 +1,5 @@
 /* ecmis-10-3-case-edit.js
-   ให้นิติกรแก้ไขรายละเอียดคดีศาลปกครองได้จากหน้าที่แสดงข้อมูลคดีแบบอ่านอย่างเดียว
+   ให้นิติกรแก้ไขรายละเอียดคดีปกครองได้จากหน้าที่แสดงข้อมูลคดีแบบอ่านอย่างเดียว
    ใช้ฟอร์มและกติกาเดียวกับโหมดแก้ไขของ 10-3-02-legal-director-assign.html
    การใช้งาน: ECMIS103CaseEdit.mount({ getCase: () => currentCase, onSaved: (c) => { currentCase = c; } }); */
 (function (global) {
@@ -231,7 +231,7 @@
     if (!cur) return;
     var rec = sourceRecord(cur);
     global.Swal.fire({
-      title: "แก้ไขรายละเอียดคดีศาลปกครอง",
+      title: "แก้ไขรายละเอียดคดีปกครอง",
       html: buildForm(rec),
       width: 760,
       showCancelButton: true,
@@ -256,7 +256,7 @@
       global.Swal.fire({
         icon: "success",
         title: "บันทึกการแก้ไขแล้ว",
-        text: "อัปเดตรายละเอียดคดีศาลปกครองเรียบร้อย",
+        text: "อัปเดตรายละเอียดคดีปกครองเรียบร้อย",
         timer: 1600,
         showConfirmButton: false,
       });
