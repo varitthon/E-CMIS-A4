@@ -261,3 +261,137 @@ body.dark-mode .verdict-compare-line.unknown { color: #cbd5e1; }
   .record-accordion-tag { margin-left: 20px; }
   .verdict-final { padding: 14px; }
 }
+
+/* ==========================================================================
+   ขั้นตอนก่อนหน้า (พับได้) — สร้างโดย ECMISPrevStep ใน ecmis-shell.js จาก data-prev-step
+   ========================================================================== */
+.prev-step {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  margin-bottom: 12px;
+}
+.prev-step > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--text-title);
+  border-radius: 10px;
+}
+.prev-step > summary::-webkit-details-marker { display: none; }
+.prev-step > summary:hover { background: var(--bg-body); }
+.prev-step > summary:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: 2px;
+}
+.prev-step-icon {
+  display: inline-flex;
+  color: #64748b;
+  font-size: 0.8em;
+  transition: transform 0.15s ease;
+}
+.prev-step[open] > summary .prev-step-icon { transform: rotate(180deg); }
+.prev-step-title { flex: 1; min-width: 0; }
+.prev-step-tag {
+  font-size: 0.78em;
+  font-weight: 600;
+  color: #1e3a8a;
+  background: rgba(37, 99, 235, 0.08);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+.prev-step-hint {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: #64748b;
+  white-space: nowrap;
+}
+.prev-step[open] > summary {
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 10px 10px 0 0;
+}
+.prev-step-body { padding: 12px; }
+.prev-step-body > * { margin-bottom: 0 !important; }
+body.dark-mode .prev-step-tag { color: #93c5fd; background: rgba(147, 197, 253, 0.12); }
+body.dark-mode .prev-step-icon,
+body.dark-mode .prev-step-hint { color: #cbd5e1; }
+@media (max-width: 640px) {
+  .prev-step > summary { flex-wrap: wrap; row-gap: 4px; }
+  .prev-step-hint { display: none; }
+}
+@media print {
+  .prev-step { border: 0; }
+  .prev-step > summary { display: none; }
+  .prev-step-body { padding: 0; }
+}
+
+/* รายการตรวจแบบไอคอน (ECMIS_renderCheckList) */
+.check-item { display: flex; align-items: baseline; gap: 6px; }
+.check-item.is-ok i { color: #16a34a; }
+.check-item.is-no i { color: #dc2626; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------- STEPPER (shared)
+   ทุกหน้ามี CSS stepper ของตัวเองแบบ inline ซึ่งวาดเส้นเดียวยาวเต็มแถว
+   (.stepper::before left/right คงที่) ทำให้เส้นเลยวงกลมแรก/สุดท้ายออกไป —
+   ที่นี่แทนด้วยเส้นต่อช่วง: แต่ละขั้น (ยกเว้นขั้นแรก) วาดเส้นจากกึ่งกลางขั้นก่อนหน้า
+   ถึงกึ่งกลางตัวเอง เส้นจึงเริ่ม/จบที่วงกลมแรก/สุดท้ายพอดีไม่ว่ามีกี่ขั้น
+   ขนาดกะทัดรัด: วงกลม 32px ไม่ล็อกความกว้างขั้นต่ำ 900px (ยืดตามการ์ด)
+   stepper ที่ยาวมากเลื่อนแนวนอนได้เพราะแต่ละขั้นกว้างอย่างน้อย 92px
+   ใช้ "body .stepper" ให้ชนะ CSS inline ของหน้า (ซึ่งโหลดหลังไฟล์นี้) */
+body .stepper,
+body .stepper.stepper-wide {
+  min-width: 0;
+  width: 100%;
+  gap: 0;
+  justify-content: space-between;
+  align-items: flex-start; /* วงกลมอยู่แนวเดียวกันแม้ป้ายชื่อขั้นยาว 2 บรรทัด */
+}
+body .stepper::before {
+  display: none;
+}
+body .stepper .step-item {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 92px;
+  padding: 0 4px;
+}
+/* เส้นวิ่งจากขอบขวาวงกลมก่อนหน้าถึงขอบซ้ายวงกลมของตัวเอง (ไม่ลอดใต้/ทับวงกลม
+   เพราะแต่ละขั้นเป็น stacking context แยก เส้นของขั้นถัดไปจะวาดทับวงกลมขั้นก่อนหน้าได้) */
+body .stepper .step-item + .step-item::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: calc(50% + 16px);
+  width: calc(100% - 32px);
+  height: 2px;
+  background: var(--border-color);
+}
+body .stepper .step-circle {
+  width: 32px;
+  height: 32px;
+  font-size: 0.85em;
+  margin-bottom: 6px;
+}
+body .stepper .step-item.planned .step-circle {
+  background: var(--bg-card);
+}
+body .stepper .step-label {
+  font-size: 0.72em;
+  line-height: 1.35;
+}

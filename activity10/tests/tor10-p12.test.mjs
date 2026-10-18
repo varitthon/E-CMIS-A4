@@ -90,13 +90,13 @@ t("B1 บันทึกผลทันที: คงสถานะ RETURNED_FR
   assert.equal(p.act7History[0].by, SENDER, "ประวัติเก็บชื่อผู้ส่ง");
   assert.equal(p.act7History[0].bypass, true);
 });
-t("B1 ขาเข้า (ไม่ระบุ stage) ยังเปลี่ยนเป็น PENDING_DIRECTOR_RESOLUTION เหมือนเดิม", () => {
+t("B1 ขาเข้า (ไม่ระบุ stage) เปลี่ยนเป็น PENDING_GROUP_RESOLUTION (ขั้น 11 ผอ.กองถูกตัด)", () => {
   const r = buildAct7Patch(
     "B1", {},
     { decision: "AGREE", meetingNo: "1/2569", meetingDate: "2026-08-12" },
     SENDER, AT,
   );
-  assert.equal(r.patch.statusCode, "PENDING_DIRECTOR_RESOLUTION");
+  assert.equal(r.patch.statusCode, "PENDING_GROUP_RESOLUTION");
   assert.equal(r.submit, "submitLegalAdminResolutionIntake");
 });
 t("B2 บันทึกผลทันที: advance L2-RECEIVE-BOARD-ROUND2 → L2_PENDING_DIRLEGAL_BOARD_ACK", () => {
@@ -109,7 +109,7 @@ t("B2 บันทึกผลทันที: advance L2-RECEIVE-BOARD-ROUND2 �
   assert.equal(A2.stepByCode("L2-RECEIVE-BOARD-ROUND2").statusCode, "L2_PENDING_DIRLEGAL_BOARD_ACK");
   assert.equal(act7OutboundStages("B2").now, "L2_PENDING_DIRLEGAL_BOARD_ACK");
 });
-t("B3 บันทึกผลทันที: advance L3-19 → L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN, ไม่บังคับลายเซ็น", () => {
+t("B3 บันทึกผลทันที: advance L3-19 → L3_PENDING_GROUP_RESOLUTION_APPROVE, ไม่บังคับลายเซ็น", () => {
   const r = buildAct7Patch(
     "B3", {},
     {
@@ -121,8 +121,8 @@ t("B3 บันทึกผลทันที: advance L3-19 → L3_PENDING_DIRE
   );
   assert.deepEqual(r.advance, { module: "Activity103", stepCode: "L3-19" });
   assert.equal(r.skipSignature, true, "outbound: ข้ามลายเซ็นธุรการ (ลงนามที่ 10-3-10 ได้ภายหลัง)");
-  assert.equal(A3.stepByCode("L3-19").statusCode, "L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN");
-  assert.equal(act7OutboundStages("B3").now, "L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN");
+  assert.equal(A3.stepByCode("L3-19").statusCode, "L3_PENDING_GROUP_RESOLUTION_APPROVE");
+  assert.equal(act7OutboundStages("B3").now, "L3_PENDING_GROUP_RESOLUTION_APPROVE");
 });
 t("B3 ขาเข้า (ไม่ระบุ stage) ไม่ข้ามลายเซ็น", () => {
   const r = buildAct7Patch(

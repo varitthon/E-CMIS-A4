@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-CMIS - หนังสือแจ้งจากหน่วยงานอื่น</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-list-page.css?v=20261014_1" />
+  </head>
+  <body>
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="breadcrumb">
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> /
+            <span>ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >หนังสือแจ้งจากหน่วยงานอื่น</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">3</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">ก</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
+              <span class="user-role" id="userRoleTitle"
+                >เจ้าหน้าที่ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <!-- Profile & Logout Dropdown -->
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName"
+                    >นางกานดา รักษ์ธรรม</span
+                  >
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >เจ้าหน้าที่ธุรการชำนาญงาน</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg"
+                    >กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span
+                  >
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Body -->
+      <main class="content">
+        <h1 class="page-title"><i class="fa-solid fa-envelope-open-text" style="color: #1e3a8a" aria-hidden="true"></i>หนังสือแจ้งจากหน่วยงานอื่น</h1>
+        <p class="page-intro">หนังสือแจ้งจากหน่วยงานอื่นที่ส่งถึงหน่วยงานของท่าน (TOR 10.1.9 / 10.2.6) กด &quot;เปิดสำนวน&quot; เพื่อไปยังสำนวนในรายการงาน</p>
+        <!-- ย้ายมาจากมุมมอง "หนังสือแจ้งจากหน่วยงานอื่น" ของ 01-work-inbox.html -->
+        <div class="table-card" id="noticePanel">
+          <div class="table-title-bar">
+            <span>หนังสือแจ้งจากหน่วยงานอื่นถึงหน่วยงานของท่าน</span>
+            <span
+              class="badge"
+              style="background: #e2e8f0; color: #334155"
+              id="noticeBadgeCount"
+              >0 รายการ</span
+            >
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>เลขสำนวน</th>
+                  <th>เรื่อง</th>
+                  <th>ที่หนังสือ</th>
+                  <th>วันที่</th>
+                  <th>แจ้งถึงหน่วยงาน</th>
+                  <th>การดำเนินการ</th>
+                </tr>
+              </thead>
+              <tbody id="noticeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script>
+      /* หนังสือแจ้งจากหน่วยงานอื่น: ดึงจาก Activity10.buildAlerts (kind = notice)
+         แล้วหาตัวหนังสือจริงจาก internalNotices[i] ของสำนวน (id = <caseId>:notice:<i>) */
+      function getNoticeRows() {
+        if (typeof Activity10 === "undefined" || !Activity10.buildAlerts)
+          return [];
+        const unit =
+          typeof window.ecmisCurrentUnit === "function"
+            ? window.ecmisCurrentUnit()
+            : "";
+        const cases = Activity10.getCases();
+        return Activity10.buildAlerts(cases, getCurrentRole(), new Date(), {
+          unit,
+        })
+          .filter((a) => a.kind === "notice")
+          .map((a) => {
+            const idx = parseInt(a.id.split(":notice:")[1], 10);
+            const kase = cases.find((c) => c.id === a.caseId) || {};
+            return {
+              caseId: a.caseId,
+              notice: (kase.internalNotices || [])[idx] || {},
+            };
+          });
+      }
+      function escNotice(v) {
+        return String(v == null ? "" : v).replace(
+          /[&<>"']/g,
+          (ch) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[ch],
+        );
+      }
+      function renderNotices() {
+        const rows = getNoticeRows();
+        document.getElementById("noticeBadgeCount").textContent =
+          rows.length + " รายการ";
+        document.getElementById("noticeTableBody").innerHTML = rows.length
+          ? rows
+              .map((r) => {
+                const n = r.notice;
+                const date =
+                  n.date && Activity10.formatDisplayDate
+                    ? Activity10.formatDisplayDate(n.date)
+                    : n.date || "-";
+                return (
+                  "<tr><td>" + escNotice(r.caseId) + "</td>" +
+                  "<td>" + escNotice(n.subject || "-") + "</td>" +
+                  "<td>" + escNotice(n.docNo || "-") + "</td>" +
+                  "<td>" + escNotice(date) + "</td>" +
+                  "<td>" + escNotice((n.units || []).join(", ") || "-") + "</td>" +
+                  '<td><a class="btn btn-outline" href="01-work-inbox.html?openCase=' +
+                  encodeURIComponent(r.caseId) +
+                  '">เปิดสำนวน</a></td></tr>'
+                );
+              })
+              .join("")
+          : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:20px">ไม่มีหนังสือแจ้งจากหน่วยงานอื่น</td></tr>';
+      }
+      document.addEventListener("DOMContentLoaded", renderNotices);
+    </script>
+  </body>
+</html>

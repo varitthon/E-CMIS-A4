@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      ผอ.กลุ่มงานคดี ตรวจร่างคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3
+    </title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 700px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+
+      .upload-box {
+        border: 2px dashed var(--border-color);
+        padding: 16px;
+        border-radius: 6px;
+        text-align: center;
+        background: var(--bg-body);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .upload-box input[type="file"] {
+        flex: 1;
+        font-size: 0.88em;
+        color: var(--text-main);
+      }
+      .info-box {
+        background: #fffbeb;
+        border: 1px solid #fef3c7;
+        border-radius: 6px;
+        padding: 10px 14px;
+        display: flex;
+        gap: 10px;
+        color: #92400e;
+        font-size: 0.76em;
+      }
+      body.dark-mode .info-box {
+        background: #3b2d12;
+        border-color: #78350f;
+        color: #fde68a;
+      }
+      #stayDocView.l3-split-preview {
+        position: static;
+        max-height: none;
+        overflow: visible;
+      }
+      #stayDocView .l3-doc-pageframe {
+        min-height: 480px;
+        max-height: 760px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="breadcrumb">
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >ผอ.กลุ่มงานคดี ตรวจร่างคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper" id="stepper"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            รอนิติกรเสนอร่างคำชี้แจงคัดค้านที่หน้า
+            <a href="10-3b-01-lawyer-draft-stay-objection.html">นิติกร จัดทำคำชี้แจงคัดค้าน</a>
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div
+            class="l3-note"
+            style="
+              background: #eff6ff;
+              border: 1px solid #bfdbfe;
+              color: #1e3a8a;
+            "
+          >
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <strong>เคสนี้เป็นสาขาคู่ขนานของกิจกรรมที่ 1</strong><br />
+              เดินสถานะแยกต่างหากจากคดีหลัก
+              <span class="font-monospace" id="f_parentCaseId">-</span>
+              ไม่กระทบขั้นตอนของคดีหลักที่กำลังดำเนินอยู่
+            </div>
+          </div>
+
+          <div class="form-card" data-prev-step="ข้อมูลคดี (อ้างอิงจากคดีหลัก)">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >ข้อมูลคดี (อ้างอิงจากคดีหลัก)</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้องคดี</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้องคดี</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-signature text-primary me-2"></i
+                >ร่างคำชี้แจงคัดค้านที่นิติกรเสนอ</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
+            </div>
+            <div class="form-card-body">
+              <div id="stayDocView" style="margin-bottom: 16px"></div>
+              <div class="form-group d-none" id="legacyDocGroup">
+                <label>คำชี้แจงคัดค้าน (ไฟล์แนบ — สำนวนเดิม)</label>
+                <div id="f_stayObjectionFiles"></div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>บันทึกข้อความเสนอร่างคำชี้แจง</label>
+                  <div id="f_memoFiles"></div>
+                </div>
+                <div class="form-group">
+                  <label>เอกสารประกอบ</label>
+                  <div id="f_supportingFiles"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>นิติกรผู้เสนอร่าง</label>
+                <div class="l3-sig-preview">
+                  <img id="f_lawyerSigImg" alt="ยืนยันในระบบ นิติกร" class="d-none" />
+                  <div class="l3-sig-preview-meta">
+                    <div><strong id="f_lawyerName">-</strong></div>
+                    <div>ยืนยันเสนอในระบบเมื่อ <span id="f_lawyerSignedAt">-</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="sendBackNotice" class="l3-note l3-note-warn d-none">
+            <i class="fa-solid fa-rotate-left"></i>
+            <div>
+              <strong><span id="f_sendBackBy">-</span> ส่งกลับให้ทบทวน</strong><br />
+              ประเด็น: <span id="f_sendBackNotes">-</span><br />
+              <span style="font-size: 0.85em">เมื่อ <span id="f_sendBackAt">-</span></span>
+            </div>
+          </div>
+
+          <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
+                >ตรวจร่างคำชี้แจงคัดค้านคำขอทุเลาการบังคับ</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กลุ่มงานคดี</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ผลการตรวจร่างคำชี้แจงคัดค้าน <span style="color: #dc2626">*</span></label>
+                <div class="l3-decision-grid">
+                  <label class="l3-decision-card active-approve" id="card_approve" onclick="selectDecision('APPROVE')">
+                    <input type="radio" name="in_decision" id="in_approve" value="APPROVE" checked style="accent-color: #1e3a8a" />
+                    <div style="display: flex; flex-direction: column">
+                      <div class="l3-decision-title" style="color: #1e3a8a">
+                        <i class="fa-solid fa-circle-check text-success me-1"></i>เห็นชอบ
+                      </div>
+                      <div class="l3-decision-sub">(ร่างถูกต้อง เสนอ ผอ.กองกฎหมายตรวจร่างต่อ)</div>
+                    </div>
+                  </label>
+                  <label class="l3-decision-card" id="card_return" onclick="selectDecision('RETURN')">
+                    <input type="radio" name="in_decision" id="in_return" value="RETURN" style="accent-color: #dc2626" />
+                    <div style="display: flex; flex-direction: column">
+                      <div class="l3-decision-title" style="color: #dc2626">
+                        <i class="fa-solid fa-rotate-left text-danger me-1"></i>ส่งกลับนิติกร
+                      </div>
+                      <div class="l3-decision-sub">(ส่งกลับนิติกรแก้ไขร่างคำชี้แจงคัดค้าน)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็น ผอ.กลุ่มงานคดี <span style="color: #dc2626" id="notesRequired" class="d-none">*</span></label>
+                <textarea
+                  id="in_reviewNotes"
+                  class="form-control"
+                  rows="3"
+                  placeholder="ระบุความเห็นหรือข้อสังเกตต่อร่าง (กรณีส่งกลับต้องระบุเหตุผล)..."
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>ส่งต่อให้</label>
+                <div class="read-box" id="f_forwardTo">-</div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">-</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
+
+    <script>
+      /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — ผอ.กลุ่มงานคดี ตรวจร่างคำชี้แจงคัดค้าน (เอกสารสด l3LiveDocs.stayObjection)
+         เห็นชอบ → ผอ.กองกฎหมาย 3b-01b / ส่งกลับ → นิติกร 3b-01 (STAY_SENDBACK.LAWYER) */
+      const STEP_CODE = "LAW0097A";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      const DOC_KEY = "stayObjection";
+      const DOC_LABEL = "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ";
+      const SENDBACK = Activity103.STAY_SENDBACK.LAWYER;
+      let currentCase = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        ECMIS103.renderStepper("stepper", STEP_CODE);
+        loadCase();
+        ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+      });
+
+      /* รับเฉพาะเคสลูก (-B) ที่สถานะชี้มาหน้านี้ (L3B_PENDING_GROUP_REVIEW) */
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const pending = Activity103.pendingStatusFor(STEP.page);
+        const found = Activity103.getCase(id, pending);
+        if (!found || found.statusCode !== pending || !Activity103.isStayObjectionCase(found)) {
+          currentCase = null;
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        currentCase = found;
+        populate();
+        selectDecision("APPROVE");
+      }
+
+      function esc(t) {
+        return String(t == null ? "" : t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function warn(title, text) {
+        Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
+      }
+
+      function hasLiveDoc(c) {
+        return !!((c.l3LiveDocs || {})[DOC_KEY]);
+      }
+
+      function populate() {
+        const c = currentCase;
+        const sig = (c.l3Signatures || {}).LAW0097;
+        ECMIS103.setText("f_parentCaseId", c.l3ParentCaseId);
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+
+        ECMIS103.setText("f_draftVersion", "ร่างครั้งที่ " + (c.l3StayObjectionVersion || 1));
+        ECMIS103.renderAttachments("f_memoFiles", c.l3StayObjectionMemoAttachments);
+        ECMIS103.renderAttachments("f_supportingFiles", c.l3StayObjectionSupportingAttachments);
+        ECMIS103.setText("f_lawyerName", c.officer || ECMIS103.signerLabel("case_legal_officer"));
+        ECMIS103.setText("f_lawyerSignedAt", sig && sig.signedAt);
+        const img = document.getElementById("f_lawyerSigImg");
+        if (sig && sig.image) {
+          img.src = sig.image;
+          img.classList.remove("d-none");
+        }
+        renderDoc();
+        populateExtra();
+      }
+
+      /* เอกสารสดอ่านอย่างเดียว (แบบคำคู่ความ ช่องลงนามเว้นว่าง) */
+      function renderDoc() {
+        const c = currentCase;
+        const live = hasLiveDoc(c);
+        document.getElementById("legacyDocGroup").classList.toggle("d-none", live);
+        if (!live) ECMIS103.renderAttachments("f_stayObjectionFiles", c.l3StayObjectionAttachments);
+        const models = ECMISWetSign.buildPrintModels(c);
+        if (!live || !models || !models.stayObjection) return;
+        const viewer = ECMIS103Docs.createViewer("stayDocView", {
+          title: DOC_LABEL,
+          fileName: DOC_LABEL + " " + (c.blackCaseNo || ""),
+        });
+        if (viewer) viewer.render(models.stayObjection);
+      }
+
+      /* ผอ.กองกฎหมายส่งกลับมาทบทวน (STAY_SENDBACK.GROUP) */
+      function populateExtra() {
+        const c = currentCase;
+        if (!c.l3bSendBackNotes) return;
+        ECMIS103.setText("f_sendBackBy", c.l3bSendBackBy || "ผู้ตรวจ");
+        ECMIS103.setText("f_sendBackNotes", c.l3bSendBackNotes);
+        ECMIS103.setText("f_sendBackAt", c.l3bSendBackAt || "-");
+        document.getElementById("sendBackNotice").classList.remove("d-none");
+      }
+
+      function isReturn() {
+        return document.getElementById("in_return").checked;
+      }
+
+      function selectDecision(type) {
+        document.getElementById(type === "RETURN" ? "in_return" : "in_approve").checked = true;
+        document.getElementById("card_approve").className = "l3-decision-card" + (type === "APPROVE" ? " active-approve" : "");
+        document.getElementById("card_return").className = "l3-decision-card" + (type === "RETURN" ? " active-return" : "");
+        const back = type === "RETURN";
+        document.getElementById("notesRequired").classList.toggle("d-none", !back);
+        ECMIS103.setText("f_forwardTo", back ? sendBackTarget() : ECMIS103.signerLabel(STEP.nextRole));
+        document.getElementById("btnSubmit").innerHTML = back
+          ? '<i class="fa-solid fa-rotate-left me-1"></i>ยืนยันในระบบ และ ส่งกลับนิติกรแก้ไข'
+          : '<i class="fa-solid fa-circle-check me-1"></i>ยืนยันในระบบ (เห็นชอบ) และ เสนอ ผอ.กองกฎหมาย';
+      }
+
+      function submitForm() {
+        if (!currentCase) return;
+        const back = isReturn();
+        const notesRaw = document.getElementById("in_reviewNotes").value.trim();
+        if (back && !notesRaw) {
+          return warn("กรุณาระบุเหตุผล", "กรณีส่งกลับ กรุณาระบุประเด็นที่ต้องแก้ไข");
+        }
+        if (!back && !hasLiveDoc(currentCase)) {
+          return warn("ไม่พบเอกสารสด", "สำนวนนี้ยังไม่มีคำชี้แจงคัดค้านแบบเอกสารสด — กรุณาส่งกลับนิติกรจัดทำใหม่");
+        }
+        const notes = notesRaw || "-";
+        const forwardTo = back ? sendBackTarget() : ECMIS103.signerLabel(STEP.nextRole);
+        Swal.fire({
+          icon: back ? "warning" : "question",
+          title: back ? "ยืนยันส่งกลับแก้ไข?" : "ยืนยันเห็นชอบร่างคำชี้แจงคัดค้าน?",
+          html: `
+ <div class="emd-summary">
+ <p><strong>คดี:</strong> ${esc(currentCase.id)} (${esc(currentCase.blackCaseNo || "-")})</p>
+ <p><strong>เอกสาร:</strong> ${esc(DOC_LABEL)} (ร่างครั้งที่ ${esc(currentCase.l3StayObjectionVersion || 1)})</p>
+ <p><strong>ผลการตรวจ:</strong> ${back ? "ส่งกลับแก้ไข" : "เห็นชอบ"}</p>
+ <p><strong>ความเห็น ผอ.กลุ่มงานคดี:</strong> ${esc(notes)}</p>
+ <p><strong>ส่งต่อให้:</strong> ${esc(forwardTo)}</p>
+ <p class="${back ? "emd-strong-bad" : "emd-strong-ok"}"><strong>สถานะ:</strong> ${esc(back ? SENDBACK.status : STEP.status)}</p>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: back ? "ยืนยันส่งกลับแก้ไข" : "ยืนยันเห็นชอบ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: back ? "#dc2626" : "#16a34a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          const reviewer = ECMIS103.signerLabel(STEP.role);
+          ECMIS103.openSignatureModal(
+            {
+              title: back
+                ? "ยืนยันในระบบ — ส่งกลับร่างคำชี้แจงคัดค้าน (ผอ.กลุ่มงานคดี)"
+                : "ยืนยันในระบบ — เห็นชอบร่างคำชี้แจงคัดค้าน (ผอ.กลุ่มงานคดี)",
+              signer: reviewer,
+              certId: "PACC-CASEGROUPDIR-2569-103B",
+            },
+            (image) => {
+              const review = {
+                decision: back ? "RETURN" : "APPROVE",
+                notes: notes,
+                version: currentCase.l3StayObjectionVersion || 1,
+                reviewedBy: reviewer,
+                reviewedAt: ECMIS103.formatThaiDateTime(new Date()),
+              };
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(currentCase.id, STEP_CODE, back ? sendBackPatch(review) : approvePatch(review));
+              Swal.fire({
+                icon: "success",
+                title: back ? "ส่งกลับแก้ไขสำเร็จ!" : "ตรวจร่างคำชี้แจงคัดค้านสำเร็จ!",
+                text: (back ? "ส่งกลับให้ " : "ส่งต่อให้ ") + forwardTo + " เรียบร้อยแล้ว",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
+      }
+
+      function sendBackTarget() {
+        return currentCase.officer || ECMIS103.signerLabel("case_legal_officer");
+      }
+
+      /* ส่งกลับนิติกร 1 ขั้น (3b-01) — เหตุผลไปแสดงที่ 3b-01 */
+      function sendBackPatch(review) {
+        return {
+          status: SENDBACK.status,
+          statusCode: SENDBACK.statusCode,
+          statusBadge: "bg-danger text-white",
+          assignedRole: SENDBACK.assignedRole,
+          l3Step: null,
+          l3StepSeq: 0,
+          l3StayGroupReview: review,
+          l3bSendBackNotes: review.notes,
+          l3bSendBackBy: "ผอ.กลุ่มงานคดี",
+          l3bSendBackAt: review.reviewedAt,
+        };
+      }
+
+      /* เห็นชอบ → ผอ.กองกฎหมาย (assignedRole จาก STEP.nextRole ใน advance) */
+      function approvePatch(review) {
+        return {
+          l3StayGroupReview: review,
+          l3bSendBackNotes: undefined,
+          l3bSendBackBy: undefined,
+          l3bSendBackAt: undefined,
+        };
+      }
+
+      /* ---- shell chrome (theme / font size / dropdown) ---- */
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>

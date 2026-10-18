@@ -23,11 +23,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
 
     <style>
       h1,
@@ -331,10 +333,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร ลงทะเบียน/เสนอความเห็นควรอุทธรณ์</span
             >
@@ -354,10 +356,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -426,7 +428,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคำพิพากษาศาลปกครองชั้นต้น">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -462,11 +464,11 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
@@ -478,15 +480,6 @@
                 <div class="form-group">
                   <label>เลขทะเบียนคดี</label>
                   <div class="read-box font-monospace" id="f_caseRegNo">-</div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ข้อสั่งการจาก ผอ.กองกฎหมาย</label>
-                <div
-                  class="read-box read-box-textarea"
-                  id="f_directorOrderNotes"
-                >
-                  -
                 </div>
               </div>
               <div class="form-group">
@@ -508,47 +501,9 @@
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-3">
-                <div
-                  class="form-group"
-                  style="margin-bottom: 0; grid-column: span 2 / span 3"
-                >
-                  <label>ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
-                  <input
-                    type="text"
-                    id="opinionSearchInput"
-                    class="form-control"
-                    style="width: 100%"
-                    placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
-                    onkeyup="handleOpinionSearchKeyup(event)"
-                  />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    style="width: 100%; margin-top: 20px"
-                    onclick="executeOpinionSearch()"
-                  >
-                    🔍 ค้นหาสำนวน
-                  </button>
-                </div>
-              </div>
-              <div
-                class="helper-text"
-                style="margin: 8px 0 16px; font-size: 0.82em; color: #64748b"
-              >
-                * ค้นหาได้จาก: <strong>เลขสำนวน</strong>,
-                <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>,
-                <strong>ชื่อผู้กล่าวหา</strong> หรือ
-                <strong>ชื่อผู้ถูกกล่าวหา</strong>
-              </div>
-
-              <div
-                id="opinionSearchResults"
-                class="d-none"
-                style="margin-bottom: 16px"
-              ></div>
+              <!-- แผงค้นหาสำนวนร่วม (ECMISCaseSearch.mountPanel) — หน้าตา/ตัวกรองเดียวกับหน้า 02 -->
+              <div id="opinionSearchHost"></div>
+              <div id="lawcaseSearchHost"></div>
 
               <div class="form-group" id="grp_relatedCaseNo">
                 <label>เลขสำนวนที่เกี่ยวข้อง</label>
@@ -657,42 +612,234 @@
                     </div>
                   </label>
                 </div>
+                <div class="helper-text d-none" id="decisionLockedNote">
+                  <i class="fa-solid fa-lock me-1"></i>กำหนดไว้ที่ขั้นนิติกรวิเคราะห์ผลคำพิพากษา (10-3v-04) — แก้ไขได้โดยให้ ผอ. ส่งกลับ
+                </div>
               </div>
-              <div class="form-group">
-                <label
-                  ><span id="label_opinionAttachments"
-                    >แนบเอกสารประกอบการพิจารณา</span
-                  >
-                  <span style="color: #dc2626">*</span></label
-                >
-                <div class="helper-text" id="helper_opinionAttachments">
+              <div class="form-group" id="grp_liveDocHint">
+                <label>เอกสารประกอบการพิจารณา (เอกสารสด)</label>
+                <div class="helper-text" id="helper_liveDoc">
                   เลือกความเห็นควรอุทธรณ์ด้านบนก่อน
-                  เพื่อดูคำแนะนำเอกสารที่ต้องเตรียมสำหรับขั้นตอนถัดไป
+                  เพื่อเปิดเอกสารสดที่ต้องจัดทำสำหรับขั้นตอนถัดไป
                 </div>
-                <div class="upload-box" style="margin-top: 6px">
-                  <input
-                    type="file"
-                    id="in_opinionAttachments"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleOpinionAttachmentsChange(this)"
-                  />
-                </div>
-                <div
-                  id="opinionAttachmentsList"
-                  style="margin-top: 8px"
-                ></div>
               </div>
             </div>
-            <div class="form-actions">
-              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ
-                ผอ.กลุ่มงานคดี
+          </div>
+
+          <div id="draftNotice" class="l3-note l3-note-info d-none">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div style="flex: 1">
+              <strong>โหลดร่างที่บันทึกไว้</strong> เมื่อ <span id="f_draftSavedAt">-</span>
+              <span id="f_draftSavedBy"></span>
+            </div>
+            <button type="button" class="btn btn-secondary" style="height: 30px; font-size: 0.8em" onclick="resetDraft()">
+              <i class="fa-solid fa-rotate-left"></i>ล้างร่าง / กลับเป็นค่าตั้งต้น
+            </button>
+          </div>
+
+          <!-- ========== เอกสารสด — ร่างคำอุทธรณ์ (ความเห็น "เห็นควรอุทธรณ์") ========== -->
+          <div class="l3-split l3-split--doc d-none" id="docBlock_appeal">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสารสด — ร่างคำอุทธรณ์</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ศาลที่ยื่นอุทธรณ์ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="ap_court" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ยื่นอุทธรณ์ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="ap_docDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>คดีหมายเลขดำที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="ap_blackNo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>คดีหมายเลขแดงที่</label>
+                      <input type="text" id="ap_redNo" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ศาลที่มีคำพิพากษา (ชั้นต้น) <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="ap_fromCourt" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ศาลมีคำพิพากษา <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="ap_verdictDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้อุทธรณ์ (ข้าพเจ้า) <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="ap_appellant" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ฐานะในคดี <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="ap_appellantRole" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>เหตุผลแห่งการอุทธรณ์ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_ap_body">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="ap_body"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำขอท้ายอุทธรณ์ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_ap_request">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="ap_request"></div>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="ap_signerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้ลงนาม</label>
+                      <input type="text" id="ap_signerPos" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="appealPreviewCol"></div>
+          </div>
+
+          <!-- ========== เอกสารสด — บันทึกเสนอบอร์ด (ความเห็น "เห็นควรไม่อุทธรณ์") ========== -->
+          <div class="l3-split l3-split--doc d-none" id="docBlock_board">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสารสด — บันทึกเสนอบอร์ด (เห็นควรไม่อุทธรณ์)</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ส่วนราชการ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="bd_division" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>โทร. (ผู้รับผิดชอบ)</label>
+                      <input type="text" id="bd_phone" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ที่ <span class="l3-optional">(ธุรการออกเลขส่งภายใน)</span></label>
+                      <div class="read-box font-monospace" id="bd_docNo">ปป 0002/ — รอออกเลข</div>
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="bd_docDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="bd_subject" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>เรียน <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="bd_to" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>๑. เรื่องเดิม <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bd_background">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bd_background"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๒. ผลคำพิพากษา <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bd_facts">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bd_facts"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๓. ข้อพิจารณา / เหตุผลที่เห็นควรไม่อุทธรณ์ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bd_opinion">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bd_opinion"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๔. ข้อเสนอ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bd_proposal">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bd_proposal"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำลงท้าย</label>
+                    <input type="text" id="bd_closing" class="form-control" />
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้เสนอ (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="bd_proposerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้เสนอ</label>
+                      <input type="text" id="bd_proposerPos" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="boardPreviewCol"></div>
+          </div>
+
+          <div class="form-actions" id="actionBar">
+            <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+            <div class="l3-actions-right">
+              <span class="l3-draft-meta" id="f_draftMeta"></span>
+              <button type="button" class="btn btn-secondary" id="btnSaveDraft" onclick="saveDraftNow()">
+                <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง
+              </button>
+              <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ ผอ.กลุ่มงานคดี
               </button>
             </div>
           </div>
@@ -702,11 +849,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-case-search.js?v=20261014_4"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
 
     <script>
       /* LAW0145 — นิติกร ลงทะเบียนคดีปกครอง (สมุดคุม) — Part 8
@@ -747,6 +896,8 @@
           return;
         }
         populate();
+        initDecision();
+        initLiveDocs();
       }
 
       function populate() {
@@ -771,8 +922,8 @@
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         ECMIS103.setText("f_verdictResult", c.l3VerdictResult);
-        ECMIS103.setText("f_caseRegNo", c.l8CaseRegNo);
-        ECMIS103.setText("f_directorOrderNotes", c.l8DirectorOrderNotes);
+        /* เลขทะเบียนคดีบันทึกไว้ที่ 10-3v-00 (l3VerdictRegNo) — เคสเดิมใช้ l8CaseRegNo */
+        ECMIS103.setText("f_caseRegNo", c.l3VerdictRegNo || c.l8CaseRegNo);
         ECMIS103.setText("f_groupAssignNotes", c.l8GroupAssignNotes);
       }
 
@@ -787,99 +938,18 @@
           .replace(/'/g, "&#39;");
       }
 
-      function handleOpinionSearchKeyup(e) {
-        if (e.key === "Enter") executeOpinionSearch();
-      }
+      /* แผงค้นหาสำนวน (แผงร่วมเดียวกับหน้า 02) — เลือกแล้วเชื่อมโยงเลขสำนวนที่เกี่ยวข้อง */
+      const opinionSearchPanel = ECMISCaseSearch.mountPanel(document.getElementById("opinionSearchHost"), {
+        prefix: "opinion",
+        onSelect: (c) => selectOpinionCase(c.id),
+        hint: 'คลิกแถวเพื่อดูรายละเอียด แล้วกด "เลือกสำนวนนี้" เพื่อเชื่อมโยงเลขสำนวนที่เกี่ยวข้อง',
+      });
+
+      /* สำนวนในกองกฎหมาย — ดูอย่างเดียว ไม่เชื่อมข้อมูล */
+      ECMISCaseSearch.mountPanel(document.getElementById("lawcaseSearchHost"), { source: "legal" });
 
       function executeOpinionSearch() {
-        const q = document
-          .getElementById("opinionSearchInput")
-          .value.trim()
-          .toLowerCase();
-        const resultsContainer = document.getElementById(
-          "opinionSearchResults",
-        );
-        if (!resultsContainer) return;
-
-        if (!q) {
-          Swal.fire({
-            icon: "info",
-            title: "กรุณากรอกคำค้นหา",
-            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือผู้ถูกกล่าวหา",
-            timer: 1500,
-            showConfirmButton: false,
-          });
-          resultsContainer.classList.add("d-none");
-          return;
-        }
-
-        const cases = Activity10.getPaccIntakeDatabase
-          ? Activity10.getPaccIntakeDatabase()
-          : [];
-        const matched = cases.filter((c) => {
-          return (
-            c.id.toLowerCase().includes(q) ||
-            (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
-            (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
-            (c.accuser && c.accuser.toLowerCase().includes(q)) ||
-            (c.accused && c.accused.toLowerCase().includes(q)) ||
-            c.title.toLowerCase().includes(q)
-          );
-        });
-
-        resultsContainer.classList.remove("d-none");
-
-        if (matched.length === 0) {
-          resultsContainer.innerHTML = `
- <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
- <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${escapeHtml(q)}"
- </div>
- `;
-          return;
-        }
-
-        let html = `
- <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
- <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
- <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
- <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.75rem; height: 26px;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
- </div>
- <div style="overflow-x: auto;">
- <table class="search-results-table">
- <thead>
- <tr>
- <th>เลขสำนวน ป.ป.ท.</th>
- <th>ชื่อผู้กล่าวหา</th>
- <th>ชื่อผู้ถูกกล่าวหา</th>
- <th>เรื่องสำนวน</th>
- </tr>
- </thead>
- <tbody>
- `;
-
-        matched.forEach((c) => {
-          const cleanId = c.id.replace(/^.*?-/, "");
-          html += `
- <tr onclick="selectOpinionCase('${escapeHtml(c.id)}')" title="คลิกเพื่อเลือกสำนวนนี้">
- <td>
- <strong class="font-monospace" style="color:var(--text-title);">${escapeHtml(cleanId)}</strong>
- ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${escapeHtml(c.paccCaseNo)}</div>` : ""}
- </td>
- <td>${escapeHtml(c.accuser || "-")}</td>
- <td style="font-weight:600;">${escapeHtml((window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-")}</td>
- <td>${escapeHtml(c.title)}</td>
- </tr>
- `;
-        });
-
-        html += `
- </tbody>
- </table>
- </div>
- </div>
- `;
-
-        resultsContainer.innerHTML = html;
+        opinionSearchPanel.search();
       }
 
       function selectOpinionCase(caseId) {
@@ -893,7 +963,7 @@
         );
         if (!target) return;
 
-        const cleanId = target.id.replace(/^.*?-/, "");
+        const cleanId = ECMISCaseSearch.caseNo(target);
         document.getElementById("in_relatedCaseNo").value = cleanId;
 
         const resultsContainer = document.getElementById(
@@ -910,8 +980,29 @@
         });
       }
 
-      /* เลือกความเห็นควรอุทธรณ์ — เหมือนแพทเทิร์นใน 10-3v-12 */
-      function selectDecision(type) {
+      /* ความเห็นควรอุทธรณ์กำหนดไว้แล้วที่ 10-3v-04 (l8ProposedBranch เห็นชอบที่ 10-3v-05/06)
+         — หน้านี้แสดงแบบอ่านอย่างเดียว; เคสเก่าที่ยังไม่มีค่า ให้นิติกรเลือกเองได้ (บังคับเลือก) */
+      let decisionLocked = false;
+
+      function initDecision() {
+        const preset = String(currentCase.l8ProposedBranch || "").toUpperCase();
+        decisionLocked = preset === "APPEAL" || preset === "BOARD";
+        if (!decisionLocked) return;
+        selectDecision(preset, true);
+        ["decision_appeal", "decision_board"].forEach((id) => {
+          document.getElementById(id).disabled = true;
+        });
+        ["label_decision_appeal", "label_decision_board"].forEach((id) => {
+          const el = document.getElementById(id);
+          el.removeAttribute("onclick");
+          el.style.cursor = "default";
+        });
+        document.getElementById("decisionLockedNote").classList.remove("d-none");
+      }
+
+      /* เลือกความเห็นควรอุทธรณ์ — เหมือนแพทเทิร์นใน 10-3v-12 (force = ตั้งค่าจากเคส ตอนล็อกไว้) */
+      function selectDecision(type, force) {
+        if (decisionLocked && !force) return;
         const cards = {
           APPEAL: document.getElementById("label_decision_appeal"),
           BOARD: document.getElementById("label_decision_board"),
@@ -929,98 +1020,460 @@
           document.getElementById("decision_board").checked = true;
           if (cards.BOARD) cards.BOARD.className = "decision-card active-lose";
         }
-        updateAttachmentGuidance(t);
+        showDocKind(t);
       }
 
-      /* เปลี่ยนคำแนะนำ/ป้ายกำกับของช่องแนบเอกสารตามความเห็นที่เลือก
-         เพราะเอกสารที่ต้องเตรียมต่างกันตามกิจกรรมถัดไป (10 หรือ 9) */
-      function updateAttachmentGuidance(t) {
-        const label = document.getElementById("label_opinionAttachments");
-        const helper = document.getElementById("helper_opinionAttachments");
-        if (!label || !helper) return;
-        if (t === "APPEAL") {
-          label.textContent = "แนบคำอุทธรณ์";
+      /* เอกสารสดเปลี่ยนตามความเห็นที่เลือก — เห็นควรอุทธรณ์ = ร่างคำอุทธรณ์ (กิจกรรมที่ 10),
+         เห็นควรไม่อุทธรณ์ = บันทึกเสนอบอร์ด (กิจกรรมที่ 9) */
+      function showDocKind(t) {
+        const kind = DOC_KIND_BY_DECISION[t] || "";
+        document.getElementById("docBlock_appeal").classList.toggle("d-none", kind !== "appeal");
+        document.getElementById("docBlock_board").classList.toggle("d-none", kind !== "board");
+        const helper = document.getElementById("helper_liveDoc");
+        if (kind === "appeal") {
           helper.textContent =
-            "สำหรับส่งต่อจัดทำคำอุทธรณ์ (กิจกรรมที่ 10) — แนบไฟล์ที่เกี่ยวข้องได้ที่นี่ (เลือกได้หลายไฟล์) หากยังไม่พร้อมสามารถแนบในขั้นตอนถัดไปได้";
-        } else if (t === "BOARD") {
-          label.textContent = "แนบบันทึกเสนอบอร์ด";
+            "จัดทำ \"ร่างคำอุทธรณ์\" ในเอกสารสดด้านล่าง สำหรับส่งต่อจัดทำคำอุทธรณ์ (กิจกรรมที่ 10)";
+        } else if (kind === "board") {
           helper.textContent =
-            "สำหรับส่งต่อเสนอมติอุทธรณ์ต่อบอร์ด (กิจกรรมที่ 9) — แนบไฟล์ที่เกี่ยวข้องได้ที่นี่ (เลือกได้หลายไฟล์) หากยังไม่พร้อมสามารถแนบในขั้นตอนถัดไปได้";
+            "จัดทำ \"บันทึกเสนอบอร์ด\" ในเอกสารสดด้านล่าง สำหรับส่งต่อเสนอมติอุทธรณ์ต่อบอร์ด (กิจกรรมที่ 9)";
         } else {
-          label.textContent = "แนบเอกสารประกอบการพิจารณา";
           helper.textContent =
-            "เลือกความเห็นควรอุทธรณ์ด้านบนก่อน เพื่อดูคำแนะนำเอกสารที่ต้องเตรียมสำหรับขั้นตอนถัดไป";
+            "เลือกความเห็นควรอุทธรณ์ด้านบนก่อน เพื่อเปิดเอกสารสดที่ต้องจัดทำสำหรับขั้นตอนถัดไป";
         }
+        scheduleRender();
       }
 
-      /* แนบเอกสารประกอบการพิจารณา (ทางเลือก, เหมือน pattern ของ 02-board-intake.html) */
-      let opinionAttachedFiles = [];
+      /* =================================================== เอกสารสด (แทนการแนบไฟล์ in_opinionAttachments)
+         แพทเทิร์นเดียวกับ 10-3-13 — ฟอร์มซ้าย + พรีวิว A4 ขวา (ECMIS103Docs) ค่าตั้งต้นเติมจากข้อมูลคดี
+         ลำดับที่ใช้ค่า: ร่างที่บันทึกไว้ (l3DocDraft) > ฉบับที่เสนอล่าสุด (l8LiveDocs, กรณี 10-3v-20 ส่งกลับ) > ค่าตั้งต้น
+         ตอนเสนอเก็บ l8LiveDocs = { appeal|board: { label, fields, editors, blocks } } — blocks คือภาพบล็อก
+         ที่จัดหน้าแล้ว ให้หน้าถัดไป (10-3v-20/22/23/26/27) แสดงพรีวิวอ่านอย่างเดียวได้โดยไม่ต้องสร้างแม่แบบซ้ำ */
+      const LIVE_DOC_LABELS = {
+        appeal: "ร่างคำอุทธรณ์",
+        board: "บันทึกเสนอบอร์ด (เห็นควรไม่อุทธรณ์)",
+      };
+      const DOC_KIND_BY_DECISION = { APPEAL: "appeal", BOARD: "board" };
+      const DOC_FIELDS = {
+        appeal: [
+          "ap_court", "ap_docDate", "ap_blackNo", "ap_redNo", "ap_fromCourt", "ap_verdictDate",
+          "ap_appellant", "ap_appellantRole", "ap_signerName", "ap_signerPos",
+        ],
+        board: [
+          "bd_division", "bd_phone", "bd_docDate", "bd_subject", "bd_to", "bd_closing",
+          "bd_proposerName", "bd_proposerPos",
+        ],
+      };
+      const DOC_EDITORS = {
+        appeal: ["ap_body", "ap_request"],
+        board: ["bd_background", "bd_facts", "bd_opinion", "bd_proposal"],
+      };
+      const ALL_FIELD_IDS = [].concat(DOC_FIELDS.appeal, DOC_FIELDS.board);
+      const ALL_EDITOR_IDS = [].concat(DOC_EDITORS.appeal, DOC_EDITORS.board);
+      const liveEditors = {};
+      let initialEditorHTML = {};
+      let docViewers = {};
+      let renderTimer = null;
+      let dirtyTracker = null;
 
-      function handleOpinionAttachmentsChange(input) {
-        if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = [
-          "pdf",
-          "doc",
-          "docx",
-          "xls",
-          "xlsx",
-          "png",
-          "jpg",
-          "jpeg",
-        ];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
+      function roleName(roleId) {
+        const roles = (window.ECMIS && ECMIS.ROLES) || [];
+        const r = roles.find((x) => x.id === roleId);
+        return r ? r.name : "";
+      }
+
+      function firstName(full) {
+        return String(full || "").replace(/^(นาย|นางสาว|นาง|น\.ส\.)/, "").trim().split(/\s+/)[0] || "";
+      }
+
+      function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+      }
+
+      /* ค่าว่าง/ขีด ("-") ถือว่าไม่มีข้อมูล */
+      function textOrBlank(v) {
+        const t = String(v == null ? "" : v).trim();
+        return t === "-" ? "" : t;
+      }
+
+      function isoDate(v) {
+        const m = String(v || "").match(/^\d{4}-\d{2}-\d{2}/);
+        return m ? m[0] : "";
+      }
+
+      function editorHTML(id) {
+        return liveEditors[id] ? liveEditors[id].getHTML() : initialEditorHTML[id] || "";
+      }
+
+      function editorText(id) {
+        if (liveEditors[id]) return liveEditors[id].getText().trim();
+        const box = document.createElement("div");
+        box.innerHTML = initialEditorHTML[id] || "";
+        return box.textContent.trim();
+      }
+
+      function p(text) {
+        return "<p>" + escapeHtml(text) + "</p>";
+      }
+
+      /* ---------- ค่าตั้งต้นแทนค่าจากเคส (ศาล/เลขคดี/คู่ความ/วันที่พิพากษา/ผลคดี/ประเด็น) ---------- */
+      function buildDefaults(c) {
+        const D = ECMIS103Docs;
+        const pl = (c.plaintiffs || []).filter(Boolean);
+        const df = (c.defendants || []).filter(Boolean);
+        const idx = df.findIndex((n) => /ป\.ป\.ท|ป้องกันและปราบปรามการทุจริตในภาครัฐ/.test(n));
+        const respNo = String(idx >= 0 ? idx + 1 : 1);
+        const plText = (pl[0] || "……") + (pl.length > 1 ? " กับพวกรวม " + pl.length + " คน" : "");
+        const dfText = "คณะกรรมการ ป.ป.ท. ที่ " + respNo + (df.length > 1 ? " กับพวกรวม " + df.length + " คน" : "");
+        const parties = "ระหว่าง " + plText + " ผู้ฟ้องคดี กับ " + dfText + " ผู้ถูกฟ้องคดี";
+        const court = c.courtName || "ศาลปกครอง……";
+        const black = c.blackCaseNo || "……";
+        const red = c.redCaseNo || "……";
+        const verdictISO = isoDate(c.verdictDate);
+        const verdictTh = D.thaiLongDate(verdictISO) || "……";
+        const result = textOrBlank(c.l3VerdictResult) || "แพ้คดี";
+        const summary = textOrBlank(c.l3VerdictSummary);
+        const issues = textOrBlank(c.l8VerdictIssues) || textOrBlank(c.l3VerdictIssues);
+        const opinion = textOrBlank(c.l3VerdictOpinionText);
+        const officer = c.l8GroupAssignTarget || c.officer || roleName("case_legal_officer");
+        const today = Activity103.toISODate(new Date());
+        const verdictLine =
+          court + " ได้มีคำพิพากษาในคดีหมายเลขดำที่ " + black + " คดีหมายเลขแดงที่ " + red +
+          " เมื่อวันที่ " + verdictTh + " " + parties + " ผลคดี ผู้ถูกฟ้องคดีที่ " + respNo + " " + result +
+          (summary ? " โดยสรุปคำพิพากษาได้ว่า " + summary : "");
+
+        return {
+          fields: {
+            ap_court: "ศาลปกครองสูงสุด",
+            ap_docDate: today,
+            ap_blackNo: c.blackCaseNo || "",
+            ap_redNo: c.redCaseNo || "",
+            ap_fromCourt: c.courtName || "",
+            ap_verdictDate: verdictISO,
+            ap_appellant: "คณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+            ap_appellantRole: "ผู้ถูกฟ้องคดีที่ " + respNo,
+            ap_signerName: roleName("chairman"),
+            ap_signerPos: "ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+
+            bd_division: "กกม. สำนักงาน ป.ป.ท.",
+            bd_phone: "1801 (" + firstName(officer) + ")",
+            bd_docDate: today,
+            bd_subject: "ขอเสนอไม่อุทธรณ์คำพิพากษา" + court + " คดีหมายเลขแดงที่ " + red,
+            bd_to: "คณะกรรมการ ป.ป.ท. (ผ่านเลขาธิการคณะกรรมการ ป.ป.ท.)",
+            bd_closing: "จึงเรียนมาเพื่อโปรดพิจารณา",
+            bd_proposerName: officer,
+            bd_proposerPos: "นิติกรชำนาญการ",
+          },
+          editors: {
+            ap_body:
+              "<p><strong>ข้อ 1. ข้อเท็จจริงและคำพิพากษาของศาลปกครองชั้นต้น</strong></p>" +
+              p(verdictLine) +
+              "<p><strong>ข้อ 2. ประเด็นที่ผู้อุทธรณ์ไม่เห็นพ้องด้วยกับคำพิพากษา</strong></p>" +
+              p(issues || "……") +
+              "<p><strong>ข้อ 3. เหตุผลแห่งการอุทธรณ์</strong></p>" +
+              p(opinion || "……"),
+            ap_request: p(
+              "ด้วยเหตุผลดังกล่าวข้างต้น ผู้อุทธรณ์จึงขอศาลปกครองสูงสุดได้โปรดพิจารณาพิพากษากลับคำพิพากษาของ" +
+                court + " ในคดีหมายเลขแดงที่ " + red + " เป็นให้ยกฟ้องผู้ฟ้องคดี",
+            ),
+            bd_background: p(
+              court + " ได้รับคำฟ้องคดีหมายเลขดำที่ " + black + " " + parties +
+                " โดยคณะกรรมการ ป.ป.ท. ได้มอบหมายพนักงานอัยการ สำนักงานคดีปกครอง เป็นผู้แก้ต่างคดี",
+            ),
+            bd_facts: p(verdictLine),
+            bd_opinion: p(issues || opinion || "……"),
+            bd_proposal: p(
+              "เห็นควรไม่อุทธรณ์คำพิพากษาของ" + court + " ในคดีหมายเลขแดงที่ " + red +
+                " และนำเสนอที่ประชุมคณะกรรมการ ป.ป.ท. เพื่อพิจารณามีมติไม่อุทธรณ์คำพิพากษาต่อไป",
+            ),
+          },
+        };
+      }
+
+      /* HTML จาก TipTap → บล็อกย่อหน้า (ย่อหน้าละบล็อก ตัดหน้าได้) — แบบเดียวกับ editorBlocks ใน ecmis-10-3-docs.js */
+      function paraBlocks(html) {
+        const D = ECMIS103Docs;
+        const box = document.createElement("div");
+        box.innerHTML = D.thHTML(html || "");
+        const out = [];
+        Array.from(box.children).forEach((el) => {
+          const tag = el.tagName.toLowerCase();
+          if (tag === "ul" || tag === "ol") {
+            Array.from(el.children).forEach((li, i) => {
+              const mark = tag === "ol" ? D.th(i + 1) + ". " : "• ";
+              out.push('<p class="l3p-para is-list">' + mark + li.innerHTML.replace(/<\/?p>/g, "") + "</p>");
             });
             return;
           }
-          if (file.size > maxSizeBytes) {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${sizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          opinionAttachedFiles.push(file);
+          if (!el.textContent.trim()) return;
+          const h = '<p class="l3p-para">' + el.innerHTML + "</p>";
+          out.push(el.children.length ? h : { html: h, split: { cls: "l3p-para", text: el.textContent } });
         });
-        input.value = "";
-        renderOpinionAttachmentsList();
+        return out.length ? out : ['<p class="l3p-para l3p-empty">……</p>'];
       }
 
-      function removeOpinionAttachment(index) {
-        opinionAttachedFiles.splice(index, 1);
-        renderOpinionAttachmentsList();
+      /* ---------- แม่แบบร่างคำอุทธรณ์ (หัวกระดาษแบบคำคู่ความ ใช้คลาส l3p-* ของ ecmis-10-3-paper.css) ---------- */
+      function appealModel() {
+        const D = ECMIS103Docs;
+        const t = (v) => D.th(D.esc(v)).replace(/\n/g, "<br />");
+        const k = (label) => '<span class="l3p-key">' + label + "</span>";
+        const dot = (v) => '<span class="l3p-dot">' + (String(v == null ? "" : v).trim() ? t(v) : "&nbsp;") + "</span>";
+        const dp = D.dateParts(val("ap_docDate"));
+        const party = (list, role) => {
+          const names = (list || []).filter(Boolean);
+          const text = names.length > 1 ? names[0] + " กับพวกรวม " + names.length + " คน" : names[0] || "";
+          return '<div class="l3p-line">' + dot(text) + k(role) + "</div>";
+        };
+        const blocks = [];
+        blocks.push(
+          '<div class="l3p-answer-top">' +
+            '<div class="l3p-left"><div style="padding-left:0.8cm">คำอุทธรณ์ของ</div><div style="padding-left:0.8cm">' + t(val("ap_appellantRole")) + "</div></div>" +
+            '<div><img class="l3p-garuda is-lg" src="garuda.png" alt="ตราครุฑ" /></div>' +
+            '<div class="l3p-right"><div>(ร่าง)</div><div style="height:0.7cm"></div>' +
+            '<div class="l3p-line">' + k("คดีหมายเลขดำที่") + dot(val("ap_blackNo")) + "</div>" +
+            '<div class="l3p-line">' + k("คดีหมายเลขแดงที่") + dot(val("ap_redNo")) + "</div></div>" +
+            "</div>" +
+            '<div class="l3p-court">' + t(val("ap_court")) + "</div>" +
+            '<div class="l3p-line" style="margin-left:38%;margin-top:6px">' + k("วันที่") + dot(dp ? dp.day : "") +
+            k("เดือน") + dot(dp ? dp.month : "") + k("พุทธศักราช") + dot(dp ? dp.year : "") + "</div>",
+        );
+        blocks.push(
+          '<div class="l3p-between"><span class="l3p-key">ระหว่าง</span><span class="l3p-brace"></span>' +
+            '<div class="l3p-party">' + party(currentCase.plaintiffs, "ผู้ฟ้องคดี") + party(currentCase.defendants, "ผู้ถูกฟ้องคดี") + "</div></div>",
+        );
+        blocks.push(
+          '<div class="l3p-gap"></div><p class="l3p-para">ข้าพเจ้า ' + t(val("ap_appellant")) + " " + t(val("ap_appellantRole")) +
+            " ขอยื่นอุทธรณ์คำพิพากษาของ" + t(val("ap_fromCourt")) + " ลงวันที่ " + (D.thaiLongDate(val("ap_verdictDate")) || "……") +
+            " ต่อ" + t(val("ap_court")) + " โดยมีข้อความตามที่จะกล่าวต่อไปนี้</p>",
+        );
+        paraBlocks(editorHTML("ap_body")).forEach((b) => blocks.push(b));
+        blocks.push({ html: '<div class="l3p-heading"><u>คำขอท้ายอุทธรณ์</u></div>', keep: true });
+        paraBlocks(editorHTML("ap_request")).forEach((b) => blocks.push(b));
+        blocks.push('<div class="l3p-center" style="margin-top:8px">ควรมิควรแล้วแต่จะโปรด</div>');
+        const pos = val("ap_signerPos").split("\n").map(t).join("<br />");
+        blocks.push(
+          '<div class="l3p-sign" style="margin-left:30%"><div>ลงชื่อ ................................................ ผู้อุทธรณ์</div>' +
+            '<div class="l3p-sign-wait">รอลงนาม</div>' +
+            (val("ap_signerName") ? "<div>(" + t(val("ap_signerName")) + ")</div>" : "") +
+            (pos ? "<div>" + pos + "</div>" : "") +
+            "</div>",
+        );
+        return {
+          blocks: blocks,
+          decor: (i) => (i > 0 ? '<div class="l3p-pageno">- ' + D.th(i + 1) + " -</div>" : ""),
+        };
       }
 
-      function renderOpinionAttachmentsList() {
-        const listEl = document.getElementById("opinionAttachmentsList");
-        if (!listEl) return;
-        if (!opinionAttachedFiles.length) {
-          listEl.innerHTML = "";
-          return;
+      /* ---------- แม่แบบบันทึกเสนอบอร์ด = บันทึกข้อความ (T1 memo) ---------- */
+      function boardModel() {
+        const D = ECMIS103Docs;
+        return D.memo({
+          division: val("bd_division"),
+          phone: val("bd_phone"),
+          docNo: document.getElementById("bd_docNo").textContent,
+          docDate: D.thaiLongDate(val("bd_docDate")),
+          subject: val("bd_subject"),
+          to: val("bd_to"),
+          sections: [
+            { heading: "๑. เรื่องเดิม", html: editorHTML("bd_background") },
+            { heading: "๒. ผลคำพิพากษา", html: editorHTML("bd_facts") },
+            { heading: "๓. ข้อพิจารณา", html: editorHTML("bd_opinion") },
+            { heading: "๔. ข้อเสนอ", html: editorHTML("bd_proposal") },
+          ],
+          closing: val("bd_closing"),
+          proposer: { sig: null, name: val("bd_proposerName"), position: val("bd_proposerPos") },
+        });
+      }
+
+      function currentKind() {
+        return DOC_KIND_BY_DECISION[decision] || "";
+      }
+
+      function renderPreviews() {
+        if (!currentCase || !docViewers.appeal) return;
+        const kind = currentKind();
+        if (kind === "appeal") docViewers.appeal.render(appealModel());
+        if (kind === "board") docViewers.board.render(boardModel());
+      }
+
+      function scheduleRender() {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(renderPreviews, 150);
+      }
+
+      function initLiveDocs() {
+        const c = currentCase;
+        if (!c) return;
+        const defaults = buildDefaults(c);
+        const saved = c.l8LiveDocs || null;
+        const draft = ECMIS103Docs.readDraft(c, STEP_CODE);
+        const fields = Object.assign({}, defaults.fields);
+        const eds = Object.assign({}, defaults.editors);
+        if (saved) {
+          Object.keys(DOC_FIELDS).forEach((k) => {
+            Object.assign(fields, (saved[k] && saved[k].fields) || {});
+            Object.assign(eds, (saved[k] && saved[k].editors) || {});
+          });
         }
-        listEl.innerHTML = opinionAttachedFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return `
- <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
- <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
- <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
- <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeOpinionAttachment(${idx})" title="ลบไฟล์นี้">
- <i class="fa-solid fa-trash-can"></i>
- </button>
- </div>`;
-          })
-          .join("");
+        if (draft) {
+          Object.assign(fields, draft.fields || {});
+          Object.assign(eds, draft.editors || {});
+          restoreDraftExtra(draft.extra || {});
+          showDraftInfo(draft, true);
+        }
+        initialEditorHTML = eds;
+        ECMIS103Docs.applyFields(fields);
+
+        const black = c.blackCaseNo || "";
+        docViewers = {
+          appeal: ECMIS103Docs.createViewer("appealPreviewCol", { title: LIVE_DOC_LABELS.appeal, editTarget: "ap_court", fileName: LIVE_DOC_LABELS.appeal + " " + black }),
+          board: ECMIS103Docs.createViewer("boardPreviewCol", { title: LIVE_DOC_LABELS.board, editTarget: "bd_subject", fileName: "บันทึกเสนอบอร์ด " + black }),
+        };
+        renderPreviews();
+
+        ALL_FIELD_IDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", scheduleRender);
+          el.addEventListener("change", scheduleRender);
+        });
+
+        Promise.all(
+          ALL_EDITOR_IDS.map((id) =>
+            ECMIS103.mountEditor(id, {
+              toolbarId: "tb_" + id,
+              initialHTML: eds[id] || "",
+              placeholder: "พิมพ์ข้อความ...",
+              onUpdate: () => {
+                if (dirtyTracker) dirtyTracker.mark();
+                scheduleRender();
+              },
+            }).then((editor) => {
+              liveEditors[id] = editor;
+            }),
+          ),
+        ).then(renderPreviews);
+
+        dirtyTracker = ECMIS103Docs.trackDirty();
+        document.getElementById("pageBody").addEventListener("input", () => dirtyTracker.mark());
+        document.getElementById("pageBody").addEventListener("change", () => dirtyTracker.mark());
+      }
+
+      /* เก็บเฉพาะเอกสารชนิดที่ตรงกับความเห็นที่เลือก + ภาพบล็อกที่จัดหน้าแล้ว (blocks) สำหรับหน้าอ่านอย่างเดียว */
+      function collectLiveDocs() {
+        const k = currentKind();
+        const editors = {};
+        DOC_EDITORS[k].forEach((id) => { editors[id] = editorHTML(id); });
+        const model = k === "appeal" ? appealModel() : boardModel();
+        const out = {};
+        out[k] = {
+          label: LIVE_DOC_LABELS[k],
+          fields: ECMIS103Docs.collectFields(DOC_FIELDS[k]),
+          editors: editors,
+          blocks: model.blocks,
+        };
+        return out;
+      }
+
+      function validateLiveDocs() {
+        const required = {
+          appeal: [
+            ["ap_court", "ศาลที่ยื่นอุทธรณ์ (ร่างคำอุทธรณ์)"],
+            ["ap_docDate", "วันที่ยื่นอุทธรณ์ (ร่างคำอุทธรณ์)"],
+            ["ap_blackNo", "คดีหมายเลขดำที่ (ร่างคำอุทธรณ์)"],
+            ["ap_fromCourt", "ศาลที่มีคำพิพากษา (ร่างคำอุทธรณ์)"],
+            ["ap_verdictDate", "วันที่ศาลมีคำพิพากษา (ร่างคำอุทธรณ์)"],
+            ["ap_appellant", "ผู้อุทธรณ์ (ร่างคำอุทธรณ์)"],
+            ["ap_appellantRole", "ฐานะในคดี (ร่างคำอุทธรณ์)"],
+          ],
+          board: [
+            ["bd_division", "ส่วนราชการ (บันทึกเสนอบอร์ด)"],
+            ["bd_docDate", "วันที่ (บันทึกเสนอบอร์ด)"],
+            ["bd_subject", "เรื่อง (บันทึกเสนอบอร์ด)"],
+            ["bd_to", "เรียน (บันทึกเสนอบอร์ด)"],
+          ],
+        };
+        const editorsRequired = {
+          appeal: [
+            ["ap_body", "เหตุผลแห่งการอุทธรณ์ (ร่างคำอุทธรณ์)"],
+            ["ap_request", "คำขอท้ายอุทธรณ์ (ร่างคำอุทธรณ์)"],
+          ],
+          board: [
+            ["bd_background", "๑. เรื่องเดิม (บันทึกเสนอบอร์ด)"],
+            ["bd_facts", "๒. ผลคำพิพากษา (บันทึกเสนอบอร์ด)"],
+            ["bd_opinion", "๓. ข้อพิจารณา (บันทึกเสนอบอร์ด)"],
+            ["bd_proposal", "๔. ข้อเสนอ (บันทึกเสนอบอร์ด)"],
+          ],
+        };
+        const k = currentKind();
+        for (const [id, label] of required[k] || []) {
+          if (!val(id).trim()) return label;
+        }
+        for (const [id, label] of editorsRequired[k] || []) {
+          if (!editorText(id)) return label;
+        }
+        return "";
+      }
+
+      /* ---------- บันทึกร่าง (ไม่เปลี่ยนสถานะ ไม่ตรวจช่องบังคับ) — แบบเดียวกับ 10-3-13 ---------- */
+      function saveDraftNow() {
+        if (!currentCase) return;
+        const editors = {};
+        ALL_EDITOR_IDS.forEach((id) => { editors[id] = editorHTML(id); });
+        const saved = ECMIS103Docs.saveDraft(currentCase.id, STEP_CODE, {
+          fields: ECMIS103Docs.collectFields(ALL_FIELD_IDS),
+          editors: editors,
+          extra: {
+            decision: decisionLocked ? "" : decision,
+            relatedCaseNo: val("in_relatedCaseNo"),
+            verdictIssues: val("in_verdictIssues"),
+          },
+        });
+        if (!saved) return;
+        currentCase = Activity10.getCaseById(currentCase.id) || currentCase;
+        if (dirtyTracker) dirtyTracker.clear();
+        showDraftInfo(saved, false);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "บันทึกร่างแล้ว " + saved.savedAt,
+          showConfirmButton: false,
+          timer: 2200,
+        });
+      }
+
+      function showDraftInfo(draft, loaded) {
+        ECMIS103.setText("f_draftMeta", "บันทึกร่างล่าสุด " + draft.savedAt);
+        if (loaded) {
+          ECMIS103.setText("f_draftSavedAt", draft.savedAt);
+          ECMIS103.setText("f_draftSavedBy", draft.savedBy ? "โดย " + draft.savedBy : "");
+          document.getElementById("draftNotice").classList.remove("d-none");
+        }
+      }
+
+      function restoreDraftExtra(extra) {
+        if (extra.decision && !decisionLocked) selectDecision(extra.decision);
+        if (extra.relatedCaseNo != null) document.getElementById("in_relatedCaseNo").value = extra.relatedCaseNo;
+        if (extra.verdictIssues != null) document.getElementById("in_verdictIssues").value = extra.verdictIssues;
+      }
+
+      function resetDraft() {
+        Swal.fire({
+          icon: "question",
+          title: "ล้างร่างและกลับเป็นค่าตั้งต้น?",
+          text: "ข้อความที่แก้ไขและบันทึกร่างไว้จะถูกลบ",
+          showCancelButton: true,
+          confirmButtonText: "ล้างร่าง",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+          if (dirtyTracker) dirtyTracker.clear();
+          window.location.reload();
+        });
       }
 
       function doneAndBack(text) {
@@ -1033,32 +1486,29 @@
         }).then(ECMIS103.goInbox);
       }
 
+      function warn(text) {
+        Swal.fire({
+          icon: "warning",
+          title: "ข้อมูลไม่ครบถ้วน",
+          text: text,
+          confirmButtonColor: "#1e3a8a",
+        });
+      }
+
       function submitForm() {
-        if (!decision) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาเลือกความเห็นควรอุทธรณ์",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
-        if (!opinionAttachedFiles.length) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาแนบเอกสารประกอบการพิจารณาอย่างน้อย 1 ไฟล์",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
+        if (!decision) return warn("กรุณาเลือกความเห็นควรอุทธรณ์");
+        const missing = validateLiveDocs();
+        if (missing) return warn("กรุณาระบุ " + missing + " ในเอกสารสด");
         const issues =
           document.getElementById("in_verdictIssues").value.trim() || "-";
+        const kind = currentKind();
 
         Swal.fire({
           icon: "question",
           title: "ยืนยัน และ เสนอ ผอ.กลุ่มงานคดี",
-          text: "บันทึกความเห็นควรอุทธรณ์ และส่งต่อ ผอ.กลุ่มงานคดีเพื่อพิจารณาเห็นชอบ",
+          text:
+            "บันทึกความเห็นควรอุทธรณ์พร้อมเอกสารสด \"" + LIVE_DOC_LABELS[kind] +
+            "\" และส่งต่อ ผอ.กลุ่มงานคดีเพื่อพิจารณาเห็นชอบ",
           showCancelButton: true,
           confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
@@ -1071,11 +1521,16 @@
               .getElementById("in_relatedCaseNo")
               .value.trim(),
             l8VerdictIssues: issues,
-            l8OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
+            /* หน้าถัดไปที่ยังแสดงรายการชื่อไฟล์ (เคสเดิม) อ่าน l8OpinionAttachments
+               จึงใส่ชื่อเอกสารสดแทนชื่อไฟล์ ส่วนเนื้อหาจริงเก็บใน l8LiveDocs */
+            l8OpinionAttachments: [LIVE_DOC_LABELS[kind] + " (เอกสารสด)"],
+            l8LiveDocs: collectLiveDocs(),
             l8ProposedBranch: decision,
             assignedRole: "case_group_director",
             officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
           });
+          ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+          if (dirtyTracker) dirtyTracker.clear();
           doneAndBack("บันทึกและส่งเสนอ ผอ.กลุ่มงานคดีเรียบร้อยแล้ว");
         });
       }
@@ -1084,7 +1539,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

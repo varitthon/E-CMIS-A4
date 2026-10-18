@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี | E-CMIS
-      กิจกรรมที่ 10.3
+      ธุรการ บันทึกผลการลงนามจริงคำชี้แจงคัดค้าน — ลงนามโดย ประธานกรรมการ ป.ป.ท. | E-CMIS กิจกรรมที่ 10.3
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,11 +25,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
 
     <style>
       h1,
@@ -158,6 +158,7 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 16px;
+        position: relative;
       }
       .form-group:last-child {
         margin-bottom: 0;
@@ -181,16 +182,10 @@
         font-size: 0.9em;
         background-color: var(--bg-card);
         color: var(--text-title);
-        height: 38px;
       }
       .form-control:focus {
         border-color: #2563eb;
         box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-      }
-      textarea.form-control {
-        height: auto;
-        resize: vertical;
-        padding: 10px 12px;
       }
 
       .form-actions {
@@ -293,12 +288,12 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน</span
+              >ธุรการ บันทึกผลการลงนามจริงคำชี้แจงคัดค้าน — ลงนามโดย ประธานกรรมการ ป.ป.ท.</span
             >
           </div>
         </div>
@@ -316,10 +311,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -371,9 +366,9 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอนิติกรจัดทำคำชี้แจงคัดค้านที่หน้า
-            <a href="10-3b-01-lawyer-draft-stay-objection.html"
-              >นิติกร จัดทำคำชี้แจงคัดค้าน</a
+            รอ ผอ.กองกฎหมายเห็นชอบและล็อกคำชี้แจงคัดค้านฉบับจริงที่หน้า
+            <a href="10-3b-01b-legal-director-review-stay-objection.html"
+              >ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน</a
             >
             ก่อน
           </div>
@@ -397,7 +392,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคดี (อ้างอิงจากคดีหลัก)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -416,112 +411,121 @@
                 </div>
                 <div class="form-group">
                   <label>หมายเลขคดีดำ</label>
-                  <div class="read-box font-monospace" id="f_blackCaseNo">
-                    -
-                  </div>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">-</div>
                 </div>
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ครบกำหนดยื่นคำชี้แจงคัดค้าน</label>
+                <div class="read-box" id="f_dueDate">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" data-prev-step="ร่างคำชี้แจงคัดค้านและผลการตรวจตามลำดับชั้น">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-user-check text-primary me-2"></i
+                >ร่างคำชี้แจงคัดค้านและผลการตรวจตามลำดับชั้น</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>บันทึกข้อความเสนอร่างคำชี้แจง</label>
+                  <div id="f_memoFiles"></div>
+                </div>
+                <div class="form-group">
+                  <label>เอกสารประกอบ</label>
+                  <div id="f_supportingFiles"></div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผอ.กลุ่มงานคดี</label>
+                  <div class="read-box read-box-textarea" id="f_groupReview">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ผอ.กองกฎหมาย</label>
+                  <div class="read-box read-box-textarea" id="f_directorReview">-</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" id="printCard">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-paperclip text-primary me-2"></i
-                >คำชี้แจงคัดค้านที่นิติกรจัดทำ</span
+                ><i class="fa-solid fa-print text-primary me-2"></i
+                >คำชี้แจงคัดค้านฉบับจริงสำหรับเสนอประธานกรรมการ ป.ป.ท. ลงนาม</span
               >
+              <span class="badge" style="background: #e0e7ff; color: #1e3a8a" id="f_lockBadge">-</span>
             </div>
             <div class="form-card-body">
-              <div class="form-group">
-                <label>คำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</label>
-                <div id="f_stayObjectionFiles"></div>
+              <div class="l3-note l3-note-info" style="margin-bottom: 12px">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  พิมพ์คำชี้แจงคัดค้านจากฉบับที่ล็อกไว้ (แบบฟอร์มทางการ ช่องลงนามเว้นว่าง) เสนอประธานกรรมการ ป.ป.ท.
+                  ลงนามด้วยหมึก แล้วบันทึกผลการลงนามจริงด้านล่าง
+                </div>
               </div>
-              <div class="form-group">
-                <label>เอกสารประกอบเพิ่มเติม</label>
-                <div id="f_staySupportingFiles"></div>
+              <div id="printDocs"></div>
+              <div class="form-group d-none" id="legacyDocGroup" style="margin-top: 12px">
+                <label>คำชี้แจงคัดค้าน (ไฟล์แนบ — สำนวนเดิม)</label>
+                <div id="f_stayObjectionFiles"></div>
               </div>
             </div>
           </div>
 
-          <div class="form-card" style="border: 2px solid #1e3a8a">
+          <div id="wetSignRecorder"></div>
+
+          <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-pen-nib text-primary me-2"></i
-                >ตรวจสอบและลงนามคำชี้แจงคัดค้าน</span
+                ><i class="fa-solid fa-file-signature text-primary me-2"></i
+                >ยืนยันบันทึกผลการลงนามจริงคำชี้แจงคัดค้าน</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ประธานกรรมการ
-                ป.ป.ท.</span
+                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-group">
-                <label
-                  ><span
-                    >แนบไฟล์ร่างคำชี้แจงที่ลงนามแล้ว <br /><span
-                      style="font-weight: 400; color: #64748b"
-                      >(ลงนามสดในเอกสารเท่านั้น)</span
-                    >
-                  </span>
-                  <span style="color: #dc2626">*</span></label
-                >
-                <div class="upload-box">
-                  <input
-                    type="file"
-                    id="in_signedDraftFiles"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleSignedDraftChange(this)"
-                  />
-                </div>
-                <div id="signedDraftList" style="margin-top: 8px"></div>
-                <div
-                  class="info-box"
-                  style="margin-top: 10px; margin-bottom: 0"
-                >
-                  <div>
-                    <b>ข้อกำหนดการแนบไฟล์:</b><br />
-                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
-                    JPEG<br />
-                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
-                  </div>
+              <div class="l3-note l3-note-info" style="margin-bottom: 16px">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  ธุรการกองกฎหมายรับคำชี้แจงคัดค้านฉบับจริงที่ประธานกรรมการ ป.ป.ท. ลงนามแล้ว ตรวจว่าลงนามครบถ้วน
+                  บันทึกผลการลงนามจริง (สแกน วันที่ลงนาม และที่เก็บฉบับจริง) แล้วส่งนิติกรยื่นต่อศาล —
+                  หากประธานฯ ไม่ลงนามหรือแก้ไขด้วยลายมือ ให้กด "ส่งกลับแก้ไข" (ปลดล็อกให้นิติกรแก้ไขและพิมพ์ฉบับใหม่)
                 </div>
               </div>
               <div class="form-group">
-                <label>ความเห็น / ข้อสั่งการเพิ่มเติม</label>
-                <textarea
-                  id="in_signNotes"
-                  class="form-control"
-                  rows="3"
-                  placeholder="ระบุความเห็นเพิ่มเติม (ถ้ามี)..."
-                >
--</textarea
-                >
+                <label>ส่งต่อให้ (นิติกรเจ้าของสำนวน)</label>
+                <div class="read-box" id="f_forwardTo">-</div>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-pen-nib me-1"></i>ลงนามคำชี้แจงคัดค้าน และ
-                ส่งนิติกรส่งศาล
-              </button>
+              <div style="display: flex; gap: 8px">
+                <button type="button" class="btn btn-outline-danger" id="btnReturn" onclick="returnForm()">
+                  <i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับแก้ไข
+                </button>
+                <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
+                  <i class="fa-solid fa-circle-check me-1"></i>บันทึกผลการลงนาม (ยืนยันในระบบ) และ ส่งนิติกรส่งศาล
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -530,16 +534,23 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
+    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
 
     <script>
+      /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านบนกระดาษ
+         ธุรการกองกฎหมายบันทึกผลการลงนามจริง (สแกน + วันที่ + ที่เก็บฉบับจริง) ที่ l3WetSign.stayObjection
+         ประธานฯ ไม่ต้องเข้าระบบ / ไม่อัปโหลดไฟล์เอง — ส่งกลับ → นิติกร 3b-01 (STAY_SENDBACK.LAWYER + ปลดล็อก) */
       const STEP_CODE = "LAW0098";
       const STEP = Activity103.stepByCode(STEP_CODE);
+      const DOC_KEY = "stayObjection";
+      const DOC_LABEL = "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ";
       let currentCase = null;
-      let signedDraftFiles = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -549,16 +560,12 @@
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* ขั้นก่อนหน้าคือ LAW0097 (นิติกร จัดทำคำชี้แจงคัดค้าน ที่ 10-3b-01) แต่
-         STAY_STEPS ไม่ได้ export ผ่าน Activity103.STEPS (เป็นคนละอาเรย์กับสาย
-         หลัก) จึงระบุ statusCode ของขั้นก่อนหน้าตรงๆ แทนการไล่ index เหมือน
-         หน้าสายหลัก (เช่น 10-3-08) */
+      /* รับเฉพาะเคสลูก (-B) ที่ ผอ.กองเห็นชอบ/ล็อกแล้ว (L3B_PENDING_CHAIRMAN_SIGN) */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const prev = Activity103.stepByCode("LAW0097");
-        const found = Activity103.getCase(id, prev ? prev.statusCode : null);
-
-        if (!found || !Activity103.isStayObjectionCase(found)) {
+        const pending = Activity103.pendingStatusFor(STEP.page);
+        const found = Activity103.getCase(id, pending);
+        if (!found || found.statusCode !== pending || !Activity103.isStayObjectionCase(found)) {
           currentCase = null;
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
@@ -566,6 +573,46 @@
         }
         currentCase = found;
         populate();
+        ECMISWetSign.renderRecorder("wetSignRecorder", {
+          docKey: DOC_KEY,
+          docLabel: DOC_LABEL,
+          signerLabel: chairmanLabel(),
+          caseObj: currentCase,
+          noteLabel: "ข้อสั่งการประธานกรรมการ / ฉบับจริงอยู่ที่ / หมายเหตุ",
+          notePlaceholder: "เช่น ได้รับฉบับจริงแล้ว เก็บที่ธุรการกองกฎหมาย (ระบุข้อสั่งการประธานกรรมการ ถ้ามี)",
+        });
+      }
+
+      function chairmanLabel() {
+        return ECMIS103.signerLabel("chairman");
+      }
+
+      function esc(t) {
+        return String(t == null ? "" : t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function warn(title, text) {
+        Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
+      }
+
+      function dueText(c) {
+        const iso = c.l3StayDueDate || c.dueDate;
+        if (!iso) return "-";
+        return /^\d{4}-\d{2}-\d{2}/.test(String(iso)) ? ECMIS103.formatThaiDate(String(iso).slice(0, 10)) : String(iso);
+      }
+
+      function reviewText(r, code) {
+        if (!r) return "-";
+        const sig = (currentCase.l3Signatures || {})[code];
+        return [
+          "ผล: " + (r.decision === "RETURN" ? "ส่งกลับ" : "เห็นชอบ"),
+          "ความเห็น: " + (r.notes || "-"),
+          "ยืนยันในระบบ: " + (r.reviewedBy || "-") + " เมื่อ " + ((sig && sig.signedAt) || r.reviewedAt || "-"),
+        ].join("\n");
       }
 
       function populate() {
@@ -576,134 +623,151 @@
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
-        ECMIS103.renderAttachments(
-          "f_stayObjectionFiles",
-          c.l3StayObjectionAttachments,
-        );
-        ECMIS103.renderAttachments(
-          "f_staySupportingFiles",
-          c.l3StayObjectionSupportingAttachments,
-        );
-      }
+        ECMIS103.setText("f_dueDate", dueText(c));
 
-      function doneAndBack(text) {
-        Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: text,
-          timer: 1900,
-          showConfirmButton: false,
-        }).then(ECMIS103.goInbox);
-      }
+        ECMIS103.setText("f_draftVersion", "ร่างครั้งที่ " + (c.l3StayObjectionVersion || 1));
+        ECMIS103.renderAttachments("f_memoFiles", c.l3StayObjectionMemoAttachments);
+        ECMIS103.renderAttachments("f_supportingFiles", c.l3StayObjectionSupportingAttachments);
+        ECMIS103.setText("f_groupReview", reviewText(c.l3StayGroupReview, "LAW0097A"));
+        ECMIS103.setText("f_directorReview", reviewText(c.l3StayDirectorReview, "LAW0097B"));
+        ECMIS103.setText("f_forwardTo", c.officer || ECMIS103.signerLabel("case_legal_officer"));
 
-      function handleSignedDraftChange(input) {
-        if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = [
-          "pdf",
-          "doc",
-          "docx",
-          "xls",
-          "xlsx",
-          "png",
-          "jpg",
-          "jpeg",
-        ];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          if (file.size > maxSizeBytes) {
-            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          signedDraftFiles.push(file);
+        const live = !!(c.l3LiveDocs || {})[DOC_KEY];
+        document.getElementById("legacyDocGroup").classList.toggle("d-none", live);
+        if (!live) ECMIS103.renderAttachments("f_stayObjectionFiles", c.l3StayObjectionAttachments);
+        ECMISWetSign.renderPrintDocs("printDocs", c, {
+          docs: [{ docKey: DOC_KEY, label: DOC_LABEL, fileName: DOC_LABEL + " " + (c.blackCaseNo || "") }],
         });
-        input.value = "";
-        renderSignedDraftList();
-      }
-
-      function removeSignedDraft(index) {
-        signedDraftFiles.splice(index, 1);
-        renderSignedDraftList();
-      }
-
-      function renderSignedDraftList() {
-        const listEl = document.getElementById("signedDraftList");
-        if (!listEl) return;
-        if (!signedDraftFiles.length) {
-          listEl.innerHTML = "";
-          return;
-        }
-        listEl.innerHTML = signedDraftFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return (
-              '<div class="l3-attachment-row">' +
-              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
-              file.name +
-              ' <span style="color: #94a3b8">(' +
-              sizeMb +
-              " MB)</span></div>" +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeSignedDraft(' +
-              idx +
-              ')"><i class="fa-solid fa-trash-can"></i></button>' +
-              "</div>"
-            );
-          })
-          .join("");
+        const lock = (c.l3DocLock || {})[DOC_KEY];
+        ECMIS103.setText(
+          "f_lockBadge",
+          lock ? "ล็อกฉบับจริงครั้งที่ " + lock.version + " — " + lock.lockedAt : "ยังไม่ล็อก (สำนวนเดิม)",
+        );
       }
 
       function submitForm() {
-        if (!signedDraftFiles.length) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาแนบไฟล์ร่างคำชี้แจง (ลงนามแล้ว)",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
-        const notes =
-          document.getElementById("in_signNotes").value.trim() || "-";
+        if (!currentCase) return;
+        const missing = ECMISWetSign.validate("wetSignRecorder");
+        if (missing) return warn("ข้อมูลไม่ครบถ้วน", missing);
+        const recordedBy = ECMIS103.signerLabel("admin_legal");
+        const wet = ECMISWetSign.collect("wetSignRecorder", {
+          docKey: DOC_KEY,
+          signerRole: "chairman",
+          signerName: chairmanLabel(),
+          recordedBy: recordedBy,
+        });
+        const rec = wet[DOC_KEY];
+        const forwardTo = currentCase.officer || ECMIS103.signerLabel("case_legal_officer");
 
-        ECMIS103.openSignatureModal(
-          {
-            title: "ลงนามคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
-            signer: ECMIS103.signerLabel("chairman"),
-            certId: "PACC-CHAIRMAN-2569-103B",
-          },
-          (image) => {
-            Activity103.sign(currentCase.id, STEP_CODE, image);
-            Activity103.advance(currentCase.id, STEP_CODE, {
-              l3StayObjectionChairmanNotes: notes,
-              l3StayObjectionSignedAttachments: signedDraftFiles.map(
-                (f) => f.name,
-              ),
-            });
-            doneAndBack("ลงนามคำชี้แจงคัดค้านเรียบร้อยแล้ว");
-          },
-        );
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันบันทึกผลการลงนามจริงคำชี้แจงคัดค้าน?",
+          html: `
+ <div class="emd-summary">
+ <p><strong>คดี:</strong> ${esc(currentCase.id)} (${esc(currentCase.blackCaseNo || "-")})</p>
+ <p><strong>ลงนามโดย:</strong> ${esc(rec.signerName)} เมื่อ ${esc(rec.signedDate)} (ฉบับล็อกครั้งที่ ${esc(rec.version)})</p>
+ <p><strong>ไฟล์สแกน:</strong> ${esc(rec.scanFiles.join(", "))}</p>
+ <p><strong>ฉบับจริงอยู่ที่ / หมายเหตุ:</strong> ${esc(rec.note || "-")}</p>
+ <p><strong>ครบกำหนดยื่นคำชี้แจง:</strong> ${esc(dueText(currentCase))}</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ${esc(forwardTo)} ส่งคำชี้แจงคัดค้านต่อศาล</p>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันบันทึกผลและส่งนิติกร",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#16a34a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103.openSignatureModal(
+            {
+              title: "ยืนยันบันทึกผลการลงนามจริงในระบบ",
+              signer: recordedBy,
+              certId: "PACC-LEGAL-ADMIN-2569-103B",
+            },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image, { signer: recordedBy });
+              Activity103.advance(currentCase.id, STEP_CODE, {
+                l3WetSign: Object.assign({}, currentCase.l3WetSign, wet),
+                /* ฟิลด์เดิมที่หน้าเก่าอ่าน — คงไว้ให้สอดคล้องกับฉบับลงนามจริง */
+                l3StayObjectionSignedAttachments: rec.scanFiles.slice(),
+                l3StayObjectionChairmanNotes: rec.note || "-",
+                assignedRole: "case_legal_officer",
+              });
+              Swal.fire({
+                icon: "success",
+                title: "บันทึกผลการลงนามจริงสำเร็จ!",
+                text: "ส่ง " + forwardTo + " ส่งคำชี้แจงคัดค้านต่อศาลเรียบร้อยแล้ว",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
+      }
+
+      /* ส่งกลับแก้ไข — ประธานฯ ไม่ลงนาม / แก้ไขด้วยลายมือ → นิติกร 3b-01 (ปลดล็อก พิมพ์ฉบับใหม่) */
+      function returnForm() {
+        if (!currentCase) return;
+        const back = Activity103.STAY_SENDBACK.LAWYER;
+        Swal.fire({
+          icon: "warning",
+          title: "ส่งกลับให้นิติกรแก้ไข?",
+          html:
+            '<div class="emd-summary"><p>ประธานกรรมการ ป.ป.ท. ไม่ลงนามหรือแก้ไขเอกสารด้วยลายมือ — ระบบจะปลดล็อกคำชี้แจงคัดค้าน ' +
+            "ให้นิติกรแก้ไขและเสนอใหม่ตามลำดับชั้น (พิมพ์ฉบับใหม่)</p></div>",
+          input: "textarea",
+          inputLabel: "เหตุผล / ประเด็นที่ต้องแก้ไข (จำเป็น)",
+          inputPlaceholder: "เช่น ประธานกรรมการให้แก้ไขข้อ 3",
+          inputValidator: (v) => (!v || !v.trim() ? "กรุณาระบุเหตุผลการส่งกลับ" : undefined),
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันส่งกลับแก้ไข",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          const reason = String(res.value || "").trim();
+          const recordedBy = ECMIS103.signerLabel("admin_legal");
+          ECMIS103.openSignatureModal(
+            { title: "ยืนยันส่งกลับแก้ไขในระบบ", signer: recordedBy, certId: "PACC-LEGAL-ADMIN-2569-103B" },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image, { signer: recordedBy });
+              Activity103.advance(
+                currentCase.id,
+                STEP_CODE,
+                Object.assign(
+                  {
+                    status: back.status,
+                    statusCode: back.statusCode,
+                    statusBadge: "bg-danger text-white",
+                    assignedRole: back.assignedRole,
+                    l3Step: null,
+                    l3StepSeq: 0,
+                    l3bSendBackNotes: reason,
+                    l3bSendBackBy: "ธุรการกองกฎหมาย (ประธานกรรมการ ป.ป.ท. ไม่ลงนาม/แก้ไขด้วยลายมือ)",
+                    l3bSendBackAt: ECMIS103.formatThaiDateTime(new Date()),
+                  },
+                  ECMISWetSign.unlockDocs(currentCase, [DOC_KEY]),
+                ),
+              );
+              Swal.fire({
+                icon: "success",
+                title: "ส่งกลับแก้ไขสำเร็จ!",
+                text: "ส่งกลับให้ " + (currentCase.officer || ECMIS103.signerLabel("case_legal_officer")) + " แก้ไขเรียบร้อยแล้ว",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
       }
 
       /* ---- shell chrome (theme / font size / dropdown) ---- */
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

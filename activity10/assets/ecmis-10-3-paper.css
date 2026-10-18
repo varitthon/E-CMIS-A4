@@ -1,0 +1,524 @@
+/* =====================================================================
+   E-CMIS 10.3 — กระดาษเอกสารราชการสำหรับ "ตัวอย่างเอกสารสด"
+   แม่แบบ T1 บันทึกข้อความ / T2 หนังสือภายนอก / T3 คำให้การ (ค.๓)
+   ให้หน้าตาใกล้เคียง PDF ต้นฉบับใน docs/10.3 mockup/ref doc
+   (ใช้คู่กับ assets/ecmis-10-3-docs.js)
+   ===================================================================== */
+
+:root {
+  --l3p-red: #d61f26;
+  --l3p-blue: #2f5bd3;
+  --l3p-ink: #111827;
+  --l3p-dot: #6b7280;
+  --l3p-indent: 2.5cm;
+}
+
+/* ---------------------------------------------------------- SPLIT (form | doc) */
+.l3-split.l3-split--doc {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.l3-split--doc .l3-split-preview {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+.l3-split--doc .l3-split-form {
+  display: flex;
+  flex-direction: column;
+}
+.l3-split--doc .l3-split-form .form-card {
+  flex: 1;
+  margin-bottom: 0;
+}
+.l3-split--doc .l3-doc-viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+.l3-split--doc .l3-doc-pageframe {
+  flex: 1;
+  min-height: 560px;
+  height: auto;
+  max-height: 900px;
+  display: block;
+}
+@media (max-width: 1024px) {
+  .l3-split.l3-split--doc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------ viewer control bar */
+.l3-doc-controlbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8em;
+  color: var(--text-title);
+  background: var(--bg-body);
+}
+.l3-doc-viewmode {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.l3-doc-viewmode button {
+  border: 0;
+  background: var(--bg-card);
+  color: var(--text-title);
+  padding: 4px 10px;
+  font-size: 1em;
+  cursor: pointer;
+}
+.l3-doc-viewmode button.is-active {
+  background: #1e3a8a;
+  color: #fff;
+}
+.l3-doc-pagenav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.l3-doc-pagenav button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+}
+.l3-doc-pagenav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ----------------------------------------------------------------- page stack */
+.l3p-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: max-content;
+  margin: 0 auto;
+}
+.l3p-stack.is-single .l3p-page:not(.is-current) {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ A4 sheet */
+.l3p-page {
+  position: relative;
+  box-sizing: border-box;
+  width: 210mm;
+  height: 297mm;
+  padding: 25mm 20mm 20mm 30mm;
+  background: #fff;
+  color: var(--l3p-ink);
+  font-family: "Sarabun", "TH Sarabun New", sans-serif;
+  font-size: 14pt;
+  line-height: 1.55;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.l3p-page p {
+  margin: 0;
+}
+.l3p-content {
+  position: relative;
+}
+.l3p-measure {
+  position: absolute;
+  left: -99999px;
+  top: 0;
+  visibility: hidden;
+  box-shadow: none;
+  height: auto;
+}
+
+/* page decorations */
+.l3p-pageno {
+  position: absolute;
+  top: 12mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.l3p-secret {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--l3p-red);
+  font-family: "Prompt", sans-serif;
+  font-weight: 800;
+  font-size: 26pt;
+  line-height: 1;
+}
+.l3p-secret.is-top {
+  top: 4mm;
+}
+.l3p-secret.is-bottom {
+  bottom: 4mm;
+}
+.l3p-cont {
+  position: absolute;
+  right: 20mm;
+  bottom: 12mm;
+}
+.l3p-slogan {
+  position: absolute;
+  left: 30mm;
+  right: 20mm;
+  bottom: 9mm;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------- stamps */
+.l3p-stamp {
+  font-family: "Prompt", sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.l3p-stamp-urgent {
+  color: var(--l3p-red);
+  font-size: 28pt;
+}
+.l3p-stamp-copy {
+  color: var(--l3p-blue);
+  font-size: 30pt;
+  text-align: center;
+}
+.l3p-garuda {
+  display: block;
+  object-fit: contain;
+}
+.l3p-garuda.is-sm {
+  width: 1.5cm;
+  height: 1.5cm;
+}
+.l3p-garuda.is-lg {
+  width: 3cm;
+  height: 3cm;
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------------- lines */
+.l3p-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.l3p-key {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.l3p-key.is-lg {
+  font-size: 17pt;
+}
+.l3p-key.is-plain {
+  font-weight: 400;
+}
+.l3p-dot {
+  flex: 1 1 auto;
+  min-width: 1.6cm;
+  border-bottom: 1px dotted var(--l3p-dot);
+  padding: 0 4px;
+  min-height: 1.4em;
+  word-break: break-word;
+}
+.l3p-dot.is-fixed {
+  flex: 0 0 auto;
+}
+.l3p-empty {
+  color: #9ca3af;
+}
+
+/* --------------------------------------------------------- body paragraphs */
+.l3p-heading {
+  margin-top: 8px;
+  padding-left: var(--l3p-indent);
+  font-weight: 700;
+}
+.l3p-heading u {
+  text-decoration: underline;
+}
+.l3p-para {
+  text-indent: var(--l3p-indent);
+  text-align: justify;
+  word-break: break-word;
+}
+.l3p-para.no-indent {
+  text-indent: 0;
+}
+.l3p-para.is-list {
+  text-indent: 0;
+  padding-left: var(--l3p-indent);
+}
+.l3p-para strong {
+  font-weight: 700;
+}
+.l3p-gap {
+  height: 10px;
+}
+
+/* -------------------------------------------------------- signature block */
+.l3p-sign {
+  margin-left: 45%;
+  text-align: center;
+  margin-top: 12px;
+}
+.l3p-sign-img {
+  height: 1.3cm;
+  max-width: 5cm;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+.l3p-sign-wait {
+  height: 1.3cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 11pt;
+  font-style: italic;
+}
+.l3p-sign-date {
+  color: var(--l3p-blue);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------- memo header (T1) */
+.l3p-memo-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.l3p-memo-title {
+  font-weight: 800;
+  font-size: 25pt;
+  line-height: 1;
+  margin-left: 6px;
+}
+.l3p-recv {
+  position: absolute;
+  top: -14mm;
+  right: -8mm;
+  border: 1.5px solid var(--l3p-blue);
+  color: var(--l3p-blue);
+  padding: 2px 8px;
+  font-size: 10.5pt;
+  line-height: 1.4;
+  min-width: 4.4cm;
+}
+.l3p-recv .l3p-dot {
+  border-bottom-color: var(--l3p-blue);
+}
+
+/* chain of opinions */
+.l3p-opinion {
+  margin-top: 12px;
+}
+.l3p-opinion-title {
+  padding-left: var(--l3p-indent);
+  font-weight: 700;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.l3p-opinion-title u {
+  white-space: nowrap;
+}
+.l3p-opinion-text {
+  border-bottom: 1px dotted var(--l3p-dot);
+  min-height: 1.55em;
+  color: #1d4ed8;
+}
+.l3p-chair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.l3p-chair .l3p-sign {
+  margin-left: 0;
+}
+.l3p-chair-stamp {
+  color: var(--l3p-blue);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------- letter header (T2) */
+.l3p-letter-top {
+  position: relative;
+  min-height: 3cm;
+}
+.l3p-letter-top .l3p-stamp-copy {
+  position: absolute;
+  top: -17mm;
+  left: 0;
+  right: 0;
+}
+.l3p-letter-top .l3p-stamp-urgent {
+  position: absolute;
+  left: 0;
+  top: 0.2cm;
+}
+.l3p-letter-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 4px;
+}
+.l3p-letter-addr {
+  width: 7.2cm;
+}
+.l3p-letter-date {
+  margin-left: 45%;
+  margin-top: 6px;
+}
+.l3p-hang {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 10px;
+  margin-top: 6px;
+}
+.l3p-letter-foot {
+  margin-top: 16px;
+  font-size: 13pt;
+  line-height: 1.45;
+}
+.l3p-ctrlbox {
+  position: absolute;
+  right: 18mm;
+  bottom: 14mm;
+  border: 1.5px solid var(--l3p-blue);
+  color: var(--l3p-blue);
+  padding: 2px 8px;
+  font-size: 10pt;
+  line-height: 1.5;
+  min-width: 5.6cm;
+}
+.l3p-ctrlbox .l3p-line {
+  gap: 4px;
+}
+.l3p-ctrlbox .l3p-dot {
+  border-bottom-color: var(--l3p-blue);
+  min-width: 1.4cm;
+}
+
+/* ------------------------------------------------- court answer (T3) */
+.l3p-answer-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 8px;
+}
+.l3p-answer-top .l3p-left {
+  padding-top: 1cm;
+}
+.l3p-answer-top .l3p-right {
+  text-align: right;
+}
+.l3p-answer-top .l3p-right .l3p-line {
+  justify-content: flex-end;
+  font-weight: 700;
+}
+.l3p-answer-top .l3p-right .l3p-dot {
+  flex: 0 0 3.4cm;
+}
+.l3p-answer-sub {
+  text-align: center;
+  color: var(--l3p-blue);
+  font-weight: 700;
+  font-size: 15pt;
+}
+.l3p-circle {
+  display: inline-block;
+  width: 0.55cm;
+  height: 0.55cm;
+  border: 1.5px solid var(--l3p-ink);
+  border-radius: 50%;
+}
+.l3p-court {
+  text-align: center;
+  margin-top: 8px;
+}
+.l3p-between {
+  display: grid;
+  grid-template-columns: 2.2cm 0.7cm 1fr;
+  align-items: stretch;
+  margin-top: 8px;
+}
+.l3p-between > .l3p-key {
+  align-self: center;
+  font-size: 15pt;
+}
+.l3p-brace {
+  border: 1.5px solid var(--l3p-ink);
+  border-right: 0;
+  border-radius: 14px 0 0 14px;
+}
+.l3p-party {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.1cm;
+}
+.l3p-uline {
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+}
+.l3p-center {
+  text-align: center;
+}
+
+/* ---------------------------------------------------------- draft / form bits */
+.l3-draft-meta {
+  font-size: 0.8em;
+  color: #64748b;
+}
+.l3-actions-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.l3-doc-group-title {
+  font-weight: 700;
+  font-size: 0.86em;
+  color: #1e3a8a;
+  margin: 18px 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.l3-doc-group-title:first-child {
+  margin-top: 0;
+}
+body.dark-mode .l3-doc-group-title {
+  color: #93c5fd;
+}

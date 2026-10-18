@@ -23,9 +23,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -642,7 +642,7 @@
               title="สลับโหมดมืด/สว่าง"
               id="themeBtn"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <button type="button" class="circle-icon-btn" title="การแจ้งเตือน">
               <i class="fa-regular fa-bell"></i>
@@ -721,7 +721,7 @@
         </div>
 
         <!-- Card 1: Read-Only Case Details & Prosecutor Docs -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="รายละเอียดสำนวนคดีและเอกสารอัยการ">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-file-invoice text-primary me-2"></i
@@ -800,7 +800,7 @@
         </div>
 
         <!-- Card 2: Legal Officer Opinion & Group Director Review Summary -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="บันทึกความเห็น (นิติกร) และผลการกลั่นกรอง (ผอ.กลุ่มงาน)">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
@@ -1096,13 +1096,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
 
     <script>
       let currentCase = null;
@@ -1117,7 +1117,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 
@@ -1161,7 +1161,7 @@
         if (savedTheme === "dark") {
           document.body.classList.add("dark-mode");
           if (document.getElementById("themeBtn"))
-            document.getElementById("themeBtn").innerText = "☀️";
+            document.getElementById("themeBtn").innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i>';
         }
       }
 
@@ -1727,7 +1727,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 

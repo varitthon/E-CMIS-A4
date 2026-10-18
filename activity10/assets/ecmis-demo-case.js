@@ -565,6 +565,8 @@
     return Array.from(document.querySelectorAll("input, textarea, select")).filter(function (el) {
       if (el.dataset.demoFilled || el.disabled || el.readOnly) return false;
       if (el.closest(SKIP_AREA)) return false;
+      /* ช่องแสดงผล พ.ศ. ของ ecmis-th-datepicker.js — เติมที่ช่อง type=date จริงแทน แล้วช่องนี้ตามเอง */
+      if (el.classList.contains("th-date-display")) return false;
       if (el.type === "file") return true;
       return isVisible(el) && !isExcluded(describe(el));
     });

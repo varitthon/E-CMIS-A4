@@ -196,8 +196,12 @@
       '<div class="form-card-header"><span><i class="fa-solid fa-scale-balanced text-primary me-2"></i>คำสั่ง/คำพิพากษารายชั้น</span>' +
       '<span style="display:flex;gap:8px;flex-wrap:wrap">' +
       (pageFile().indexOf("22-") === 0 ? "" :
-      '<button type="button" class="btn btn-primary" onclick="openJudgmentDialog(\'' + esc(kase.id) + "')\">" +
-      '<i class="fa-solid fa-plus me-1"></i>บันทึกคำสั่ง/คำพิพากษา</button>' +
+      /* คำพิพากษารายชั้นศาลบันทึกที่หน้าบันทึกผลคำพิพากษา (verdict-form.html) ซึ่งเขียน judgments[] ให้ด้วย
+         popup เดิมเหลือไว้เฉพาะคำสั่งพนักงานอัยการ */
+      '<a class="btn btn-primary" href="verdict-form.html?id=' + encodeURIComponent(kase.id) + '">' +
+      '<i class="fa-solid fa-scale-balanced me-1"></i>บันทึกผลคำพิพากษา</a>' +
+      '<button type="button" class="btn btn-secondary" onclick="openJudgmentDialog(\'' + esc(kase.id) + "')\">" +
+      '<i class="fa-solid fa-plus me-1"></i>บันทึกคำสั่งพนักงานอัยการ</button>' +
       '<button type="button" class="btn btn-secondary" onclick="openInternalNoticeDialog(\'' + esc(kase.id) + "')\">" +
       '<i class="fa-solid fa-bell me-1"></i>แจ้งผลหน่วยงานภายใน</button>') +
       (canAnalyze
@@ -220,7 +224,12 @@
     const host = document.getElementById(PANEL_ID);
     const kase = resolveCase();
     if (!host || !kase) return;
-    host.innerHTML = caseInfoCard(kase) + (JUDGMENT_PAGE_RE.test(pageFile()) ? judgmentPanel(kase) : "");
+    /* การ์ดข้อมูลสำนวนพับไว้ (ECMISPrevStep ใน ecmis-shell.js ห่อจาก data-prev-step) */
+    host.innerHTML =
+      '<div id="ecmis101-caseinfo" data-prev-step="ข้อมูลสำนวน (เลขคดี · ศาล · อายุความ)">' +
+      caseInfoCard(kase) +
+      "</div>" +
+      (JUDGMENT_PAGE_RE.test(pageFile()) ? judgmentPanel(kase) : "");
   }
 
   function mount() {
@@ -243,7 +252,10 @@
     const kase = findCase(caseId);
     if (!kase || !global.Swal) return;
     const tor = A.getTorDetails(kase);
-    const levels = A.JUDGMENT_LEVELS.map((l) => '<option value="' + l.code + '">' + esc(l.name) + "</option>").join("");
+    /* ชั้นศาลย้ายไปบันทึกที่ verdict-form.html — popup นี้รับเฉพาะคำสั่งพนักงานอัยการ */
+    const levels = A.JUDGMENT_LEVELS.filter((l) => l.code === "PROSECUTOR")
+      .map((l) => '<option value="' + l.code + '">' + esc(l.name) + "</option>")
+      .join("");
     const field = (label, inner) => '<div style="text-align:left;margin-bottom:10px"><label style="font-size:.85em;font-weight:600;display:block;margin-bottom:3px">' + label + "</label>" + inner + "</div>";
     const inp = (id, ph, type, val) => '<input id="' + id + '" type="' + (type || "text") + '" class="swal2-input" style="margin:0;width:100%" placeholder="' + (ph || "") + '" value="' + esc(val || "") + '">';
     global.Swal.fire({

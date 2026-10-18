@@ -17,10 +17,11 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
     <style>
       body {
         font-size: var(--base-font-size);
@@ -270,32 +271,6 @@
         color: var(--text-title);
       }
 
-      /* Search Results Table */
-      .search-results-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 0.88em;
-      }
-      .search-results-table th,
-      .search-results-table td {
-        padding: 10px 12px;
-        border: 1px solid var(--border-color);
-        text-align: left;
-      }
-      .search-results-table th {
-        background: var(--bg-body);
-        color: var(--text-title);
-        font-weight: 600;
-      }
-      .search-results-table tr:hover {
-        background: rgba(37, 99, 235, 0.05);
-        cursor: pointer;
-      }
-      .search-results-table tr.table-primary {
-        background: rgba(37, 99, 235, 0.12) !important;
-      }
-
       /* Section แสดงรายละเอียดคดีหลังจากเลือกแล้ว */
       .case-detail-container {
         background: var(--bg-body);
@@ -335,32 +310,6 @@
         margin-left: 6px;
       }
       #complaintIntakeBody { padding: 0 14px 12px; }
-      .complaint-intake-group {
-        font-weight: 700;
-        font-size: 0.82em;
-        color: #64748b;
-        margin: 10px 0 6px;
-        border-bottom: 1px dashed var(--border-color);
-        padding-bottom: 4px;
-      }
-      .complaint-intake-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 8px 16px;
-        margin: 0;
-      }
-      .complaint-intake-grid dt {
-        font-weight: 400;
-        font-size: 0.78em;
-        color: #64748b;
-      }
-      .complaint-intake-grid dd {
-        margin: 0;
-        font-weight: 600;
-        font-size: 0.88em;
-        color: var(--text-title);
-        word-break: break-word;
-      }
 
       .d-none {
         display: none !important;
@@ -442,10 +391,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> /
             <span>ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >รับผลคดีและส่งต่อ ผอ.กองกฎหมาย</span
@@ -466,10 +415,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">3</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">3</span>
             </div>
           </div>
           <div
@@ -548,104 +497,16 @@
         <!-- Form Card -->
         <div class="form-card">
           <div class="form-card-header">
-            <span>📝 แบบฟอร์มรับเรื่อง (ธุรการกองกฎหมาย)</span>
+            <i class="fa-solid fa-file-pen" aria-hidden="true"></i>
+            <span>แบบฟอร์มรับเรื่อง (ธุรการกองกฎหมาย)</span>
           </div>
 
           <div class="form-card-body">
-            <!-- ค้นหาฐานข้อมูลเดิม -->
-            <div class="form-grid-3">
-              <div
-                class="form-group"
-                style="margin-bottom: 0; grid-column: span 2 / span 3"
-              >
-                <label id="lbl_intakeSearch">ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
-                <input
-                  type="text"
-                  id="intakeSearchInput"
-                  class="form-control"
-                  style="width: 100%"
-                  placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
-                  onkeyup="handleIntakeSearchKeyup(event)"
-                />
-              </div>
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  style="width: 100%; margin-top: 20px"
-                  onclick="executeIntakeSearch()"
-                >
-                  🔍 ค้นหาสำนวน
-                </button>
-              </div>
-            </div>
-            <div
-              style="
-                background: var(--bg-body);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                padding: 14px 16px;
-                margin-top: 10px;
-              "
-            >
-              <div
-                style="
-                  font-size: 0.82em;
-                  font-weight: 700;
-                  color: var(--text-title);
-                  margin-bottom: 10px;
-                "
-              >
-                <i class="fa-solid fa-filter me-1"></i>ตัวกรองแบบละเอียด
-              </div>
-              <div class="form-grid-3" style="margin-bottom: 0">
-                <div class="form-group" style="margin-bottom: 0">
-                  <label>เลขดำ ป.ป.ท.</label>
-                  <input
-                    type="text"
-                    id="intakeFilterBlackNo"
-                    class="form-control"
-                    placeholder="เช่น อ. 104/2569"
-                    onkeyup="handleIntakeSearchKeyup(event)"
-                  />
-                </div>
-                <div class="form-group" style="margin-bottom: 0">
-                  <label>จาก</label>
-                  <input
-                    type="text"
-                    id="intakeFilterSource"
-                    class="form-control"
-                    placeholder="หน่วยงานอัยการต้นทาง..."
-                    onkeyup="handleIntakeSearchKeyup(event)"
-                  />
-                </div>
-                <div class="form-group" style="margin-bottom: 0">
-                  <label>เรื่อง</label>
-                  <input
-                    type="text"
-                    id="intakeFilterSubject"
-                    class="form-control"
-                    placeholder="ชื่อเรื่อง / ข้อกล่าวหา..."
-                    onkeyup="handleIntakeSearchKeyup(event)"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="helper-text" style="margin-bottom: 20px">
-              * ค้นหาได้จาก: <strong>เลขสำนวน</strong> (เช่น 2569/001),
-              <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong> (เช่น ปปท. 0012/2568),
-              <strong>ชื่อผู้กล่าวหา</strong> หรือ
-              <strong>ชื่อผู้ถูกกล่าวหา</strong> / กรอก
-              <strong>เลขดำ ป.ป.ท.</strong>, <strong>จาก</strong> หรือ
-              <strong>เรื่อง</strong> เพิ่มเติมเพื่อกรองผลให้แคบลง
-            </div>
-
-            <!-- Search Results Display Panel -->
-            <div
-              id="intakeSearchResults"
-              class="d-none"
-              style="margin-bottom: 20px"
-            ></div>
+            <!-- ค้นหาสำนวน (ไม่บังคับ) — แผงร่วม ECMISCaseSearch.mountPanel (assets/ecmis-case-search.js)
+                 หน้าตา/ตัวกรองเดียวกับหน้านิติกรและหน้า ค้นหาสำนวน · เลือกแล้วเติมฟอร์ม (selectIntakeCase) -->
+            <div id="intakeSearchHost"></div>
+            <!-- ค้นหาสำนวนในกองกฎหมาย (ดูอย่างเดียว) — ตรวจว่ามีสำนวนในระบบแล้วหรือยัง ถ้าไม่พบให้บันทึกรับเรื่องในฟอร์มด้านล่าง -->
+            <div id="lawcaseSearchHost"></div>
 
             <!-- ส่วนแสดงข้อมูลรายละเอียดสำนวนคดี (แสดงหลังกดเลือกจากค้นหา) -->
             <div
@@ -653,11 +514,16 @@
               class="case-detail-container d-none"
             >
               <div class="case-detail-title">
-                📁 รายละเอียดข้อมูลสำนวนคดีที่เลือก
+                <i class="fa-solid fa-folder-open" aria-hidden="true"></i> รายละเอียดข้อมูลสำนวนคดีที่เลือก
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>เลขสำนวน ป.ป.ท.</label>
+                  <label
+                    >เลขสำนวนเรื่องที่
+                    <span class="autofill-tag" id="tag_caseIdAutofill"
+                      ><i class="fa-solid fa-magnifying-glass"></i>เติมจากค้นหาสำนวน</span
+                    ></label
+                  >
                   <input
                     type="text"
                     id="f_caseId"
@@ -719,6 +585,16 @@
                   />
                 </div>
               </div>
+              <!-- เอกสารจากสำนวนเดิม (อ่านอย่างเดียว) — เติมโดย renderSelectedCaseFiles() และบันทึกลงเคสใหม่เป็น paccFiles -->
+              <div id="selectedCaseFilesBox" class="d-none" style="margin-bottom: 12px">
+                <div class="intake-files-title" style="margin-top: 0">
+                  <i class="fa-solid fa-paperclip me-1"></i>เอกสารจากสำนวนเดิม
+                  <span class="autofill-tag"
+                    ><i class="fa-solid fa-magnifying-glass"></i>เติมจากค้นหาสำนวน</span
+                  >
+                </div>
+                <div id="selectedCaseFiles"></div>
+              </div>
               <!-- ข้อมูลต้นทางจากการรับเรื่องร้องเรียน (ศรร./กองบริหารคดี) — แสดงเฉพาะสำนวนที่มี complaintIntake
                    พับไว้ก่อน กดหัวข้อเพื่อดู; อ่านอย่างเดียว เติมโดย renderComplaintIntake() -->
               <details id="complaintIntakeBox" class="complaint-intake-box d-none">
@@ -750,13 +626,14 @@
                 gap: 6px;
               "
             >
-              <span>📥 ข้อมูลการรับจากฝ่ายสารบรรณกลาง</span>
+              <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+              <span>ข้อมูลการรับจากฝ่ายสารบรรณกลาง</span>
             </div>
 
             <div class="form-grid-2">
               <div class="form-group">
                 <label
-                  >เลขสารบรรณกลาง <span style="color: #dc2626">*</span></label
+                  >เลขสารบรรณ <span style="color: #dc2626">*</span></label
                 >
                 <input
                   type="text"
@@ -813,8 +690,9 @@
                 gap: 6px;
               "
             >
+              <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
               <span id="sectionHeaderText"
-                >📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ</span
+                >รายละเอียดหนังสือความเห็นพนักงานอัยการ</span
               >
             </div>
 
@@ -829,7 +707,11 @@
                   class="form-control"
                   onchange="toggleProsecutorCaseTypeDiv()"
                 >
-                  <option value="10.1">คดีอาญาทุจริตและคดีประพฤติมิชอบ</option>
+                  <!-- สามหมวดแรกเข้าสายงาน 10.1 เหมือนกัน (value เดียวกัน) ต่างกันที่ชื่อหมวด
+                       ที่บันทึกลงสำนวน (categoryName = ข้อความของตัวเลือก) -->
+                  <option value="10.1">คดียุติธรรม</option>
+                  <option value="10.1">คดีอาญาทุจริต</option>
+                  <option value="10.1">คดีประพฤติมิชอบ</option>
                   <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
                   <option value="10.3">คดีปกครอง</option>
                 </select>
@@ -914,6 +796,7 @@
                   onchange="
                     toggleProsecutorLevelOtherInput();
                     updateLivePreview();
+                    if (window.ECMISVerdictIntake) ECMISVerdictIntake.refresh();
                   "
                 >
                   <option value="0">ยังไม่มีศาลระบุ</option>
@@ -990,7 +873,7 @@
             <div id="div_criminalCase">
               <div class="form-grid-2">
                 <div class="form-group" id="grp_crimPlaintiffs">
-                  <label>โจทก์</label>
+                  <label>ผู้ฟ้องคดี <span style="color: #dc2626">*</span></label>
                   <div id="crimPlaintiffList"></div>
                   <button
                     type="button"
@@ -998,7 +881,19 @@
                     style="margin-top: 6px"
                     onclick="addCrimPlaintiffRow()"
                   >
-                    <i class="fa-solid fa-plus"></i> เพิ่มโจทก์
+                    <i class="fa-solid fa-plus"></i> เพิ่มผู้ฟ้องคดี
+                  </button>
+                </div>
+                <div class="form-group" id="grp_crimDefendants">
+                  <label>ผู้ถูกฟ้องคดี <span style="color: #dc2626">*</span></label>
+                  <div id="crimDefendantList"></div>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="margin-top: 6px"
+                    onclick="addCrimDefendantRow()"
+                  >
+                    <i class="fa-solid fa-plus"></i> เพิ่มผู้ถูกฟ้องคดี
                   </button>
                 </div>
               </div>
@@ -1080,6 +975,10 @@
                 </div>
               </div>
             </div>
+
+            <!-- ========== บันทึกผลคำพิพากษา (10.1 + กรณีอัยการ 3–9, ไม่บังคับ) ==========
+                 เรนเดอร์โดย assets/ecmis-verdict-intake.js -->
+            <div id="div_verdictRecord" style="display: none"></div>
 
             <!-- ========== เฉพาะหมวด 10.2 การขอเปิดเผยข้อมูลข่าวสาร ==========
                  แสดงแทนช่องเฉพาะงานอัยการ เมื่อเลือกหมวดหมู่ = 10.2.1 -->
@@ -1584,20 +1483,69 @@
                 </div>
               </div>
 
+              <!-- วันที่รับเรื่อง: สารบรรณรับ (บังคับ) และประธานกรรมการ ป.ป.ท. รับ (ถ้ามี) พร้อมเลขรับของแต่ละจุด
+                   วันที่สารบรรณรับเรื่องใช้ id เดิม in_courtReceivedDate → courtReceivedDate
+                   จึงยังเป็นฐานคำนวณปีงบประมาณและกำหนดเวลาของสาย 10.3 เหมือนเดิม -->
               <div class="form-grid-2">
                 <div class="form-group">
                   <label
-                    >วันที่สำนักงาน ป.ป.ท. รับเรื่อง</label
+                    >วันที่สารบรรณรับเรื่อง
+                    <span style="color: #dc2626">*</span></label
                   >
                   <input
                     type="date"
                     id="in_courtReceivedDate"
                     class="form-control"
-                    lang="th-TH-u-ca-buddhist"
                     oninput="this.dataset.touched = '1'; syncCourtFiscalYear(); updateLivePreview()"
                   />
                 </div>
-                <!-- TOR 10.3.1.2 ปีงบประมาณ — คำนวณจากวันที่รับเรื่อง (ต.ค.–ก.ย.) แก้ไขได้ -->
+                <div class="form-group">
+                  <label
+                    >เลขรับ <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="in_courtSarabanNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น สบ.0021/2569"
+                    value="สบ.0021/2569"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label
+                    >วันที่ประธานกรรมการ ป.ป.ท. รับเรื่อง
+                    <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    type="date"
+                    id="in_chairReceivedDate"
+                    class="form-control"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >เลขรับ
+                    <span style="font-weight: 400; color: #64748b"
+                      >(ถ้ามี)</span
+                    ></label
+                  >
+                  <input
+                    type="text"
+                    id="in_chairReceiveNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น ปธ.0012/2569"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <!-- TOR 10.3.1.2 ปีงบประมาณ — คำนวณจากวันที่สารบรรณรับเรื่อง (ต.ค.–ก.ย.) -->
                 <div class="form-group">
                   <label
                     >ปีงบประมาณที่รับเรื่อง</label
@@ -1613,10 +1561,22 @@
                     readonly
                   />
                 </div>
+                <div class="form-group">
+                  <label
+                    >หน่วยงานที่รับเรื่อง</label
+                  >
+                  <input
+                    type="text"
+                    id="in_receivingUnit"
+                    class="form-control"
+                    value="กองกฎหมาย"
+                    oninput="updateLivePreview()"
+                  />
+                </div>
               </div>
 
               <div class="form-group" id="grp_courtPlaintiffs">
-                <label>ผู้ฟ้อง <span style="color: #dc2626">*</span></label>
+                <label>ผู้ฟ้องคดี <span style="color: #dc2626">*</span></label>
                 <div id="courtPlaintiffList"></div>
                 <button
                   type="button"
@@ -1624,12 +1584,12 @@
                   style="margin-top: 6px"
                   onclick="addCourtPlaintiffRow()"
                 >
-                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ฟ้อง
+                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ฟ้องคดี
                 </button>
               </div>
 
               <div class="form-group" id="grp_courtDefendants">
-                <label>ผู้ถูกฟ้อง <span style="color: #dc2626">*</span></label>
+                <label>ผู้ถูกฟ้องคดี <span style="color: #dc2626">*</span></label>
                 <div id="courtDefendantList"></div>
                 <button
                   type="button"
@@ -1637,7 +1597,7 @@
                   style="margin-top: 6px"
                   onclick="addCourtDefendantRow()"
                 >
-                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ถูกฟ้อง
+                  <i class="fa-solid fa-plus"></i> เพิ่มผู้ถูกฟ้องคดี
                 </button>
               </div>
 
@@ -1665,7 +1625,7 @@
                 <label
                   >มูลเหตุแห่งการฟ้องคดี
                   <span style="font-weight: 400; color: #64748b"
-                    >(ค้นหาจากสารบบคดีของสำนักงาน ป.ป.ท. ด้านบน หรือพิมพ์เอง)</span
+                    >(เลือกจาก "ค้นหาสำนวน" ด้านบน หรือพิมพ์เอง)</span
                   ></label
                 >
                 <textarea
@@ -1676,32 +1636,6 @@
                   placeholder="เลือกสำนวนจากผลค้นหาฐานข้อมูลสำนวนคดีเดิม ระบบจะเติมข้อมูลให้"
                   oninput="updateLivePreview()"
                 ></textarea>
-              </div>
-
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขสารบัญ</label>
-                  <input
-                    type="text"
-                    id="in_courtSarabanNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น สบ.0021/2569"
-                    value="สบ.0021/2569"
-                    oninput="updateLivePreview()"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >หน่วยงานที่รับเรื่อง</label
-                  >
-                  <input
-                    type="text"
-                    id="in_receivingUnit"
-                    class="form-control"
-                    value="กองกฎหมาย"
-                    oninput="updateLivePreview()"
-                  />
-                </div>
               </div>
 
               <div class="form-group">
@@ -1955,7 +1889,7 @@
                   align-items: center;
                 "
               >
-                <span>🏷️ กรอกเลขรับกองกฎหมาย</span>
+                <i class="fa-solid fa-tag" aria-hidden="true"></i> <span>กรอกเลขรับกองกฎหมาย</span>
                 <span
                   class="badge"
                   style="background: #16a34a; color: #fff"
@@ -1970,14 +1904,26 @@
                     >เลขรับกองกฎหมาย (กกม.)
                     <span style="color: #dc2626">*</span></label
                   >
-                  <input
-                    type="text"
-                    id="f_lawReceiveNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น 0014/2569"
-                    value="0014/2569"
-                    style="font-weight: 700; color: #1e3a8a"
-                  />
+                  <div style="display: flex; gap: 8px; align-items: stretch">
+                    <input
+                      type="text"
+                      id="f_lawReceiveNo"
+                      class="form-control font-monospace"
+                      placeholder="เช่น 0014/2569"
+                      value="0014/2569"
+                      style="font-weight: 700; color: #1e3a8a; flex: 1; min-width: 0"
+                    />
+                    <button
+                      type="button"
+                      id="btn_lawReceiveFromEOffice"
+                      class="btn btn-secondary"
+                      style="white-space: nowrap"
+                      onclick="fetchLawReceiveNoFromEOffice()"
+                      title="ออกเลขรับกองกฎหมายเลขถัดไป"
+                    >
+                      <i class="fa-solid fa-hashtag me-1" aria-hidden="true"></i>ออกเลขกองกฎหมาย
+                    </button>
+                  </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 0">
                   <label>เจ้าหน้าที่ผู้รับเรื่อง</label>
@@ -2025,12 +1971,20 @@
     </div>
 
     <!-- Scripts -->
+    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-case-search.js?v=20261014_4"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-2.js?v=20261008_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-2.js?v=20261014_6"></script>
+    <script src="assets/ecmis-export.js?v=20261018_1"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261018_3"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261018_5"></script>
+    <script src="assets/ecmis-verdict-doc.js?v=20261018_4"></script>
+    <script src="assets/ecmis-verdict-form.js?v=20261018_6"></script>
+    <script src="assets/ecmis-verdict-intake.js?v=20261018_3"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const roleId = ECMIS.currentRoleId
@@ -2145,6 +2099,7 @@
         if (mapped === undefined) return;
         levelSelect.value = mapped;
         toggleProsecutorLevelOtherInput();
+        if (window.ECMISVerdictIntake) ECMISVerdictIntake.refresh();
       }
 
       /* "อื่นๆ" ในช่องประเภทผู้ยื่นคำขอ (เฉพาะบล็อกคำขอเปิดเผยข้อมูลข่าวสาร) */
@@ -2232,6 +2187,49 @@
         if (typeof syncCourtFiscalYear === "function") syncCourtFiscalYear();
         if (typeof recomputeDueDate === "function") recomputeDueDate();
         updateLivePreview();
+      }
+
+      /* ปุ่ม "ออกเลขกองกฎหมาย" ข้างเลขรับกองกฎหมาย — ต้นแบบจำลองการดึงเลขรับถัดไปจากระบบ E-Office
+         (เลขถัดจากเลขรับสูงสุดของปี พ.ศ. ปัจจุบันในเคสที่มีอยู่และในช่อง) ช่องยังแก้ไขเองได้ */
+      const EOFFICE_FETCH_DELAY_MS = 900;
+      function nextLawReceiveNo() {
+        const beYear = String(new Date().getFullYear() + 543);
+        const numberOf = (no) => {
+          const m = /^(\d+)\/(\d{4})$/.exec(String(no || "").trim());
+          return m && m[2] === beYear ? Number(m[1]) : 0;
+        };
+        const cases = Activity10.getCases ? Activity10.getCases() : [];
+        const current = document.getElementById("f_lawReceiveNo");
+        const highest = Math.max(
+          numberOf(current && current.value),
+          ...cases.map((c) => numberOf(c.lawReceiveNo)),
+        );
+        return `${String(highest + 1).padStart(4, "0")}/${beYear}`;
+      }
+
+      function fetchLawReceiveNoFromEOffice() {
+        const input = document.getElementById("f_lawReceiveNo");
+        const btn = document.getElementById("btn_lawReceiveFromEOffice");
+        if (!input || !btn || btn.disabled) return;
+        const label = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin me-1"></i>กำลังออกเลข...';
+        setTimeout(() => {
+          const receiveNo = nextLawReceiveNo();
+          input.value = receiveNo;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          btn.disabled = false;
+          btn.innerHTML = label;
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: `ออกเลขรับกองกฎหมาย ${receiveNo} แล้ว`,
+            timer: 2200,
+            showConfirmButton: false,
+          });
+        }, EOFFICE_FETCH_DELAY_MS);
       }
 
       function toggleRequestChannelDetail() {
@@ -2383,9 +2381,12 @@
         if (isDisclosure) recomputeDueDate();
         show("div_courtCase", isCourtCase);
         show("div_criminalCase", cat === "10.1");
+        /* การ์ดบันทึกผลคำพิพากษา (10.1 + กรณีอัยการ 3–9) — assets/ecmis-verdict-intake.js */
+        if (window.ECMISVerdictIntake) ECMISVerdictIntake.refresh();
 
         if (cat === "10.1") {
           renderCrimPlaintiffList();
+          renderCrimDefendantList();
         }
 
         if (isCourtCase) {
@@ -2395,21 +2396,13 @@
           syncCourtFiscalYear();
         }
 
-        /* TOR 10.3.1.1(7): สำหรับคดีปกครอง ช่องค้นหาเดิมใช้หามูลเหตุแห่งการฟ้องคดี */
-        const searchLabel = document.getElementById("lbl_intakeSearch");
-        if (searchLabel) {
-          searchLabel.innerText = isCourtCase
-            ? "ค้นหามูลเหตุแห่งการฟ้องคดีจากสารบบคดีของสำนักงาน ป.ป.ท."
-            : "ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)";
-        }
-
         const header = document.getElementById("sectionHeaderText");
         if (header) {
           header.innerText = isDisclosure
-            ? "📋 รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร"
+            ? "รายละเอียดคำขอเปิดเผยข้อมูลข่าวสาร"
             : isCourtCase
-              ? "📋 รายละเอียดคดีปกครอง"
-              : "📋 รายละเอียดหนังสือความเห็นพนักงานอัยการ";
+              ? "รายละเอียดคดีปกครอง"
+              : "รายละเอียดหนังสือความเห็นพนักงานอัยการ";
         }
 
         const srcLabel = document.getElementById("lbl_source");
@@ -2530,7 +2523,7 @@
         updateLivePreview();
       }
 
-      /* TOR 10.1.1.2(2) โจทก์/จำเลยของคดีอาญา — เพิ่มได้หลายราย ไม่บังคับ */
+      /* TOR 10.1.1.2(2) ผู้ฟ้องคดี/ผู้ถูกฟ้องคดีของคดีอาญา — เพิ่มได้หลายราย บังคับอย่างน้อยฝ่ายละ 1 ราย */
       let crimPlaintiffs = ["พนักงานอัยการ / สำนักงาน ป.ป.ท."];
       function renderCrimPlaintiffList() {
         renderCourtPartyList(
@@ -2554,6 +2547,29 @@
         crimPlaintiffs[idx] = val;
       }
 
+      let crimDefendants = [""];
+      function renderCrimDefendantList() {
+        renderCourtPartyList(
+          "crimDefendantList",
+          crimDefendants,
+          "updateCrimDefendant",
+          "removeCrimDefendantRow",
+          "เช่น ชื่อผู้ถูกฟ้องคดี / จำเลย",
+        );
+      }
+      function addCrimDefendantRow() {
+        crimDefendants.push("");
+        renderCrimDefendantList();
+      }
+      function removeCrimDefendantRow(idx) {
+        crimDefendants.splice(idx, 1);
+        if (!crimDefendants.length) crimDefendants = [""];
+        renderCrimDefendantList();
+      }
+      function updateCrimDefendant(idx, val) {
+        crimDefendants[idx] = val;
+      }
+
       /* รวมค่าช่อง TOR 10.1.1.2 ของคดีอาญา (ว่าง = ไม่ส่งฟิลด์ เพื่อไม่ทับค่า fallback เดิม) */
       function collectCriminalCaseFields() {
         const val = (id) => {
@@ -2565,6 +2581,8 @@
         const out = {};
         const plaintiffs = clean(crimPlaintiffs);
         if (plaintiffs.length) out.plaintiffs = plaintiffs;
+        const defendants = clean(crimDefendants);
+        if (defendants.length) out.defendants = defendants;
         if (val("in_crimBlackNo")) out.courtBlackNo = val("in_crimBlackNo");
         if (val("in_crimRedNo")) out.courtRedNo = val("in_crimRedNo");
         if (val("in_crimCourtName")) out.courtName = val("in_crimCourtName");
@@ -2770,6 +2788,8 @@
           courtReceivedDate: val("in_courtReceivedDate") || val("in_physicalDocDate"),
           defendants: defendants,
           courtSarabanNo: val("in_courtSarabanNo"),
+          chairReceivedDate: val("in_chairReceivedDate"),
+          chairReceiveNo: val("in_chairReceiveNo"),
           courtRemark: val("in_courtRemark"),
           receivingUnit: val("in_receivingUnit") || "กองกฎหมาย",
           attachmentFileNames: courtAttachedFiles.map((f) => f.name),
@@ -2789,6 +2809,9 @@
           ["in_orderedTo", "กรุณาระบุสั่งถึง"],
           ["in_summonsName", "กรุณาเลือกชื่อหมาย"],
           ["in_courtDeadlineDays", "กรุณาระบุจำนวนวันที่ศาลให้ทำ"],
+          ["in_courtReceivedDate", "กรุณาระบุวันที่สารบรรณรับเรื่อง"],
+          ["in_courtSarabanNo", "กรุณาระบุเลขรับของสารบรรณ"],
+          ["in_chairReceivedDate", "กรุณาระบุวันที่ประธานกรรมการ ป.ป.ท. รับเรื่อง"],
         ];
         for (const [id, msg] of checks) {
           const el = document.getElementById(id);
@@ -2799,7 +2822,9 @@
               text: msg,
               confirmButtonColor: "#1e3a8a",
             });
-            if (el) el.focus();
+            /* ช่องวันที่ถูกซ่อนไว้หลังช่องแสดงผล พ.ศ. (id + "_th") จึงโฟกัสช่องแสดงผลแทน */
+            const focusEl = document.getElementById(id + "_th") || el;
+            if (focusEl) focusEl.focus();
             return false;
           }
         }
@@ -2868,7 +2893,7 @@
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 รายการ",
+            text: "กรุณาระบุชื่อผู้ฟ้องคดีอย่างน้อย 1 รายการ",
             confirmButtonColor: "#1e3a8a",
           });
           return false;
@@ -2879,7 +2904,7 @@
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุผู้ถูกฟ้องอย่างน้อย 1 รายการ",
+            text: "กรุณาระบุผู้ถูกฟ้องคดีอย่างน้อย 1 รายการ",
             confirmButtonColor: "#1e3a8a",
           });
           return false;
@@ -3217,124 +3242,50 @@
         return true;
       }
 
+      /* แผงค้นหาสำนวน (แผงร่วม) — สร้างครั้งแรกที่ถูกเรียก (ตัวสาธิตอาจเรียกก่อน DOMContentLoaded) */
+      function intakeSearchPanel() {
+        const host = document.getElementById("intakeSearchHost");
+        if (!host) return null;
+        return (
+          host._caseSearch ||
+          ECMISCaseSearch.mountPanel(host, {
+            prefix: "intake",
+            onSelect: (c) => selectIntakeCase(c.id),
+            hint: 'คลิกแถวเพื่อดูรายละเอียด แล้วกด "เลือกสำนวนนี้" เพื่อเติมข้อมูลลงฟอร์ม',
+          })
+        );
+      }
+      intakeSearchPanel();
+      ECMISCaseSearch.mountPanel(document.getElementById("lawcaseSearchHost"), {
+        source: "legal",
+        notFound: "ไม่พบสำนวนในกองกฎหมาย — บันทึกรับเรื่องใหม่ได้ในแบบฟอร์มด้านล่าง",
+      });
+
       function executeIntakeSearch() {
-        const getVal = (id) => {
-          const el = document.getElementById(id);
-          return el ? el.value.trim().toLowerCase() : "";
-        };
-
-        const q = getVal("intakeSearchInput");
-        const filterBlackNo = getVal("intakeFilterBlackNo");
-        const filterSource = getVal("intakeFilterSource");
-        const filterSubject = getVal("intakeFilterSubject");
-
-        const resultsContainer = document.getElementById("intakeSearchResults");
-        if (!resultsContainer) return;
-
-        if (!q && !filterBlackNo && !filterSource && !filterSubject) {
-          Swal.fire({
-            icon: "info",
-            title: "กรุณากรอกคำค้นหา",
-            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา, ผู้ถูกกล่าวหา หรือกรอกเลขดำ ป.ป.ท./จาก/เรื่อง",
-            timer: 1500,
-            showConfirmButton: false,
-          });
-          resultsContainer.classList.add("d-none");
-          return;
-        }
-
-        const cases = Activity10.getPaccIntakeDatabase
-          ? Activity10.getPaccIntakeDatabase()
-          : [];
-        const matched = cases.filter((c) => {
-          const matchesQuery =
-            !q ||
-            c.id.toLowerCase().includes(q) ||
-            (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
-            (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
-            (c.redNo && c.redNo.toLowerCase().includes(q)) ||
-            (c.accuser && c.accuser.toLowerCase().includes(q)) ||
-            (c.accused && c.accused.toLowerCase().includes(q)) ||
-            (c.section && c.section.toLowerCase().includes(q)) ||
-            /* สำนวนจากการรับเรื่องร้องเรียน: ค้นด้วยเลขรับ/เลขติดตาม/PIN/เลขสารบัญได้ด้วย */
-            (Activity10.paccIntakeSearchText &&
-              Activity10.paccIntakeSearchText(c).includes(q)) ||
-            c.title.toLowerCase().includes(q);
-
-          const matchesBlackNo =
-            !filterBlackNo ||
-            (c.blackNo && c.blackNo.toLowerCase().includes(filterBlackNo));
-          const matchesSource =
-            !filterSource ||
-            (c.source && c.source.toLowerCase().includes(filterSource));
-          const matchesSubject =
-            !filterSubject ||
-            (c.title && c.title.toLowerCase().includes(filterSubject));
-
-          return (
-            matchesQuery && matchesBlackNo && matchesSource && matchesSubject
-          );
-        });
-
-        resultsContainer.classList.remove("d-none");
-
-        if (matched.length === 0) {
-          resultsContainer.innerHTML = `
- <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
- <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${q}"
- </div>
- `;
-          return;
-        }
-
-        let html = `
- <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
- <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
- <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
- <button type="button" class="ctrl-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="document.getElementById('intakeSearchResults').classList.add('d-none')" title="ปิดแถบผลการค้นหา"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
- </div>
- <div style="overflow-x: auto;">
- <table class="search-results-table">
- <thead>
- <tr>
- <th>เลขสำนวน ป.ป.ท.</th>
- <th>ชื่อผู้กล่าวหา</th>
- <th>ชื่อผู้ถูกกล่าวหา</th>
- <th>เรื่องสำนวน</th>
- <th>มาตรา</th>
- </tr>
- </thead>
- <tbody>
- `;
-
-        matched.forEach((c) => {
-          const cleanId = c.id.replace(/^.*?-/, "");
-          const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, "_")}`;
-          html += `
- <tr id="${safeRowId}" onclick="selectIntakeCase('${c.id}')" title="คลิกเพื่อเลือกสำนวนนี้และแสดงข้อมูลเต็ม">
- <td>
- <strong class="font-monospace" style="color:var(--text-title);">${cleanId}</strong>
- ${c.paccCaseNo && c.paccCaseNo !== cleanId ? `<div style="font-size:0.8em; color:#64748b;">${c.paccCaseNo}</div>` : ""}
- </td>
- <td>${c.accuser || "-"}</td>
- <td style="font-weight:600;">${(window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-"}</td>
- <td>${c.title}</td>
- <td style="white-space:nowrap;">${c.section || "-"}</td>
- </tr>
- `;
-        });
-
-        html += `
- </tbody>
- </table>
- </div>
- </div>
- `;
-
-        resultsContainer.innerHTML = html;
+        const panel = intakeSearchPanel();
+        if (panel) panel.search();
       }
 
       let selectedIntakeCaseData = null;
+
+      function renderSelectedCaseFiles(target) {
+        const box = document.getElementById("selectedCaseFilesBox");
+        const list = document.getElementById("selectedCaseFiles");
+        if (!box || !list) return;
+        const files = target.files || [];
+        box.classList.toggle("d-none", files.length === 0);
+        list.innerHTML = ECMISCaseSearch.renderFileList(files);
+      }
+
+      function previewIntakeCase(caseId) {
+        const panel = intakeSearchPanel();
+        if (panel) panel.preview(caseId);
+      }
+
+      function closeIntakeCasePreview() {
+        const panel = intakeSearchPanel();
+        if (panel) panel.closePreview();
+      }
 
       function selectIntakeCase(caseId) {
         /* ค้นจากฐานข้อมูลสำนวน ป.ป.ท. ชุดเดียวกับตารางผลค้นหาเท่านั้น และเทียบ id ตรงตัว
@@ -3366,6 +3317,9 @@
           intakeCatEl &&
           target.category &&
           (!intakeCatEl.value || intakeCatEl.value === "10.1") &&
+          /* หมวด 10.1 มีสามตัวเลือก value เดียวกัน — ตั้ง .value ซ้ำจะเด้งกลับไปตัวเลือกแรก
+             จึงไม่แตะเมื่อหมวดตรงกันอยู่แล้ว */
+          intakeCatEl.value !== target.category &&
           Array.from(intakeCatEl.options).some((o) => o.value === target.category)
         ) {
           intakeCatEl.value = target.category;
@@ -3374,8 +3328,12 @@
         }
 
         // Fill selectedCaseDetailCard fields
-        if (document.getElementById("f_caseId"))
-          document.getElementById("f_caseId").value = cleanId;
+        /* แสดงเลขเดียวกับที่บันทึกลงเคสใหม่ (paccCaseNo) และไฮไลต์ว่าเติมมาจาก "ค้นหาสำนวน" */
+        const caseNoEl = document.getElementById("f_caseId");
+        if (caseNoEl) {
+          caseNoEl.value = ECMISCaseSearch.caseNo(target);
+          caseNoEl.classList.add("autofill-from-search");
+        }
         if (document.getElementById("f_blackNo"))
           document.getElementById("f_blackNo").value = target.blackNo || "-";
         if (document.getElementById("f_subject"))
@@ -3384,6 +3342,13 @@
           document.getElementById("f_complainant").value = target.accuser || "";
         if (document.getElementById("f_accused"))
           document.getElementById("f_accused").value = target.accused || "";
+        /* 10.1: เติมผู้ถูกฟ้องคดีจากสำนวนที่เลือก ถ้ายังไม่ได้กรอก */
+        const pickedDefendant =
+          target.defendant && target.defendant !== "-" ? target.defendant : target.accused;
+        if (pickedDefendant && !crimDefendants.some((x) => String(x || "").trim())) {
+          crimDefendants = [pickedDefendant];
+          renderCrimDefendantList();
+        }
 
         /* TOR 10.3.1.1(7): เติมมูลเหตุแห่งการฟ้องคดีจากสำนวนที่เลือก (คดีปกครอง) */
         const causeEl = document.getElementById("in_causeOfSuit");
@@ -3413,6 +3378,7 @@
           requesterEl.value = target.accuser || "";
 
         renderComplaintIntake(target);
+        renderSelectedCaseFiles(target);
 
         // Hide search results panel after selecting
         const resultsContainer = document.getElementById("intakeSearchResults");
@@ -3427,16 +3393,17 @@
         }
 
         // Highlight row
-        const rows = document.querySelectorAll("#intakeSearchResults tbody tr");
-        rows.forEach((r) => r.classList.remove("table-primary"));
-        const safeRowId = `intake-row-${cleanId.replace(/[^a-zA-Z0-9]/g, "_")}`;
-        const selectedRow = document.getElementById(safeRowId);
-        if (selectedRow) selectedRow.classList.add("table-primary");
+        document
+          .querySelectorAll("#intakeSearchResults tbody tr")
+          .forEach((r) => {
+            r.classList.toggle("table-primary", r.dataset.caseId === target.id);
+            r.classList.remove("is-previewing");
+          });
 
         Swal.fire({
           icon: "success",
           title: "เลือกสำนวนคดีสำเร็จ!",
-          text: `เชื่อมโยงและแสดงข้อมูลสำนวน ${cleanId} เรียบร้อยแล้ว`,
+          text: `เชื่อมโยงและแสดงข้อมูลสำนวน ${ECMISCaseSearch.caseNo(target)} เรียบร้อยแล้ว`,
           timer: 1500,
           showConfirmButton: false,
         });
@@ -3551,7 +3518,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 
@@ -3573,7 +3540,7 @@
                 });
                 toast.fire({
                   icon: "success",
-                  title: `✍️ บันทึกเสียง: "${transcript}"`,
+                  title: `บันทึกเสียง: "${transcript}"`,
                 });
               }
             }
@@ -3632,6 +3599,25 @@
          — กรณีความเห็น/คำสั่งพนักงานอัยการ และ ระดับศาล
          ทั้งสองช่องมีเครื่องหมาย * จึงต้องบังคับกรอกเมื่อเลือก "อื่นๆ" */
       function validateProsecutorFields() {
+        /* 10.1: ผู้ฟ้องคดี / ผู้ถูกฟ้องคดี อย่างน้อยฝ่ายละ 1 ราย */
+        const partyChecks = [
+          [crimPlaintiffs, "crimPlaintiffList", "กรุณาระบุผู้ฟ้องคดีอย่างน้อย 1 รายการ"],
+          [crimDefendants, "crimDefendantList", "กรุณาระบุผู้ถูกฟ้องคดีอย่างน้อย 1 รายการ"],
+        ];
+        for (const [list, listId, msg] of partyChecks) {
+          if (!list.some((x) => String(x || "").trim())) {
+            Swal.fire({
+              icon: "warning",
+              title: "ข้อมูลไม่ครบถ้วน",
+              text: msg,
+              confirmButtonColor: "#1e3a8a",
+            });
+            const first = document.querySelector("#" + listId + " input");
+            if (first) first.focus();
+            return false;
+          }
+        }
+
         const caseTypeSel = document.getElementById("in_prosecutorCaseType");
         if (
           caseTypeSel &&
@@ -3677,6 +3663,19 @@
       }
 
       function submitBoardIntakeForm() {
+        /* การ์ดบันทึกผลคำพิพากษาไม่บังคับ แต่ถ้ากรอกแล้วต้องเลือกชั้นศาลและตัวเลขถูกต้อง */
+        const verdictErrors = window.ECMISVerdictIntake
+          ? ECMISVerdictIntake.validateBeforeSubmit()
+          : [];
+        if (verdictErrors.length) {
+          Swal.fire({
+            icon: "warning",
+            title: "ตรวจสอบบันทึกผลคำพิพากษา",
+            html: verdictErrors.map((e) => "<div>" + e + "</div>").join(""),
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
         const centralSarabanNo =
           (document.getElementById("in_centralSarabanNo")
             ? document.getElementById("in_centralSarabanNo").value.trim()
@@ -3785,8 +3784,8 @@
             title: "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน",
             text:
               isDisclosure || isCourtCase
-                ? "ต้องมี เลขสารบรรณกลาง และเลขรับกองกฎหมาย"
-                : "ต้องมี เลขสารบรรณกลาง, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
+                ? "ต้องมี เลขสารบรรณ และเลขรับกองกฎหมาย"
+                : "ต้องมี เลขสารบรรณ, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
             confirmButtonColor: "#1e3a8a",
           });
           return;
@@ -3844,23 +3843,37 @@
                   l2AppellantAgency: val102("in_appellantAgency"),
                   relatedRequestNo: val102("in_relatedRequestNo"),
                 }
+              /* ขั้น ผอ.กองกฎหมายมอบหมาย (04 / 10-2-01 / 10-3-02) ถูกตัดออก 2026-10-14 —
+                 ธุรการส่งตรงถึง ผอ.กลุ่มงานตามกิจกรรมย่อย
+                 ดู docs/remove-dir-legal-assign/plan.md */
               : isDisclosure
               ? {
-                  status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
-                  statusCode: "L2_PENDING_DIRECTOR_ASSIGN",
+                  status: "ผอ.กลุ่มงานความเห็นแย้งตรวจประเด็นกฎหมาย",
+                  statusCode: "L2_PENDING_GROUP_ASSIGN",
                   l2Step: "LAW0037",
                   l2StepSeq: 6,
+                  assignedRole: "group_director",
+                  officer: "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)",
+                  workflowStep: 3,
                 }
               : isCourtCase
                 ? {
-                    status: "ผอ.กองกฎหมายพิจารณามอบหมาย",
-                    statusCode: "L3_PENDING_DIRECTOR_ASSIGN",
+                    status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร",
+                    statusCode: "L3_PENDING_GROUP_ASSIGN",
                     l3Step: "LAW0085",
                     l3StepSeq: 1,
+                    assignedRole: "case_group_director",
+                    officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+                    workflowStep: 3,
                   }
                 : {
-                    status: "ผอ.กองกฎหมายพิจารณา",
-                    statusCode: "PENDING_DIRECTOR",
+                    status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณา",
+                    statusCode: "PENDING_GROUP_DIRECTOR",
+                    assignedRole: "group_director",
+                    officer: "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)",
+                    targetDirectorName:
+                      "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)",
+                    workflowStep: 4,
                   };
 
             const newCase = Activity10.addCase({
@@ -3872,6 +3885,11 @@
                  เป็นเคสเดิม (id หรือ paccCaseNo ตรงกัน) แล้วเขียนทับเคสที่กำลังดำเนินการอยู่
                  เคสรับเรื่องใหม่ต้องได้เลขของตัวเองเสมอ แล้วค่อยผูกสำนวนเดิมหลังสร้าง (ด้านล่าง) */
               category: category,
+              categoryName: (() => {
+                const catSel = document.getElementById("in_category");
+                const opt = catSel && catSel.options[catSel.selectedIndex];
+                return opt ? opt.text.trim() : "";
+              })(),
               title: finalTitle,
               source: source,
               docNo: docNo,
@@ -3893,11 +3911,11 @@
               centralSarabanNo: centralSarabanNo,
               physicalDocDate: physicalDocDate,
               statusBadge: "bg-primary text-white",
-              assignedRole: isAppealIntake ? "case_bureau_admin" : "dir_legal",
-              officer: isAppealIntake
-                ? "นางนิชาดา ธุรการกิจ"
-                : "นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)",
-              workflowStep: 3,
+              assignedRole: isAppealIntake
+                ? "case_bureau_admin"
+                : routing.assignedRole,
+              officer: isAppealIntake ? "นางนิชาดา ธุรการกิจ" : routing.officer,
+              workflowStep: routing.workflowStep || 3,
             });
 
             // ผูกสำนวน ป.ป.ท. เดิมที่เลือกจากผลค้นหา (อ้างอิงเท่านั้น ไม่รวมเคส)
@@ -3905,8 +3923,16 @@
               Activity10.updateCase(newCase.id, {
                 paccCaseNo: selectedIntakeCaseData.paccCaseNo || "",
                 paccSourceId: selectedIntakeCaseData.id,
+                /* เอกสารจากสำนวนเดิม [{ name, href }] ให้ขั้นตอนถัดไปเปิดดูได้ */
+                paccFiles: (selectedIntakeCaseData.files || []).map((f) => ({
+                  name: f.name,
+                  href: f.href,
+                })),
               });
             }
+
+            /* บันทึกผลคำพิพากษาที่กรอกในการ์ด (ถ้ามี) ลงสำนวนใหม่ — ครบ = บันทึก, ไม่ครบ = ร่าง */
+            if (window.ECMISVerdictIntake) ECMISVerdictIntake.saveFor(newCase.id);
 
             Activity10.savePhysicalDocIntake(newCase.id, {
               centralSarabanNo: centralSarabanNo,

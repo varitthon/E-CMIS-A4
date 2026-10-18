@@ -185,7 +185,7 @@ t("วันที่ที่กรอกแต่อ่านไม่ออ�
 
 console.log("buildAct7Patch — ผลลัพธ์รายจุดเชื่อม");
 const historyOf = (patch) => patch.act7History[patch.act7History.length - 1];
-t("B1 AGREE → PENDING_DIRECTOR_RESOLUTION/dir_legal, signedExecutiveOrder 'เห็นชอบให้ทำความเห็นแย้ง'", () => {
+t("B1 AGREE → PENDING_GROUP_RESOLUTION/group_director (ขั้น 11 ผอ.กองถูกตัด), signedExecutiveOrder 'เห็นชอบให้ทำความเห็นแย้ง'", () => {
   const r = buildAct7Patch(
     "B1",
     { id: "คดี-1" },
@@ -206,8 +206,8 @@ t("B1 AGREE → PENDING_DIRECTOR_RESOLUTION/dir_legal, signedExecutiveOrder 'เ
   assert.equal(p.signedExecutiveOrder, "เห็นชอบให้ทำความเห็นแย้ง");
   assert.equal(p.boardNoticeDocNo, "ปป 0001/9");
   assert.equal(p.boardNoticeDate, "2026-08-13");
-  assert.equal(p.statusCode, "PENDING_DIRECTOR_RESOLUTION");
-  assert.equal(p.assignedRole, "dir_legal");
+  assert.equal(p.statusCode, "PENDING_GROUP_RESOLUTION");
+  assert.equal(p.assignedRole, "group_director");
   assert.equal(r.advance, null);
   assert.equal(r.submit, "submitLegalAdminResolutionIntake");
 });
@@ -243,7 +243,7 @@ t("B2 → ฟิลด์ l2 รอบ 2 + advance L2-RECEIVE-BOARD-ROUND2 → d
   const withText = buildAct7Patch("B2", {}, { decision: "OTHER", noticeNo: "a", noticeDate: "2026-10-01", detail: "รายละเอียด" }, BY, AT).patch;
   assert.equal(withText.l2BoardResolutionRound2Text, "รายละเอียด");
 });
-t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, advance L3-19 → dir_legal", () => {
+t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, advance L3-19 → case_group_director", () => {
   const r = buildAct7Patch(
     "B3",
     { id: "คดี-3" },
@@ -269,7 +269,7 @@ t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, advance L3-19 → dir_
   assert.equal(p.l3ResolutionNotice.notes, "-");
   assert.equal(p.l3ResolutionNotice.acknowledgedBy, null);
   assert.equal(p.l3ResolutionNoticeDocNo, "ปป 0003/4501");
-  assert.equal(p.assignedRole, "dir_legal");
+  assert.equal(p.assignedRole, "case_group_director");
   assert.deepEqual(r.advance, { module: "Activity103", stepCode: "L3-19" });
 });
 t("B4 → มติอุทธรณ์ + L2_PENDING_APPEAL_NOTICE_DRAFT/case_tracking_secretary", () => {

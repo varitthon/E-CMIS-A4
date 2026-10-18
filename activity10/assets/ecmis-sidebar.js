@@ -1,8 +1,9 @@
 /* ==========================================================================
    E-CMIS กิจกรรมที่ 10 — แถบเมนูข้างซ้าย (sidebar) สร้างด้วย JS ทั้งหมด
    รูปแบบเดียวกับ intake-investigation/assets/ecmis-sidebar.js (ก4/ก5):
-   แบรนด์ · สวิตช์หมวดงาน 10.1/10.2/10.3 · ส่วนท้าย (ผู้ใช้ · ย่อ/ขยาย · ⓘ · ออกจากระบบ)
-   ไม่มีรายการเมนูตามสิทธิ์ (ซ่อนทั้งหมดตามที่ตกลง) และไม่มีลิงก์ไปกิจกรรมที่ 7
+   แบรนด์ · กลุ่มเมนู (งานของฉัน: รายการงาน + หนังสือแจ้ง ·
+   ค้นหา · รายงาน — กลุ่มรายงานเห็นเฉพาะสายงานกฎหมาย) · ส่วนท้าย (ผู้ใช้ · ย่อ/ขยาย · ออกจากระบบ)
+   ไม่มีลิงก์ไปกิจกรรมที่ 7
    (ใช้สวิตช์ "จำลองผลจากกิจกรรมที่ 7 (bypass)" ในเมนูโปรไฟล์แทนตามเดิม)
    โหลดแบบ defer หลัง ecmis-shell.js — ใช้ getCurrentRole/ecmisRoleDisplay/confirmLogout ของ shell
    ========================================================================== */
@@ -13,17 +14,32 @@
   const COLLAPSED_KEY = 'ecmis_sidebar_collapsed';
   const INBOX = '01-work-inbox.html';
   const MOBILE_MAX = 900;
-  const CATEGORIES = [
-    { id: '10.1', label: 'คดีอาญาทุจริตฯ' },
-    { id: '10.2', label: 'ข้อมูลข่าวสาร' },
-    { id: '10.3', label: 'คดีปกครอง' }
-  ];
   const ICONS = {
     chevron: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>',
-    logout: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>'
+    logout: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
+    inbox: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+    search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+    report: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
+    book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/></svg>'
   };
-
-  let activeCategory = null;
+  /* กลุ่มเมนู (หัวข้อคงที่) — เลือกหมวดงาน 10.1/10.2/10.3 ที่การ์ดในหน้ารายการงาน;
+     legalOnly = เห็นเฉพาะบทบาทสายงานกฎหมาย (Activity10.isLegalViewRole) */
+  const NAV_GROUPS = [
+    { id: 'work', label: 'งานของฉัน', items: [
+      { href: INBOX, label: 'รายการงาน', icon: 'inbox' },
+      { href: 'notices.html', label: 'หนังสือแจ้งจากหน่วยงานอื่น', icon: 'mail', count: noticeCount }
+    ] },
+    { id: 'search', label: 'ค้นหา', items: [
+      { href: 'search-case.html', label: 'ค้นหาสำนวน', icon: 'search' }
+    ] },
+    { id: 'reports', label: 'รายงาน', legalOnly: true, items: [
+      { href: 'board-report.html', label: 'รายงานผลตามมติคณะกรรมการ', icon: 'report' },
+      { href: 'registry.html', label: 'สารบบคำวินิจฉัย/คำพิพากษา', icon: 'book' },
+      { href: 'dasdbord.html', label: 'แดชบอร์ดสถิติ', icon: 'chart' }
+    ] }
+  ];
 
   function esc(v) {
     return String(v == null ? '' : v).replace(/[&<>"']/g, function (ch) {
@@ -35,19 +51,49 @@
     return global.location.pathname.split('/').pop() || INBOX;
   }
 
-  /* หมวดงานของหน้าปัจจุบันจากชื่อไฟล์: 10-2-* = 10.2, 10-3* = 10.3,
-     หน้า 03–22 (สาย 10.1 เดิม) = 10.1; กล่องงานอ่านจาก ?cat (ค่าตั้งต้น 10.1);
-     หน้ารับเรื่องกลาง (02) และแดชบอร์ด ไม่ผูกหมวด */
-  function categoryFromPage() {
-    const file = currentFile();
-    if (file === INBOX) {
-      const cat = new URLSearchParams(global.location.search).get('cat');
-      return CATEGORIES.some(function (c) { return c.id === cat; }) ? cat : '10.1';
+  function sessionRole() {
+    try { return global.sessionStorage.getItem('ecmis_role') || ''; } catch (e) { return ''; }
+  }
+
+  function isLegalRole() {
+    const A = global.Activity10;
+    return !!(A && typeof A.isLegalViewRole === 'function' && A.isLegalViewRole(sessionRole()));
+  }
+
+  /* จำนวนหนังสือแจ้งถึงหน่วยของผู้ใช้ (ตรรกะเดียวกับหน้า notices.html) — ข้อมูลยังไม่พร้อมคืน 0 */
+  function noticeCount() {
+    const A = global.Activity10;
+    if (!A || typeof A.buildAlerts !== 'function' || typeof global.getCurrentRole !== 'function') return 0;
+    try {
+      const unit = typeof global.ecmisCurrentUnit === 'function' ? global.ecmisCurrentUnit() : '';
+      return A.buildAlerts(A.getCases(), global.getCurrentRole(), new Date(), { unit: unit })
+        .filter(function (a) { return a.kind === 'notice'; }).length;
+    } catch (e) {
+      return 0;
     }
-    if (/^10-2-/.test(file)) return '10.2';
-    if (/^10-3/.test(file)) return '10.3';
-    if (/^\d{2}-/.test(file) && !/^0[12]-/.test(file)) return '10.1';
-    return null;
+  }
+
+  function linkMarkup(item, file) {
+    const on = file === item.href;
+    const n = item.count ? item.count() : 0;
+    return '<a class="ecmis-sidebar-nav-link' + (on ? ' active' : '') + '" href="' + item.href + '"'
+      + (on ? ' aria-current="page"' : '') + ' title="' + esc(item.label) + (n ? ' (' + n + ')' : '') + '">'
+      + ICONS[item.icon] + '<span class="ecmis-sidebar-label">' + esc(item.label) + '</span>'
+      + (n ? '<span class="ecmis-sidebar-count" aria-label="' + n + ' รายการ">' + n + '</span>' : '')
+      + '</a>';
+  }
+
+  function navMarkup() {
+    const file = currentFile();
+    const legal = isLegalRole();
+    return '<nav class="ecmis-sidebar-nav" aria-label="เมนูหลัก">'
+      + NAV_GROUPS.filter(function (g) { return !g.legalOnly || legal; }).map(function (g) {
+        return '<div class="ecmis-sidebar-group" data-group="' + g.id + '">'
+          + '<div class="ecmis-sidebar-group-title">' + esc(g.label) + '</div>'
+          + g.items.map(function (item) { return linkMarkup(item, file); }).join('')
+          + '</div>';
+      }).join('')
+      + '</nav>';
   }
 
   function isCollapsed() {
@@ -58,17 +104,6 @@
     const roleId = typeof global.getCurrentRole === 'function' ? global.getCurrentRole() : '';
     const cur = typeof global.ecmisRoleDisplay === 'function' ? global.ecmisRoleDisplay(roleId) : null;
     return cur || { name: 'ผู้ใช้งาน', role: 'สำนักงาน ป.ป.ท.', av: '?' };
-  }
-
-  function switchMarkup() {
-    return '<div class="ecmis-sidebar-switch" role="tablist" aria-label="สลับหมวดงานกฎหมายในทางคดี">'
-      + CATEGORIES.map(function (c) {
-        const on = c.id === activeCategory;
-        return '<a class="ecmis-sidebar-switch-btn' + (on ? ' active' : '') + '" href="' + INBOX + '?cat=' + c.id + '"'
-          + ' role="tab" aria-selected="' + on + '" data-cat="' + c.id + '" title="' + c.id + ' ' + esc(c.label) + '">'
-          + '<strong>' + c.id + '</strong><span>' + esc(c.label) + '</span></a>';
-      }).join('')
-      + '</div>';
   }
 
   function footerMarkup() {
@@ -110,15 +145,6 @@
     else setCollapsed(!document.body.classList.contains('ecmis-sidebar-collapsed'));
   }
 
-  /* อยู่ในกล่องงานแล้ว: สลับหมวดในหน้าเดิม ไม่ต้องโหลดหน้าใหม่ */
-  function onSwitchClick(e, btn) {
-    if (currentFile() !== INBOX || typeof global.selectCategory !== 'function') return;
-    e.preventDefault();
-    const cat = btn.getAttribute('data-cat');
-    if (cat !== activeCategory) global.selectCategory(cat);
-    document.body.classList.remove('ecmis-sidebar-mobile-open');
-  }
-
   /* ผูกครั้งเดียวที่ <aside> — ปุ่มข้างในถูกสร้างใหม่ทุกครั้งที่ render() */
   function bind(sidebar) {
     sidebar.addEventListener('click', function (e) {
@@ -128,10 +154,7 @@
       }
       if (e.target.closest('.ecmis-sidebar-logout')) {
         logout(e);
-        return;
       }
-      const tab = e.target.closest('[data-cat]');
-      if (tab) onSwitchClick(e, tab);
     });
   }
 
@@ -161,24 +184,12 @@
     sidebar.innerHTML = '<a class="ecmis-sidebar-brand" href="' + INBOX + '" title="กลับหน้ารายการงาน">'
       + '<img class="ecmis-sidebar-logo" src="pacc_logo.png" alt="ตราสัญลักษณ์ ป.ป.ท." />'
       + '<span class="ecmis-sidebar-brand-text"><strong>E-CMIS</strong><small>ระบบกฎหมายในทางคดี</small></span></a>'
-      + switchMarkup()
+      + navMarkup()
       + '<div class="ecmis-sidebar-spacer"></div>'
       + footerMarkup();
-    if (typeof global.injectPageInfoIcon === 'function') global.injectPageInfoIcon();
   }
 
-  /* กล่องงานเรียกเมื่อเลือก/ยุบหมวด (selectCategory) ให้แท็บตรงกับการ์ดที่เปิดอยู่ */
-  function setActiveCategory(cat) {
-    activeCategory = cat || null;
-    document.querySelectorAll('#ecmisSidebar .ecmis-sidebar-switch-btn').forEach(function (btn) {
-      const on = btn.getAttribute('data-cat') === activeCategory;
-      btn.classList.toggle('active', on);
-      btn.setAttribute('aria-selected', String(on));
-    });
-  }
-
-  activeCategory = categoryFromPage();
-  global.ECMISSidebar = { render: render, toggle: toggle, setActiveCategory: setActiveCategory };
+  global.ECMISSidebar = { render: render, toggle: toggle };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
   else render();

@@ -23,11 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -328,10 +328,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร วิเคราะห์ผลคำพิพากษา</span
             >
@@ -351,10 +351,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -415,7 +415,9 @@
         </div>
 
         <div id="pageBody">
-          <div class="form-card">
+          <!-- เหตุผลที่ถูกส่งกลับจาก ผอ.กลุ่มงาน (10-3v-05) / ผอ.กอง (10-3v-06) -->
+          <div id="sendBackNotice"></div>
+          <div class="form-card" data-prev-step="ข้อมูลคำพิพากษาศาลปกครองชั้นต้น">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -452,11 +454,11 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
@@ -717,6 +719,76 @@
                   </label>
                 </div>
               </div>
+
+              <!-- ความเห็นควรอุทธรณ์ — แสดงเฉพาะแพ้/แพ้บางส่วน (หน้าตาเดียวกับ
+                   radio ใน 10-3v-19-lawyer-register.html) ไม่มีแนบไฟล์ -->
+              <div class="form-group d-none" id="grp_appealOpinion">
+                <label
+                  >ความเห็นควรอุทธรณ์
+                  <span style="color: #dc2626">*</span></label
+                >
+                <div
+                  class="decision-grid"
+                  style="grid-template-columns: repeat(2, 1fr)"
+                >
+                  <label
+                    class="decision-card"
+                    id="label_opinion_appeal"
+                    onclick="selectAppealOpinion('APPEAL')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_appealOpinion"
+                      id="opinion_appeal"
+                      value="APPEAL"
+                      style="accent-color: #16a34a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #16a34a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-file-signature me-1"></i
+                        >เห็นควรอุทธรณ์
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (จัดทำคำอุทธรณ์)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_opinion_board"
+                    onclick="selectAppealOpinion('BOARD')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_appealOpinion"
+                      id="opinion_board"
+                      value="BOARD"
+                      style="accent-color: #dc2626; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #dc2626;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-rotate-left me-1"></i
+                        >เห็นควรไม่อุทธรณ์
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (เสนอมติต่อบอร์ด)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -821,10 +893,10 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
     <script src="assets/ecmis-capture.js"></script>
 
     <script>
@@ -836,6 +908,19 @@
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
       let appealDeadlineTouched = false;
+
+      /* ความเห็นควรอุทธรณ์ (แพ้/แพ้บางส่วน) — key ตรงกับ APPEAL_CONSIDER_BRANCHES
+         ที่ 10-3v-18/19/20 ใช้ต่อ (l8ProposedBranch) */
+      const APPEAL_OPINION_LABELS = {
+        APPEAL: "เห็นควรอุทธรณ์",
+        BOARD: "เห็นควรไม่อุทธรณ์",
+      };
+      const RESULT_TYPE_BY_VALUE = {
+        "ชนะ": "WIN",
+        "แพ้": "LOSE",
+        "แพ้บางส่วน": "PARTIAL",
+      };
+      const APPEAL_TYPE_BY_VALUE = { "ยื่น": "YES", "ไม่ยื่น": "NO" };
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -907,7 +992,55 @@
         }
 
         document.getElementById("in_verdictReadDate").value = todayISO();
+        renderSendBackNotice(c);
+        restoreDraft(c);
         updateProposedBranch();
+      }
+
+      /* การ์ดเตือนเหตุผลที่ถูกส่งกลับ (l3VerdictSendBackNotes จาก 10-3v-05/06)
+         สร้างด้วย textContent — ข้อความมาจากผู้ใช้ */
+      function renderSendBackNotice(c) {
+        const host = document.getElementById("sendBackNotice");
+        host.innerHTML = "";
+        if (!c.l3VerdictSendBackNotes) return;
+        const note = document.createElement("div");
+        note.className = "l3-note l3-note-warn";
+        note.style.marginBottom = "16px";
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-rotate-left";
+        const text = document.createElement("div");
+        const strong = document.createElement("strong");
+        strong.textContent =
+          "ถูกส่งกลับจาก " + (c.l3VerdictSendBackBy || "ผู้บังคับบัญชา") + ": ";
+        text.appendChild(strong);
+        text.appendChild(document.createTextNode(c.l3VerdictSendBackNotes));
+        note.appendChild(icon);
+        note.appendChild(text);
+        host.appendChild(note);
+      }
+
+      /* เคสที่ถูกส่งกลับ — เติมค่าที่นิติกรเคยบันทึกไว้กลับเข้าฟอร์ม
+         (ไฟล์แนบประกอบความเห็นต้องแนบใหม่ เพราะเก็บไว้แค่ชื่อไฟล์) */
+      function restoreDraft(c) {
+        const setVal = (id, v) => {
+          if (v) document.getElementById(id).value = v;
+        };
+        setVal("in_verdictIssues", c.l3VerdictIssues);
+        setVal("in_verdictSummary", c.l3VerdictSummary);
+        setVal("in_verdictOpinionText", c.l3VerdictOpinionText);
+        setVal("in_verdictReadDate", c.l3VerdictReadDate);
+        if (c.l3AppealDeadline) {
+          setVal("in_appealDeadline", c.l3AppealDeadline);
+          appealDeadlineTouched = true;
+        }
+        const resultType = RESULT_TYPE_BY_VALUE[c.l3VerdictResult];
+        if (!resultType) return;
+        selectVerdictResult(resultType);
+        const appealType = APPEAL_TYPE_BY_VALUE[c.l3AppealByPlaintiff];
+        if (resultType === "WIN" && appealType) selectAppealByPlaintiff(appealType);
+        if (resultType !== "WIN" && APPEAL_OPINION_LABELS[c.l8ProposedBranch]) {
+          selectAppealOpinion(c.l8ProposedBranch);
+        }
       }
 
       /* ---- ผลคดี / วันครบกำหนดอุทธรณ์ / แนวทางที่เสนอ ---- */
@@ -963,18 +1096,61 @@
         updateProposedBranch();
       }
 
+      /* การ์ด "ความเห็นควรอุทธรณ์" — แพทเทิร์นเดียวกับ selectDecision() ใน
+         10-3v-19-lawyer-register.html (APPEAL = active-win, BOARD = active-lose) */
+      function selectAppealOpinion(type) {
+        const cards = {
+          APPEAL: document.getElementById("label_opinion_appeal"),
+          BOARD: document.getElementById("label_opinion_board"),
+        };
+        Object.values(cards).forEach((el) => {
+          if (el) el.className = "decision-card";
+        });
+
+        const t = (type || "").toUpperCase();
+        if (t === "APPEAL") {
+          document.getElementById("opinion_appeal").checked = true;
+          if (cards.APPEAL) cards.APPEAL.className = "decision-card active-win";
+        } else if (t === "BOARD") {
+          document.getElementById("opinion_board").checked = true;
+          if (cards.BOARD) cards.BOARD.className = "decision-card active-lose";
+        }
+
+        updateProposedBranch();
+      }
+
+      /* ล้าง radio กลุ่มหนึ่ง + คืน class การ์ดเป็นค่าตั้งต้น */
+      function clearRadioGroup(name, labelIds) {
+        document
+          .querySelectorAll('input[name="' + name + '"]')
+          .forEach((el) => (el.checked = false));
+        labelIds.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.className = "decision-card";
+        });
+      }
+
       function onResultChange() {
         const result = getResult();
-        const grp = document.getElementById("grp_appealByPlaintiff");
-        grp.classList.toggle("d-none", result !== "ชนะ");
-        if (result !== "ชนะ") {
-          document
-            .querySelectorAll('input[name="in_appealByPlaintiff"]')
-            .forEach((el) => (el.checked = false));
-          ["label_appeal_yes", "label_appeal_no"].forEach((id) => {
-            const el = document.getElementById(id);
-            if (el) el.className = "decision-card";
-          });
+        const isWin = result === "ชนะ";
+        const isLose = result === "แพ้" || result === "แพ้บางส่วน";
+        document
+          .getElementById("grp_appealByPlaintiff")
+          .classList.toggle("d-none", !isWin);
+        document
+          .getElementById("grp_appealOpinion")
+          .classList.toggle("d-none", !isLose);
+        if (!isWin) {
+          clearRadioGroup("in_appealByPlaintiff", [
+            "label_appeal_yes",
+            "label_appeal_no",
+          ]);
+        }
+        if (!isLose) {
+          clearRadioGroup("in_appealOpinion", [
+            "label_opinion_appeal",
+            "label_opinion_board",
+          ]);
         }
         updateProposedBranch();
       }
@@ -993,6 +1169,14 @@
       function getResult() {
         const el = document.querySelector(
           'input[name="in_verdictResult"]:checked',
+        );
+        return el ? el.value : "";
+      }
+
+      /* "APPEAL" / "BOARD" หรือ "" ถ้ายังไม่เลือก */
+      function getAppealOpinion() {
+        const el = document.querySelector(
+          'input[name="in_appealOpinion"]:checked',
         );
         return el ? el.value : "";
       }
@@ -1029,7 +1213,12 @@
           return;
         }
         const branch = Activity103.VERDICT_BRANCHES[key];
-        el.textContent = branch.label + " → " + branch.proposal;
+        const opinion = APPEAL_OPINION_LABELS[getAppealOpinion()];
+        el.textContent =
+          branch.label +
+          " → " +
+          branch.proposal +
+          (key === "APPEAL_CONSIDER" && opinion ? " (" + opinion + ")" : "");
       }
 
       /* ---- แนบเอกสารประกอบความเห็น (เหมือน pattern ของ 10-3-04) ---- */
@@ -1152,6 +1341,21 @@
           });
           return;
         }
+        const appealOpinion = getAppealOpinion();
+        if ((result === "แพ้" || result === "แพ้บางส่วน") && !appealOpinion) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุความเห็นควรอุทธรณ์",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        /* ชนะคดี → ไม่มีความเห็นควรอุทธรณ์ (null ทั้งคู่) */
+        const proposedAppealBranch = result === "ชนะ" ? null : appealOpinion;
+        const appealOpinionLabel = proposedAppealBranch
+          ? APPEAL_OPINION_LABELS[proposedAppealBranch]
+          : null;
         const opinionText = document
           .getElementById("in_verdictOpinionText")
           .value.trim();
@@ -1185,7 +1389,12 @@
             branch.label +
             " → " +
             branch.proposal +
-            "</strong>",
+            "</strong>" +
+            (appealOpinionLabel
+              ? "<br />ความเห็นควรอุทธรณ์: <strong>" +
+                appealOpinionLabel +
+                "</strong>"
+              : ""),
           showCancelButton: true,
           confirmButtonText: "ยืนยันและส่งต่อ",
           cancelButtonText: "ยกเลิก",
@@ -1210,6 +1419,11 @@
               (f) => f.name,
             ),
             l3ProposedBranch: branchKey,
+            l8ProposedBranch: proposedAppealBranch,
+            l3AppealOpinion: appealOpinionLabel,
+            /* ส่งใหม่แล้ว — ล้างเหตุผลส่งกลับรอบก่อน */
+            l3VerdictSendBackNotes: null,
+            l3VerdictSendBackBy: null,
             assignedRole: "case_group_director",
             officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
           });
@@ -1223,7 +1437,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

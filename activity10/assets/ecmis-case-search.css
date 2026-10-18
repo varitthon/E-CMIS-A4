@@ -1,0 +1,241 @@
+/* ค้นหาสำนวน — สไตล์ร่วมของหน้า 02-board-intake.html และ search-case.html
+   (ตารางผลค้นหา · แผงรายละเอียด · รายการเอกสาร · ป้ายเติมจากค้นหาสำนวน · ข้อมูลรับเรื่องร้องเรียน) */
+
+/* Search Results Table */
+.search-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.88em;
+}
+.search-results-table th,
+.search-results-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+.search-results-table th {
+  background: var(--bg-body);
+  color: var(--text-title);
+  font-weight: 600;
+}
+.search-results-table tr:hover {
+  background: rgba(37, 99, 235, 0.05);
+  cursor: pointer;
+}
+.search-results-table tr.table-primary {
+  background: rgba(37, 99, 235, 0.12) !important;
+}
+/* แถวที่กำลังดูรายละเอียด (ยังไม่เลือก) */
+.search-results-table tr.is-previewing {
+  background: rgba(37, 99, 235, 0.08);
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+.search-results-table tbody tr:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: -2px;
+}
+/* แผงรายละเอียดสำนวนใต้ตารางผลค้นหา — กดแถวเพื่อดู แล้วกด "เลือกสำนวนนี้" เพื่อเติมฟอร์ม */
+.intake-preview {
+  margin-top: 12px;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 14px 16px;
+}
+.intake-preview-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 10px;
+}
+.intake-preview-no {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: #1e3a8a;
+}
+.intake-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px 20px;
+  margin: 0;
+}
+.intake-preview-grid dt {
+  font-size: 0.78em;
+  color: #64748b;
+  font-weight: 600;
+}
+.intake-preview-grid dd {
+  margin: 2px 0 0;
+  font-size: 0.9em;
+  color: var(--text-title);
+  word-break: break-word;
+}
+.intake-preview-grid .is-wide { grid-column: 1 / -1; }
+.intake-preview .complaint-intake-group { margin-top: 12px; }
+.intake-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+/* รายการเอกสารในสำนวน (แผงรายละเอียด และการ์ดสำนวนที่เลือก) */
+.intake-files-title {
+  font-weight: 700;
+  color: var(--text-title);
+  font-size: 0.88em;
+  margin: 14px 0 8px;
+}
+.intake-file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-card);
+  margin-bottom: 6px;
+  font-size: 0.88em;
+}
+.intake-file-row .intake-file-name { flex: 1; min-width: 0; word-break: break-word; }
+.intake-file-row .btn { height: 28px; padding: 0 10px; font-size: 0.85em; white-space: nowrap; }
+/* ช่องที่เติมจาก "ค้นหาสำนวน" */
+.autofill-from-search {
+  border-color: #2563eb !important;
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.autofill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-size: 0.75em;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.complaint-intake-group {
+  font-weight: 700;
+  font-size: 0.82em;
+  color: #64748b;
+  margin: 10px 0 6px;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 4px;
+}
+.complaint-intake-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+}
+.complaint-intake-grid dt {
+  font-weight: 400;
+  font-size: 0.78em;
+  color: #64748b;
+}
+.complaint-intake-grid dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.88em;
+  color: var(--text-title);
+  word-break: break-word;
+}
+
+/* แผงค้นหาสำนวน (ECMISCaseSearch.mountPanel) — หน้าตาเดียวกันทุกหน้า */
+.intake-search-acc {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  margin-bottom: 20px;
+}
+.intake-search-acc > summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: var(--text-title);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  border-radius: 8px;
+}
+.intake-search-acc > summary::-webkit-details-marker { display: none; }
+.intake-search-acc > summary:hover { background: var(--bg-body); }
+.intake-search-acc > summary:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: 2px;
+}
+.intake-search-acc .acc-chevron {
+  margin-left: auto;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+.intake-search-acc[open] .acc-chevron { transform: rotate(180deg); }
+.intake-search-acc[open] > summary {
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 8px 8px 0 0;
+}
+.intake-search-acc-body { padding: 14px 16px 4px; }
+.intake-search-optional {
+  font-weight: 400;
+  color: #64748b;
+  font-size: 0.85em;
+}
+.case-search-filter-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 10px;
+}
+.case-search-filter-title {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 10px;
+}
+.case-search-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.case-search-helper {
+  font-size: 0.78em;
+  color: #64748b;
+  margin: 6px 0 12px;
+}
+@media (max-width: 768px) {
+  .case-search-filter-box .form-grid-2,
+  .case-search-filter-box .form-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* แท็บแหล่งสำนวน (search-case.html) */
+.case-search-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+.case-search-tab {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.case-search-tab:hover { color: var(--text-title); }
+.case-search-tab:focus-visible { outline: 2px solid #1e3a8a; outline-offset: 2px; }
+.case-search-tab.active { color: #1e3a8a; border-bottom-color: #1e3a8a; }
+body.dark-mode .case-search-tab.active { color: #93c5fd; border-bottom-color: #93c5fd; }

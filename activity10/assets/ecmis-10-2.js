@@ -24,21 +24,12 @@
       page: "02-board-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
-      statusCode: "L2_PENDING_DIRECTOR_ASSIGN",
-      label: "ธุรการกองกฎหมาย ลงทะเบียนรับเรื่องและเสนอ ผอ.กองกฎหมาย",
-      stepName: "ธุรการ ลงทะเบียนรับเรื่อง",
-    },
-    {
-      code: "LAW0038",
-      seq: 7,
-      page: "10-2-01-legal-director-assign.html",
-      role: "dir_legal",
-      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      /* LAW0038 (10-2-01 ผอ.กองกฎหมาย สั่งการ) ถูกตัดออก 2026-10-14 — ธุรการส่งตรงถึง
+         ผอ.กลุ่มงานความเห็นแย้ง ดู docs/remove-dir-legal-assign/plan.md */
       status: "ผอ.กลุ่มงานความเห็นแย้งตรวจประเด็นกฎหมาย",
       statusCode: "L2_PENDING_GROUP_ASSIGN",
-      label: "ผอ.กองกฎหมาย พิจารณาสั่งการและมอบหมายงาน",
-      stepName: "ผอ.กอง สั่งการ",
+      label: "ธุรการกองกฎหมาย ลงทะเบียนรับเรื่องและเสนอ ผอ.กลุ่มงานความเห็นแย้ง",
+      stepName: "ธุรการ ลงทะเบียนรับเรื่อง",
     },
     {
       code: "LAW0039",
@@ -95,30 +86,19 @@
       label: "คณะอนุกรรมการฯ พิจารณาตามระเบียบวาระและมีมติที่ประชุม",
       stepName: "คณะอนุกรรมการฯ มีมติ",
     },
-    /* สองขั้นตอน (ธุรการกองกฎหมาย -> ผอ.กองกฎหมาย) หลังคณะอนุกรรมการฯ มีมติแล้ว
-       (10-2-06) ก่อนฝ่ายเลขานุการฯ จะร่างบันทึกข้อความที่ 10-2-07 — ธุรการแค่รับเรื่อง
-       (ไม่ลงนาม) ส่วน ผอ.กองมอบหมายฝ่ายเลขานุการฯ ไม่มีการเปลี่ยนแปลงมติ/สถานะคดีใดๆ */
+    /* ธุรการกองกฎหมายรับเรื่อง (ไม่ลงนาม) หลังคณะอนุกรรมการฯ มีมติแล้ว (10-2-06)
+       แล้วส่งตรงถึงฝ่ายเลขานุการฯ ร่างบันทึกที่ 10-2-07 — ขั้น ผอ.กองกฎหมายมอบหมาย
+       (L2-DIRLEGAL-PRECOMMENT, 10-2-34) ถูกตัดออก 2026-10-14 */
     {
       code: "L2-ADMIN-PRECOMMENT",
       seq: 12,
       page: "10-2-33-legal-admin-comment.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผู้อำนวยการกองกฎหมายมอบหมาย",
-      statusCode: "L2_PENDING_DIRLEGAL_PRECOMMENT",
-      label: "ธุรการกองกฎหมาย รับเรื่อง (ไม่ลงนาม)",
-      stepName: "ธุรการ รับเรื่อง",
-    },
-    {
-      code: "L2-DIRLEGAL-PRECOMMENT",
-      seq: 12,
-      page: "10-2-34-legal-director-comment.html",
-      role: "dir_legal",
-      roleTitle: "ผู้อำนวยการกองกฎหมาย",
       status: "ฝ่ายเลขานุการฯ ทำบันทึกผลมติเลขา",
       statusCode: "L2_PENDING_SECRETARIAT_DRAFT",
-      label: "ผู้อำนวยการกองกฎหมาย มอบหมายฝ่ายเลขานุการฯ",
-      stepName: "ผอ.กอง มอบหมาย",
+      label: "ธุรการกองกฎหมาย รับเรื่อง (ไม่ลงนาม)",
+      stepName: "ธุรการ รับเรื่อง",
     },
     {
       code: "LAW0045-0046",
@@ -1943,7 +1923,7 @@
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
-        }).fire({ icon: "info", title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ" });
+        }).fire({ icon: "info", title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ" });
       };
 
       recognition.onresult = function (event) {
@@ -2174,7 +2154,12 @@
     const host = group ? null : document.getElementById("pageBody") || document.querySelector(".content");
     if ((group && group.parentNode) || host) {
       const old = document.getElementById("l2CaseMeta");
-      if (old) old.remove();
+      if (old) {
+        const oldBox = old.parentNode && old.parentNode.classList.contains("prev-step-body")
+          ? old.parentNode.parentNode
+          : null;
+        (oldBox || old).remove();
+      }
       const box = document.createElement("div");
       box.id = "l2CaseMeta";
       box.className = "form-grid-2";
@@ -2195,6 +2180,7 @@
         group.parentNode.insertBefore(box, group);
       } else {
         box.className = "form-card";
+        box.setAttribute("data-prev-step", "ข้อมูลการรับเรื่อง (วันที่รับ · ครบกำหนด · หน่วยงานที่เสนอ)");
         box.innerHTML = '<div class="form-card-body"><div class="form-grid-2">' + box.innerHTML + "</div></div>";
         host.insertBefore(box, host.firstChild);
       }
@@ -2613,7 +2599,7 @@
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;' +
       'padding-top:2px;margin:0 4px;position:relative;z-index:2;flex:0 0 auto" title="เริ่มกระบวนการอุทธรณ์ใหม่">' +
       '<div style="width:2px;height:36px;background:repeating-linear-gradient(to bottom,#7c3aed 0,#7c3aed 4px,transparent 4px,transparent 8px);margin-bottom:6px"></div>' +
-      '<div style="font-size:0.7em;font-weight:700;color:#7c3aed;white-space:nowrap">▸ เริ่ม Flow อุทธรณ์</div>' +
+      '<div style="font-size:0.7em;font-weight:700;color:#7c3aed;white-space:nowrap"><i class="fa-solid fa-caret-right" aria-hidden="true"></i> เริ่ม Flow อุทธรณ์</div>' +
       "</div>";
 
     function stepItemHtml(step, i, displayNo) {

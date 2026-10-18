@@ -17,9 +17,9 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       body {
@@ -104,25 +104,6 @@
         font-size: 0.88em;
         color: #64748b;
         margin-top: 2px;
-      }
-
-      /* ตัวกรอง "มุมมอง" ของหน้าคิวงาน — ดูวิธีเพิ่มมุมมองที่หัวสคริปต์ (#inboxViewSelect) */
-      .inbox-view-bar {
-        margin-bottom: 14px;
-      }
-      .inbox-view-bar .filter-grid .form-group {
-        flex: 0 0 360px;
-        max-width: 100%;
-      }
-      .inbox-tab-hidden {
-        display: none !important;
-      }
-      /* ป้ายสถานะแบบพิลล์ในตารางรายงาน/สารบบ: เรียงบรรทัดเดียวกัน ขนาดเท่ากับ .badge อื่น */
-      .badge-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        align-items: center;
       }
 
       .filter-card {
@@ -539,7 +520,7 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
             <span><i class="fa-solid fa-house"></i> หน้าแรก</span> /
@@ -740,30 +721,12 @@
           </div>
         </div>
 
-        <!-- ตัวกรองมุมมองของหน้าคิวงาน: ค่า option = ชื่อพาเนล data-inbox-panel="X" -->
-        <div class="filter-card inbox-view-bar" id="inboxViewBar">
-          <div class="filter-grid">
-            <div class="form-group">
-              <label for="inboxViewSelect">มุมมอง</label>
-              <select id="inboxViewSelect" class="form-control">
-                <option value="cases">งานในคิว</option>
-                <option value="notices" id="noticeViewOption">
-                  หนังสือแจ้งจากหน่วยงานอื่น
-                </option>
-                <!-- มุมมองรายงาน/สารบบ 10.1 (เห็นเฉพาะสายงานกฎหมาย — ซ่อนโดย ECMIS101Reports.applyRoleVisibility) -->
-                <option value="board-report">รายงานผลตามมติคณะกรรมการ</option>
-                <option value="registry">สารบบคำวินิจฉัย/คำพิพากษา</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
         <!-- Empty state before a category is chosen -->
-        <div class="empty-state-card" id="emptyState" data-inbox-panel="cases">
+        <div class="empty-state-card" id="emptyState">
           เลือกประเภทงานด้านบนเพื่อดูรายการ
         </div>
 
-        <div id="inboxDetail" style="display: none" data-inbox-panel="cases">
+        <div id="inboxDetail" style="display: none">
           <!-- Filter & Search Card -->
           <div class="filter-card">
             <div class="filter-grid">
@@ -859,186 +822,39 @@
           </div>
         </div>
 
-        <!-- มุมมอง: หนังสือแจ้งจากหน่วยงานอื่น (TOR 10.1.9 / 10.2.6) -->
-        <div
-          class="table-card inbox-tab-hidden"
-          id="noticePanel"
-          data-inbox-panel="notices"
-        >
-          <div class="table-title-bar">
-            <span>หนังสือแจ้งจากหน่วยงานอื่นถึงหน่วยงานของท่าน</span>
-            <span
-              class="badge"
-              style="background: #e2e8f0; color: #334155"
-              id="noticeBadgeCount"
-              >0 รายการ</span
-            >
-          </div>
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>เลขสำนวน</th>
-                  <th>เรื่อง</th>
-                  <th>ที่หนังสือ</th>
-                  <th>วันที่</th>
-                  <th>แจ้งถึงหน่วยงาน</th>
-                  <th>การดำเนินการ</th>
-                </tr>
-              </thead>
-              <tbody id="noticeTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- มุมมอง: รายงานผลตามมติ (10.1.8) / สารบบคำวินิจฉัย (10.1.10) — เรนเดอร์โดย assets/ecmis-10-1-reports.js -->
-        <div
-          class="table-card inbox-tab-hidden"
-          id="boardReportPanel"
-          data-inbox-panel="board-report"
-        ></div>
-        <div
-          class="table-card inbox-tab-hidden"
-          id="registryPanel"
-          data-inbox-panel="registry"
-        ></div>
       </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-2.js?v=20261008_1"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
-    <script src="assets/ecmis-export.js?v=20261001_1"></script>
-    <script src="assets/ecmis-10-1-reports.js?v=20261002_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-2.js?v=20261014_6"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
     <script>
-      /* กลไกมุมมองของหน้าคิวงาน (ตัวกรอง "มุมมอง" = <select id="inboxViewSelect">)
-         - ตัวเลือก:  <option value="ชื่อ"> ใน #inboxViewSelect
-         - พาเนล:     องค์ประกอบใดก็ได้ที่มี data-inbox-panel="ชื่อ" (หลายตัวต่อมุมมองได้)
-         - showInboxTab(name) สลับ class .inbox-tab-hidden ของพาเนลทั้งหมด จึงไม่ชนกับ
-           การสลับ style.display ของโค้ดเดิม (selectCategory ฯลฯ) และตั้งค่า select ให้ตรงกัน
-           (ถ้าตัวเลือกถูกซ่อนตามบทบาทจะกลับไปมุมมอง "cases")
-         - เพิ่มมุมมองใหม่: เพิ่ม <option> + พาเนลใน HTML แล้วลงทะเบียน renderer ที่ INBOX_TAB_RENDERERS[ชื่อ]
-           (เรียกทุกครั้งที่เปลี่ยนมุมมอง) — เปิดมุมมองตั้งต้นผ่าน ?tab=ชื่อ (เช่น ?tab=notices) */
-      const INBOX_TAB_RENDERERS = {};
-      function showInboxTab(name) {
-        const select = document.getElementById("inboxViewSelect");
-        const opt =
-          select && select.querySelector('option[value="' + name + '"]');
-        if (!opt || opt.disabled) name = "cases";
-        if (select) select.value = name;
-        document.querySelectorAll("[data-inbox-panel]").forEach((p) => {
-          p.classList.toggle(
-            "inbox-tab-hidden",
-            p.getAttribute("data-inbox-panel") !== name,
-          );
-        });
-        if (INBOX_TAB_RENDERERS[name]) INBOX_TAB_RENDERERS[name]();
-      }
-      document
-        .getElementById("inboxViewSelect")
-        .addEventListener("change", (e) => showInboxTab(e.target.value));
-
-      /* หนังสือแจ้งจากหน่วยงานอื่น: ดึงจาก Activity10.buildAlerts (kind = notice)
-         แล้วหาตัวหนังสือจริงจาก internalNotices[i] ของสำนวน (id = <caseId>:notice:<i>) */
-      function getNoticeRows() {
-        if (typeof Activity10 === "undefined" || !Activity10.buildAlerts)
-          return [];
-        const unit =
-          typeof window.ecmisCurrentUnit === "function"
-            ? window.ecmisCurrentUnit()
-            : "";
-        const cases = Activity10.getCases();
-        return Activity10.buildAlerts(cases, getCurrentRole(), new Date(), {
-          unit,
-        })
-          .filter((a) => a.kind === "notice")
-          .map((a) => {
-            const idx = parseInt(a.id.split(":notice:")[1], 10);
-            const kase = cases.find((c) => c.id === a.caseId) || {};
-            return {
-              caseId: a.caseId,
-              notice: (kase.internalNotices || [])[idx] || {},
-            };
-          });
-      }
-      function escNotice(v) {
-        return String(v == null ? "" : v).replace(
-          /[&<>"']/g,
-          (ch) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;",
-            })[ch],
-        );
-      }
-      function updateNoticeViewCount(count) {
-        const n = count == null ? getNoticeRows().length : count;
-        document.getElementById("noticeViewOption").textContent =
-          "หนังสือแจ้งจากหน่วยงานอื่น" + (n ? " (" + n + ")" : "");
-      }
-      function renderNoticeTab() {
-        const rows = getNoticeRows();
-        const body = document.getElementById("noticeTableBody");
-        document.getElementById("noticeBadgeCount").textContent =
-          rows.length + " รายการ";
-        updateNoticeViewCount(rows.length);
-        body.innerHTML = rows.length
-          ? rows
-              .map((r) => {
-                const n = r.notice;
-                const date =
-                  n.date && Activity10.formatDisplayDate
-                    ? Activity10.formatDisplayDate(n.date)
-                    : n.date || "-";
-                return (
-                  "<tr><td>" +
-                  escNotice(r.caseId) +
-                  "</td>" +
-                  "<td>" +
-                  escNotice(n.subject || "-") +
-                  "</td>" +
-                  "<td>" +
-                  escNotice(n.docNo || "-") +
-                  "</td>" +
-                  "<td>" +
-                  escNotice(date) +
-                  "</td>" +
-                  "<td>" +
-                  escNotice((n.units || []).join(", ") || "-") +
-                  "</td>" +
-                  '<td><button class="btn btn-outline" data-open-notice-case="' +
-                  escNotice(r.caseId) +
-                  '">เปิดสำนวน</button></td></tr>'
-                );
-              })
-              .join("")
-          : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:20px">ไม่มีหนังสือแจ้งจากหน่วยงานอื่น</td></tr>';
-      }
-      INBOX_TAB_RENDERERS.notices = renderNoticeTab;
-      ECMIS101Reports.register(INBOX_TAB_RENDERERS);
-      try {
-        updateNoticeViewCount();
-      } catch (e) {
-        /* ข้อมูลยังไม่พร้อม — จะอัปเดตเมื่อเปิดมุมมองหนังสือแจ้ง */
-      }
-      document.addEventListener("click", (e) => {
-        const b = e.target.closest("[data-open-notice-case]");
-        if (b) viewCaseDetail(b.getAttribute("data-open-notice-case"));
-      });
-
       /* ลิงก์จากการแจ้งเตือน: ?alert=<เลขสำนวน> เปิดหมวดของสำนวนแล้วกรองด้วยเลขสำนวน,
-         ?tab=notices เปิดมุมมองหนังสือแจ้ง (ตัวกรอง "มุมมอง") */
+         ?openCase=<เลขสำนวน> เปิดหน้าสำนวน (ปุ่ม "เปิดสำนวน" ของ notices.html)
+         มุมมองเดิมย้ายไปเป็นหน้าเมนูแถบด้านข้างแล้ว — ลิงก์เก่า ?tab=X ส่งต่อไปหน้าใหม่ */
+      const LEGACY_TAB_PAGES = {
+        notices: "notices.html",
+        "board-report": "board-report.html",
+        registry: "registry.html",
+      };
+      (function () {
+        const page =
+          LEGACY_TAB_PAGES[new URLSearchParams(window.location.search).get("tab")];
+        if (page) window.location.replace(page);
+      })();
       function applyInboxUrlParams() {
         const params = new URLSearchParams(window.location.search);
+        const openCase = params.get("openCase");
+        if (openCase) {
+          viewCaseDetail(openCase);
+          return;
+        }
         const alertId = params.get("alert");
         if (alertId) {
           const row = getAllDatabaseCases().find((c) => c.id === alertId);
@@ -1048,8 +864,7 @@
             onSearchChange();
           }
         }
-        if (params.get("tab")) showInboxTab(params.get("tab"));
-        /* ?cat=10.1|10.2|10.3 จากแท็บหมวดงานใน sidebar (assets/ecmis-sidebar.js) */
+        /* ?cat=10.1|10.2|10.3 เปิดหมวดงานตั้งต้นจากลิงก์ */
         const cat = params.get("cat");
         if (CATEGORY_CARD_ID[cat] && currentCategory !== cat)
           selectCategory(cat);
@@ -1086,7 +901,7 @@
           accused: "นายสมชาย ทุจริตมั่น",
           officer: "นายกฤษดา",
           status: "รอมอบหมายกลุ่มงาน",
-          statusCode: "PENDING_DIRECTOR",
+          statusCode: "PENDING_GROUP_DIRECTOR",
           slaText: "เหลือ 2 วัน",
           slaDays: 2,
         },
@@ -1495,7 +1310,7 @@
           title: "ฟ้องขอให้เพิกถอนคำสั่งทางปกครอง",
           officer: "น.ส.วิภาดา",
           status: "รอมอบหมายคดีปกครอง",
-          statusCode: "PENDING_DIRECTOR",
+          statusCode: "PENDING_GROUP_DIRECTOR",
           slaText: "เหลือ 30 วัน",
           slaDays: 30,
         },
@@ -1857,14 +1672,12 @@
           itemsHtml += `
  <li><a href="02-board-intake.html"><i class="fa-solid fa-inbox"></i> <span>บันทึกรับเรื่องเข้าระบบ</span></a></li>
  <li><a href="09-legal-admin-dispatch.html"><i class="fa-solid fa-paper-plane"></i> <span>ออกเลขส่งและส่งต่อผู้บริหาร</span></a></li>
- <li><a href="10-legal-admin-resolution.html"><i class="fa-solid fa-file-signature"></i> <span>รับผลมติและส่งต่อ ผอ.กองกฎหมาย</span></a></li>
+ <li><a href="10-legal-admin-resolution.html"><i class="fa-solid fa-file-signature"></i> <span>รับผลมติและส่งต่อ ผอ.กลุ่มงาน</span></a></li>
  <li><a href="19-legal-admin-oag-verdict-intake.html"><i class="fa-solid fa-gavel"></i> <span>รับผลคำวินิจฉัยชี้ขาด อสส.</span></a></li>
  `;
         } else if (roleId === "dir_legal" || roleId === "Napas.S") {
           itemsHtml += `
- <li><a href="04-legal-director-review.html"><i class="fa-solid fa-user-check"></i> <span>มอบหมายสำนวนคดี</span></a></li>
  <li><a href="08-legal-director-approval.html"><i class="fa-solid fa-clipboard-check"></i> <span>ตรวจพิจารณาและสั่งการ</span></a></li>
- <li><a href="11-legal-director-resolution.html"><i class="fa-solid fa-file-circle-check"></i> <span>พิจารณาผลมติและสั่งการ</span></a></li>
  <li><a href="20-legal-director-oag-verdict-review.html"><i class="fa-solid fa-gavel"></i> <span>ตรวจสอบคำวินิจฉัย อสส.</span></a></li>
  `;
         } else if (roleId === "group_director" || roleId === "Arnon.C") {
@@ -1931,9 +1744,7 @@
         if (roleId === "dir_legal" || roleId === "Napas.S") {
           return allCases.filter(
             (c) =>
-              c.statusCode === "PENDING_DIRECTOR" ||
               c.statusCode === "PENDING_DIRECTOR_APPROVAL" ||
-              c.statusCode === "PENDING_DIRECTOR_RESOLUTION" ||
               c.statusCode === "PENDING_DIRECTOR_FINAL_REVIEW" ||
               c.statusCode === "PENDING_DIRECTOR_OAG_VERDICT_REVIEW" ||
               c.assignedRole === "dir_legal" ||
@@ -2232,7 +2043,6 @@
           document.getElementById("inboxDetail").style.display = "none";
           document.getElementById("emptyState").style.display = "";
           updateCategoryScopedButtons();
-          if (window.ECMISSidebar) ECMISSidebar.setActiveCategory(null);
           return;
         }
 
@@ -2244,7 +2054,6 @@
         updateDynamicFilter(cat);
         updateCategoryScopedButtons();
         renderTable();
-        if (window.ECMISSidebar) ECMISSidebar.setActiveCategory(cat);
       }
 
       /* ปุ่มที่ผูกกับหมวดหมู่งานหนึ่ง ๆ เท่านั้น (เช่น ปุ่มทดสอบ Flow 4 ผูกกับ
@@ -2438,15 +2247,8 @@
             window.location.href = `20-legal-director-oag-verdict-review.html?id=${encodeURIComponent(c.id)}`;
           } else if (sc === "PENDING_DIRECTOR_FINAL_REVIEW") {
             window.location.href = `15-legal-director-final-review.html?id=${encodeURIComponent(c.id)}`;
-          } else if (
-            sc === "PENDING_DIRECTOR_RESOLUTION" ||
-            sc === "PENDING_DIRECTOR_RESOLUTION_ORDER"
-          ) {
-            window.location.href = `11-legal-director-resolution.html?id=${encodeURIComponent(c.id)}`;
           } else if (sc === "PENDING_DIRECTOR_APPROVAL") {
             window.location.href = `08-legal-director-approval.html?id=${encodeURIComponent(c.id)}`;
-          } else if (sc === "PENDING_DIRECTOR") {
-            window.location.href = `04-legal-director-review.html?id=${encodeURIComponent(c.id)}`;
           } else {
             window.location.href = `03-prosecutor-doc.html?id=${encodeURIComponent(c.id)}`;
           }
@@ -3012,17 +2814,8 @@
           if (statusCode === "PENDING_DIRECTOR_FINAL_REVIEW") {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ผอ.กองตรวจร่างหนังสือสมบูรณ์">ดำเนินการ</button>`;
           }
-          if (
-            statusCode === "PENDING_DIRECTOR_RESOLUTION" ||
-            statusCode === "PENDING_DIRECTOR_RESOLUTION_ORDER"
-          ) {
-            return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="พิจารณาผลมติ">ดำเนินการ</button>`;
-          }
           if (statusCode === "PENDING_DIRECTOR_APPROVAL") {
             return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="ตรวจพิจารณาร่างความเห็น">ดำเนินการ</button>`;
-          }
-          if (statusCode === "PENDING_DIRECTOR") {
-            return `<button class="btn-action-primary" onclick="handleCaseAction('${caseId}')" title="มอบหมายกลุ่มงาน">ดำเนินการ</button>`;
           }
           return `<button class="action-btn" onclick="viewCaseDetail('${caseId}')" title="ดูรายละเอียดสำนวน">${svgEyeIcon}</button>`;
         }
@@ -3334,7 +3127,6 @@
         updateRoleDisplay();
         updateCardCounts();
         selectCategory("10.1");
-        renderNoticeTab();
         applyInboxUrlParams();
       };
     </script>

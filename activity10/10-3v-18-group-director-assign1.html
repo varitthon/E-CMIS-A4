@@ -23,11 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -263,10 +263,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ผอ.กลุ่มงาน มอบหมายนิติกร (ลงทะเบียนคดี)</span
             >
@@ -286,10 +286,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -341,16 +341,16 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอ ผอ.กองกฎหมายมอบหมายที่หน้า
-            <a href="10-3v-17-legal-director-assign1.html"
-              >ผอ.กองกฎหมาย มอบหมาย ผอ.กลุ่มงานคดี (พิจารณาอุทธรณ์)</a
+            รอผู้อำนวยการกองกฎหมายกำหนดแนวทาง "แพ้คดี" ที่หน้า
+            <a href="10-3v-06-legal-director-decide.html"
+              >ผอ.กองกฎหมาย พิจารณาผลคำพิพากษา</a
             >
             ก่อน
           </div>
         </div>
 
         <div id="pageBody">
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคำพิพากษาศาลปกครองชั้นต้น">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -386,41 +386,52 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
-              <div class="form-group">
-                <label>ผลคดี</label>
-                <div class="read-box" id="f_verdictResult">-</div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผลคดี</label>
+                  <div class="read-box" id="f_verdictResult">-</div>
+                </div>
+                <div class="form-group">
+                  <label>เลขทะเบียนคดี</label>
+                  <div class="read-box font-monospace" id="f_caseRegNo">-</div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="form-card">
+          <!-- ความเห็นควรอุทธรณ์ที่นิติกรเสนอไว้ที่ 10-3v-04 (เห็นชอบแล้วที่ 10-3v-05/06) — อ่านอย่างเดียว
+               (แทนการ์ด "เอกสารแนบจากการรับเรื่อง" ของ 10-3v-16 ที่ถูกตัดออก 2026-10-14) -->
+          <div class="form-card" data-prev-step="ความเห็นควรอุทธรณ์ของนิติกร">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-inbox text-primary me-2"></i
-                >ข้อสั่งการจาก ผอ.กองกฎหมาย</span
+                ><i class="fa-solid fa-scale-balanced text-primary me-2"></i
+                >ความเห็นควรอุทธรณ์ของนิติกร</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-group">
-                <label>ข้อสั่งการ / ความเห็นของ ผอ.กองกฎหมาย</label>
-                <div
-                  class="read-box read-box-textarea"
-                  id="f_directorOrderNotes"
-                >
-                  -
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ความเห็นควรอุทธรณ์</label>
+                  <div
+                    class="read-box"
+                    id="f_appealOpinion"
+                    style="font-weight: 700; color: #1e3a8a"
+                  >
+                    -
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label>เอกสารแนบ</label>
-                <div id="f_noticeAttachments"></div>
+                <div class="form-group">
+                  <label>นิติกรผู้รับผิดชอบ (มอบหมายไว้ที่ 10-3v-03)</label>
+                  <div class="read-box" id="f_prevLawyer">-</div>
+                </div>
               </div>
             </div>
           </div>
@@ -496,19 +507,23 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
 
     <script>
       /* (เพิ่ม) — ผอ.กลุ่มงานคดี มอบหมายนิติกร รอบที่ 1 (ลงทะเบียนคดี)
-         Part 8, เคสมาจาก 10-3v-17 ที่สถานะ L8_PENDING_GROUP_ASSIGN1
+         Part 8, เคสมาจาก 10-3v-06 (แพ้คดี) ที่สถานะ L3V_TO_APPEAL_CONSIDER
+         (เคสเก่าที่ค้างอยู่ L8_PENDING_GROUP_ASSIGN1 ก็รับได้ — ไม่ต้องรอหนังสือ
+         สำนักงานคดีปกครองแล้ว เพราะตัด 10-3v-16 ออก 2026-10-14)
          ดู docs/10.3 mockup/implementation-plan-part8.md — เก็บ assign loop
          2 รอบตามผัง AS-IS ตรงๆ (รอบนี้คือรอบที่ 1 สำหรับงานลงทะเบียน) */
       const STEP_CODE = "L8GROUPASSIGN1";
       const STEP = Activity103.stepByCode(STEP_CODE);
+      /* สถานะที่หน้านี้รับ: ใหม่ (จาก 10-3v-06 แพ้คดี) + เดิม (เคสค้างก่อนตัด 10-3v-16) */
+      const ACCEPT_STATUS = ["L3V_TO_APPEAL_CONSIDER", "L8_PENDING_GROUP_ASSIGN1"];
       let currentCase = null;
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -521,17 +536,18 @@
 
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const idx = Activity103.APPEAL_CONSIDER_STEPS.findIndex(
-          (s) => s.code === STEP_CODE,
-        );
-        const prev = Activity103.APPEAL_CONSIDER_STEPS[idx - 1];
-        const found = Activity103.getCase(id, prev ? prev.statusCode : null);
+        /* APPEAL_CONSIDER_STEPS ไม่มีขั้นก่อนหน้าแล้ว (ตัด 10-3v-16/17) — ลองสถานะใหม่
+           L3V_TO_APPEAL_CONSIDER ก่อน แล้วค่อยสถานะเดิม L8_PENDING_GROUP_ASSIGN1 */
+        let found = Activity103.getCase(id, ACCEPT_STATUS[0]);
+        if (!found || !ACCEPT_STATUS.includes(found.statusCode)) {
+          found = Activity103.getCase(id, ACCEPT_STATUS[1]);
+        }
         /* getCase() ตกไปคดี 10.3 ใดก็ได้เมื่อหาไม่เจอ — หน้านี้รับเฉพาะเคส
-           คำพิพากษาที่อยู่สถานะ L8_PENDING_GROUP_ASSIGN1 เท่านั้น */
+           คำพิพากษาที่อยู่สถานะใน ACCEPT_STATUS เท่านั้น */
         currentCase =
           found &&
           Activity103.isVerdictCase(found) &&
-          found.statusCode === "L8_PENDING_GROUP_ASSIGN1"
+          ACCEPT_STATUS.includes(found.statusCode)
             ? found
             : null;
 
@@ -560,11 +576,32 @@
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         ECMIS103.setText("f_verdictResult", c.l3VerdictResult);
+        /* เลขทะเบียนคดีบันทึกไว้ที่ 10-3v-00 (l3VerdictRegNo) — เคสเดิมใช้ l8CaseRegNo */
+        ECMIS103.setText("f_caseRegNo", c.l3VerdictRegNo || c.l8CaseRegNo);
 
-        ECMIS103.setText("f_directorOrderNotes", c.l8DirectorOrderNotes);
-        ECMIS103.renderAttachments("f_noticeAttachments", c.l8NoticeAttachments);
+        /* ความเห็นควรอุทธรณ์จาก 10-3v-04 — ใช้ป้ายไทย (l3AppealOpinion) ก่อน ถ้าไม่มีแปลงจาก l8ProposedBranch */
+        const branch = Activity103.APPEAL_CONSIDER_BRANCHES[c.l8ProposedBranch];
+        ECMIS103.setText(
+          "f_appealOpinion",
+          c.l3AppealOpinion ||
+            (branch ? branch.label + " → " + branch.proposal : "ยังไม่ระบุ (นิติกรกำหนดที่ขั้นตรวจสอบคำพิพากษา)"),
+        );
+        ECMIS103.setText("f_prevLawyer", c.l3GroupAssignTarget);
+        selectPrevLawyer(c.l3GroupAssignTarget);
 
         document.getElementById("in_assignDate").value = todayISO();
+      }
+
+      /* ตั้งค่าเริ่มต้นของ "มอบหมายให้" เป็นนิติกรที่ ผอ.กลุ่มงานมอบหมายไว้แล้วที่ 10-3v-03
+         (ยังเปลี่ยนได้) — select เติมรายชื่อโดย fillLawyerSelects ก่อนหน้านี้แล้ว */
+      function selectPrevLawyer(name) {
+        const sel = document.getElementById("in_assignTarget");
+        const target = String(name || "").trim();
+        if (!sel || !target) return;
+        const idx = Array.from(sel.options).findIndex(
+          (o) => o.text.trim() === target,
+        );
+        if (idx >= 0) sel.selectedIndex = idx;
       }
 
       function doneAndBack(text) {
@@ -608,7 +645,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

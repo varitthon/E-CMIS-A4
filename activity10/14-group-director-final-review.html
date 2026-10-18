@@ -25,9 +25,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -343,7 +343,7 @@
             <i class="fa-solid fa-bars"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>งานกฎหมายในทางคดี</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ผอ.กลุ่มงาน ตรวจร่างหนังสือความเห็น</span
             >
@@ -363,10 +363,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌓
+              <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">3</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">3</span>
             </div>
           </div>
           <div
@@ -453,7 +453,7 @@
         </div>
 
         <!-- Card 1: Read-Only Case Details & Executive Decision -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="รายละเอียดสำนวนคดีและผลมติคณะกรรมการ ป.ป.ท.">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-folder-open text-primary me-2"></i
@@ -640,7 +640,7 @@
         </div>
 
         <!-- Card 2: Draft Opinion Document submitted by Legal Officer -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="ร่างหนังสือความเห็นที่นิติกรจัดทำ">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -894,13 +894,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
     <script>
       let currentCase = null;
       let isRecording = false;
@@ -910,7 +910,7 @@
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
         localStorage.setItem("theme_mode", isDark ? "dark" : "light");
-        document.getElementById("themeBtn").textContent = isDark ? "☀️" : "🌓";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>';
       }
 
       let baseFontSize = 14;
@@ -934,7 +934,7 @@
         if (savedTheme === "dark") {
           document.body.classList.add("dark-mode");
           const btn = document.getElementById("themeBtn");
-          if (btn) btn.textContent = "☀️";
+          if (btn) btn.innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i>';
         }
         loadCaseData();
       });
@@ -1410,7 +1410,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 

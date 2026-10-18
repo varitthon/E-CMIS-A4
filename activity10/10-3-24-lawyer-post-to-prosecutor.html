@@ -23,11 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -259,10 +259,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง</span
             >
@@ -282,10 +282,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -404,18 +404,18 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="กำหนดเวลายื่นคำให้การ">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-hourglass-half text-primary me-2"></i
@@ -437,7 +437,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ร่างเอกสารที่นิติกรเสนอ">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-signature text-primary me-2"></i
@@ -478,7 +478,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ผลการตรวจร่าง">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-user-check text-primary me-2"></i
@@ -502,7 +502,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="การออกเลขหนังสือส่งภายใน (ธุรการกองกฎหมาย)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-stamp text-primary me-2"></i
@@ -533,37 +533,19 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="หนังสือนำส่ง — ฉบับลงนามจริง">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-signature text-primary me-2"></i
-                >การลงนามหนังสือนำส่ง</span
-              >
-              <span class="badge" style="background: #dcfce7; color: #166534"
-                ><i class="fa-solid fa-check me-1"></i>ลงนามแล้ว</span
+                >หนังสือนำส่ง — ฉบับลงนามจริง</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ผู้ลงนาม</label>
-                  <div class="l3-sig-preview">
-                    <img id="f_coverSigImg" alt="ลายมือชื่อผู้ลงนามหนังสือนำส่ง" class="d-none" />
-                    <div class="l3-sig-preview-meta">
-                      <div><strong id="f_coverSignedBy">-</strong></div>
-                      <div>ลงนามเมื่อ <span id="f_coverSignedAt">-</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>ความเห็นผู้ลงนาม</label>
-                  <div class="read-box read-box-textarea" id="f_coverOpinion">-</div>
-                </div>
-              </div>
+              <div id="wetSignCoverView"></div>
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="เลขหนังสือส่งออก (ระบบออกอัตโนมัติ)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-hashtag text-primary me-2"></i
@@ -585,37 +567,19 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="คำให้การ — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-pen-nib text-primary me-2"></i
-                >การลงนามในคำให้การ (ประธานกรรมการ ป.ป.ท.)</span
-              >
-              <span class="badge" style="background: #dcfce7; color: #166534"
-                ><i class="fa-solid fa-check me-1"></i>ลงนามแล้ว</span
+                >คำให้การ — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ผู้ลงนาม</label>
-                  <div class="l3-sig-preview">
-                    <img id="f_chairmanSigImg" alt="ลายมือชื่อประธานกรรมการ" class="d-none" />
-                    <div class="l3-sig-preview-meta">
-                      <div><strong id="f_chairmanSignedBy">-</strong></div>
-                      <div>ลงนามเมื่อ <span id="f_chairmanSignedAt">-</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>ข้อสั่งการประธานกรรมการ</label>
-                  <div class="read-box read-box-textarea" id="f_chairmanNotes">-</div>
-                </div>
-              </div>
+              <div id="wetSignAnswerView"></div>
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="เอกสารฉบับจริงที่ธุรการกองกฎหมายรวบรวม">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-folder-open text-primary me-2"></i
@@ -753,11 +717,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
+    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
 
     <script>
       const STEP_CODE = "L3-32";
@@ -966,35 +932,18 @@
           adminImg.src = adminSig.image;
           adminImg.classList.remove("d-none");
         }
-        const chairCs = c.l3AnswerChairmanSigning || {};
-        const chairSig = (c.l3Signatures || {})["L3-29"];
-        ECMIS103.setText("f_chairmanSignedBy", chairCs.signedBy || ECMIS103.signerLabel("chairman"));
-        ECMIS103.setText("f_chairmanSignedAt", (chairSig && chairSig.signedAt) || chairCs.signedAt);
-        ECMIS103.setText("f_chairmanNotes", chairCs.notes);
-        const chairImg = document.getElementById("f_chairmanSigImg");
-        if (chairSig && chairSig.image) {
-          chairImg.src = chairSig.image;
-          chairImg.classList.remove("d-none");
-        }
+        /* ฉบับลงนามจริง (หมึก) ที่ธุรการบันทึกผลไว้ — docs/wet-sign/plan.md */
+        ECMISWetSign.renderSignedView("wetSignAnswerView", c, "answer", "คำให้การ (ค.๓)");
         ECMIS103.setText("f_externalDocNo", c.l3AnswerExternalDocNo);
         ECMIS103.setText("f_externalDocDate", c.l3AnswerExternalDocDate);
         ECMIS103.setText("f_urgencyBadge", c.l3AnswerUrgency || "-");
-        const cs = c.l3CoverLetterSigning || {};
-        const coverSig = (c.l3Signatures || {})[cs.signerRole === "deputy_sg" ? "L3-27B" : "L3-27A"];
-        ECMIS103.setText("f_coverSignedBy", cs.signedBy || c.l3CoverLetterSignerName);
-        ECMIS103.setText("f_coverSignedAt", (coverSig && coverSig.signedAt) || cs.signedAt);
-        ECMIS103.setText("f_coverOpinion", cs.opinion);
-        const coverImg = document.getElementById("f_coverSigImg");
-        if (coverSig && coverSig.image) {
-          coverImg.src = coverSig.image;
-          coverImg.classList.remove("d-none");
-        }
+        ECMISWetSign.renderSignedView("wetSignCoverView", c, "coverLetter", "หนังสือนำส่งถึงอธิบดีอัยการ (หนังสือขอให้แก้ต่าง)");
 
         const sigs = c.l3Signatures || {};
         const reviewText = (r, code) =>
           r
             ? [
-                (r.checkedAnswer ? "✔" : "✘") + " ร่างคำให้การ  " + (r.checkedLetter ? "✔" : "✘") + " หนังสือนำส่ง",
+                "ร่างคำให้การ: " + (r.checkedAnswer ? "ตรวจแล้ว" : "ยังไม่ตรวจ") + " · หนังสือนำส่ง: " + (r.checkedLetter ? "ตรวจแล้ว" : "ยังไม่ตรวจ"),
                 "ความเห็น: " + (r.notes || "-"),
                 "ลงนาม: " + (r.reviewedBy || "-") + " เมื่อ " + ((sigs[code] && sigs[code].signedAt) || r.reviewedAt || "-"),
               ].join("\n")
@@ -1130,7 +1079,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

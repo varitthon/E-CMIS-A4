@@ -21,9 +21,9 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
 
     <style>
@@ -606,7 +606,7 @@
               title="สลับโหมดมืด/สว่าง"
               id="themeBtn"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <button type="button" class="circle-icon-btn" title="การแจ้งเตือน">
               <i class="fa-regular fa-bell"></i>
@@ -687,7 +687,7 @@
         </div>
 
         <!-- Card 1: Read-Only Case Details & Board Resolution -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="รายละเอียดสำนวนคดีและผลมติการประชุมคณะกรรมการ ป.ป.ท.">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -829,7 +829,7 @@
             >
               <span
                 ><i class="fa-solid fa-paper-plane text-primary me-2"></i
-                >แบบฟอร์มบันทึกรับผลมติและส่งต่อ ผอ.กองกฎหมาย
+                >แบบฟอร์มบันทึกรับผลมติและส่งต่อ ผอ.กลุ่มงานความเห็นแย้ง
                 (ธุรการกองกฎหมาย)</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
@@ -879,7 +879,7 @@
                   type="text"
                   class="form-control"
                   readonly
-                  value="นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)"
+                  value="นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)"
                   style="font-weight: 600; color: #1e3a8a"
                 />
               </div>
@@ -898,7 +898,7 @@
                 onclick="forwardSavedResult()"
               >
                 <i class="fa-solid fa-paper-plane me-1"></i>รับผลมติและส่งต่อ
-                ผอ.กองกฎหมาย
+                ผอ.กลุ่มงานความเห็นแย้ง
               </button>
             </div>
           </div>
@@ -908,14 +908,14 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
 
     <script>
       let currentCase = null;
@@ -930,7 +930,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 
@@ -974,7 +974,7 @@
         if (savedTheme === "dark") {
           document.body.classList.add("dark-mode");
           if (document.getElementById("themeBtn"))
-            document.getElementById("themeBtn").innerText = "☀️";
+            document.getElementById("themeBtn").innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i>';
         }
       }
 
@@ -1064,7 +1064,7 @@
  <div class="form-card" style="border: 2px solid #16a34a;">
  <div class="form-card-header" style="background: rgba(22,163,74,0.05);">
  <span><i class="fa-solid fa-circle-check text-success me-2"></i>สถานะการรับผลมติ (ธุรการกองกฎหมาย)</span>
- <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>ส่งต่อ ผอ.กองกฎหมายแล้ว</span>
+ <span class="badge" style="background:#16a34a; color:#fff;"><i class="fa-solid fa-lock me-1"></i>ส่งต่อ ผอ.กลุ่มงานความเห็นแย้งแล้ว</span>
  </div>
  <div class="form-card-body">
   <div class="form-grid-2">
@@ -1079,7 +1079,7 @@
  </div>
 
  <div class="form-group">
- <label>บันทึกการส่งต่อถึง ผอ.กองกฎหมาย</label>
+ <label>บันทึกการส่งต่อถึง ผอ.กลุ่มงานความเห็นแย้ง</label>
  <div class="read-box read-box-textarea font-monospace">${currentCase.adminResolutionIntakeNotes || "-"}</div>
  </div>
  <div class="form-group">
@@ -1106,7 +1106,7 @@
       }
 
       /* B1 (P10) — สรุปผลพิจารณาจากกิจกรรมที่ 7 ที่บันทึกไว้ + ป๊อปอัปบันทึกผล
-         (ป๊อปอัปเขียนมติ + signedExecutiveOrder แล้วส่งต่อ ผอ.กองกฎหมายให้เอง) */
+         (ป๊อปอัปเขียนมติ + signedExecutiveOrder แล้วส่งต่อ ผอ.กลุ่มงานความเห็นแย้งให้เอง) */
       function renderAct7Summary() {
         const host = document.getElementById("act7Summary");
         if (host && currentCase)
@@ -1114,7 +1114,7 @@
       }
 
       /* P12 (B1): ถ้าผลมติถูกบันทึกแล้วจากป๊อปอัปหลังรองเลขาธิการลงนาม (บันทึกผลทันที)
-         ธุรการรับผลมติและส่งต่อ ผอ.กองกฎหมายได้เลยโดยไม่ต้องกรอกซ้ำ */
+         ธุรการรับผลมติและส่งต่อ ผอ.กลุ่มงานความเห็นแย้งได้เลยโดยไม่ต้องกรอกซ้ำ */
       function renderForwardButton() {
         const btn = document.getElementById("btnForwardSaved");
         if (!btn || !currentCase) return;
@@ -1126,13 +1126,13 @@
       function forwardSavedResult() {
         if (!currentCase) return;
         const notes =
-          "ได้รับผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว จึงกราบเรียนเสนอ ผอ.กองกฎหมาย " +
+          "ได้รับผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว จึงกราบเรียนเสนอ ผอ.กลุ่มงานความเห็นแย้ง " +
           "เพื่อโปรดพิจารณาและมีคำสั่งการมอบหมายกลุ่มงานความเห็นแย้งดำเนินการตามมติต่อไป";
         Activity10.submitLegalAdminResolutionIntake(currentCase.id, notes);
         Swal.fire({
           icon: "success",
           title: "บันทึกรับผลมติสำเร็จ!",
-          text: "ส่งเรื่องให้ ผอ.กองกฎหมาย สั่งการตามผลมติเรียบร้อยแล้ว",
+          text: "ส่งเรื่องให้ ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกรตามผลมติเรียบร้อยแล้ว",
           timer: 1600,
           showConfirmButton: false,
         }).then(() => {
@@ -1147,7 +1147,7 @@
             Swal.fire({
               icon: "success",
               title: "บันทึกรับผลมติสำเร็จ!",
-              text: "ส่งเรื่องให้ ผอ.กองกฎหมาย สั่งการตามผลมติเรียบร้อยแล้ว",
+              text: "ส่งเรื่องให้ ผอ.กลุ่มงานความเห็นแย้ง มอบหมายนิติกรตามผลมติเรียบร้อยแล้ว",
               timer: 1600,
               showConfirmButton: false,
             }).then(() => {
@@ -1218,7 +1218,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 

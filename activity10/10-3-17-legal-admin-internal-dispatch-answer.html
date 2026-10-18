@@ -23,11 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -259,10 +259,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ธุรการ ออกเลขหนังสือส่งภายในและเสนอผู้ลงนาม</span
             >
@@ -282,10 +282,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -368,7 +368,7 @@
               style="max-height: 56px; background: #fff; border-radius: 6px; padding: 4px"
             />
           </div>
-          <div class="form-card">
+          <div class="form-card" data-prev-step="รายละเอียดคดีปกครอง">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -406,18 +406,18 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="กำหนดเวลายื่นคำให้การ">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-hourglass-half text-primary me-2"></i
@@ -439,7 +439,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ร่างเอกสารที่นิติกรเสนอ">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-signature text-primary me-2"></i
@@ -480,7 +480,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ผลการตรวจร่าง">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-user-check text-primary me-2"></i
@@ -570,10 +570,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
 
     <script>
       const STEP_CODE = "L3-26";
@@ -692,7 +692,7 @@
         const reviewText = (r, code) =>
           r
             ? [
-                (r.checkedAnswer ? "✔" : "✘") + " ร่างคำให้การ  " + (r.checkedLetter ? "✔" : "✘") + " หนังสือนำส่ง",
+                "ร่างคำให้การ: " + (r.checkedAnswer ? "ตรวจแล้ว" : "ยังไม่ตรวจ") + " · หนังสือนำส่ง: " + (r.checkedLetter ? "ตรวจแล้ว" : "ยังไม่ตรวจ"),
                 "ความเห็น: " + (r.notes || "-"),
                 "ลงนาม: " + (r.reviewedBy || "-") + " เมื่อ " + ((sigs[code] && sigs[code].signedAt) || r.reviewedAt || "-"),
               ].join("\n")
@@ -764,7 +764,7 @@
  <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
  <p><strong>เอกสารที่เสนอ:</strong> ร่างคำให้การแก้คำฟ้อง, ร่างหนังสือนำส่ง (${esc((docs.letterFileNames || []).join(", ") || "-")})</p>
  <p><strong>เสนอผู้ลงนาม:</strong> ${esc(route.label)} — ${esc(signerName)}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ${esc(route.label)} ตรวจคำให้การและลงนามหนังสือนำส่ง</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> เสนอ ${esc(route.label)} ลงนามหนังสือนำส่ง (บนกระดาษ) — ธุรการบันทึกผลการลงนามจริง</p>
  </div>
  `,
           showCancelButton: true,
@@ -790,13 +790,14 @@
                 l3CoverLetterSignerName: signerName,
                 status: route.status,
                 statusCode: route.statusCode,
-                assignedRole: role,
+                /* 2026-10-15 ผู้บริหารลงนามบนกระดาษ — ธุรการบันทึกผลการลงนามจริงที่ 10-3-18/19 */
+                assignedRole: "admin_legal",
               });
 
               Swal.fire({
                 icon: "success",
                 title: "ออกเลขและเสนอผู้ลงนามสำเร็จ!",
-                text: "หนังสือเลขที่ " + docNo + " — ส่ง " + signerName + " ตรวจคำให้การและลงนามหนังสือนำส่งเรียบร้อยแล้ว",
+                text: "หนังสือเลขที่ " + docNo + " — เสนอ " + signerName + " ลงนามหนังสือนำส่ง (บนกระดาษ) เรียบร้อยแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);
@@ -808,7 +809,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-CMIS - บันทึกผลคำพิพากษา</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-list-page.css?v=20261014_1" />
+  </head>
+  <body>
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="breadcrumb">
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> /
+            <span>ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</span> /
+            <a href="registry.html?tab=verdict-db" style="color: inherit">สารบบคำวินิจฉัย/คำพิพากษา</a> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >บันทึกผลคำพิพากษา</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">3</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">ก</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
+              <span class="user-role" id="userRoleTitle"
+                >เจ้าหน้าที่ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <!-- Profile & Logout Dropdown -->
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName"
+                    >นางกานดา รักษ์ธรรม</span
+                  >
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >เจ้าหน้าที่ธุรการชำนาญงาน</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg"
+                    >กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span
+                  >
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Body -->
+      <main class="content">
+        <h1 class="page-title"><i class="fa-solid fa-scale-balanced" style="color: #1e3a8a" aria-hidden="true"></i>บันทึกผลคำพิพากษา</h1>
+        <p class="page-intro">บันทึกผลคำพิพากษารายชั้นศาลของสำนวน 10.1 — 1 ชั้นศาล = 1 แถวในฐานข้อมูลคำพิพากษา (Excel) ข้อมูลสำนวน มติคณะกรรมการ และคดีในศาลดึงจากสำนวนเดิมให้อัตโนมัติตอนส่งออก</p>
+        <div id="verdictPage"></div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-export.js?v=20261018_1"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261018_3"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261018_5"></script>
+    <script src="assets/ecmis-verdict-doc.js?v=20261018_4"></script>
+    <script src="assets/ecmis-verdict-form.js?v=20261018_6"></script>
+    <script src="assets/ecmis-verdict-page.js?v=20261018_4"></script>
+  </body>
+</html>

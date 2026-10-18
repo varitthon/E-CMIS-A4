@@ -23,11 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -263,10 +263,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ธุรการ ออกเลขส่ง/เสนอบอร์ด</span
             >
@@ -286,10 +286,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -350,7 +350,7 @@
         </div>
 
         <div id="pageBody">
-          <div class="form-card">
+          <div class="form-card" data-prev-step="รายละเอียดคดีปกครอง">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -376,11 +376,11 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
@@ -400,7 +400,7 @@
             >
               <span
                 ><i class="fa-solid fa-paper-plane text-primary me-2"></i
-                >ออกเลขส่งภายในและส่งมติเสนอบอร์ด</span
+                >ออกเลขส่งภายในและเสนอตามลำดับชั้น</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
@@ -439,6 +439,19 @@
                   </div>
                 </div>
               </div>
+              <!-- เสนอต่อผู้บริหาร (บันทึกไว้เท่านั้น เรื่องยังส่งเข้ากิจกรรมที่ 7 เหมือนเดิม) -->
+              <div class="form-group">
+                <label for="in_proposeTo"
+                  >เสนอต่อ <span style="color: #dc2626">*</span></label
+                >
+                <select id="in_proposeTo" class="form-control">
+                  <option value="">-- เลือกผู้บริหารที่เสนอต่อ --</option>
+                  <option value="deputy_sg">
+                    รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.
+                  </option>
+                  <option value="secgen">เลขาธิการ ป.ป.ท.</option>
+                </select>
+              </div>
               <div class="form-group">
                 <label>หมายเหตุ</label>
                 <textarea
@@ -458,7 +471,7 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>ส่งมติเสนอบอร์ด
+                <i class="fa-solid fa-paper-plane me-1"></i>เสนอตามลำดับชั้น
               </button>
             </div>
           </div>
@@ -468,11 +481,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261002_5"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
 
     <script>
       const STEP_CODE = "LAW0095";
@@ -514,6 +527,9 @@
           docNoEl.value = c.l3InternalDocNo || "";
         }
         ECMIS103.setText("f_dispatchDate", c.l3InternalDocDate);
+        if (c.l3ProposeTo) {
+          document.getElementById("in_proposeTo").value = c.l3ProposeTo;
+        }
       }
 
       function doneAndBack(text) {
@@ -559,6 +575,19 @@
           document.getElementById("in_internalDocNo").focus();
           return;
         }
+        const proposeSel = document.getElementById("in_proposeTo");
+        if (!proposeSel.value) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกผู้บริหารที่เสนอต่อ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          proposeSel.focus();
+          return;
+        }
+        const proposeToLabel =
+          proposeSel.options[proposeSel.selectedIndex].text.trim();
         /* ผู้ใช้แก้เลขเองได้ — ถ้ายังไม่เคยกดออกเลขส่ง (ไม่มีวันที่) ให้ประทับวันนี้ให้ */
         const docDate =
           currentCase.l3InternalDocDate || ECMIS103.formatThaiDate(new Date());
@@ -567,13 +596,15 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันส่งมติเสนอบอร์ด",
+          title: "ยืนยันเสนอตามลำดับชั้น",
           html:
             "ส่งเรื่องเข้ากิจกรรมที่ 7 (เสนอบอร์ด) ด้วยเลขที่หนังสือ <strong>" +
             docNo +
-            "</strong><br/>",
+            "</strong><br/>เสนอต่อ: <strong>" +
+            proposeToLabel +
+            "</strong>",
           showCancelButton: true,
-          confirmButtonText: "ยืนยันส่งมติเสนอบอร์ด",
+          confirmButtonText: "ยืนยันเสนอตามลำดับชั้น",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#1e3a8a",
           cancelButtonColor: "#64748b",
@@ -583,10 +614,12 @@
             l3InternalDocNo: docNo,
             l3InternalDocDate: docDate,
             l3DispatchNotes: notes,
+            l3ProposeTo: proposeSel.value,
+            l3ProposeToLabel: proposeToLabel,
           });
           const finish = () =>
             doneAndBack(
-              "ส่งมติเสนอบอร์ดเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด (กิจกรรมที่ 7)",
+              "เสนอตามลำดับชั้นเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด (กิจกรรมที่ 7)",
             );
           /* P12 (B3): สวิตช์ ON → ป๊อปอัปจำลองมติมอบอำนาจหลังส่ง; [บันทึกผลทันที] → 10-3-10 ผ่านไปแล้ว
              (ข้ามลายเซ็นธุรการ) / [ภายหลัง] → ค้าง L3_READY_FOR_BOARD */
@@ -598,7 +631,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

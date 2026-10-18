@@ -23,11 +23,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
 
     <style>
       h1,
@@ -291,10 +292,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร ร่างคำแก้อุทธรณ์</span
             >
@@ -314,10 +315,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -386,7 +387,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคำพิพากษาศาลปกครองชั้นต้น">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -422,11 +423,11 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
@@ -456,47 +457,9 @@
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-3">
-                <div
-                  class="form-group"
-                  style="margin-bottom: 0; grid-column: span 2 / span 3"
-                >
-                  <label>ค้นหาฐานข้อมูลสำนวนคดีเดิม (ป.ป.ท.)</label>
-                  <input
-                    type="text"
-                    id="opinionSearchInput"
-                    class="form-control"
-                    style="width: 100%"
-                    placeholder="พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา..."
-                    onkeyup="handleOpinionSearchKeyup(event)"
-                  />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    style="width: 100%; margin-top: 20px"
-                    onclick="executeOpinionSearch()"
-                  >
-                    🔍 ค้นหาสำนวน
-                  </button>
-                </div>
-              </div>
-              <div
-                class="helper-text"
-                style="margin: 8px 0 16px; font-size: 0.82em; color: #64748b"
-              >
-                * ค้นหาได้จาก: <strong>เลขสำนวน</strong>,
-                <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>,
-                <strong>ชื่อผู้กล่าวหา</strong> หรือ
-                <strong>ชื่อผู้ถูกกล่าวหา</strong>
-              </div>
-
-              <div
-                id="opinionSearchResults"
-                class="d-none"
-                style="margin-bottom: 16px"
-              ></div>
+              <!-- แผงค้นหาสำนวนร่วม (ECMISCaseSearch.mountPanel) — หน้าตา/ตัวกรองเดียวกับหน้า 02 -->
+              <div id="opinionSearchHost"></div>
+              <div id="lawcaseSearchHost"></div>
 
               <div class="form-group" id="grp_relatedCaseNo">
                 <label>เลขสำนวนที่เกี่ยวข้อง</label>
@@ -627,10 +590,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-case-search.js?v=20261014_4"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
     <script src="assets/ecmis-capture.js"></script>
 
     <script>
@@ -725,99 +689,18 @@
       /* ---------------------------------------------- ค้นหาสำนวนคดีที่เกี่ยวข้อง
          เหมือน pattern ของ 02-board-intake.html / 10-3-04-lawyer-review-complaint.html
          (executeIntakeSearch/selectIntakeCase) แต่เลือกแล้วแค่เชื่อมโยงเลขสำนวน */
-      function handleOpinionSearchKeyup(e) {
-        if (e.key === "Enter") executeOpinionSearch();
-      }
+      /* แผงค้นหาสำนวน (แผงร่วมเดียวกับหน้า 02) — เลือกแล้วเชื่อมโยงเลขสำนวนที่เกี่ยวข้อง */
+      const opinionSearchPanel = ECMISCaseSearch.mountPanel(document.getElementById("opinionSearchHost"), {
+        prefix: "opinion",
+        onSelect: (c) => selectOpinionCase(c.id),
+        hint: 'คลิกแถวเพื่อดูรายละเอียด แล้วกด "เลือกสำนวนนี้" เพื่อเชื่อมโยงเลขสำนวนที่เกี่ยวข้อง',
+      });
+
+      /* สำนวนในกองกฎหมาย — ดูอย่างเดียว ไม่เชื่อมข้อมูล */
+      ECMISCaseSearch.mountPanel(document.getElementById("lawcaseSearchHost"), { source: "legal" });
 
       function executeOpinionSearch() {
-        const q = document
-          .getElementById("opinionSearchInput")
-          .value.trim()
-          .toLowerCase();
-        const resultsContainer = document.getElementById(
-          "opinionSearchResults",
-        );
-        if (!resultsContainer) return;
-
-        if (!q) {
-          Swal.fire({
-            icon: "info",
-            title: "กรุณากรอกคำค้นหา",
-            text: "พิมพ์เลขสำนวน, ชื่อผู้กล่าวหา หรือผู้ถูกกล่าวหา",
-            timer: 1500,
-            showConfirmButton: false,
-          });
-          resultsContainer.classList.add("d-none");
-          return;
-        }
-
-        const cases = Activity10.getPaccIntakeDatabase
-          ? Activity10.getPaccIntakeDatabase()
-          : [];
-        const matched = cases.filter((c) => {
-          return (
-            c.id.toLowerCase().includes(q) ||
-            (c.paccCaseNo && c.paccCaseNo.toLowerCase().includes(q)) ||
-            (c.blackNo && c.blackNo.toLowerCase().includes(q)) ||
-            (c.accuser && c.accuser.toLowerCase().includes(q)) ||
-            (c.accused && c.accused.toLowerCase().includes(q)) ||
-            c.title.toLowerCase().includes(q)
-          );
-        });
-
-        resultsContainer.classList.remove("d-none");
-
-        if (matched.length === 0) {
-          resultsContainer.innerHTML = `
- <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
- <i class="fa-solid fa-inbox me-1"></i>ไม่พบข้อมูลสำนวนที่ค้นหาจากข้อความ "${escapeHtml(q)}"
- </div>
- `;
-          return;
-        }
-
-        let html = `
- <div style="padding: 12px; background: var(--bg-body); border-radius: 8px; border: 1px solid var(--border-color);">
- <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
- <div style="font-weight: 700; color: var(--text-title); font-size: 0.9em;"><i class="fa-solid fa-list-check me-1"></i>พบข้อมูลสำนวนที่ตรงกัน (${matched.length} รายการ):</div>
- <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.75rem; height: 26px;" onclick="document.getElementById('opinionSearchResults').classList.add('d-none')"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
- </div>
- <div style="overflow-x: auto;">
- <table class="search-results-table">
- <thead>
- <tr>
- <th>เลขสำนวน ป.ป.ท.</th>
- <th>ชื่อผู้กล่าวหา</th>
- <th>ชื่อผู้ถูกกล่าวหา</th>
- <th>เรื่องสำนวน</th>
- </tr>
- </thead>
- <tbody>
- `;
-
-        matched.forEach((c) => {
-          const cleanId = c.id.replace(/^.*?-/, "");
-          html += `
- <tr onclick="selectOpinionCase('${escapeHtml(c.id)}')" title="คลิกเพื่อเลือกสำนวนนี้">
- <td>
- <strong class="font-monospace" style="color:var(--text-title);">${escapeHtml(cleanId)}</strong>
- ${c.paccCaseNo ? `<div style="font-size:0.8em; color:#64748b;">${escapeHtml(c.paccCaseNo)}</div>` : ""}
- </td>
- <td>${escapeHtml(c.accuser || "-")}</td>
- <td style="font-weight:600;">${escapeHtml((window.Activity10 && Activity10.fullName ? Activity10.fullName(c.accused, c.accusedPosition) : c.accused) || "-")}</td>
- <td>${escapeHtml(c.title)}</td>
- </tr>
- `;
-        });
-
-        html += `
- </tbody>
- </table>
- </div>
- </div>
- `;
-
-        resultsContainer.innerHTML = html;
+        opinionSearchPanel.search();
       }
 
       function selectOpinionCase(caseId) {
@@ -831,7 +714,7 @@
         );
         if (!target) return;
 
-        const cleanId = target.id.replace(/^.*?-/, "");
+        const cleanId = ECMISCaseSearch.caseNo(target);
         document.getElementById("in_relatedCaseNo").value = cleanId;
 
         const resultsContainer = document.getElementById(
@@ -991,7 +874,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

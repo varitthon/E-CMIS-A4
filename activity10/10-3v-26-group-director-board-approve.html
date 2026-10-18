@@ -23,11 +23,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
 
     <style>
       h1,
@@ -271,10 +272,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >ผอ.กลุ่มงาน เห็นชอบเสนอมติบอร์ด</span
             >
@@ -294,10 +295,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -359,7 +360,7 @@
         </div>
 
         <div id="pageBody">
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคำพิพากษาศาลปกครองชั้นต้น">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-gavel text-primary me-2"></i
@@ -385,11 +386,11 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
@@ -400,7 +401,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="บันทึกเสนอบอร์ด (จากนิติกร)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-pen-fancy text-primary me-2"></i
@@ -417,6 +418,9 @@
               <div class="form-group">
                 <label>เอกสารแนบบันทึกเสนอบอร์ด (จากนิติกร)</label>
                 <div id="f_draftAttachments"></div>
+                <div class="l3-split--doc d-none" id="opinionDocWrap">
+                  <div id="opinionDocHost"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -465,18 +469,19 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
 
     <script>
       /* LAW0150 — ผอ.กลุ่มงานคดี พิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด, Part 9)
          เคสมาจาก 10-3v-20 ที่สถานะ L8_TO_BOARD_PROPOSE (เลือก "เห็นควรไม่อุทธรณ์")
          เดินต่อบนเคสคำพิพากษาเดิม ไม่มีขั้นก่อนหน้าใน APPEAL_BOARD_STEPS ให้ไล่
          ต่อได้ (LAW0149 ตัดออกแล้ว — ซ้ำกับการแนบบันทึกเสนอบอร์ดที่ 10-3v-19)
-         จึงฮาร์ดโค้ดสถานะตั้งต้นตรงนี้เหมือน 10-3v-16/10-3v-22
+         จึงฮาร์ดโค้ดสถานะตั้งต้นตรงนี้เหมือน 10-3v-22
          ดู docs/10.3 mockup/flow-page-08.md, flow-page-09.md */
       const STEP_CODE = "LAW0150";
       const STEP = Activity103.stepByCode(STEP_CODE);
@@ -520,10 +525,38 @@
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
-        ECMIS103.setText("f_caseRegNo", c.l8CaseRegNo);
+        /* เลขทะเบียนคดีบันทึกไว้ที่ 10-3v-00 (l3VerdictRegNo) — เคสเดิมใช้ l8CaseRegNo */
+        ECMIS103.setText("f_caseRegNo", c.l3VerdictRegNo || c.l8CaseRegNo);
 
         ECMIS103.setText("f_draftText", c.l8VerdictIssues);
-        ECMIS103.renderAttachments("f_draftAttachments", c.l8OpinionAttachments);
+        renderOpinionDocs("f_draftAttachments", c);
+      }
+
+      /* เอกสารสดจาก 10-3v-19 (l8LiveDocs) — แสดงพรีวิว A4 แบบอ่านอย่างเดียวจากบล็อกที่จัดหน้าไว้ตอนเสนอ
+         (ECMIS103Docs.createViewer แบบเดียวกับ 10-3-13 แต่ไม่มีปุ่มแก้ไข) — เคสเดิมที่ยังแนบไฟล์
+         (ไม่มี l8LiveDocs) แสดงรายการชื่อไฟล์จาก l8OpinionAttachments เหมือนเดิม */
+      function renderOpinionDocs(listId, c) {
+        const docs = c.l8LiveDocs || null;
+        const key = docs
+          ? Object.keys(docs).find((k) => docs[k] && (docs[k].blocks || []).length)
+          : null;
+        if (!key || !window.ECMIS103Docs) {
+          ECMIS103.renderAttachments(listId, c.l8OpinionAttachments);
+          return;
+        }
+        const doc = docs[key];
+        document.getElementById(listId).classList.add("d-none");
+        document.getElementById("opinionDocWrap").classList.remove("d-none");
+        const viewer = ECMIS103Docs.createViewer("opinionDocHost", {
+          title: doc.label,
+          fileName: doc.label + " " + (c.blackCaseNo || ""),
+        });
+        if (!viewer) return;
+        viewer.render({
+          blocks: doc.blocks,
+          decor: (i) =>
+            i > 0 ? '<div class="l3p-pageno">- ' + ECMIS103Docs.th(i + 1) + " -</div>" : "",
+        });
       }
 
       function doneAndBack(text) {
@@ -564,7 +597,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

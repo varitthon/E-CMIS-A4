@@ -2067,21 +2067,9 @@
       visible: (role) => role.id === "admin_legal" || role.id === "Kanda.R",
     },
     {
-      href: "04-legal-director-review.html",
-      icon: "fa-user-tie",
-      label: "พิจารณาและมอบหมายเรื่อง",
-      visible: (role) => role.id === "dir_legal" || role.id === "Napas.S",
-    },
-    {
       href: "08-legal-director-approval.html",
       icon: "fa-user-check",
       label: "ตรวจพิจารณาและสั่งการ",
-      visible: (role) => role.id === "dir_legal" || role.id === "Napas.S",
-    },
-    {
-      href: "11-legal-director-resolution.html",
-      icon: "fa-file-circle-check",
-      label: "พิจารณาผลมติและสั่งการ",
       visible: (role) => role.id === "dir_legal" || role.id === "Napas.S",
     },
     {
@@ -2161,7 +2149,7 @@
 
           if (days <= 0) {
             notifications.push({
-              title: `⚠️ สำนวนเกินกำหนดเวลา! (${cleanId})`,
+              title: `สำนวนเกินกำหนดเวลา! (${cleanId})`,
               body: `สำนวน ${displayId} เกินกำหนดเวลาแล้ว ${Math.abs(days)} วัน`,
               time: "ด่วนที่สุด",
               icon: "fa-triangle-exclamation",
@@ -2169,7 +2157,7 @@
             });
           } else if (days <= 7) {
             notifications.push({
-              title: `🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ ${days} วัน)`,
+              title: `เตือนกรอบเวลาเร่งด่วน (เหลือ ${days} วัน)`,
               body: `สำนวน ${displayId} ครบกำหนดยกร่างความเห็นภายใน ${days} วัน`,
               time: "เร่งด่วน",
               icon: "fa-clock",
@@ -2177,7 +2165,7 @@
             });
           } else if (days <= 15) {
             notifications.push({
-              title: `🟠 เตือนกรอบเวลา (เหลือ ${days} วัน)`,
+              title: `เตือนกรอบเวลา (เหลือ ${days} วัน)`,
               body: `สำนวน ${displayId} เหลือเวลาจัดทำความเห็น ${days} วัน`,
               time: "วันนี้",
               icon: "fa-clock",
@@ -2185,7 +2173,7 @@
             });
           } else {
             notifications.push({
-              title: "📋 มอบหมายสำนวนใหม่",
+              title: "มอบหมายสำนวนใหม่",
               body: `สำนวน ${displayId} อยู่ระหว่างจัดทำความเห็น (เหลือ ${days} วัน)`,
               time: "วันนี้",
               icon: "fa-user-pen",
@@ -2196,21 +2184,21 @@
       } else {
         notifications = [
           {
-            title: "🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 5 วัน)",
+            title: "เตือนกรอบเวลาเร่งด่วน (เหลือ 5 วัน)",
             body: "สำนวน คดี-2569/001 ครบกำหนดยกร่างความเห็นภายใน 5 วัน",
             time: "เร่งด่วน",
             icon: "fa-clock",
             cls: "bg-danger text-white",
           },
           {
-            title: "🔴 เตือนกรอบเวลาเร่งด่วน (เหลือ 7 วัน)",
+            title: "เตือนกรอบเวลาเร่งด่วน (เหลือ 7 วัน)",
             body: "สำนวน คดี-2569/002 ครบกำหนดยกร่างความเห็นภายใน 7 วัน",
             time: "วันนี้",
             icon: "fa-clock",
             cls: "bg-danger text-white",
           },
           {
-            title: "📋 ได้รับมอบหมายสำนวนใหม่",
+            title: "ได้รับมอบหมายสำนวนใหม่",
             body: "สำนวน คดีปกครอง-2569/002 ให้จัดทำคำให้การเพิ่มเติม",
             time: "1 ชม. ที่แล้ว",
             icon: "fa-user-pen",

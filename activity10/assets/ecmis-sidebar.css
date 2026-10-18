@@ -85,60 +85,117 @@ body.dark-mode .ecmis-sidebar {
   letter-spacing: 0.04em;
 }
 
-/* สลับหมวดงาน 10.1 / 10.2 / 10.3 (แทนสวิตช์ ก4/ก5 ของ intake) */
-.ecmis-sidebar-switch {
+/* เมนูแบ่งกลุ่ม (งานของฉัน · ค้นหา · รายงาน) — เลื่อนได้เมื่อเมนูยาวกว่าความสูงจอ */
+.ecmis-sidebar-nav {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 4px;
-  margin: 12px 10px 4px;
-  padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
+  align-content: start;
+  gap: 14px;
+  margin: 12px 0 4px;
+  padding: 0 10px;
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1;
 }
 
-.ecmis-sidebar-switch-btn {
+.ecmis-sidebar-group {
+  display: grid;
+  gap: 4px;
+}
+
+.ecmis-sidebar-group-title {
+  padding: 0 6px 2px;
+  color: rgba(232, 238, 247, 0.45);
+  font:
+    700 11px "Sarabun",
+    sans-serif;
+  letter-spacing: 0.04em;
+}
+
+/* จำนวนรายการ (เช่น หนังสือแจ้ง) ท้ายเมนู */
+.ecmis-sidebar-count {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.ecmis-sidebar-nav-link.active .ecmis-sidebar-count {
+  background: #17263a;
+}
+
+.ecmis-sidebar-nav-link {
   display: flex;
-  min-height: 44px;
-  flex-direction: column;
-  align-items: start;
-  justify-content: center;
-  gap: 1px;
-  padding: 6px 4px;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 8px 10px;
   border-radius: 7px;
   color: rgba(232, 238, 247, 0.72);
   font:
-    600 11px "Sarabun",
+    600 13px "Sarabun",
     sans-serif;
-  text-align: center;
   text-decoration: none;
-  line-height: 1.25;
 }
 
-.ecmis-sidebar-switch-btn strong {
-  font-size: 13px;
+.ecmis-sidebar-nav-link svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.ecmis-sidebar-switch-btn:hover,
-.ecmis-sidebar-switch-btn:focus-visible {
+.ecmis-sidebar-nav-link:hover,
+.ecmis-sidebar-nav-link:focus-visible {
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
   outline: none;
 }
 
-.ecmis-sidebar-switch-btn.active {
+.ecmis-sidebar-nav-link.active {
   color: #17263a;
   background: linear-gradient(135deg, #e8c96a, #d3ad4e);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
-.ecmis-sidebar-collapsed .ecmis-sidebar-switch {
-  display: none;
+.ecmis-sidebar-collapsed .ecmis-sidebar-nav-link {
+  justify-content: center;
+  padding-inline: 0;
 }
 
-/* ไม่มีรายการเมนู — ดันส่วนท้ายลงล่างสุด */
+/* ย่อเมนู: ซ่อนหัวข้อกลุ่ม เหลือไอคอน; จำนวนรายการเป็นจุดมุมไอคอน */
+.ecmis-sidebar-collapsed .ecmis-sidebar-group-title {
+  display: none;
+}
+.ecmis-sidebar-collapsed .ecmis-sidebar-group + .ecmis-sidebar-group {
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+.ecmis-sidebar-collapsed .ecmis-sidebar-nav-link {
+  position: relative;
+}
+.ecmis-sidebar-collapsed .ecmis-sidebar-count {
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  min-width: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 14px;
+}
+
+/* เมนูยืดเต็มพื้นที่แล้ว (flex: 1) — ตัวเว้นไม่ต้องกินที่ */
 .ecmis-sidebar-spacer {
-  flex: 1;
+  flex: 0;
 }
 
 .ecmis-sidebar-footer {
@@ -223,14 +280,6 @@ body.dark-mode .ecmis-sidebar {
   stroke: currentColor;
   stroke-width: 2;
   transition: transform 0.3s ease;
-}
-
-.ecmis-sidebar-tools .page-info-btn {
-  margin-top: 0;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  border-radius: 8px;
 }
 
 .ecmis-sidebar-collapsed .ecmis-sidebar-toggle svg {
@@ -331,15 +380,30 @@ body.dark-mode .ecmis-sidebar {
   }
 
   /* บนมือถือแสดงเต็มเสมอ แม้เคยย่อไว้บนเดสก์ท็อป */
-  .ecmis-sidebar-collapsed .ecmis-sidebar-switch {
-    display: grid;
-  }
   .ecmis-sidebar-collapsed .ecmis-sidebar-brand-text,
   .ecmis-sidebar-collapsed .ecmis-sidebar-user-copy {
     display: block;
   }
   .ecmis-sidebar-collapsed .ecmis-sidebar-label {
     display: inline;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-nav-link {
+    justify-content: flex-start;
+    padding-inline: 10px;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-group-title {
+    display: block;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-group + .ecmis-sidebar-group {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .ecmis-sidebar-collapsed .ecmis-sidebar-count {
+    position: static;
+    min-width: 20px;
+    padding: 1px 6px;
+    font-size: 11px;
+    line-height: 16px;
   }
   .ecmis-sidebar-collapsed .ecmis-sidebar-brand {
     justify-content: flex-start;

@@ -127,11 +127,12 @@
   }
 
   /* ---------- Word ---------- */
-  function toDocx(html, filename) {
+  /* options (ไม่บังคับ) ส่งต่อให้ html-docx-js เช่น { orientation, margins: { top, right, bottom, left } } หน่วย twip */
+  function toDocx(html, filename, options) {
     return loadScript("docx")
       .then(function (lib) {
         if (typeof lib.asBlob !== "function") throw new Error("html-docx-js ไม่พร้อมใช้งาน");
-        download(lib.asBlob(html), (filename || "รายงาน") + ".docx");
+        download(options ? lib.asBlob(html, options) : lib.asBlob(html), (filename || "รายงาน") + ".docx");
         return true;
       })
       .catch(function (err) {

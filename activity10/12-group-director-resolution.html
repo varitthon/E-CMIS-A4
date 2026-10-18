@@ -10,9 +10,9 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2">
- <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
- <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9">
+ <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+ <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
     <style>
@@ -558,7 +558,7 @@
  <button class="ctrl-btn" onclick="changeFontSize(1)" title="เพิ่มขนาดตัวอักษร">A+</button>
  </div>
  <div class="icon-btn-group">
- <button type="button" class="circle-icon-btn" onclick="toggleTheme()" title="สลับโหมดมืด/สว่าง" id="themeBtn">🌙</button>
+ <button type="button" class="circle-icon-btn" onclick="toggleTheme()" title="สลับโหมดมืด/สว่าง" id="themeBtn"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
  <button type="button" class="circle-icon-btn" title="การแจ้งเตือน">
  <i class="fa-regular fa-bell"></i>
  <span class="noti-badge">3</span>
@@ -609,27 +609,23 @@
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
               <div class="step-label">10. ธุรการ รับผลมติ</div>
             </div>
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">11. ผอ.กอง สั่งการตามมติ</div>
-            </div>
             <div class="step-item active" id="step12">
-              <div class="step-circle">12</div>
-              <div class="step-label">12. ผอ.กลุ่ม มอบหมาย</div>
+              <div class="step-circle">11</div>
+              <div class="step-label">11. ผอ.กลุ่ม มอบหมาย</div>
             </div>
             <div class="step-item" id="step13">
-              <div class="step-circle">13</div>
-              <div class="step-label">13. นิติกร จัดทำหนังสือ</div>
+              <div class="step-circle">12</div>
+              <div class="step-label">12. นิติกร จัดทำหนังสือ</div>
             </div>
             <div class="step-item" id="step14">
-              <div class="step-circle">14</div>
-              <div class="step-label">14. ผอ.กลุ่ม ตรวจร่าง</div>
+              <div class="step-circle">13</div>
+              <div class="step-label">13. ผอ.กลุ่ม ตรวจร่าง</div>
             </div>
           </div>
         </div>
 
         <!-- Card 1: Read-Only Case Details & Prosecutor Docs -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="รายละเอียดสำนวนคดีและเอกสารอัยการ">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-file-invoice text-primary me-2"></i
@@ -707,11 +703,11 @@
           </div>
         </div>
 
- <!-- Card 2: Resolution Details & Legal Director Directives -->
- <div class="form-card">
+ <!-- Card 2: Resolution Details -->
+ <div class="form-card" data-prev-step="ผลมติคณะกรรมการ ป.ป.ท.">
  <div class="form-card-header">
- <span><i class="fa-solid fa-gavel text-primary me-2"></i>ผลมติคณะกรรมการ ป.ป.ท. และ คำสั่งการจาก ผอ.กองกฎหมาย</span>
- <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>ผอ.กอง มอบหมายแล้ว</span>
+ <span><i class="fa-solid fa-gavel text-primary me-2"></i>ผลมติคณะกรรมการ ป.ป.ท.</span>
+ <span class="badge" style="background:#dcfce7; color:#166534;"><i class="fa-solid fa-check-double me-1"></i>มีมติแล้ว</span>
  </div>
  <div class="form-card-body">
  <div class="form-grid-3">
@@ -740,45 +736,6 @@
                 ที่ประชุมคณะกรรมการ ป.ป.ท.
                 ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงประกอบบันทึกความเห็นของกองกฎหมายแล้ว
                 มีมติเป็นเอกฉันท์เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ
-              </div>
-            </div>
-
-            <!-- Directives Card -->
-            <div
-              style="
-                background: rgba(37, 99, 235, 0.04);
-                border: 1px solid #bfdbfe;
-                border-radius: 8px;
-                padding: 14px 16px;
-                margin-top: 10px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 8px;
-                "
-              >
-                <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9em">
-                  <i class="fa-solid fa-user-tie me-1 text-primary"></i
-                  >ข้อสั่งการจาก ผอ.กองกฎหมาย (นายนภัส สอนดี):
-                </div>
-                <span
-                  class="font-monospace text-secondary"
-                  style="font-size: 0.85em"
-                  id="f_dirOrderDate"
-                  >-</span
-                >
-              </div>
-              <div
-                class="font-monospace"
-                style="font-size: 0.88em; color: #334155"
-                id="f_directorResolutionOrderNotes"
-              >
-                รับทราบผลมติคณะกรรมการ ป.ป.ท. มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง
-                กำกับนิติกรเจ้าของสำนวนจัดทำร่างหนังสือส่งอัยการสูงสุดและหนังสือแจ้งหน่วยงานที่เกี่ยวข้องตามมติต่อไป
               </div>
             </div>
           </div>
@@ -905,13 +862,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260902_2"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
 
     <script>
       let currentCase = null;
@@ -963,7 +920,7 @@
         if (savedTheme === "dark") {
           document.body.classList.add("dark-mode");
           if (document.getElementById("themeBtn"))
-            document.getElementById("themeBtn").innerText = "☀️";
+            document.getElementById("themeBtn").innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i>';
         }
       }
 
@@ -1028,18 +985,6 @@
             "ที่ประชุมคณะกรรมการ ป.ป.ท. ได้พิจารณาสำนวนการไต่สวนข้อเท็จจริงประกอบบันทึกความเห็นของกองกฎหมายแล้ว มีมติเป็นเอกฉันท์เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
         );
 
-        setElText(
-          "f_dirOrderDate",
-          currentCase.directorResolutionOrderDate
-            ? "สั่งการเมื่อ: " + currentCase.directorResolutionOrderDate
-            : "สั่งการเมื่อ: 14 ส.ค. 2569",
-        );
-        setElText(
-          "f_directorResolutionOrderNotes",
-          currentCase.directorResolutionOrderNotes ||
-            "รับทราบผลมติคณะกรรมการ ป.ป.ท. มอบหมาย ผอ.กลุ่มงานความเห็นแย้ง กำกับนิติกรเจ้าของสำนวนจัดทำร่างหนังสือส่งอัยการสูงสุดและหนังสือแจ้งหน่วยงานที่เกี่ยวข้องตามมติต่อไป",
-        );
-
         // Check if Group Director has already ordered
         const isAlreadyOrdered =
           currentCase.statusCode === "PENDING_OFFICER_FINAL_DOC" ||
@@ -1052,7 +997,7 @@
           if (step12El) {
             step12El.className = "step-item completed";
             step12El.innerHTML =
-              '<div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">12. ผอ.กลุ่ม มอบหมาย</div>';
+              '<div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">11. ผอ.กลุ่ม มอบหมาย</div>';
           }
 
           const cardContainer = document.getElementById(
@@ -1205,7 +1150,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 

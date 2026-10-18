@@ -24,9 +24,9 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       h1,
@@ -393,7 +393,7 @@
               title="สลับโหมดมืด/สว่าง"
               id="themeBtn"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <button type="button" class="circle-icon-btn" title="การแจ้งเตือน">
               <i class="fa-regular fa-bell"></i>
@@ -446,33 +446,29 @@
             </div>
             <div class="step-item completed">
               <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">2. ผอ.กอง มอบหมาย</div>
-            </div>
-            <div class="step-item completed">
-              <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-              <div class="step-label">3. ผอ.กลุ่มงาน มอบหมาย</div>
+              <div class="step-label">2. ผอ.กลุ่มงาน มอบหมาย</div>
             </div>
             <div class="step-item active" id="step5">
-              <div class="step-circle">4</div>
-              <div class="step-label">4. นิติกร ยกร่างความเห็น</div>
+              <div class="step-circle">3</div>
+              <div class="step-label">3. นิติกร ยกร่างความเห็น</div>
             </div>
             <div class="step-item" id="step6">
-              <div class="step-circle">5</div>
-              <div class="step-label">5. ผอ.กลุ่มงาน ตรวจร่าง</div>
+              <div class="step-circle">4</div>
+              <div class="step-label">4. ผอ.กลุ่มงาน ตรวจร่าง</div>
             </div>
             <div class="step-item" id="step7">
-              <div class="step-circle">6</div>
-              <div class="step-label">6. ผอ.กอง ตรวจพิจารณา</div>
+              <div class="step-circle">5</div>
+              <div class="step-label">5. ผอ.กอง ตรวจพิจารณา</div>
             </div>
             <div class="step-item" id="step8">
-              <div class="step-circle">7</div>
-              <div class="step-label">7. ธุรการ ออกเลขส่ง</div>
+              <div class="step-circle">6</div>
+              <div class="step-label">6. ธุรการ ออกเลขส่ง</div>
             </div>
           </div>
         </div>
 
         <!-- Card 1: Read-Only Case Details & Superior Orders -->
-        <div class="form-card">
+        <div class="form-card" data-prev-step="รายละเอียดสำนวนคดีและข้อสั่งการจากผู้บังคับบัญชา">
           <div class="form-card-header">
             <span
               ><i class="fa-solid fa-file-invoice text-primary me-2"></i
@@ -587,38 +583,8 @@
                 >ข้อสั่งการจากผู้บังคับบัญชาตามลำดับชั้น
               </div>
               <div
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+                style="display: grid; grid-template-columns: 1fr; gap: 12px"
               >
-                <div
-                  style="
-                    background: var(--bg-card);
-                    padding: 10px 12px;
-                    border-radius: 6px;
-                    border: 1px solid var(--border-color);
-                  "
-                >
-                  <div
-                    style="
-                      font-weight: 700;
-                      font-size: 0.85em;
-                      color: var(--text-title);
-                      margin-bottom: 4px;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-user-tie me-1"
-                      style="color: #1e3a8a"
-                    ></i
-                    >ผอ.กองกฎหมาย (นายนภัส สอนดี):
-                  </div>
-                  <div
-                    class="font-monospace"
-                    style="font-size: 0.85em; color: #475569"
-                    id="f_directorNotes"
-                  >
-                    -
-                  </div>
-                </div>
                 <div
                   style="
                     background: var(--bg-card);
@@ -916,12 +882,12 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
 
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-1-extras.js?v=20261002_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
     <script>
       let currentCase = null;
       let activeRecognition = null;
@@ -952,7 +918,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 
@@ -996,7 +962,7 @@
         if (savedTheme === "dark") {
           document.body.classList.add("dark-mode");
           if (document.getElementById("themeBtn"))
-            document.getElementById("themeBtn").innerText = "☀️";
+            document.getElementById("themeBtn").innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i>';
         }
       }
 
@@ -1157,11 +1123,6 @@
           "f_opinion",
           currentCase.legalOpinion ||
             "จากการตรวจพิจารณาสำนวนการไต่สวนข้อเท็จจริง พนักงานอัยการมีคำสั่งเด็ดขาดไม่ฟ้องผู้ถูกกล่าวหา เสนอเรื่องให้สำนักงาน ป.ป.ท. พิจารณาทำความเห็นแย้งส่งอัยการสูงสุดชี้ขาด",
-        );
-        setElText(
-          "f_directorNotes",
-          currentCase.directorNotes ||
-            "โปรดมอบหมายนิติกรเจ้าของสำนวนดำเนินการตรวจพิจารณาและยกร่างความเห็นแย้งตามขั้นตอนกฎหมาย",
         );
         setElText(
           "f_groupDirectorNotes",
@@ -1634,7 +1595,7 @@
             });
             toast.fire({
               icon: "info",
-              title: "🎙️ กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
+              title: "กำลังฟังเสียงภาษาไทย... กรุณาพูดข้อความ",
             });
           };
 

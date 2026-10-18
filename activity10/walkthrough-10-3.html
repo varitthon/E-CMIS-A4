@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>คู่มือไล่ทดสอบ 10.3 | E-CMIS</title>
+<link rel="icon" type="image/png" href="pacc_logo.png" />
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  :root { --bg:#f1f5f9; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --pri:#1e3a8a; --ok:#16a34a; --bad:#dc2626; --cur:#fef3c7; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Sarabun",sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+  header { background:var(--pri); color:#fff; padding:14px 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; font-weight:600; flex:1; }
+  header button { background:#fff; color:var(--pri); border:0; border-radius:6px; padding:6px 12px; font:inherit; cursor:pointer; }
+  main { max-width:1200px; margin:0 auto; padding:16px; }
+  .help { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:16px; color:var(--muted); line-height:1.7; }
+  .help b { color:var(--text); }
+  .lane { background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:16px; overflow:hidden; }
+  .lane-h { padding:10px 16px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .lane-h h2 { margin:0; font-size:15px; font-weight:600; flex:1; }
+  .lane-h .meta { font-size:12px; color:var(--muted); }
+  .lane-h .case { font-size:12px; background:#eef2ff; color:var(--pri); border-radius:6px; padding:2px 8px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; color:var(--muted); font-weight:500; background:#f8fafc; }
+  tr.current td { background:var(--cur); }
+  .no { color:var(--muted); width:28px; }
+  .role { white-space:nowrap; }
+  .page { font-family:ui-monospace,monospace; font-size:12px; color:var(--muted); }
+  .todo { color:var(--muted); font-size:13px; }
+  .btn { border:1px solid var(--pri); background:#fff; color:var(--pri); border-radius:6px; padding:4px 10px; font:inherit; font-size:12px; cursor:pointer; white-space:nowrap; margin:0 4px 4px 0; }
+  .btn.pri { background:var(--pri); color:#fff; }
+  .chk { display:flex; gap:4px; }
+  .chk button { border:1px solid var(--line); background:#fff; border-radius:6px; width:30px; height:28px; cursor:pointer; }
+  .chk button.on-ok { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .chk button.on-bad { background:var(--bad); color:#fff; border-color:var(--bad); }
+  textarea { width:100%; min-width:160px; font:inherit; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:4px 6px; resize:vertical; }
+  .tag { font-size:11px; border-radius:4px; padding:1px 6px; background:#f1f5f9; color:var(--muted); }
+  .tag.cur { background:#f59e0b; color:#fff; }
+  .empty { padding:12px 16px; color:var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1><i class="fa-solid fa-route me-1"></i> คู่มือไล่ทดสอบกิจกรรม 10.3 ทีละขั้น</h1>
+  <span id="progress"></span>
+  <button type="button" onclick="render()"><i class="fa-solid fa-rotate"></i> อัปเดตสถานะ</button>
+  <button type="button" onclick="resetCases()"><i class="fa-solid fa-clock-rotate-left"></i> รีเซ็ตข้อมูลเคสทดสอบ</button>
+  <button type="button" onclick="clearChecks()"><i class="fa-solid fa-eraser"></i> ล้างผลตรวจ</button>
+</header>
+<main>
+  <div class="help">
+    <b>วิธีใช้:</b> แต่ละสายงานมีเคสทดสอบ 1 เคส แถวสีเหลือง = ขั้นที่เคสอยู่ตอนนี้ ·
+    <b>เปิดหน้า</b> = สลับเป็นบทบาทของขั้นนั้นแล้วเปิดหน้าในแท็บใหม่ (ทำงานในหน้าแล้วกดส่งตามปกติ จากนั้นกลับมากด <b>อัปเดตสถานะ</b>) ·
+    <b>ข้ามมาขั้นนี้</b> = ย้ายเคสทดสอบมาที่ขั้นนี้ทันที (ใช้ตรวจหน้าเดี่ยว — ข้อมูลจากขั้นก่อนหน้าอาจไม่ครบ ถ้าต้องการข้อมูลครบให้เดินตามลำดับ) ·
+    ติ๊ก <i class="fa-solid fa-check"></i>/<i class="fa-solid fa-xmark"></i> และจดหมายเหตุไว้ (เก็บในเบราว์เซอร์นี้เท่านั้น) ·
+    <b>รีเซ็ตข้อมูลเคสทดสอบ</b> = คืนข้อมูลทุกเคสเป็นตอนเปิดคู่มือครั้งแรก
+  </div>
+  <div id="lanes"></div>
+</main>
+
+<script src="assets/ecmis-app.js?v=20261014_6"></script>
+<script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+<script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+<script>
+  /* คู่มือไล่ทดสอบ 10.3 — อ่านขั้นตอนจาก Activity103.*_STEPS ตอนเปิดหน้า จึงตรงกับโค้ดปัจจุบันเสมอ
+     ใช้ localStorage แยก (walkthrough103_*) ไม่ยุ่งกับข้อมูลระบบนอกจากเคสทดสอบที่เลือก */
+  const SNAP_KEY = "walkthrough103_snapshot";
+  const CHECK_KEY = "walkthrough103_checks";
+  const A3 = window.Activity103;
+  const A = window.Activity10;
+
+  const caseKinds = {
+    main: (c) => A3.isCourtCase(c) && !A3.isStayObjectionCase(c) && !A3.isVerdictCase(c),
+    stay: (c) => A3.isStayObjectionCase(c),
+    verdict: (c) => A3.isVerdictCase(c),
+  };
+
+  const LANES = [
+    { key: "main", title: "1. รับคำฟ้อง → เสนอบอร์ด", steps: "STEPS", kind: "main", note: "เริ่มที่ 02 บันทึกรับเรื่อง (หมวดคดีปกครอง)" },
+    { key: "stay", title: "2. คัดค้านคำขอทุเลาการบังคับคดี (เคสลูก -B)", steps: "STAY_STEPS", kind: "stay", note: "ประธานฯ ลงนามบนกระดาษ — ธุรการบันทึกผลที่ 3b-02" },
+    { key: "court", title: "3. คำสั่งศาลเรื่องทุเลา", steps: "COURT_ORDER_STEPS", kind: "stay", note: "ต่อจากสาย 2" },
+    { key: "answer", title: "4. จัดทำและส่งคำให้การ (หลังบอร์ดมีมติ)", steps: "ANSWER_STEPS", kind: "main", note: "ผู้บริหารลงนามบนกระดาษ — ธุรการบันทึกผลที่ 3-18/3-19 และ 3-22" },
+    { key: "verdict", title: "5. คำพิพากษาศาลปกครองชั้นต้น", steps: "VERDICT_STEPS", kind: "verdict", note: "แพ้คดี → นิติกรเลือกควร/ไม่ควรอุทธรณ์ที่ 10-3v-04" },
+    { key: "appealReply", title: "6. ทำคำแก้อุทธรณ์ (ชนะ ผู้ฟ้องอุทธรณ์)", steps: "APPEAL_STEPS", kind: "verdict", note: "10-3v-06 เลือก ชนะคดี (ผู้ฟ้องยื่นอุทธรณ์)" },
+    { key: "consider", title: "7. พิจารณาอุทธรณ์ (แพ้คดี)", steps: "APPEAL_CONSIDER_STEPS", kind: "verdict", note: "10-3v-06 เลือก แพ้คดี → ตรงไป 10-3v-18" },
+    { key: "draft", title: "8. ร่างคำอุทธรณ์ (เห็นควรอุทธรณ์)", steps: "APPEAL_DRAFT_STEPS", kind: "verdict", note: "ต่อจาก v20 เมื่อเลือก เห็นควรอุทธรณ์" },
+    { key: "board", title: "9. เสนอบอร์ด (เห็นควรไม่อุทธรณ์)", steps: "APPEAL_BOARD_STEPS", kind: "verdict", note: "ต่อจาก v20 เมื่อเลือก เห็นควรไม่อุทธรณ์" },
+    { key: "boardYes", title: "10. บอร์ดให้อุทธรณ์", steps: "BOARD_APPROVED_APPEAL_STEPS", kind: "verdict", note: "มติบอร์ด: อุทธรณ์" },
+    { key: "boardNo", title: "11. บอร์ดไม่อุทธรณ์", steps: "BOARD_NO_APPEAL_STEPS", kind: "verdict", note: "มติบอร์ด: ไม่อุทธรณ์" },
+  ];
+
+  const roleName = (id) => {
+    const r = ((window.ECMIS && window.ECMIS.ROLES) || []).find((x) => x.id === id);
+    return r ? r.title + " (" + r.name + ")" : id;
+  };
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[m]);
+  const loadJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+
+  /* เก็บข้อมูลเคสทั้งหมดตอนเปิดคู่มือครั้งแรก — ใช้รีเซ็ต */
+  if (!localStorage.getItem(SNAP_KEY)) {
+    localStorage.setItem(SNAP_KEY, JSON.stringify(A.getCases()));
+  }
+
+  function testCase(kind) {
+    const pin = loadJSON("walkthrough103_cases", {});
+    const all = A.getCases();
+    const pinned = pin[kind] && all.find((c) => c.id === pin[kind]);
+    if (pinned) return pinned;
+    const found = all.find(caseKinds[kind]);
+    if (found) {
+      pin[kind] = found.id;
+      localStorage.setItem("walkthrough103_cases", JSON.stringify(pin));
+    }
+    return found || null;
+  }
+
+  function entryStatus(step) {
+    return step.entryStatus || A3.pendingStatusFor(step.page);
+  }
+
+  function openStep(laneKey, i, jump) {
+    const lane = LANES.find((l) => l.key === laneKey);
+    const step = A3[lane.steps][i];
+    const kase = testCase(lane.kind);
+    if (!kase) return alert("ไม่พบเคสทดสอบสำหรับสายนี้");
+    if (jump) {
+      const st = entryStatus(step);
+      if (!st) return alert("ขั้นนี้ไม่มีสถานะเข้า (เป็นจุดเริ่มด้วยปุ่ม) — เปิดหน้าโดยตรงแทน");
+      A.updateCase(kase.id, { statusCode: st, assignedRole: step.role });
+    }
+    sessionStorage.setItem("ecmis_role", step.role);
+    window.open(step.page + "?id=" + encodeURIComponent(kase.id), "_blank");
+    setTimeout(render, 300);
+  }
+
+  function setCheck(id, val) {
+    const checks = loadJSON(CHECK_KEY, {});
+    const cur = checks[id] || {};
+    checks[id] = Object.assign({}, cur, { r: cur.r === val ? "" : val });
+    localStorage.setItem(CHECK_KEY, JSON.stringify(checks));
+    render();
+  }
+  function setNote(id, text) {
+    const checks = loadJSON(CHECK_KEY, {});
+    checks[id] = Object.assign({}, checks[id] || {}, { n: text });
+    localStorage.setItem(CHECK_KEY, JSON.stringify(checks));
+  }
+  function clearChecks() {
+    if (confirm("ล้างผลตรวจ ✓/✗ และหมายเหตุทั้งหมด?")) { localStorage.removeItem(CHECK_KEY); render(); }
+  }
+  function resetCases() {
+    if (!confirm("คืนข้อมูลเคสทั้งหมดเป็นตอนเปิดคู่มือครั้งแรก?")) return;
+    A.saveCases(loadJSON(SNAP_KEY, A.getCases()));
+    render();
+  }
+
+  function render() {
+    const checks = loadJSON(CHECK_KEY, {});
+    let total = 0, done = 0;
+    const html = LANES.map((lane) => {
+      const steps = A3[lane.steps] || [];
+      const kase = testCase(lane.kind);
+      if (!steps.length) return "";
+      const curCode = kase && kase.statusCode;
+      const rows = steps.map((s, i) => {
+        const id = lane.key + ":" + s.code;
+        const ck = checks[id] || {};
+        total++; if (ck.r) done++;
+        const isCur = curCode && entryStatus(s) === curCode;
+        const next = steps[i + 1];
+        const expect = next
+          ? "ส่งต่อ → " + esc(roleName(next.role).split(" (")[0]) + " : " + esc(next.stepName || next.label)
+          : "ขั้นสุดท้ายของสายนี้ (สถานะ: " + esc(s.status) + ")";
+        return `<tr class="${isCur ? "current" : ""}">
+          <td class="no">${i + 1}${isCur ? '<br><span class="tag cur">อยู่ที่นี่</span>' : ""}</td>
+          <td><b>${esc(s.stepName || s.label)}</b><div class="page">${esc(s.page)}</div></td>
+          <td class="role">${esc(roleName(s.role))}</td>
+          <td class="todo">${esc(s.label)}<br><i class="fa-solid fa-arrow-right"></i> ${expect}</td>
+          <td><button class="btn pri" onclick="openStep('${lane.key}',${i},false)"><i class="fa-solid fa-up-right-from-square"></i> เปิดหน้า</button>
+              <button class="btn" onclick="openStep('${lane.key}',${i},true)"><i class="fa-solid fa-forward"></i> ข้ามมาขั้นนี้</button></td>
+          <td><div class="chk"><button class="${ck.r === "ok" ? "on-ok" : ""}" title="ผ่าน" onclick="setCheck('${id}','ok')"><i class="fa-solid fa-check"></i></button>
+              <button class="${ck.r === "bad" ? "on-bad" : ""}" title="ไม่ผ่าน" onclick="setCheck('${id}','bad')"><i class="fa-solid fa-xmark"></i></button></div></td>
+          <td><textarea rows="1" placeholder="หมายเหตุ" onchange="setNote('${id}', this.value)">${esc(ck.n || "")}</textarea></td>
+        </tr>`;
+      }).join("");
+      return `<section class="lane">
+        <div class="lane-h"><h2>${esc(lane.title)}</h2>
+          <span class="meta">${esc(lane.note)}</span>
+          ${kase ? `<span class="case">เคสทดสอบ: ${esc(kase.id)} · ${esc(kase.statusCode)}</span>` : ""}</div>
+        ${kase ? `<table><thead><tr><th>#</th><th>ขั้นตอน / หน้า</th><th>บทบาทที่ต้องใช้</th><th>ทำอะไร → ผลที่ควรเห็น</th><th></th><th>ผล</th><th>หมายเหตุ</th></tr></thead><tbody>${rows}</tbody></table>`
+               : `<div class="empty">ไม่พบเคสทดสอบสำหรับสายนี้</div>`}
+      </section>`;
+    }).join("");
+    document.getElementById("lanes").innerHTML = html;
+    document.getElementById("progress").textContent = "ตรวจแล้ว " + done + " / " + total + " ขั้น";
+  }
+  window.addEventListener("focus", render);
+  render();
+</script>
+</body>
+</html>

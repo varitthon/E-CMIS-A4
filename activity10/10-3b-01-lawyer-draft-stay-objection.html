@@ -25,11 +25,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
-    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261008_2" />
-    <script src="assets/ecmis-sidebar.js?v=20261008_2" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20260930_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
 
     <style>
       h1,
@@ -287,10 +288,10 @@
             onclick="toggleSidebar()"
             title="ซ่อน/แสดงเมนู"
           >
-            ☰
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
           </button>
           <div class="breadcrumb">
-            <span>🏠 หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
               >นิติกร จัดทำคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี</span
             >
@@ -310,10 +311,10 @@
               id="themeBtn"
               title="สลับโหมดสี"
             >
-              🌙
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
             <div class="circle-icon-btn" title="การแจ้งเตือน">
-              🔔<span class="noti-badge">1</span>
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
             </div>
           </div>
           <div
@@ -370,7 +371,7 @@
             <a href="10-3-04-lawyer-review-complaint.html"
               >นิติกร ตรวจสอบ/จัดทำความเห็น</a
             >
-            ก่อน
+            ก่อน (หรือเมื่อร่างคำชี้แจงถูกส่งกลับให้แก้ไข)
           </div>
         </div>
 
@@ -392,7 +393,7 @@
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคดี (อ้างอิงจากคดีหลัก)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -418,15 +419,35 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ผู้ฟ้อง</label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="f_plaintiffs"></div>
                 </div>
                 <div class="form-group">
-                  <label>ผู้ถูกฟ้อง</label>
+                  <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div id="sendBackNotice" class="l3-note l3-note-warn d-none">
+            <i class="fa-solid fa-rotate-left"></i>
+            <div>
+              <strong><span id="f_sendBackBy">-</span> ส่งกลับให้แก้ไข</strong><br />
+              ประเด็นที่ต้องแก้ไข: <span id="f_sendBackNotes">-</span><br />
+              <span style="font-size: 0.85em">เมื่อ <span id="f_sendBackAt">-</span></span>
+            </div>
+          </div>
+
+          <div id="draftNotice" class="l3-note l3-note-info d-none">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div style="flex: 1">
+              <strong>โหลดร่างที่บันทึกไว้</strong> เมื่อ <span id="f_draftSavedAt">-</span>
+              <span id="f_draftSavedBy"></span>
+            </div>
+            <button type="button" class="btn btn-secondary" style="height: 30px; font-size: 0.8em" onclick="resetDraft()">
+              <i class="fa-solid fa-rotate-left"></i>ล้างร่าง / กลับเป็นค่าตั้งต้น
+            </button>
           </div>
 
           <div class="form-card" style="border: 2px solid #1e3a8a">
@@ -443,6 +464,14 @@
               >
             </div>
             <div class="form-card-body">
+              <div class="l3-note l3-note-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  คำชี้แจงคัดค้านจัดทำเป็น <strong>เอกสารสด</strong> บนแบบคำคู่ความยื่นต่อศาลปกครอง (ด้านล่าง) —
+                  เสนอ ผอ.กลุ่มงานคดี และ ผอ.กองกฎหมาย ตรวจร่าง แล้วพิมพ์ฉบับจริงให้ประธานกรรมการ ป.ป.ท.
+                  ลงนามด้วยหมึก (ช่องลงนามเว้นว่าง ไม่มีลายเซ็นอิเล็กทรอนิกส์)
+                </div>
+              </div>
               <div class="form-group">
                 <label
                   >ศาลที่ยื่นคำชี้แจง
@@ -451,7 +480,7 @@
                 <select
                   id="in_courtNameForm"
                   class="form-control"
-                  onchange="toggleStayCourtNameOtherInput()"
+                  onchange="onCourtChange()"
                 >
                   <option value="ศาลปกครองสูงสุด">ศาลปกครองสูงสุด</option>
                   <option value="ศาลปกครองกลาง">ศาลปกครองกลาง</option>
@@ -497,13 +526,14 @@
                     id="in_courtNameFormOtherText"
                     class="form-control"
                     placeholder="โปรดระบุชื่อศาล..."
+                    oninput="onCourtChange()"
                   />
                 </div>
               </div>
 
               <div class="form-group">
                 <label
-                  >แนบไฟล์บันทึกข้อความ
+                  >แนบไฟล์บันทึกข้อความ (เสนอร่างคำชี้แจงคัดค้านตามลำดับชั้น)
                   <span style="color: #dc2626">*</span></label
                 >
                 <div class="upload-box">
@@ -512,7 +542,7 @@
                     id="in_stayObjectionDoc"
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                     multiple
-                    onchange="handleStayObjectionDocChange(this)"
+                    onchange="addDocFiles('memo', this)"
                   />
                 </div>
                 <div id="stayObjectionDocList" style="margin-top: 8px"></div>
@@ -542,21 +572,129 @@
                     id="in_stayAttachments"
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                     multiple
-                    onchange="handleStayAttachmentsChange(this)"
+                    onchange="addDocFiles('supporting', this)"
                   />
                 </div>
                 <div id="stayAttachmentsList" style="margin-top: 8px"></div>
               </div>
             </div>
-            <div class="form-actions">
-              <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="submitForm()"
-              >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
-                ส่งต่อประธานกรรมการ ป.ป.ท. เพื่อลงนาม
+          </div>
+
+          <!-- ========== เอกสารสด — คำชี้แจงคัดค้านคำขอทุเลาการบังคับ (แบบคำคู่ความต่อศาลปกครอง) ========== -->
+          <div class="l3-split l3-split--doc">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสารสด — คำชี้แจงคัดค้านคำขอทุเลาการบังคับ</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-scale-balanced"></i>ส่วนหัวคำชี้แจง</div>
+                  <div class="form-group">
+                    <label>ชื่อเอกสาร <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="s_title" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>ประทับคำว่า</label>
+                    <select id="s_copyMark" class="form-control">
+                      <option value="ฉบับจริง">ไม่ประทับ (ฉบับจริง)</option><option value="สำเนา">สำเนา</option>
+                    </select>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ถูกฟ้องคดีที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_respondentNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>ศาล <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_court" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>คดีหมายเลขดำที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_blackNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>คดีหมายเลขแดงที่ <span class="l3-optional">(ถ้ามี)</span></label>
+                      <input type="text" id="s_redNo" class="form-control font-monospace" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>วันที่ยื่นคำชี้แจง <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="s_date" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                    <div class="form-group">
+                      <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_subject" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-id-card"></i>ข้อมูลผู้ชี้แจง</div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ข้าพเจ้า <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_meName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ฐานะ</label>
+                      <input type="text" id="s_meRole" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>อยู่ที่</label>
+                      <input type="text" id="s_address" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>โทรศัพท์</label>
+                      <input type="text" id="s_phone" class="form-control font-monospace" />
+                    </div>
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-align-left"></i>เนื้อหาคำชี้แจงคัดค้าน</div>
+                  <div class="form-group">
+                    <label>ข้อ ๑ … ข้อสุดท้าย <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_s_body">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="s_body"></div>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="s_signerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้ลงนาม</label>
+                      <input type="text" id="s_signerPos" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="l3-note l3-note-info" style="margin-bottom: 0">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <div>ช่องลงนามเว้นว่างไว้สำหรับประธานกรรมการ ป.ป.ท. ลงนามด้วยหมึกบนฉบับพิมพ์</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="stayPreviewCol"></div>
+          </div>
+
+          <div class="form-actions" id="actionBar">
+            <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+            <div class="l3-actions-right">
+              <span class="l3-draft-meta" id="f_draftMeta"></span>
+              <button type="button" class="btn btn-secondary" id="btnSaveDraft" onclick="saveDraftNow()">
+                <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง
+              </button>
+              <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
+                <i class="fa-solid fa-circle-check me-1"></i>ยืนยันเสนอในระบบ และ เสนอ ผอ.กลุ่มงานคดี
               </button>
             </div>
           </div>
@@ -566,18 +704,34 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20260904_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261006_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
-    <script src="assets/ecmis-10-3.js?v=20261008_1"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20261002_2"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
 
     <script>
+      /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — คำชี้แจงคัดค้านเป็นเอกสารสดบนแบบคำคู่ความ
+         เก็บที่ case.l3LiveDocs.stayObjection (ECMIS103Docs.STAY_FIELDS / STAY_EDITORS)
+         บันทึกข้อความยังแนบไฟล์ (l3StayObjectionMemoAttachments) — เอกสารประกอบแนบไฟล์ตามเดิม */
       const STEP_CODE = "LAW0097";
       const STEP = Activity103.stepByCode(STEP_CODE);
+      const DOC_KEY = "stayObjection";
+      const DOC_LABEL = "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ";
+      const ALLOWED_EXT = ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"];
+      const MAX_FILE_BYTES = 100 * 1024 * 1024;
+      const DOC_GROUPS = {
+        memo: { listId: "stayObjectionDocList", files: [] },
+        supporting: { listId: "stayAttachmentsList", files: [] },
+      };
       let currentCase = null;
-      let stayObjectionDocFiles = [];
-      let stayAttachedFiles = [];
+      let docViewer = null;
+      let liveEditor = null;
+      let initialEditorHTML = {};
+      let renderTimer = null;
+      let dirtyTracker = null;
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -595,30 +749,32 @@
         });
       });
 
-      /* ทางเข้าเดียวคือสาขา Part 1b จาก 10-3-04 (spawnStayObjectionCase เขียน
-         L3B_PENDING_LAWYER_DRAFT ตรงตั้งแต่สร้างเคสลูก ไม่ใช่ผล advance() ของ
-         ขั้นก่อนหน้าใน STAY_STEPS จึงฮาร์ดโค้ดค่าจริงตรงนี้เหมือน 10-2-15) */
+      /* รับเฉพาะเคสลูก (-B) ที่รอนิติกร: สร้างใหม่จาก 10-3-04 หรือถูกส่งกลับ (STAY_SENDBACK.LAWYER) */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        currentCase = Activity103.getCase(id, "L3B_PENDING_LAWYER_DRAFT");
-
-        if (!currentCase || !Activity103.isStayObjectionCase(currentCase)) {
+        const pending = Activity103.pendingStatusFor(STEP.page);
+        const found = Activity103.getCase(id, pending);
+        if (!found || found.statusCode !== pending || !Activity103.isStayObjectionCase(found)) {
           currentCase = null;
           document.getElementById("noCaseNotice").classList.remove("d-none");
           document.getElementById("pageBody").classList.add("d-none");
           return;
         }
+        currentCase = found;
         populate();
+        initLiveDoc();
       }
 
-      function doneAndBack(text) {
-        Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: text,
-          timer: 1900,
-          showConfirmButton: false,
-        }).then(ECMIS103.goInbox);
+      function esc(t) {
+        return String(t == null ? "" : t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function warn(title, text) {
+        Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
       }
 
       function populate() {
@@ -629,16 +785,25 @@
         const courtSel = document.getElementById("in_courtNameForm");
         courtSel.value = c.courtName || "";
         if (courtSel.value !== c.courtName) {
-          /* ชื่อศาลของเคสไม่ตรงกับตัวเลือกในลิสต์ (เช่นกรอกเป็น "อื่นๆ" ไว้
-             ตั้งแต่ขั้นก่อนหน้า) — เลือก OTHER แล้วเติมชื่อเดิมลงช่องข้อความ */
+          /* ชื่อศาลของเคสไม่ตรงกับตัวเลือกในลิสต์ — เลือก OTHER แล้วเติมชื่อเดิมลงช่องข้อความ */
           courtSel.value = "OTHER";
-          document.getElementById("in_courtNameFormOtherText").value =
-            c.courtName || "";
+          document.getElementById("in_courtNameFormOtherText").value = c.courtName || "";
         }
         toggleStayCourtNameOtherInput();
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
+
+        DOC_GROUPS.memo.files = (c.l3StayObjectionMemoAttachments || []).slice();
+        DOC_GROUPS.supporting.files = (c.l3StayObjectionSupportingAttachments || []).slice();
+        Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+
+        if (c.l3bSendBackNotes) {
+          ECMIS103.setText("f_sendBackBy", c.l3bSendBackBy || "ผู้ตรวจ");
+          ECMIS103.setText("f_sendBackNotes", c.l3bSendBackNotes);
+          ECMIS103.setText("f_sendBackAt", c.l3bSendBackAt || "-");
+          document.getElementById("sendBackNotice").classList.remove("d-none");
+        }
       }
 
       function toggleStayCourtNameOtherInput() {
@@ -652,197 +817,346 @@
       function getStayCourtNameValue() {
         const select = document.getElementById("in_courtNameForm");
         if (select && select.value === "OTHER") {
-          const otherText = document.getElementById(
-            "in_courtNameFormOtherText",
-          );
+          const otherText = document.getElementById("in_courtNameFormOtherText");
           return otherText ? otherText.value.trim() : "";
         }
         return select ? select.value : "";
       }
 
-      function handleStayObjectionDocChange(input) {
+      /* เปลี่ยนศาลที่ยื่น → ชื่อศาลบนคำชี้แจงตามไปด้วย */
+      function onCourtChange() {
+        toggleStayCourtNameOtherInput();
+        const name = getStayCourtNameValue();
+        if (name) document.getElementById("s_court").value = name;
+        scheduleRender();
+      }
+
+      /* ---------- ไฟล์แนบ (บันทึกข้อความ / เอกสารประกอบ) — เก็บเฉพาะชื่อไฟล์ ---------- */
+      function addDocFiles(key, input) {
         if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = [
-          "pdf",
-          "doc",
-          "docx",
-          "xls",
-          "xlsx",
-          "png",
-          "jpg",
-          "jpeg",
-        ];
-        Array.from(input.files).forEach((file) => {
+        const group = DOC_GROUPS[key];
+        const added = Array.from(input.files).filter((file) => {
           const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
+          if (!ALLOWED_EXT.includes(ext)) {
+            warn("ชนิดไฟล์ไม่ถูกต้อง", `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`);
+            return false;
           }
-          if (file.size > maxSizeBytes) {
-            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
+          if (file.size > MAX_FILE_BYTES) {
+            warn("ขนาดไฟล์เกินกำหนด", `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`);
+            return false;
           }
-          stayObjectionDocFiles.push(file);
+          return !group.files.includes(file.name);
         });
+        group.files = group.files.concat(added.map((f) => f.name));
         input.value = "";
-        renderStayObjectionDocList();
+        renderDocFiles(key);
+        if (dirtyTracker) dirtyTracker.mark();
       }
 
-      function removeStayObjectionDoc(index) {
-        stayObjectionDocFiles.splice(index, 1);
-        renderStayObjectionDocList();
+      function removeDocFile(key, idx) {
+        DOC_GROUPS[key].files = DOC_GROUPS[key].files.filter((_, i) => i !== idx);
+        renderDocFiles(key);
+        if (dirtyTracker) dirtyTracker.mark();
       }
 
-      function renderStayObjectionDocList() {
-        const listEl = document.getElementById("stayObjectionDocList");
-        if (!listEl) return;
-        if (!stayObjectionDocFiles.length) {
-          listEl.innerHTML = "";
-          return;
-        }
-        listEl.innerHTML = stayObjectionDocFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return (
-              '<div class="l3-attachment-row">' +
-              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
-              file.name +
-              ' <span style="color: #94a3b8">(' +
-              sizeMb +
-              " MB)</span></div>" +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeStayObjectionDoc(' +
-              idx +
-              ')"><i class="fa-solid fa-trash-can"></i></button>' +
-              "</div>"
-            );
-          })
+      function renderDocFiles(key) {
+        const group = DOC_GROUPS[key];
+        document.getElementById(group.listId).innerHTML = group.files
+          .map(
+            (name, idx) => `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)}</div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeDocFile('${key}', ${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`,
+          )
           .join("");
       }
 
-      function handleStayAttachmentsChange(input) {
-        if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = [
-          "pdf",
-          "doc",
-          "docx",
-          "xls",
-          "xlsx",
-          "png",
-          "jpg",
-          "jpeg",
-        ];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
-            Swal.fire({
-              icon: "warning",
-              title: "ชนิดไฟล์ไม่ถูกต้อง",
-              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          if (file.size > maxSizeBytes) {
-            const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            Swal.fire({
-              icon: "warning",
-              title: "ขนาดไฟล์เกินกำหนด",
-              text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          stayAttachedFiles.push(file);
+      /* =================================================== เอกสารสด คำชี้แจงคัดค้าน
+         ลำดับที่ใช้ค่า: ร่างที่บันทึกไว้ (l3DocDraft) > ฉบับที่เสนอล่าสุด (l3LiveDocs.stayObjection, กรณีถูกส่งกลับ) > ค่าตั้งต้น */
+      function roleName(roleId) {
+        const roles = (window.ECMIS && ECMIS.ROLES) || [];
+        const r = roles.find((x) => x.id === roleId);
+        return r ? r.name : "";
+      }
+
+      function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+      }
+
+      function editorHTML(id) {
+        return liveEditor ? liveEditor.getHTML() : initialEditorHTML[id] || "";
+      }
+
+      function editorText(id) {
+        if (liveEditor) return liveEditor.getText().trim();
+        const box = document.createElement("div");
+        box.innerHTML = initialEditorHTML[id] || "";
+        return box.textContent.trim();
+      }
+
+      function p(text) {
+        return "<p>" + esc(text) + "</p>";
+      }
+
+      function buildDefaults(c) {
+        const df = (c.defendants || []).filter(Boolean);
+        const idx = df.findIndex((n) => /ป\.ป\.ท|ป้องกันและปราบปรามการทุจริตในภาครัฐ/.test(n));
+        const respNo = String(idx >= 0 ? idx + 1 : 1);
+        const court = c.courtName || "ศาลปกครอง……";
+        const black = c.blackCaseNo || "……";
+        return {
+          fields: {
+            s_copyMark: "ฉบับจริง",
+            s_title: "คำชี้แจงคัดค้านคำขอทุเลาการบังคับตามคำพิพากษา/คำสั่ง",
+            s_respondentNo: respNo,
+            s_court: court,
+            s_blackNo: black,
+            s_redNo: c.redCaseNo && c.redCaseNo !== "-" ? c.redCaseNo : "",
+            s_date: Activity103.toISODate(new Date()),
+            s_subject: "คัดค้านคำขอให้ศาลมีคำสั่งทุเลาการบังคับตามคำสั่งทางปกครองไว้เป็นการชั่วคราวก่อนการพิพากษา",
+            s_meName: "คณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+            s_meRole: "ผู้ถูกฟ้องคดีที่ " + respNo,
+            s_address: "สำนักงาน ป.ป.ท. อาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ ตำบลคลองเกลือ อำเภอปากเกร็ด จังหวัดนนทบุรี 11120",
+            s_phone: "0 2502 6585",
+            s_signerName: roleName("chairman"),
+            s_signerPos: "ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+          },
+          editors: {
+            s_body:
+              p("ข้อ 1. ตามที่ผู้ฟ้องคดีได้ยื่นคำขอให้" + court + "มีคำสั่งทุเลาการบังคับตามคำสั่งทางปกครองที่พิพาทไว้เป็นการชั่วคราวก่อนการพิพากษา ในคดีหมายเลขดำที่ " + black +
+                " และศาลได้มีคำสั่งให้ผู้ถูกฟ้องคดีที่ " + respNo + " ทำคำชี้แจงคัดค้านคำขอดังกล่าว นั้น") +
+              p("ข้อ 2. ผู้ถูกฟ้องคดีที่ " + respNo + " ขอเรียนว่า คำสั่งทางปกครองที่พิพาทออกโดยชอบด้วยกฎหมาย เป็นไปตามขั้นตอนและวิธีการที่กฎหมายกำหนดครบถ้วน ……") +
+              p("ข้อ 3. ผู้ฟ้องคดีมิได้แสดงให้เห็นว่าการให้คำสั่งดังกล่าวมีผลใช้บังคับต่อไปจะทำให้เกิดความเสียหายอย่างร้ายแรงที่ยากแก่การเยียวยาแก้ไขในภายหลัง และการทุเลาการบังคับจะเป็นอุปสรรคแก่การบริหารงานของรัฐหรือแก่การบริการสาธารณะ ……") +
+              p("ข้อ 4. ด้วยเหตุผลดังกล่าวข้างต้น ผู้ถูกฟ้องคดีที่ " + respNo + " จึงขอศาลได้โปรดมีคำสั่งยกคำขอทุเลาการบังคับของผู้ฟ้องคดี"),
+          },
+        };
+      }
+
+      function buildModel() {
+        return ECMIS103Docs.stayObjectionModel(val, editorHTML, currentCase);
+      }
+
+      function renderPreview() {
+        if (!currentCase || !docViewer) return;
+        docViewer.render(buildModel());
+      }
+
+      function scheduleRender() {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(renderPreview, 150);
+      }
+
+      function initLiveDoc() {
+        const c = currentCase;
+        const defaults = buildDefaults(c);
+        const saved = (c.l3LiveDocs || {})[DOC_KEY] || null;
+        const draft = ECMIS103Docs.readDraft(c, STEP_CODE);
+        const fields = Object.assign({}, defaults.fields, (saved && saved.fields) || {}, (draft && draft.fields) || {});
+        const eds = Object.assign({}, defaults.editors, (saved && saved.editors) || {}, (draft && draft.editors) || {});
+        if (draft) {
+          restoreDraftExtra(draft.extra || {});
+          showDraftInfo(draft, true);
+        }
+        initialEditorHTML = eds;
+        ECMIS103Docs.applyFields(fields);
+
+        docViewer = ECMIS103Docs.createViewer("stayPreviewCol", {
+          title: DOC_LABEL,
+          editTarget: "s_title",
+          fileName: DOC_LABEL + " " + (c.blackCaseNo || ""),
         });
-        input.value = "";
-        renderStayAttachmentsList();
+        renderPreview();
+
+        ECMIS103Docs.STAY_FIELDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", scheduleRender);
+          el.addEventListener("change", scheduleRender);
+        });
+
+        ECMIS103.mountEditor("s_body", {
+          toolbarId: "tb_s_body",
+          initialHTML: eds.s_body || "",
+          placeholder: "พิมพ์ข้อความ...",
+          onUpdate: () => {
+            if (dirtyTracker) dirtyTracker.mark();
+            scheduleRender();
+          },
+        }).then((editor) => {
+          liveEditor = editor;
+          renderPreview();
+        });
+
+        dirtyTracker = ECMIS103Docs.trackDirty();
+        document.getElementById("pageBody").addEventListener("input", () => dirtyTracker.mark());
+        document.getElementById("pageBody").addEventListener("change", () => dirtyTracker.mark());
       }
 
-      function removeStayAttachment(index) {
-        stayAttachedFiles.splice(index, 1);
-        renderStayAttachmentsList();
+      function collectLiveDoc() {
+        const editors = {};
+        ECMIS103Docs.STAY_EDITORS.forEach((id) => {
+          editors[id] = editorHTML(id);
+        });
+        return { label: DOC_LABEL, fields: ECMIS103Docs.collectFields(ECMIS103Docs.STAY_FIELDS), editors: editors };
       }
 
-      function renderStayAttachmentsList() {
-        const listEl = document.getElementById("stayAttachmentsList");
-        if (!listEl) return;
-        if (!stayAttachedFiles.length) {
-          listEl.innerHTML = "";
-          return;
-        }
-        listEl.innerHTML = stayAttachedFiles
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return (
-              '<div class="l3-attachment-row">' +
-              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
-              file.name +
-              ' <span style="color: #94a3b8">(' +
-              sizeMb +
-              " MB)</span></div>" +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeStayAttachment(' +
-              idx +
-              ')"><i class="fa-solid fa-trash-can"></i></button>' +
-              "</div>"
-            );
-          })
-          .join("");
+      function validateLiveDoc() {
+        const required = [
+          ["s_title", "ชื่อเอกสาร"],
+          ["s_respondentNo", "ผู้ถูกฟ้องคดีที่"],
+          ["s_court", "ศาล"],
+          ["s_blackNo", "คดีหมายเลขดำที่"],
+          ["s_date", "วันที่ยื่นคำชี้แจง"],
+          ["s_subject", "เรื่อง"],
+          ["s_meName", "ข้าพเจ้า"],
+        ];
+        const miss = required.find(([id]) => !val(id).trim());
+        if (miss) return miss[1] + " (คำชี้แจงคัดค้าน)";
+        if (!editorText("s_body")) return "เนื้อหาคำชี้แจงคัดค้าน";
+        return "";
       }
 
-      function submitForm() {
-        if (!stayObjectionDocFiles.length) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาแนบคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
+      /* ---------- บันทึกร่าง (ไม่เปลี่ยนสถานะ ไม่ลงนาม ไม่ตรวจช่องบังคับ) ---------- */
+      function saveDraftNow() {
+        if (!currentCase) return;
+        const editors = {};
+        ECMIS103Docs.STAY_EDITORS.forEach((id) => {
+          editors[id] = editorHTML(id);
+        });
+        const saved = ECMIS103Docs.saveDraft(currentCase.id, STEP_CODE, {
+          fields: ECMIS103Docs.collectFields(ECMIS103Docs.STAY_FIELDS),
+          editors: editors,
+          extra: {
+            court: val("in_courtNameForm"),
+            courtOther: val("in_courtNameFormOtherText"),
+            memo: DOC_GROUPS.memo.files.slice(),
+            supporting: DOC_GROUPS.supporting.files.slice(),
+          },
+        });
+        if (!saved) return;
+        currentCase = Activity10.getCaseById(currentCase.id) || currentCase;
+        if (dirtyTracker) dirtyTracker.clear();
+        showDraftInfo(saved, false);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "บันทึกร่างแล้ว " + saved.savedAt,
+          showConfirmButton: false,
+          timer: 2200,
+        });
+      }
+
+      function showDraftInfo(draft, loaded) {
+        ECMIS103.setText("f_draftMeta", "บันทึกร่างล่าสุด " + draft.savedAt);
+        if (loaded) {
+          ECMIS103.setText("f_draftSavedAt", draft.savedAt);
+          ECMIS103.setText("f_draftSavedBy", draft.savedBy ? "โดย " + draft.savedBy : "");
+          document.getElementById("draftNotice").classList.remove("d-none");
         }
-        if (!getStayCourtNameValue()) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุชื่อศาล (อื่นๆ)",
-            confirmButtonColor: "#1e3a8a",
-          });
-          document.getElementById("in_courtNameFormOtherText").focus();
-          return;
+      }
+
+      function restoreDraftExtra(extra) {
+        if (extra.court) {
+          document.getElementById("in_courtNameForm").value = extra.court;
+          document.getElementById("in_courtNameFormOtherText").value = extra.courtOther || "";
+          toggleStayCourtNameOtherInput();
         }
+        if (extra.memo) DOC_GROUPS.memo.files = extra.memo.slice();
+        if (extra.supporting) DOC_GROUPS.supporting.files = extra.supporting.slice();
+        Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+      }
+
+      function resetDraft() {
         Swal.fire({
           icon: "question",
-          title: "ยืนยันบันทึกคำชี้แจงคัดค้าน",
-          text: "บันทึกและส่งต่อให้ประธานกรรมการ ป.ป.ท. ลงนาม",
+          title: "ล้างร่างและกลับเป็นค่าตั้งต้น?",
+          text: "ข้อความที่แก้ไขและบันทึกร่างไว้จะถูกลบ",
           showCancelButton: true,
-          confirmButtonText: "ยืนยันและส่งต่อ",
+          confirmButtonText: "ล้างร่าง",
           cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
+          confirmButtonColor: "#dc2626",
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          Activity103.advance(currentCase.id, STEP_CODE, {
-            courtName: getStayCourtNameValue(),
-            l3StayObjectionAttachments: stayObjectionDocFiles.map(
-              (f) => f.name,
-            ),
-            l3StayObjectionSupportingAttachments: stayAttachedFiles.map(
-              (f) => f.name,
-            ),
-          });
-          doneAndBack("บันทึกคำชี้แจงคัดค้านเรียบร้อยแล้ว");
+          ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+          if (dirtyTracker) dirtyTracker.clear();
+          window.location.reload();
+        });
+      }
+
+      /* ---------- เสนอ (ยืนยันในระบบโดยนิติกร) → ผอ.กลุ่มงานคดี 3b-01a ---------- */
+      function submitForm() {
+        if (!currentCase) return;
+        const court = getStayCourtNameValue();
+        if (!court) {
+          warn("ข้อมูลไม่ครบถ้วน", "กรุณาระบุชื่อศาล (อื่นๆ)");
+          document.getElementById("in_courtNameFormOtherText").focus();
+          return;
+        }
+        if (!DOC_GROUPS.memo.files.length) {
+          return warn("ข้อมูลไม่ครบถ้วน", "กรุณาแนบไฟล์บันทึกข้อความเสนอร่างคำชี้แจงคัดค้าน");
+        }
+        const missing = validateLiveDoc();
+        if (missing) return warn("ข้อมูลเอกสารสดไม่ครบถ้วน", "กรุณาระบุ " + missing);
+
+        const isResubmit = !!currentCase.l3bSendBackNotes;
+        const version = isResubmit ? (currentCase.l3StayObjectionVersion || 1) + 1 : currentCase.l3StayObjectionVersion || 1;
+        const forwardTo = ECMIS103.signerLabel("case_group_director");
+        Swal.fire({
+          icon: "question",
+          title: isResubmit ? "ยืนยันเสนอร่างคำชี้แจงคัดค้าน (แก้ไขแล้ว)?" : "ยืนยันเสนอร่างคำชี้แจงคัดค้าน?",
+          html: `
+ <div class="emd-summary">
+ <p><strong>คดี:</strong> ${esc(currentCase.id)} (${esc(currentCase.blackCaseNo || "-")})</p>
+ <p><strong>ศาล:</strong> ${esc(court)}</p>
+ <p><strong>เอกสารสด:</strong> ${esc(DOC_LABEL)} (ร่างครั้งที่ ${version})</p>
+ <p><strong>บันทึกข้อความ:</strong> ${esc(DOC_GROUPS.memo.files.join(", "))}</p>
+ <p><strong>เอกสารประกอบ:</strong> ${DOC_GROUPS.supporting.files.length} ไฟล์</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ${esc(forwardTo)} ตรวจร่างคำชี้แจงคัดค้าน</p>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันเสนอ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#16a34a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103.openSignatureModal(
+            {
+              title: "ยืนยันเสนอในระบบ — ร่างคำชี้แจงคัดค้านคำขอทุเลาการบังคับ (นิติกร)",
+              signer: currentCase.officer || ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-CASELAWYER-2569-103B",
+            },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(currentCase.id, STEP_CODE, {
+                courtName: court,
+                l3StayObjectionMemoAttachments: DOC_GROUPS.memo.files.slice(),
+                l3StayObjectionSupportingAttachments: DOC_GROUPS.supporting.files.slice(),
+                /* หน้าเดิมแสดงรายการไฟล์คำชี้แจงจากฟิลด์นี้ — ใส่ชื่อเอกสารสดแทน เนื้อหาจริงอยู่ใน l3LiveDocs */
+                l3StayObjectionAttachments: [DOC_LABEL + " (เอกสารสด)"],
+                l3StayObjectionVersion: version,
+                l3LiveDocs: Object.assign({}, currentCase.l3LiveDocs, { [DOC_KEY]: collectLiveDoc() }),
+                l3bSendBackNotes: undefined,
+                l3bSendBackBy: undefined,
+                l3bSendBackAt: undefined,
+                assignedRole: "case_group_director",
+              });
+              ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+              if (dirtyTracker) dirtyTracker.clear();
+              Swal.fire({
+                icon: "success",
+                title: "เสนอร่างคำชี้แจงคัดค้านสำเร็จ!",
+                text: "ส่ง " + forwardTo + " ตรวจร่างเรียบร้อยแล้ว",
+                timer: 1900,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
         });
       }
 
@@ -850,7 +1164,7 @@
       function toggleTheme() {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
-        document.getElementById("themeBtn").innerText = isDark ? "☀️" : "🌙";
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
         localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
       }
 

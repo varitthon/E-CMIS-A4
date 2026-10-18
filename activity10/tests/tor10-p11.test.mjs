@@ -70,7 +70,7 @@ t("secgen เห็นสำนวน seed (ไม่มี l2StepSeq) ที่
   assert.equal(A2.canView102(k, "secgen", ""), true);
 });
 t("secgen ไม่เห็นสำนวน seed ที่ยังไม่ถึงขั้นตน", () => {
-  const k = { category: "10.2.1", statusCode: "L2_PENDING_DIRECTOR_ASSIGN" };
+  const k = { category: "10.2.1", statusCode: "L2_PENDING_GROUP_ASSIGN" };
   assert.equal(A2.canView102(k, "secgen", ""), false);
 });
 t("seed 10.2 ที่ไม่มีทั้ง l2StepSeq และ assignedRole หา seq ได้ (หรือเป็นสายอื่นที่ไม่ใช่ STEPS)", () => {

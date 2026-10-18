@@ -42,7 +42,9 @@ t("ลงนามหนังสือนำส่ง (L3-27A / L3-27B) → ส
   ["L3-27A", "L3-27B"].forEach((code) => {
     const s = A3.ANSWER_STEPS.find((x) => x.code === code);
     assert.equal(s.statusCode, "L3_PENDING_CHAIRMAN_ANSWER_SIGN", code);
-    assert.equal(s.status, "ประธานกรรมการ ป.ป.ท. ลงนามในคำให้การ", code);
+    /* 2026-10-15 ลงนามจริง: ประธานฯ ลงนามบนกระดาษ ธุรการบันทึกผล (docs/wet-sign/plan.md) */
+    assert.match(s.status, /^ประธานกรรมการ ป\.ป\.ท\. ลงนามคำให้การ \(บนกระดาษ\)/, code);
+    assert.equal(s.role, "admin_legal", code);
   });
 });
 

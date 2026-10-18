@@ -356,10 +356,10 @@
       const patch = outbound
         ? resultFields
         : Object.assign({}, resultFields, {
-            statusCode: "PENDING_DIRECTOR_RESOLUTION",
-            status: "เสนอผลมติ ผอ.กองกฎหมาย",
-            statusBadge: "bg-primary text-white",
-            assignedRole: "dir_legal",
+            statusCode: "PENDING_GROUP_RESOLUTION",
+            status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ",
+            statusBadge: "bg-info text-dark",
+            assignedRole: "group_director",
           });
       if (!patch.boardResolutionFiles.length && kase && kase.boardResolutionFiles) {
         patch.boardResolutionFiles = kase.boardResolutionFiles;
@@ -413,7 +413,7 @@
             acknowledgedAt: null,
           },
           l3ResolutionNoticeDocNo: f.noticeNo,
-          assignedRole: "dir_legal",
+          assignedRole: "case_group_director",
         },
         advance: { module: "Activity103", stepCode: "L3-19" },
         submit: null,
@@ -622,7 +622,7 @@
   const OUTBOUND_NOW_STATUS = {
     B1: "RETURNED_FROM_EXEC",
     B2: "L2_PENDING_DIRLEGAL_BOARD_ACK",
-    B3: "L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN",
+    B3: "L3_PENDING_GROUP_RESOLUTION_APPROVE",
     B4: "L2_PENDING_APPEAL_NOTICE_DRAFT",
     B5: BOARD_APPEAL_STATUS.APPEAL.statusCode,
   };
@@ -919,7 +919,8 @@
           if (other) other.style.display = linkId === "B1" && sel.value === "OTHER" ? "block" : "none";
           const msg = act7MismatchWarning(linkId, kase, sel.value);
           warn.style.display = msg ? "block" : "none";
-          warn.textContent = msg ? "⚠ " + msg : "";
+          warn.textContent = msg || "";
+          if (msg) warn.insertAdjacentHTML("afterbegin", '<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> ');
         };
         sel.addEventListener("change", refresh);
         refresh();

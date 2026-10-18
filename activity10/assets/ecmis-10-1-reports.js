@@ -1,11 +1,11 @@
-/* ECMIS 10.1 reports — มุมมองรายงาน/สารบบของหน้าคิวงาน (ตัวกรอง "มุมมอง" #inboxViewSelect ใน 01-work-inbox.html)
+/* ECMIS 10.1 reports — หน้ารายงาน/สารบบจากเมนูแถบด้านข้าง (board-report.html · registry.html)
    - board-report  รายงานผลตามมติคณะกรรมการ        TOR 10.1.8
    - registry      สารบบคำวินิจฉัย/คำพิพากษา        TOR 10.1.10
                    + รายงานวิเคราะห์คำพิพากษา (เชิงปริมาณ/เชิงคุณภาพ/สรุปคดีชั้นศาล) พิมพ์/Word/Excel/PDF  TOR 10.1.11.2-.5
    การบันทึก/นำเข้าผลวิเคราะห์ (10.1.11.1/.4) อยู่ที่แผงคำพิพากษาของหน้า 18-22 (ecmis-10-1-extras.js)
    ตรรกะข้อมูลอยู่ใน Activity10 (buildBoardResolutionReport / buildJudgmentRegistry …)
    และการส่งออกอยู่ใน ECMISExport — ไฟล์นี้เป็นเพียง UI. ต้องโหลดหลัง ecmis-activity10.js + ecmis-export.js
-   ใช้งาน: ECMIS101Reports.register(INBOX_TAB_RENDERERS) แล้วเรียก applyRoleVisibility() */
+   ใช้งาน: ECMIS101Reports.register(renderers) แล้วเรียก renderers["board-report" หรือ "registry"]() — บทบาทอื่นเห็นข้อความแจ้ง */
 (function (global) {
   "use strict";
 
