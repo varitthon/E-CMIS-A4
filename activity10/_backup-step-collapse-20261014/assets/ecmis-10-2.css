@@ -1,0 +1,749 @@
+/* ==========================================================================
+   E-CMIS กิจกรรมที่ 10.2 — คำขอเปิดเผยข้อมูลข่าวสาร
+   Styles used only by the 10-2-*.html step pages. Loaded after
+   ecmis-shell.css so it can lean on the same CSS custom properties.
+   ========================================================================== */
+
+/* ------------------------------------------------------------- SIGN CHAIN
+   แถบสถานะสายการลงนามของบันทึกเสนอเลขาธิการฯ (ผู้เสนอ → ผู้เห็นชอบ) */
+.l2-sign-chain {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.l2-sign-node {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--bg-body);
+}
+
+.l2-sign-ico {
+  font-size: 1.15em;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.l2-sign-meta {
+  min-width: 0;
+}
+
+.l2-sign-title {
+  font-weight: 700;
+  font-size: 0.9em;
+  color: var(--text-title);
+}
+
+.l2-sign-pos {
+  font-size: 0.78em;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.l2-sign-state {
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.l2-sign-when {
+  font-size: 0.75em;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* ลายเซ็นที่ประทับแล้วในเอกสาร */
+.l2-sig-slot {
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.l2-sig-img {
+  max-width: 220px;
+  max-height: 84px;
+  display: block;
+  margin: 0 auto 4px;
+}
+
+.l2-sig-placeholder {
+  width: 220px;
+  height: 84px;
+  margin: 0 auto 4px;
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 0.82em;
+}
+
+.l2-sig-name {
+  font-size: 0.88em;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.l2-sig-role {
+  font-size: 0.8em;
+  color: #64748b;
+}
+
+/* ------------------------------------------------------------- DOC PREVIEW
+   ตัวอย่างเอกสารราชการ (บันทึกข้อความ / แผ่นสรุปมติ) แบบอ่านอย่างเดียว */
+.l2-doc {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 28px 32px;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.94em;
+}
+
+body.dark-mode .l2-doc {
+  background: #f8fafc;
+}
+
+.l2-doc-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.25em;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.l2-doc-subtitle {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.l2-doc-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.l2-doc-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.l2-doc-value {
+  flex: 1 1 200px;
+  border-bottom: 1px dotted #94a3b8;
+  min-height: 1.5em;
+}
+
+.l2-doc-section {
+  margin-top: 14px;
+}
+
+.l2-doc-section > .l2-doc-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.l2-doc-body {
+  text-indent: 2.5em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.l2-doc-signblock {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 26px;
+}
+
+.l2-doc-divider {
+  border: 0;
+  border-top: 1px solid #cbd5e1;
+  margin: 22px 0;
+}
+
+/* ------------------------------------------------------ DOC PREVIEW VIEWER
+   กรอบ "ตัวอย่างเอกสารสด" แบบหน้ากระดาษ A4 พร้อมแถบเครื่องมือ (แก้ไข/ส่งออก
+   DOCX/พิมพ์/ซูม/เลื่อนหน้า) อ้างอิงหน้าตาจากตัวอย่างเอกสารของระบบ E-CMIS จริง
+   ใช้ที่ 10-2-06 และ 10-2-07 เท่านั้น หน้าอื่นที่ใช้ .l2-doc เฉย ๆ
+   (เช่น 10-2-08) ไม่เกี่ยวข้องและไม่ถูกกระทบ */
+.l2-doc-viewer {
+  background: #ffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.l2-doc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.l2-doc-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  color: var(--text-title);
+}
+
+.l2-doc-toolbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.l2-doc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.l2-doc-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-title);
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.l2-doc-btn:hover {
+  background: var(--border-color);
+}
+
+.l2-doc-btn-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.l2-doc-controlbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  font-size: 0.8em;
+  color: var(--text-title);
+}
+
+.l2-doc-viewmode {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.l2-doc-viewmode button {
+  height: 26px;
+  padding: 0 9px;
+  border: none;
+  background: var(--bg-card);
+  color: #64748b;
+  font-size: 0.92em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.l2-doc-viewmode button.is-active {
+  background: #1e3a8a;
+  color: #fff;
+}
+
+.l2-doc-pagenav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.l2-doc-pagenav button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: not-allowed;
+  opacity: 0.45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+}
+
+.l2-doc-pagenav span {
+  font-weight: 600;
+}
+
+.l2-doc-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.l2-doc-zoom button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: pointer;
+  font-size: 0.8em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.l2-doc-zoom button:hover {
+  background: var(--border-color);
+}
+
+.l2-doc-zoom-val {
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.l2-doc-pageframe {
+  background: #334155;
+  padding: 22px 14px;
+  height: 550px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.l2-doc-page {
+  /* border-box สำคัญ — ถ้าไม่ตั้ง padding จะบวกเพิ่มนอก width/min-height ทำให้
+     กล่องจริงกลายเป็น ~246mm x 337mm (สัดส่วน 0.73) แทนที่จะเป็น A4 แท้ ๆ
+     210mm x 297mm (สัดส่วน 0.707) */
+  box-sizing: border-box;
+  background: #fff;
+  color: #0f172a;
+  width: 210mm;
+  max-width: none;
+  /* ขนาดคงที่เท่า A4 จริง — ไม่ยืดตามเนื้อหา (สอดคล้องกับการตัดสินใจ "หน้าเดียว
+     ไม่แบ่งหน้าจริง") เนื้อหาที่ยาวเกินหนึ่งหน้าเลื่อนดูภายในกล่องนี้แทน */
+  height: 297mm;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20mm 18mm;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.92em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+/* -------------------------------------------------------------- DECISIONS
+   การ์ดตัวเลือกมติ ใช้โครงเดียวกับ .decision-card ของกิจกรรม 10.1 */
+.l2-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.l2-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--bg-card);
+  transition: all 0.15s ease;
+}
+
+.l2-choice:hover {
+  border-color: #94a3b8;
+}
+
+.l2-choice.is-active {
+  border-width: 2px;
+  background: rgba(30, 58, 138, 0.04);
+}
+
+.l2-choice input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.l2-choice-label {
+  font-weight: 600;
+  font-size: 0.92em;
+}
+
+.l2-choice-hint {
+  font-size: 0.78em;
+  color: #64748b;
+}
+
+/* ---------------------------------------------------------------- NOTICES */
+.l2-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.88em;
+  border: 1px solid;
+  margin-bottom: 16px;
+}
+
+.l2-note-info {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: rgba(37, 99, 235, 0.25);
+  color: #1e3a8a;
+}
+
+.l2-note-warn {
+  background: rgba(217, 119, 6, 0.07);
+  border-color: rgba(217, 119, 6, 0.3);
+  color: #92400e;
+}
+
+body.dark-mode .l2-note-info {
+  color: #93c5fd;
+}
+
+body.dark-mode .l2-note-warn {
+  color: #fcd34d;
+}
+
+/* ------------------------------------------------------------- FILE INPUT */
+.l2-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-body);
+}
+
+.l2-file input[type="file"] {
+  flex: 1;
+  font-size: 0.86em;
+  color: var(--text-title);
+}
+
+.l2-optional {
+  font-size: 0.78em;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* ------------------------------------------------------------------ SELECT
+   ตัวเลือกผู้รับมอบหมายมีข้อความยาว จึงต้องมีลูกศรชัดและตัดข้อความไม่ให้ล้น
+   ไม่งั้นจะดูเหมือนช่องกรอกข้อความธรรมดา */
+select.l2-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) center,
+    calc(100% - 11px) center;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 32px;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+select.l2-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ชื่อตำแหน่งของผู้รับมอบหมาย — ยกมาไว้ที่ป้ายกำกับ เพราะทุกตัวเลือก
+   อยู่ในตำแหน่งเดียวกัน ทำให้ตัวเลือกใน dropdown สั้นและอ่านง่าย */
+.l2-role-hint {
+  font-weight: 500;
+  color: #64748b;
+  font-size: 0.92em;
+}
+
+/* ------------------------------------------------------------- SPLIT LAYOUT
+   เค้าโครง 2 คอลัมน์ของ 10-2-06 / 10-2-07: ตัวอย่างเอกสารสดปักหมุดด้านซ้าย
+   ฟอร์มกรอกข้อมูลด้านขวา ย่อเป็นคอลัมน์เดียวบนจอแคบ */
+.l2-split {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.l2-split-preview {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.l2-split-form {
+  min-width: 0;
+  width: 100%;
+}
+
+.l2-split-toggle {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .l2-split {
+    grid-template-columns: 2;
+  }
+  .l2-split-preview {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+  .l2-split-toggle {
+    display: inline-flex;
+  }
+  .l2-split-preview.is-collapsed .l2-split-preview-body {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- RICH EDITOR
+   Tiptap แบบขั้นต่ำ (ตัวหนา/ตัวเอียง/บูลเลต/เลข) ให้หน้าตาใกล้เคียง .form-control
+   เดิมมากที่สุด ใช้แทน <textarea> เฉพาะฟิลด์ที่ป้อนเข้าตัวอย่างเอกสารสด */
+.l2-tiptap-wrap {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.l2-tiptap-wrap:focus-within {
+  border-color: #1e3a8a;
+  /* box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12); */
+}
+
+.l2-tiptap-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-body);
+}
+
+.l2-tiptap-toolbar button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-title);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82em;
+}
+
+.l2-tiptap-toolbar button:hover {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.l2-tiptap-toolbar button.is-active {
+  background: rgba(30, 58, 138, 0.1);
+  border-color: #1e3a8a;
+  color: #1e3a8a;
+}
+
+.l2-tiptap {
+  min-height: 110px;
+  padding: 10px 12px;
+  font-family: "Sarabun", sans-serif;
+  font-size: 0.95em;
+  line-height: 1.75;
+  color: var(--text-title);
+  outline: none;
+}
+
+/* Tiptap สร้าง .ProseMirror (contenteditable จริง) เป็นลูกของ .l2-tiptap
+   ไม่ใช่ .l2-tiptap เอง — outline:none ด้านบนจึงไม่ผล ทำให้เบราว์เซอร์
+   วาดกรอบโฟกัสสีดำทับซ้อนกับกรอบฟ้าของ .l2-tiptap-wrap ตอนคลิก/พิมพ์ */
+.l2-tiptap .ProseMirror {
+  outline: none;
+}
+
+.l2-tiptap p {
+  margin: 0 0 0.5em;
+}
+
+.l2-tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.l2-tiptap ul,
+.l2-tiptap ol {
+  padding-left: 1.4em;
+  margin: 0 0 0.5em;
+}
+
+.l2-tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ---- ฟิลด์ "โปรดระบุ" ที่โผล่มาเมื่อเลือกตัวเลือก "อื่นๆ" ---- */
+.l2-choice-other-detail {
+  margin-top: 10px;
+}
+
+/* ------------------------------------------------------- ATTACHMENT LIST
+   รายการเอกสารแนบประกอบคำร้อง (มาจาก 02-board-intake.html) แสดงแบบอ่านอย่างเดียว
+   ทุกหน้า 10-2-xx — โครงเดียวกับแถวไฟล์แนบใน 07-group-director-approval.html */
+.l2-attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.l2-attachment-row:last-child {
+  margin-bottom: 0;
+}
+
+.l2-attachment-name {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------ SIGNATURE MODAL
+   ECMIS102.openSignatureModal() (bindSignaturePad in ecmis-10-2.js) builds
+   this markup with emd-sig-* classes but no rules ever backed them, so the
+   card highlight and the hand/certificate panel toggle silently did nothing
+   — both panels rendered at once. Mirrors 22-officer-case-closed-notify.html's
+   inline-styled signature modal 1:1 so both pages look and behave the same. */
+.emd-sig-title {
+  color: #0f2a62;
+}
+
+.emd-sig-signer {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
+}
+
+.emd-sig-label {
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.emd-fs-sm {
+  font-size: 0.78rem;
+}
+
+.emd-sig-card {
+  cursor: pointer;
+  background: #ffffff;
+  border-color: #e5e7eb !important;
+  transition: all 0.2s;
+}
+
+.emd-sig-card.is-active {
+  background: #f0f6ff;
+  border-color: #2563eb !important;
+}
+
+.emd-sig-ico {
+  width: 38px;
+  height: 38px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.emd-sig-ico.is-primary {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.emd-sig-card-title {
+  font-size: 0.88rem;
+}
+
+.emd-sig-card-desc {
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.emd-sig-panel {
+  display: none;
+}
+
+.emd-sig-panel.is-visible {
+  display: block;
+}
+
+.emd-sig-pad {
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  background: #fafbfd;
+}
+
+.emd-sig-canvas {
+  width: 100%;
+  height: 170px;
+  touch-action: none;
+}
+
+.emd-sig-cert {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.82rem;
+}

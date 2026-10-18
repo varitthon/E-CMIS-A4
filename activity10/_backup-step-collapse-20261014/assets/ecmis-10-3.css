@@ -1,0 +1,759 @@
+/**
+ * E-CMIS กิจกรรมที่ 10.3 — shared styles for the 10-3-*.html step pages.
+ * Mirrors the small set of classes ecmis-10-2.css provides for its own flow
+ * (read-only field boxes, inline notices, attachment rows) — kept separate
+ * per activity rather than shared, matching how 10-2 was split off on its own.
+ */
+
+.read-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9em;
+  color: var(--text-title);
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.read-box-textarea {
+  min-height: 70px;
+  align-items: flex-start;
+  white-space: pre-wrap;
+}
+
+.l3-optional {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* โหมดดูอย่างเดียว (eye icon จากอินบ็อกซ์เมื่อไม่ใช่คิวของบทบาทตัวเอง) —
+   ใช้ร่วมกับ ECMIS103.applyViewOnlyMode() ใน ecmis-10-3.js */
+.view-only-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.88em;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.btn-disabled-view {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.l3-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.l3-note-warn {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #92400e;
+}
+body.dark-mode .l3-note-warn {
+  background: #3b2d12;
+  border-color: #78350f;
+  color: #fde68a;
+}
+
+.l3-attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 0.88em;
+}
+
+.l3-attachment-name {
+  display: flex;
+  align-items: center;
+}
+
+/* ------------------------------------------------------------- SPLIT LAYOUT
+   เค้าโครง 2 คอลัมน์ (ตัวอย่างเอกสารสดปักหมุดด้านซ้าย ฟอร์มกรอกด้านขวา) —
+   คัดลอกโครงจาก ecmis-10-2.css (.l2-split*) มาเป็น .l3-split* เพื่อให้ 10-3
+   คงความ self-contained เหมือนโมดูล JS ของตัวเอง */
+.l3-split {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.l3-split-preview {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.l3-split-form {
+  min-width: 0;
+  width: 100%;
+}
+
+.l3-split-toggle {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .l3-split {
+    grid-template-columns: 2;
+  }
+  .l3-split-preview {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+  .l3-split-toggle {
+    display: inline-flex;
+  }
+  .l3-split-preview.is-collapsed .l3-split-preview-body {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- RICH EDITOR
+   Tiptap แบบขั้นต่ำ (ตัวหนา/ตัวเอียง/บูลเลต/เลข) หน้าตาใกล้เคียง .form-control */
+.l3-tiptap-wrap {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.l3-tiptap-wrap:focus-within {
+  border-color: #1e3a8a;
+}
+
+.l3-tiptap-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-body);
+}
+
+.l3-tiptap-toolbar button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-title);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82em;
+}
+
+.l3-tiptap-toolbar button:hover {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.l3-tiptap-toolbar button.is-active {
+  background: rgba(30, 58, 138, 0.1);
+  border-color: #1e3a8a;
+  color: #1e3a8a;
+}
+
+.l3-tiptap {
+  min-height: 110px;
+  padding: 10px 12px;
+  font-family: "Sarabun", sans-serif;
+  font-size: 0.95em;
+  line-height: 1.75;
+  color: var(--text-title);
+  outline: none;
+}
+
+.l3-tiptap .ProseMirror {
+  outline: none;
+}
+
+.l3-tiptap p {
+  margin: 0 0 0.5em;
+}
+
+.l3-tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.l3-tiptap ul,
+.l3-tiptap ol {
+  padding-left: 1.4em;
+  margin: 0 0 0.5em;
+}
+
+.l3-tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------ DOC PREVIEW VIEWER
+   กรอบ "ตัวอย่างเอกสารสด" แบบหน้ากระดาษ A4 พร้อมแถบเครื่องมือ (แก้ไข/ซูม) */
+.l3-doc {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 28px 32px;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.94em;
+}
+
+.l3-doc-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.l3-doc-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.l3-doc-value {
+  flex: 1 1 200px;
+  border-bottom: 1px dotted #94a3b8;
+  min-height: 1.5em;
+}
+
+.l3-doc-section {
+  margin-top: 14px;
+}
+
+.l3-doc-section > .l3-doc-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.l3-doc-body {
+  text-indent: 2.5em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.l3-doc-signblock {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 26px;
+}
+
+.l3-doc-viewer {
+  background: #ffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.l3-doc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffff;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.l3-doc-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  color: var(--text-title);
+}
+
+.l3-doc-toolbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.l3-doc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.l3-doc-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-title);
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.l3-doc-btn:hover {
+  background: var(--border-color);
+}
+
+.l3-doc-btn-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.l3-doc-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.l3-doc-zoom button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-title);
+  cursor: pointer;
+  font-size: 0.8em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.l3-doc-zoom button:hover {
+  background: var(--border-color);
+}
+
+.l3-doc-zoom-val {
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.l3-doc-pageframe {
+  background: #334155;
+  padding: 22px 14px;
+  height: 550px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.l3-doc-page {
+  box-sizing: border-box;
+  background: #fff;
+  color: #0f172a;
+  width: 210mm;
+  max-width: none;
+  height: 297mm;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20mm 18mm;
+  font-family: "Sarabun", sans-serif;
+  line-height: 1.85;
+  font-size: 0.92em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.l3-note-info {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e3a8a;
+}
+body.dark-mode .l3-note-info {
+  background: #172554;
+  border-color: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.l3-section-title {
+  font-size: 0.92em;
+  font-weight: 700;
+  color: var(--text-title);
+  margin: 4px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.l3-divider {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 20px 0;
+}
+
+.l3-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-body);
+}
+.l3-checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #1e3a8a;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.l3-checkbox-row label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 600;
+  display: block;
+}
+.l3-checkbox-row.is-disabled label,
+.l3-checkbox-row.is-disabled input {
+  cursor: default;
+}
+
+.l3-upload-box {
+  border: 2px dashed var(--border-color);
+  padding: 16px;
+  border-radius: 6px;
+  background: var(--bg-body);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.l3-upload-box input[type="file"] {
+  flex: 1;
+  font-size: 0.88em;
+  color: var(--text-main);
+}
+
+.l3-recipient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.l3-sig-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-body);
+}
+.l3-sig-preview img {
+  max-height: 64px;
+  max-width: 220px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px;
+}
+.l3-sig-preview-meta {
+  font-size: 0.85em;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.stepper-row-label {
+  font-size: 0.78em;
+  font-weight: 700;
+  color: var(--text-title);
+  margin: 0 0 10px 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stepper-row-label:not(:first-child) {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.stepper.stepper-wide {
+  min-width: 1900px;
+}
+.step-item.planned .step-circle {
+  border-style: dashed;
+  background: transparent;
+  color: #94a3b8;
+}
+.step-item.planned .step-label {
+  color: #94a3b8;
+}
+.stepper-legend {
+  margin-left: auto;
+  font-weight: 500;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.stepper-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px dashed #94a3b8;
+  display: inline-block;
+}
+
+.step-item.planned.is-waiting .step-circle {
+  border-color: #1e3a8a;
+  color: #1e3a8a;
+}
+.step-item.planned.is-waiting .step-label {
+  color: var(--text-title);
+  font-weight: 700;
+}
+
+.l3-due-box {
+  border: 2px solid #16a34a;
+  background: rgba(22, 163, 74, 0.06);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.l3-due-box.is-soon {
+  border-color: #d97706;
+  background: rgba(217, 119, 6, 0.08);
+}
+.l3-due-box.is-overdue {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.07);
+}
+.l3-due-date {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: var(--text-title);
+}
+.l3-due-left {
+  font-weight: 700;
+  color: #16a34a;
+}
+.l3-due-box.is-soon .l3-due-left {
+  color: #d97706;
+}
+.l3-due-box.is-overdue .l3-due-left {
+  color: #dc2626;
+}
+
+.l3-ext-row {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--bg-card);
+}
+.l3-ext-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+.l3-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 16px;
+}
+@media (max-width: 900px) {
+  .l3-form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.l3-doc-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.l3-doc-tab {
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  background: var(--bg-body);
+  color: #64748b;
+  padding: 8px 14px;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.88em;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px;
+}
+.l3-doc-tab.is-active {
+  background: var(--bg-card);
+  color: #1e3a8a;
+  border-color: #1e3a8a;
+  border-bottom: 1px solid var(--bg-card);
+}
+.l3-doc-tab .l3-tab-state {
+  font-size: 0.8em;
+  color: #dc2626;
+}
+.l3-doc-tab .l3-tab-state.is-done {
+  color: #16a34a;
+}
+.l3-draft-saved {
+  font-size: 0.8em;
+  color: #64748b;
+}
+.l3-tiptap-readonly {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: var(--bg-body);
+  font-size: 0.9em;
+  color: var(--text-title);
+  min-height: 120px;
+}
+.l3-tiptap-readonly p {
+  margin: 0 0 8px;
+}
+
+.l3-checkbox-row input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #1e3a8a;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.l3-checkbox-row.is-selected {
+  border-color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.05);
+}
+
+.form-group .l3-checkbox-row label {
+  display: block;
+  margin: 0;
+  justify-content: initial;
+}
+
+.l3-decision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.l3-decision-card {
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 0;
+}
+.form-group label.l3-decision-card {
+  justify-content: flex-start;
+  margin-bottom: 0;
+}
+.l3-decision-card:hover {
+  border-color: #93c5fd;
+  background: rgba(37, 99, 235, 0.02);
+}
+.l3-decision-card.active-approve {
+  border-color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.05);
+}
+.l3-decision-card.active-return {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.05);
+}
+.l3-decision-card input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.l3-decision-title {
+  font-weight: 700;
+  font-size: 0.92em;
+}
+.l3-decision-sub {
+  font-size: 0.78em;
+  color: #64748b;
+  font-weight: 400;
+}
+@media (max-width: 1024px) {
+  .l3-decision-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stepper .step-item.step-final .step-circle {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2);
+}
+.stepper .step-item.step-final .step-label {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+/* TOR 10.3.3 / 10.3.4 แผงบันทึกสถานะ (ECMIS103.renderStatusPanel) */
+.l3-status-history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border-color, #e2e8f0);
+  font-size: 0.82em;
+}
+.l3-status-history-row span:first-child {
+  color: #64748b;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .l3-status-history-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-CMIS - ค้นหาสำนวน</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261008_2" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_1" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_1" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
+    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_1" />
+    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_1" />
+    <style>
+      body {
+        font-size: var(--base-font-size);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      /* Form Card */
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+        height: 38px;
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
+      }
+
+      .helper-text {
+        font-size: 0.78em;
+        color: #64748b;
+        margin-top: 4px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+      .d-none {
+        display: none !important;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .search-intro {
+        font-size: 0.88em;
+        color: #64748b;
+        margin: 0 0 16px;
+      }
+      .search-filter-box {
+        background: var(--bg-body);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .search-filter-title {
+        font-size: 0.82em;
+        font-weight: 700;
+        color: var(--text-title);
+        margin-bottom: 10px;
+      }
+      .search-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            ☰
+          </button>
+          <div class="breadcrumb">
+            <span>🏠 หน้าแรก</span> /
+            <span>ระบบบริหารจัดการกระบวนการด้านกฎหมายในทางคดี</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >ค้นหาสำนวน</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              🌙
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              🔔<span class="noti-badge">3</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">ก</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">นางกานดา รักษ์ธรรม</span>
+              <span class="user-role" id="userRoleTitle"
+                >เจ้าหน้าที่ธุรการกองกฎหมาย</span
+              >
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <!-- Profile & Logout Dropdown -->
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName"
+                    >นางกานดา รักษ์ธรรม</span
+                  >
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >เจ้าหน้าที่ธุรการชำนาญงาน</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg"
+                    >กองกฎหมาย (กอท.) · สำนักงาน ป.ป.ท.</span
+                  >
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Body -->
+      <div class="content">
+        <!-- ค้นหาสำนวน (อ่านอย่างเดียว) — ค้น ดูรายละเอียด และเปิดเอกสารในสำนวน
+             ใช้ฐานข้อมูลและตัวแสดงผลเดียวกับส่วน "ค้นหาสำนวน" ในหน้า 02 (assets/ecmis-case-search.js) -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <i class="fa-solid fa-magnifying-glass" style="color: #1e3a8a"></i>
+            <h1 style="font-size: 1em; margin: 0">ค้นหาสำนวน</h1>
+          </div>
+          <div class="form-card-body">
+            <p class="search-intro">
+              ค้นหาสำนวนจากสารบบคดีของสำนักงาน ป.ป.ท. คลิกแถวในผลค้นหาเพื่อดูรายละเอียดและเอกสารในสำนวน
+            </p>
+            <div class="form-grid-3">
+              <div
+                class="form-group"
+                style="margin-bottom: 0; grid-column: span 2 / span 3"
+              >
+                <label for="caseSearchInput">คำค้นหา</label>
+                <input
+                  type="text"
+                  id="caseSearchInput"
+                  class="form-control"
+                  placeholder="พิมพ์เลขสำนวน / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา / ชื่อเรื่อง..."
+                  onkeyup="handleCaseSearchKeyup(event)"
+                />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  style="width: 100%; margin-top: 20px"
+                  onclick="runCaseSearch()"
+                >
+                  <i class="fa-solid fa-magnifying-glass"></i> ค้นหาสำนวน
+                </button>
+              </div>
+            </div>
+
+            <div class="search-filter-box">
+              <div class="search-filter-title">
+                <i class="fa-solid fa-filter me-1"></i>ตัวกรองเพิ่มเติม
+              </div>
+              <div class="form-grid-3" style="margin-bottom: 12px">
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterCaseNo">เลขสำนวนเรื่องที่</label>
+                  <input
+                    type="text"
+                    id="csFilterCaseNo"
+                    class="form-control font-monospace"
+                    placeholder="เช่น 0074/2569"
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterCourtName">ชื่อศาล</label>
+                  <input
+                    type="text"
+                    id="csFilterCourtName"
+                    class="form-control"
+                    placeholder="เช่น ศาลปกครองกลาง"
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterCourtBlackNo">หมายเลขดำศาล</label>
+                  <input
+                    type="text"
+                    id="csFilterCourtBlackNo"
+                    class="form-control"
+                    placeholder="เช่น บ. 45/2569"
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+              </div>
+              <div class="form-grid-2" style="margin-bottom: 12px">
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterPlaintiff">ชื่อผู้ฟ้อง</label>
+                  <input
+                    type="text"
+                    id="csFilterPlaintiff"
+                    class="form-control"
+                    placeholder="ชื่อผู้ฟ้องคดี / โจทก์..."
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterDefendant">ชื่อผู้ถูกฟ้อง</label>
+                  <input
+                    type="text"
+                    id="csFilterDefendant"
+                    class="form-control"
+                    placeholder="ชื่อผู้ถูกฟ้องคดี / จำเลย..."
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+              </div>
+              <div class="form-grid-2" style="margin-bottom: 0">
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterSource">จาก</label>
+                  <input
+                    type="text"
+                    id="csFilterSource"
+                    class="form-control"
+                    placeholder="หน่วยงานต้นทาง..."
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label for="csFilterSubject">เรื่อง</label>
+                  <input
+                    type="text"
+                    id="csFilterSubject"
+                    class="form-control"
+                    placeholder="ชื่อเรื่อง / ข้อกล่าวหา..."
+                    onkeyup="handleCaseSearchKeyup(event)"
+                  />
+                </div>
+              </div>
+              <div class="search-actions">
+                <button type="button" class="btn btn-secondary" onclick="clearCaseSearch()">
+                  <i class="fa-solid fa-eraser"></i> ล้างเงื่อนไข
+                </button>
+              </div>
+            </div>
+
+            <div id="caseSearchResults" class="d-none" style="margin-top: 16px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20260904_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261014_3"></script>
+    <script src="assets/ecmis-case-search.js?v=20261014_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261008_2"></script>
+    <script>
+      const CASE_SEARCH_FILTERS = {
+        caseNo: "csFilterCaseNo",
+        courtName: "csFilterCourtName",
+        courtBlackNo: "csFilterCourtBlackNo",
+        plaintiff: "csFilterPlaintiff",
+        defendant: "csFilterDefendant",
+        source: "csFilterSource",
+        subject: "csFilterSubject",
+      };
+
+      function readValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : "";
+      }
+
+      function runCaseSearch() {
+        const q = readValue("caseSearchInput");
+        const filters = Object.fromEntries(
+          Object.entries(CASE_SEARCH_FILTERS).map(([key, id]) => [key, readValue(id)]),
+        );
+        const container = document.getElementById("caseSearchResults");
+        const { hasCriteria, results } = ECMISCaseSearch.search({ query: q, filters });
+        if (!hasCriteria) {
+          Swal.fire({
+            icon: "info",
+            title: "กรุณากรอกคำค้นหา",
+            text: "พิมพ์คำค้นหา หรือกรอกตัวกรองอย่างน้อย 1 ช่อง",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          container.classList.add("d-none");
+          return;
+        }
+        container.classList.remove("d-none");
+        container.innerHTML = ECMISCaseSearch.renderResults(results, q, {
+          onRowClick: "previewCase",
+          previewId: "casePreview",
+          resultsId: "caseSearchResults",
+          hint: "คลิกแถวเพื่อดูรายละเอียดและเอกสารในสำนวน",
+        });
+      }
+
+      function handleCaseSearchKeyup(e) {
+        if (e.key === "Enter") runCaseSearch();
+      }
+
+      function clearCaseSearch() {
+        ["caseSearchInput", ...Object.values(CASE_SEARCH_FILTERS)].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        const container = document.getElementById("caseSearchResults");
+        container.classList.add("d-none");
+        container.innerHTML = "";
+      }
+
+      /* กดแถว → แสดงรายละเอียดใต้ตาราง กดแถวเดิมซ้ำหรือ "ปิด" เพื่อปิด (หน้านี้ดูอย่างเดียว ไม่มีปุ่มเลือก) */
+      function previewCase(caseId) {
+        const panel = document.getElementById("casePreview");
+        if (!panel) return;
+        if (panel.dataset.caseId === caseId && !panel.classList.contains("d-none")) {
+          closeCasePreview();
+          return;
+        }
+        const target = ECMISCaseSearch.findCase(caseId);
+        if (!target) return;
+        ECMISCaseSearch.markRow("caseSearchResults", caseId, "is-previewing");
+        panel.dataset.caseId = caseId;
+        panel.innerHTML =
+          ECMISCaseSearch.renderDetail(target) +
+          `
+ <div class="intake-preview-actions">
+ <button type="button" class="btn btn-secondary" onclick="closeCasePreview()"><i class="fa-solid fa-xmark me-1"></i>ปิด</button>
+ </div>`;
+        panel.classList.remove("d-none");
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      function closeCasePreview() {
+        const panel = document.getElementById("casePreview");
+        if (panel) {
+          panel.classList.add("d-none");
+          panel.dataset.caseId = "";
+        }
+        ECMISCaseSearch.markRow("caseSearchResults", "", "is-previewing");
+      }
+    </script>
+  </body>
+</html>

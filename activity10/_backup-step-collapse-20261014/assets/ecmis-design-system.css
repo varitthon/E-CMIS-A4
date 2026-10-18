@@ -1,0 +1,454 @@
+/* ==========================================================================
+   E-CMIS Design System — canonical token + component layer
+   D:\Mercil\E-CMIS-A4
+
+   WHAT THIS IS
+   Extracted from the four existing stylesheets (ecmis-shell.css,
+   ecmis-modal.css, ecmis-app.css, ecmis-activity10.css) plus the ~5,900
+   lines of per-page inline <style> blocks across activity10/*.html.
+   Where those sources disagreed, the value used by the MOST live pages won;
+   every reconciliation is noted inline with "RECONCILED:".
+
+   HOW TO USE
+   This file is ADDITIVE and is currently linked only by design-system.html.
+   Nothing changes until a page opts in. To adopt on a page:
+     1. <link rel="stylesheet" href="assets/ecmis-design-system.css">
+        AFTER ecmis-shell.css and BEFORE the page's own <style> block.
+     2. Delete the duplicated rules from that page's <style> block.
+     3. Replace inline `style="background:#dcfce7;color:#166534"` badges
+        with the semantic classes (.ds-badge-success etc.) defined below.
+
+   LAYERS
+     1. Tokens        — color, type, space, radius, shadow, size
+     2. Primitives    — button, badge, form control, read-box
+     3. Components    — form card, stepper, decision card, table
+     4. Dark mode     — token overrides only (body.dark-mode)
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
+:root {
+  /* ---- brand -------------------------------------------------------- */
+  --ds-navy-900: #1a2b48;   /* sidebar ground */
+  --ds-navy-800: #1e293b;   /* primary button hover / heading ink */
+  --ds-navy-700: #1e3a8a;   /* PRIMARY ACTION — btn-primary, active step */
+  --ds-blue-600: #2563eb;   /* INTERACTIVE — nav active, focus, links */
+  --ds-blue-300: #93c5fd;   /* hover hairline */
+  --ds-blue-100: #dbeafe;   /* info surface */
+
+  /* ---- neutrals ----------------------------------------------------- */
+  --ds-ink-900: #1e293b;    /* titles */
+  --ds-ink-700: #334155;    /* body copy */
+  --ds-ink-500: #64748b;    /* muted / captions */
+  --ds-ink-400: #94a3b8;    /* idle nav, disabled */
+  --ds-line: #e2e8f0;
+  --ds-surface: #ffffff;
+  --ds-surface-sunken: #f0f4f8;   /* page ground + read-box fill */
+  --ds-surface-raised: #f1f5f9;   /* table header, neutral chip */
+
+  /* ---- status (bg / text / fill) -------------------------------------
+     RECONCILED: success text was #166534 on 14 usages and #15803d on 7.
+     #166534 wins. Success FILL (#16a34a) is a separate role from success
+     TEXT — do not collapse them. */
+  --ds-success-bg: #dcfce7;
+  --ds-success-text: #166534;
+  --ds-success-fill: #16a34a;
+  --ds-warning-bg: #fef3c7;
+  --ds-warning-text: #92400e;
+  --ds-warning-fill: #d97706;
+  --ds-danger-bg: #fee2e2;
+  --ds-danger-text: #991b1b;
+  --ds-danger-fill: #dc2626;
+  --ds-info-bg: #dbeafe;
+  --ds-info-text: #1e40af;
+  --ds-info-fill: #2563eb;
+  --ds-sky-bg: #e0f2fe;
+  --ds-sky-text: #0369a1;
+  --ds-sky-fill: #0284c7;
+  --ds-neutral-bg: #f1f5f9;
+  --ds-neutral-text: #475569;
+
+  /* ---- typography ----------------------------------------------------
+     Two families only: Prompt for headings/chrome, Sarabun for body.
+     Sizes stay em-relative because most pages inherit the browser default
+     (see the --base-font-size note in ecmis-shell.css). */
+  --ds-font-heading: 'Prompt', sans-serif;
+  --ds-font-body: 'Sarabun', sans-serif;
+  --ds-font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --ds-text-xs: 0.78em;   /* user-role, meta */
+  --ds-text-sm: 0.8em;    /* badge, step label */
+  --ds-text-md: 0.85em;   /* dense table, notification */
+  --ds-text-base: 0.9em;  /* form control, read-box, button */
+  --ds-text-lg: 0.95em;   /* nav link */
+  --ds-text-xl: 1.05em;   /* card header, brand */
+  --ds-leading-tight: 1.2;
+  --ds-leading-normal: 1.5;
+
+  /* ---- spacing (4px base) -------------------------------------------- */
+  --ds-space-1: 4px;
+  --ds-space-2: 6px;
+  --ds-space-3: 10px;
+  --ds-space-4: 14px;
+  --ds-space-5: 16px;
+  --ds-space-6: 20px;
+  --ds-space-7: 24px;
+
+  /* ---- radius --------------------------------------------------------- */
+  --ds-radius-sm: 6px;    /* control, button */
+  --ds-radius-md: 8px;    /* decision card, dropdown */
+  --ds-radius-lg: 10px;   /* form card, stepper card */
+  --ds-radius-pill: 12px; /* badge */
+  --ds-radius-full: 50%;
+
+  /* ---- elevation ------------------------------------------------------ */
+  --ds-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.02);
+  --ds-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ds-shadow-overlay: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --ds-focus-ring: 0 0 0 2px rgba(37, 99, 235, 0.15);
+
+  /* ---- sizing --------------------------------------------------------- */
+  --ds-control-h: 38px;   /* input, select, button */
+  --ds-circle-btn: 34px;  /* topbar icon button, avatar */
+  --ds-step-dot: 36px;
+  --ds-mic-btn: 26px;
+  --ds-sidebar-w: 240px;
+  --ds-content-max: 1300px;
+
+  /* ---- motion --------------------------------------------------------- */
+  --ds-transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   2. PRIMITIVES
+   ========================================================================== */
+
+/* ---- Layout container (mirrors .content, repeated on 22 pages) ---- */
+.ds-content {
+  padding: var(--ds-space-6) var(--ds-space-7);
+  max-width: var(--ds-content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ---- Button -----------------------------------------------------------
+   One height (38px), one radius (6px), icon+label flex row. */
+.ds-btn {
+  padding: 0 var(--ds-space-6);
+  height: var(--ds-control-h);
+  border-radius: var(--ds-radius-sm);
+  border: none;
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-base);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-2);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: var(--ds-transition);
+}
+.ds-btn-primary { background: var(--ds-navy-700); color: #fff; }
+.ds-btn-primary:hover { background: var(--ds-navy-800); color: #fff; }
+.ds-btn-secondary {
+  background: var(--ds-surface-sunken);
+  color: var(--ds-ink-900);
+  border: 1px solid var(--ds-line);
+}
+.ds-btn-secondary:hover { background: var(--ds-line); color: var(--ds-ink-900); }
+/* RECONCILED: 13-officer-final-doc.html redefines .btn-primary as green
+   (#16a34a) for its "confirm & send" step. That is a SEMANTIC success
+   action, not a re-skinned primary — use .ds-btn-success there instead. */
+.ds-btn-success { background: var(--ds-success-fill); color: #fff; font-weight: 600; }
+.ds-btn-success:hover { background: #15803d; color: #fff; }
+.ds-btn-danger { background: var(--ds-danger-fill); color: #fff; }
+.ds-btn-danger:hover { background: #b91c1c; color: #fff; }
+.ds-btn[disabled],
+.ds-btn.is-disabled {
+  background: var(--ds-line);
+  color: var(--ds-ink-400);
+  cursor: not-allowed;
+}
+
+/* ---- Microphone button (speech-to-text field affordance, 54 usages) ---- */
+.ds-btn-mic {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-full);
+  width: var(--ds-mic-btn);
+  height: var(--ds-mic-btn);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ds-blue-600);
+  font-size: 12px;
+  vertical-align: middle;
+  margin-left: var(--ds-space-2);
+  transition: var(--ds-transition);
+  box-shadow: var(--ds-shadow-raised);
+}
+.ds-btn-mic:hover {
+  background: var(--ds-blue-600);
+  color: #fff;
+  border-color: var(--ds-blue-600);
+  transform: scale(1.08);
+}
+.ds-btn-mic.recording {
+  background: var(--ds-danger-fill) !important;
+  color: #fff !important;
+  border-color: #b91c1c !important;
+  animation: ds-pulse-mic 1.2s infinite ease-in-out;
+}
+@keyframes ds-pulse-mic {
+  0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); transform: scale(1); }
+  50%  { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); transform: scale(1.1); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+}
+
+/* ---- Badge ------------------------------------------------------------
+   REPLACES ~90 inline `style="background:#dcfce7;color:#166534"` spans.
+   Shape is one rule; color is a modifier. */
+.ds-badge {
+  padding: var(--ds-space-1) var(--ds-space-3);
+  border-radius: var(--ds-radius-pill);
+  font-size: var(--ds-text-sm);
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+.ds-badge-success { background: var(--ds-success-bg); color: var(--ds-success-text); }
+.ds-badge-warning { background: var(--ds-warning-bg); color: var(--ds-warning-text); }
+.ds-badge-danger  { background: var(--ds-danger-bg);  color: var(--ds-danger-text); }
+.ds-badge-info    { background: var(--ds-info-bg);    color: var(--ds-info-text); }
+.ds-badge-sky     { background: var(--ds-sky-bg);     color: var(--ds-sky-text); }
+.ds-badge-neutral { background: var(--ds-neutral-bg); color: var(--ds-neutral-text); }
+/* Solid variants — used for "current step" and count pills */
+.ds-badge-solid-navy    { background: var(--ds-navy-700);     color: #fff; }
+.ds-badge-solid-success { background: var(--ds-success-fill); color: #fff; }
+.ds-badge-solid-danger  { background: var(--ds-danger-fill);  color: #fff; }
+.ds-badge-solid-sky     { background: var(--ds-sky-fill);     color: #fff; }
+
+/* ---- Form control ---- */
+.ds-form-group { display: flex; flex-direction: column; margin-bottom: var(--ds-space-5); }
+.ds-form-group:last-child { margin-bottom: 0; }
+.ds-form-group > label {
+  font-size: 0.88em;
+  font-weight: 600;
+  color: var(--ds-ink-900);
+  margin-bottom: var(--ds-space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ds-form-control {
+  width: 100%;
+  height: var(--ds-control-h);
+  padding: 8px 12px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-sm);
+  outline: none;
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-base);
+  background-color: var(--ds-surface);
+  color: var(--ds-ink-900);
+}
+.ds-form-control:focus {
+  border-color: var(--ds-blue-600);
+  box-shadow: var(--ds-focus-ring);
+}
+textarea.ds-form-control { height: auto; resize: vertical; padding: 10px 12px; }
+.ds-form-control[readonly],
+.ds-form-control:disabled { background: var(--ds-surface-sunken); color: var(--ds-ink-500); }
+
+/* ---- Read-only display field ------------------------------------------
+   Already canonical in ecmis-shell.css as .read-box; restated here on the
+   ds- prefix so a page can adopt the whole system with one vocabulary.
+   Field WIDTHS come from .form-grid-2 / .form-grid-3 in ecmis-shell.css. */
+.ds-read-box {
+  background-color: var(--ds-surface-sunken);
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-sm);
+  padding: var(--ds-space-3) var(--ds-space-4);
+  font-size: var(--ds-text-base);
+  color: var(--ds-ink-900);
+  min-height: var(--ds-control-h);
+  display: flex;
+  align-items: center;
+}
+.ds-read-box-textarea { min-height: 80px; align-items: flex-start; line-height: var(--ds-leading-normal); }
+
+/* ==========================================================================
+   3. COMPONENTS
+   ========================================================================== */
+
+/* ---- Form card (the primary content container, 21 pages) ---- */
+.ds-card {
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-line);
+  margin-bottom: var(--ds-space-6);
+  box-shadow: var(--ds-shadow-card);
+  overflow: hidden;
+}
+.ds-card-header {
+  padding: var(--ds-space-4) var(--ds-space-6);
+  background: var(--ds-surface);
+  border-bottom: 1px solid var(--ds-line);
+  font-family: var(--ds-font-heading);
+  font-weight: 700;
+  color: var(--ds-ink-900);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--ds-text-xl);
+}
+.ds-card-body { padding: var(--ds-space-6); }
+.ds-card-actions {
+  padding: var(--ds-space-5) var(--ds-space-6);
+  background: var(--ds-surface);
+  border-top: 1px solid var(--ds-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--ds-space-3);
+}
+
+/* ---- Stepper (workflow position indicator, 21 pages) ------------------
+   RECONCILED: `.completed` was green (#16a34a) on 5 pages and blue
+   (#2563eb) on 3. Green wins — it reads as "done", and blue is already
+   spent on "interactive". Active keeps the navy dot plus its focus halo. */
+.ds-stepper-card {
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-line);
+  padding: 18px var(--ds-space-7);
+  margin-bottom: var(--ds-space-6);
+  box-shadow: var(--ds-shadow-card);
+}
+.ds-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  max-width: 950px;
+  margin: 0 auto;
+}
+.ds-stepper::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--ds-line);
+  z-index: 1;
+}
+.ds-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  text-decoration: none;
+}
+.ds-step-circle {
+  width: var(--ds-step-dot);
+  height: var(--ds-step-dot);
+  border-radius: var(--ds-radius-full);
+  background: var(--ds-surface-sunken);
+  border: 2px solid var(--ds-line);
+  color: var(--ds-ink-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--ds-text-base);
+  margin-bottom: var(--ds-space-2);
+}
+.ds-step.is-active .ds-step-circle {
+  background: var(--ds-navy-700);
+  border-color: var(--ds-navy-700);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+}
+.ds-step.is-complete .ds-step-circle {
+  background: var(--ds-success-fill);
+  border-color: var(--ds-success-fill);
+  color: #fff;
+}
+.ds-step-label {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-ink-500);
+  text-align: center;
+  white-space: nowrap;
+  max-width: 150px;
+}
+.ds-step.is-active .ds-step-label { color: var(--ds-ink-900); font-weight: 600; }
+
+/* ---- Decision card (mutually-exclusive choice, 22 usages) ---- */
+.ds-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ds-space-4);
+  margin-bottom: var(--ds-space-4);
+}
+.ds-decision-card {
+  border: 2px solid var(--ds-line);
+  border-radius: var(--ds-radius-md);
+  padding: var(--ds-space-4) var(--ds-space-5);
+  background: var(--ds-surface);
+  cursor: pointer;
+  transition: var(--ds-transition);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+}
+.ds-decision-card:hover { border-color: var(--ds-blue-300); background: rgba(37, 99, 235, 0.02); }
+.ds-decision-card.is-danger  { border-color: var(--ds-danger-fill);  background: rgba(220, 38, 38, 0.05); }
+.ds-decision-card.is-success { border-color: var(--ds-success-fill); background: rgba(22, 163, 74, 0.05); }
+.ds-decision-card.is-warning { border-color: var(--ds-warning-fill); background: rgba(217, 119, 6, 0.05); }
+
+/* ---- Table ---- */
+.ds-table { width: 100%; font-size: var(--ds-text-md); border-collapse: collapse; }
+.ds-table thead th {
+  background: var(--ds-surface-raised);
+  color: var(--ds-ink-700);
+  font-weight: 600;
+  text-align: left;
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-bottom: 2px solid var(--ds-line);
+  white-space: nowrap;
+}
+.ds-table tbody td {
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-bottom: 1px solid var(--ds-line);
+  vertical-align: middle;
+}
+.ds-table tbody tr:hover { background: var(--ds-surface-sunken); }
+
+/* ---- Utilities ---- */
+.ds-mono { font-family: var(--ds-font-mono); }
+.ds-muted { color: var(--ds-ink-500); }
+.ds-hidden { display: none !important; }
+
+@media (max-width: 1024px) {
+  .ds-decision-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   4. DARK MODE — token overrides only, matching body.dark-mode in
+   ecmis-shell.css so both layers flip together.
+   ========================================================================== */
+body.dark-mode {
+  --ds-surface: #1e293b;
+  --ds-surface-sunken: #0f172a;
+  --ds-surface-raised: #334155;
+  --ds-line: #334155;
+  --ds-ink-900: #f8fafc;
+  --ds-ink-700: #cbd5e1;
+  --ds-ink-500: #94a3b8;
+  --ds-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+}

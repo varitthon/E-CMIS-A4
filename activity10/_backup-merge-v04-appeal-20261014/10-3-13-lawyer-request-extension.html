@@ -1,0 +1,1838 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>นิติกร ขอขยายเวลาและร่างคำให้การ | E-CMIS กิจกรรมที่ 10.3</title>
+    <link rel="icon" type="image/png" href="pacc_logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
+    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <link rel="stylesheet" href="assets/ecmis-modal.css" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
+
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .topbar {
+        font-family: "Prompt", sans-serif;
+      }
+      .menu li a i {
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
+      }
+      .user-profile-top:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .content {
+        padding: 20px 24px;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .stepper-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 18px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow-x: auto;
+      }
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        min-width: 900px;
+      }
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: var(--border-color);
+        z-index: 1;
+      }
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+      }
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        border: 2px solid var(--border-color);
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-bottom: 6px;
+      }
+      .step-item.active .step-circle {
+        background: #1e3a8a;
+        border-color: #1e3a8a;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.2);
+      }
+      .step-item.completed .step-circle {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: #fff;
+      }
+      .step-label {
+        font-size: 0.72em;
+        color: #64748b;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.35;
+      }
+      .step-item.active .step-label {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .form-card {
+        background: var(--bg-card);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 1.05em;
+      }
+      .form-card-body {
+        padding: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+      }
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+      .form-group label {
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 0.9em;
+        background-color: var(--bg-card);
+        color: var(--text-title);
+        height: 38px;
+      }
+      .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      textarea.form-control {
+        height: auto;
+        resize: vertical;
+        padding: 10px 12px;
+      }
+
+      .form-actions {
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 0 20px;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: #1e3a8a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #1e293b;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--bg-body);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background: var(--border-color);
+        color: var(--text-title);
+      }
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .font-monospace {
+        font-family: monospace;
+      }
+      .d-none {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button
+            class="btn-toggle-menu"
+            onclick="toggleSidebar()"
+            title="ซ่อน/แสดงเมนู"
+          >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="breadcrumb">
+            <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
+            <span style="color: var(--text-title); font-weight: 600"
+              >นิติกร ยื่นคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง</span
+            >
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <div class="font-sizer" title="ปรับขนาดตัวอักษร">
+            <button class="ctrl-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="ctrl-btn" onclick="changeFontSize(0)">A</button>
+            <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+          </div>
+          <div class="icon-btn-group">
+            <button
+              class="circle-icon-btn"
+              onclick="toggleTheme()"
+              id="themeBtn"
+              title="สลับโหมดสี"
+            >
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <div class="circle-icon-btn" title="การแจ้งเตือน">
+              <i class="fa-solid fa-bell" aria-hidden="true"></i><span class="noti-badge">1</span>
+            </div>
+          </div>
+          <div
+            class="user-profile-top"
+            onclick="toggleProfileDropdown(event)"
+            title="ข้อมูลผู้เข้าใช้ระบบและออกจากระบบ"
+          >
+            <div class="avatar" id="userAvatar">-</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">-</span>
+              <span class="user-role" id="userRoleTitle">-</span>
+            </div>
+            <i
+              class="fa-solid fa-chevron-down ms-1"
+              style="font-size: 0.72rem; color: #64748b"
+            ></i>
+
+            <div
+              class="profile-dropdown-menu"
+              id="profileDropdown"
+              onclick="event.stopPropagation()"
+            >
+              <div class="profile-dropdown-header">ข้อมูลผู้เข้าใช้ระบบ</div>
+              <div class="profile-dropdown-body">
+                <div class="profile-card">
+                  <span class="profile-card-name" id="profileCardName">-</span>
+                  <span class="profile-card-title" id="profileCardTitle"
+                    >-</span
+                  >
+                  <span class="profile-card-org" id="profileCardOrg">-</span>
+                </div>
+                <span class="profile-note"
+                  ><i class="fa-solid fa-circle-info me-1"></i
+                  >หากต้องการเปลี่ยนบทบาท
+                  กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stepper-card">
+          <div class="stepper-row-label">
+            <i class="fa-solid fa-paper-plane"></i> ก่อนคณะกรรมการ ป.ป.ท. มีมติ
+          </div>
+          <div class="stepper" id="stepperPart1"></div>
+          <div class="stepper-row-label">
+            <i class="fa-solid fa-gavel"></i> หลังคณะกรรมการ ป.ป.ท. มีมติ — จัดทำและส่งคำให้การ
+          </div>
+          <div class="stepper stepper-wide" id="stepperPart2"></div>
+        </div>
+
+        <div id="noCaseNotice" class="l3-note l3-note-warn d-none">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
+            รอ ผอ.กลุ่มงานคดีพิจารณาและเห็นชอบที่หน้า
+            <a href="10-3-12-group-director-approve-resolution.html"
+              >ผอ.กลุ่มงานคดี พิจารณาและเห็นชอบ</a
+            >
+            ก่อน
+          </div>
+        </div>
+
+        <div id="pageBody">
+          <div id="viewModeNotice" class="l3-note l3-note-info d-none">
+            <i class="fa-solid fa-eye"></i>
+            <div style="flex: 1">
+              <strong>ขั้นตอนนี้ดำเนินการแล้ว (ดูอย่างเดียว)</strong><br />
+              ลงนามโดย <span id="f_viewSigner">-</span> เมื่อ
+              <span id="f_viewSignedAt">-</span><br />
+              สถานะปัจจุบันของคดี: <strong id="f_viewStatus">-</strong>
+            </div>
+            <img
+              id="f_viewSigImg"
+              alt="ลายมือชื่อ"
+              class="d-none"
+              style="max-height: 56px; background: #fff; border-radius: 6px; padding: 4px"
+            />
+          </div>
+          <div class="form-card">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >รายละเอียดคดีปกครอง</span
+              >
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"
+                ><i class="fa-solid fa-hashtag me-1"></i
+                ><span id="f_caseNo">-</span></span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขรับกองกฎหมาย</label>
+                  <div class="read-box font-monospace" id="f_lawReceiveNo">
+                    -
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ชื่อหมาย</label>
+                  <div class="read-box" id="f_summonsName">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ศาล</label>
+                  <div class="read-box" id="f_courtName">-</div>
+                </div>
+                <div class="form-group">
+                  <label>หมายเลขคดีดำ</label>
+                  <div class="read-box font-monospace" id="f_blackCaseNo">
+                    -
+                  </div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้ฟ้องคดี</label>
+                  <div id="f_plaintiffs"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้ถูกฟ้องคดี</label>
+                  <div id="f_defendants"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" data-prev-step="กำหนดเวลายื่นคำให้การ">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-hourglass-half text-primary me-2"></i
+                >กำหนดเวลายื่นคำให้การ</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วันที่สำนักงาน ป.ป.ท. รับเรื่อง</label>
+                  <div class="read-box" id="f_courtReceivedDate">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ศาลให้ทำภายใน</label>
+                  <div class="read-box" id="f_courtDeadlineDays">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ครบกำหนดเดิม</label>
+                  <div class="read-box" id="f_originalDue">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ศาลอนุญาตให้ขยายรวม</label>
+                  <div class="read-box" id="f_grantedTotal">-</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ครบกำหนดยื่นคำให้การ (ปัจจุบัน)</label>
+                <div class="l3-due-box" id="dueBox">
+                  <span class="l3-due-date" id="f_currentDue">-</span>
+                  <span class="l3-due-left" id="f_daysLeft">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" data-prev-step="คำสั่งที่ได้รับ">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-list-check text-primary me-2"></i
+                >คำสั่งที่ได้รับ</span
+              >
+              <span
+                class="badge"
+                style="background: #dcfce7; color: #166534"
+                id="f_resolutionResultBadge"
+                >-</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>มติคณะกรรมการ ป.ป.ท.</label>
+                <div class="read-box" id="f_resolutionRef">-</div>
+              </div>
+              <div class="form-group">
+                <label>สาระสำคัญของมติ</label>
+                <div class="read-box read-box-textarea" id="f_resolutionText">-</div>
+              </div>
+              <div class="form-group">
+                <label>ความเห็น ผอ.กลุ่มงานคดี</label>
+                <div class="read-box read-box-textarea" id="f_groupNotes">-</div>
+                <div style="font-size: 0.78em; color: #64748b; margin-top: 4px">
+                  ลงนามเมื่อ <span id="f_groupSignedAt">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
+            <div
+              class="form-card-header"
+              style="background: rgba(30, 58, 138, 0.05)"
+            >
+              <span
+                ><i class="fa-solid fa-scale-balanced text-primary me-2"></i
+                >ยื่นคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง</span
+              >
+              <span class="badge" style="background: #1e3a8a; color: #fff"
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร กลุ่มงานคดี</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div id="returnNotice" class="l3-note l3-note-warn d-none" style="margin-bottom: 16px">
+                <i class="fa-solid fa-rotate-left"></i>
+                <div>
+                  <strong><span id="f_returnFrom">ผอ.กลุ่มงานคดี</span>ส่งกลับให้แก้ไข</strong><br />
+                  <span id="f_returnInfo">-</span><br />
+                  ประเด็นที่ต้องแก้ไข: <span id="f_returnNotes">-</span><br />
+                  <span style="font-size: 0.85em">โดย <span id="f_returnBy">-</span></span>
+                </div>
+              </div>
+              <div class="l3-section-title">
+                <i class="fa-solid fa-scale-balanced text-primary"></i>
+                1. ยื่นคำขอขยายเวลาต่อศาล
+              </div>
+              <div class="l3-note l3-note-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  ศาลกำหนดให้ทำคำให้การตามหมาย (ปกติ 30 วัน)
+                  ขอขยายเวลาได้ตามดุลพินิจศาล ปกติ 2–3 ครั้ง
+                  และจำนวนวันที่ศาลอนุญาตจริงอาจไม่ครบตามที่ขอ —
+                  ระบบคำนวณวันครบกำหนดใหม่จากจำนวนวันที่ศาลอนุญาต
+                </div>
+              </div>
+              <div id="extensionList"></div>
+              <div id="extensionCountWarn" class="l3-note l3-note-warn d-none">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                  ยื่นคำขอขยายเวลาเกิน 3 ครั้งแล้ว — ปกติศาลอนุญาต 2–3 ครั้ง
+                  กรุณาตรวจสอบความจำเป็น
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                id="btnAddExtension"
+                onclick="addExtensionRow()"
+              >
+                <i class="fa-solid fa-plus me-1"></i>เพิ่มคำขอขยายเวลา
+              </button>
+              <div class="form-group" style="margin-top: 16px">
+                <label>หมายเหตุ</label>
+                <textarea
+                  id="in_extensionNotes"
+                  class="form-control"
+                  rows="2"
+                  placeholder="ระบุหมายเหตุ (ถ้ามี)..."
+                ></textarea>
+              </div>
+
+              <hr class="l3-divider" />
+
+              <div class="l3-section-title">
+                <i class="fa-solid fa-paperclip text-primary"></i>
+                2. พยานหลักฐานและเอกสารประกอบ
+              </div>
+              <div class="l3-note l3-note-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  ร่างบันทึกข้อความ หนังสือถึงอธิบดีอัยการ และคำให้การ จัดทำเป็น <strong>เอกสารสด</strong> ด้านล่าง
+                  (ข้อความตั้งต้นเติมจากข้อมูลคดี แก้ไขได้ และกด "บันทึกร่าง" เก็บไว้ทำต่อภายหลังได้)
+                </div>
+              </div>
+              <div class="form-group">
+                <label>พยานหลักฐานและเอกสารประกอบ <span style="font-weight: 400; color: #64748b">(ถ้ามี)</span></label>
+                <div class="l3-upload-box">
+                  <input type="file" id="in_evidenceFiles" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="addDocFiles('evidence', this)" />
+                </div>
+                <div id="evidenceFileList" style="margin-top: 8px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="draftNotice" class="l3-note l3-note-info d-none">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div style="flex: 1">
+              <strong>โหลดร่างที่บันทึกไว้</strong> เมื่อ <span id="f_draftSavedAt">-</span>
+              <span id="f_draftSavedBy"></span>
+            </div>
+            <button type="button" class="btn btn-secondary" style="height: 30px; font-size: 0.8em" onclick="resetDraft()">
+              <i class="fa-solid fa-rotate-left"></i>ล้างร่าง / กลับเป็นค่าตั้งต้น
+            </button>
+          </div>
+
+          <!-- ========== เอกสาร 1 — บันทึกข้อความเสนอร่างคำให้การ (PDF 5-A) ========== -->
+          <div class="l3-split l3-split--doc">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสาร 1 — บันทึกข้อความเสนอร่างคำให้การ</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ชั้นความเร็ว</label>
+                      <select id="m_urgency" class="form-control">
+                        <option>ด่วนที่สุด</option><option>ด่วนมาก</option><option>ด่วน</option><option value="">ปกติ</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>ชั้นความลับ</label>
+                      <select id="m_secrecy" class="form-control">
+                        <option value="">ไม่มี</option><option selected>ลับ</option><option>ลับมาก</option><option>ลับที่สุด</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ส่วนราชการ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="m_division" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>โทร. (ผู้รับผิดชอบ)</label>
+                      <input type="text" id="m_phone" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ที่ <span class="l3-optional">(ธุรการออกเลขส่งภายใน)</span></label>
+                      <div class="read-box font-monospace" id="m_docNo">ปป 0002/ — รอออกเลข</div>
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="m_docDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="m_subject" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>เรียน <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="m_to" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>๑. เรื่องเดิม <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_m_background">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="m_background"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๒. ข้อเท็จจริง <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_m_facts">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="m_facts"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๓. ข้อเสนอ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_m_proposal">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="m_proposal"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำลงท้าย</label>
+                    <input type="text" id="m_closing" class="form-control" />
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้เสนอ (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="m_proposerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้เสนอ</label>
+                      <input type="text" id="m_proposerPos" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="memoPreviewCol"></div>
+          </div>
+
+          <!-- ========== เอกสาร 2 — หนังสือขอให้แก้ต่างถึงอธิบดีอัยการ (PDF 5-B) ========== -->
+          <div class="l3-split l3-split--doc">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสาร 2 — หนังสือขอให้แก้ต่างถึงอธิบดีอัยการ</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ชั้นความเร็ว</label>
+                      <select id="l_urgency" class="form-control">
+                        <option>ด่วนที่สุด</option><option>ด่วนมาก</option><option>ด่วน</option><option value="">ปกติ</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>ประทับคำว่า</label>
+                      <select id="l_copyMark" class="form-control">
+                        <option value="สำเนา">สำเนา (คู่ฉบับ)</option><option value="">ไม่ประทับ (ฉบับจริง)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ที่ <span class="l3-optional">(ระบบออกเลขให้เมื่อลงนาม)</span></label>
+                      <div class="read-box font-monospace" id="l_docNo">ปป 0002/ — รอออกเลข</div>
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="l_docDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ที่อยู่ส่วนราชการ</label>
+                    <textarea id="l_address" class="form-control" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="l_subject" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>เรียน <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="l_to" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>อ้างถึง <span class="l3-optional">(ถ้ามี)</span></label>
+                    <input type="text" id="l_ref" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>สิ่งที่ส่งมาด้วย <span class="l3-optional">(บรรทัดละ 1 รายการ)</span></label>
+                    <textarea id="l_enclosures" class="form-control" rows="5"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>เนื้อความ <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_l_body">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="l_body"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำลงท้าย</label>
+                    <input type="text" id="l_closing" class="form-control" />
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="l_signerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้ลงนาม</label>
+                      <textarea id="l_signerPos" class="form-control" rows="2"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>ท้ายหนังสือ (หน่วยงาน / โทร. / โทรสาร)</label>
+                    <textarea id="l_footer" class="form-control" rows="3"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="letterPreviewCol"></div>
+          </div>
+
+          <!-- ========== เอกสาร 3 — คำให้การ แบบ (ค.๓) (PDF 5-C) ========== -->
+          <div class="l3-split l3-split--doc">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสาร 3 — คำให้การ (ค.๓)</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-scale-balanced"></i>ส่วนหัวคำให้การ</div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ประทับคำว่า</label>
+                      <select id="a_copyMark" class="form-control">
+                        <option value="สำเนา">สำเนา</option><option value="">ไม่ประทับ</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>ข้อความกำกับ</label>
+                      <input type="text" id="a_subtitle" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ถูกฟ้องคดีที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="a_respondentNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>ศาล <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="a_court" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>คดีหมายเลขดำที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="a_blackNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>คดีหมายเลขแดงที่ <span class="l3-optional">(ถ้ามี)</span></label>
+                      <input type="text" id="a_redNo" class="form-control font-monospace" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>วันที่ยื่นคำให้การ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="a_date" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                    <div class="form-group">
+                      <label>ขอยื่น</label>
+                      <input type="text" id="a_submitType" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-id-card"></i>ข้อมูลผู้ให้การ</div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ข้าพเจ้า <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="a_meName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ฐานะ</label>
+                      <input type="text" id="a_meRole" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="l3-form-grid-3">
+                    <div class="form-group"><label>เกิดวันที่</label><input type="text" id="a_birthDay" class="form-control" /></div>
+                    <div class="form-group"><label>เดือน</label><input type="text" id="a_birthMonth" class="form-control" /></div>
+                    <div class="form-group"><label>พ.ศ.</label><input type="text" id="a_birthYear" class="form-control" /></div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group"><label>อายุ (ปี)</label><input type="text" id="a_age" class="form-control" /></div>
+                    <div class="form-group"><label>อาชีพ</label><input type="text" id="a_occupation" class="form-control" /></div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group"><label>อยู่ที่</label><input type="text" id="a_address" class="form-control" /></div>
+                    <div class="form-group"><label>หมู่ที่</label><input type="text" id="a_moo" class="form-control" /></div>
+                  </div>
+                  <div class="l3-form-grid-3">
+                    <div class="form-group"><label>ถนน</label><input type="text" id="a_road" class="form-control" /></div>
+                    <div class="form-group"><label>ตรอก/ซอย</label><input type="text" id="a_soi" class="form-control" /></div>
+                    <div class="form-group"><label>ตำบล/แขวง</label><input type="text" id="a_subdistrict" class="form-control" /></div>
+                  </div>
+                  <div class="l3-form-grid-3">
+                    <div class="form-group"><label>อำเภอ/เขต</label><input type="text" id="a_district" class="form-control" /></div>
+                    <div class="form-group"><label>จังหวัด</label><input type="text" id="a_province" class="form-control" /></div>
+                    <div class="form-group"><label>รหัสไปรษณีย์</label><input type="text" id="a_postcode" class="form-control font-monospace" /></div>
+                  </div>
+                  <div class="form-group">
+                    <label>โทรศัพท์</label>
+                    <input type="text" id="a_phone" class="form-control font-monospace" />
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-align-left"></i>เนื้อหาคำให้การ</div>
+                  <div class="form-group">
+                    <label>ข้อ ๑ … ข้อสุดท้าย <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_a_body">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="a_body"></div>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="a_signerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้ลงนาม</label>
+                      <input type="text" id="a_signerPos" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="answerPreviewCol"></div>
+          </div>
+
+          <div class="form-actions" id="actionBar">
+            <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+            <div class="l3-actions-right">
+              <span class="l3-draft-meta" id="f_draftMeta"></span>
+              <button type="button" class="btn btn-secondary" id="btnSaveDraft" onclick="saveDraftNow()">
+                <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง
+              </button>
+              <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
+                <i class="fa-solid fa-signature me-1"></i>ลงนาม และ เสนอ ผอ.กลุ่มงานคดี
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261014_8"></script>
+    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-10-3.js?v=20261014_9"></script>
+    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261014_2"></script>
+
+    <script>
+      const STEP_CODE = "L3-22";
+      const STEP = Activity103.stepByCode(STEP_CODE);
+      const RESULT_OPTIONS = [
+        { value: "PENDING", label: "รอผลคำสั่งศาล" },
+        { value: "GRANTED", label: "ศาลอนุญาต" },
+        { value: "DENIED", label: "ศาลไม่อนุญาต" },
+      ];
+      let currentCase = null;
+      let viewOnly = false;
+      let extensionRows = [];
+      /* ร่างคำให้การ/หนังสือนำส่งเปลี่ยนเป็นเอกสารสด (ดู initLiveDocs) — เหลือแนบไฟล์เฉพาะพยานหลักฐาน */
+      const DOC_GROUPS = {
+        evidence: { listId: "evidenceFileList", label: "พยานหลักฐาน", allowed: ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"], files: [] },
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMIS103.initUserProfile();
+        ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
+        loadCase();
+        if (!viewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+        ECMIS103CaseEdit.mount({
+          getCase: function () { return currentCase; },
+          onSaved: function (c) { currentCase = c; },
+        });
+      });
+
+      function loadCase() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const pending = Activity103.pendingStatusFor(STEP.page);
+        const found = Activity103.getCase(id, pending);
+        if (found && found.statusCode === pending) {
+          currentCase = found;
+        } else if (id && found && found.id === id && Activity103.isStepSigned(found, STEP_CODE)) {
+          currentCase = found;
+          viewOnly = true;
+        }
+        ECMIS103.renderStepperV2(
+          "stepperPart1",
+          "stepperPart2",
+          viewOnly ? null : STEP_CODE,
+          currentCase,
+        );
+
+        if (!currentCase) {
+          document.getElementById("noCaseNotice").classList.remove("d-none");
+          document.getElementById("pageBody").classList.add("d-none");
+          return;
+        }
+        populate();
+        if (viewOnly) fillSavedValues();
+        initLiveDocs();
+        if (viewOnly) ECMIS103.applyViewMode(currentCase, STEP_CODE);
+      }
+
+      function fillSavedValues() {
+        extensionRows = (currentCase.l3ExtensionRequests || []).map((r) =>
+          Object.assign({ fileNames: [] }, r),
+        );
+        document.getElementById("in_extensionNotes").value =
+          currentCase.l3ExtensionNotes || "";
+        renderExtensionList();
+        const docs = currentCase.l3AnswerDocs || {};
+        DOC_GROUPS.evidence.files = (docs.evidenceNames || []).slice();
+        Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+      }
+
+      function addDocFiles(key, input) {
+        if (!input.files || !input.files.length) return;
+        const group = DOC_GROUPS[key];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!group.allowed.includes(ext)) {
+            warn("ชนิดไฟล์ไม่ถูกต้อง", `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (${group.allowed.join(", ").toUpperCase()})`);
+            return;
+          }
+          if (file.size > 100 * 1024 * 1024) {
+            warn("ขนาดไฟล์เกินกำหนด", `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`);
+            return;
+          }
+          group.files.push(file.name);
+        });
+        input.value = "";
+        renderDocFiles(key);
+      }
+
+      function removeDocFile(key, idx) {
+        DOC_GROUPS[key].files.splice(idx, 1);
+        renderDocFiles(key);
+      }
+
+      function renderDocFiles(key) {
+        const group = DOC_GROUPS[key];
+        document.getElementById(group.listId).innerHTML = group.files
+          .map(
+            (name, idx) => `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)}</div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeDocFile('${key}', ${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`,
+          )
+          .join("");
+      }
+
+      function esc(t) {
+        return String(t == null ? "" : t)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function formatISODate(iso) {
+        return iso ? ECMIS103.formatThaiDate(iso) : "-";
+      }
+
+      function populate() {
+        const c = currentCase;
+        const r = c.l3BoardResolution || {};
+        const sigs = c.l3Signatures || {};
+
+        ECMIS103.setText("f_caseNo", c.id);
+        ECMIS103.setText("f_lawReceiveNo", c.lawReceiveNo);
+        ECMIS103.setText("f_summonsName", c.summonsName);
+        ECMIS103.setText("f_courtName", c.courtName);
+        ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
+        ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
+        ECMIS103.renderPartyList("f_defendants", c.defendants);
+
+        ECMIS103.setText("f_courtReceivedDate", formatISODate(c.courtReceivedDate));
+        ECMIS103.setText(
+          "f_courtDeadlineDays",
+          c.courtDeadlineDays ? c.courtDeadlineDays + " วัน" : "-",
+        );
+
+        ECMIS103.setText("f_resolutionResultBadge", r.result);
+        ECMIS103.setText(
+          "f_resolutionRef",
+          r.meetingNo
+            ? "ครั้งที่ " + r.meetingNo + " วันที่ " + formatISODate(r.meetingDate) + " วาระที่ " + r.agendaNo
+            : "-",
+        );
+        ECMIS103.setText("f_resolutionText", r.text);
+        ECMIS103.setText("f_groupNotes", c.l3ResolutionGroupApproveNotes);
+        ECMIS103.setText("f_groupSignedAt", sigs["L3-21"] && sigs["L3-21"].signedAt);
+
+        if (!viewOnly) {
+          const prev = c.l3ExtensionRequests || [];
+          extensionRows = prev.length ? prev.map((r) => Object.assign({ fileNames: [] }, r, { fileNames: (r.fileNames || []).slice() })) : [newRow()];
+          renderExtensionList();
+          const docs = c.l3AnswerDocs || {};
+          DOC_GROUPS.evidence.files = (docs.evidenceNames || []).slice();
+          Object.keys(DOC_GROUPS).forEach(renderDocFiles);
+          const ret = c.l3AnswerReturn;
+          if (ret) {
+            const label = (d) => (d === "APPROVE" ? "เห็นชอบ" : "ไม่เห็นชอบ");
+            ECMIS103.setText(
+              "f_returnInfo",
+              ret.from === "case_legal_officer"
+                ? "เลขคดี ศาล และคู่ความตรงกัน: " + (ret.decisionAnswer === "APPROVE" ? "เห็นด้วย" : "ไม่เห็นด้วย") + " / ลำดับเอกสารและสำเนาคู่ฉบับ: " + (ret.decisionLetter === "APPROVE" ? "เห็นด้วย" : "ไม่เห็นด้วย")
+                : "ร่างคำให้การ: " + label(ret.decisionAnswer) + " / ร่างหนังสือนำส่ง: " + label(ret.decisionLetter),
+            );
+            ECMIS103.setText("f_returnNotes", ret.notes);
+            ECMIS103.setText("f_returnFrom", ({ dir_legal: "ผอ.กองกฎหมาย", secgen: "เลขาธิการ ป.ป.ท. ", deputy_sg: "รองเลขาธิการ ป.ป.ท. ", case_legal_officer: "นิติกร (ขั้นรวบรวมเอกสาร) " })[ret.from] || "ผอ.กลุ่มงานคดี");
+            ECMIS103.setText("f_returnBy", (ret.reviewedBy || "-") + " เมื่อ " + (ret.reviewedAt || "-"));
+            document.getElementById("returnNotice").classList.remove("d-none");
+          }
+        }
+      }
+
+      function newRow() {
+        return {
+          filedDate: Activity103.toISODate(new Date()),
+          requestedDays: "30",
+          result: "PENDING",
+          grantedDays: "",
+          orderDate: "",
+          fileNames: [],
+        };
+      }
+
+      function addExtensionRow() {
+        extensionRows.push(newRow());
+        renderExtensionList();
+      }
+
+      function removeExtensionRow(idx) {
+        extensionRows.splice(idx, 1);
+        renderExtensionList();
+      }
+
+      function updateExtField(idx, field, value) {
+        extensionRows[idx][field] = value;
+        if (field === "result") {
+          if (value !== "GRANTED") extensionRows[idx].grantedDays = "";
+          if (value === "PENDING") extensionRows[idx].orderDate = "";
+          renderExtensionList();
+          return;
+        }
+        refreshDeadline();
+      }
+
+      function addExtFiles(idx, input) {
+        if (!input.files || !input.files.length) return;
+        Array.from(input.files).forEach((f) => extensionRows[idx].fileNames.push(f.name));
+        input.value = "";
+        renderExtensionList();
+      }
+
+      function removeExtFile(idx, fileIdx) {
+        extensionRows[idx].fileNames.splice(fileIdx, 1);
+        renderExtensionList();
+      }
+
+      function renderExtensionList() {
+        const el = document.getElementById("extensionList");
+        el.innerHTML = extensionRows
+          .map((row, idx) => {
+            const resultOptions = RESULT_OPTIONS.map(
+              (o) => `<option value="${o.value}"${o.value === row.result ? " selected" : ""}>${o.label}</option>`,
+            ).join("");
+            const files = row.fileNames
+              .map(
+                (name, fIdx) => `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)}</div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeExtFile(${idx}, ${fIdx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`,
+              )
+              .join("");
+            return `
+ <div class="l3-ext-row">
+ <div class="l3-ext-row-head">
+ <span><i class="fa-solid fa-file-circle-plus text-primary me-2"></i>คำขอขยายเวลา ครั้งที่ ${idx + 1}</span>
+ ${extensionRows.length > 1 ? `<button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 10px; font-size: 0.8em" onclick="removeExtensionRow(${idx})"><i class="fa-solid fa-trash-can me-1"></i>ลบ</button>` : ""}
+ </div>
+ <div class="l3-form-grid-3">
+ <div class="form-group">
+ <label>วันที่ยื่นคำร้อง <span style="color: #dc2626">*</span></label>
+ <input type="date" class="form-control" lang="th-TH-u-ca-buddhist" value="${esc(row.filedDate)}" oninput="updateExtField(${idx}, 'filedDate', this.value)" />
+ </div>
+ <div class="form-group">
+ <label>จำนวนวันที่ขอ <span style="color: #dc2626">*</span></label>
+ <input type="number" min="1" step="1" class="form-control font-monospace" value="${esc(row.requestedDays)}" oninput="updateExtField(${idx}, 'requestedDays', this.value)" />
+ </div>
+ <div class="form-group">
+ <label>ผลคำสั่งศาล <span style="color: #dc2626">*</span></label>
+ <select class="form-control" onchange="updateExtField(${idx}, 'result', this.value)">${resultOptions}</select>
+ </div>
+ </div>
+ ${row.result !== "PENDING" ? `
+ <div class="l3-form-grid-3">
+ <div class="form-group">
+ <label>วันที่ศาลมีคำสั่ง</label>
+ <input type="date" class="form-control" lang="th-TH-u-ca-buddhist" value="${esc(row.orderDate)}" oninput="updateExtField(${idx}, 'orderDate', this.value)" />
+ </div>
+ ${row.result === "GRANTED" ? `
+ <div class="form-group">
+ <label>จำนวนวันที่ศาลอนุญาต <span style="color: #dc2626">*</span></label>
+ <input type="number" min="1" step="1" class="form-control font-monospace" value="${esc(row.grantedDays)}" oninput="updateExtField(${idx}, 'grantedDays', this.value)" />
+ </div>` : ""}
+ </div>` : ""}
+ <div class="form-group" style="margin-bottom: 0">
+ <label>แนบคำร้อง / คำสั่งศาล <span style="color: #dc2626">*</span></label>
+ <div class="l3-upload-box"><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="addExtFiles(${idx}, this)" /></div>
+ <div style="margin-top: 8px">${files}</div>
+ </div>
+ </div>`;
+          })
+          .join("");
+        document
+          .getElementById("extensionCountWarn")
+          .classList.toggle("d-none", extensionRows.length <= 3);
+        refreshDeadline();
+      }
+
+      function refreshDeadline() {
+        const d = Activity103.computeAnswerDeadline(currentCase, extensionRows);
+        const box = document.getElementById("dueBox");
+        box.classList.remove("is-soon", "is-overdue");
+        if (!d) {
+          ECMIS103.setText("f_originalDue", "-");
+          ECMIS103.setText("f_grantedTotal", "-");
+          ECMIS103.setText("f_currentDue", "ไม่มีข้อมูลวันรับเรื่องหรือจำนวนวันที่ศาลกำหนด");
+          ECMIS103.setText("f_daysLeft", "");
+          return null;
+        }
+        ECMIS103.setText("f_originalDue", ECMIS103.formatThaiDate(d.originalDue));
+        ECMIS103.setText("f_grantedTotal", d.grantedTotal + " วัน");
+        ECMIS103.setText("f_currentDue", ECMIS103.formatThaiDate(d.currentDue));
+        let leftText;
+        if (d.daysLeft < 0) {
+          box.classList.add("is-overdue");
+          leftText = "เลยกำหนดมาแล้ว " + Math.abs(d.daysLeft) + " วัน";
+        } else if (d.daysLeft <= 7) {
+          box.classList.add("is-soon");
+          leftText = d.daysLeft === 0 ? "ครบกำหนดวันนี้" : "เหลือ " + d.daysLeft + " วัน";
+        } else {
+          leftText = "เหลือ " + d.daysLeft + " วัน";
+        }
+        ECMIS103.setText("f_daysLeft", leftText);
+        return d;
+      }
+
+      function resultLabel(value) {
+        const o = RESULT_OPTIONS.find((x) => x.value === value);
+        return o ? o.label : "-";
+      }
+
+      function warn(title, text) {
+        Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
+      }
+
+      function submitForm() {
+        if (!currentCase) return;
+        if (!extensionRows.length) {
+          return warn("กรุณาเพิ่มคำขอขยายเวลา", "กรุณาบันทึกคำขอขยายเวลาอย่างน้อย 1 ครั้ง");
+        }
+        for (let i = 0; i < extensionRows.length; i++) {
+          const row = extensionRows[i];
+          const no = "ครั้งที่ " + (i + 1);
+          if (!row.filedDate) return warn("กรุณาระบุวันที่ยื่นคำร้อง", "คำขอขยายเวลา" + no + " ยังไม่มีวันที่ยื่นคำร้อง");
+          if (!(parseInt(row.requestedDays, 10) > 0)) return warn("กรุณาระบุจำนวนวันที่ขอ", "คำขอขยายเวลา" + no + " ต้องระบุจำนวนวันที่ขอมากกว่า 0");
+          if (row.result === "GRANTED" && !(parseInt(row.grantedDays, 10) > 0)) {
+            return warn("กรุณาระบุจำนวนวันที่ศาลอนุญาต", "คำขอขยายเวลา" + no + " ศาลอนุญาตแล้ว ต้องระบุจำนวนวันที่ได้รับอนุญาต");
+          }
+          if (!row.fileNames.length) return warn("กรุณาแนบคำร้อง / คำสั่งศาล", "คำขอขยายเวลา" + no + " ต้องแนบคำร้องหรือคำสั่งศาลอย่างน้อย 1 ไฟล์");
+        }
+        const missing = validateLiveDocs();
+        if (missing) return warn("ข้อมูลเอกสารสดไม่ครบถ้วน", "กรุณาระบุ " + missing);
+
+        const d = refreshDeadline();
+        const notes = document.getElementById("in_extensionNotes").value.trim() || "-";
+        const rowsSummary = extensionRows
+          .map(
+            (r, i) =>
+              `ครั้งที่ ${i + 1}: ยื่น ${esc(formatISODate(r.filedDate))} ขอ ${esc(r.requestedDays)} วัน — ${resultLabel(r.result)}${r.result === "GRANTED" ? " " + esc(r.grantedDays) + " วัน" : ""}`,
+          )
+          .join("<br/>");
+        const dueText = d
+          ? ECMIS103.formatThaiDate(d.currentDue) + " (" + document.getElementById("f_daysLeft").textContent + ")"
+          : "-";
+
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันการเสนอคำขอขยายเวลาและร่างคำให้การ?",
+          html: `
+ <div class="emd-summary">
+ <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
+ <p><strong>คำขอขยายเวลา:</strong><br/>${rowsSummary}</p>
+ <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
+ <p><strong>เอกสารสด:</strong> ${LIVE_DOC_LABELS.memo}, ${LIVE_DOC_LABELS.letter}, ${LIVE_DOC_LABELS.answer}</p>
+ <p><strong>พยานหลักฐานแนบ:</strong> ${DOC_GROUPS.evidence.files.length} ไฟล์</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การ</p>
+ </div>
+ `,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันเสนอ",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#16a34a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103.openSignatureModal(
+            {
+              title: "ลงนามเสนอคำขอขยายเวลาและร่างคำให้การแก้คำฟ้อง",
+              signer: currentCase.officer || ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-CASELAWYER-2569-103",
+            },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(currentCase.id, STEP_CODE, {
+                l3ExtensionRequests: extensionRows.map((r, i) => ({
+                  no: i + 1,
+                  filedDate: r.filedDate,
+                  requestedDays: r.requestedDays,
+                  result: r.result,
+                  grantedDays: r.result === "GRANTED" ? r.grantedDays : "",
+                  orderDate: r.result === "PENDING" ? "" : r.orderDate,
+                  fileNames: r.fileNames.slice(),
+                })),
+                l3ExtensionNotes: notes,
+                l3AnswerOriginalDueDate: d ? Activity103.toISODate(d.originalDue) : "",
+                l3AnswerDueDate: d ? Activity103.toISODate(d.currentDue) : "",
+                /* หน้าถัดไป (10-3-15 … 10-3-25) ยังแสดงรายการไฟล์จาก answerFileNames/letterFileNames
+                   จึงใส่ชื่อเอกสารสดแทนชื่อไฟล์ ส่วนเนื้อหาจริงเก็บใน l3LiveDocs */
+                l3AnswerDocs: {
+                  answerFileNames: [LIVE_DOC_LABELS.answer + " (เอกสารสด)"],
+                  letterFileNames: [LIVE_DOC_LABELS.memo + " (เอกสารสด)", LIVE_DOC_LABELS.letter + " (เอกสารสด)"],
+                  evidenceNames: DOC_GROUPS.evidence.files.slice(),
+                  version: currentCase.l3AnswerReturn ? ((currentCase.l3AnswerDocs || {}).version || 1) + 1 : 1,
+                },
+                l3LiveDocs: collectLiveDocs(),
+                l3AnswerReturn: undefined,
+                assignedRole: "case_group_director",
+              });
+              ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+              if (dirtyTracker) dirtyTracker.clear();
+
+              Swal.fire({
+                icon: "success",
+                title: "เสนอร่างคำให้การสำเร็จ!",
+                text: "ครบกำหนดยื่นคำให้การ " + dueText + " — ส่ง ผอ.กลุ่มงานคดี ตรวจสอบร่างคำให้การเรียบร้อยแล้ว",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
+      }
+
+      /* =================================================== เอกสารสด (PDF 5-A / 5-B / 5-C)
+         ฟอร์มซ้าย + พรีวิว A4 ขวา (ECMIS103Docs) — ค่าตั้งต้นเติมจากข้อมูลคดี
+         ลำดับที่ใช้ค่า: ร่างที่บันทึกไว้ (l3DocDraft) > ฉบับที่เสนอล่าสุด (l3LiveDocs, กรณีถูกส่งกลับ) > ค่าตั้งต้น */
+      const LIVE_DOC_LABELS = {
+        memo: "บันทึกข้อความเสนอร่างคำให้การ",
+        letter: "หนังสือขอให้แก้ต่างถึงอธิบดีอัยการ",
+        answer: "คำให้การ (ค.๓)",
+      };
+      const DOC_FIELDS = {
+        memo: ["m_urgency", "m_secrecy", "m_division", "m_phone", "m_docDate", "m_subject", "m_to", "m_closing", "m_proposerName", "m_proposerPos"],
+        letter: ["l_urgency", "l_copyMark", "l_docDate", "l_address", "l_subject", "l_to", "l_ref", "l_enclosures", "l_closing", "l_signerName", "l_signerPos", "l_footer"],
+        answer: [
+          "a_copyMark", "a_subtitle", "a_respondentNo", "a_court", "a_blackNo", "a_redNo", "a_date", "a_submitType",
+          "a_meName", "a_meRole", "a_birthDay", "a_birthMonth", "a_birthYear", "a_age", "a_occupation",
+          "a_address", "a_moo", "a_road", "a_soi", "a_subdistrict", "a_district", "a_province", "a_postcode", "a_phone",
+          "a_signerName", "a_signerPos",
+        ],
+      };
+      const DOC_EDITORS = { memo: ["m_background", "m_facts", "m_proposal"], letter: ["l_body"], answer: ["a_body"] };
+      const ALL_FIELD_IDS = [].concat(DOC_FIELDS.memo, DOC_FIELDS.letter, DOC_FIELDS.answer);
+      const ALL_EDITOR_IDS = [].concat(DOC_EDITORS.memo, DOC_EDITORS.letter, DOC_EDITORS.answer);
+      const liveEditors = {};
+      let initialEditorHTML = {};
+      let docViewers = {};
+      let renderTimer = null;
+      let dirtyTracker = null;
+
+      function roleName(roleId) {
+        const roles = (window.ECMIS && ECMIS.ROLES) || [];
+        const r = roles.find((x) => x.id === roleId);
+        return r ? r.name : "";
+      }
+
+      function firstName(full) {
+        return String(full || "").replace(/^(นาย|นางสาว|นาง|น\.ส\.)/, "").trim().split(/\s+/)[0] || "";
+      }
+
+      function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+      }
+
+      function editorHTML(id) {
+        return liveEditors[id] ? liveEditors[id].getHTML() : initialEditorHTML[id] || "";
+      }
+
+      function editorText(id) {
+        if (liveEditors[id]) return liveEditors[id].getText().trim();
+        const box = document.createElement("div");
+        box.innerHTML = initialEditorHTML[id] || "";
+        return box.textContent.trim();
+      }
+
+      function p(text) {
+        return "<p>" + esc(text) + "</p>";
+      }
+
+      /* ---------- ค่าตั้งต้นตามแบบ PDF 5 แทนค่าจากเคส ---------- */
+      function buildDefaults(c) {
+        const D = ECMIS103Docs;
+        const pl = (c.plaintiffs || []).filter(Boolean);
+        const df = (c.defendants || []).filter(Boolean);
+        const idx = df.findIndex((n) => /ป\.ป\.ท|ป้องกันและปราบปรามการทุจริตในภาครัฐ/.test(n));
+        const respNo = String(idx >= 0 ? idx + 1 : 3);
+        const plName = pl[0] || "……";
+        const defCount = df.length || "……";
+        const court = c.courtName || "ศาลปกครอง……";
+        const black = c.blackCaseNo || "……";
+        const days = c.courtDeadlineDays || 30;
+        const orderDate = D.thaiLongDate(c.courtOrderDate) || D.thaiLongDate(c.courtReceivedDate) || "……";
+        const r = c.l3BoardResolution || {};
+        const meeting = r.meetingNo
+          ? "ครั้งที่ " + r.meetingNo + " เมื่อวันที่ " + (D.thaiLongDate(r.meetingDate) || "……") + " วาระที่ " + (r.agendaNo || "……")
+          : "ครั้งที่ …… เมื่อวันที่ …… วาระที่ ……";
+        const meetingDate = D.thaiLongDate(r.meetingDate) || "……";
+        const officer = roleName("case_legal_officer");
+        const deputy = roleName("deputy_sg");
+        const today = Activity103.toISODate(new Date());
+        const parties = "ระหว่าง " + plName + " (ผู้ฟ้องคดี) กับ คณะกรรมการ ป.ป.ท. (ผู้ถูกฟ้องคดีที่ " + respNo + ") กับพวกรวม " + defCount + " คน";
+
+        return {
+          fields: {
+            m_urgency: "ด่วนที่สุด",
+            m_secrecy: "ลับ",
+            m_division: "กกม. สำนักงาน ป.ป.ท.",
+            m_phone: "1801 (" + firstName(officer) + ")",
+            m_docDate: today,
+            m_subject: court + " มีหมายแจ้งคำสั่งศาลให้ทำคำให้การ คดีหมายเลขดำที่ " + black,
+            m_to: "ประธานกรรมการ ป.ป.ท. (ผ่านเลขาธิการคณะกรรมการ ป.ป.ท.)",
+            m_closing: "จึงเรียนมาเพื่อโปรดพิจารณา",
+            m_proposerName: officer,
+            m_proposerPos: "นิติกรชำนาญการ",
+
+            l_urgency: "ด่วนที่สุด",
+            l_copyMark: "สำเนา",
+            l_docDate: today,
+            l_address: "สำนักงาน ป.ป.ท.\nอาคารซอฟต์แวร์ปาร์ค ถนนแจ้งวัฒนะ\nอำเภอปากเกร็ด จังหวัดนนทบุรี 11120",
+            l_subject: "ขอให้ดำเนินการแก้ต่างคดีปกครอง คดีหมายเลขดำที่ " + black,
+            l_to: "อธิบดีอัยการ สำนักงานคดีปกครอง",
+            l_ref: "",
+            l_enclosures: [
+              "หมายเรียกและสำเนาคำฟ้องคดีปกครองในคดีหมายเลขดำที่ " + black + " จำนวน 1 ชุด",
+              "สรุปข้อเท็จจริงและเอกสารประกอบกรณีคำฟ้องคดีปกครองหมายเลขดำที่ " + black + " จำนวน 3 ชุด พร้อมแผ่นซีดีบรรจุสำเนาอิเล็กทรอนิกส์สรุปข้อเท็จจริงฯ จำนวน 1 แผ่น",
+              "หนังสือมอบอำนาจให้พนักงานอัยการ สำนักงานคดีปกครองดำเนินการและเอกสารที่เกี่ยวข้อง จำนวน 3 ชุด",
+              "สำเนาคำขอขยายระยะเวลาและคำสั่งศาล จำนวน 1 ชุด",
+            ].join("\n"),
+            l_closing: "จึงเรียนมาเพื่อโปรดพิจารณาดำเนินการต่อไป",
+            l_signerName: deputy,
+            l_signerPos: "รองเลขาธิการ ปฏิบัติราชการแทน\nเลขาธิการคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+            l_footer: "กองกฎหมาย สำนักงาน ป.ป.ท.\nโทร. 0 2502 6585\nโทรสาร. 0 2502 6592 (" + officer + " นิติกรชำนาญการ)",
+
+            a_copyMark: "สำเนา",
+            a_subtitle: "-สรุปข้อเท็จจริง-",
+            a_respondentNo: respNo,
+            a_court: court,
+            a_blackNo: black,
+            a_redNo: c.redCaseNo || "",
+            a_date: today,
+            a_submitType: "คำให้การ",
+            a_meName: "คณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+            a_meRole: "ผู้ถูกฟ้องคดีที่ " + respNo,
+            a_birthDay: "-",
+            a_birthMonth: "-",
+            a_birthYear: "-",
+            a_age: "-",
+            a_occupation: "-",
+            a_address: "สำนักงาน ป.ป.ท. อาคารซอฟต์แวร์ปาร์ค",
+            a_moo: "-",
+            a_road: "แจ้งวัฒนะ",
+            a_soi: "-",
+            a_subdistrict: "คลองเกลือ",
+            a_district: "ปากเกร็ด",
+            a_province: "นนทบุรี",
+            a_postcode: "11120",
+            a_phone: "0 2502 6585",
+            a_signerName: roleName("chairman"),
+            a_signerPos: "ประธานกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ",
+          },
+          editors: {
+            m_background:
+              p("1.1 " + court + " ได้มีคำสั่งลงวันที่ " + orderDate + " ในคดีหมายเลขดำที่ " + black + " " + parties +
+                " โดย" + court + " มีคำสั่งให้คณะกรรมการ ป.ป.ท. ในฐานะผู้ถูกฟ้องคดีที่ " + respNo +
+                " จัดทำคำให้การแก้คำฟ้องพร้อมด้วยพยานหลักฐานที่เกี่ยวข้อง จำนวน 1 ชุด พร้อมสำเนาคำให้การและสำเนาพยานหลักฐานอีก 1 ชุด รวม 2 ชุด ยื่นต่อศาลภายใน " +
+                days + " วัน นับแต่วันที่ได้รับคำสั่งศาล") +
+              p("1.2 เมื่อวันที่ " + meetingDate + " กกม. ได้นำเรื่องดังกล่าวเสนอต่อที่ประชุมคณะกรรมการ ป.ป.ท. เพื่อพิจารณา โดยที่ประชุมคณะกรรมการ ป.ป.ท. ได้พิจารณาและมีมติการประชุมคณะกรรมการ ป.ป.ท. " +
+                meeting + " โดยมีมติเป็นเอกฉันท์ ดังนี้") +
+              p("(1) มีมติมอบอำนาจ (โดยมีใบมอบอำนาจ) ให้ผู้อำนวยการกองกฎหมาย ขอขยายระยะเวลายื่นคำให้การต่อ" + court + " นับแต่วันครบกำหนดเดิม, เข้าฟังการพิจารณาคดี และการพิพากษาคดีทั้งปวง ทั้งนี้ ให้มีอำนาจมอบอำนาจช่วงได้ด้วย") +
+              p("(2) มีมติมอบหมายพนักงานอัยการเป็นผู้แก้ต่างคดีปกครองตามพระราชบัญญัติองค์กรอัยการและพนักงานอัยการ พ.ศ. 2553 มาตรา 14 (4) และมีใบมอบอำนาจต่อพนักงานอัยการ สำนักงานคดีปกครองดำเนินการ โดยให้มีอำนาจมอบอำนาจช่วงได้ด้วย") +
+              p("(3) ในการดำเนินการตามข้อ 1) และข้อ 2) คณะกรรมการ ป.ป.ท. มีมติมอบหมายให้ประธานกรรมการ ป.ป.ท. เป็นผู้มีอำนาจลงนามในใบมอบอำนาจแทนคณะกรรมการ ป.ป.ท. ผู้มอบอำนาจ") +
+              p("(4) มอบหมายผู้อำนวยการกองกฎหมายร่วมกับผู้รับผิดชอบสำนวนและผู้รับผิดชอบในการประสานคดี รวบรวมข้อเท็จจริงและพยานหลักฐาน ประสานงานทางคดีกับพนักงานอัยการ โดยจัดส่งร่างคำให้การรวมทั้งเอกสารพยานหลักฐานที่เกี่ยวข้อง ให้ต่ออธิบดีอัยการ สำนักงานคดีปกครอง"),
+            m_facts: p(
+              "กกม. ได้ดำเนินการจัดทำร่างคำให้การ พร้อมด้วยพยานหลักฐานและเอกสารที่เกี่ยวข้อง เพื่อยื่นต่อ" + court +
+                " ในคดีหมายเลขดำที่ " + black + " " + parties + " เสร็จเรียบร้อยแล้ว",
+            ),
+            m_proposal:
+              p("เนื่องจาก กกม. ได้จัดทำร่างคำให้การพร้อมด้วยพยานหลักฐานและเอกสารที่เกี่ยวข้อง ในคดีหมายเลขดำที่ " + black + " เพื่อยื่นต่อ" + court + " เสร็จเรียบร้อยแล้ว จึงเห็นควรดำเนินการ ดังนี้") +
+              p("3.1 เสนอประธานกรรมการ ป.ป.ท. ลงนามในร่างคำให้การ") +
+              p("3.2 เสนอเลขาธิการคณะกรรมการ ป.ป.ท. ลงนามในหนังสือถึงอธิบดีอัยการ สำนักงานคดีปกครอง แนบท้ายบันทึกฉบับนี้"),
+            l_body:
+              p("ด้วยคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ (คณะกรรมการ ป.ป.ท.) ได้รับหมายเรียกและสำเนาคำฟ้องในคดีปกครอง หมายเลขดำที่ " + black +
+                " ระหว่าง " + plName + " (ผู้ฟ้องคดี) กับ คณะกรรมการ ป.ป.ท. ที่ " + respNo + " กับพวกรวม " + defCount +
+                " คน (ผู้ถูกฟ้องคดี) โดยศาลเรียกให้คณะกรรมการ ป.ป.ท. ในฐานะผู้ถูกฟ้องคดีที่ " + respNo +
+                " จัดทำคำให้การแก้คำฟ้องพร้อมด้วยพยานหลักฐาน จำนวน 1 ชุด และจัดทำสำเนาคำให้การพร้อมสำเนาพยานหลักฐานดังกล่าวที่มีการรับรองสำเนาถูกต้องอีกจำนวน 1 ชุด รวม 2 ชุด ยื่นต่อศาลภายใน " +
+                days + " วัน นับแต่วันที่ได้รับแจ้งคำสั่งศาล") +
+              p("สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ จึงขอส่งเรื่องดังกล่าวมายังท่านเพื่อโปรดพิจารณาแก้ต่างคดีแทนผู้ถูกฟ้องคดีที่ " + respNo +
+                " โดยได้จัดส่งหมายเรียกและสำเนาคำฟ้องคดีปกครองในคดีหมายเลขดำที่ " + black +
+                " สรุปข้อเท็จจริงและเอกสารประกอบ หนังสือมอบอำนาจให้พนักงานอัยการ สำนักงานคดีปกครองดำเนินการ และเอกสารอื่นๆ ที่เกี่ยวข้อง ตามสิ่งที่ส่งมาด้วย 1 ถึง 4 ทั้งนี้ ได้มอบหมายให้ผู้อำนวยการกองกฎหมาย สำนักงานคณะกรรมการป้องกันและปราบปรามการทุจริตในภาครัฐ เป็นผู้ประสานงานทางคดีด้วยแล้ว"),
+            a_body:
+              "<p><strong>ข้อ 1. สถานภาพของผู้ถูกฟ้องคดี</strong></p>" +
+              p("1.1 ผู้ถูกฟ้องคดีที่ " + respNo + " เป็นคณะกรรมการที่แต่งตั้งขึ้นตามมาตรา 5 แห่งพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. 2551 และที่แก้ไขเพิ่มเติม มีอำนาจหน้าที่ตามพระราชบัญญัติมาตรการของฝ่ายบริหารในการป้องกันและปราบปรามการทุจริต พ.ศ. 2551 และที่แก้ไขเพิ่มเติม มาตรา 17 ดังต่อไปนี้") +
+              p("(4) ไต่สวนข้อเท็จจริงและชี้มูลเกี่ยวกับการกระทำการทุจริตในภาครัฐของเจ้าหน้าที่ของรัฐ") +
+              p("(5) ไต่สวนข้อเท็จจริงและสรุปสำนวน พร้อมทั้งความเห็นส่งพนักงานอัยการ เพื่อฟ้องคดีอาญาต่อเจ้าหน้าที่ของรัฐ") +
+              "<p><strong>ข้อ 2. ข้อเท็จจริงและข้อต่อสู้</strong></p>" +
+              p("……") +
+              p("ข้อ 3. ด้วยข้อกฎหมาย ข้อเท็จจริง และเหตุผลดังกล่าวตามข้างต้น ผู้ถูกฟ้องคดีที่ " + respNo + " จึงขอกราบเรียนต่อศาลที่เคารพโปรดพิจารณาพิพากษายกฟ้องผู้ฟ้องคดีในคดีนี้ด้วย"),
+          },
+        };
+      }
+
+      /* ---------- ลายมือชื่อ/ความเห็นตามลำดับชั้น (ดึงจาก l3Signatures เมื่อขั้นถัดไปลงนาม) ---------- */
+      function chainInfo(c) {
+        const sigs = c.l3Signatures || {};
+        const comments = c.l3DocComments || {};
+        const sgCode = sigs["L3-27A"] ? "L3-27A" : "L3-27B";
+        const sgIsSecgen = sgCode === "L3-27A";
+        const short = (code) => (sigs[code] && sigs[code].signedAt ? String(sigs[code].signedAt).split(" ").slice(0, 3).join(" ") : "");
+        return {
+          sigs: sigs,
+          comment: (code) => comments[code] || "",
+          short: short,
+          initials: (code, roleId) => (sigs[code] ? firstName(roleName(roleId)) : ""),
+          sg: {
+            code: sgCode,
+            sig: sigs[sgCode],
+            name: roleName(sgIsSecgen ? "secgen" : "deputy_sg"),
+            position: sgIsSecgen ? "เลขาธิการคณะกรรมการ ป.ป.ท." : "รองเลขาธิการ ปฏิบัติราชการแทน\nเลขาธิการคณะกรรมการ ป.ป.ท.",
+          },
+        };
+      }
+
+      function buildModels() {
+        const D = ECMIS103Docs;
+        const ch = chainInfo(currentCase);
+        const dp = D.dateParts(val("a_date"));
+
+        const memo = D.memo({
+          urgency: val("m_urgency"),
+          secrecy: val("m_secrecy"),
+          division: val("m_division"),
+          phone: val("m_phone"),
+          docNo: document.getElementById("m_docNo").textContent,
+          docDate: D.thaiLongDate(val("m_docDate")),
+          subject: val("m_subject"),
+          to: val("m_to"),
+          sections: [
+            { heading: "๑. เรื่องเดิม", html: editorHTML("m_background") },
+            { heading: "๒. ข้อเท็จจริง", html: editorHTML("m_facts") },
+            { heading: "๓. ข้อเสนอ", html: editorHTML("m_proposal") },
+          ],
+          closing: val("m_closing"),
+          proposer: { sig: ch.sigs[STEP_CODE], name: val("m_proposerName"), position: val("m_proposerPos") },
+          opinions: [
+            { no: "๔", title: "ความเห็นของผู้บังคับบัญชาชั้นต้น", text: ch.comment("L3-24"), sig: ch.sigs["L3-24"], name: roleName("case_group_director"), position: "ผู้อำนวยการกลุ่มงานคดี" },
+            { no: "๕", title: "ความเห็นผู้อำนวยการกองกฎหมาย", text: ch.comment("L3-25"), sig: ch.sigs["L3-25"], name: roleName("dir_legal"), position: "ผู้อำนวยการกองกฎหมาย" },
+            { no: "๖", title: "ความเห็นเลขาธิการคณะกรรมการ ป.ป.ท.", text: ch.comment(ch.sg.code), sig: ch.sg.sig, name: ch.sg.name, position: ch.sg.position },
+          ],
+          chair: {
+            to: "ประธานกรรมการ ป.ป.ท.",
+            text: "เพื่อโปรดพิจารณาลงนามในคำให้การ ตามที่ กกม. เสนอ",
+            forwarder: { sig: ch.sg.sig, name: ch.sg.name, position: ch.sg.position },
+            sig: ch.sigs["L3-29"],
+            name: roleName("chairman"),
+            position: "ประธานกรรมการ ป.ป.ท.",
+          },
+        });
+
+        const letter = D.letter({
+          isCopy: val("l_copyMark") === "สำเนา",
+          urgency: val("l_urgency"),
+          docNo: document.getElementById("l_docNo").textContent,
+          address: val("l_address"),
+          docDate: D.thaiLongDate(val("l_docDate")),
+          subject: val("l_subject"),
+          to: val("l_to"),
+          ref: val("l_ref"),
+          enclosures: val("l_enclosures").split("\n"),
+          html: editorHTML("l_body"),
+          closing: val("l_closing"),
+          signer: { sig: ch.sg.sig, name: val("l_signerName"), position: val("l_signerPos") },
+          footer: val("l_footer").split("\n").filter((x) => x.trim()),
+          ctrl: [
+            { key: "ผู้อำนวยการกอง", value: ch.initials("L3-25", "dir_legal"), date: ch.short("L3-25") },
+            { key: "ผู้อำนวยการกลุ่ม", value: ch.initials("L3-24", "case_group_director"), date: ch.short("L3-24") },
+            { key: "เจ้าหน้าที่", value: ch.initials(STEP_CODE, "case_legal_officer"), date: ch.short(STEP_CODE) },
+          ],
+        });
+
+        const answer = D.answer({
+          isCopy: val("a_copyMark") === "สำเนา",
+          subtitle: val("a_subtitle"),
+          respondentNo: val("a_respondentNo"),
+          blackNo: val("a_blackNo"),
+          redNo: val("a_redNo") || "/๒๕....",
+          court: val("a_court"),
+          day: dp ? dp.day : "",
+          month: dp ? dp.month : "",
+          year: dp ? dp.year : "",
+          plaintiffs: currentCase.plaintiffs,
+          defendants: currentCase.defendants,
+          me: {
+            name: val("a_meName"), role: val("a_meRole"), birthDay: val("a_birthDay"), birthMonth: val("a_birthMonth"),
+            birthYear: val("a_birthYear"), age: val("a_age"), occupation: val("a_occupation"), address: val("a_address"),
+            moo: val("a_moo"), road: val("a_road"), soi: val("a_soi"), subdistrict: val("a_subdistrict"),
+            district: val("a_district"), province: val("a_province"), postcode: val("a_postcode"), phone: val("a_phone"),
+          },
+          submitType: val("a_submitType"),
+          html: editorHTML("a_body"),
+          signer: { sig: ch.sigs["L3-29"], name: val("a_signerName"), position: val("a_signerPos") },
+          ctrl: [
+            { key: "รอง ลธ.ป.ป.ท.", value: ch.sg.sig ? firstName(ch.sg.name) : "", date: ch.short(ch.sg.code) },
+            { key: "ผอ.กกม.", value: ch.initials("L3-25", "dir_legal"), date: ch.short("L3-25") },
+            { key: "จนท.", value: ch.initials(STEP_CODE, "case_legal_officer"), date: ch.short(STEP_CODE) },
+          ],
+        });
+        return { memo: memo, letter: letter, answer: answer };
+      }
+
+      function renderPreviews() {
+        if (!currentCase || !docViewers.memo) return;
+        const m = buildModels();
+        docViewers.memo.render(m.memo);
+        docViewers.letter.render(m.letter);
+        docViewers.answer.render(m.answer);
+      }
+
+      function scheduleRender() {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(renderPreviews, 150);
+      }
+
+      function initLiveDocs() {
+        const c = currentCase;
+        if (!c) return;
+        const defaults = buildDefaults(c);
+        const saved = c.l3LiveDocs || null;
+        const draft = viewOnly ? null : ECMIS103Docs.readDraft(c, STEP_CODE);
+        const fields = Object.assign({}, defaults.fields);
+        const eds = Object.assign({}, defaults.editors);
+        if (saved) {
+          ["memo", "letter", "answer"].forEach((k) => {
+            Object.assign(fields, (saved[k] && saved[k].fields) || {});
+            Object.assign(eds, (saved[k] && saved[k].editors) || {});
+          });
+        }
+        if (draft) {
+          Object.assign(fields, draft.fields || {});
+          Object.assign(eds, draft.editors || {});
+          restoreDraftExtra(draft.extra || {});
+          showDraftInfo(draft, true);
+        }
+        initialEditorHTML = eds;
+        ECMIS103Docs.applyFields(fields);
+
+        if (c.l3AnswerInternalDocNo) document.getElementById("m_docNo").textContent = c.l3AnswerInternalDocNo;
+        if (c.l3AnswerExternalDocNo) document.getElementById("l_docNo").textContent = c.l3AnswerExternalDocNo;
+
+        const black = c.blackCaseNo || "";
+        docViewers = {
+          memo: ECMIS103Docs.createViewer("memoPreviewCol", { title: LIVE_DOC_LABELS.memo, editTarget: "m_subject", fileName: LIVE_DOC_LABELS.memo + " " + black }),
+          letter: ECMIS103Docs.createViewer("letterPreviewCol", { title: LIVE_DOC_LABELS.letter, editTarget: "l_subject", fileName: LIVE_DOC_LABELS.letter + " " + black }),
+          answer: ECMIS103Docs.createViewer("answerPreviewCol", { title: LIVE_DOC_LABELS.answer, editTarget: "a_respondentNo", fileName: "คำให้การ " + black }),
+        };
+        renderPreviews();
+
+        ALL_FIELD_IDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", scheduleRender);
+          el.addEventListener("change", scheduleRender);
+          if (viewOnly) el.disabled = true;
+        });
+
+        Promise.all(
+          ALL_EDITOR_IDS.map((id) =>
+            ECMIS103.mountEditor(id, {
+              toolbarId: "tb_" + id,
+              initialHTML: eds[id] || "",
+              placeholder: "พิมพ์ข้อความ...",
+              onUpdate: () => {
+                if (dirtyTracker) dirtyTracker.mark();
+                scheduleRender();
+              },
+            }).then((editor) => {
+              liveEditors[id] = editor;
+              if (editor && viewOnly) editor.setEditable(false);
+            }),
+          ),
+        ).then(renderPreviews);
+
+        if (viewOnly) {
+          document.getElementById("actionBar").classList.add("d-none");
+          return;
+        }
+        dirtyTracker = ECMIS103Docs.trackDirty();
+        document.getElementById("pageBody").addEventListener("input", () => dirtyTracker.mark());
+        document.getElementById("pageBody").addEventListener("change", () => dirtyTracker.mark());
+      }
+
+      function collectLiveDocs() {
+        const out = {};
+        Object.keys(DOC_FIELDS).forEach((k) => {
+          const editors = {};
+          DOC_EDITORS[k].forEach((id) => { editors[id] = editorHTML(id); });
+          out[k] = { label: LIVE_DOC_LABELS[k], fields: ECMIS103Docs.collectFields(DOC_FIELDS[k]), editors: editors };
+        });
+        return out;
+      }
+
+      function validateLiveDocs() {
+        const required = [
+          ["m_division", "ส่วนราชการ (เอกสาร 1)"],
+          ["m_docDate", "วันที่ (เอกสาร 1)"],
+          ["m_subject", "เรื่อง (เอกสาร 1)"],
+          ["m_to", "เรียน (เอกสาร 1)"],
+          ["l_docDate", "วันที่ (เอกสาร 2)"],
+          ["l_subject", "เรื่อง (เอกสาร 2)"],
+          ["l_to", "เรียน (เอกสาร 2)"],
+          ["a_respondentNo", "ผู้ถูกฟ้องคดีที่ (เอกสาร 3)"],
+          ["a_court", "ศาล (เอกสาร 3)"],
+          ["a_blackNo", "คดีหมายเลขดำ (เอกสาร 3)"],
+          ["a_date", "วันที่ยื่นคำให้การ (เอกสาร 3)"],
+          ["a_meName", "ข้าพเจ้า (เอกสาร 3)"],
+        ];
+        for (const [id, label] of required) {
+          if (!val(id).trim()) return label;
+        }
+        const editorsRequired = [
+          ["m_background", "๑. เรื่องเดิม (เอกสาร 1)"],
+          ["m_facts", "๒. ข้อเท็จจริง (เอกสาร 1)"],
+          ["m_proposal", "๓. ข้อเสนอ (เอกสาร 1)"],
+          ["l_body", "เนื้อความ (เอกสาร 2)"],
+          ["a_body", "เนื้อหาคำให้การ (เอกสาร 3)"],
+        ];
+        for (const [id, label] of editorsRequired) {
+          if (!editorText(id)) return label;
+        }
+        return "";
+      }
+
+      /* ---------- บันทึกร่าง (ไม่เปลี่ยนสถานะ ไม่ออกเลข ไม่ลงนาม ไม่ตรวจช่องบังคับ) ---------- */
+      function saveDraftNow() {
+        if (!currentCase || viewOnly) return;
+        const editors = {};
+        ALL_EDITOR_IDS.forEach((id) => { editors[id] = editorHTML(id); });
+        const saved = ECMIS103Docs.saveDraft(currentCase.id, STEP_CODE, {
+          fields: ECMIS103Docs.collectFields(ALL_FIELD_IDS),
+          editors: editors,
+          extra: {
+            extensionRows: extensionRows.map((r) => Object.assign({}, r, { fileNames: (r.fileNames || []).slice() })),
+            extensionNotes: val("in_extensionNotes"),
+            evidence: DOC_GROUPS.evidence.files.slice(),
+          },
+        });
+        if (!saved) return;
+        currentCase = Activity10.getCaseById(currentCase.id) || currentCase;
+        if (dirtyTracker) dirtyTracker.clear();
+        showDraftInfo(saved, false);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "บันทึกร่างแล้ว " + saved.savedAt,
+          showConfirmButton: false,
+          timer: 2200,
+        });
+      }
+
+      function showDraftInfo(draft, loaded) {
+        ECMIS103.setText("f_draftMeta", "บันทึกร่างล่าสุด " + draft.savedAt);
+        if (loaded) {
+          ECMIS103.setText("f_draftSavedAt", draft.savedAt);
+          ECMIS103.setText("f_draftSavedBy", draft.savedBy ? "โดย " + draft.savedBy : "");
+          document.getElementById("draftNotice").classList.remove("d-none");
+        }
+      }
+
+      function restoreDraftExtra(extra) {
+        if (extra.extensionRows && extra.extensionRows.length) {
+          extensionRows = extra.extensionRows.map((r) => Object.assign({ fileNames: [] }, r, { fileNames: (r.fileNames || []).slice() }));
+          renderExtensionList();
+        }
+        if (extra.extensionNotes != null) document.getElementById("in_extensionNotes").value = extra.extensionNotes;
+        if (extra.evidence) {
+          DOC_GROUPS.evidence.files = extra.evidence.slice();
+          renderDocFiles("evidence");
+        }
+      }
+
+      function resetDraft() {
+        Swal.fire({
+          icon: "question",
+          title: "ล้างร่างและกลับเป็นค่าตั้งต้น?",
+          text: "ข้อความที่แก้ไขและบันทึกร่างไว้จะถูกลบ",
+          showCancelButton: true,
+          confirmButtonText: "ล้างร่าง",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
+          if (dirtyTracker) dirtyTracker.clear();
+          window.location.reload();
+        });
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        document.getElementById("themeBtn").innerHTML = isDark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
+        localStorage.setItem("ecmis_theme", isDark ? "dark" : "light");
+      }
+
+      function changeFontSize(direction) {
+        const currentSize = parseFloat(
+          window.getComputedStyle(document.body).fontSize,
+        );
+        document.body.style.fontSize =
+          direction === 0 ? "14px" : currentSize + direction + "px";
+      }
+
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && !dropdown.contains(e.target))
+          dropdown.classList.remove("show");
+      });
+    </script>
+  </body>
+</html>
