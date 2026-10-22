@@ -36,10 +36,10 @@
     ".ws-signed-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-weight:600;color:var(--text-title)}" +
     ".ws-signed-empty{color:#64748b;font-size:.9em;display:flex;align-items:center;gap:8px}" +
     ".ws-print-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}" +
-    ".ws-print-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}" +
-    "@media (max-width:1024px){.ws-print-grid{grid-template-columns:minmax(0,1fr)}}" +
+    /* ฉบับจริงแสดงทีละฉบับเต็มความกว้าง ขนาดจริง A4 (100%) — ปุ่ม −/+ ของตัวแสดงผลย่อ/ขยายได้ 2026-10-22 */
+    ".ws-print-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}" +
     ".ws-print-grid .l3-split-preview{position:static;max-height:none;overflow:visible}" +
-    ".ws-print-grid .l3-doc-pageframe{min-height:480px;max-height:760px}";
+    ".ws-print-grid .l3-doc-pageframe{min-height:600px;max-height:calc(100vh - 160px);overflow:auto}";
 
   /* ไฟล์ที่เลือกในแต่ละการ์ด — เก็บแยกตาม container (แทนที่ทั้ง array ทุกครั้ง ไม่แก้ของเดิม) */
   const fileState = new WeakMap();
@@ -305,6 +305,19 @@
     const rec = record(caseObj, docKey);
     const head =
       '<div class="ws-signed-head"><span><i class="fa-solid fa-file-signature text-primary me-2"></i>' + esc(docLabel) + "</span>";
+    /* 2026-10-22 ไม่มีขั้นธุรการบันทึกผลลงนาม (10-3-18/19/22) แล้ว — ใช้ฉบับลงนามจริงที่นิติกรแนบที่ 10-3-13 */
+    const liveKey = docKey === "coverLetter" ? "letter" : docKey;
+    const scan = !rec && caseObj && caseObj.l3LiveDocs && caseObj.l3LiveDocs[liveKey] && caseObj.l3LiveDocs[liveKey].signedFileName;
+    if (scan) {
+      const scanId = "ws_scan_" + liveKey + "_" + Math.random().toString(36).slice(2, 8);
+      host.innerHTML =
+        '<div class="ws-signed">' + head +
+        '<span class="badge ws-badge-signed"><i class="fa-solid fa-pen-nib me-1"></i>ฉบับลงนามจริง</span></div>' +
+        '<div class="form-group"><label>ไฟล์สแกนฉบับลงนามจริง <span style="font-weight:400;color:#64748b">(แนบโดยนิติกรที่ 10-3-13)</span></label>' +
+        '<div id="' + scanId + '"></div></div></div>';
+      if (global.ECMIS103) ECMIS103.renderAttachments(scanId, [scan]);
+      return;
+    }
     if (!rec) {
       host.innerHTML =
         '<div class="ws-signed">' + head +
@@ -467,6 +480,8 @@
   /* การ์ด "ฉบับจริงสำหรับลงนาม" — พรีวิวอ่านอย่างเดียว + พิมพ์ / ดาวน์โหลด
      opts = { docs: [{ docKey, label, fileName }] } (ค่าเริ่มต้น: หนังสือนำส่ง + คำให้การ;
      สายคัดค้านทุเลาส่ง docs: [{ docKey: "stayObjection", ... }]) */
+  const ACTUAL_SIZE = 1;
+
   function renderPrintDocs(containerEl, caseObj, opts) {
     const host = resolveEl(containerEl);
     if (!host) return;
@@ -485,31 +500,40 @@
         "<div>ไม่พบเอกสารสดที่นิติกรเสนอในสำนวนนี้ (สำนวนเดิมแนบเป็นไฟล์) — กรุณาพิมพ์จากไฟล์ร่างที่แนบไว้</div></div>";
       return;
     }
+    /* แท็บต่อฉบับ (แบบเดียวกับแท็บ "เอกสารที่นิติกรเสนอ") — วาดพรีวิวเมื่อเปิดแท็บ เพราะแท็บที่ซ่อนวัดขนาดหน้าไม่ได้ */
     const uid = "ws_print_" + Math.random().toString(36).slice(2, 8);
+    const shown = docs.filter(function (d) { return models[d.docKey]; });
     host.innerHTML =
-      '<div class="ws-print-actions">' +
-      docs
-        .filter(function (d) { return models[d.docKey]; })
-        .map(function (d) {
-          return '<button type="button" class="btn btn-secondary" data-ws-print="' + d.docKey + '">' +
-            '<i class="fa-solid fa-print me-1"></i>พิมพ์ฉบับจริง (แบบฟอร์มทางการ) — ' + esc(d.label) + "</button>";
+      '<div class="l3-doc-tabs" role="tablist">' +
+      shown
+        .map(function (d, i) {
+          return '<button type="button" class="l3-doc-tab' + (i === 0 ? " is-active" : "") + '" role="tab" data-ws-tab="' + d.docKey + '">' +
+            '<i class="fa-solid ' + (d.docKey === "answer" ? "fa-scale-balanced" : "fa-envelope") + '"></i>' + esc(d.label) + "</button>";
         })
         .join("") +
       "</div>" +
-      '<div class="ws-print-grid">' +
-      docs
-        .filter(function (d) { return models[d.docKey]; })
-        .map(function (d) { return '<div id="' + uid + "_" + d.docKey + '"></div>'; })
-        .join("") +
-      "</div>";
+      shown
+        .map(function (d, i) {
+          return '<div class="ws-print-pane" data-ws-pane="' + d.docKey + '"' + (i === 0 ? "" : " hidden") + ">" +
+            '<div class="ws-print-actions"><button type="button" class="btn btn-secondary" data-ws-print="' + d.docKey + '">' +
+            '<i class="fa-solid fa-print me-1"></i>พิมพ์ฉบับจริง (แบบฟอร์มทางการ) — ' + esc(d.label) + "</button></div>" +
+            '<div class="ws-print-grid"><div id="' + uid + "_" + d.docKey + '"></div></div></div>';
+        })
+        .join("");
     const viewers = {};
-    docs.forEach(function (d) {
-      if (!models[d.docKey]) return;
-      const v = ECMIS103Docs.createViewer(uid + "_" + d.docKey, { title: d.label + " (ฉบับจริง)", fileName: d.fileName });
-      if (!v) return;
-      v.render(models[d.docKey]);
-      viewers[d.docKey] = v;
+    shown.forEach(function (d) {
+      const v = ECMIS103Docs.createViewer(uid + "_" + d.docKey, { title: d.label + " (ฉบับจริง)", fileName: d.fileName, zoom: o.zoom || ACTUAL_SIZE });
+      if (v) viewers[d.docKey] = v;
     });
+    function show(key) {
+      host.querySelectorAll("[data-ws-tab]").forEach(function (b) { b.classList.toggle("is-active", b.dataset.wsTab === key); });
+      host.querySelectorAll("[data-ws-pane]").forEach(function (p) { p.hidden = p.dataset.wsPane !== key; });
+      if (viewers[key]) viewers[key].render(models[key]);
+    }
+    host.querySelectorAll("[data-ws-tab]").forEach(function (btn) {
+      btn.addEventListener("click", function () { show(btn.dataset.wsTab); });
+    });
+    if (shown.length) show(shown[0].docKey);
     host.querySelectorAll("[data-ws-print]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const v = viewers[btn.dataset.wsPrint];

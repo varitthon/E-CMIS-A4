@@ -25,12 +25,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
     <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
-    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -385,7 +385,7 @@
           >
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              <strong>เคสนี้เป็นสาขาคู่ขนานของกิจกรรมที่ 1</strong><br />
+              <strong>เคสนี้เป็นสาขาคู่ขนานของคดีหลัก</strong><br />
               เดินสถานะแยกต่างหากจากคดีหลัก
               <span class="font-monospace" id="f_parentCaseId">-</span>
               ไม่กระทบขั้นตอนของคดีหลักที่กำลังดำเนินอยู่
@@ -534,13 +534,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
-    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_m2325"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_m2325"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
-    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261022_rm181922"></script>
 
     <script>
       /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้านบนกระดาษ
@@ -679,7 +679,7 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          ECMIS103.openSignatureModal(
+          ECMIS103.confirmRecord(
             {
               title: "ยืนยันบันทึกผลการลงนามจริงในระบบ",
               signer: recordedBy,
@@ -729,7 +729,7 @@
           if (!res.isConfirmed) return;
           const reason = String(res.value || "").trim();
           const recordedBy = ECMIS103.signerLabel("admin_legal");
-          ECMIS103.openSignatureModal(
+          ECMIS103.confirmRecord(
             { title: "ยืนยันส่งกลับแก้ไขในระบบ", signer: recordedBy, certId: "PACC-LEGAL-ADMIN-2569-103B" },
             (image) => {
               Activity103.sign(currentCase.id, STEP_CODE, image, { signer: recordedBy });

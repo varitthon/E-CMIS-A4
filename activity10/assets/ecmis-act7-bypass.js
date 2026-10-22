@@ -96,11 +96,14 @@
       show: ["notes"],
       labels: { detail: "สาระสำคัญของมติ" },
       waitingStatuses: ["L3_READY_FOR_BOARD"],
+      /* 2026-10-21 ตัด 10-3-10 — ไม่มีหน้ารับมติแล้ว ธุรการบันทึกผลจากปุ่มที่กล่องงาน */
+      showWaiting: true,
+      waitBadge: "ระหว่างรอมติคณะกรรมการ ป.ป.ท.",
       senderRoles: ["admin_legal"],
       requiresSwitch: false,
       popup: true,
       promptAfterOutbound: true,
-      page: "10-3-10-legal-admin-resolution-notice.html",
+      page: "10-3-13-lawyer-request-extension.html",
     },
     B4: {
       id: "B4",
@@ -120,7 +123,7 @@
       popup: true,
       promptAfterOutbound: true,
       showWaiting: true,
-      waitBadge: "ระหว่างรอกิจกรรมที่ 7",
+      waitBadge: "ระหว่างรอมติคณะกรรมการ ป.ป.ท.",
       page: "10-2-appeal-12-tracking-secretary-notice-draft.html",
     },
     B5: {
@@ -137,7 +140,7 @@
       popup: true,
       promptAfterOutbound: true,
       showWaiting: true,
-      waitBadge: "ระหว่างรอกิจกรรมที่ 7",
+      waitBadge: "ระหว่างรอมติคณะกรรมการ ป.ป.ท.",
       page: "10-3v-28-legal-admin-board-propose.html",
     },
     B6: {
@@ -413,13 +416,15 @@
             acknowledgedAt: null,
           },
           l3ResolutionNoticeDocNo: f.noticeNo,
-          assignedRole: "case_group_director",
+          /* 2026-10-21 ตัด 10-3-10/10-3-12 — ผลมติส่งตรงถึงนิติกร (10-3-13) */
+          status: "นิติกรยื่นคำขอขยายเวลาต่อศาล",
+          statusCode: "L3_PENDING_LAWYER_EXTENSION",
+          statusBadge: "bg-primary text-white",
+          assignedRole: "case_legal_officer",
+          officer: f.lawyer || kase.officer,
         },
-        advance: { module: "Activity103", stepCode: "L3-19" },
+        advance: null,
         submit: null,
-        /* P12 ขาออก: ข้ามลายเซ็นธุรการ (เป็นผลจำลองจากกิจกรรมที่ 7 ตอนส่ง) —
-           หน้า 10-3-11/12 รองรับกรณีไม่มีลายเซ็น L3-19 */
-        skipSignature: !!outbound,
       };
     },
 
@@ -467,7 +472,7 @@
     const link = ACT7_LINKS[linkId];
     const builder = PATCH_BUILDERS[linkId];
     if (!link || !link.popup || !builder) {
-      return { error: "จุดเชื่อมกิจกรรมที่ 7 ไม่รองรับการบันทึกผ่านป๊อปอัป: " + linkId };
+      return { error: "จุดเชื่อมผลมติบอร์ด ไม่รองรับการบันทึกผ่านป๊อปอัป: " + linkId };
     }
     const checked = validateForm(link, form);
     if (checked.error) return { error: checked.error };
@@ -598,7 +603,7 @@
 
   function summaryHtml(linkId, kase) {
     if (!hasSavedResult(linkId, kase)) {
-      return '<div class="read-box" style="color:#b45309">ยังไม่ได้บันทึกผลพิจารณาจากกิจกรรมที่ 7</div>';
+      return '<div class="read-box" style="color:#b45309">ยังไม่ได้บันทึกผลพิจารณาของคณะกรรมการ ป.ป.ท.</div>';
     }
     return summaryRows(linkId, kase)
       .map(function (row) {
@@ -622,7 +627,7 @@
   const OUTBOUND_NOW_STATUS = {
     B1: "RETURNED_FROM_EXEC",
     B2: "L2_PENDING_DIRLEGAL_BOARD_ACK",
-    B3: "L3_PENDING_GROUP_RESOLUTION_APPROVE",
+    B3: "L3_PENDING_LAWYER_EXTENSION",
     B4: "L2_PENDING_APPEAL_NOTICE_DRAFT",
     B5: BOARD_APPEAL_STATUS.APPEAL.statusCode,
   };
@@ -837,7 +842,15 @@
         }
         updated = mod.advance(caseId, res.advance.stepCode, Object.assign({}, res.patch, extra));
       } else {
-        updated = A.updateCase(caseId, res.patch);
+        const patch =
+          linkId === "B3" && global.ECMIS103
+            ? Object.assign({}, res.patch, {
+                l3ResolutionNotice: Object.assign({}, res.patch.l3ResolutionNotice, {
+                  notifiedAt: global.ECMIS103.formatThaiDateTime(new Date()),
+                }),
+              })
+            : res.patch;
+        updated = A.updateCase(caseId, patch);
         if (res.submit && typeof A[res.submit] === "function") {
           updated = A[res.submit](caseId, form.notes || "") || updated;
         }
@@ -845,26 +858,11 @@
       const saved = opts.afterSave || opts.onSaved;
       if (typeof saved === "function") return saved(updated, link);
       global.Swal.fire({
-        icon: "success", title: "บันทึกผลพิจารณาจากกิจกรรมที่ 7 แล้ว", timer: 1600, showConfirmButton: false,
+        icon: "success", title: "บันทึกผลพิจารณาของคณะกรรมการ ป.ป.ท. แล้ว", timer: 1600, showConfirmButton: false,
       }).then(function () { global.location.href = INBOX_PAGE; });
       return updated;
     };
-    const sig =
-      linkId === "B3" && !res.skipSignature && global.ECMIS103 && global.ECMIS103.openSignatureModal;
-    if (sig) {
-      global.ECMIS103.openSignatureModal(
-        {
-          title: "ลงนามบันทึกรับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.",
-          signer: global.ECMIS103.signerLabel("admin_legal"),
-          certId: "PACC-ADMINLEGAL-2569-103",
-        },
-        function (image) {
-          global.Activity103.sign(caseId, res.advance.stepCode, image);
-          write();
-        },
-      );
-      return;
-    }
+    /* B3 เคยให้ธุรการลงนามก่อนบันทึก — ตัดออก 2026-10-21 (ธุรการไม่ลงนาม และไม่มีขั้น L3-19 แล้ว) */
     write();
   }
 
@@ -889,14 +887,14 @@
     const by = signerOf(currentRoleId());
 
     return Swal.fire({
-      title: 'ผลพิจารณาจากกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.)<span class="act7-tag">บันทึกแทนกิจกรรมที่ 7</span>',
+      title: 'ผลพิจารณาจากการประชุมคณะกรรมการ ป.ป.ท.<span class="act7-tag">บันทึกแทนผลบอร์ด</span>',
       html:
         '<div style="text-align:left;margin-bottom:10px;font-size:0.85em;color:#64748b">' +
         escHtml(link.title) + " — สำนวน " + escHtml(kase.id) + "</div>" +
         (later
           ? '<div style="text-align:left;margin-bottom:10px;padding:8px 10px;border-radius:6px;background:#eff6ff;' +
-            'color:#1e3a8a;font-size:0.85em">ส่งเรื่องเข้ากิจกรรมที่ 7 แล้ว — จำลองผลพิจารณาของคณะกรรมการ ป.ป.ท. ' +
-            "ตอบกลับทันที หรือเลือก “ภายหลัง” ให้สำนวนค้างรอกิจกรรมที่ 7</div>"
+            'color:#1e3a8a;font-size:0.85em">ส่งเรื่องเสนอคณะกรรมการ ป.ป.ท. แล้ว — จำลองผลพิจารณาของคณะกรรมการ ป.ป.ท. ' +
+            "ตอบกลับทันที หรือเลือก “ภายหลัง” ให้สำนวนค้างรอมติคณะกรรมการ ป.ป.ท.</div>"
           : "") +
         popupHtml(link, d, opts),
       width: 640,
@@ -905,7 +903,7 @@
       allowOutsideClick: !later,
       allowEscapeKey: !later,
       confirmButtonText: later ? "บันทึกผลทันที" : "บันทึกผล",
-      denyButtonText: "ภายหลัง (ค้างรอกิจกรรมที่ 7)",
+      denyButtonText: "ภายหลัง (ค้างรอมติคณะกรรมการ ป.ป.ท.)",
       cancelButtonText: "ยกเลิก",
       confirmButtonColor: "#1e3a8a",
       denyButtonColor: "#64748b",
@@ -963,7 +961,7 @@
 
   function goInboxLater() {
     return global.Swal.fire({
-      icon: "info", title: "ค้างรอกิจกรรมที่ 7", text: "สำนวนอยู่ระหว่างรอผลพิจารณาจากกิจกรรมที่ 7",
+      icon: "info", title: "ค้างรอมติคณะกรรมการ ป.ป.ท.", text: "สำนวนอยู่ระหว่างรอผลพิจารณาของคณะกรรมการ ป.ป.ท.",
       timer: 1600, showConfirmButton: false,
     }).then(function () { global.location.href = INBOX_PAGE; });
   }

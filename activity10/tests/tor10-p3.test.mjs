@@ -127,10 +127,10 @@ t("เคสที่ยังไม่มี judgments → เริ่ม arra
   assert.equal(p.judgments.length, 1);
   assert.equal(p.judgments[0].isFinal, true);
 });
-t("JUDGMENT_LEVELS มี 4 ชั้น", () => {
+t("JUDGMENT_LEVELS มี 4 ชั้น + 2 ชั้นศาลปกครอง", () => {
   assert.deepEqual(
     Activity10.JUDGMENT_LEVELS.map((l) => l.code),
-    ["PROSECUTOR", "FIRST", "APPEAL", "SUPREME"],
+    ["PROSECUTOR", "FIRST", "APPEAL", "SUPREME", "ADMIN_FIRST", "ADMIN_SUPREME"],
   );
 });
 

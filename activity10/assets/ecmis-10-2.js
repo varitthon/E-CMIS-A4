@@ -24,12 +24,23 @@
       page: "02-board-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      /* LAW0038 (10-2-01 ผอ.กองกฎหมาย สั่งการ) ถูกตัดออก 2026-10-14 — ธุรการส่งตรงถึง
-         ผอ.กลุ่มงานความเห็นแย้ง ดู docs/remove-dir-legal-assign/plan.md */
+      /* LAW0038 (10-2-01 ผอ.กองกฎหมาย สั่งการ) ถูกตัดออก 2026-10-14 แล้วนำกลับมา 2026-10-21
+         (เรื่องเข้าใหม่ต้องผ่าน ผอ.กองกฎหมาย มอบหมายก่อน) */
+      status: "ผอ.กองกฎหมายพิจารณาสั่งการ",
+      statusCode: "L2_PENDING_DIRECTOR_ASSIGN",
+      label: "ธุรการกองกฎหมาย ลงทะเบียนรับเรื่องและเสนอ ผอ.กองกฎหมาย",
+      stepName: "ธุรการ ลงทะเบียนรับเรื่อง",
+    },
+    {
+      code: "LAW0038",
+      seq: 7,
+      page: "10-2-01-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
       status: "ผอ.กลุ่มงานความเห็นแย้งตรวจประเด็นกฎหมาย",
       statusCode: "L2_PENDING_GROUP_ASSIGN",
-      label: "ธุรการกองกฎหมาย ลงทะเบียนรับเรื่องและเสนอ ผอ.กลุ่มงานความเห็นแย้ง",
-      stepName: "ธุรการ ลงทะเบียนรับเรื่อง",
+      label: "ผอ.กองกฎหมาย พิจารณาสั่งการและมอบหมายงาน",
+      stepName: "ผอ.กอง สั่งการ",
     },
     {
       code: "LAW0039",
@@ -378,7 +389,7 @@
       status: "รอมติคณะกรรมการ ป.ป.ท. (รอบ 2)",
       statusCode: "L2_READY_FOR_BOARD_ROUND2",
       label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย ออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.",
-      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ ส่งกิจกรรมที่7",
+      stepName: "[อยู่ระหว่างไต่สวน] ธุรการ ส่งเสนอบอร์ด",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
     },
@@ -396,7 +407,7 @@
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
       status: "ผอ.กองกฎหมายรับทราบมติคณะกรรมการ ป.ป.ท.",
       statusCode: "L2_PENDING_DIRLEGAL_BOARD_ACK",
-      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย รับมติจากกิจกรรมที่ 7",
+      label: "[อยู่ระหว่างไต่สวน] ธุรการกองกฎหมาย รับมติคณะกรรมการ ป.ป.ท.",
       stepName: "[อยู่ระหว่างไต่สวน] ธุรการ รับมติ",
       includeIf: ["DISCLOSE", "PARTIAL"],
       caseState: ["INVESTIGATING"],
@@ -496,31 +507,30 @@
     /* ---------------------------------------------------------- FLOW 4
        อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล (Flow 4, drawio หน้า 6 "อุทธรณ์คำสั่ง"
        LAW0069-079) — เริ่มหลังสาย DENY ปิดสำนวนที่ L2-DENY-DISPATCH-COMMITTEE
-       (10-2-17, L2_CASE_CLOSED_DENY_ASSIGNED) แล้วผู้ยื่นคำขอใช้สิทธิ์อุทธรณ์
+       (10-2-17, L2_CASE_CLOSED_DENY_ASSIGNED) หรือสาย PARTIAL (อนุญาตบางส่วน)
+       ปิดสำนวนแล้ว (10-2-14/10-2-24) แล้วผู้ยื่นคำขอใช้สิทธิ์อุทธรณ์ (ดู canFileAppeal)
        ดูรายละเอียดแผนเต็มที่ docs/10-2-flow4-appeal-plan.md */
     {
       /* จุดเริ่มต้นทางที่ 1: สาย "ส่วนกลาง" (ผัง TO-BE) — ธุรการกองบริหารคดีรับเรื่อง
-         แล้วส่งต่อให้ ผอ.กองบริหารคดี (appeal-02) → ผอ.กลุ่มงานติดตามคดี (appeal-03)
-         เลือก/มอบหมายนิติกรตามลำดับ (คนละสายกับ "เขต" ที่ส่งตรงถึงนิติกรได้เลย
-         ดู L2-APPEAL-INTAKE-DISTRICT ด้านล่าง) — ทั้งสองสายมาบรรจบที่ precondition
-         เดียวกันของ appeal-04 (L2_PENDING_CASE_OWNER_APPEAL_OPINION) */
+         และเลือกนิติกรเอง (default เจ้าของสำนวนเดิมจากข้อมูลสำนวน) ส่งตรงถึง appeal-04
+         เหมือนสายเขต — ขั้น ผอ.กองบริหารคดี (appeal-02) / ผอ.กลุ่มงานติดตามคดี
+         (appeal-03) มอบหมายถูกตัดออกแล้ว (ผู้ใช้ขอ 19/10) */
       code: "L2-APPEAL-INTAKE",
       seq: 40,
       page: "10-2-appeal-01-legal-admin-intake.html",
       role: "case_bureau_admin",
       roleTitle: "ธุรการกองบริหารคดี",
-      status: "ผอ.กองบริหารคดีพิจารณาเรื่องอุทธรณ์และมอบหมาย",
-      statusCode: "L2_PENDING_BUREAU_DIRECTOR_ASSIGN",
+      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
+      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
       label: "[อุทธรณ์] ธุรการกองบริหารคดี รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ (สายส่วนกลาง)",
       stepName: "[อุทธรณ์] ธุรการส่วนกลาง รับเรื่อง",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
       intakeChannel: ["CENTRAL"],
     },
     {
       /* จุดเริ่มต้นทางที่ 2: สาย "เขต" (ผัง TO-BE) — เจ้าหน้าที่เขตรับเรื่องแล้วส่งตรง
          ถึงนิติกรเจ้าของสำนวนได้เลย ไม่ต้องผ่าน ผอ.กองบริหารคดี/ผอ.กลุ่มงานติดตามคดี
-         มอบหมายเหมือนสายส่วนกลาง (สั้นกว่า 2 ขั้น) statusCode ชี้ตรงไปที่ precondition
-         ของ appeal-04 จุดเดียวกับที่สายส่วนกลางมาบรรจบ */
+         มอบหมาย — statusCode ชี้ตรงไปที่ precondition ของ appeal-04 เหมือนสายส่วนกลาง */
       code: "L2-APPEAL-INTAKE-DISTRICT",
       seq: 41,
       page: "10-2-appeal-01b-district-intake.html",
@@ -530,36 +540,8 @@
       statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
       label: "[อุทธรณ์] เจ้าหน้าที่เขต รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ (สายเขต)",
       stepName: "[อุทธรณ์] ธุรการเขต รับเรื่อง",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
       intakeChannel: ["DISTRICT"],
-    },
-    {
-      code: "L2-APPEAL-BUREAU-ASSIGN",
-      seq: 42,
-      page: "10-2-appeal-02-case-bureau-director-assign.html",
-      role: "case_bureau_director",
-      roleTitle: "ผู้อำนวยการกองบริหารคดี",
-      status: "ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร",
-      statusCode: "L2_PENDING_TRACKING_DIRECTOR_ASSIGN",
-      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณาเรื่องอุทธรณ์และมอบหมาย (สายส่วนกลาง)",
-      stepName: "[อุทธรณ์] ผอ.กองบริหารคดี มอบหมาย",
-      includeIf: ["DENY"],
-      intakeChannel: ["CENTRAL"],
-    },
-    {
-      /* ผลผลิตชี้ไปที่ precondition เดียวกับ L2-APPEAL-INTAKE-DISTRICT ด้านบน —
-         ทั้งสองสายบรรจบที่นี่ก่อนเข้า appeal-04 */
-      code: "L2-APPEAL-TRACKING-ASSIGN",
-      seq: 43,
-      page: "10-2-appeal-03-case-tracking-director-assign.html",
-      role: "case_tracking_director",
-      roleTitle: "ผู้อำนวยการกลุ่มงานบริหารติดตามคดี",
-      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
-      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
-      label: "[อุทธรณ์] ผู้อำนวยการกลุ่มงานบริหารติดตามคดี พิจารณาและมอบหมายนิติกร (สายส่วนกลาง)",
-      stepName: "[อุทธรณ์] ผอ.กลุ่มงานติดตามคดี มอบหมายนิติกร",
-      includeIf: ["DENY"],
-      intakeChannel: ["CENTRAL"],
     },
     {
       /* เดิมส่งต่อฝ่ายเลขาฯ ให้จัดทำวาระ (appeal-05) ก่อนเข้าคณะอนุกรรมการฯ — สลับ
@@ -576,7 +558,7 @@
       statusCode: "L2_PENDING_APPEAL_RULING",
       label: "[อุทธรณ์] นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์และทำความเห็น",
       stepName: "[อุทธรณ์] นิติกร บันทึกความเห็น",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
     {
       code: "L2-APPEAL-RULING",
@@ -588,7 +570,7 @@
       statusCode: "L2_PENDING_APPEAL_MEMO",
       label: "[อุทธรณ์] คณะอนุกรรมการวินิจฉัยอุทธรณ์ พิจารณาและมีคำวินิจฉัย",
       stepName: "[อุทธรณ์] คณะอนุกรรมการฯ วินิจฉัย",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
     {
       /* เดิมส่งต่อ ผอ.กลุ่มงานติดตามคดี (appeal-08) ลงนามรับรอง ก่อนถึง ผอ.กองบริหารคดี
@@ -606,11 +588,11 @@
       page: "10-2-appeal-07-secretariat-memo.html",
       role: "appeal_subcommittee_secretariat",
       roleTitle: "ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์",
-      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอคณะกรรมการ ป.ป.ท.",
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
       label: "[อุทธรณ์] ฝ่ายเลขาคณะอนุกรรมการวินิจฉัยอุทธรณ์ บันทึกวาระการประชุมและจัดทำบันทึกเสนอคณะกรรมการ ป.ป.ท.",
       stepName: "[อุทธรณ์] เลขาฯ บันทึกวาระ+เสนอบันทึก",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
     {
       /* เดิมลงนามเสนอ (appeal-09) แล้วส่งต่อธุรการให้ออกเลขส่งแยกหน้า (appeal-10)
@@ -626,9 +608,9 @@
       roleTitle: "ผู้อำนวยการกองบริหารคดี",
       status: "รอมติบอร์ดตอบกลับ",
       statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD",
-      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณา ลงนามในฐานะผู้เสนอเรื่อง และออกเลขส่งยื่นกิจกรรมที่ 7",
+      label: "[อุทธรณ์] ผู้อำนวยการกองบริหารคดี พิจารณา ลงนามในฐานะผู้เสนอเรื่อง และออกเลขส่งเสนอคณะกรรมการ ป.ป.ท.",
       stepName: "[อุทธรณ์] ผอ.กองบริหารคดี ลงนามเสนอ+ออกเลขส่ง",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
     {
       /* code ตั้งชื่อ "L2-APPEAL-NOTICE-DRAFT-2" (ไม่ใช่ L2-NOTICE-DRAFT) กันชนกับ
@@ -643,7 +625,7 @@
       statusCode: "L2_PENDING_APPEAL_CASE_OWNER_NOTIFY",
       label: "[อุทธรณ์] เลขานุการกลุ่มงานบริหารติดตามคดี จัดทำหนังสือแจ้งผลมติ",
       stepName: "[อุทธรณ์] เลขาฯติดตามคดี จัดทำหนังสือแจ้งผล",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
     {
       /* LAW0082 + LAW0083 พับรวม — ผู้อุทธรณ์ (LAW0083) ไม่ใช่ผู้ใช้งานระบบ จึงพับ
@@ -659,7 +641,7 @@
       statusCode: "L2_APPEAL_CASE_CLOSED_NOTIFIED",
       label: "[อุทธรณ์] นิติกรเจ้าของสำนวน แจ้งผลคำวินิจฉัยให้ผู้อุทธรณ์ทราบ",
       stepName: "[อุทธรณ์] นิติกร แจ้งผลผู้อุทธรณ์",
-      includeIf: ["DENY"],
+      includeIf: ["DENY", "PARTIAL"],
     },
   ];
 
@@ -742,15 +724,6 @@
      ด้านบน แต่แยกค่าคนละสถานะ ให้ H3 เลือกได้ว่าจะจำลองว่าคำร้องเข้าทางไหน (ดู
      docs/10-2-full-test-flow.md หัวข้อ 7 — [H3] มี variant ส่วนกลาง/เขต) */
   ROUTES["L2_PENDING_APPEAL_INTAKE_DISTRICT"] = "10-2-appeal-01b-district-intake.html";
-
-  /* L2-APPEAL-INTAKE-DISTRICT (10-2-appeal-01b) แทรกต่อท้าย L2-APPEAL-INTAKE
-     (10-2-appeal-01) ในอาเรย์พอดี — auto-reduce จึงสร้าง route ผิดโดยบังเอิญ:
-     ROUTES["L2_PENDING_BUREAU_DIRECTOR_ASSIGN"] (ผลผลิตของ appeal-01 สายส่วนกลาง)
-     ไปชี้ที่ appeal-01b (สายเขต) แทนที่จะเป็น appeal-02 (สายส่วนกลางที่ถูกต้อง) —
-     ส่วน ROUTES["L2_PENDING_CASE_OWNER_APPEAL_OPINION"] auto-reduce แก้ให้ถูกเองแล้ว
-     เพราะ L2-APPEAL-TRACKING-ASSIGN (appeal-03) ที่อยู่ถัดไปในอาเรย์ก็ผลิตค่าเดียวกัน
-     นี้ชี้ไปที่ appeal-04 ซ้อนทับ (ลำดับหลังชนะ) จึงไม่ต้องแก้ */
-  ROUTES["L2_PENDING_BUREAU_DIRECTOR_ASSIGN"] = "10-2-appeal-02-case-bureau-director-assign.html";
 
   /* L2-APPEAL-BOARD-RESOLUTION (10-2-appeal-11) ต่อท้าย L2-APPEAL-BOARD-DISPATCH
      (10-2-appeal-10) ในอาเรย์พอดี — auto-reduce ด้านบนจึงสร้าง route ผิดโดยบังเอิญ:
@@ -1346,7 +1319,15 @@
        บทบาทที่ไม่อยู่ในรายการ = คงพฤติกรรมเดิม (เห็นได้) เพื่อไม่ให้ demo เดิมเสีย
        ⚠️ ต้องให้ ป.ป.ท. ยืนยันกติกา */
     VISIBILITY_RULES: {
-      all: ["admin_legal", "dir_legal", "group_director"],
+      /* ผอ.กอง / ผอ.กลุ่ม ทุกสายงานเห็นทุกเรื่อง (Menu-Role Matrix v1.0) */
+      all: [
+        "admin_legal",
+        "dir_legal",
+        "group_director",
+        "case_group_director",
+        "case_bureau_director",
+        "case_tracking_director",
+      ],
       byStep: ["sub_secretariat", "subcommittee_screen", "secgen", "deputy_sg"],
       byUnit: ["district_admin"],
       confidentialRoles: ["admin_legal", "dir_legal", "group_director"],
@@ -1957,7 +1938,13 @@
   /* ---------------------------------------------------------- PAGE HELPERS */
   function setText(id, text) {
     const el = document.getElementById(id);
-    if (el) el.textContent = text == null || text === "" ? "-" : text;
+    if (!el) return;
+    /* ช่องเลขที่หนังสือที่เป็น input (ปุ่มออกเลข ecmis-doc-no.js) — ใส่ค่าแทนข้อความ */
+    if (el.tagName === "INPUT") {
+      el.value = text == null || text === "-" ? "" : text;
+      return;
+    }
+    el.textContent = text == null || text === "" ? "-" : text;
   }
 
   /* เอกสารแนบประกอบคำร้อง — แนบไว้ตั้งแต่ 02-board-intake.html (attachmentFileNames)
@@ -2026,7 +2013,7 @@
   function fallbackOtherBoardResolutions(kase) {
     return [
       {
-        activity: "กิจกรรมที่ 7 — พิจารณาสำนวนไต่สวนหลัก",
+        activity: "การประชุมคณะกรรมการ ป.ป.ท. — พิจารณาสำนวนไต่สวนหลัก",
         date: (kase && kase.l2DenyAssignDate) || new Date().toISOString().split("T")[0],
         resolution: "รับทราบและให้ดำเนินการไต่สวนตามระเบียบต่อไป",
         detail: "คณะกรรมการ ป.ป.ท. มีมติต่อสำนวน " + ((kase && kase.relatedCaseNo) || "-") + " ไว้อ้างอิงประกอบการพิจารณาอุทธรณ์",

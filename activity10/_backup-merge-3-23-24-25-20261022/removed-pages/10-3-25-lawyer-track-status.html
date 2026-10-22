@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ธุรการ บันทึกผลการลงนามจริงคำให้การและรวบรวมฉบับจริง | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>นิติกร ติดตามสถานะ | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,12 +23,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
     <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
-    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
 
     <style>
       h1,
@@ -265,7 +264,7 @@
           <div class="breadcrumb">
             <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ธุรการ บันทึกผลการลงนามจริงคำให้การและรวบรวมฉบับจริง</span
+              >นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ</span
             >
           </div>
         </div>
@@ -345,10 +344,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอธุรการกองกฎหมายบันทึกผลการลงนามจริงหนังสือนำส่งที่หน้า
-            <a href="10-3-18-secgen-sign-cover-letter.html">บันทึกผลการลงนามจริงหนังสือนำส่ง (เลขาธิการ)</a>
-            หรือ
-            <a href="10-3-19-deputy-sg-sign-cover-letter.html">(รองเลขาธิการ)</a>
+            รอนิติกรบันทึกการจัดส่งทางไปรษณีย์ที่หน้า
+            <a href="10-3-24-lawyer-post-to-prosecutor.html">นิติกร ส่งไปรษณีย์ถึงอัยการ</a>
             ก่อน
           </div>
         </div>
@@ -358,7 +355,7 @@
             <i class="fa-solid fa-eye"></i>
             <div style="flex: 1">
               <strong>ขั้นตอนนี้ดำเนินการแล้ว (ดูอย่างเดียว)</strong><br />
-              ลงนามโดย <span id="f_viewSigner">-</span> เมื่อ
+              บันทึกโดย <span id="f_viewSigner">-</span> เมื่อ
               <span id="f_viewSignedAt">-</span><br />
               สถานะปัจจุบันของคดี: <strong id="f_viewStatus">-</strong>
             </div>
@@ -570,113 +567,217 @@
             </div>
           </div>
 
-          <div class="form-card" id="printCard">
+          <div class="form-card" data-prev-step="คำให้การ — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-print text-primary me-2"></i
-                >คำให้การฉบับจริงสำหรับเสนอประธานกรรมการ ป.ป.ท. ลงนาม</span
+                ><i class="fa-solid fa-pen-nib text-primary me-2"></i
+                >คำให้การ — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)</span
               >
-              <span class="badge" style="background: #e0e7ff; color: #1e3a8a" id="f_lockBadge">-</span>
             </div>
             <div class="form-card-body">
-              <div class="l3-note l3-note-info" style="margin-bottom: 12px">
-                <i class="fa-solid fa-circle-info"></i>
-                <div>
-                  พิมพ์คำให้การจากฉบับที่ล็อกไว้ (แบบฟอร์มทางการ ช่องลงนามเว้นว่าง) เสนอประธานกรรมการ ป.ป.ท.
-                  ลงนามด้วยหมึก แล้วบันทึกผลการลงนามจริงด้านล่าง
-                </div>
-              </div>
-              <div id="printDocs"></div>
+              <div id="wetSignAnswerView"></div>
             </div>
           </div>
 
-          <div id="wetSignRecorder"></div>
-          <div id="wetSignAnswerView"></div>
-
-          <div class="form-card">
+          <div class="form-card" data-prev-step="เอกสารฉบับจริงที่ธุรการกองกฎหมายรวบรวม">
             <div class="form-card-header">
               <span
-                ><i class="fa-solid fa-file-lines text-primary me-2"></i
-                >เอกสารคำให้การและหนังสือนำส่ง</span
+                ><i class="fa-solid fa-folder-open text-primary me-2"></i
+                >เอกสารฉบับจริงที่ธุรการกองกฎหมายรวบรวม</span
+              >
+              <span class="badge" style="background: #dcfce7; color: #166534"
+                ><i class="fa-solid fa-check me-1"></i>ลงนามครบถ้วน</span
               >
             </div>
             <div class="form-card-body">
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ร่างคำให้การแก้คำฟ้อง</label>
-                  <div id="f_sigAnswerFiles"></div>
+                  <label>วันที่รับเอกสารฉบับจริง</label>
+                  <div class="read-box" id="f_originalSets">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เอกสารเพิ่มเติม</label>
+                  <div id="f_originalScans"></div>
                 </div>
                 <div class="form-group">
-                  <label>หนังสือนำส่งถึงสำนักงานคดีปกครอง</label>
-                  <div id="f_sigLetterFiles"></div>
+                  <label>ธุรการผู้รวบรวม</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_adminSigImg" alt="ลายมือชื่อธุรการ" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_adminCollectedBy">-</strong></div>
+                      <div>รวบรวมเมื่อ <span id="f_adminSignedAt">-</span></div>
+                      <div>หมายเหตุ: <span id="f_originalNotes">-</span></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <label>พยานหลักฐานและเอกสารประกอบ</label>
-                <div id="f_sigEvidenceFiles"></div>
-              </div>
-              <div class="form-group">
-                <label>แนบเอกสารเพิ่มเติม <span style="font-weight: 400; color: #64748b">(ถ้ามี)</span></label>
-                <div class="l3-upload-box" id="extraUploadBox">
-                  <input
-                    type="file"
-                    id="in_extraFiles"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleExtraChange(this)"
-                  />
-                </div>
-                <div id="extraList" style="margin-top: 8px"></div>
               </div>
             </div>
           </div>
 
+          <div class="form-card" data-prev-step="ข้อมูลการจัดส่งทางไปรษณีย์">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-truck-fast text-primary me-2"></i
+                >ข้อมูลการจัดส่งทางไปรษณีย์</span
+              >
+              <span class="badge font-monospace" style="background: #dbeafe; color: #1e3a8a" id="f_trackingBadge">-</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>วิธีจัดส่ง / เลขพัสดุ</label>
+                  <div class="read-box" id="f_postMethod">-</div>
+                </div>
+                <div class="form-group">
+                  <label>วันที่ฝากส่ง / ที่ทำการไปรษณีย์</label>
+                  <div class="read-box" id="f_postDate">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ผู้รับปลายทาง</label>
+                  <div class="read-box read-box-textarea" id="f_postAddress">-</div>
+                </div>
+                <div class="form-group">
+                  <label>ค่าบริการ</label>
+                  <div class="read-box" id="f_postFee">-</div>
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ใบรับฝาก / ใบเสร็จ</label>
+                  <div id="f_postReceipts"></div>
+                </div>
+                <div class="form-group">
+                  <label>ผู้จัดส่ง</label>
+                  <div class="l3-sig-preview">
+                    <img id="f_postSigImg" alt="ลายมือชื่อนิติกร" class="d-none" />
+                    <div class="l3-sig-preview-meta">
+                      <div><strong id="f_postedBy">-</strong></div>
+                      <div>บันทึกเมื่อ <span id="f_postSignedAt">-</span></div>
+                      <div>หมายเหตุ: <span id="f_postNotes">-</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOR 10.3.3 / 10.3.4 บันทึกสถานะ (ECMIS103.renderStatusPanel) -->
+          <div id="l3StatusPanel"></div>
           <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-folder-open text-primary me-2"></i
-                >ยืนยันบันทึกผลการลงนามจริงและรวบรวมฉบับจริง</span
+                ><i class="fa-solid fa-magnifying-glass-location text-primary me-2"></i
+                >ติดตามสถานะการจัดส่งและใบตอบรับ</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
+                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร กลุ่มงานคดี</span
               >
             </div>
             <div class="form-card-body">
               <div class="l3-note l3-note-info" style="margin-bottom: 16px">
                 <i class="fa-solid fa-circle-info"></i>
                 <div>
-                  ธุรการกองกฎหมายรับคำให้การฉบับจริงที่ประธานกรรมการ ป.ป.ท. ลงนามแล้ว พร้อมหนังสือนำส่งฉบับจริง
-                  ตรวจว่าลงนามครบถ้วน บันทึกผลการลงนามจริง แล้วส่งให้นิติกรเจ้าของเรื่องรวบรวมเอกสารเพื่อจัดส่งอัยการ
-                  หากประธานฯ ไม่ลงนามหรือแก้ไขด้วยลายมือ ให้กด "ส่งกลับแก้ไข"
+                  บันทึกสถานะการจัดส่งจนนำจ่ายสำเร็จ แนบใบตอบรับที่สำนักงานคดีปกครองลงชื่อรับ
+                  เมื่อบันทึกแล้วจะปิดขั้นตอนจัดทำและส่งคำให้การ และเข้าสู่ช่วงรอศาลปกครองมีคำพิพากษา (กรณี 2)
+                </div>
+              </div>
+
+              <div class="l3-section-title">
+                <i class="fa-solid fa-route text-primary"></i>
+                ประวัติสถานะการจัดส่ง
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" style="font-size: 0.88em">
+                  <thead>
+                    <tr>
+                      <th style="width: 44px">ลำดับ</th>
+                      <th style="width: 170px">วันที่</th>
+                      <th style="width: 210px">สถานะ</th>
+                      <th>รายละเอียด</th>
+                      <th style="width: 50px"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="eventTable"></tbody>
+                </table>
+              </div>
+              <div style="margin: 8px 0 16px">
+                <button type="button" class="btn btn-secondary" style="height: 32px" onclick="addEvent()">
+                  <i class="fa-solid fa-plus me-1"></i>เพิ่มสถานะ
+                </button>
+              </div>
+
+              <hr class="l3-divider" />
+
+              <div class="l3-section-title">
+                <i class="fa-solid fa-file-circle-check text-primary"></i>
+                ใบตอบรับจากสำนักงานคดีปกครอง
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label><span>วันที่ปลายทางรับเอกสาร <span style="color: #dc2626">*</span></span></label>
+                  <input type="date" id="in_deliveredDate" class="form-control" onchange="renderTimeliness()" />
+                </div>
+                <div class="form-group">
+                  <label><span>ผู้ลงชื่อรับ <span style="color: #dc2626">*</span></span></label>
+                  <input type="text" id="in_receiverName" class="form-control" placeholder="ชื่อ-นามสกุล ผู้ลงชื่อรับในใบตอบรับ" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>เปรียบเทียบกับกำหนดยื่นคำให้การ</label>
+                <div class="l3-due-box" id="timelinessBox">
+                  <span class="l3-due-date" id="f_timeliness">-</span>
+                  <span class="l3-due-left" id="f_timelinessNote"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label><span>แนบใบตอบรับ (ไปรษณีย์ตอบรับ / หนังสือตอบรับ) <span style="color: #dc2626">*</span></span></label>
+                <div class="l3-upload-box">
+                  <input
+                    type="file"
+                    id="in_ackFiles"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                    multiple
+                    onchange="handleAckChange(this)"
+                  />
+                </div>
+                <div id="ackList" style="margin-top: 8px"></div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขที่หนังสือตอบรับจากอัยการ (ถ้ามี)</label>
+                  <input type="text" id="in_prosecutorAckNo" class="form-control" placeholder="เช่น อส 0027(ชม)/1234" />
+                </div>
+                <div class="form-group">
+                  <label>วันที่อัยการยื่นคำให้การต่อศาล (ถ้าทราบ)</label>
+                  <input type="date" id="in_courtFiledDate" class="form-control" />
                 </div>
               </div>
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label><span>วันที่รับเอกสารฉบับจริง <span style="color: #dc2626">*</span></span></label>
-                  <input type="date" id="in_collectedDate" class="form-control" />
+                  <label>ผู้ติดตาม</label>
+                  <div class="read-box" id="f_trackedBy">-</div>
                 </div>
                 <div class="form-group">
-                  <label><span>ส่งต่อให้ (นิติกร กลุ่มงานคดี) <span style="color: #dc2626">*</span></span></label>
-                  <select id="in_forwardTo" class="form-control">
-                    <option value="">-- เลือกนิติกร --</option>
-                  </select>
+                  <label>ขั้นตอนถัดไป</label>
+                  <div class="read-box" id="f_forwardTo">-</div>
                 </div>
               </div>
               <div class="form-group">
                 <label>หมายเหตุ</label>
-                <textarea id="in_collectNotes" class="form-control" rows="2" placeholder="ระบุหมายเหตุ (ถ้ามี)..."></textarea>
+                <textarea id="in_trackNotes" class="form-control" rows="2" placeholder="ระบุหมายเหตุ (ถ้ามี)..."></textarea>
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
-              <button type="button" class="btn btn-outline-danger" id="btnReturn" onclick="returnForm()">
-                <i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับแก้ไข
-              </button>
-              <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
-                <i class="fa-solid fa-circle-check me-1"></i>บันทึกผลการลงนาม (ยืนยันในระบบ) และ ส่งนิติกรรวบรวมเอกสาร
+              <button type="button" class="btn btn-primary" onclick="submitForm()">
+                <i class="fa-solid fa-paper-plane me-1"></i>ปิดขั้นตอนส่งคำให้การ
               </button>
             </div>
           </div>
@@ -685,32 +786,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
-    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
-    <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
-    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-10-3-extension-edit.js?v=20261022_1"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261022_rm181922"></script>
 
     <script>
-      /* 2026-10-15 รวม 10-3-21 (ประธานฯ ลงนามคำให้การ) เข้าหน้านี้ — ประธานฯ ลงนามบนกระดาษ
-         ธุรการบันทึกผลการลงนามจริง (สแกน + วันที่) และรวบรวมฉบับจริง (docs/wet-sign/plan.md) */
-      const STEP_CODE = "L3-30";
-      const DOC_KEY = "answer";
-      const DOC_LABEL = "คำให้การ (ค.๓)";
-      const COVER_LABEL = "หนังสือนำส่งถึงอธิบดีอัยการ (หนังสือขอให้แก้ต่าง)";
+      const STEP_CODE = "L3-33";
       const STEP = Activity103.stepByCode(STEP_CODE);
       const EXT_RESULT = { PENDING: "รอผลคำสั่งศาล", GRANTED: "ศาลอนุญาต", DENIED: "ศาลไม่อนุญาต" };
       let currentCase = null;
       let viewOnly = false;
-      let extraFiles = [];
-      let savedExtraNames = [];
-      const LAWYERS = [
-        "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
-        "นางสาวสุดา คดีเที่ยง (นิติกร กลุ่มงานคดี)",
-        "นางสาวพิมพ์ชนก ธรรมรักษ์ (นิติกร กลุ่มงานคดี)",
-      ];
+      let ackFiles = [];
+      let savedAckNames = [];
+      let events = [];
+      const EVENT_STATUSES = ["รับฝากแล้ว", "อยู่ระหว่างขนส่ง", "ถึงที่ทำการปลายทาง", "นำจ่ายสำเร็จ", "นำจ่ายไม่สำเร็จ / ส่งคืน"];
+      const DELIVERED = "นำจ่ายสำเร็จ";
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -742,83 +835,177 @@
           return;
         }
         populate();
+        ECMIS103.renderStatusPanel("l3StatusPanel", currentCase.id, {
+          readOnly: new URLSearchParams(window.location.search).get("view") === "1",
+          onSaved: function (c) { currentCase = c; },
+        });
         if (viewOnly) {
           fillSavedValues();
-          ECMISWetSign.renderSignedView("wetSignAnswerView", currentCase, DOC_KEY, DOC_LABEL);
           ECMIS103.applyViewMode(currentCase, STEP_CODE);
-        } else {
-          ECMISWetSign.renderRecorder("wetSignRecorder", {
-            docKey: DOC_KEY,
-            docLabel: DOC_LABEL,
-            signerLabel: chairmanLabel(),
-            caseObj: currentCase,
-            noteLabel: "ข้อสั่งการประธานกรรมการ / ฉบับจริงอยู่ที่ / หมายเหตุ",
-            notePlaceholder: "ระบุข้อสั่งการประธานกรรมการ (ถ้ามี) หรือที่เก็บฉบับจริง",
-          });
         }
       }
 
       function fillSavedValues() {
-        const o = currentCase.l3AnswerOriginals || {};
-        document.getElementById("in_collectNotes").value = o.notes && o.notes !== "-" ? o.notes : "";
-        document.getElementById("in_collectedDate").value = o.collectedDateISO || "";
-        if (o.forwardTo) renderLawyerOptions(o.forwardTo);
-        savedExtraNames = o.extraNames || o.scanNames || [];
-        renderExtraList();
+        const t = currentCase.l3AnswerTracking || {};
+        events = (t.events || []).map((e) => Object.assign({}, e));
+        renderEvents();
+        document.getElementById("in_deliveredDate").value = t.deliveredDate || "";
+        document.getElementById("in_receiverName").value = t.receiverName || "";
+        document.getElementById("in_prosecutorAckNo").value = t.prosecutorAckNo || "";
+        document.getElementById("in_courtFiledDate").value = t.courtFiledDate || "";
+        document.getElementById("in_trackNotes").value = t.notes && t.notes !== "-" ? t.notes : "";
+        savedAckNames = t.ackNames || [];
+        renderAckList();
+        renderTimeliness();
       }
 
-      function renderLawyerOptions(selected) {
-        const names = LAWYERS.slice();
-        if (selected && !names.includes(selected)) names.unshift(selected);
-        const el = document.getElementById("in_forwardTo");
-        el.innerHTML =
-          '<option value="">-- เลือกนิติกร --</option>' +
-          names.map((x) => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
-        el.value = selected || "";
-      }
 
-      function handleExtraChange(input) {
-        if (!input.files || !input.files.length) return;
-        const allowed = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
-        Array.from(input.files).forEach((file) => {
-          const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowed.includes(ext)) {
-            warn("ชนิดไฟล์ไม่ถูกต้อง", `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`);
-            return;
-          }
-          if (file.size > 100 * 1024 * 1024) {
-            warn("ขนาดไฟล์เกินกำหนด", `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`);
-            return;
-          }
-          extraFiles.push(file.name);
-        });
-        input.value = "";
-        renderExtraList();
-      }
-
-      function removeExtra(index) {
-        extraFiles.splice(index, 1);
-        renderExtraList();
-      }
-
-      function renderExtraList() {
-        if (viewOnly) {
-          ECMIS103.renderAttachments("extraList", savedExtraNames);
-          return;
+      function renderPosting() {
+        const c = currentCase;
+        const p = c.l3AnswerPosting || {};
+        ECMIS103.setText("f_trackingBadge", p.trackingNo);
+        ECMIS103.setText("f_postMethod", (p.method || "-") + " — " + (p.trackingNo || "-"));
+        ECMIS103.setText("f_postDate", formatISODate(p.postDate) + (p.postOffice ? " ณ " + p.postOffice : ""));
+        ECMIS103.setText("f_postAddress", (p.destination || "-") + "\n" + (p.address || ""));
+        ECMIS103.setText("f_postFee", p.fee != null ? Number(p.fee).toFixed(2) + " บาท" : "-");
+        ECMIS103.renderAttachments("f_postReceipts", p.receiptNames);
+        const sig = (c.l3Signatures || {})["L3-32"];
+        ECMIS103.setText("f_postedBy", p.postedBy || c.officer);
+        ECMIS103.setText("f_postSignedAt", sig && sig.signedAt);
+        ECMIS103.setText("f_postNotes", p.notes);
+        const img = document.getElementById("f_postSigImg");
+        if (sig && sig.image) {
+          img.src = sig.image;
+          img.classList.remove("d-none");
         }
-        document.getElementById("extraList").innerHTML = extraFiles
+      }
+
+      function syncEvents() {
+        events.forEach((e, i) => {
+          e.date = document.getElementById("ev_date_" + i).value;
+          e.status = document.getElementById("ev_status_" + i).value;
+          e.detail = document.getElementById("ev_detail_" + i).value.trim();
+        });
+      }
+
+      function renderEvents() {
+        const today = Activity103.toISODate(new Date());
+        document.getElementById("eventTable").innerHTML = events
           .map(
-            (name, idx) => `
- <div class="l3-attachment-row">
- <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(name)}</div>
- <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeExtra(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
- </div>`,
+            (e, i) => `<tr>
+ <td>${i + 1}</td>
+ <td><input type="date" id="ev_date_${i}" class="form-control" max="${today}" value="${esc(e.date || "")}" /></td>
+ <td><select id="ev_status_${i}" class="form-control" onchange="onEventStatusChange()">${EVENT_STATUSES.map((st) => `<option value="${esc(st)}"${st === e.status ? " selected" : ""}>${esc(st)}</option>`).join("")}</select></td>
+ <td><input type="text" id="ev_detail_${i}" class="form-control" placeholder="เช่น ศูนย์ไปรษณีย์ / ผู้ลงชื่อรับ" value="${esc(e.detail || "")}" /></td>
+ <td>${i === 0 ? "" : `<button type="button" class="btn btn-secondary" style="height: 30px; padding: 0 10px" onclick="removeEvent(${i})" title="ลบสถานะนี้"><i class="fa-solid fa-trash-can"></i></button>`}</td>
+ </tr>`,
           )
           .join("");
       }
 
-      function chairmanLabel() {
-        return ECMIS103.signerLabel("chairman");
+      function addEvent() {
+        syncEvents();
+        const last = events[events.length - 1] || {};
+        const nextIdx = Math.min(EVENT_STATUSES.indexOf(last.status) + 1, EVENT_STATUSES.indexOf(DELIVERED));
+        events.push({ date: Activity103.toISODate(new Date()), status: EVENT_STATUSES[Math.max(nextIdx, 0)], detail: "" });
+        renderEvents();
+        onEventStatusChange();
+      }
+
+      function removeEvent(i) {
+        syncEvents();
+        events.splice(i, 1);
+        renderEvents();
+        onEventStatusChange();
+      }
+
+      function onEventStatusChange() {
+        syncEvents();
+        const delivered = events.find((e) => e.status === DELIVERED);
+        const input = document.getElementById("in_deliveredDate");
+        if (delivered && delivered.date && !input.value) input.value = delivered.date;
+        renderTimeliness();
+      }
+
+      function renderTimeliness() {
+        const box = document.getElementById("timelinessBox");
+        const date = document.getElementById("in_deliveredDate").value;
+        const d = Activity103.computeAnswerDeadline(currentCase);
+        box.classList.remove("is-soon", "is-overdue");
+        if (!date || !d) {
+          ECMIS103.setText("f_timeliness", date ? "ไม่มีข้อมูลกำหนดยื่นคำให้การ" : "ยังไม่ระบุวันที่ปลายทางรับเอกสาร");
+          ECMIS103.setText("f_timelinessNote", "");
+          return null;
+        }
+        const due = Activity103.toISODate(d.currentDue);
+        const diff = Math.round((new Date(date) - new Date(due)) / 86400000);
+        ECMIS103.setText("f_timeliness", "รับเอกสาร " + formatISODate(date) + " / ครบกำหนด " + ECMIS103.formatThaiDate(d.currentDue));
+        if (diff > 0) {
+          box.classList.add("is-overdue");
+          ECMIS103.setText("f_timelinessNote", "เกินกำหนด " + diff + " วัน");
+        } else {
+          if (diff >= -3) box.classList.add("is-soon");
+          ECMIS103.setText("f_timelinessNote", diff === 0 ? "ทันกำหนด (วันสุดท้าย)" : "ทันกำหนด ก่อนครบ " + Math.abs(diff) + " วัน");
+        }
+        return diff;
+      }
+
+      function handleAckChange(input) {
+        if (!input.files || !input.files.length) return;
+        const allowed = ["pdf", "png", "jpg", "jpeg"];
+        Array.from(input.files).forEach((file) => {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (!allowed.includes(ext)) {
+            Swal.fire({
+              icon: "warning",
+              title: "ชนิดไฟล์ไม่ถูกต้อง",
+              text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          if (file.size > 100 * 1024 * 1024) {
+            Swal.fire({
+              icon: "warning",
+              title: "ขนาดไฟล์เกินกำหนด",
+              text: `ไฟล์ "${file.name}" มีขนาดเกินกำหนดสูงสุด 100 MB`,
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          ackFiles.push(file);
+        });
+        input.value = "";
+        renderAckList();
+      }
+
+      function removeAck(index) {
+        ackFiles.splice(index, 1);
+        renderAckList();
+      }
+
+      function renderAckList() {
+        const el = document.getElementById("ackList");
+        if (viewOnly) {
+          el.innerHTML = savedAckNames
+            .map((n) => '<div class="l3-attachment-row"><div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' + esc(n) + "</div></div>")
+            .join("");
+          return;
+        }
+        el.innerHTML = ackFiles
+          .map((file, idx) => {
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            return `
+ <div class="l3-attachment-row">
+ <div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>${esc(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></div>
+ <button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeAck(${idx})" title="ลบไฟล์นี้"><i class="fa-solid fa-trash-can"></i></button>
+ </div>`;
+          })
+          .join("");
+      }
+
+      function selectedSigner() {
+        return currentCase ? currentCase.l3CoverLetterSignerRole : null;
       }
 
       function esc(t) {
@@ -855,7 +1042,7 @@
         ECMIS103.setText("f_answerCourt", c.courtName);
         ECMIS103.renderAttachments("f_answerFiles", docs.answerFileNames);
         ECMIS103.renderAttachments("f_letterFiles", docs.letterFileNames);
-        ECMIS103.renderAttachments("f_evidenceFiles", docs.evidenceNames);
+        ECMIS103.renderAttachments("f_evidenceFiles", (docs.evidenceNames || []).concat(docs.extraNames || []));
 
         ECMIS103.setText("f_lawyerName", c.officer || ECMIS103.signerLabel("case_legal_officer"));
         ECMIS103.setText("f_lawyerSignedAt", sig && sig.signedAt);
@@ -868,25 +1055,37 @@
         ECMIS103.setText("f_internalDocDate", c.l3AnswerInternalDocDate);
         ECMIS103.setText("f_proposedSigner", c.l3CoverLetterSignerName);
         ECMIS103.setText("f_dispatchNotes", c.l3AnswerDispatchNotes);
-        renderLawyerOptions(c.officer || ECMIS103.signerLabel("case_legal_officer"));
+        ECMIS103.setText("f_forwardTo", "ปิดขั้นตอนส่งคำให้การ — รอศาลปกครองมีคำพิพากษา (กรณี 2)");
+        ECMIS103.setText("f_trackedBy", c.officer || ECMIS103.signerLabel("case_legal_officer"));
         const today = Activity103.toISODate(new Date());
-        document.getElementById("in_collectedDate").value = today;
-        document.getElementById("in_collectedDate").max = today;
-        ECMIS103.renderAttachments("f_sigAnswerFiles", docs.answerFileNames);
-        ECMIS103.renderAttachments("f_sigLetterFiles", docs.letterFileNames);
-        ECMIS103.renderAttachments("f_sigEvidenceFiles", docs.evidenceNames);
-        ECMISWetSign.renderPrintDocs("printDocs", c, {
-          docs: [{ docKey: DOC_KEY, label: DOC_LABEL, fileName: "คำให้การ " + (c.blackCaseNo || "") }],
-        });
-        const lock = (c.l3DocLock || {})[DOC_KEY];
-        ECMIS103.setText(
-          "f_lockBadge",
-          lock ? "ล็อกฉบับจริงครั้งที่ " + lock.version + " — " + lock.lockedAt : "ยังไม่ล็อก (สำนวนเดิม)",
-        );
+        document.getElementById("in_deliveredDate").max = today;
+        document.getElementById("in_courtFiledDate").max = today;
+        const posting = c.l3AnswerPosting || {};
+        document.getElementById("in_deliveredDate").min = posting.postDate || "";
+        events = [{ date: posting.postDate || today, status: "รับฝากแล้ว", detail: (posting.postOffice || "") + (posting.trackingNo ? " เลขพัสดุ " + posting.trackingNo : "") }];
+        renderPosting();
+        renderEvents();
+        renderTimeliness();
+        const o = c.l3AnswerOriginals || {};
+        /* 2026-10-22 ไม่มีขั้นธุรการรวบรวมฉบับจริง (10-3-22) แล้ว — ซ่อนส่วนนี้เมื่อเคสไม่มีข้อมูลเดิม */
+        if (!c.l3AnswerOriginals) document.getElementById("f_originalSets").closest(".form-card").style.display = "none";
+        ECMIS103.setText("f_originalSets", o.collectedDate);
+        ECMIS103.renderAttachments("f_originalScans", o.extraNames || o.scanNames);
+        ECMIS103.setText("f_adminCollectedBy", o.collectedBy || ECMIS103.signerLabel("admin_legal"));
+        const adminSig = (c.l3Signatures || {})["L3-30"];
+        ECMIS103.setText("f_adminSignedAt", (adminSig && adminSig.signedAt) || o.collectedDate);
+        ECMIS103.setText("f_originalNotes", o.notes);
+        const adminImg = document.getElementById("f_adminSigImg");
+        if (adminSig && adminSig.image) {
+          adminImg.src = adminSig.image;
+          adminImg.classList.remove("d-none");
+        }
+        /* ฉบับลงนามจริง (หมึก) ที่ธุรการบันทึกผลไว้ — docs/wet-sign/plan.md */
+        ECMISWetSign.renderSignedView("wetSignAnswerView", c, "answer", "คำให้การ (ค.๓)");
         ECMIS103.setText("f_externalDocNo", c.l3AnswerExternalDocNo);
         ECMIS103.setText("f_externalDocDate", c.l3AnswerExternalDocDate);
         ECMIS103.setText("f_urgencyBadge", c.l3AnswerUrgency || "-");
-        ECMISWetSign.renderSignedView("wetSignCoverView", c, "coverLetter", COVER_LABEL);
+        ECMISWetSign.renderSignedView("wetSignCoverView", c, "coverLetter", "หนังสือนำส่งถึงอธิบดีอัยการ (หนังสือขอให้แก้ต่าง)");
 
         const sigs = c.l3Signatures || {};
         const reviewText = (r, code) =>
@@ -894,7 +1093,7 @@
             ? [
                 "ร่างคำให้การ: " + (r.checkedAnswer ? "ตรวจแล้ว" : "ยังไม่ตรวจ") + " · หนังสือนำส่ง: " + (r.checkedLetter ? "ตรวจแล้ว" : "ยังไม่ตรวจ"),
                 "ความเห็น: " + (r.notes || "-"),
-                "ยืนยันในระบบ: " + (r.reviewedBy || "-") + " เมื่อ " + ((sigs[code] && sigs[code].signedAt) || r.reviewedAt || "-"),
+                "ลงนาม: " + (r.reviewedBy || "-") + " เมื่อ " + ((sigs[code] && sigs[code].signedAt) || r.reviewedAt || "-"),
               ].join("\n")
             : "-";
         ECMIS103.setText("f_groupReview", reviewText(c.l3AnswerGroupReview, "L3-24"));
@@ -942,144 +1141,83 @@
 
       function submitForm() {
         if (!currentCase) return;
-        const missing = ECMISWetSign.validate("wetSignRecorder");
-        if (missing) return warn("ข้อมูลไม่ครบถ้วน", missing);
-        const recordedBy = ECMIS103.signerLabel("admin_legal");
-        const wet = ECMISWetSign.collect("wetSignRecorder", {
-          docKey: DOC_KEY,
-          signerRole: "chairman",
-          signerName: chairmanLabel(),
-          recordedBy: recordedBy,
-        });
-        const rec = wet[DOC_KEY];
-        const collectedDateISO = document.getElementById("in_collectedDate").value;
-        if (!collectedDateISO) return warn("กรุณาระบุวันที่รับเอกสาร", "กรุณาระบุวันที่รับเอกสารฉบับจริง");
-        if (collectedDateISO > Activity103.toISODate(new Date())) return warn("วันที่รับเอกสารไม่ถูกต้อง", "วันที่รับเอกสารฉบับจริงต้องไม่เป็นวันในอนาคต");
-        const forwardTo = document.getElementById("in_forwardTo").value;
-        if (!forwardTo) return warn("กรุณาเลือกนิติกร", "กรุณาเลือกนิติกร กลุ่มงานคดี ที่ต้องการส่งต่อ");
-        const notes = document.getElementById("in_collectNotes").value.trim() || "-";
-        const collectedDate = ECMIS103.formatThaiDate(collectedDateISO);
-        const extraNames = extraFiles.slice();
-        const dueText = document.getElementById("f_currentDue").textContent + " (" + document.getElementById("f_daysLeft").textContent + ")";
+        syncEvents();
+        const today = Activity103.toISODate(new Date());
+        const posting = currentCase.l3AnswerPosting || {};
+        if (events.some((e) => !e.date)) return warn("กรุณาระบุวันที่ของสถานะ", "กรุณาระบุวันที่ให้ครบทุกแถวในประวัติสถานะการจัดส่ง");
+        if (events.some((e) => e.date > today)) return warn("วันที่สถานะไม่ถูกต้อง", "วันที่ของสถานะการจัดส่งต้องไม่เป็นวันในอนาคต");
+        if (events.some((e, i) => i > 0 && e.date < events[i - 1].date))
+          return warn("ลำดับวันที่ไม่ถูกต้อง", "วันที่ของสถานะต้องเรียงจากเก่าไปใหม่");
+        const last = events[events.length - 1];
+        if (!last || last.status !== DELIVERED)
+          return warn("ยังนำจ่ายไม่สำเร็จ", "สถานะล่าสุดต้องเป็น \"" + DELIVERED + "\" จึงจะปิดขั้นตอนได้ หากส่งคืนให้ติดต่อไปรษณีย์และบันทึกสถานะเพิ่ม");
+        const deliveredDate = document.getElementById("in_deliveredDate").value;
+        if (!deliveredDate) return warn("กรุณาระบุวันที่ปลายทางรับเอกสาร", "กรุณาเลือกวันที่สำนักงานคดีปกครองรับเอกสาร");
+        if (deliveredDate > today) return warn("วันที่รับเอกสารไม่ถูกต้อง", "วันที่รับเอกสารต้องไม่เป็นวันในอนาคต");
+        if (posting.postDate && deliveredDate < posting.postDate)
+          return warn("วันที่รับเอกสารไม่ถูกต้อง", "วันที่รับเอกสารต้องไม่ก่อนวันที่ฝากส่ง (" + formatISODate(posting.postDate) + ")");
+        const receiverName = document.getElementById("in_receiverName").value.trim();
+        if (!receiverName) return warn("กรุณาระบุผู้ลงชื่อรับ", "กรุณากรอกชื่อผู้ลงชื่อรับตามใบตอบรับ");
+        if (!ackFiles.length) return warn("กรุณาแนบใบตอบรับ", "กรุณาแนบใบตอบรับอย่างน้อย 1 ไฟล์");
+        const courtFiledDate = document.getElementById("in_courtFiledDate").value;
+        if (courtFiledDate && courtFiledDate < deliveredDate)
+          return warn("วันที่ยื่นต่อศาลไม่ถูกต้อง", "วันที่อัยการยื่นคำให้การต่อศาลต้องไม่ก่อนวันที่รับเอกสาร");
+        const prosecutorAckNo = document.getElementById("in_prosecutorAckNo").value.trim();
+        const notes = document.getElementById("in_trackNotes").value.trim() || "-";
+        const diff = renderTimeliness();
+        const onTime = diff == null ? null : diff <= 0;
+        const timelinessText = document.getElementById("f_timelinessNote").textContent || "-";
+        const trackedBy = currentCase.officer || ECMIS103.signerLabel("case_legal_officer");
+        const ackNames = ackFiles.map((f) => f.name);
 
         Swal.fire({
-          icon: "question",
-          title: "ยืนยันบันทึกผลการลงนามจริงและรวบรวมฉบับจริง?",
+          icon: onTime === false ? "warning" : "question",
+          title: "ยืนยันปิดขั้นตอนส่งคำให้การ?",
           html: `
  <div class="emd-summary">
  <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
- <p><strong>คำให้การ ลงนามโดย:</strong> ${esc(rec.signerName)} เมื่อ ${esc(rec.signedDate)} (ฉบับล็อกครั้งที่ ${esc(rec.version)})</p>
- <p><strong>ไฟล์สแกนคำให้การ:</strong> ${esc(rec.scanFiles.join(", "))}</p>
- <p><strong>วันที่รับเอกสารฉบับจริง:</strong> ${esc(collectedDate)}</p>
- <p><strong>หนังสือนำส่ง:</strong> ${esc(currentCase.l3AnswerExternalDocNo || "-")} (${esc(currentCase.l3AnswerUrgency || "-")})</p>
- <p><strong>เอกสารเพิ่มเติม:</strong> ${extraNames.length ? extraNames.map(esc).join(", ") : "ไม่มี"}</p>
- <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
- <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ${esc(forwardTo)} รวบรวมเอกสารเพื่อจัดส่งอัยการ</p>
+ <p><strong>เลขพัสดุ:</strong> ${esc(posting.trackingNo || "-")} (${events.length} สถานะ ล่าสุด: ${esc(last.status)})</p>
+ <p><strong>ปลายทางรับเอกสาร:</strong> ${esc(formatISODate(deliveredDate))} โดย ${esc(receiverName)}</p>
+ <p><strong>เทียบกำหนดยื่นคำให้การ:</strong> ${esc(timelinessText)}</p>
+ <p><strong>ยื่นคำให้การต่อศาล:</strong> ${courtFiledDate ? esc(formatISODate(courtFiledDate)) : "ยังไม่ทราบ"}</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา (กรณี 2)</p>
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: "ยืนยันบันทึกผลและส่งนิติกร",
+          confirmButtonText: "ยืนยันปิดขั้นตอน",
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#16a34a",
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          ECMIS103.openSignatureModal(
+          ECMIS103.confirmRecord(
             {
-              title: "ยืนยันบันทึกผลการลงนามจริงในระบบ",
-              signer: recordedBy,
-              certId: "PACC-LEGAL-ADMIN-2569-103",
+              title: "ลงนามบันทึกผลการติดตามและปิดขั้นตอนส่งคำให้การ",
+              signer: ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-LAWYER-2569-103",
             },
             (image) => {
-              Activity103.sign(currentCase.id, STEP_CODE, image, { signer: recordedBy });
+              Activity103.sign(currentCase.id, STEP_CODE, image);
               Activity103.advance(currentCase.id, STEP_CODE, {
-                l3WetSign: Object.assign({}, currentCase.l3WetSign, wet),
-                l3AnswerChairmanSigning: {
-                  signedBy: rec.signerName,
-                  signedAt: rec.signedDate,
-                  notes: rec.note || "-",
-                  wetSign: true,
-                  recordedBy: recordedBy,
-                  recordedAt: rec.recordedAt,
-                },
-                l3AnswerOriginals: {
-                  extraNames: extraNames,
+                l3AnswerTracking: {
+                  events: events.map((e) => Object.assign({}, e)),
+                  deliveredDate: deliveredDate,
+                  receiverName: receiverName,
+                  ackNames: ackNames,
+                  prosecutorAckNo: prosecutorAckNo,
+                  courtFiledDate: courtFiledDate,
+                  onTime: onTime,
                   notes: notes,
-                  collectedDate: collectedDate,
-                  collectedDateISO: collectedDateISO,
-                  forwardTo: forwardTo,
-                  collectedBy: ECMIS103.signerLabel("admin_legal"),
+                  trackedBy: trackedBy,
                 },
+                statusBadge: "bg-success text-white",
                 assignedRole: "case_legal_officer",
               });
 
               Swal.fire({
                 icon: "success",
-                title: "บันทึกผลการลงนามจริงและรวบรวมฉบับจริงสำเร็จ!",
-                text: "ส่ง " + forwardTo + " รวบรวมเอกสารเพื่อจัดส่งอัยการเรียบร้อยแล้ว",
-                timer: 2000,
-                showConfirmButton: false,
-              }).then(ECMIS103.goInbox);
-            },
-          );
-        });
-      }
-
-      /* ส่งกลับแก้ไข — ประธานฯ ไม่ลงนาม / แก้ไขด้วยลายมือ → นิติกรแก้ไขที่ 10-3-13 (ปลดล็อก พิมพ์ฉบับใหม่) */
-      function returnForm() {
-        if (!currentCase) return;
-        Swal.fire({
-          icon: "warning",
-          title: "ส่งกลับให้นิติกรแก้ไข?",
-          html:
-            '<div class="emd-summary"><p>ผู้บริหารไม่ลงนามหรือแก้ไขเอกสารด้วยลายมือ — ระบบจะปลดล็อกคำให้การและหนังสือนำส่ง ' +
-            "ให้นิติกรแก้ไขและเสนอใหม่ (พิมพ์ฉบับใหม่)</p></div>",
-          input: "textarea",
-          inputLabel: "เหตุผล / ประเด็นที่ต้องแก้ไข (จำเป็น)",
-          inputPlaceholder: "เช่น ประธานกรรมการให้แก้ไขข้อต่อสู้ ข้อ 2",
-          inputValidator: (v) => (!v || !v.trim() ? "กรุณาระบุเหตุผลการส่งกลับ" : undefined),
-          showCancelButton: true,
-          confirmButtonText: "ยืนยันส่งกลับแก้ไข",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#dc2626",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          const reason = String(res.value || "").trim();
-          const recordedBy = ECMIS103.signerLabel("admin_legal");
-          ECMIS103.openSignatureModal(
-            { title: "ยืนยันส่งกลับแก้ไขในระบบ", signer: recordedBy, certId: "PACC-LEGAL-ADMIN-2569-103" },
-            (image) => {
-              const at = ECMIS103.formatThaiDateTime(new Date());
-              Activity103.sign(currentCase.id, STEP_CODE, image, { signer: recordedBy });
-              Activity103.advance(
-                currentCase.id,
-                STEP_CODE,
-                Object.assign(
-                  {
-                    status: "นิติกรแก้ไขร่างคำให้การ/หนังสือนำส่ง (ผู้บริหารไม่ลงนาม)",
-                    statusCode: "L3_PENDING_LAWYER_EXTENSION",
-                    statusBadge: "bg-danger text-white",
-                    l3Step: "L3-21",
-                    l3StepSeq: 3,
-                    assignedRole: "case_legal_officer",
-                    l3WetSignReturnNotes: reason,
-                    l3AnswerReturn: {
-                      from: "admin_legal",
-                      decisionAnswer: "RETURN",
-                      decisionLetter: "RETURN",
-                      notes: reason,
-                      reviewedBy: recordedBy,
-                      reviewedAt: at,
-                    },
-                  },
-                  ECMISWetSign.unlockDocs(currentCase, ["answer", "coverLetter"]),
-                ),
-              );
-              Swal.fire({
-                icon: "success",
-                title: "ส่งกลับแก้ไขสำเร็จ!",
-                text: "ส่งกลับให้ " + (currentCase.officer || ECMIS103.signerLabel("case_legal_officer")) + " แก้ไขเรียบร้อยแล้ว",
+                title: "ปิดขั้นตอนส่งคำให้การสำเร็จ!",
+                text: "สำนักงานคดีปกครองรับเอกสารแล้ว — รอศาลปกครองมีคำพิพากษา",
                 timer: 2000,
                 showConfirmButton: false,
               }).then(ECMIS103.goInbox);

@@ -243,7 +243,7 @@ t("B2 → ฟิลด์ l2 รอบ 2 + advance L2-RECEIVE-BOARD-ROUND2 → d
   const withText = buildAct7Patch("B2", {}, { decision: "OTHER", noticeNo: "a", noticeDate: "2026-10-01", detail: "รายละเอียด" }, BY, AT).patch;
   assert.equal(withText.l2BoardResolutionRound2Text, "รายละเอียด");
 });
-t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, advance L3-19 → case_group_director", () => {
+t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, ส่งตรงนิติกร 10-3-13 (ตัด 10-3-10/12)", () => {
   const r = buildAct7Patch(
     "B3",
     { id: "คดี-3" },
@@ -269,8 +269,10 @@ t("B3 → l3BoardResolution + l3ResolutionNotice + docNo, advance L3-19 → case
   assert.equal(p.l3ResolutionNotice.notes, "-");
   assert.equal(p.l3ResolutionNotice.acknowledgedBy, null);
   assert.equal(p.l3ResolutionNoticeDocNo, "ปป 0003/4501");
-  assert.equal(p.assignedRole, "case_group_director");
-  assert.deepEqual(r.advance, { module: "Activity103", stepCode: "L3-19" });
+  assert.equal(p.statusCode, "L3_PENDING_LAWYER_EXTENSION");
+  assert.equal(p.assignedRole, "case_legal_officer");
+  assert.equal(p.officer, "นายก (นิติกร)");
+  assert.equal(r.advance, null);
 });
 t("B4 → มติอุทธรณ์ + L2_PENDING_APPEAL_NOTICE_DRAFT/case_tracking_secretary", () => {
   const r = buildAct7Patch(
@@ -364,13 +366,17 @@ t("B4/B5/B6 ที่รอ → true; ป้ายตามจุดเชื่
   assert.equal(isAct7Waiting({ statusCode: "L9_PROPOSED_TO_BOARD" }), true);
   assert.equal(isAct7Waiting({ statusCode: "L3_AWAITING_JUDGMENT" }), true);
   assert.equal(act7WaitInfo({ statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD" }).linkId, "B4");
-  assert.equal(act7WaitInfo({ statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD" }).badge, "ระหว่างรอกิจกรรมที่ 7");
-  assert.equal(act7WaitInfo({ statusCode: "L9_PROPOSED_TO_BOARD" }).badge, "ระหว่างรอกิจกรรมที่ 7");
+  assert.equal(act7WaitInfo({ statusCode: "L2_APPEAL_SUBMITTED_TO_BOARD" }).badge, "ระหว่างรอมติคณะกรรมการ ป.ป.ท.");
+  assert.equal(act7WaitInfo({ statusCode: "L9_PROPOSED_TO_BOARD" }).badge, "ระหว่างรอมติคณะกรรมการ ป.ป.ท.");
   assert.equal(act7WaitInfo({ statusCode: "L3_AWAITING_JUDGMENT" }).linkId, "B6");
   assert.equal(act7WaitInfo({ statusCode: "L3_AWAITING_JUDGMENT" }).badge, "รอศาลมีคำพิพากษา");
 });
-t("สถานะอื่น (รวม B1–B3, B7) / null → false", () => {
-  ["RETURNED_FROM_EXEC", "L2_READY_FOR_BOARD_ROUND2", "L3_READY_FOR_BOARD", "L7_SENT_TO_PROSECUTOR", ""].forEach((s) => {
+t("B3 รอมติ (ตัด 10-3-10 แล้ว 2026-10-21) → ปุ่มกล่องงานของธุรการ", () => {
+  assert.equal(act7WaitInfo({ statusCode: "L3_READY_FOR_BOARD" }).linkId, "B3");
+  assert.equal(act7WaitInfo({ statusCode: "L3_READY_FOR_BOARD" }).badge, "ระหว่างรอมติคณะกรรมการ ป.ป.ท.");
+});
+t("สถานะอื่น (รวม B1–B2, B7) / null → false", () => {
+  ["RETURNED_FROM_EXEC", "L2_READY_FOR_BOARD_ROUND2", "L7_SENT_TO_PROSECUTOR", ""].forEach((s) => {
     assert.equal(isAct7Waiting({ statusCode: s }), false, s);
     assert.equal(act7WaitInfo({ statusCode: s }), null, s);
   });

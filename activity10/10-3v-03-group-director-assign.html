@@ -23,11 +23,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
     <style>
       h1,
@@ -341,7 +342,11 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอธุรการกองกฎหมายรับเรื่องและส่งต่อมาที่ขั้นตอนนี้ก่อน
+            รอ ผอ.กองกฎหมายลงนามมอบหมายที่หน้า
+            <a href="10-3v-02-legal-director-assign.html"
+              >ผอ.กองกฎหมาย มอบหมาย (คำพิพากษา)</a
+            >
+            ก่อน
           </div>
         </div>
 
@@ -381,10 +386,16 @@
                   <div class="read-box font-monospace" id="f_redCaseNo">-</div>
                 </div>
               </div>
-              <div class="form-group">
-                <label>เลขทะเบียนคดีปกครอง</label>
-                <div class="read-box font-monospace" id="f_verdictRegNo">
-                  -
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>เลขทะเบียนคดีปกครอง</label>
+                  <div class="read-box font-monospace" id="f_verdictRegNo">
+                    -
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>ผอ.กองกฎหมายมอบหมายให้</label>
+                  <div class="read-box" id="f_directorAssignTarget">-</div>
                 </div>
               </div>
               <div class="form-grid-2">
@@ -395,6 +406,15 @@
                 <div class="form-group">
                   <label>ผู้ถูกฟ้องคดี</label>
                   <div id="f_defendants"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ข้อสั่งการจาก ผอ.กองกฎหมาย</label>
+                <div
+                  class="read-box read-box-textarea"
+                  id="f_directorOrderNotes"
+                >
+                  -
                 </div>
               </div>
               <div class="form-group">
@@ -475,10 +495,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
     <script src="assets/ecmis-capture.js"></script>
 
     <script>
@@ -531,8 +552,10 @@
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.setText("f_redCaseNo", c.redCaseNo);
         ECMIS103.setText("f_verdictRegNo", c.l3VerdictRegNo);
+        ECMIS103.setText("f_directorAssignTarget", c.l3DirectorAssignTarget);
         ECMIS103.renderPartyList("f_plaintiffs", c.plaintiffs);
         ECMIS103.renderPartyList("f_defendants", c.defendants);
+        ECMIS103.setText("f_directorOrderNotes", c.l3DirectorOrderNotes);
         ECMIS103.renderAttachments("f_attachments", c.attachmentFileNames);
 
         const originEl = document.getElementById("f_originCase");

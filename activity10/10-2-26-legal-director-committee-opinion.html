@@ -25,9 +25,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260904_1" />
 
@@ -117,7 +118,7 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอคณะกรรมการ ป.ป.ท.</div>
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
           <div class="stepper" id="stepperPart2"></div>
@@ -196,10 +197,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-2.js?v=20261014_6"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
+    <script src="assets/ecmis-review-decision.js?v=20261021_3"></script>
 
     <script>
       const STEP_CODE = "L2-COMMITTEE-DIRECTOR-OPINION";
@@ -245,36 +248,16 @@
         }
       }
 
-      function sendBack() {
-        Swal.fire({
-          icon: "warning",
-          title: "ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง",
-          input: "textarea",
-          inputLabel: "เหตุผลที่ส่งกลับ",
-          inputPlaceholder: "ระบุเหตุผล...",
-          showCancelButton: true,
-          confirmButtonText: "ส่งกลับ",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#dc2626",
-          cancelButtonColor: "#64748b",
-          inputValidator: (value) => (!value ? "กรุณาระบุเหตุผลที่ส่งกลับ" : undefined),
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          Activity102.unsign(currentCase.id, "committeeGroupApprove");
-          Activity102.advance(currentCase.id, STEP_CODE, {
-            statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
-            status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
-            assignedRole: "group_director",
-            officer: ECMIS102.signerLabel("group_director"),
-            l2CommitteeDirectorSendBackReason: res.value.trim(),
-          });
-          Swal.fire({
-            icon: "success",
-            title: "ส่งกลับเรียบร้อย",
-            text: "ส่งกลับให้ ผอ.กลุ่มงานความเห็นแย้ง พิจารณาใหม่แล้ว",
-            timer: 1900,
-            showConfirmButton: false,
-          }).then(ECMIS102.goInbox);
+      /* ส่งกลับ — เรียกจากการ์ดผลการพิจารณา (assets/ecmis-review-decision.js)
+         ซึ่งรับเหตุผล ยืนยัน และแจ้งผลให้แล้ว */
+      function sendBack(reason) {
+        Activity102.unsign(currentCase.id, "committeeGroupApprove");
+        Activity102.advance(currentCase.id, STEP_CODE, {
+          statusCode: "L2_PENDING_COMMITTEE_DIRECTOR_OPINION",
+          status: "ผอ.กองกฎหมายพิจารณาให้ความเห็น",
+          assignedRole: "group_director",
+          officer: ECMIS102.signerLabel("group_director"),
+          l2CommitteeDirectorSendBackReason: reason,
         });
       }
 
@@ -331,6 +314,22 @@
       document.addEventListener("click", (e) => {
         const dropdown = document.getElementById("profileDropdown");
         if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove("show");
+      });
+    </script>
+    <!-- ผลการพิจารณา เห็นชอบ | ส่งกลับ (assets/ecmis-review-decision.js, 2026-10-21) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMISReviewDecision.mount({
+          approveTitle: "เห็นชอบ",
+          approveSub: "ให้ความเห็นและลงนาม ส่งต่อธุรการ",
+          sendBackTitle: "ส่งกลับ ผอ.กลุ่มงานความเห็นแย้ง",
+          sendBackSub: "ทบทวนการอนุมัติ",
+          hideOnSendBack: ["in_opinion"],
+          hide: ['button[onclick="sendBack()"]'],
+          onApprove: submitForm,
+          onSendBack: sendBack,
+          doneText: "ส่งกลับให้ ผอ.กลุ่มงานความเห็นแย้ง พิจารณาใหม่แล้ว",
+        });
       });
     </script>
   </body>

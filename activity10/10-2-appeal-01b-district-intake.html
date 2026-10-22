@@ -25,9 +25,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260904_1" />
 
@@ -127,7 +128,7 @@
             <i class="fa-solid fa-chevron-down me-1" id="stepperAccordionIcon"></i>แสดงขั้นตอนก่อนยื่นอุทธรณ์ (สายเดิมที่ปิดสำนวนแล้ว)
           </button>
           <div id="stepperAccordionBody" class="d-none" style="margin-top: 14px">
-            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+            <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอคณะกรรมการ ป.ป.ท.</div>
             <div class="stepper" id="stepperPart1"></div>
             <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ (ก่อนยื่นอุทธรณ์)</div>
             <div class="stepper" id="stepperPart2"></div>
@@ -138,8 +139,9 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคำร้องในขั้นตอนนี้</strong><br />
-            คำร้องจะมาถึงขั้นตอนนี้เมื่อผู้ยื่นคำขอที่ได้รับแจ้งมติไม่อนุญาตเปิดเผยข้อมูลแล้วใช้สิทธิ์ยื่นอุทธรณ์ (ต่อจากหน้า
-            <a href="10-2-17-legal-admin-deny-dispatch-committee.html">ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน</a>)
+            คำร้องจะมาถึงขั้นตอนนี้เมื่อผู้ยื่นคำขอที่ได้รับแจ้งมติไม่อนุญาตเปิดเผยข้อมูล หรืออนุญาตให้เปิดเผยบางส่วน แล้วใช้สิทธิ์ยื่นอุทธรณ์ (ต่อจากหน้า
+            <a href="10-2-17-legal-admin-deny-dispatch-committee.html">ธุรการกองกฎหมาย ออกเลขส่งและมอบหมายกอง/สำนักเจ้าของสำนวน</a> หรือ
+            <a href="10-2-14-legal-admin-disclose-partial-notice-dispatch.html">ธุรการกองกฎหมาย ส่งแจ้งผล (เปิดเผย/บางส่วน)</a>)
           </div>
         </div>
 
@@ -147,7 +149,7 @@
           <div class="l2-note l2-note-info">
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              คำร้องนี้ถูกปิดสำนวนด้วยมติ<strong>ไม่อนุญาตเปิดเผยข้อมูล</strong>แล้ว และผู้ยื่นคำขอได้รับแจ้งสิทธิ์ในการยื่นอุทธรณ์
+              คำร้องนี้ถูกปิดสำนวนด้วยมติ<strong id="f_closedResolution">ไม่อนุญาตเปิดเผยข้อมูล</strong>แล้ว และผู้ยื่นคำขอได้รับแจ้งสิทธิ์ในการยื่นอุทธรณ์
               เจ้าหน้าที่เขตบันทึกรับหนังสืออุทธรณ์ที่ยื่นตรงที่เขตที่หน้านี้ และส่งตรงถึงนิติกรเจ้าของสำนวนได้เลย โดยไม่ต้องผ่านกองบริหารคดี
             </div>
           </div>
@@ -191,7 +193,7 @@
                 <div class="read-box" id="f_resolutionScreening">-</div>
               </div>
               <div class="form-group">
-                <label>มติร่างเสนอบอร์ด (ก่อนส่งกิจกรรมที่ 7)</label>
+                <label>มติร่างเสนอบอร์ด (ก่อนเสนอบอร์ด)</label>
                 <div class="read-box" id="f_resolutionBoardDraft">-</div>
               </div>
               <div class="form-group">
@@ -199,7 +201,7 @@
                 <div class="read-box" id="f_resolutionBoardReply">-</div>
               </div>
               <div class="form-group" id="otherBoardResolutionsGroup" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
-                <label>มติบอร์ดกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน <span class="l2-optional">(ข้อมูลอ้างอิง)</span></label>
+                <label>มติบอร์ด ครั้งอื่นบนสำนวนเดียวกัน <span class="l2-optional">(ข้อมูลอ้างอิง)</span></label>
                 <div id="f_otherBoardResolutions"></div>
               </div>
               <div class="form-group" style="border-top: 1px dashed var(--border-color); padding-top: 16px">
@@ -218,7 +220,7 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>เลขที่หนังสือรับ (เลขสารบัญ) <span style="color: #dc2626">*</span></label>
-                  <input type="text" id="in_receiveNo" class="form-control font-monospace" style="font-weight: 600" />
+                  <input type="text" id="in_receiveNo" class="form-control font-monospace" style="font-weight: 600" data-doc-no="{BE}/" data-doc-no-kind="receive" />
                 </div>
                 <div class="form-group">
                   <label>วันที่ลงรับ <span style="color: #dc2626">*</span></label>
@@ -298,10 +300,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-2.js?v=20261014_6"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
 
     <script>
       const STEP_CODE = "L2-APPEAL-INTAKE-DISTRICT";
@@ -315,7 +318,7 @@
         ECMIS102.guardRole(STEP.role, STEP.roleTitle);
       });
 
-      /* คำร้องที่รอขั้นตอนนี้ = สาย DENY ที่ปิดสำนวนแล้วและถูกยื่นอุทธรณ์ตรงที่เขต
+      /* คำร้องที่รอขั้นตอนนี้ = สาย DENY/PARTIAL ที่ปิดสำนวนแล้วและถูกยื่นอุทธรณ์ตรงที่เขต
          (statusCode L2_PENDING_APPEAL_INTAKE_DISTRICT ไม่มี step ไหนผลิตออกมาเอง — ดู
          ROUTES["L2_PENDING_APPEAL_INTAKE_DISTRICT"] ใน ecmis-10-2.js)
 
@@ -465,6 +468,9 @@
         ECMIS102.renderCaseMeta(c);
         document.getElementById("f_requesterName").textContent = c.l2AppellantName || c.requesterName || "-";
         ECMIS102.renderOriginalCaseCard(c);
+        /* อุทธรณ์ได้ทั้งมติไม่อนุญาต (DENY) และอนุญาตบางส่วน (PARTIAL) — แสดงตามมติจริงของคำร้อง */
+        document.getElementById("f_closedResolution").textContent =
+          c.l2ResolutionType === "PARTIAL" ? "อนุญาตให้เปิดเผยข้อมูลบางส่วน" : "ไม่อนุญาตเปิดเผยข้อมูล";
 
         document.getElementById("in_receiveDate").value = todayISO();
         const seq = String(5100 + Math.floor(Math.random() * 400)).padStart(4, "0");
@@ -573,5 +579,6 @@
         if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove("show");
       });
     </script>
+    <script src="assets/ecmis-doc-no.js?v=20261022_1"></script>
   </body>
 </html>

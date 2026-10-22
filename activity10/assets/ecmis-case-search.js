@@ -2,6 +2,8 @@
    - "pacc"  สำนวนใน ป.ป.ท. (Activity10.getPaccIntakeDatabase) — เลือกแล้วเติมฟอร์ม/เชื่อมเลขสำนวน (onSelect)
    - "legal" สำนวนในกองกฎหมาย (Activity10.getCases = เคสที่ธุรการรับเข้าระบบแล้ว) — ดูอย่างเดียว ไม่เชื่อมข้อมูล
              ถ้าไม่พบ ธุรการบันทึกรับเรื่องใหม่ในหน้า 02-board-intake.html
+   - "legacy" ข้อมูลระบบเดิมกองกฎหมาย (กจ.10, ECMISLegacy.lawSource) — ดูอย่างเดียว
+   สำนวน ป.ป.ท. ที่นำเข้าจากระบบเดิม (legacyIms) แสดงแผงประวัติ กจ.5/กจ.6 ท้ายรายละเอียด
    ใช้ใน 02-board-intake.html, หน้านิติกร 10-3-04 / 10-3v-11 / 10-3v-19 และ search-case.html
    ECMISCaseSearch.mountPanel(host, opts) สร้าง markup + ผูกเหตุการณ์ในตัว ⇒ ทุกหน้าหน้าตาเหมือนกัน · ไม่แก้ข้อมูลสำนวน */
 (function (global) {
@@ -163,8 +165,16 @@
     },
   };
 
+  /* "legacy" ข้อมูลระบบเดิมของกองกฎหมาย (กจ.10) — มาจาก assets/ecmis-legacy-data.js ถ้าหน้าโหลดไว้ */
   function sourceOf(name) {
+    if (name === "legacy" && global.ECMISLegacy) return global.ECMISLegacy.lawSource;
     return SOURCES[name] || SOURCES.pacc;
+  }
+
+  /* แผงประวัติสำนวนเดิมจากระบบเดิม (กจ.5/กจ.6) ของสำนวน ป.ป.ท. ที่นำเข้า */
+  function legacyImsHtml(c) {
+    const L = global.ECMISLegacy;
+    return L && c && c.legacyIms ? L.renderImsPanel(c.legacyIms) : "";
   }
 
   function present(v) {
@@ -230,7 +240,12 @@
           `<dl class="intake-preview-grid">${renderDetailList(g.rows)}</dl>`,
       )
       .join("");
+    /* files() คืน null ⇒ แหล่งนั้นแสดงไฟล์เองใน extraHtml */
     const files = src.files(c);
+    const filesHtml = !files
+      ? ""
+      : `<div class="intake-files-title"><i class="fa-solid fa-paperclip me-1" aria-hidden="true"></i>เอกสารในสำนวน (${files.length})</div>
+ ${files.length ? renderFileList(files) : '<div style="font-size:0.85em; color:#64748b;">ไม่มีเอกสารในสำนวน</div>'}`;
     return `
  <div class="intake-preview-head">
  <i class="fa-solid fa-folder-open" style="color:#2563eb;" aria-hidden="true"></i>
@@ -238,8 +253,8 @@
  </div>
  <dl class="intake-preview-grid">${renderDetailList(src.detailRows(c))}</dl>
  ${complaintHtml}
- <div class="intake-files-title"><i class="fa-solid fa-paperclip me-1" aria-hidden="true"></i>เอกสารในสำนวน (${files.length})</div>
- ${files.length ? renderFileList(files) : '<div style="font-size:0.85em; color:#64748b;">ไม่มีเอกสารในสำนวน</div>'}`;
+ ${filesHtml}
+ ${src.extraHtml ? src.extraHtml(c) : legacyImsHtml(c)}`;
   }
 
   function cellHtml(parts) {
@@ -351,22 +366,27 @@
      คืน { search, clear, preview, closePreview, findCase } */
   function mountPanel(host, options) {
     const src = sourceOf((options && options.source) || "pacc");
-    const isLegal = src === SOURCES.legal;
+    const isLegacy = !!src.action; /* แหล่งข้อมูลระบบเดิม (กจ.10) — ดูอย่างเดียว ปุ่มท้ายรายละเอียดจาก src.action */
+    const isLegal = src === SOURCES.legal || isLegacy;
     const opts = Object.assign(
       {
-        prefix: isLegal ? "lawcase" : "intake",
+        prefix: isLegacy ? "legacy" : isLegal ? "lawcase" : "intake",
         collapsible: true,
         open: false,
         title: src.title,
         notFound: src.notFound,
-        icon: isLegal ? "fa-scale-balanced" : "fa-magnifying-glass",
+        icon: isLegacy ? "fa-database" : isLegal ? "fa-scale-balanced" : "fa-magnifying-glass",
         selectLabel: "เลือกสำนวนนี้",
-        placeholder: isLegal
-          ? "พิมพ์เลขสำนวน / เลขรับกองกฎหมาย / ชื่อเรื่อง / ชื่อคู่กรณี..."
-          : "พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา...",
-        helper: isLegal
-          ? "* ค้นหาสำนวนที่รับเข้าระบบกองกฎหมายแล้ว (ดูอย่างเดียว ไม่เชื่อมข้อมูล) — ถ้าไม่พบ ธุรการบันทึกรับเรื่องใหม่ได้ในหน้าบันทึกรับเรื่อง"
-          : "* ค้นหาได้จาก: <strong>เลขสำนวน</strong>, <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>, <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong> / กรอกตัวกรองเพิ่มเติมเพื่อกรองผลให้แคบลง",
+        placeholder: isLegacy
+          ? "พิมพ์เลขสำนวน ป.ป.ท. / เลขหนังสือนำส่ง / ชื่อเรื่อง / ชื่อผู้ถูกกล่าวหา / หน่วยงาน..."
+          : isLegal
+            ? "พิมพ์เลขสำนวน / เลขรับกองกฎหมาย / ชื่อเรื่อง / ชื่อคู่กรณี..."
+            : "พิมพ์เลขสำนวน / เลขสำนวนไต่สวน (ป.ป.ท.) / ชื่อผู้กล่าวหา / ชื่อผู้ถูกกล่าวหา...",
+        helper: isLegacy
+          ? "* ค้นหาข้อมูลที่ย้ายมาจากระบบเดิม (IMS) ของกองกฎหมาย — ดูอย่างเดียว · สำนวนที่มีข้อมูลเรื่องร้องเรียนในระบบเดิมจะแสดงลำดับเหตุการณ์ มติ และเอกสารครบชุด"
+          : isLegal
+            ? "* ค้นหาสำนวนที่รับเข้าระบบกองกฎหมายแล้ว (ดูอย่างเดียว ไม่เชื่อมข้อมูล) — ถ้าไม่พบ ธุรการบันทึกรับเรื่องใหม่ได้ในหน้าบันทึกรับเรื่อง"
+            : "* ค้นหาได้จาก: <strong>เลขสำนวน</strong>, <strong>เลขสำนวนไต่สวน ป.ป.ท.</strong>, <strong>ชื่อผู้กล่าวหา</strong> หรือ <strong>ชื่อผู้ถูกกล่าวหา</strong> / กรอกตัวกรองเพิ่มเติมเพื่อกรองผลให้แคบลง",
       },
       options || {},
     );
@@ -435,7 +455,9 @@
       if (!target) return;
       markRow(ids.results, caseId, "is-previewing");
       panel.dataset.caseId = caseId;
-      const action = isLegal
+      const action = isLegacy
+        ? src.action(target)
+        : isLegal
         ? `<a class="btn btn-primary" href="${escapeHtml(src.viewUrl(target))}"><i class="fa-solid fa-up-right-from-square me-1" aria-hidden="true"></i>เปิดดูสำนวน</a>`
         : opts.onSelect
           ? `<button type="button" class="btn btn-primary" id="${p}SelectCaseBtn" data-cs-action="select"><i class="fa-solid fa-check me-1" aria-hidden="true"></i>${escapeHtml(opts.selectLabel)}</button>`
@@ -496,6 +518,7 @@
     findCase: (id) => findIn(SOURCES.pacc, id),
     caseNo: (c) => SOURCES.pacc.caseNo(c),
     renderDetail: (c) => renderDetailFor(SOURCES.pacc, c),
+    legacyImsHtml: legacyImsHtml,
     renderFileList: renderFileList,
     openFile: openFile,
     markRow: markRow,

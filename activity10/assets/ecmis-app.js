@@ -172,7 +172,7 @@
       responsibilities:
         "วิเคราะห์ข้อกฎหมาย/ข้อเท็จจริง, จัดทำบันทึกความเห็น (เห็นชอบ/เห็นแย้ง), ร่างคำให้การ/คำแก้อุทธรณ์คดีปกครอง และติดตามสถานะ/ผลคำพิพากษา",
       note: "หากงานล้นมือ นิติกรกลุ่มงานอื่นอาจถูกมอบหมายให้ช่วยดำเนินการในคดีที่ไม่ซับซ้อนได้",
-      perms: ["view.all", "download", "legal.opinion", "doc.generate"],
+      perms: ["view.assigned", "download", "legal.opinion", "doc.generate"],
     },
     {
       id: "case_legal_officer",
@@ -186,7 +186,7 @@
       responsibilities:
         "ตรวจสอบคำฟ้องคดีปกครองเพื่อหามูลเหตุคดี ประสานนักสืบเจ้าของสำนวน จัดทำบันทึกสรุปความเห็น ร่างคำให้การ/คำแก้อุทธรณ์ และติดตามสถานะ/ผลคำพิพากษาคดีปกครอง",
       note: "รับผิดชอบสำนวนคดีปกครองในกลุ่มงานคดีโดยเฉพาะ",
-      perms: ["view.all", "download", "legal.opinion", "doc.generate"],
+      perms: ["view.assigned", "download", "legal.opinion", "doc.generate"],
     },
     {
       id: "group_director",
@@ -282,9 +282,9 @@
       org: "กองบริหารคดี",
       act: "10.2",
       responsibilities:
-        "พิจารณาเรื่องอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลและมอบหมายกลุ่มงานบริหารติดตามคดี, พิจารณานำเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7)",
+        "พิจารณาเรื่องอุทธรณ์คำสั่งไม่เปิดเผยข้อมูลและมอบหมายกลุ่มงานบริหารติดตามคดี, พิจารณานำเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท.",
       note: "ผู้บังคับบัญชาระดับผู้อำนวยการของกองบริหารคดี เฉพาะสายงานอุทธรณ์ (กิจกรรม 10.2)",
-      perms: ["view.assigned", "download", "assign.work", "approve.general"],
+      perms: ["view.all", "download", "assign.work", "approve.general"],
     },
     {
       id: "case_tracking_director",
@@ -298,7 +298,7 @@
       responsibilities:
         "พิจารณาและมอบหมายนิติกรเจ้าของสำนวนดำเนินการเรื่องอุทธรณ์, ลงนามส่งต่อผู้อำนวยการกองบริหารคดีก่อนนำเรื่องเข้าที่ประชุมคณะกรรมการ ป.ป.ท.",
       note: "กำกับดูแลกลุ่มงานบริหารติดตามคดี เฉพาะสายงานอุทธรณ์ (กิจกรรม 10.2)",
-      perms: ["view.assigned", "download", "assign.work", "sign.own"],
+      perms: ["view.all", "download", "assign.work", "sign.own"],
     },
     {
       id: "appeal_subcommittee_secretariat",
@@ -353,7 +353,7 @@
       org: "กองบริหารคดี",
       act: "10.2",
       responsibilities:
-        "รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ, ออกเลขส่งและยื่นเรื่องเข้ากิจกรรมที่ 7, บันทึกมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์ (sheet 6-7 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล)",
+        "รับเรื่องอุทธรณ์และบันทึกเข้าสู่ระบบ, ออกเลขส่งและยื่นเรื่องเสนอคณะกรรมการ ป.ป.ท., บันทึกมติคณะกรรมการ ป.ป.ท. ต่อคำอุทธรณ์ (sheet 6-7 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล)",
       note: "งานธุรการของสาย Flow 4 อุทธรณ์ ทั้งหมดเดิมใช้ admin_legal (ธุรการกองกฎหมาย) — แยกออกมาเป็น role นี้ เพื่อให้สอดคล้องกับหน่วยงานเจ้าของเรื่อง (กองบริหารคดี) เหมือน case_bureau_director/case_tracking_director/case_tracking_secretary ที่เหลือในสายนี้ ดู docs/10-2-flow4-appeal-plan.md",
       perms: ["view.assigned", "download", "assign.work"],
     },
@@ -2065,6 +2065,12 @@
       icon: "fa-folder-plus",
       label: "บันทึกรับเรื่องเข้าระบบ",
       visible: (role) => role.id === "admin_legal" || role.id === "Kanda.R",
+    },
+    {
+      href: "04-legal-director-review.html",
+      icon: "fa-user-tie",
+      label: "พิจารณาและมอบหมายเรื่อง",
+      visible: (role) => role.id === "dir_legal" || role.id === "Napas.S",
     },
     {
       href: "08-legal-director-approval.html",

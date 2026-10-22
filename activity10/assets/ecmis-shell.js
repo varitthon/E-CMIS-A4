@@ -425,8 +425,8 @@
       box.style.cssText = 'margin-top:10px;padding:8px 10px;border:1px dashed #94a3b8;border-radius:8px;font-size:0.85em';
       box.innerHTML = '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-weight:600">'
         + '<input type="checkbox" id="act7SwitchInput" style="width:auto;margin:0" />'
-        + '<span>จำลองผลจากกิจกรรมที่ 7 (bypass)</span></label>'
-        + '<div style="margin-top:4px;color:#64748b;font-size:0.9em">เปิด = ธุรการบันทึกผลพิจารณาแทนกิจกรรมที่ 7 ได้ในระบบนี้</div>';
+        + '<span>จำลองผลมติคณะกรรมการ ป.ป.ท. (bypass)</span></label>'
+        + '<div style="margin-top:4px;color:#64748b;font-size:0.9em">เปิด = ธุรการบันทึกผลพิจารณาของคณะกรรมการ ป.ป.ท.แทน ได้ในระบบนี้</div>';
       const note = body.querySelector('.profile-note');
       body.insertBefore(box, note || null);
       box.querySelector('input').addEventListener('change', function (e) {
@@ -624,9 +624,15 @@
       tag.textContent = tagText;
       summary.appendChild(tag);
     }
+    /* data-prev-step-current = ส่วนของขั้นตอนปัจจุบัน (เปิดไว้ก่อน แถบสีน้ำเงิน) — 2026-10-21
+       data-prev-step-hint = ข้อความกำกับด้านขวา (ค่าเริ่มต้น "ข้อมูลขั้นตอนก่อนหน้า") */
+    const isCurrent = el.hasAttribute('data-prev-step-current');
+    if (isCurrent) box.classList.add('prev-step--current');
+    /* หัวกล่องพับแทนหัวการ์ด — ซ่อนหัวการ์ดด้านใน ไม่ให้ซ้ำ (ส่วนขั้นปัจจุบันเสมอ / อื่น ๆ ใส่ data-prev-step-hide-head) */
+    if (isCurrent || el.hasAttribute('data-prev-step-hide-head')) box.classList.add('prev-step--nohead');
     const hint = document.createElement('span');
     hint.className = 'prev-step-hint';
-    hint.textContent = 'ข้อมูลขั้นตอนก่อนหน้า';
+    hint.textContent = el.getAttribute('data-prev-step-hint') || (isCurrent ? 'ขั้นตอนปัจจุบัน' : 'ข้อมูลขั้นตอนก่อนหน้า');
     summary.appendChild(hint);
     const body = document.createElement('div');
     body.className = 'prev-step-body';
@@ -635,7 +641,8 @@
     el.parentNode.insertBefore(box, el);
     body.appendChild(el);
     const key = prevStepKey(el);
-    box.open = el.hasAttribute('data-prev-step-open') || prevStepOpenState.get(key) === true;
+    const remembered = prevStepOpenState.get(key);
+    box.open = remembered != null ? remembered : el.hasAttribute('data-prev-step-open') || isCurrent;
     box.addEventListener('toggle', function () { prevStepOpenState.set(key, box.open); });
     box.hidden = isHiddenCard(el);
     if (global.MutationObserver) {
@@ -714,7 +721,24 @@
     });
   }
 
+  /* ป้ายบนหัวกล่องพับที่มี element นี้อยู่ (เช่น เลขคดีที่เดิมอยู่บนหัวการ์ดที่ถูกซ่อน) */
+  function setPrevStepTag(target, text) {
+    const el = typeof target === 'string' ? document.getElementById(target) : target;
+    const box = el && el.closest ? el.closest('details.prev-step') : null;
+    if (!box) return;
+    const summary = box.querySelector(':scope > summary');
+    let tag = summary.querySelector('.prev-step-tag');
+    if (!tag) {
+      tag = document.createElement('span');
+      tag.className = 'prev-step-tag';
+      summary.insertBefore(tag, summary.querySelector('.prev-step-hint'));
+    }
+    tag.textContent = text || '';
+    tag.hidden = !text;
+  }
+
   global.ECMISPrevStep = {
+    setTag: setPrevStepTag,
     collapse: collapsePrevSteps,
     openAll: function () { setAllPrevSteps(true); },
     closeAll: function () { setAllPrevSteps(false); },

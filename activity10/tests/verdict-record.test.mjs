@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const sandbox = {};
-for (const f of ["ecmis-verdict-lists.js", "ecmis-verdict-record.js", "ecmis-verdict-doc.js"]) {
+for (const f of ["ecmis-court-prosecutor-lists.js", "ecmis-verdict-lists.js", "ecmis-verdict-record.js", "ecmis-verdict-doc.js"]) {
   const src = fs.readFileSync(new URL("../assets/" + f, import.meta.url), "utf8");
   new Function("window", src)(sandbox);
 }
@@ -245,6 +245,121 @@ t("สำนวนเดิม: ผูกไว้ (paccSourceId) มาก่�
   assert.equal(R.paccOf({ id: "คดี-2", paccSourceId: "" }, db), null);
 });
 
+console.log("\nรายการศาล/อัยการ (ฉบับร่าง)");
+const CL = sandbox.ECMISCourtLists;
+
+t("77 จังหวัด; อัยการประพฤติมิชอบ 77 สำนักงาน; ศาลกรองตามประเภท × ชั้น", () => {
+  assert.equal(CL.PROVINCES.length, 77);
+  assert.equal(new Set(CL.PROVINCES).size, 77);
+  assert.equal(CL.officesFor("MISCONDUCT").length, 77);
+  assert.ok(CL.courtsFor("CORRUPTION", "FIRST").includes("ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 9"));
+  /* ศาลแขวง / ศาลจังหวัด แยกกัน — ศาลจังหวัดไม่มีศาลแขวงปน และกลับกัน */
+  assert.ok(CL.courtsFor("PROVINCIAL", "FIRST").includes("ศาลจังหวัดชลบุรี"));
+  assert.ok(!CL.courtsFor("PROVINCIAL", "FIRST").includes("ศาลจังหวัดกรุงเทพมหานคร"));
+  assert.ok(!CL.courtsFor("PROVINCIAL", "FIRST").some((n) => /แขวง/.test(n)));
+  assert.ok(CL.courtsFor("DISTRICT", "FIRST").every((n) => /^ศาลแขวง/.test(n)));
+  assert.deepEqual(CL.courtsFor("PROVINCIAL", "SUPREME"), ["ศาลฎีกา"]);
+  assert.deepEqual(CL.courtsFor("", "FIRST"), []);
+  /* ไม่มีตัวเลือก "อื่นๆ" ในรายชื่อศาล */
+  Object.keys(CL.COURTS).forEach((t) =>
+    Object.keys(CL.COURTS[t]).forEach((lv) => assert.ok(!CL.COURTS[t][lv].includes(CL.OTHER), t + "/" + lv)),
+  );
+});
+
+t("2 ส่วน: ชั้นศาลอาญา = ทุจริต/แขวง/จังหวัด, ชั้นศาลปกครอง = ศาลปกครอง; รหัสเดิม MISCONDUCT แปลงตามชื่อศาล", () => {
+  assert.deepEqual(CL.courtTypesForLevel("APPEAL").map((x) => x.code), ["CORRUPTION", "DISTRICT", "PROVINCIAL"]);
+  assert.deepEqual(CL.courtTypesForLevel("ADMIN_FIRST").map((x) => x.code), ["ADMIN"]);
+  assert.deepEqual(CL.courtsFor("ADMIN", "ADMIN_SUPREME"), ["ศาลปกครองสูงสุด"]);
+  assert.ok(CL.courtsFor("ADMIN", "ADMIN_FIRST").includes("ศาลปกครองกลาง"));
+  assert.equal(CL.normalizeType("MISCONDUCT", "ศาลแขวงดุสิต"), "DISTRICT");
+  assert.equal(CL.normalizeType("MISCONDUCT", "ศาลจังหวัดเลย"), "PROVINCIAL");
+  assert.equal(CL.normalizeType("MISCONDUCT", ""), "");
+  assert.equal(CL.prosecutorTypeForCourt("DISTRICT"), "MISCONDUCT");
+  assert.equal(CL.prosecutorTypeForCourt("ADMIN"), "");
+  assert.equal(LISTS.levelPart("ADMIN_SUPREME"), "ADMIN");
+  assert.equal(LISTS.VERDICT_STAGES.ADMIN_FIRST.length, 4);
+  /* ศาลปกครองไม่บังคับประเภทคำพิพากษา (ลงโทษ/ยกฟ้อง) */
+  assert.deepEqual(R.validate("ADMIN_FIRST", { verdictStage: LISTS.VERDICT_STAGES.ADMIN_FIRST[0] }, "done"), []);
+  assert.ok(R.validate("FIRST", { verdictStage: LISTS.VERDICT_STAGES.FIRST[0] }, "done").length > 0);
+});
+
+t("ข้อความอัยการต้นทางเดิม (สนง.) จับคู่ประเภท/สำนักงานได้; ไม่พบ = อื่นๆ", () => {
+  assert.deepEqual(CL.findOffice("สนง.อัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1"), {
+    type: "CORRUPTION",
+    name: "สำนักงานอัยการพิเศษฝ่ายคดีปราบปรามการทุจริต 1",
+  });
+  assert.equal(CL.findOffice("สำนักงานอัยการจังหวัดเลย").type, "MISCONDUCT");
+  const other = CL.findOffice("สำนักงาน ป.ป.ท.");
+  assert.equal(other.name, CL.OTHER);
+  assert.equal(other.other, "สำนักงาน ป.ป.ท.");
+  assert.equal(CL.courtTypeOfName("ศาลจังหวัดสระบุรี"), "PROVINCIAL");
+  assert.equal(CL.courtTypeOfName("ศาลปกครองเชียงใหม่"), "ADMIN");
+  assert.equal(CL.courtTypeOfName("ศาลอุทธรณ์คดีพิเศษ"), "CORRUPTION");
+});
+
+console.log("\nแยกรายบุคคล (ชั้นศาล × บุคคล)");
+
+t("2 คนในชั้นเดียวกัน = 2 บันทึก; ศาลใช้ร่วมทั้งชั้น; judgments สรุปรายชื่อ; คดีถึงที่สุดเมื่อครบทุกคน", () => {
+  let kase = withPatch(baseCase(), "FIRST", fullInput, {
+    person: "นาย ก",
+    status: "done",
+    court: { type: "CORRUPTION", name: "ศาลเดิม", blackNo: "อท. 1/2568" },
+  });
+  kase = withPatch(kase, "FIRST", { verdictType: "2", verdictStage: "1.2 ศาลชั้นต้นพิพากษายกฟ้อง", isFinal: false }, {
+    person: "นาย ข",
+    status: "done",
+    court: { type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 1", blackNo: "อท. 1/2568" },
+  });
+  const recs = R.getRecords(kase).filter((r) => r.level === "FIRST");
+  assert.deepEqual(recs.map((r) => r.person), ["นาย ก", "นาย ข"]);
+  assert.ok(recs.every((r) => r.court.name === "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 1"), "ศาลล่าสุดใช้ร่วมทุกคน");
+  assert.equal(kase.judgments.length, 1);
+  assert.match(kase.judgments[0].result, /นาย ก: .*\/ นาย ข: ศาลชั้นต้นพิพากษายกฟ้อง/);
+  assert.equal(kase.judgments[0].isFinal, false);
+  assert.deepEqual(R.personsAt(kase, "FIRST"), ["นาย ก", "นาย ข"]);
+});
+
+t("ลบบุคคล: เหลือคนเดียว judgments กลับเป็นผลของคนนั้น; ลบหมด = ลบรายการที่ฟอร์มดูแล", () => {
+  let kase = withPatch(baseCase(), "FIRST", fullInput, { person: "นาย ก", status: "done" });
+  kase = withPatch(kase, "FIRST", { verdictType: "2" }, { person: "นาย ข", status: "draft" });
+  kase = Object.assign(kase, R.removePersonPatch(kase, "FIRST", "นาย ก"));
+  assert.deepEqual(R.personsAt(kase, "FIRST"), ["นาย ข"]);
+  assert.equal(kase.judgments[0].result, "ยกฟ้อง");
+  kase = Object.assign(kase, R.removePersonPatch(kase, "FIRST", "นาย ข"));
+  assert.equal(kase.verdictRecords.length, 0);
+  assert.equal(kase.judgments.length, 0);
+});
+
+t("บันทึกรุ่นเดิมไม่มี person = ผู้ถูกกล่าวหาคนแรกของสำนวน; รายชื่อให้เลือกรวมจำเลย+สำนวนเดิมไม่ซ้ำ", () => {
+  const kase = Object.assign(baseCase(), { verdictRecords: [{ level: "FIRST", status: "draft", fields: {}, court: {} }] });
+  assert.equal(R.getRecords(kase)[0].person, "ณัฐกานต์ แพนดอร่า");
+  const names = R.personCandidates(
+    { defendants: ["นาย ก", "นาย ข (อดีตนายก อบต.)"], accused: "นาย ก" },
+    { accused: "นาย ค, นาย ข และ นาย ง" },
+  );
+  assert.deepEqual(names, ["นาย ก", "นาย ข", "นาย ค", "นาย ง"]);
+});
+
+t("ค่าเริ่มต้นคนใหม่ในชั้นที่มีคนอื่นแล้ว = ศาลเดิมของชั้น ผลว่าง; สำนวนใหม่ = ประเภทศาลจากหน้า 02", () => {
+  const kase = withPatch(baseCase(), "APPEAL", fullInput, { person: "นาย ก", court: { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ" } });
+  const s = R.initialState(kase, "APPEAL", "นาย ข");
+  assert.equal(s.court.name, "ศาลอุทธรณ์คดีพิเศษ");
+  assert.equal(s.fields.verdictType, "");
+  assert.equal(R.initialState(Object.assign(baseCase(), { courtSystem: "PROVINCIAL", courtName: "" }), "FIRST").court.type, "PROVINCIAL");
+  /* รหัสเดิมไม่มีชื่อศาล = ไม่รู้ว่าแขวงหรือจังหวัด → ว่าง; ประเภทศาลอาญาไม่ใช้กับชั้นศาลปกครอง */
+  assert.equal(R.initialState(Object.assign(baseCase(), { courtSystem: "MISCONDUCT", courtName: "" }), "FIRST").court.type, "");
+  assert.equal(R.initialState(Object.assign(baseCase(), { courtSystem: "CORRUPTION", courtName: "" }), "ADMIN_FIRST").court.type, "");
+});
+
+t("ตัวอย่างรุ่นก่อน (เลขคดีดำตรงตัวอย่าง) ถูกแทนด้วยรุ่นใหม่; บันทึกจริงไม่ถูกแทน", () => {
+  const s = LISTS.SAMPLE_RECORDS.find((x) => x.caseId === "คดี-100004/2569");
+  const old = { id: s.caseId, category: "10.1", verdictRecords: [{ level: "FIRST", court: { blackNo: "อ. 230/2568" }, fields: {} }] };
+  const [hit] = R.samplePatches([old], [s]);
+  assert.deepEqual(hit.patch.verdictRecords.map((r) => r.person), ["นายสมชาย ทุจริตมั่น", "นายประเสริฐ ร่วมคิด"]);
+  const real = { id: s.caseId, category: "10.1", verdictRecords: [{ level: "FIRST", court: { blackNo: "อ. 999/2569" }, fields: {} }] };
+  assert.equal(R.samplePatches([real], [s]).length, 0);
+});
+
 console.log("\nExcel (ชีต ฐาน)");
 
 t("หัวตาราง 3 แถว 49 คอลัมน์ A–AW และรวมเซลล์กลุ่ม", () => {
@@ -303,7 +418,45 @@ t("หลายชั้นศาล = หลายแถว เรียงช�
   assert.deepEqual(R.getRecords(kase).map((x) => x.level), ["FIRST", "SUPREME"]);
 });
 
+t("แยกรายบุคคล: 1 แถวต่อชั้น×บุคคล คอลัมน์ F และ AF เป็นชื่อบุคคลของแถว", () => {
+  let kase = withPatch(baseCase(), "FIRST", fullInput, { person: "นาย ก", status: "done" });
+  kase = withPatch(kase, "FIRST", fullInput, { person: "นาย ข", status: "done" });
+  const rows = R.excelRows([kase], DEPS);
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows.map((r) => [r[col("F")], r[col("AF")]]), [["นาย ก", "นาย ก"], ["นาย ข", "นาย ข"]]);
+});
+
 console.log("\nWord (แบบสรุปการวิเคราะห์คดี)");
+
+t("Word: หลายคนในชั้น → ป้าย 'ศาลชั้นต้น › ชื่อ'; ประเภทศาลที่เลือกกำหนดแถวศาล", () => {
+  let kase = withPatch(baseCase(), "FIRST", fullInput, {
+    person: "นาย ก",
+    status: "done",
+    court: { type: "MISCONDUCT", name: "ศาลอาญา", blackNo: "อ. 5/2568" },
+  });
+  kase = withPatch(kase, "FIRST", { verdictType: "2" }, { person: "นาย ข", status: "draft", court: kase.verdictRecords[0].court });
+  const html = D.buildSummaryHtml(kase, DEPS);
+  assert.ok(html.includes("ศาลชั้นต้น › นาย ก"));
+  assert.ok(html.includes("ศาลชั้นต้น › นาย ข พิพากษายกฟ้อง"));
+  assert.ok(html.includes("– นาย ข: พิพากษายกฟ้อง"));
+  const misconductRow = html.split("คำพิพากษาศาลคดีประพฤติมิชอบ")[1].split("คำพิพากษาศาลคดีทุจริต")[0];
+  assert.ok(misconductRow.includes("อ. 5/2568"), "ศาลอาญา (ไม่มีคำว่าจังหวัด) อยู่แถวประพฤติมิชอบเพราะเลือกประเภทไว้");
+});
+
+t("Word: ส่วนศาลปกครองเพิ่มแถว 'คำพิพากษาศาลปกครอง' เฉพาะเมื่อมีบันทึก; ศาลแขวงอยู่แถวประพฤติมิชอบ", () => {
+  const stage = LISTS.VERDICT_STAGES.ADMIN_FIRST[0];
+  let kase = withPatch(baseCase(), "FIRST", fullInput, { person: "นาย ก", status: "done", court: { type: "DISTRICT", name: "ศาลแขวงดุสิต", blackNo: "อ. 9/2568" } });
+  assert.ok(!D.buildSummaryHtml(kase, DEPS).includes("คำพิพากษาศาลปกครอง"));
+  const misconductRow = D.buildSummaryHtml(kase, DEPS).split("คำพิพากษาศาลคดีประพฤติมิชอบ")[1].split("คำพิพากษาศาลคดีทุจริต")[0];
+  assert.ok(misconductRow.includes("อ. 9/2568"));
+  kase = withPatch(kase, "ADMIN_FIRST", { verdictStage: stage }, { person: "นาย ก", status: "done", court: { type: "ADMIN", name: "ศาลปกครองกลาง", blackNo: "ฟ. 77/2568" } });
+  const html = D.buildSummaryHtml(kase, DEPS);
+  const start = html.indexOf("คำพิพากษาศาลปกครอง<br>");
+  assert.ok(start > 0);
+  const adminRow = html.slice(start, html.indexOf("ศาลพิพากษาลงโทษ", start));
+  assert.ok(adminRow.includes("ฟ. 77/2568"));
+  assert.ok(adminRow.includes("ศาลปกครองกลาง"));
+});
 
 t("มีหัวข้อครบตามแบบฟอร์ม ผู้สรุป+ตำแหน่ง และแยกศาลประพฤติมิชอบ/ทุจริต", () => {
   const kase = withPatch(baseCase(), "FIRST", fullInput, {
@@ -332,6 +485,168 @@ t("ข้อความผู้ใช้ถูก escape", () => {
   const html = D.buildSummaryHtml(kase, DEPS);
   assert.ok(!html.includes("<script>x"));
   assert.ok(html.includes("&lt;b&gt;bad"));
+});
+
+t("ตัวอย่างหลายผู้ถูกกล่าวหา: สร้างสำนวนใหม่ครั้งเดียว แล้วเติมผลรายบุคคล", () => {
+  const ID = "คดี-100090/2569";
+  const created = R.sampleNewCases([], LISTS.SAMPLE_RECORDS, "2026-10-20");
+  const kase = created.find((c) => c.id === ID);
+  assert.ok(kase);
+  assert.equal(kase.category, "10.1");
+  assert.equal(kase.paccSourceId, "สำนวน-0090/2569");
+  assert.deepEqual(kase.defendants, ["นายประยุทธ ทองดี", "นางสาวมาลี ศรีงาม", "นายวีระ ใจกล้า"]);
+  assert.equal(kase.dateReceived, "2026-10-15");
+  assert.equal(kase.dueDate, "2026-10-30");
+  /* มีอยู่แล้ว → ไม่สร้างซ้ำ */
+  assert.equal(R.sampleNewCases([{ id: ID }], LISTS.SAMPLE_RECORDS).filter((c) => c.id === ID).length, 0);
+
+  const patch = R.samplePatches([kase], LISTS.SAMPLE_RECORDS).find((x) => x.caseId === ID).patch;
+  const merged = Object.assign({}, kase, patch);
+  assert.deepEqual(R.personsAt(merged, "FIRST").sort(), [...kase.defendants].sort());
+  assert.equal(R.personsAt(merged, "APPEAL").length, 2);
+  assert.equal(R.getRecord(merged, "FIRST", "นายวีระ ใจกล้า").fields.verdictType, "2");
+  assert.equal(R.getRecord(merged, "APPEAL", "นางสาวมาลี ศรีงาม").status, "draft");
+  assert.equal(R.excelRows([merged], {}).length, 5);
+  const first = merged.judgments.find((j) => j.verdictRecordLevel === "FIRST");
+  assert.equal(
+    first.result,
+    "ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย — นายประยุทธ ทองดี: ลงโทษ / นางสาวมาลี ศรีงาม: ลงโทษ / นายวีระ ใจกล้า: ยกฟ้อง",
+  );
+  assert.ok(LISTS.ACT7_SAMPLE["สำนวน-0090/2569"]);
+});
+
+t("รายชื่อบุคคลจากสำนวนเดิมที่มีผู้ถูกกล่าวหา 3 คน", () => {
+  const names = R.personCandidates(
+    { id: "x", category: "10.1" },
+    { accused: "นายประยุทธ ทองดี, นางสาวมาลี ศรีงาม และ นายวีระ ใจกล้า" },
+  );
+  for (const n of ["นายประยุทธ ทองดี", "นางสาวมาลี ศรีงาม", "นายวีระ ใจกล้า"]) assert.ok(names.includes(n), n);
+});
+
+console.log("\nแท็บรายบุคคล");
+
+t("ลำดับแท็บ: รายชื่อสำนวนก่อน แล้วต่อคนที่มีบันทึกแต่ไม่อยู่ในรายชื่อ (ไม่ซ้ำ)", () => {
+  assert.deepEqual(R.tabOrder(["ก", "ข"], ["ข", "ค", " ", "ก"]), ["ก", "ข", "ค"]);
+  assert.equal(R.previousPerson(["ก", "ข", "ค"], "ค"), "ข");
+  assert.equal(R.previousPerson(["ก", "ข"], "ก"), "");
+  assert.equal(R.previousPerson(["ก"], "ไม่มี"), "");
+});
+
+t("คัดลอกผล: ทุกช่องของ 3 ส่วน ไม่รวมศาล และไม่แก้ต้นฉบับ", () => {
+  const src = { verdictType: "1", jailYears: 2, isFinal: true, courtName: "ศาล X" };
+  const out = R.copyFields(src);
+  assert.equal(out.verdictType, "1");
+  assert.equal(out.jailYears, 2);
+  assert.equal(out.isFinal, true);
+  assert.equal(out.courtName, undefined);
+  assert.equal(out.resultDetail, "");
+  out.verdictType = "2";
+  assert.equal(src.verdictType, "1");
+});
+
+t("ค่าเริ่มต้นรายแท็บ: ข้อความ popup เดิมอยู่แท็บแรกเท่านั้น; คนที่มีบันทึกได้ผลของตัวเอง", () => {
+  const legacy = { id: "x", accused: "ก, ข", judgments: [{ level: "FIRST", issuer: "ศาล", result: "ลงโทษ", summary: "สรุปเดิม" }] };
+  const st = R.tabStates(legacy, "FIRST", ["ก", "ข"]);
+  assert.equal(st["ก"].fields.resultDetail, "สรุปเดิม");
+  assert.equal(st["ข"].fields.resultDetail, "");
+  const kase = Object.assign({}, legacy, R.buildRecordPatch(legacy, "FIRST", { verdictType: "2" }, { person: "ข", status: "draft" }));
+  const st2 = R.tabStates(kase, "FIRST", ["ก", "ข"]);
+  assert.equal(st2["ข"].fields.verdictType, "2");
+  assert.equal(st2["ข"].status, "draft");
+  assert.equal(st2["ก"].status, "");
+});
+
+t("บันทึกหลายคนพร้อมกัน: ศาลเดียวกันทุกคน; มีคนผิด = ไม่บันทึกใครเลย", () => {
+  const kase = { id: "x", accused: "ก, ข" };
+  const court = { type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 4", blackNo: "อท. 1/2569" };
+  const ok = R.buildLevelPatch(kase, "FIRST", [
+    { person: "ก", status: "done", fields: { verdictType: "1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย" } },
+    { person: "ข", status: "draft", fields: { verdictType: "2" } },
+  ], { court: court, fileNames: ["a.pdf"], by: "ผู้ทดสอบ" });
+  assert.deepEqual(ok.errors, []);
+  const merged = Object.assign({}, kase, ok.patch);
+  assert.deepEqual(R.personsAt(merged, "FIRST"), ["ก", "ข"]);
+  assert.equal(R.getRecord(merged, "FIRST", "ข").court.name, court.name);
+  assert.deepEqual(R.getRecord(merged, "FIRST", "ก").fileNames, ["a.pdf"]);
+  assert.equal(R.getRecord(merged, "FIRST", "ข").status, "draft");
+  assert.equal(merged.judgments.length, 1);
+
+  const bad = R.buildLevelPatch(kase, "FIRST", [
+    { person: "ก", status: "done", fields: { verdictType: "1" } },
+    { person: "ข", status: "draft", fields: { jailYears: -1 } },
+  ], { court: court });
+  assert.equal(bad.patch, null);
+  assert.deepEqual(bad.errors.map((e) => e.person), ["ก", "ข"]);
+  assert.equal(R.buildLevelPatch(kase, "FIRST", [], {}).patch, null);
+});
+
+t("ซ่อน/เลิกซ่อนบุคคลรายชั้น: ไม่ซ้ำ ไม่กระทบชั้นอื่น และไม่แก้สำนวนเดิม", () => {
+  const kase = { id: "x", verdictHiddenPersons: { APPEAL: ["ค"] } };
+  const p1 = R.hiddenPatch(kase, "APPEAL", "ข", true);
+  assert.deepEqual(p1.verdictHiddenPersons.APPEAL, ["ค", "ข"]);
+  assert.deepEqual(kase.verdictHiddenPersons.APPEAL, ["ค"]);
+  const k2 = Object.assign({}, kase, p1);
+  assert.deepEqual(R.hiddenPatch(k2, "APPEAL", ["ข"], true).verdictHiddenPersons.APPEAL, ["ค", "ข"]);
+  assert.deepEqual(R.hiddenPatch(k2, "APPEAL", ["ค", "ข"], false).verdictHiddenPersons.APPEAL, []);
+  assert.deepEqual(R.hiddenPersons(k2, "FIRST"), []);
+  assert.deepEqual(R.hiddenPatch({ id: "y" }, "FIRST", "ก", true).verdictHiddenPersons, { FIRST: ["ก"] });
+});
+
+t("AG: รายการจากชีต DD (ลบ 3.1 เดิม, เพิ่มฟ้องทุกราย/บางราย) และค่าที่เลือกลงคอลัมน์ AG ก่อนกรณีอัยการ", () => {
+  const flat = LISTS.PROSECUTOR_STATUSES.flatMap((x) => (typeof x === "string" ? [x] : x.items));
+  assert.equal(flat.length, 11);
+  assert.ok(flat.includes("3.1 พนักงานอัยการแจ้งคำสั่งฟ้องทุกราย"));
+  assert.ok(flat.includes("3.2 พนักงานอัยการแจ้งคำสั่งฟ้องบางราย"));
+  assert.ok(!flat.some((s) => /แจ้งคำสั่งฟ้อง$/.test(s)));
+  const base = { id: "x", accused: "ก", prosecutorCaseTypeName: "3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)" };
+  const kase = Object.assign({}, base, R.buildRecordPatch(base, "FIRST", { verdictType: "1" }, { person: "ก", status: "draft" }));
+  assert.equal(R.excelRows([kase], {})[0][col("AG")], "อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)");
+  kase.verdictProsecutorStatus = "3.2 พนักงานอัยการแจ้งคำสั่งฟ้องบางราย";
+  assert.equal(R.excelRows([kase], {})[0][col("AG")], "พนักงานอัยการแจ้งคำสั่งฟ้องบางราย");
+});
+
+t("รายละเอียดสำนวนเดิมในแถวขยาย: ดึงจากสำนวนเดิม + กิจกรรม 7; ไม่ได้ผูก = ไม่มีเลขสำนวนเดิม ค่าเป็น -", () => {
+  const deps = { paccDb: PACC_DB, act7: { "สำนวน-0001/2569": { ministry: "กระทรวงมหาดไทย", boardMeetingNo: "3/2568", boardOutcomes: { criminal: true } } } };
+  const d = R.paccDetailRows({ id: "x", paccSourceId: "สำนวน-0001/2569" }, deps);
+  const get = (label) => d.rows.find((r) => r.label === label).value;
+  assert.equal(d.paccId, "สำนวน-0001/2569");
+  /* 5 ช่องหลักที่ผู้ใช้ขอ: เลขสำนวน พฤติการณ์ เจ้าของสำนวน ประเภทมติชี้มูล หน่วยงาน */
+  assert.equal(d.main.caseNo, "0001/2569");
+  assert.equal(d.main.allegation, "เรียกรับเงิน");
+  assert.equal(d.main.owner, "นายสมชาย ใจดี");
+  assert.equal(d.main.resolutionType, "ผิดอาญา");
+  assert.equal(d.main.unit, "กองกฎหมาย (กอท.)");
+  assert.equal(get("ต้นสังกัด"), "กระทรวงมหาดไทย");
+  assert.equal(get("มติคณะกรรมการ ป.ป.ท."), "ครั้งที่ 3/2568");
+  assert.equal(get("ประเภทความผิด"), "-");
+  const none = R.paccDetailRows({ id: "y" }, deps);
+  assert.equal(none.paccId, "");
+  assert.equal(none.main.caseNo, "-");
+  assert.equal(none.rows.length, 7);
+});
+
+t("คืนค่าตัวอย่าง: ล้างแล้วเติมใหม่ได้ผลเดิม; คง judgments จาก popup เดิม; ไม่แตะสำนวนอื่น", () => {
+  const ID = "คดี-100090/2569";
+  const start = R.sampleNewCases([], LISTS.SAMPLE_RECORDS, "2026-10-20").find((c) => c.id === ID);
+  const seeded = Object.assign({}, start, R.samplePatches([start], LISTS.SAMPLE_RECORDS)[0].patch);
+  const original = JSON.stringify(seeded.verdictRecords.map((r) => [r.level, r.person, r.status, r.fields.verdictType]));
+  /* ผู้ใช้แก้ไข: ลบคน ซ่อนคน ใส่ AG และมี judgment จาก popup เดิม */
+  const edited = Object.assign({}, seeded, R.removePersonPatch(seeded, "FIRST", "นายวีระ ใจกล้า"), {
+    verdictHiddenPersons: { APPEAL: ["นายวีระ ใจกล้า"] },
+    verdictProsecutorStatus: "3.1 พนักงานอัยการแจ้งคำสั่งฟ้องทุกราย",
+  });
+  edited.judgments = edited.judgments.concat([{ level: "PROSECUTOR", result: "คำสั่งเดิม" }]);
+  const other = { id: "คดี-อื่น/2569", category: "10.1", verdictRecords: [{ level: "FIRST", person: "x", fields: {} }] };
+  const clear = R.clearSamplePatches([edited, other], LISTS.SAMPLE_RECORDS);
+  assert.deepEqual(clear.map((x) => x.caseId), [ID]);
+  const cleared = Object.assign({}, edited, clear[0].patch);
+  assert.deepEqual(cleared.verdictRecords, []);
+  assert.deepEqual(cleared.judgments.map((j) => j.result), ["คำสั่งเดิม"]);
+  const restored = Object.assign({}, cleared, R.samplePatches([cleared], LISTS.SAMPLE_RECORDS)[0].patch);
+  assert.equal(JSON.stringify(restored.verdictRecords.map((r) => [r.level, r.person, r.status, r.fields.verdictType])), original);
+  assert.deepEqual(restored.verdictHiddenPersons, {});
+  assert.equal(restored.verdictProsecutorStatus, "");
+  assert.ok(restored.judgments.some((j) => j.result === "คำสั่งเดิม"));
 });
 
 console.log("\n" + passed + " passed");

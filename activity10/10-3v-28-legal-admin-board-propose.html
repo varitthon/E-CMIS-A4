@@ -23,11 +23,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
     <style>
       h1,
@@ -438,18 +439,18 @@
             >
               <span
                 ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
-                >ผลพิจารณาจากกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.)</span
+                >ผลพิจารณาจากการประชุมคณะกรรมการ ป.ป.ท.</span
               >
               <span class="badge" style="background: #e2e8f0; color: #475569"
-                >บันทึกแทนกิจกรรมที่ 7</span
+                >บันทึกแทนผลบอร์ด</span
               >
             </div>
             <div class="form-card-body">
               <div class="read-box" id="act7WaitNote">
-                ส่งมติเสนอบอร์ดแล้ว — ระหว่างรอกิจกรรมที่ 7 (คณะกรรมการ ป.ป.ท.) พิจารณา
+                ส่งมติเสนอบอร์ดแล้ว — ระหว่างรอการประชุมคณะกรรมการ ป.ป.ท. พิจารณา
               </div>
               <button type="button" class="btn btn-primary d-none" id="btnAct7Save" onclick="openAct7Popup()" style="margin-top: 12px">
-                <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาจากกิจกรรมที่ 7
+                <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาของคณะกรรมการ ป.ป.ท.
               </button>
             </div>
           </div>
@@ -461,7 +462,7 @@
             >
               <span
                 ><i class="fa-solid fa-paper-plane text-primary me-2"></i
-                >ส่งมติเสนอบอร์ด (กิจกรรมที่ 7)</span
+                >ส่งมติเสนอบอร์ด</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
@@ -476,8 +477,7 @@
                     id="in_externalDocNo"
                     class="form-control font-monospace"
                     placeholder="เช่น ปป 0003/4451"
-                    style="font-weight: 700; color: #1e3a8a"
-                  />
+                    style="font-weight: 700; color: #1e3a8a" data-doc-no="ปป 0003/" data-doc-no-date="in_dispatchDate" />
                 </div>
                 <div class="form-group">
                   <label>วันที่ส่งมติเสนอบอร์ด</label>
@@ -518,12 +518,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
     <script src="assets/ecmis-capture.js"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
 
     <script>
       /* LAW0152 — ธุรการกองกฎหมาย ส่งมติเสนอบอร์ด (Part 9) — เป็น terminal
@@ -594,7 +595,7 @@
             Swal.fire({
               icon: "success",
               title: "บันทึกผลพิจารณาแล้ว",
-              text: "บันทึกมติคณะกรรมการ ป.ป.ท. แทนกิจกรรมที่ 7 เรียบร้อย — ส่งต่อธุรการรับหนังสือแจ้งมติ",
+              text: "บันทึกมติคณะกรรมการ ป.ป.ท. เรียบร้อย — ส่งต่อธุรการรับหนังสือแจ้งมติ",
               timer: 2000,
               showConfirmButton: false,
             }).then(ECMIS103.goInbox);
@@ -644,7 +645,7 @@
         Swal.fire({
           icon: "question",
           title: "ยืนยันส่งมติเสนอบอร์ด",
-          text: "ส่งมติอุทธรณ์ไปยังกิจกรรมที่ 7 (เสนอมติต่อบอร์ด)",
+          text: "ส่งมติอุทธรณ์เสนอคณะกรรมการ ป.ป.ท. (เสนอมติต่อบอร์ด)",
           showCancelButton: true,
           confirmButtonText: "ยืนยันส่ง",
           cancelButtonText: "ยกเลิก",
@@ -686,5 +687,6 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <script src="assets/ecmis-doc-no.js?v=20261022_1"></script>
   </body>
 </html>

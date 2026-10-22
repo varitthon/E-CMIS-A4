@@ -23,11 +23,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
     <style>
       h1,
@@ -406,8 +407,7 @@
                     class="form-control font-monospace"
                     style="font-weight: 700"
                     placeholder="เช่น 2569/4410"
-                    value="2569/4415"
-                  />
+                    value="2569/4415" data-doc-no="{BE}/" data-doc-no-kind="receive" />
                 </div>
                 <div class="form-group">
                   <label
@@ -775,7 +775,7 @@
                 onclick="submitForm()"
               >
                 <i class="fa-solid fa-paper-plane me-1"></i>ยืนยัน และ เสนอ
-                ผอ.กลุ่มงานคดี
+                ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -785,10 +785,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
 
     <script>
       /* LAW0119 — ธุรการกองกฎหมาย รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
@@ -1170,8 +1171,8 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยัน และ เสนอ ผอ.กลุ่มงานคดี",
-          text: "บันทึกรับหนังสือแจ้งผลคำพิพากษา ลงทะเบียนคดีปกครอง และส่งต่อ ผอ.กลุ่มงานคดีพิจารณามอบหมายนิติกร",
+          title: "ยืนยัน และ เสนอ ผอ.กองกฎหมาย",
+          text: "บันทึกรับหนังสือแจ้งผลคำพิพากษา ลงทะเบียนคดีปกครอง และส่งต่อ ผอ.กองกฎหมายพิจารณามอบหมาย",
           showCancelButton: true,
           confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
@@ -1228,8 +1229,8 @@
             status: STEP.status,
             statusCode: STEP.statusCode,
             statusBadge: "bg-primary text-white",
-            assignedRole: "case_group_director",
-            officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+            assignedRole: "dir_legal",
+            officer: "นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)",
             l3Step: STEP.code,
             l3StepSeq: STEP.seq,
           });
@@ -1244,7 +1245,7 @@
           Swal.fire({
             icon: "success",
             title: "บันทึกและส่งเสนอสำเร็จ",
-            text: `ลงทะเบียนคดีปกครองเลขที่ ${val("in_verdictRegNo")} และส่งต่อ ผอ.กลุ่มงานคดีแล้ว`,
+            text: `ลงทะเบียนคดีปกครองเลขที่ ${val("in_verdictRegNo")} และส่งต่อ ผอ.กองกฎหมายแล้ว`,
             timer: 1800,
             showConfirmButton: false,
           }).then(() => {
@@ -1273,5 +1274,6 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <script src="assets/ecmis-doc-no.js?v=20261022_1"></script>
   </body>
 </html>

@@ -120,7 +120,7 @@
       field("สั่งถึง", selectHtml("ce_orderedTo", ORDERED_TO_OPTIONS, c.orderedTo), true) +
       field("หมายเลขคดีดำ", input("ce_blackCaseNo", c.blackCaseNo), true) +
       field("หมายเลขคดีแดง", input("ce_redCaseNo", c.redCaseNo)) +
-      field("ศาลให้ทำภายใน .... วัน (เวลาที่ศาลสั่ง)", input("ce_courtDeadlineDays", c.courtDeadlineDays, "number", 'min="1" step="1"'), true) +
+      field("ศาลให้ทำภายใน (วัน)", input("ce_courtDeadlineDays", c.courtDeadlineDays, "number", 'min="1" step="1"'), true) +
       field("ผู้ฟ้องคดี (บรรทัดละ 1 ราย)", textarea("ce_plaintiffs", lines(c.plaintiffs), 3), true) +
       field("ผู้ถูกฟ้องคดี (บรรทัดละ 1 ราย)", textarea("ce_defendants", lines(c.defendants), 3), true) +
       field("ผู้ร้องสอด (บรรทัดละ 1 ราย)", textarea("ce_intervenors", lines(c.intervenors), 2), false, true) +
@@ -301,7 +301,8 @@
     if (!card || document.getElementById(FORM_ID)) return;
     var cur = opts.getCase();
     if (!cur) return;
-    keepCardOpen(card);
+    /* opts.collapsible — คงการ์ดไว้ในกล่องพับ "ขั้นตอนก่อนหน้า" (แก้ไขได้เมื่อกางออก) 2026-10-21 */
+    if (!opts.collapsible) keepCardOpen(card);
 
     var body = card.querySelector(".form-card-body") || card;
     /* ช่องอ่านอย่างเดียวเดิมยังอยู่ (ซ่อน) เพราะโค้ดของหน้าเติม/อ่าน f_* อยู่ */

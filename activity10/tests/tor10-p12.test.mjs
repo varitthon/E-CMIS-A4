@@ -109,7 +109,7 @@ t("B2 บันทึกผลทันที: advance L2-RECEIVE-BOARD-ROUND2 �
   assert.equal(A2.stepByCode("L2-RECEIVE-BOARD-ROUND2").statusCode, "L2_PENDING_DIRLEGAL_BOARD_ACK");
   assert.equal(act7OutboundStages("B2").now, "L2_PENDING_DIRLEGAL_BOARD_ACK");
 });
-t("B3 บันทึกผลทันที: advance L3-19 → L3_PENDING_GROUP_RESOLUTION_APPROVE, ไม่บังคับลายเซ็น", () => {
+t("B3 บันทึกผลทันที: ส่งตรงนิติกร L3_PENDING_LAWYER_EXTENSION (10-3-13), ไม่มีลายเซ็นธุรการ", () => {
   const r = buildAct7Patch(
     "B3", {},
     {
@@ -119,12 +119,13 @@ t("B3 บันทึกผลทันที: advance L3-19 → L3_PENDING_GROU
     },
     SENDER, AT, { stage: "outbound" },
   );
-  assert.deepEqual(r.advance, { module: "Activity103", stepCode: "L3-19" });
-  assert.equal(r.skipSignature, true, "outbound: ข้ามลายเซ็นธุรการ (ลงนามที่ 10-3-10 ได้ภายหลัง)");
-  assert.equal(A3.stepByCode("L3-19").statusCode, "L3_PENDING_GROUP_RESOLUTION_APPROVE");
-  assert.equal(act7OutboundStages("B3").now, "L3_PENDING_GROUP_RESOLUTION_APPROVE");
+  assert.equal(r.advance, null);
+  assert.equal(r.patch.statusCode, "L3_PENDING_LAWYER_EXTENSION");
+  assert.equal(A3.ROUTES.L3_PENDING_LAWYER_EXTENSION, "10-3-13-lawyer-request-extension.html");
+  assert.equal(A3.ROUTES.L3_READY_FOR_BOARD, undefined, "รอกิจกรรมที่ 7 — ไม่มีหน้า");
+  assert.equal(act7OutboundStages("B3").now, "L3_PENDING_LAWYER_EXTENSION");
 });
-t("B3 ขาเข้า (ไม่ระบุ stage) ไม่ข้ามลายเซ็น", () => {
+t("B3 ขาเข้า (ไม่ระบุ stage) ไม่มีลายเซ็นธุรการเช่นกัน", () => {
   const r = buildAct7Patch(
     "B3", {},
     {

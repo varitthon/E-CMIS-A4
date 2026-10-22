@@ -13,7 +13,9 @@
   // L2_PENDING_APPEAL_NOTICE_DRAFT) พร้อมเติม l2AppealMemoInternalDocNo/
   // BoardReplyDocNo-Date/ResolutionNotes ให้ครบทุกเคสสาย appeal — ต้องขึ้นเวอร์ชัน
   // ให้ browser ที่มี localStorage เก่าอยู่แล้วโหลดข้อมูลชุดใหม่)
-  const DATA_VERSION = "v64_p11_l8_verdict_issues";
+  // v65: ตัด appeal-02/03 (ธุรการเลือกนิติกรเอง) + อุทธรณ์ได้ทั้ง DENY/PARTIAL
+  // (เพิ่มคำร้อง-100050/2569 สาย PARTIAL ที่ปิดสำนวนแล้ว ไว้ทดสอบปุ่ม "ยื่นอุทธรณ์")
+  const DATA_VERSION = "v65_appeal_partial";
   const STORAGE_KEY = "ecmis_act10_cases_" + DATA_VERSION;
 
   function getDateWithOffset(daysOffset) {
@@ -1472,6 +1474,33 @@
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
+    {
+      /* สาย PARTIAL (อนุญาตบางส่วน) ที่ปิดสำนวนแล้วที่ 10-2-14 — ผู้ยื่นคำขอยัง
+         ใช้สิทธิ์อุทธรณ์ส่วนที่ไม่อนุญาตได้ (ปุ่ม "ยื่นอุทธรณ์" ในรายการงาน) */
+      id: "คำร้อง-100050/2569",
+      category: "10.2.1",
+      categoryName: "การขอเปิดเผยข้อมูลข่าวสาร",
+      title: "คำร้องขอเปิดเผยรายงานผลการตรวจสอบการจัดซื้อครุภัณฑ์การแพทย์",
+      requesterName: "นางสาวพิมพ์ชนก ใสสะอาด",
+      requesterTypeName: "ประชาชนทั่วไป",
+      requestedInfo: "รายงานผลการตรวจสอบการจัดซื้อครุภัณฑ์การแพทย์ พร้อมเอกสารประกอบ",
+      relatedCaseNo: "คดี-100021/2569",
+      requestChannelName: "ยื่นทางไปรษณีย์",
+      attachmentFileNames: ["คำร้องขอเปิดเผยข้อมูล.pdf"],
+      l2ResolutionType: "PARTIAL",
+      l2ResolutionTypeName: "อนุญาตให้เปิดเผยบางส่วน",
+      l2ResolutionDetail:
+        "คณะอนุกรรมการฯ อนุญาตให้เปิดเผยรายงานผลการตรวจสอบ ยกเว้นเอกสารประกอบที่มีข้อมูลส่วนบุคคลของพยาน",
+      l2MeetingNo: "9/2569",
+      l2MeetingDate: getDateWithOffset(-14),
+      l2InternalDocNo: "ปป 0002/4620",
+      l2OriginalCaseOfficer: "นายประดิษฐ์ ไต่สวนเก่ง",
+      l2OriginalCaseOfficerOrg: "กองปราบปรามการทุจริตในภาครัฐ 1",
+      statusCode: "L2_CASE_CLOSED_NOTICE_SENT",
+      status: "สิ้นสุด — แจ้งผลผู้ยื่นคำขอแล้ว",
+      assignedRole: "admin_legal",
+      officer: "นางกานดา รักษ์ธรรม",
+    },
 
     /* ----------------------------------------------- FLOW 4 (ตัวอย่าง)
        อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล — ทดสอบหน้า 10-2-appeal-01 ที่เพิ่มใหม่
@@ -1514,21 +1543,21 @@
         "คณะอนุกรรมการพิจารณากลั่นกรองฯ ชี้มูลเบื้องต้นว่าการสอบสวนวินัยยังไม่ถึงที่สุด หากเปิดเผยอาจกระทบกระบวนการทางวินัยที่ยังไม่สิ้นสุด",
       l2ResolutionAtBoardDraft: "ไม่อนุญาตเปิดเผย (ยืนตามชี้มูล)",
       l2ResolutionAtBoardDraftDetail:
-        "รองเลขาธิการ ป.ป.ท. ตรวจร่างและให้ความเห็นยืนยันมติชี้มูลเดิม ก่อนเสนอเลขาธิการ ป.ป.ท. ลงนามส่งกิจกรรมที่ 7",
+        "รองเลขาธิการ ป.ป.ท. ตรวจร่างและให้ความเห็นยืนยันมติชี้มูลเดิม ก่อนเสนอเลขาธิการ ป.ป.ท. ลงนามส่งเสนอบอร์ด",
       l2ResolutionAtBoardReply: "ไม่อนุญาตเปิดเผย",
       l2ResolutionAtBoardReplyDetail:
-        "คณะกรรมการ ป.ป.ท. (กิจกรรมที่ 7) มีมติยืนตามร่างที่เสนอ ไม่อนุญาตเปิดเผยข้อมูล พร้อมมอบหมายกองปราบปรามการทุจริตในภาครัฐ 2 เป็นเจ้าของสำนวนต่อ",
+        "คณะกรรมการ ป.ป.ท. มีมติยืนตามร่างที่เสนอ ไม่อนุญาตเปิดเผยข้อมูล พร้อมมอบหมายกองปราบปรามการทุจริตในภาครัฐ 2 เป็นเจ้าของสำนวนต่อ",
       /* มติกิจกรรมที่ 7 ครั้งอื่นบนสำนวนเดียวกัน (คดี-100018/2569) — ไว้ดูประกอบ
          เฉย ๆ ไม่ใช่มติของคำร้องขอเปิดเผยข้อมูลนี้ */
       l2OtherBoardResolutions: [
         {
-          activity: "กิจกรรมที่ 7 (รอบที่ 1) — ความเห็นแย้งคำสั่งไม่ฟ้อง",
+          activity: "การประชุมคณะกรรมการ ป.ป.ท. (รอบที่ 1) — ความเห็นแย้งคำสั่งไม่ฟ้อง",
           date: getDateWithOffset(-90),
           resolution: "เห็นชอบให้ทำความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการ",
           detail: "คณะกรรมการ ป.ป.ท. เห็นชอบให้ทำความเห็นแย้งในสำนวนคดี-100018/2569",
         },
         {
-          activity: "กิจกรรมที่ 7 (รอบที่ 2) — พิจารณาสำนวนไต่สวนหลัก",
+          activity: "การประชุมคณะกรรมการ ป.ป.ท. (รอบที่ 2) — พิจารณาสำนวนไต่สวนหลัก",
           date: getDateWithOffset(-45),
           resolution: "มีมติให้ดำเนินการไต่สวนต่อ และให้ตั้งคณะอนุกรรมการไต่สวนเพิ่มเติม",
           detail: "คณะกรรมการ ป.ป.ท. เห็นว่าพยานหลักฐานยังไม่เพียงพอ ให้ขยายผลการไต่สวนในสำนวนคดี-100018/2569 ต่อไปอีก 60 วัน",
@@ -1597,10 +1626,10 @@
       l2AppealSystemNo: "อธ-100033/2569",
       l2AppealSummary:
         "ผู้อุทธรณ์เห็นว่าเอกสารการเบิกจ่ายงบประมาณดังกล่าวไม่ได้เกี่ยวข้องโดยตรงกับสำนวนที่อยู่ระหว่างไต่สวนของหน่วยงานอื่น จึงขอให้ทบทวนมติไม่อนุญาตเปิดเผยข้อมูล",
-      statusCode: "L2_PENDING_BUREAU_DIRECTOR_ASSIGN",
-      status: "ผอ.กองบริหารคดีพิจารณาเรื่องอุทธรณ์และมอบหมาย",
-      assignedRole: "case_bureau_director",
-      officer: "นางปัทมา บริหารกิจ",
+      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
+      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
+      assignedRole: "original_officer",
+      officer: "นายสมชาย ใจซื่อ",
     },
     {
       id: "คำร้อง-100034/2569",
@@ -1632,11 +1661,10 @@
       l2AppealSystemNo: "อธ-100034/2569",
       l2AppealSummary:
         "ผู้อุทธรณ์เห็นว่าการสอบสวนวินัยดังกล่าวมีผลถึงที่สุดแล้วในทางปฏิบัติ จึงไม่มีเหตุผลที่จะระงับการเปิดเผยข้อมูลอีกต่อไป",
-      l2AppealBureauDirectorNotes: "-",
-      statusCode: "L2_PENDING_TRACKING_DIRECTOR_ASSIGN",
-      status: "ผอ.กลุ่มงานบริหารติดตามคดีพิจารณาและมอบหมายนิติกร",
-      assignedRole: "case_tracking_director",
-      officer: "นายวิชัย ติดตามกิจ",
+      statusCode: "L2_PENDING_CASE_OWNER_APPEAL_OPINION",
+      status: "นิติกรเจ้าของสำนวนแจ้งผู้อุทธรณ์และทำความเห็น",
+      assignedRole: "original_officer",
+      officer: "นายสมชาย ใจซื่อ",
     },
     {
       id: "คำร้อง-100035/2569",
@@ -1712,7 +1740,7 @@
         "นิติกรเจ้าของสำนวนเห็นว่าการสอบสวนวินัยดังกล่าวได้ข้อยุติแล้วในทางปฏิบัติ ไม่ขัดข้องหากจะเปิดเผยข้อมูลตามที่ผู้อุทธรณ์ร้องขอ",
       l2AppealCaseOwnerAttachmentFileNames: [],
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
-      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอคณะกรรมการ ป.ป.ท.",
       assignedRole: "case_bureau_director",
       officer: "นางปัทมา บริหารกิจ",
     },
@@ -1849,10 +1877,10 @@
       l2AppealRulingAttachmentFileNames: [],
       l2AppealMemoNotes: "-",
       l2AppealMemoAttachmentFileNames: [],
-      statusCode: "L2_PENDING_TRACKING_DIRECTOR_SIGN",
-      status: "ผอ.กลุ่มงานบริหารติดตามคดีลงนามรับรอง",
-      assignedRole: "case_tracking_director",
-      officer: "นายวิชัย ติดตามกิจ",
+      statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอคณะกรรมการ ป.ป.ท.",
+      assignedRole: "case_bureau_director",
+      officer: "นางปัทมา บริหารกิจ",
     },
     {
       id: "คำร้อง-100040/2569",
@@ -1906,7 +1934,7 @@
       l2AppealBoardDispatchDocNo: "ปป 0002/5255",
       l2AppealBoardDispatchDate: getDateWithOffset(-5),
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
-      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอคณะกรรมการ ป.ป.ท.",
       assignedRole: "case_bureau_director",
       officer: "นางปัทมา บริหารกิจ",
     },
@@ -1964,7 +1992,7 @@
       l2AppealBoardDispatchDocNo: "ปป 0002/5228",
       l2AppealBoardDispatchDate: getDateWithOffset(-11),
       statusCode: "L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE",
-      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอกิจกรรมที่ 7",
+      status: "ผอ.กองบริหารคดีพิจารณาและลงนามเสนอคณะกรรมการ ป.ป.ท.",
       assignedRole: "case_bureau_director",
       officer: "นางปัทมา บริหารกิจ",
     },
@@ -2875,7 +2903,7 @@
         },
       },
       statusCode: "L2_BOARD_RESOLVED_ROUND2",
-      status: "รอธุรการบันทึกรับมติ (กิจกรรมที่ 7)",
+      status: "รอธุรการบันทึกรับมติ",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
@@ -3183,7 +3211,7 @@
       l3StayObjectionSupportingAttachments: [
         "พยานหลักฐานประกอบคำชี้แจง_100100-B.pdf",
       ],
-      /* ---- LAW0098 (10-3b-02) — ประธานกรรมการ ป.ป.ท. ลงนาม ---- */
+      /* ---- ประธานกรรมการ ป.ป.ท. ลงนาม (นิติกรแนบฉบับลงนามจริงที่ 10-3b-03) ---- */
       l3StayObjectionChairmanNotes: "เห็นชอบตามที่นิติกรเสนอ ลงนามคัดค้านได้",
       /* ---- LAW0099 (10-3b-03) — นิติกร ส่งศาล/ปิดสำนวน ---- */
       l3StayDispatchMethod: "post",
@@ -3558,7 +3586,7 @@
       workflowStep: 3,
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย)",
-      status: "รอจัดทำคำแก้อุทธรณ์ (กิจกรรมที่ 7)",
+      status: "รอจัดทำคำแก้อุทธรณ์",
       statusCode: "L3V_TO_APPEAL_REPLY",
       statusBadge: "bg-primary text-white",
       l3Step: "LAW0127",
@@ -4049,7 +4077,7 @@
       workflowStep: 3,
       officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
       assignedRole: "admin_legal",
-      status: "รอเสนอบอร์ด (กิจกรรมที่ 7)",
+      status: "รอเสนอบอร์ด",
       statusCode: "L3_READY_FOR_BOARD",
       statusBadge: "bg-primary text-white",
       l3Step: "LAW0095",
@@ -4113,7 +4141,7 @@
       workflowStep: 3,
       officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
       assignedRole: "admin_legal",
-      status: "รอเสนอบอร์ด (กิจกรรมที่ 7)",
+      status: "รอเสนอบอร์ด",
       statusCode: "L3_READY_FOR_BOARD",
       statusBadge: "bg-primary text-white",
       l3Step: "LAW0095",
@@ -4317,6 +4345,33 @@
       defendant: "นายศิริโชค มีอำนาจ",
       responsibleUnit: "กองกฎหมาย (กอท.)",
       responsibleOfficer: "นางสาวปวีณา ศรีสุข",
+    },
+    /* ตัวอย่างสำนวนเดิมที่มีผู้ถูกกล่าวหาหลายคน (3 คน) — ใช้สาธิตบันทึกผลคำพิพากษารายบุคคล
+       ผูกกับคดี-100090/2569 (สร้างโดยตัวอย่างใน ecmis-verdict-lists.js) */
+    {
+      id: "สำนวน-0090/2569",
+      category: "10.1",
+      categoryName: "คดีอาญาทุจริต",
+      title: "ร่วมกันทุจริตจัดซื้อครุภัณฑ์การแพทย์ราคาสูงเกินจริง โรงพยาบาลส่งเสริมสุขภาพตำบลหนองบัว",
+      source: "สำนักงานอัยการคดีปราบปรามการทุจริตภาค 4",
+      accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+      accused: "นายประยุทธ ทองดี, นางสาวมาลี ศรีงาม และ นายวีระ ใจกล้า",
+      accusedPosition: "นายกองค์การบริหารส่วนตำบล / เจ้าพนักงานพัสดุ / ผู้รับจ้าง",
+      section: "18/1 ก",
+      courtOrder: "คำสั่งฟ้องพนักงานอัยการคดีปราบปรามการทุจริตภาค 4",
+      statuteLimitation: "20 ปี (หมดอายุความ 14 ก.พ. 2588)",
+      dateReceived: getDateWithOffset(-5),
+      dueDate: getDateWithOffset(10),
+      paccCaseNo: "0090/2569",
+      blackNo: "อ. 215/2569",
+      redNo: "-",
+      centralSarabanNo: "2569/4520",
+      courtName: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 4",
+      courtBlackNo: "อท. 133/2569",
+      plaintiff: "พนักงานอัยการ สำนักงานอัยการคดีปราบปรามการทุจริตภาค 4",
+      defendant: "นายประยุทธ ทองดี, นางสาวมาลี ศรีงาม และ นายวีระ ใจกล้า",
+      responsibleUnit: "กองกฎหมาย (กอท.)",
+      responsibleOfficer: "นายณัฐพล บัวทุม",
     },
     {
       id: "สำนวน-0055/2569",
@@ -4637,41 +4692,28 @@
     officer: G1_DIRECTOR,
     workflowStep: 11,
   };
+  /* 2026-10-21 นำขั้น ผอ.กองกฎหมาย มอบหมาย ของเรื่องเข้าใหม่กลับมา (04 / 10-2-01 /
+     10-3-02 / 10-3v-02) — PENDING_DIRECTOR, L2_PENDING_DIRECTOR_ASSIGN,
+     L3_PENDING_DIRECTOR_ASSIGN, L3V_PENDING_DIRECTOR_ASSIGN จึงไม่ย้ายต่อแล้ว
+     (เคสที่ย้ายไป ผอ.กลุ่มงานก่อนหน้านี้คงอยู่ที่เดิม) */
+  const L3_TO_LAWYER = {
+    statusCode: "L3_PENDING_LAWYER_EXTENSION",
+    status: "นิติกรยื่นคำขอขยายเวลาต่อศาล",
+    assignedRole: "case_legal_officer",
+    keepOfficer: true,
+  };
   const REMOVED_DIRECTOR_STATUS = {
-    PENDING_DIRECTOR: {
-      statusCode: "PENDING_GROUP_DIRECTOR",
-      status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณา",
-      statusBadge: "bg-info text-dark",
-      assignedRole: "group_director",
-      officer: G1_DIRECTOR,
-      workflowStep: 4,
-    },
     PENDING_DIRECTOR_RESOLUTION: G1_RESOLUTION,
     PENDING_DIRECTOR_RESOLUTION_ORDER: G1_RESOLUTION,
-    L2_PENDING_DIRECTOR_ASSIGN: {
-      statusCode: "L2_PENDING_GROUP_ASSIGN",
-      status: "ผอ.กลุ่มงานความเห็นแย้งตรวจประเด็นกฎหมาย",
-      assignedRole: "group_director",
-      officer: G1_DIRECTOR,
-    },
     L2_PENDING_DIRLEGAL_PRECOMMENT: {
       statusCode: "L2_PENDING_SECRETARIAT_DRAFT",
       status: "ฝ่ายเลขานุการฯ ทำบันทึกผลมติเลขา",
       assignedRole: "sub_secretariat",
       officer: SECRETARIAT,
     },
-    L3_PENDING_DIRECTOR_ASSIGN: {
-      statusCode: "L3_PENDING_GROUP_ASSIGN",
-      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร",
-    },
-    L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN: {
-      statusCode: "L3_PENDING_GROUP_RESOLUTION_APPROVE",
-      status: "ผอ.กลุ่มงานคดีพิจารณาเห็นชอบ",
-    },
-    L3V_PENDING_DIRECTOR_ASSIGN: {
-      statusCode: "L3V_PENDING_GROUP_ASSIGN",
-      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (คำพิพากษา)",
-    },
+    /* 2026-10-21 ตัด 10-3-10/10-3-12 — เคสที่ค้างไปนิติกร (10-3-13) โดยคง officer (นิติกร) เดิม */
+    L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN: L3_TO_LAWYER,
+    L3_PENDING_GROUP_RESOLUTION_APPROVE: L3_TO_LAWYER,
     L7_PENDING_DIRECTOR_ASSIGN: {
       statusCode: "L7_PENDING_GROUP_ASSIGN",
       status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (คำแก้อุทธรณ์)",
@@ -4694,17 +4736,31 @@
      (docs/wet-sign/plan.md) เคสที่ค้างรอผู้บริหารจึงย้ายผู้รับงานเป็นธุรการ
      และเคสที่ค้างที่ 10-3-22 เดิม (รวบรวมฉบับจริง) เข้าหน้ารวมใหม่ */
   const ADMIN = "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการกองกฎหมาย)";
-  const WET_SIGN_REASSIGN = {
-    L3_PENDING_SECGEN_COVER_SIGN: {},
-    L3_PENDING_DEPUTY_SG_COVER_SIGN: {},
-    L3_PENDING_CHAIRMAN_ANSWER_SIGN: {},
-    L3B_PENDING_CHAIRMAN_SIGN: {},
-    L3_PENDING_ADMIN_COLLECT_ORIGINALS: {
-      statusCode: "L3_PENDING_CHAIRMAN_ANSWER_SIGN",
-      status:
-        "ประธานกรรมการ ป.ป.ท. ลงนามคำให้การ (บนกระดาษ) — ธุรการกองกฎหมายบันทึกผลการลงนามจริงและรวบรวมฉบับจริง",
-    },
+  const WET_SIGN_REASSIGN = {};
+  /* 2026-10-22 ตัด 10-3b-02 — เคสลูก (-B) ที่ค้างรอธุรการบันทึกผลลงนาม ไปนิติกร 3b-03 แนบฉบับลงนามจริงเอง */
+  REMOVED_DIRECTOR_STATUS.L3B_PENDING_CHAIRMAN_SIGN = {
+    statusCode: "L3B_PENDING_LAWYER_DISPATCH",
+    status: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — นิติกรแนบฉบับลงนามจริงและส่งต่อศาล",
+    assignedRole: "case_legal_officer",
+    keepOfficer: true,
   };
+  /* 2026-10-22 ตัด 10-3-18 / 10-3-19 / 10-3-22 — ฉบับลงนามจริงแนบครบที่ 10-3-13
+     เคสที่ค้างรอบันทึกผลลงนาม/รวบรวมฉบับจริง ไปนิติกรรวบรวมเอกสาร (10-3-23) ทันที คงนิติกรเจ้าของสำนวน */
+  const TO_LAWYER_COLLECT = {
+    statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
+    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+    assignedRole: "case_legal_officer",
+    keepOfficer: true,
+  };
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_SECGEN_COVER_SIGN = TO_LAWYER_COLLECT;
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_DEPUTY_SG_COVER_SIGN = TO_LAWYER_COLLECT;
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_CHAIRMAN_ANSWER_SIGN = TO_LAWYER_COLLECT;
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_ADMIN_COLLECT_ORIGINALS = TO_LAWYER_COLLECT;
+  /* 2026-10-22 รวม 10-3-24 (ส่งไปรษณีย์) / 10-3-25 (ติดตามสถานะ) เข้า 10-3-23 — เคสค้างกลับไปหน้ารวม */
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_POST_TO_PROSECUTOR = Object.assign({}, TO_LAWYER_COLLECT, {
+    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+  });
+  REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_TRACK_STATUS = REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_POST_TO_PROSECUTOR;
 
   function migrateRemovedDirectorSteps(cases) {
     let changed = false;
@@ -4721,13 +4777,14 @@
       if (!to) return c;
       changed = true;
       const isCourt = /^L(3V?|7|8|9A|9B)_/.test(c.statusCode);
+      const { keepOfficer, ...target } = to;
       return Object.assign(
         {},
         c,
-        isCourt
+        isCourt && !keepOfficer
           ? { assignedRole: "case_group_director", officer: G3_DIRECTOR }
           : {},
-        to,
+        target,
       );
     });
     return { cases: migrated, changed: changed };
@@ -4754,23 +4811,152 @@
     return seeded;
   }
 
+  /* ขอบเขตการมองเห็นสำนวนในรายการงาน (docs/E-CMIS_Activity10_Menu_Role_Matrix_v1_0.xlsx)
+     ALL_CASES_ROLES     : ธุรการกองกฎหมาย + ผอ.กอง / ผอ.กลุ่ม ทุกสายงาน เห็นงานทุกสำนวน
+     ASSIGNED_ONLY_ROLES : นิติกร เห็นเฉพาะสำนวนที่ได้รับมอบหมายให้ตน */
+  const ALL_CASES_ROLES = [
+    "admin_legal",
+    "dir_legal",
+    "group_director",
+    "case_group_director",
+    "case_bureau_director",
+    "case_tracking_director",
+  ];
+  const ASSIGNED_ONLY_ROLES = [
+    "legal_officer",
+    "case_legal_officer",
+    "original_officer",
+  ];
+
+  /* จำชื่อนิติกรทุกคนที่สำนวนเคยถูกมอบหมายให้ (officer ถูกเขียนทับเมื่อสำนวนเดินต่อ)
+     เพื่อให้นิติกรยังเห็นสำนวนของตนหลังส่งงานให้ ผอ. ตรวจแล้ว */
+  function withAssignedLawyers(c) {
+    if (!c || ASSIGNED_ONLY_ROLES.indexOf(c.assignedRole) < 0 || !c.officer)
+      return c;
+    const list = Array.isArray(c.assignedLawyers) ? c.assignedLawyers : [];
+    if (list.indexOf(c.officer) >= 0) return c;
+    return Object.assign({}, c, { assignedLawyers: list.concat(c.officer) });
+  }
+
   function saveCases(cases) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify((cases || []).map(withAssignedLawyers)),
+      );
     } catch (e) {
       console.warn("Failed to save cases to localStorage", e);
     }
   }
 
+  /* แถบขั้นตอนของหน้า 10.1 เขียนไว้ใน HTML — เคสที่ ผอ.กองกฎหมายมอบหมายนิติกรโดยตรง
+     (directAssignedByDirector) ไม่ผ่านขั้น "ผอ.กลุ่มงาน มอบหมาย(นิติกร)" จึงตัดวงกลมนั้นออก
+     แล้วเลื่อนเลขขั้นถัดไป (ไม่แตะขั้น "มอบหมายนิติกรตามมติ" หลังคณะกรรมการ) */
+  const GROUP_ASSIGN_LABEL = /^(\d+)\.\s*ผอ\.กลุ่มงาน มอบหมาย(นิติกร)?$/;
+  function hideSkippedGroupAssignStep(doc, kase) {
+    if (!doc || !kase || !kase.directAssignedByDirector) return false;
+    const items = Array.from(doc.querySelectorAll(".step-item"));
+    const skipIdx = items.findIndex((it) => {
+      const label = it.querySelector(".step-label");
+      return label && GROUP_ASSIGN_LABEL.test(label.textContent.trim());
+    });
+    if (skipIdx < 0) return false;
+    const renumber = (el) => {
+      if (!el) return;
+      const m = el.textContent.trim().match(/^(\d+)(\.?)/);
+      if (m) el.textContent = el.textContent.trim().replace(/^\d+/, String(Number(m[1]) - 1));
+    };
+    items.slice(skipIdx + 1).forEach((it) => {
+      const circle = it.querySelector(".step-circle");
+      if (circle && !circle.querySelector("i")) renumber(circle);
+      renumber(it.querySelector(".step-label"));
+    });
+    items[skipIdx].remove();
+    return true;
+  }
+
+  /* หน้าที่เปิดด้วย ?id= ของเคส 10.1 — ซ่อนขั้นที่ข้ามเองหลังโหลดหน้า */
+  function autoHideSkippedGroupAssignStep() {
+    if (typeof document === "undefined" || typeof location === "undefined") return;
+    const run = () => {
+      const id = new URLSearchParams(location.search).get("id");
+      if (!id) return;
+      const kase = loadCases().find((c) => c.id === id);
+      hideSkippedGroupAssignStep(document, kase);
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", run);
+    } else {
+      run();
+    }
+  }
+
+  /* ส่งกลับ (ผู้ตรวจส่งงานคืนผู้จัดทำ — หน้าที่ใช้ ecmis-review-decision.js, 2026-10-21)
+     เก็บไว้ที่ lastSendBack ของเคส; หน้าที่เปิดเคสนั้นด้วย ?id= แสดงแถบเหตุผลเอง
+     ตราบที่สถานะยังเป็นสถานะที่ถูกส่งกลับ (ทำงานต่อแล้วแถบหายเอง) */
+  function sendBackPatch(by, reason, toStatusCode) {
+    return {
+      lastSendBack: {
+        by: by || "ผู้บังคับบัญชา",
+        reason: reason || "",
+        toStatusCode: toStatusCode,
+        at: formatDisplayDate(new Date()),
+      },
+    };
+  }
+
+  function sendBackNoticeEl(doc, info) {
+    const note = doc.createElement("div");
+    note.className = "ecmis-sendback-notice";
+    note.setAttribute("role", "status");
+    note.style.cssText =
+      "display:flex;gap:10px;align-items:flex-start;margin:0 0 16px;padding:12px 16px;" +
+      "border:1px solid #fca5a5;border-left:4px solid #dc2626;border-radius:8px;" +
+      "background:rgba(220,38,38,.06);color:var(--text-title,#1e293b);font-size:.92em";
+    const icon = doc.createElement("i");
+    icon.className = "fa-solid fa-rotate-left";
+    icon.style.cssText = "color:#dc2626;margin-top:3px";
+    icon.setAttribute("aria-hidden", "true");
+    const body = doc.createElement("div");
+    const head = doc.createElement("strong");
+    head.textContent = "ถูกส่งกลับจาก " + info.by + (info.at ? " (" + info.at + ")" : "") + ": ";
+    body.appendChild(head);
+    body.appendChild(doc.createTextNode(info.reason));
+    note.appendChild(icon);
+    note.appendChild(body);
+    return note;
+  }
+
+  function autoRenderSendBackNotice() {
+    if (typeof document === "undefined" || typeof location === "undefined") return;
+    const run = () => {
+      const id = new URLSearchParams(location.search).get("id");
+      if (!id || document.querySelector(".ecmis-sendback-notice")) return;
+      const kase = loadCases().find((c) => c.id === id);
+      const info = kase && kase.lastSendBack;
+      if (!info || !info.reason || info.toStatusCode !== kase.statusCode) return;
+      const firstCard = document.querySelector(".form-card");
+      if (firstCard) firstCard.parentNode.insertBefore(sendBackNoticeEl(document, info), firstCard);
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", run);
+    } else {
+      run();
+    }
+  }
+
   // Activity 10 Engine API
   const Activity10 = {
+    sendBackPatch,
     fullName,
     formatDisplayDate,
     getCases: loadCases,
     saveCases,
     migrateRemovedDirectorSteps,
     getPaccIntakeDatabase() {
-      return PACC_INTAKE_DATABASE;
+      /* + สำนวนที่นำเข้าจากระบบเดิม (กจ.5/กจ.6) เมื่อหน้าโหลด assets/ecmis-legacy-data.js */
+      const legacy = global.ECMISLegacy ? global.ECMISLegacy.paccCases() : [];
+      return legacy.length ? PACC_INTAKE_DATABASE.concat(legacy) : PACC_INTAKE_DATABASE;
     },
     complaintIntakeGroups,
     paccIntakeSearchText,
@@ -5129,6 +5315,9 @@
       { code: "FIRST", name: "ศาลชั้นต้น" },
       { code: "APPEAL", name: "ศาลอุทธรณ์" },
       { code: "SUPREME", name: "ศาลฎีกา" },
+      /* ส่วนศาลปกครองของบันทึกผลคำพิพากษา (ecmis-verdict-lists.js LEVELS) */
+      { code: "ADMIN_FIRST", name: "ศาลปกครองชั้นต้น" },
+      { code: "ADMIN_SUPREME", name: "ศาลปกครองสูงสุด" },
     ],
     judgmentLevelName(code) {
       const lv = Activity10.JUDGMENT_LEVELS.find((l) => l.code === code);
@@ -5285,10 +5474,52 @@
     },
 
     /* บทบาทสายกฎหมาย/ผู้บริหารที่เห็นสารบบ รายงาน และผลวิเคราะห์คำพิพากษา (รวมชื่อ login เดิมผ่าน ALERT_ROLE_ALIASES) */
-    LEGAL_VIEW_ROLES: ["admin_legal", "dir_legal", "group_director", "legal_officer", "deputy_sg", "secgen"],
+    LEGAL_VIEW_ROLES: ["admin_legal", "dir_legal", "group_director", "case_group_director", "legal_officer", "deputy_sg", "secgen"],
     isLegalViewRole(roleId) {
       const r = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
       return Activity10.LEGAL_VIEW_ROLES.indexOf(r) >= 0;
+    },
+
+    /* ---- ขอบเขตการมองเห็นสำนวนในรายการงาน (ดู ALL_CASES_ROLES / ASSIGNED_ONLY_ROLES) ---- */
+    ALL_CASES_ROLES,
+    ASSIGNED_ONLY_ROLES,
+    seesAllCases(roleId) {
+      const r = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
+      return ALL_CASES_ROLES.indexOf(r) >= 0;
+    },
+    isAssignedOnlyRole(roleId) {
+      const r = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
+      return ASSIGNED_ONLY_ROLES.indexOf(r) >= 0;
+    },
+    /* สำนวนนี้มอบหมายให้นิติกรผู้ใช้คนนี้หรือไม่ — เทียบชื่อกับผู้รับผิดชอบปัจจุบัน
+       ผู้ที่ ผอ.กลุ่ม เลือก และประวัติการมอบหมาย (assignedLawyers);
+       สำนวนที่ถึงขั้นของบทบาทนี้แต่ยังไม่ระบุชื่อ ถือว่าเป็นของผู้ใช้บทบาทนี้ */
+    isAssignedTo(kase, roleId, userName) {
+      const c = kase && (kase.raw || kase);
+      if (!c) return false;
+      const role = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
+      const names = [c.officer, c.assignedOfficer, c.l3GroupAssignTarget]
+        .concat(Array.isArray(c.assignedLawyers) ? c.assignedLawyers : [])
+        .filter(Boolean)
+        .map(String);
+      if (userName && names.some((n) => n.indexOf(userName) >= 0)) return true;
+      /* อุทธรณ์ 10.2: ธุรการมอบให้ "เจ้าของสำนวนเดิม" (ชื่อจริงจากคดีต้นทาง) —
+         ผู้ใช้บทบาทเจ้าของสำนวนเดิมในระบบเป็นตัวแทนของบุคคลนั้น */
+      if (
+        role === "original_officer" &&
+        c.l2OriginalCaseOfficer &&
+        c.officer === c.l2OriginalCaseOfficer
+      )
+        return true;
+      return c.assignedRole === role && !c.officer;
+    },
+    /* คืนรายการสำนวนที่บทบาทนี้เห็น หรือ null ถ้าบทบาทนี้ยังใช้ตรรกะเดิมของหน้ารายการงาน */
+    visibleCasesFor(cases, roleId, userName) {
+      const list = cases || [];
+      if (Activity10.seesAllCases(roleId)) return list.slice();
+      if (Activity10.isAssignedOnlyRole(roleId))
+        return list.filter((c) => Activity10.isAssignedTo(c, roleId, userName));
+      return null;
     },
 
     /* แปลงวันที่หลายรูปแบบเป็น ISO ค.ศ. "yyyy-mm-dd" — รองรับ ISO (ค.ศ./พ.ศ.), dd-mm-yyyy,
@@ -5548,6 +5779,8 @@
       { code: "FIRST", name: "ศาลชั้นต้น" },
       { code: "APPEAL", name: "ศาลอุทธรณ์" },
       { code: "SUPREME", name: "ศาลฎีกา" },
+      { code: "ADMIN_FIRST", name: "ศาลปกครองชั้นต้น" },
+      { code: "ADMIN_SUPREME", name: "ศาลปกครองสูงสุด" },
       { code: "BOARD", name: "มติคณะกรรมการ ป.ป.ท." },
     ],
     buildJudgmentRegistry(cases) {
@@ -5926,6 +6159,8 @@
       "Napas.S": "dir_legal",
       "Arnon.C": "group_director",
       "Nattapol.B": "legal_officer",
+      "Kittisak.S": "case_legal_officer",
+      "Somchai.J": "original_officer",
       "Surapong.W": "deputy_sg",
       "Pimchanok.T": "sub_secretariat",
       "Kitti.P": "subcommittee_screen",
@@ -6158,13 +6393,14 @@
       const caseId = newCaseData.id
         ? newCaseData.id.replace(/-10\.\d(\.\d)?-/, "-")
         : `${casePrefix}-${nextNum}/2569`;
-      /* ขั้น ผอ.กองกฎหมายมอบหมาย (04) ถูกตัดออก 2026-10-14 — เคสใหม่เข้า ผอ.กลุ่มงานตรง */
-      const status = newCaseData.status || "ผอ.กลุ่มงานความเห็นแย้งพิจารณา";
-      const statusCode = newCaseData.statusCode || "PENDING_GROUP_DIRECTOR";
-      const statusBadge = newCaseData.statusBadge || "bg-info text-dark";
-      const assignedRole = newCaseData.assignedRole || "group_director";
+      /* ขั้น ผอ.กองกฎหมายมอบหมาย (04) ถูกตัดออก 2026-10-14 แล้วนำกลับมา 2026-10-21 —
+         เคสใหม่เข้า ผอ.กองกฎหมายก่อน */
+      const status = newCaseData.status || "ผอ.กองกฎหมายพิจารณา";
+      const statusCode = newCaseData.statusCode || "PENDING_DIRECTOR";
+      const statusBadge = newCaseData.statusBadge || "bg-primary text-white";
+      const assignedRole = newCaseData.assignedRole || "dir_legal";
       const officer =
-        newCaseData.officer || "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)";
+        newCaseData.officer || "นายนภัส สอนดี (ผู้อำนวยการกองกฎหมาย)";
 
       const existingItem = cases.find(
         (c) =>
@@ -6358,12 +6594,11 @@
         item.lawReceiveNo =
           lawReceiveNo ||
           `${String(Math.floor(10 + Math.random() * 90)).padStart(4, "0")}/2569`;
-        item.statusCode = "PENDING_GROUP_DIRECTOR";
-        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณา";
-        item.statusBadge = "bg-info text-dark";
-        item.assignedRole = "group_director";
-        item.targetDirectorName = "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)";
-        item.workflowStep = 4;
+        item.statusCode = "PENDING_DIRECTOR";
+        item.status = "ผอ.กองกฎหมายพิจารณา";
+        item.statusBadge = "bg-primary text-white";
+        item.assignedRole = "dir_legal";
+        item.workflowStep = 3;
         saveCases(cases);
       }
       return item;
@@ -6414,6 +6649,30 @@
       }
       return item;
     },
+
+    /* ผอ.กองกฎหมายมอบหมายนิติกรโดยตรง (หน้า 04) — ข้ามขั้น ผอ.กลุ่มงานมอบหมาย (หน้า 05)
+       ขั้น ผอ.กลุ่มงานตรวจร่าง (07) เป็นต้นไปเหมือนเดิม; directAssignedByDirector ใช้ซ่อน
+       ขั้นที่ข้ามในแถบขั้นตอน (hideSkippedGroupAssignStep) */
+    assignLegalOfficerByDirector(id, officerName, notes, deadlineDate) {
+      const cases = loadCases();
+      const item = cases.find((c) => c.id === id);
+      if (item) {
+        item.statusCode = "DRAFTING_OPINION";
+        item.status = "นิติกรจัดทำความเห็น";
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
+        item.officer = officerName || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+        item.workflowStep = 5;
+        item.directAssignedByDirector = true;
+        item.directorNotes = notes || "";
+        item.directorForwardedDate = formatDisplayDate(new Date());
+        item.officerDeadline = deadlineDate || item.dueDate;
+        saveCases(cases);
+      }
+      return item;
+    },
+
+    hideSkippedGroupAssignStep,
 
     forwardToLegalOfficer(id, officerName, notes, deadlineDate) {
       const cases = loadCases();
@@ -7213,6 +7472,8 @@
   };
 
   global.Activity10 = Activity10;
+  autoHideSkippedGroupAssignStep();
+  autoRenderSendBackNotice();
 })(
   typeof window !== "undefined"
     ? window

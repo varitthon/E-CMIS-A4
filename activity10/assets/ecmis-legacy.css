@@ -1,0 +1,254 @@
+/* ข้อมูลนำเข้าจากระบบเดิม (assets/ecmis-legacy-data.js) — แผงประวัติสำนวนเดิม (กจ.5/กจ.6) และผลค้นหา กจ.10
+   โทนอำพัน แยกจากข้อมูลระบบใหม่ (น้ำเงิน) ให้รู้ทันทีว่าเป็นข้อมูลที่ย้ายมา อ่านอย่างเดียว */
+:root {
+  --lg-accent: #b45309;
+  --lg-accent-soft: rgba(180, 83, 9, 0.08);
+  --lg-accent-line: rgba(180, 83, 9, 0.35);
+  --lg-ok: #047857;
+}
+body.dark-mode {
+  --lg-accent: #fbbf24;
+  --lg-accent-soft: rgba(251, 191, 36, 0.1);
+  --lg-accent-line: rgba(251, 191, 36, 0.35);
+  --lg-ok: #34d399;
+}
+
+.lg-panel {
+  margin-top: 16px;
+  border: 1px solid var(--lg-accent-line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+.lg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--lg-accent-soft);
+  border-bottom: 1px solid var(--lg-accent-line);
+}
+.lg-head-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--lg-accent);
+}
+.lg-head-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.lg-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--lg-accent-line);
+  color: var(--lg-accent);
+  font-size: 0.74em;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.lg-tag.is-ro { font-family: inherit; }
+
+/* แถบสรุปตัวเลขสำคัญ */
+.lg-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-bottom: 1px solid var(--border-color);
+}
+.lg-stat {
+  padding: 10px 14px;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lg-stat:last-child { border-right: 0; }
+.lg-stat span { font-size: 0.74em; color: #64748b; font-weight: 600; }
+.lg-stat strong { font-size: 0.95em; color: var(--text-title); }
+.lg-stat.is-done strong { color: var(--lg-ok); }
+
+/* ส่วนพับได้ */
+.lg-sec { border-bottom: 1px solid var(--border-color); }
+.lg-sec:last-child { border-bottom: 0; }
+.lg-sec > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--text-title);
+}
+.lg-sec > summary::-webkit-details-marker { display: none; }
+.lg-sec > summary:hover { background: var(--lg-accent-soft); }
+.lg-sec > summary:focus-visible { outline: 2px solid var(--lg-accent); outline-offset: -2px; }
+.lg-sec > summary > .fa-solid:first-child { color: var(--lg-accent); width: 16px; text-align: center; }
+.lg-count {
+  min-width: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  font-size: 0.78em;
+  text-align: center;
+  color: #64748b;
+}
+.lg-chev { margin-left: auto; font-size: 0.75em; color: #94a3b8; transition: transform 0.15s ease; }
+.lg-sec[open] > summary .lg-chev { transform: rotate(180deg); }
+.lg-sec-body { padding: 4px 14px 14px 38px; }
+
+.lg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px 18px;
+  margin: 0;
+}
+.lg-grid dt { font-size: 0.76em; color: #64748b; font-weight: 600; }
+.lg-grid dd { margin: 2px 0 0; font-size: 0.88em; color: var(--text-title); word-break: break-word; }
+.lg-grid .is-wide { grid-column: 1 / -1; }
+
+/* ลำดับเหตุการณ์ */
+.lg-timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.lg-timeline::before {
+  content: "";
+  position: absolute;
+  left: 92px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--lg-accent-line);
+}
+.lg-timeline li {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 26px;
+  padding: 6px 0;
+  position: relative;
+  font-size: 0.86em;
+}
+.lg-timeline li::before {
+  content: "";
+  position: absolute;
+  left: 88px;
+  top: 11px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--lg-accent);
+}
+.lg-timeline li:last-child::before { background: var(--lg-accent); }
+.lg-timeline time { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: #64748b; font-size: 0.92em; padding-top: 1px; }
+.lg-tl-ev { color: var(--text-title); font-weight: 500; }
+.lg-tl-by { color: #94a3b8; font-size: 0.86em; }
+
+/* การ์ดมติ / คำสั่ง */
+.lg-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--bg-body);
+}
+.lg-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.9em; color: var(--text-title); }
+.lg-pill {
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: var(--lg-accent-soft);
+  color: var(--lg-accent);
+  font-size: 0.8em;
+  font-weight: 700;
+}
+.lg-members { list-style: none; margin: 8px 0 0; padding: 8px 0 0; border-top: 1px dashed var(--border-color); font-size: 0.86em; }
+.lg-members li { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; color: var(--text-title); }
+.lg-members em { font-style: normal; color: #64748b; }
+
+/* ตาราง */
+.lg-table-wrap { overflow-x: auto; }
+.lg-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+.lg-table th, .lg-table td { padding: 7px 10px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: top; color: var(--text-title); }
+.lg-table th { font-size: 0.86em; color: #64748b; font-weight: 600; background: var(--bg-body); }
+.lg-nowrap { white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.lg-muted { color: #64748b; font-size: 0.92em; }
+
+/* ไฟล์ที่ย้ายมา */
+.lg-file {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--bg-card);
+  font-size: 0.86em;
+}
+.lg-code {
+  flex: none;
+  min-width: 44px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--lg-accent-soft);
+  color: var(--lg-accent);
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.86em;
+}
+.lg-file-main { flex: 1; min-width: 0; }
+.lg-file-name { display: flex; gap: 6px; align-items: center; color: var(--text-title); font-weight: 500; word-break: break-word; }
+.lg-file-name .fa-file-pdf { color: #dc2626; }
+.lg-file-meta { color: #64748b; font-size: 0.9em; margin-top: 1px; }
+.lg-file-note { margin-top: 4px; font-size: 0.88em; color: var(--text-main); line-height: 1.5; }
+.lg-file-src {
+  margin-top: 3px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.78em;
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lg-ok { flex: none; display: inline-flex; align-items: center; gap: 4px; color: var(--lg-ok); font-size: 0.82em; font-weight: 600; padding-top: 3px; }
+.lg-file .btn { flex: none; height: 28px; padding: 0 10px; font-size: 0.85em; }
+.lg-note { margin-top: 6px; font-size: 0.82em; color: #64748b; display: flex; gap: 6px; }
+
+/* การ์ด "ข้อมูลจากฐานข้อมูลเดิม" ในหน้า flow — พื้นเทาด้านนอก บอกว่าอ่านอย่างเดียว */
+/* .form-card.lg-db-card ชนะสไตล์ .form-card ในแต่ละหน้า */
+.form-card.lg-db-card {
+  background: #e9edf2;
+  border: 1px solid #cbd5e1;
+}
+body.dark-mode .form-card.lg-db-card { background: #1f2937; border-color: #374151; }
+.lg-db-head {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #475569;
+}
+body.dark-mode .lg-db-head { color: #cbd5e1; }
+.lg-db-head::-webkit-details-marker { display: none; }
+.lg-db-head:focus-visible { outline: 2px solid #64748b; outline-offset: -2px; }
+.lg-db-sub { font-weight: 500; font-size: 0.86em; color: #64748b; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.lg-db-head .lg-tag { border-color: #94a3b8; color: #64748b; }
+.lg-db-card[open] > .lg-db-head .lg-chev { transform: rotate(180deg); }
+.lg-db-body { padding: 0 18px 16px; }
+.lg-db-body .lg-panel { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .lg-sec-body { padding-left: 14px; }
+  .lg-file { flex-wrap: wrap; }
+  .lg-timeline::before { left: 4px; }
+  .lg-timeline li { grid-template-columns: 1fr; gap: 0; padding-left: 20px; }
+  .lg-timeline li::before { left: 0; }
+}

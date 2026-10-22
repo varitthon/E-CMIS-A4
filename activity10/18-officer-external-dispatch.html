@@ -10,9 +10,10 @@
  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
- <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9">
+ <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2">
+<link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3">
  <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
- <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+ <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
  <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1">
 
     <style>
@@ -501,6 +502,7 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="assets/ecmis-shipping.css?v=20261022_2" />
   </head>
   <body>
 
@@ -877,167 +879,12 @@
                 </div>
               </div>
 
-              <!-- Section A: Postal EMS Fields (Shown when Postal Method active) -->
+              <!-- Section A: ไปรษณีย์ EMS — กล่องหลักฐานการส่ง (ecmis-shipping.js) ต่อหน่วยงานผู้รับ 2026-10-22
+                   แทนฟอร์มเลข EMS/วันที่/ที่ทำการ/สลิป และกล่องจำลองติดตามพัสดุเดิม -->
               <div id="sectionPostalEMS">
-                <div
-                  style="
-                    background: var(--ems-bg);
-                    border: 1px solid rgba(225, 29, 72, 0.2);
-                    border-radius: 8px;
-                    padding: 16px 18px;
-                    margin-bottom: 16px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                      margin-bottom: 12px;
-                      color: var(--ems-red);
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-truck-ramp-box"
-                      style="font-size: 1.2em"
-                    ></i>
-                    <span style="font-weight: 700; font-size: 0.95em"
-                      >ข้อมูลการจัดส่งทางไปรษณีย์ด่วนพิเศษ</span
-                    >
-                  </div>
-
-                  <div class="form-grid-3">
-                    <div class="form-group">
-                      <label>
-                        <span
-                          >เลขติดตามพัสดุ EMS
-                          <span style="color: #dc2626">*</span></span
-                        >
-                      </label>
-                      <div style="display: flex; gap: 6px">
-                        <input
-                          type="text"
-                          id="in_emsTrackingNo"
-                          class="form-control font-monospace"
-                          placeholder="เช่น ED123456789TH"
-                          value="ED889912345TH"
-                          style="
-                            font-weight: 700;
-                            color: var(--ems-red);
-                            letter-spacing: 1px;
-                          "
-                          maxlength="13"
-                          oninput="this.value = this.value.toUpperCase()"
-                        />
-                        <button
-                          type="button"
-                          class="btn btn-ems"
-                          style="
-                            height: 38px;
-                            padding: 0 12px;
-                            font-size: 0.82em;
-                          "
-                          onclick="verifyEmsTracking()"
-                        >
-                          <i class="fa-solid fa-satellite-dish me-1"></i
-                          >เช็คสถานะ
-                        </button>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label
-                        >วันที่ฝากส่งไปรษณีย์
-                        <span style="color: #dc2626">*</span></label
-                      >
-                      <input
-                        type="date"
-                        id="in_emsDate"
-                        class="form-control font-monospace"
-                        style="font-weight: 600"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label>ที่ทำการไปรษณีย์ต้นทาง</label>
-                      <input
-                        type="text"
-                        id="in_emsPostOffice"
-                        class="form-control"
-                        placeholder="เช่น ปณ. ศูนย์ราชการเฉลิมพระเกียรติฯ"
-                        value="ไปรษณีย์ไทย สาขาศูนย์ราชการเฉลิมพระเกียรติฯ (แจ้งวัฒนะ)"
-                      />
-                    </div>
-                  </div>
-
-  <div class="form-grid-2">
-   <div class="form-group">
- <label>แนบไฟล์สลิป EMS / ใบเสร็จรับฝากไปรษณีย์</label>
- <div style="display:flex; align-items:center; gap:8px;">
- <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" id="in_emsReceiptFile" class="form-control" style="padding:5px 10px;" onchange="toggleRemoveBtn('in_emsReceiptFile','btn_removeEmsReceiptFile')">
- <button type="button" id="btn_removeEmsReceiptFile" class="btn btn-secondary" style="display:none; padding:5px 10px;" onclick="removeSelectedFile('in_emsReceiptFile','btn_removeEmsReceiptFile')" title="ลบไฟล์ที่แนบ">
- <i class="fa-solid fa-trash-can"></i>
- </button>
- </div>
- </div>
-   <div class="form-group">
- <label>หน่วยงานผู้รับระบุบนจ่าหน้า</label>
- <input type="text" id="in_emsRecipientLabel" class="form-control" readonly style="background:var(--bg-body); font-weight:600;" value="สำนักงานอัยการสูงสุด (ศูนย์ราชการอาคารราชบุรีดิเรกฤทธิ์)">
- </div>
- </div>
-
-                  <!-- EMS Live Tracking Simulation Box -->
-                  <div class="tracking-box" id="emsTrackingResultBox">
-                    <div class="tracking-header">
-                      <div>
-                        <span
-                          style="
-                            font-size: 0.82em;
-                            color: #e11d48;
-                            font-weight: 700;
-                          "
-                        >
-                          <i class="fa-solid fa-barcode me-1"></i
-                          >ผลการติดตามพัสดุไปรษณีย์ไทย EMS:
-                          <span class="font-monospace" id="lblEmsTrackingNo"
-                            >ED889912345TH</span
-                          >
-                        </span>
-                      </div>
-                      <span
-                        class="badge"
-                        style="background: #16a34a; color: #fff"
-                        id="badgeEmsStatus"
-                      >
-                        <i class="fa-solid fa-spinner fa-spin me-1"></i
-                        >อยู่ระหว่างการนำส่ง
-                      </span>
-                    </div>
-                    <div class="tracking-timeline" id="emsTimelineNodes">
-                      <div class="timeline-node passed">
-                        <div class="timeline-dot">
-                          <i class="fa-solid fa-check"></i>
-                        </div>
-                        <div class="timeline-time">25-08-2569 09:30 น.</div>
-                        <div class="timeline-title">
-                          รับฝากสิ่งของส่งทางไปรษณีย์เรียบร้อย
-                        </div>
-                        <div class="timeline-desc">
-                          ที่ทำการไปรษณีย์ ศูนย์ราชการเฉลิมพระเกียรติฯ
-                        </div>
-                      </div>
-                      <div class="timeline-node current">
-                        <div class="timeline-dot">
-                          <i class="fa-solid fa-truck"></i>
-                        </div>
-                        <div class="timeline-time">25-08-2569 11:15 น.</div>
-                        <div class="timeline-title">
-                          อยู่ระหว่างการขนส่งไปยังศูนย์คัดแยกหลักสี่
-                        </div>
-                        <div class="timeline-desc">
-                          เตรียมส่งต่อไปยังสำนักงานอัยการสูงสุด
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="form-group">
+                  <label>หลักฐานการส่ง (ไปรษณีย์ EMS) — <span id="lblShipRecipient">-</span> <span style="color: #dc2626">*</span></label>
+                  <div id="shipHost18"></div>
                 </div>
               </div>
 
@@ -1183,9 +1030,10 @@
 
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
- <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+ <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+ <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script src="assets/ecmis-export.js?v=20261002_1"></script>
     <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
 
@@ -1579,6 +1427,31 @@
 
  const lbl = document.getElementById('lblReceiveDocNo');
  if (lbl && meta) lbl.innerHTML = 'เลขรับของ' + meta.name + ' <span style="color:#dc2626;">*</span>';
+ mountShipping();
+ }
+
+ /* หลักฐานการส่ง (ไปรษณีย์ EMS) แยกต่อหน่วยงานผู้รับ → case.shippingEvidence["18-<key>"]
+    กด "ส่ง" ในกล่อง = บันทึกหลักฐานอย่างเดียว ปุ่ม "บันทึก" ของหน้าเป็นผู้บันทึกการจัดส่งของหน่วยงาน */
+ function shipKey() { return '18-' + activeRecipientKey; }
+ function readShipping() {
+ const k = Activity10.getCaseById(currentCase.id) || currentCase;
+ return (k.shippingEvidence || {})[shipKey()] || null;
+ }
+ function mountShipping() {
+ const required = Activity10.getRequiredRecipients(currentCase, getOpinionOverride());
+ const meta = required.find((r) => r.key === activeRecipientKey);
+ const lbl = document.getElementById('lblShipRecipient');
+ if (lbl) lbl.textContent = meta ? meta.name : '-';
+ ECMISShipping.mount('shipHost18', {
+ method: 'EMS',
+ get: readShipping,
+ save: (data) => {
+ const k = Activity10.getCaseById(currentCase.id) || currentCase;
+ const all = Object.assign({}, k.shippingEvidence || {});
+ all[shipKey()] = data;
+ currentCase = Activity10.updateCase(currentCase.id, { shippingEvidence: all }) || currentCase;
+ },
+ });
  }
 
       function selectDispatchMethod(method) {
@@ -1599,44 +1472,6 @@
           if (sectionPostal) sectionPostal.classList.add("d-none");
           if (sectionHand) sectionHand.classList.remove("d-none");
         }
-      }
-
-      function verifyEmsTracking() {
-        const emsInput = document.getElementById("in_emsTrackingNo");
-        const emsNo = emsInput ? emsInput.value.trim() : "";
-
-        if (!emsNo || emsNo.length < 13) {
-          Swal.fire({
-            icon: "warning",
-            title: "กรุณาระบุเลข EMS ให้ถูกต้อง",
-            text: "เลขติดตามพัสดุไปรษณีย์ด่วนพิเศษต้องมีความยาว 13 หลัก เช่น ED123456789TH",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
-
-        document.getElementById("lblEmsTrackingNo").textContent = emsNo;
-
-        Swal.fire({
-          title: "กำลังเชื่อมต่อระบบไปรษณีย์ไทย...",
-          html: `ตรวจสอบสถานะพัสดุหมายเลข <strong>${emsNo}</strong>`,
-          timer: 900,
-          timerProgressBar: true,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then(() => {
-          const toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 2500,
-          });
-          toast.fire({
-            icon: "success",
-            title: `พบข้อมูลพัสดุ EMS: ${emsNo} สถานะปกติ`,
-          });
-        });
       }
 
       function viewSignedPdfFile() {
@@ -1678,14 +1513,16 @@
 
  const record = { name: meta.name, method: currentDispatchMethod };
  if (currentDispatchMethod === 'postal_ems') {
- const t = val('in_emsTrackingNo').trim();
- if (!t || t.length < 10) {
- return warn('กรุณากรอกเลขติดตาม EMS',
- 'กรุณากรอกเลขติดตามพัสดุไปรษณีย์ EMS 13 หลักที่ได้จากไปรษณีย์ไทย', 'in_emsTrackingNo');
+ const ship = readShipping();
+ if (!ship) {
+ return warn('กรุณากรอกหลักฐานการส่ง',
+ 'กด "กรอกข้อมูลจัดส่ง" แล้วแนบใบส่งไปรษณีย์ของ' + meta.name + 'ก่อน', 'shipHost18');
  }
- record.trackingNo = t;
- record.sentDate = val('in_emsDate');
- record.postOffice = val('in_emsPostOffice').trim();
+ /* เลข EMS แรก → trackingNo เดิม (หน้า 19–22 แสดงต่อได้) + เก็บหลักฐานทั้งชุด */
+ record.trackingNo = (ship.evidenceNos || [])[0] || '';
+ record.sentDate = String(ship.savedAt || '').slice(0, 10);
+ record.postOffice = '';
+ record.shipping = ship;
  } else {
  const d = val('in_oagReceiveDocNo').trim();
  if (!d) {
@@ -1864,5 +1701,6 @@
         }
       }
     </script>
+    <script src="assets/ecmis-shipping.js?v=20261022_2"></script>
   </body>
 </html>

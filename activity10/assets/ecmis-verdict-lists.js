@@ -9,10 +9,17 @@
   "use strict";
 
   /* ชั้นศาลของบันทึก 1 รายการ = 1 แถวใน Excel; code ตรงกับ Activity10.JUDGMENT_LEVELS */
+  /* 2 ส่วน: ศาลคดีอาญาทุจริตและประพฤติมิชอบ (FIRST/APPEAL/SUPREME) และ ศาลปกครอง (ADMIN_FIRST/ADMIN_SUPREME) */
   const LEVELS = [
-    { code: "FIRST", name: "ศาลชั้นต้น" },
-    { code: "APPEAL", name: "ศาลอุทธรณ์" },
-    { code: "SUPREME", name: "ศาลฎีกา" },
+    { code: "FIRST", name: "ศาลชั้นต้น", part: "CRIMINAL" },
+    { code: "APPEAL", name: "ศาลอุทธรณ์", part: "CRIMINAL" },
+    { code: "SUPREME", name: "ศาลฎีกา", part: "CRIMINAL" },
+    { code: "ADMIN_FIRST", name: "ศาลปกครองชั้นต้น", part: "ADMIN" },
+    { code: "ADMIN_SUPREME", name: "ศาลปกครองสูงสุด", part: "ADMIN" },
+  ];
+  const PARTS = [
+    { code: "CRIMINAL", name: "ศาลคดีอาญาทุจริตและประพฤติมิชอบ" },
+    { code: "ADMIN", name: "ศาลปกครอง" },
   ];
 
   /* Y ประเภท/ลักษณะของคดี — ข้อที่มี sub ต้องเลือกหัวข้อย่อย; "(โปรดระบุ)" เปิดช่องข้อความ */
@@ -90,6 +97,19 @@
       "3.2 ศาลฎีกาพิพากษายกฟ้อง",
       "3.3 ศาลฎีกาพิพากษาลงโทษบางรายและยกฟ้องบางราย",
     ],
+    /* ศาลปกครอง — ชีต DD ไม่มีรายการ จึงเป็นรายการตัวอย่าง (ฉบับร่าง) รอรายการจริง */
+    ADMIN_FIRST: [
+      "4.1 ศาลปกครองชั้นต้นพิพากษายกฟ้อง",
+      "4.2 ศาลปกครองชั้นต้นพิพากษาตามคำขอ (เพิกถอนคำสั่ง)",
+      "4.3 ศาลปกครองชั้นต้นพิพากษาตามคำขอบางส่วน",
+      "4.4 ศาลปกครองชั้นต้นมีคำสั่งไม่รับคำฟ้อง/จำหน่ายคดี",
+    ],
+    ADMIN_SUPREME: [
+      "5.1 ศาลปกครองสูงสุดพิพากษายืน",
+      "5.2 ศาลปกครองสูงสุดพิพากษากลับ",
+      "5.3 ศาลปกครองสูงสุดพิพากษาแก้",
+      "5.4 ศาลปกครองสูงสุดมีคำสั่งไม่รับอุทธรณ์/จำหน่ายคดี",
+    ],
   };
 
   /* AJ ความผิดตามกฎหมาย/ระเบียบ (ชีต DD "ผิดตามมาตรา") — "อื่นๆ" เปิดช่องข้อความ */
@@ -102,6 +122,33 @@
 
   /* AN ประเภทการชดใช้ทางแพ่ง */
   const RESTITUTION_TYPES = ["ชดใช้เงิน", "คืนเงิน"];
+
+  /* AG สถานะชั้นพนักงานอัยการ — ชีต DD "สถานะคดีผลการพิจารณาของพนักงานอัยการ" หลังแก้ตาม เพิ่ม/ลบออก
+     (ลบออกเฉพาะ 3.1 เดิม "แจ้งคำสั่งฟ้อง" → แทนด้วย ฟ้องทุกราย/ฟ้องบางราย; 3.2–3.4 เดิมเลื่อนเป็น 3.3–3.5)
+     สตริง = ตัวเลือก, { group, items } = หัวข้อกลุ่ม (เลือกไม่ได้) — บันทึกระดับสำนวน (verdictProsecutorStatus) */
+  const PROSECUTOR_STATUSES = [
+    "1. พนักงานอัยการแจ้งข้อไม่สมบูรณ์",
+    "2. พนักงานอัยการส่งคืนสำนวน",
+    {
+      group: "3. พนักงานอัยการแจ้งคำสั่งฯแล้ว",
+      items: [
+        "3.1 พนักงานอัยการแจ้งคำสั่งฟ้องทุกราย",
+        "3.2 พนักงานอัยการแจ้งคำสั่งฟ้องบางราย",
+        "3.3 พนักงานอัยการแจ้งคำสั่งไม่ฟ้อง/หรือขาดอายุความในคดีอาญา",
+        "3.4 พนักงานอัยการขอให้นำตัวผู้ถูกกล่าวหามาฟ้อง",
+        "3.5 อยู่ระหว่างออกหมายจับ/ยังไม่สามารถจับตัวผู้ถูกกล่าวหา",
+      ],
+    },
+    {
+      group: "4. คำวินิจฉัยของอัยการสูงสุด",
+      items: [
+        "4.1 อัยการสูงสุดมีคำวินิจฉัยให้สั่งฟ้อง",
+        "4.2 อัยการสูงสุดมีคำวินิจฉัยชี้ขาดสั่งไม่ฟ้อง",
+        "4.3 อัยการสูงสุดมีคำวินิจฉัยชี้ขาดสั่งไม่ฟ้องบางราย",
+        "4.4 อัยการสูงสุดสั่งไม่อุทธรณ์-ไม่มีเหตุสมควรอุทธรณ์ยกฟ้องจำเลย",
+      ],
+    },
+  ];
 
   /* ผลมติคณะกรรมการ ป.ป.ท. (Excel P–W) — ลำดับตรงคอลัมน์ */
   const BOARD_OUTCOMES = [
@@ -192,11 +239,144 @@
       subcommitteeDisciplinary: "เป็นความผิดวินัยอย่างร้ายแรง",
       prosecutedOffenses: "ประมวลกฎหมายอาญา มาตรา 157",
     },
+    /* สำนวนเดิมที่มีผู้ถูกกล่าวหา 3 คน (PACC_INTAKE_DATABASE ใน ecmis-activity10.js) */
+    "สำนวน-0090/2569": {
+      offenseType: "จัดซื้อจัดจ้าง",
+      ministry: "กระทรวงมหาดไทย",
+      department: "กรมส่งเสริมการปกครองท้องถิ่น",
+      agency: "องค์การบริหารส่วนตำบลหนองบัว จ.อุดรธานี",
+      boardMeetingNo: "6/2568",
+      boardMeetingDate: "2025-03-20",
+      boardAgendaNo: "4.6",
+      boardOutcomes: { criminal: true, disciplinary: true },
+      inquiryOrderNo: "64/2567",
+      inquiryOrderDate: "2024-03-11",
+      subcommitteeCriminal: "ผู้ถูกกล่าวหาที่ 1 และที่ 2 เป็นความผิดตามประมวลกฎหมายอาญา มาตรา 151 และมาตรา 157 ผู้ถูกกล่าวหาที่ 3 เป็นผู้สนับสนุน",
+      subcommitteeDisciplinary: "ผู้ถูกกล่าวหาที่ 1 และที่ 2 เป็นความผิดวินัยอย่างร้ายแรง",
+      prosecutedOffenses: "ประมวลกฎหมายอาญา มาตรา 151, 157 และ 86",
+    },
   };
 
   /* ตัวอย่างบันทึกผลคำพิพากษา (เดโม) — เติมครั้งเดียวต่อเบราว์เซอร์ให้สำนวน 10.1 ที่ยังไม่มีบันทึก
-     ดู ECMISVerdictForm.ensureSamples(); paccSourceId ใส่เฉพาะเมื่อสำนวนยังไม่ได้ผูกสำนวนเดิม */
+     ดู ECMISVerdictForm.ensureSamples(); paccSourceId ใส่เฉพาะเมื่อสำนวนยังไม่ได้ผูกสำนวนเดิม
+     createCase = สร้างสำนวนนั้นก่อนถ้ายังไม่มีในระบบ */
+  const MULTI_P1 = "นายประยุทธ ทองดี";
+  const MULTI_P2 = "นางสาวมาลี ศรีงาม";
+  const MULTI_P3 = "นายวีระ ใจกล้า";
+  const MULTI_FIRST_COURT = {
+    type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 4", blackNo: "อท. 133/2569", redNo: "อท. 402/2569", date: "2026-06-18",
+  };
+  const MULTI_APPEAL_COURT = { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 211/2569", redNo: "อท. 37/2570", date: "2026-10-02" };
   const SAMPLE_RECORDS = [
+    /* ผู้ถูกกล่าวหาหลายคน: สร้างคดี-100090/2569 (ผูกสำนวน-0090/2569)
+       ชั้นต้น 3 คนผลต่างกัน (ลงโทษ / ลงโทษรอการลงโทษ / ยกฟ้อง) · ชั้นอุทธรณ์ 2 คน (บันทึกแล้ว 1 / ร่าง 1) */
+    {
+      caseId: "คดี-100090/2569",
+      by: "นายณัฐพล บัวทุม",
+      createCase: {
+        title: "พิจารณาคำสั่งไม่อุทธรณ์คดีร่วมกันทุจริตจัดซื้อครุภัณฑ์การแพทย์ราคาสูงเกินจริง รพ.สต.หนองบัว",
+        category: "10.1",
+        categoryName: "คดีอาญาทุจริต",
+        prosecutorCaseTypeNo: "3",
+        prosecutorCaseTypeName: "3. อัยการมีความเห็นสั่งไม่อุทธรณ์(ลงโทษ)",
+        prosecutorLevel: "1",
+        prosecutorLevelName: "ศาลชั้นต้น",
+        courtSystem: "CORRUPTION",
+        courtSystemName: "ศาลคดีทุจริต",
+        prosecutorType: "CORRUPTION",
+        prosecutorTypeName: "อัยการคดีทุจริต",
+        source: "สำนักงานอัยการคดีปราบปรามการทุจริตภาค 4",
+        accuser: "คณะกรรมการ ป.ป.ท. / สำนักงาน ป.ป.ท.",
+        accused: MULTI_P1 + ", " + MULTI_P2 + " และ " + MULTI_P3,
+        accusedPosition: "นายกองค์การบริหารส่วนตำบล / เจ้าพนักงานพัสดุ / ผู้รับจ้าง",
+        plaintiffs: ["พนักงานอัยการ สำนักงานอัยการคดีปราบปรามการทุจริตภาค 4"],
+        defendants: [MULTI_P1, MULTI_P2, MULTI_P3],
+        courtName: MULTI_FIRST_COURT.name,
+        courtBlackNo: MULTI_FIRST_COURT.blackNo,
+        courtRedNo: MULTI_FIRST_COURT.redNo,
+        officer: "นายณัฐพล บัวทุม",
+        assignedRole: "legal_officer",
+        status: "นิติกรจัดทำความเห็น",
+        statusCode: "DRAFTING_OPINION",
+        statusBadge: "bg-primary text-white",
+        lawReceiveNo: "0090/2569",
+        centralSarabanNo: "2569/4520",
+        paccCaseNo: "0090/2569",
+        paccSourceId: "สำนวน-0090/2569",
+        docNo: "อส 0090/2569",
+        docType: "คำสั่งไม่อุทธรณ์ของพนักงานอัยการ",
+        workflowStep: 5,
+        slaTotalDays: 15,
+        slaDaysRemaining: 10,
+        slaAlert: "sla-normal",
+        statuteLimitation: "20 ปี (หมดอายุความ 14 ก.พ. 2588)",
+      },
+      analyses: [
+        {
+          issue: "การแยกความรับผิดของผู้ร่วมกระทำความผิดแต่ละคน",
+          summary: "ศาลแยกพิจารณาบทบาทผู้ถูกกล่าวหาแต่ละคน พยานหลักฐานไม่พอฟังว่าผู้รับจ้างร่วมทุจริต",
+          analysis: "สำนวนที่มีผู้ถูกกล่าวหาหลายคนต้องแยกพยานหลักฐานรายบุคคลให้ชัดตั้งแต่ชั้นไต่สวน",
+          recommendation:
+            "ประสบความสำเร็จ: แยกบทบาทผู้สั่งการและเจ้าพนักงานพัสดุได้ชัดเจน / ข้อพึงระวัง: พยานหลักฐานเชื่อมโยงผู้รับจ้างกับการกำหนดราคายังอ่อน ควรรวบรวมหลักฐานการติดต่อระหว่างผู้รับจ้างกับเจ้าหน้าที่",
+          date: "2026-10-10",
+        },
+      ],
+      records: [
+        {
+          level: "FIRST", person: MULTI_P1, status: "done", court: MULTI_FIRST_COURT,
+          fields: {
+            caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            resultDetail: "จำเลยที่ 1 มีความผิดตามประมวลกฎหมายอาญา มาตรา 151 จำคุก 3 ปี ปรับ 60,000 บาท และให้ชดใช้เงิน 480,000 บาท",
+            offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 151",
+            jailYears: 3, fine: 60000, restitutionType: "ชดใช้เงิน", restitutionAmount: 480000,
+            refundUnit: "องค์การบริหารส่วนตำบลหนองบัว", actualJailYears: 3, actualFine: 60000, damageValue: 480000,
+          },
+          fileNames: ["คำพิพากษาศาลชั้นต้น_อท.402-2569.pdf"],
+        },
+        {
+          level: "FIRST", person: MULTI_P2, status: "done", court: MULTI_FIRST_COURT,
+          fields: {
+            caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            resultDetail: "จำเลยที่ 2 มีความผิดตามประมวลกฎหมายอาญา มาตรา 157 จำคุก 2 ปี ปรับ 20,000 บาท โทษจำคุกให้รอการลงโทษไว้ 2 ปี",
+            offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
+            jailYears: 2, fine: 20000, actualFine: 20000, suspendedYears: 2, probationYears: 1, communityHours: 36, damageValue: 480000,
+          },
+          fileNames: ["คำพิพากษาศาลชั้นต้น_อท.402-2569.pdf"],
+        },
+        {
+          level: "FIRST", person: MULTI_P3, status: "done", court: MULTI_FIRST_COURT,
+          fields: {
+            caseNatureNo: "1", verdictType: "2", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            resultDetail: "พยานหลักฐานโจทก์ไม่พอฟังว่าจำเลยที่ 3 ร่วมกระทำความผิด พิพากษายกฟ้องจำเลยที่ 3",
+            offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 86",
+            damageValue: 480000,
+          },
+          fileNames: ["คำพิพากษาศาลชั้นต้น_อท.402-2569.pdf"],
+        },
+        {
+          level: "APPEAL", person: MULTI_P1, status: "done", court: MULTI_APPEAL_COURT,
+          fields: {
+            caseNatureNo: "1", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            resultDetail: "พิพากษาแก้เป็นจำคุก 2 ปี 6 เดือน นอกจากที่แก้ให้เป็นไปตามคำพิพากษาศาลชั้นต้น",
+            offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 151",
+            jailYears: 2, jailMonths: 6, fine: 60000, restitutionType: "ชดใช้เงิน", restitutionAmount: 480000,
+            refundUnit: "องค์การบริหารส่วนตำบลหนองบัว", isFinal: true, finalLetterNo: "ศาลอุทธรณ์คดีพิเศษ ที่ ศอพ 0090/2570",
+            actualJailYears: 2, actualJailMonths: 6, actualFine: 60000, damageValue: 480000,
+          },
+          fileNames: ["คำพิพากษาศาลอุทธรณ์_อท.37-2570.pdf"],
+        },
+        {
+          level: "APPEAL", person: MULTI_P2, status: "draft", court: MULTI_APPEAL_COURT,
+          fields: {
+            caseNatureNo: "1", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            resultDetail: "พิพากษายืนตามคำพิพากษาศาลชั้นต้น (อยู่ระหว่างตรวจสอบรายละเอียด)",
+            offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
+            jailYears: 2, fine: 20000, damageValue: 480000,
+          },
+          fileNames: ["คำพิพากษาศาลอุทธรณ์_อท.37-2570.pdf"],
+        },
+      ],
+    },
     /* ตัวอย่างครบทุกส่วนของแบบสรุป (Word): สำนวนเดิม + กิจกรรม 7 ครบ, ศาลประพฤติมิชอบ (ชั้นต้น) และศาลคดีทุจริต
        (อุทธรณ์/ฎีกา), ผลคำพิพากษา, การลงโทษจริง, คดีถึงที่สุด, ข้อเสนอแนะทางคดี, ผู้สรุป+ตำแหน่ง */
     {
@@ -220,8 +400,9 @@
       records: [
         {
           level: "FIRST",
+          person: "นายอำนาจ พิทักษ์ธรรม",
           status: "done",
-          court: { name: "ศาลจังหวัดชลบุรี", blackNo: "อ. 1185/2567", redNo: "อ. 2210/2568", date: "2025-11-20" },
+          court: { type: "PROVINCIAL", name: "ศาลจังหวัดชลบุรี", blackNo: "อ. 1185/2567", redNo: "อ. 2210/2568", date: "2025-11-20" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
             caseNatureNo: "5", verdictType: "1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
@@ -235,8 +416,9 @@
         },
         {
           level: "APPEAL",
+          person: "นายอำนาจ พิทักษ์ธรรม",
           status: "done",
-          court: { name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 310/2568", redNo: "อท. 88/2569", date: "2026-04-22" },
+          court: { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 310/2568", redNo: "อท. 88/2569", date: "2026-04-22" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
             caseNatureNo: "5", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
@@ -250,8 +432,9 @@
         },
         {
           level: "SUPREME",
+          person: "นายอำนาจ พิทักษ์ธรรม",
           status: "done",
-          court: { name: "ศาลฎีกา แผนกคดีทุจริตและประพฤติมิชอบ", blackNo: "ฎท. 45/2569", redNo: "ฎท. 102/2569", date: "2026-09-30" },
+          court: { type: "CORRUPTION", name: "ศาลฎีกา แผนกคดีทุจริตและประพฤติมิชอบ", blackNo: "ฎท. 45/2569", redNo: "ฎท. 102/2569", date: "2026-09-30" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
             caseNatureNo: "5", verdictType: "1", verdictStage: "3.1 ศาลฎีกาพิพากษาลงโทษทุกราย",
@@ -275,8 +458,9 @@
       records: [
         {
           level: "FIRST",
+          person: "นายวิชัย การกุศล",
           status: "done",
-          court: { name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 1", blackNo: "อท. 58/2568", redNo: "อท. 112/2569", date: "2026-03-18" },
+          court: { type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 1", blackNo: "อท. 58/2568", redNo: "อท. 112/2569", date: "2026-03-18" },
           fields: {
             caseNatureNo: "3", verdictType: "1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาว่าจำเลยมีความผิดฐานเป็นเจ้าพนักงานเบียดบังทรัพย์ จำคุก 3 ปี และให้คืนเงิน 85,000 บาท",
@@ -288,8 +472,9 @@
         },
         {
           level: "APPEAL",
+          person: "นายวิชัย การกุศล",
           status: "done",
-          court: { name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 21/2569", redNo: "อท. 64/2569", date: "2026-08-27" },
+          court: { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 21/2569", redNo: "อท. 64/2569", date: "2026-08-27" },
           fields: {
             caseNatureNo: "3", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาแก้เป็นจำคุก 2 ปี นอกจากที่แก้ให้เป็นไปตามคำพิพากษาศาลชั้นต้น",
@@ -309,8 +494,9 @@
       records: [
         {
           level: "FIRST",
+          person: "นายธีระ วัฒนกุล",
           status: "done",
-          court: { name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 4", blackNo: "อท. 77/2569", redNo: "อท. 140/2569", date: "2026-07-09" },
+          court: { type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 4", blackNo: "อท. 77/2569", redNo: "อท. 140/2569", date: "2026-07-09" },
           fields: {
             caseNatureNo: "2", verdictType: "2", verdictStage: "1.2 ศาลชั้นต้นพิพากษายกฟ้อง",
             resultDetail: "พยานหลักฐานโจทก์ยังไม่พอฟังว่าจำเลยกระทำความผิด พิพากษายกฟ้อง",
@@ -324,17 +510,33 @@
       caseId: "คดี-100004/2569",
       paccSourceId: "สำนวน-0012/2569",
       by: "นางกานดา รักษ์ธรรม",
+      /* ตัวอย่างหลายบุคคลในชั้นเดียวกัน: จำเลยที่ 1 ลงโทษ (บันทึกแล้ว) / จำเลยที่ 2 ยกฟ้อง (ร่าง) */
+      caseFields: { defendants: ["นายสมชาย ทุจริตมั่น", "นายประเสริฐ ร่วมคิด"] },
       records: [
         {
           level: "FIRST",
-          status: "draft",
-          court: { name: "ศาลจังหวัดสระบุรี", blackNo: "อ. 230/2568", redNo: "อ. 512/2569", date: "2026-09-15" },
+          person: "นายสมชาย ทุจริตมั่น",
+          status: "done",
+          court: { type: "PROVINCIAL", name: "ศาลจังหวัดสระบุรี", blackNo: "อ. 230/2568", redNo: "อ. 512/2569", date: "2026-09-15" },
           fields: {
             caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
-            resultDetail: "ลงโทษจำเลยที่ 1 ยกฟ้องจำเลยที่ 2",
+            resultDetail: "จำเลยที่ 1 มีความผิด จำคุก 1 ปี 6 เดือน ปรับ 30,000 บาท โทษจำคุกให้รอการลงโทษไว้ 2 ปี",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 1, jailMonths: 6, fine: 30000,
-            actualJailYears: 1, actualJailMonths: 6, actualFine: 30000, suspendedYears: 2, probationYears: 1, communityHours: 24,
+            actualFine: 30000, suspendedYears: 2, probationYears: 1, communityHours: 24,
+            damageValue: 1250000,
+          },
+          fileNames: [],
+        },
+        {
+          level: "FIRST",
+          person: "นายประเสริฐ ร่วมคิด",
+          status: "draft",
+          court: { type: "PROVINCIAL", name: "ศาลจังหวัดสระบุรี", blackNo: "อ. 230/2568", redNo: "อ. 512/2569", date: "2026-09-15" },
+          fields: {
+            caseNatureNo: "1", verdictType: "2", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            resultDetail: "พยานหลักฐานโจทก์ไม่พอฟังว่าจำเลยที่ 2 ร่วมกระทำความผิด พิพากษายกฟ้องจำเลยที่ 2",
+            offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             damageValue: 1250000,
           },
           fileNames: [],
@@ -346,11 +548,14 @@
   global.ECMISVerdictLists = {
     SAMPLE_RECORDS: SAMPLE_RECORDS,
     LEVELS: LEVELS,
+    PARTS: PARTS,
+    levelPart: (code) => (LEVELS.find((l) => l.code === code) || {}).part || "",
     CASE_NATURES: CASE_NATURES,
     VERDICT_TYPES: VERDICT_TYPES,
     VERDICT_STAGES: VERDICT_STAGES,
     OFFENSE_LAWS: OFFENSE_LAWS,
     RESTITUTION_TYPES: RESTITUTION_TYPES,
+    PROSECUTOR_STATUSES: PROSECUTOR_STATUSES,
     BOARD_OUTCOMES: BOARD_OUTCOMES,
     ACT7_SAMPLE: ACT7_SAMPLE,
   };

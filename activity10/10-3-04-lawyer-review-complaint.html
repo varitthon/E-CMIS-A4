@@ -23,12 +23,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -413,7 +415,9 @@
         </div>
 
         <div id="pageBody">
-          <div class="form-card">
+          <div id="sendBackNotice"></div>
+          <!-- 2026-10-21 ทุกส่วนพับได้ (data-prev-step ใน ecmis-shell.js): ข้อมูลจากขั้นก่อนหน้าพับไว้ / ส่วนของขั้นนี้กางไว้ -->
+          <div class="form-card" data-prev-step="รายละเอียดคดีปกครอง" data-prev-step-hint="ข้อมูลจากธุรการ (กางเพื่อดู/แก้ไข)" data-prev-step-hide-head>
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -466,7 +470,7 @@
 
           <!-- Card: ค้นหาสำนวนคดีที่เกี่ยวข้อง (เหมือน pattern ของ 02-board-intake.html)
                แทนที่ขั้นตอนธุรการประสานนักสืบเจ้าของสำนวน — นิติกรค้นและดึงข้อมูลได้เอง -->
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ค้นหาสำนวนคดีที่เกี่ยวข้อง" data-prev-step-current>
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-magnifying-glass text-primary me-2"></i
@@ -493,15 +497,151 @@
           </div>
 
           <!-- TOR 10.3.3 / 10.3.4 บันทึกสถานะ (ECMIS103.renderStatusPanel) -->
-          <div id="l3StatusPanel"></div>
-          <div class="form-card" style="border: 2px solid #1e3a8a">
+          <div id="l3StatusPanel" data-prev-step="บันทึกสถานะการดำเนินงานคดีปกครอง" data-prev-step-tag="ตั้งค่าตามขั้นตอนงาน · แก้ไขได้" data-prev-step-hint="ไม่บังคับ" data-prev-step-hide-head></div>
+          <!-- ========== เอกสาร 1 — บันทึกเสนอเข้าบอร์ดเพื่อมีมติ (เอกสารสด, ref PDF 3) 2026-10-21 ==========
+               ฟอร์มซ้าย + พรีวิว A4 ขวา (ECMIS103Docs.boardMemoModel) — แทนช่อง "บันทึกสรุปความเห็น" เดิม -->
+          <div class="l3-split l3-split--doc" data-prev-step="เอกสาร 1 — บันทึกเสนอเข้าบอร์ดเพื่อมีมติ" data-prev-step-current>
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสาร 1 — บันทึกเสนอเข้าบอร์ดเพื่อมีมติ (บันทึกสรุปความเห็น)</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>เอกสารเร่งด่วน</label>
+                      <select id="bm_urgency" class="form-control">
+                        <option>ด่วนที่สุด</option><option>ด่วนมาก</option><option>ด่วน</option><option value="">ปกติ</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>วันที่ <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="bm_docDate" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ส่วนราชการ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="bm_division" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>โทร. (ผู้รับผิดชอบ)</label>
+                      <input type="text" id="bm_phone" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="bm_subject" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>เรียน <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="bm_to" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>๑. เรื่องเดิม</label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bm_background">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bm_background"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๒. ข้อเท็จจริง <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bm_facts">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bm_facts"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๓. ข้อกฎหมาย</label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bm_law">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bm_law"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๔. ข้อพิจารณา <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_bm_consider">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="bm_consider"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำลงท้าย</label>
+                    <input type="text" id="bm_closing" class="form-control" />
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้เสนอ (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="bm_proposerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้เสนอ</label>
+                      <input type="text" id="bm_proposerPos" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>๕. ความเห็นของผู้บังคับบัญชาชั้นต้น</label>
+                    <textarea id="bm_opinionGroup" class="form-control" rows="2"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>๖. ความเห็นผู้อำนวยการกองกฎหมาย</label>
+                    <textarea id="bm_opinionDirector" class="form-control" rows="2"></textarea>
+                  </div>
+                  <div class="helper-text" style="font-size: 0.82em; color: #64748b">
+                    ลายเซ็นข้อ ๕ (ผอ.กลุ่มงานคดี) และ ๖ (ผอ.กองกฎหมาย) ลงในขั้นตรวจถัดไป ส่วน ๗ เลขาธิการ และประธานสั่งการ ลงนามบนกระดาษ
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="boardMemoPreviewCol"></div>
+          </div>
+
+          <!-- ========== เอกสาร 2 — บันทึกฉบับลงนามจริง (ผู้เสนอ) — บังคับแนบ ========== -->
+          <div class="form-card" style="border: 2px solid #1e3a8a" data-prev-step="เอกสาร 2 — บันทึกฉบับลงนามจริง (ผู้เสนอ)" data-prev-step-current>
+            <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+              <span><i class="fa-solid fa-file-signature text-primary me-2"></i>เอกสาร 2 — บันทึกฉบับลงนามจริง (ผู้เสนอ) <span style="color: #dc2626">*</span></span>
+              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+            </div>
+            <div class="form-card-body">
+              <div class="helper-text" style="font-size: 0.85em; color: #64748b; margin-bottom: 10px">
+                พิมพ์เอกสาร 1 (ปุ่มดาวน์โหลด .docx ที่พรีวิว) ลงนามด้วยหมึกในช่องผู้เสนอ แล้วสแกนแนบที่นี่ (PDF / PNG / JPG ไม่เกิน 100 MB)
+              </div>
+              <div class="upload-box">
+                <input type="file" id="in_boardMemoSigned" accept=".pdf,.png,.jpg,.jpeg" onchange="handleBoardMemoSigned(this)" />
+              </div>
+              <div id="boardMemoSignedList" style="margin-top: 8px"></div>
+            </div>
+          </div>
+
+          <div class="form-card" style="border: 2px solid #1e3a8a" data-prev-step="ตรวจสอบคำฟ้องและส่งต่อ" data-prev-step-current>
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
                 ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >ตรวจสอบคำฟ้องและจัดทำบันทึกสรุปความเห็น</span
+                >ตรวจสอบคำฟ้องและส่งต่อ</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
@@ -526,6 +666,8 @@
                     >ผู้ฟ้องคดียื่นคำขอทุเลาการบังคับคดีมาด้วย</label
                   >
                 </div>
+                <!-- ซิงก์จากที่ธุรการบันทึกตอนรับเรื่อง (02: มีหมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา) -->
+                <div id="stayIntakeNote" class="l3-note l3-note-info" style="margin-top: 8px" hidden></div>
                 <div
                   class="helper-text"
                   style="margin-top: 6px; font-size: 0.82em; color: #64748b"
@@ -547,22 +689,7 @@
 
               <div class="form-group">
                 <label
-                  >บันทึกสรุปความเห็น
-                  <span style="color: #dc2626">*</span></label
-                >
-                <textarea
-                  id="in_opinionText"
-                  class="form-control"
-                  rows="6"
-                  placeholder="สรุปข้อเท็จจริง ข้อกฎหมาย และความเห็นของนิติกรต่อคำฟ้อง..."
-                >
--</textarea
-                >
-              </div>
-
-              <div class="form-group">
-                <label
-                  >แนบเอกสารประกอบความเห็น
+                  >แนบเอกสารประกอบอื่น
                   <span style="font-weight: 400; color: #64748b"
                     >(ถ้ามี)</span
                   ></label
@@ -603,6 +730,9 @@
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <button type="button" class="btn btn-secondary" onclick="saveBoardMemoDraft()">
+                <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง
+              </button>
               <button
                 type="button"
                 class="btn btn-primary"
@@ -618,13 +748,15 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-case-search.js?v=20261014_4"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-case-search.js?v=20261022_legacy"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261021_2"></script>
 
     <script>
       const STEP_CODE = "LAW0090";
@@ -638,6 +770,7 @@
         loadCase();
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
         ECMIS103CaseEdit.mount({
+          collapsible: true,
           getCase: function () { return currentCase; },
           onSaved: function (c) { currentCase = c; },
         });
@@ -664,6 +797,8 @@
       function populateCommon() {
         const c = currentCase;
         ECMIS103.setText("f_caseNo", c.id);
+        /* หัวการ์ดถูกซ่อน (หัวกล่องพับแทน) — ย้ายเลขคดีขึ้นไปเป็นป้ายบนหัวกล่อง */
+        if (window.ECMISPrevStep) ECMISPrevStep.setTag("f_caseNo", c.id);
         ECMIS103.setText("f_courtName", c.courtName);
         ECMIS103.setText("f_blackCaseNo", c.blackCaseNo);
         ECMIS103.setText("f_orderedTo", c.orderedTo);
@@ -685,6 +820,75 @@
 
       function populate() {
         populateCommon();
+        renderSendBackNotice(currentCase);
+        prefillReturned(currentCase);
+        syncStayFromIntake(currentCase);
+        initBoardMemo(currentCase);
+      }
+
+      /* คำขอทุเลา — ธุรการระบุไว้แล้วตอนรับเรื่อง (l3HasStayObjectionSummons + หมายศาล)
+         ⇒ ติ๊กและล็อกไว้ (ข้อมูลเดียวกัน ไม่ให้ขัดกัน); ธุรการไม่ได้ระบุ ⇒ นิติกรติ๊กเองได้ถ้าพบภายหลัง */
+      function syncStayFromIntake(c) {
+        const cb = document.getElementById("in_hasStayRequest");
+        const note = document.getElementById("stayIntakeNote");
+        if (!c.l3HasStayObjectionSummons) {
+          if (c.l3HasStayRequest == null) cb.checked = false;
+          note.hidden = true;
+          return;
+        }
+        cb.checked = true;
+        cb.disabled = true;
+        const files = (c.stayObjectionFileNames || []).filter(Boolean);
+        note.textContent = "";
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-circle-info";
+        const text = document.createElement("div");
+        const strong = document.createElement("strong");
+        strong.textContent = "ธุรการบันทึกไว้ตอนรับเรื่อง: ";
+        text.appendChild(strong);
+        text.appendChild(
+          document.createTextNode(
+            "มีหมายศาลแจ้งให้ทำคำคัดค้านคำขอทุเลา" + (files.length ? " (แนบ: " + files.join(", ") + ")" : ""),
+          ),
+        );
+        note.appendChild(icon);
+        note.appendChild(text);
+        note.hidden = false;
+      }
+
+      /* การ์ดเตือนเหตุผลที่ถูกส่งกลับ (l3ReviewSendBackNotes จาก 10-3-07)
+         สร้างด้วย textContent — ข้อความมาจากผู้ใช้ (แบบเดียวกับ 10-3v-04) */
+      function renderSendBackNotice(c) {
+        const host = document.getElementById("sendBackNotice");
+        host.innerHTML = "";
+        if (!c.l3ReviewSendBackNotes) return;
+        const note = document.createElement("div");
+        note.className = "l3-note l3-note-warn";
+        note.style.marginBottom = "16px";
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-rotate-left";
+        const text = document.createElement("div");
+        const strong = document.createElement("strong");
+        strong.textContent =
+          "ถูกส่งกลับจาก " + (c.l3ReviewSendBackBy || "ผู้บังคับบัญชา") + ": ";
+        text.appendChild(strong);
+        text.appendChild(document.createTextNode(c.l3ReviewSendBackNotes));
+        note.appendChild(icon);
+        note.appendChild(text);
+        host.appendChild(note);
+      }
+
+      /* เคสที่ถูกส่งกลับ — เติมค่าที่นิติกรเคยบันทึกไว้กลับเข้าฟอร์ม
+         (ไฟล์แนบประกอบความเห็นต้องแนบใหม่ เพราะเก็บไว้แค่ชื่อไฟล์) */
+      function prefillReturned(c) {
+        if (!c.l3ReviewSendBackNotes) return;
+        const setVal = (id, v) => {
+          const el = document.getElementById(id);
+          if (el && v != null && v !== "") el.value = v;
+        };
+        setVal("in_reviewNotes", c.l3ReviewNotes);
+        setVal("in_relatedCaseNo", c.l3RelatedCaseNo);
+        document.getElementById("in_hasStayRequest").checked = !!c.l3HasStayRequest;
       }
 
       /* ---------------------------------------------- ค้นหาสำนวนคดีที่เกี่ยวข้อง
@@ -814,22 +1018,166 @@
           .join("");
       }
 
+      /* ===================================== เอกสารสด — บันทึกเสนอเข้าบอร์ด (ref PDF 3)
+         ลำดับค่า: ร่าง (l3DocDraft) > ฉบับที่ส่งแล้ว (l3BoardMemo, กรณีถูกส่งกลับ) > ค่าตั้งต้นจากเคส */
+      const BM_FIELDS = ECMIS103Docs.BOARD_MEMO_FIELDS;
+      const BM_EDITORS = ECMIS103Docs.BOARD_MEMO_EDITORS;
+      const BM_LABEL = "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ";
+      const bmEditors = {};
+      let bmInitialHTML = {};
+      let bmViewer = null;
+      let bmTimer = null;
+      let bmSignedFile = null;
+
+      function bmVal(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+      }
+
+      function bmHTML(id) {
+        return bmEditors[id] ? bmEditors[id].getHTML() : bmInitialHTML[id] || "";
+      }
+
+      function bmText(id) {
+        if (bmEditors[id]) return bmEditors[id].getText().trim();
+        const box = document.createElement("div");
+        box.innerHTML = bmInitialHTML[id] || "";
+        return box.textContent.trim();
+      }
+
+      function renderBoardMemo() {
+        if (bmViewer) bmViewer.render(ECMIS103Docs.boardMemoModel(bmVal, bmHTML, currentCase, {}));
+      }
+
+      function scheduleBoardMemo() {
+        clearTimeout(bmTimer);
+        bmTimer = setTimeout(renderBoardMemo, 150);
+      }
+
+      function initBoardMemo(c) {
+        const defaults = ECMIS103Docs.boardMemoDefaults(c);
+        const saved = c.l3BoardMemo || {};
+        const draft = ECMIS103Docs.readDraft(c, STEP_CODE);
+        const fields = Object.assign({}, defaults.fields, saved.fields || {}, (draft && draft.fields) || {});
+        bmInitialHTML = Object.assign({}, defaults.editors, saved.editors || {}, (draft && draft.editors) || {});
+        ECMIS103Docs.applyFields(fields);
+        bmViewer = ECMIS103Docs.createViewer("boardMemoPreviewCol", {
+          title: BM_LABEL,
+          editTarget: "bm_subject",
+          fileName: BM_LABEL + " " + (c.blackCaseNo || ""),
+        });
+        renderBoardMemo();
+        BM_FIELDS.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", scheduleBoardMemo);
+          el.addEventListener("change", scheduleBoardMemo);
+        });
+        Promise.all(
+          BM_EDITORS.map((id) =>
+            ECMIS103.mountEditor(id, {
+              toolbarId: "tb_" + id,
+              initialHTML: bmInitialHTML[id] || "",
+              placeholder: "พิมพ์ข้อความ...",
+              onUpdate: scheduleBoardMemo,
+            }).then((editor) => {
+              bmEditors[id] = editor;
+            }),
+          ),
+        ).then(renderBoardMemo);
+        /* ถูกส่งกลับ — ไฟล์ฉบับลงนามเก็บไว้แค่ชื่อ ต้องแนบใหม่ */
+        if (c.l3BoardMemoSignedFile) renderBoardMemoSigned(c.l3BoardMemoSignedFile);
+      }
+
+      function collectBoardMemo() {
+        const editors = {};
+        BM_EDITORS.forEach((id) => { editors[id] = bmHTML(id); });
+        return { fields: ECMIS103Docs.collectFields(BM_FIELDS), editors: editors };
+      }
+
+      /* ช่องบังคับของเอกสาร 1 — คืนชื่อช่องแรกที่ยังว่าง */
+      function missingBoardMemo() {
+        const fields = [["bm_docDate", "วันที่"], ["bm_division", "ส่วนราชการ"], ["bm_subject", "เรื่อง"], ["bm_to", "เรียน"]];
+        for (const [id, label] of fields) {
+          if (!bmVal(id).trim()) return label + " (เอกสาร 1)";
+        }
+        const editors = [["bm_facts", "๒. ข้อเท็จจริง"], ["bm_consider", "๔. ข้อพิจารณา"]];
+        for (const [id, label] of editors) {
+          if (!bmText(id)) return label + " (เอกสาร 1)";
+        }
+        return "";
+      }
+
+      function saveBoardMemoDraft() {
+        if (!currentCase) return;
+        const saved = ECMIS103Docs.saveDraft(currentCase.id, STEP_CODE, collectBoardMemo());
+        Swal.fire({
+          icon: "success",
+          title: "บันทึกร่างแล้ว",
+          text: saved ? "เมื่อ " + saved.savedAt : "",
+          timer: 1400,
+          showConfirmButton: false,
+        });
+      }
+
+      const SIGNED_EXTS = ["pdf", "png", "jpg", "jpeg"];
+      function handleBoardMemoSigned(input) {
+        const file = input.files && input.files[0];
+        input.value = "";
+        if (!file) return;
+        const ext = file.name.split(".").pop().toLowerCase();
+        if (!SIGNED_EXTS.includes(ext)) {
+          Swal.fire({ icon: "warning", title: "ชนิดไฟล์ไม่ถูกต้อง", text: "รองรับ PDF, PNG, JPG, JPEG", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
+        if (file.size > 100 * 1024 * 1024) {
+          Swal.fire({ icon: "warning", title: "ขนาดไฟล์เกินกำหนด", text: "ไม่เกิน 100 MB", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
+        bmSignedFile = file;
+        renderBoardMemoSigned();
+      }
+
+      function removeBoardMemoSigned() {
+        bmSignedFile = null;
+        renderBoardMemoSigned(currentCase && currentCase.l3BoardMemoSignedFile);
+      }
+
+      /* previousName = ชื่อไฟล์ฉบับที่ส่งไปก่อนถูกส่งกลับ (แสดงเตือนให้แนบใหม่) */
+      function renderBoardMemoSigned(previousName) {
+        const listEl = document.getElementById("boardMemoSignedList");
+        if (bmSignedFile) {
+          const sizeMb = (bmSignedFile.size / (1024 * 1024)).toFixed(2);
+          listEl.innerHTML = `
+ <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; font-size:0.85em;">
+ <i class="fa-solid fa-file-signature" style="color:#16a34a;"></i>
+ <span style="flex:1;">${escapeHtml(bmSignedFile.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeBoardMemoSigned()" title="ลบไฟล์นี้">
+ <i class="fa-solid fa-trash-can"></i>
+ </button>
+ </div>`;
+          return;
+        }
+        listEl.innerHTML = previousName
+          ? `<div style="font-size:0.85em; color:#b45309;"><i class="fa-solid fa-triangle-exclamation me-1"></i>ฉบับเดิม: ${escapeHtml(previousName)} — กรุณาแนบฉบับลงนามใหม่</div>`
+          : "";
+      }
+
       /* ---- page specific ---- */
 
       function submitForm() {
-        const opinionText = document
-          .getElementById("in_opinionText")
-          .value.trim();
-        if (!opinionText) {
+        const missing = missingBoardMemo();
+        if (missing || !bmSignedFile) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุบันทึกสรุปความเห็น",
+            text: missing ? "กรุณากรอก " + missing : "กรุณาแนบบันทึกฉบับลงนามจริง (เอกสาร 2)",
             confirmButtonColor: "#1e3a8a",
           });
-          document.getElementById("in_opinionText").focus();
           return;
         }
+        /* ข้อ ๔ ข้อพิจารณา เป็นสรุปความเห็น (l3OpinionText) ให้หน้าที่ยังอ่านช่องเดิม */
+        const opinionText = bmText("bm_consider");
         const reviewNotes =
           document.getElementById("in_reviewNotes").value.trim() || "-";
         const hasStayRequest =
@@ -842,7 +1190,7 @@
           icon: "question",
           title: "ยืนยันบันทึกผลตรวจสอบและความเห็น",
           html: hasStayRequest
-            ? "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ<br/><strong style='color:#d97706'>พร้อมส่งเรื่องคำขอทุเลาการบังคับคดีเข้ากิจกรรมที่ 2</strong>"
+            ? "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ<br/><strong style='color:#d97706'>พร้อมสร้างเรื่องคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี (เคสลูก -B)</strong>"
             : "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ",
           showCancelButton: true,
           confirmButtonText: "ยืนยันและส่งต่อ",
@@ -857,7 +1205,10 @@
             l3RelatedCaseNo: relatedCaseNo,
             l3OpinionText: opinionText,
             l3OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
+            l3BoardMemo: collectBoardMemo(),
+            l3BoardMemoSignedFile: bmSignedFile.name,
           });
+          ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
           if (hasStayRequest) {
             Activity103.spawnStayObjectionCase(currentCase);
           }

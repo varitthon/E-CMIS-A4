@@ -17,12 +17,12 @@
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
-    <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <style>
       body {
         font-size: var(--base-font-size);
@@ -256,19 +256,25 @@
               <button type="button" class="case-search-tab" role="tab" aria-selected="false" aria-controls="lawcaseSearchHost" id="tabLegal">
                 <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> สำนวนในกองกฎหมาย
               </button>
+              <!-- ข้อมูลที่ย้ายมาจากระบบเดิม (กจ.10) — เปิดตรงได้ด้วย ?tab=legacy (เมนู ค้นหาข้อมูลระบบเดิม) -->
+              <button type="button" class="case-search-tab" role="tab" aria-selected="false" aria-controls="legacySearchHost" id="tabLegacy">
+                <i class="fa-solid fa-database" aria-hidden="true"></i> ข้อมูลระบบเดิม (IMS)
+              </button>
             </div>
             <div id="caseSearchHost" role="tabpanel" aria-labelledby="tabPacc"></div>
             <div id="lawcaseSearchHost" role="tabpanel" aria-labelledby="tabLegal" hidden></div>
+            <div id="legacySearchHost" role="tabpanel" aria-labelledby="tabLegacy" hidden></div>
           </div>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-case-search.js?v=20261014_4"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-case-search.js?v=20261022_legacy"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script>
       /* หน้าค้นหาสำนวน (เมนูแถบด้านข้าง) — แผงร่วมเดียวกับหน้า 02 และหน้านิติกร แบบไม่พับ ดูอย่างเดียว */
       ECMISCaseSearch.mountPanel(document.getElementById("caseSearchHost"), {
@@ -279,17 +285,24 @@
         source: "legal",
         collapsible: false,
       });
-      /* แท็บแหล่งสำนวน */
-      document.querySelectorAll(".case-search-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".case-search-tab").forEach((t) => {
-            const on = t === tab;
-            t.classList.toggle("active", on);
-            t.setAttribute("aria-selected", String(on));
-            document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
-          });
-        });
+      ECMISCaseSearch.mountPanel(document.getElementById("legacySearchHost"), {
+        source: "legacy",
+        collapsible: false,
       });
+      /* แท็บแหล่งสำนวน */
+      function showTab(tab) {
+        document.querySelectorAll(".case-search-tab").forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle("active", on);
+          t.setAttribute("aria-selected", String(on));
+          document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+        });
+      }
+      document.querySelectorAll(".case-search-tab").forEach((tab) => {
+        tab.addEventListener("click", () => showTab(tab));
+      });
+      const startTab = { legal: "tabLegal", legacy: "tabLegacy" }[new URLSearchParams(location.search).get("tab")];
+      if (startTab) showTab(document.getElementById(startTab));
     </script>
   </body>
 </html>

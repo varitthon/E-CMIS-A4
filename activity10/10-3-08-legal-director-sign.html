@@ -23,11 +23,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -387,7 +389,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >บันทึกสรุปความเห็น</span
+                >บันทึกเสนอเข้าบอร์ดเพื่อมีมติ (จัดทำโดยนิติกร)</span
               >
             </div>
             <div class="form-card-body">
@@ -407,6 +409,12 @@
                 <label>เอกสารแนบประกอบความเห็น</label>
                 <div id="f_opinionAttachments"></div>
               </div>
+              <div class="form-group">
+                <label>บันทึกฉบับลงนามจริง (ผู้เสนอ)</label>
+                <div id="f_boardMemoSigned"></div>
+              </div>
+              <!-- พรีวิวบันทึกเสนอเข้าบอร์ด (เอกสารสดจาก 10-3-04) — .l3-split--doc ให้ตัวแสดงผลไม่ sticky -->
+              <div class="l3-split--doc"><div id="boardMemoPreview"></div></div>
             </div>
           </div>
 
@@ -425,7 +433,7 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ความเห็น / ข้อสั่งการเพิ่มเติม</label>
+                <label>ความเห็นเพิ่มเติม</label>
                 <textarea
                   id="in_signNotes"
                   class="form-control"
@@ -453,10 +461,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-review-decision.js?v=20261021_3"></script>
 
     <script>
       const STEP_CODE = "LAW0094";
@@ -520,7 +531,7 @@
 
         ECMIS103.openSignatureModal(
           {
-            title: "ลงนามผ่านเรื่อง",
+            title: "ลงนามความเห็น (ข้อ ๖) และผ่านเรื่อง",
             signer: ECMIS103.signerLabel("dir_legal"),
             certId: "PACC-DIRLEGAL-2569-103",
           },
@@ -556,5 +567,46 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <!-- ผลการพิจารณา เห็นชอบ | ส่งกลับ (assets/ecmis-review-decision.js, 2026-10-21) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        ECMISReviewDecision.mount({
+          approveTitle: "เห็นชอบ",
+          approveSub: "ลงนามผ่านเรื่อง ส่งต่อธุรการออกเลขส่ง",
+          sendBackTitle: "ส่งกลับ ผอ.กลุ่มงานคดี",
+          sendBackSub: "ทบทวนความเห็นชอบ / ให้นิติกรแก้ไขบันทึกความเห็น",
+          hideOnSendBack: ["in_signNotes"],
+          onApprove: submitForm,
+          onSendBack: (reason) => {
+            Activity103.advance(currentCase.id, STEP_CODE, Object.assign({
+              status: "ผอ.กลุ่มงานคดีพิจารณาใหม่ (ส่งกลับจาก ผอ.กองกฎหมาย)",
+              statusCode: "L3_PENDING_GROUP_APPROVE",
+              assignedRole: "case_group_director",
+              officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+            }, Activity10.sendBackPatch("ผอ.กองกฎหมาย", reason, "L3_PENDING_GROUP_APPROVE")));
+          },
+          doneText: "ส่งเรื่องกลับให้ ผอ.กลุ่มงานคดี พิจารณาใหม่แล้ว",
+        });
+      });
+    </script>
+    <!-- บันทึกเสนอเข้าบอร์ด (เอกสารสดจาก 10-3-04, ref PDF 3) 2026-10-21 — ข้อ ๕ จาก 10-3-07 / ความเห็นในหน้านี้เติมข้อ ๖ -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!currentCase || !currentCase.l3BoardMemo) return;
+        const viewer = ECMIS103Docs.createViewer("boardMemoPreview", {
+          title: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ",
+          fileName: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ " + (currentCase.blackCaseNo || ""),
+        });
+        const render = () => viewer.render(ECMIS103Docs.boardMemoFromCase(currentCase, {
+          groupSig: (currentCase.l3Signatures || {}).LAW0093,
+        }));
+        render();
+        /* ไฟล์บันทึกฉบับลงนามจริงที่นิติกรอัปโหลดที่ 10-3-04 — แสดงเป็นไฟล์แนบเปิดดูได้ */
+        ECMIS103.renderAttachments("f_boardMemoSigned", currentCase.l3BoardMemoSignedFile ? [currentCase.l3BoardMemoSignedFile] : []);
+        /* เนื้อความอยู่ในพรีวิวแล้ว — ซ่อนช่องสรุปความเห็นแบบเดิม (เคสเก่าที่ไม่มีบันทึกยังเห็น) */
+        document.getElementById("f_opinionText").closest(".form-group").style.display = "none";
+      });
+    </script>
+    <script src="assets/ecmis-10-3-stay-edit.js?v=20261022_2"></script>
   </body>
 </html>

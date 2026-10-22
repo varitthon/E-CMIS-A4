@@ -23,11 +23,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -247,6 +249,8 @@
       .d-none {
         display: none !important;
       }
+      details.prev-step > .prev-step-body > .form-card { border: none; box-shadow: none; margin-bottom: 0; }
+      .l3-doc-pane .l3-doc-pageframe { max-height: calc(100vh - 220px); min-height: 520px; }
     </style>
   </head>
   <body>
@@ -357,7 +361,7 @@
             <i class="fa-solid fa-eye"></i>
             <div style="flex: 1">
               <strong>ขั้นตอนนี้ดำเนินการแล้ว (ดูอย่างเดียว)</strong><br />
-              ลงนามโดย <span id="f_viewSigner">-</span> เมื่อ
+              บันทึกโดย <span id="f_viewSigner">-</span> เมื่อ
               <span id="f_viewSignedAt">-</span><br />
               สถานะปัจจุบันของคดี: <strong id="f_viewStatus">-</strong>
             </div>
@@ -368,7 +372,7 @@
               style="max-height: 56px; background: #fff; border-radius: 6px; padding: 4px"
             />
           </div>
-          <div class="form-card" data-prev-step="รายละเอียดคดีปกครอง">
+          <div class="form-card" data-prev-step="รายละเอียดคดีปกครอง" data-prev-step-hide-head>
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -417,7 +421,10 @@
             </div>
           </div>
 
-          <div class="form-card" data-prev-step="กำหนดเวลายื่นคำให้การ">
+          <!-- ข้อมูลขั้นก่อนหน้า (10-3-04 → B3) — ECMIS103Prev -->
+          <div id="prevSteps"></div>
+
+          <div class="form-card" data-prev-step="กำหนดเวลายื่นคำให้การและคำขอขยายเวลา" data-prev-step-hide-head>
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-hourglass-half text-primary me-2"></i
@@ -436,35 +443,53 @@
                 <label>คำขอขยายเวลาที่ยื่นแล้ว</label>
                 <div class="read-box read-box-textarea" id="f_extensionSummary">-</div>
               </div>
+              <div class="form-group">
+                <label>หมายเหตุ (นิติกร)</label>
+                <div class="read-box" id="f_extensionNotes">-</div>
+              </div>
             </div>
           </div>
 
-          <div class="form-card">
-            <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-file-signature text-primary me-2"></i
-                >ร่างเอกสารที่นิติกรเสนอ</span
-              >
-              <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
-            </div>
+          <!-- ========== เอกสารที่นิติกรเสนอ (10-3-13) — แท็บ: ร่าง 3 ฉบับ + ไฟล์แนบ 2026-10-22 ========== -->
+          <div class="form-card" id="docsCard" data-prev-step="เอกสารที่นิติกรเสนอ" data-prev-step-current data-prev-step-hint="ร่างในระบบ + ฉบับลงนามจริง">
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>ร่างคำให้การแก้คำฟ้อง</label>
-                  <div id="f_answerFiles"></div>
-                </div>
-                <div class="form-group">
-                  <label>ร่างหนังสือนำส่งถึงสำนักงานคดีปกครอง (อัยการ)</label>
-                  <div id="f_letterFiles"></div>
-                </div>
+              <div class="l3-doc-tabs" role="tablist">
+                <button type="button" class="l3-doc-tab is-active" role="tab" data-tab="memo" onclick="showDocTab('memo')"><i class="fa-solid fa-file-lines"></i>บันทึกข้อความ</button>
+                <button type="button" class="l3-doc-tab" role="tab" data-tab="letter" onclick="showDocTab('letter')"><i class="fa-solid fa-envelope"></i>หนังสือถึงอธิบดีอัยการ</button>
+                <button type="button" class="l3-doc-tab" role="tab" data-tab="answer" onclick="showDocTab('answer')"><i class="fa-solid fa-scale-balanced"></i>คำให้การ (ค.๓)</button>
+                <button type="button" class="l3-doc-tab" role="tab" data-tab="files" onclick="showDocTab('files')"><i class="fa-solid fa-paperclip"></i>ไฟล์แนบและผู้เสนอ</button>
               </div>
-
-              <hr class="l3-divider" />
-
-              <div class="form-grid-2">
+              <div class="l3-doc-pane" id="pane_memo">
                 <div class="form-group">
-                  <label>พยานหลักฐานและเอกสารประกอบ</label>
-                  <div id="f_evidenceFiles"></div>
+                  <label>ฉบับลงนามจริง (สแกน) — บันทึกข้อความเสนอร่างคำให้การ</label>
+                  <div id="f_signed_memo"></div>
+                </div>
+                <div class="l3-split--doc"><div id="pv_doc_memo"></div></div>
+              </div>
+              <div class="l3-doc-pane" id="pane_letter" hidden>
+                <div class="form-group">
+                  <label>ฉบับลงนามจริง (สแกน) — หนังสือถึงอธิบดีอัยการ</label>
+                  <div id="f_signed_letter"></div>
+                </div>
+                <div class="l3-split--doc"><div id="pv_doc_letter"></div></div>
+              </div>
+              <div class="l3-doc-pane" id="pane_answer" hidden>
+                <div class="form-group">
+                  <label>ฉบับลงนามจริง (สแกน) — คำให้การ (ค.๓)</label>
+                  <div id="f_signed_answer"></div>
+                </div>
+                <div class="l3-split--doc"><div id="pv_doc_answer"></div></div>
+              </div>
+              <div class="l3-doc-pane" id="pane_files" hidden>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label>พยานหลักฐานและเอกสารประกอบ / ไฟล์เพิ่มเติม</label>
+                    <div id="f_evidenceFiles"></div>
+                  </div>
+                  <div class="form-group">
+                    <label>คำร้อง / คำสั่งศาล (คำขอขยายเวลา)</label>
+                    <div id="f_extensionFiles"></div>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>นิติกรผู้เสนอร่าง</label>
@@ -480,68 +505,10 @@
             </div>
           </div>
 
-          <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
-            <div
-              class="form-card-header"
-              style="background: rgba(30, 58, 138, 0.05)"
-            >
-              <span
-                ><i class="fa-solid fa-clipboard-check text-primary me-2"></i
-                >ตรวจสอบร่างคำให้การ</span
-              >
-              <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ผอ.กลุ่มงานคดี</span
-              >
-            </div>
+          <div class="form-card" id="actionCard" data-prev-step="ตรวจสอบร่างคำให้การ" data-prev-step-current>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ผลการตรวจร่างคำให้การแก้คำฟ้อง <span style="color: #dc2626">*</span></label>
-                <div class="l3-decision-grid">
-                  <label class="l3-decision-card active-approve" id="card_answer_approve" onclick="selectDecision('answer', 'APPROVE')">
-                    <input type="radio" name="in_answerDecision" id="in_answer_approve" value="APPROVE" checked style="accent-color: #1e3a8a" />
-                    <div style="display: flex; flex-direction: column">
-                      <div class="l3-decision-title" style="color: #1e3a8a">
-                        <i class="fa-solid fa-circle-check text-success me-1"></i>เห็นชอบ
-                      </div>
-                      <div class="l3-decision-sub">(ร่างถูกต้อง เสนอ ผอ.กองกฎหมายตรวจสอบต่อ)</div>
-                    </div>
-                  </label>
-                  <label class="l3-decision-card" id="card_answer_return" onclick="selectDecision('answer', 'RETURN')">
-                    <input type="radio" name="in_answerDecision" id="in_answer_return" value="RETURN" style="accent-color: #dc2626" />
-                    <div style="display: flex; flex-direction: column">
-                      <div class="l3-decision-title" style="color: #dc2626">
-                        <i class="fa-solid fa-rotate-left text-danger me-1"></i>ไม่เห็นชอบ
-                      </div>
-                      <div class="l3-decision-sub">(ส่งกลับนิติกรแก้ไขร่างคำให้การ)</div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ผลการตรวจร่างหนังสือนำส่งถึงสำนักงานคดีปกครอง <span style="color: #dc2626">*</span></label>
-                <div class="l3-decision-grid">
-                  <label class="l3-decision-card active-approve" id="card_letter_approve" onclick="selectDecision('letter', 'APPROVE')">
-                    <input type="radio" name="in_letterDecision" id="in_letter_approve" value="APPROVE" checked style="accent-color: #1e3a8a" />
-                    <div style="display: flex; flex-direction: column">
-                      <div class="l3-decision-title" style="color: #1e3a8a">
-                        <i class="fa-solid fa-circle-check text-success me-1"></i>เห็นชอบ
-                      </div>
-                      <div class="l3-decision-sub">(ร่างถูกต้อง เสนอ ผอ.กองกฎหมายตรวจสอบต่อ)</div>
-                    </div>
-                  </label>
-                  <label class="l3-decision-card" id="card_letter_return" onclick="selectDecision('letter', 'RETURN')">
-                    <input type="radio" name="in_letterDecision" id="in_letter_return" value="RETURN" style="accent-color: #dc2626" />
-                    <div style="display: flex; flex-direction: column">
-                      <div class="l3-decision-title" style="color: #dc2626">
-                        <i class="fa-solid fa-rotate-left text-danger me-1"></i>ไม่เห็นชอบ
-                      </div>
-                      <div class="l3-decision-sub">(ส่งกลับนิติกรแก้ไขร่างหนังสือนำส่ง)</div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>ความเห็น ผอ.กลุ่มงานคดี <span style="color: #dc2626" id="notesRequired" class="d-none">*</span></label>
+                <label>ความเห็น ผอ.กลุ่มงานคดี <span style="font-weight: 400; color: #64748b">(ถ้ามี)</span></label>
                 <textarea
                   id="in_reviewNotes"
                   class="form-control"
@@ -557,7 +524,7 @@
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
               <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
-                <i class="fa-solid fa-signature me-1"></i>ลงนาม ตรวจสอบ และ เสนอ ผอ.กองกฎหมาย
+                <i class="fa-solid fa-paper-plane me-1"></i>ตรวจสอบ และ เสนอ ผอ.กองกฎหมาย
               </button>
             </div>
           </div>
@@ -566,10 +533,15 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-extension-edit.js?v=20261022_1"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_3"></script>
+    <script src="assets/ecmis-review-decision.js?v=20261021_3"></script>
 
     <script>
       const STEP_CODE = "L3-24";
@@ -583,6 +555,19 @@
         ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
         loadCase();
         if (!viewOnly) ECMIS103.guardRole(STEP.role, STEP.roleTitle);
+        /* ผลการตรวจ: เห็นชอบ (เสนอ ผอ.กองกฎหมาย) | ส่งกลับนิติกร — การ์ดเดียวทั้งชุดเอกสาร 2026-10-22 */
+        if (currentCase && !viewOnly) {
+          ECMISReviewDecision.mount({
+            approveTitle: "เห็นชอบ",
+            approveSub: "ร่างถูกต้อง เสนอ ผอ.กองกฎหมายตรวจสอบต่อ",
+            sendBackTitle: "ส่งกลับนิติกร",
+            sendBackSub: "แก้ไขร่างคำให้การ / หนังสือนำส่ง / บันทึกข้อความ",
+            hideOnSendBack: ["in_reviewNotes", "f_forwardTo"],
+            onApprove: submitForm,
+            onSendBack: sendBack,
+            doneText: "ส่งร่างคำให้การกลับให้นิติกรแก้ไขแล้ว",
+          });
+        }
       });
 
       function loadCase() {
@@ -616,8 +601,6 @@
 
       function fillSavedValues() {
         const r = currentCase.l3AnswerGroupReview || {};
-        selectDecision("answer", r.decisionAnswer || (r.checkedAnswer === false ? "RETURN" : "APPROVE"));
-        selectDecision("letter", r.decisionLetter || (r.checkedLetter === false ? "RETURN" : "APPROVE"));
         document.getElementById("in_reviewNotes").value = r.notes || "";
       }
 
@@ -651,11 +634,12 @@
         ECMIS103.renderPartyList("f_defendants", c.defendants);
         renderDeadline();
 
-        ECMIS103.setText("f_draftVersion", "ร่างครั้งที่ " + (docs.version || 1));
-        ECMIS103.setText("f_answerCourt", c.courtName);
-        ECMIS103.renderAttachments("f_answerFiles", docs.answerFileNames);
-        ECMIS103.renderAttachments("f_letterFiles", docs.letterFileNames);
-        ECMIS103.renderAttachments("f_evidenceFiles", docs.evidenceNames);
+        ECMISPrevStep.setTag("docsCard", "ร่างครั้งที่ " + (docs.version || 1));
+        ECMIS103Prev.render("prevSteps", c, ["review", "dispatch", "resolution"]);
+        ECMIS103.setText("f_extensionNotes", c.l3ExtensionNotes);
+        ECMIS103.renderAttachments("f_evidenceFiles", (docs.evidenceNames || []).concat(docs.extraNames || []));
+        ECMIS103.renderAttachments("f_extensionFiles", (c.l3ExtensionRequests || []).reduce((all, r) => all.concat(r.fileNames || []), []));
+        renderDocTabs(c, docs);
 
         ECMIS103.setText("f_lawyerName", c.officer || ECMIS103.signerLabel("case_legal_officer"));
         ECMIS103.setText("f_lawyerSignedAt", sig && sig.signedAt);
@@ -702,110 +686,118 @@
         );
       }
 
-      function getDecision(key) {
-        return document.getElementById("in_" + key + "_return").checked ? "RETURN" : "APPROVE";
+      /* ---------- เอกสารที่นิติกรเสนอ: ฉบับลงนามจริง + พรีวิวร่างในระบบ (แท็บ) ---------- */
+      const DOC_KEYS = ["memo", "letter", "answer"];
+      let docModels = null;
+      let docViewers = {};
+
+      function signedNameOf(c, docs, key) {
+        const live = (c.l3LiveDocs || {})[key] || {};
+        if (live.signedFileName) return live.signedFileName;
+        if (key === "answer") return (docs.answerFileNames || [])[0];
+        return (docs.letterFileNames || [])[key === "memo" ? 0 : 1];
       }
 
-      function selectDecision(key, type) {
-        if (viewOnly && document.getElementById("in_" + key + "_approve").disabled) return;
-        document.getElementById("in_" + key + (type === "RETURN" ? "_return" : "_approve")).checked = true;
-        document.getElementById("card_" + key + "_approve").className = "l3-decision-card" + (type === "APPROVE" ? " active-approve" : "");
-        document.getElementById("card_" + key + "_return").className = "l3-decision-card" + (type === "RETURN" ? " active-return" : "");
-        const isReturn = getDecision("answer") === "RETURN" || getDecision("letter") === "RETURN";
-        document.getElementById("forwardToSection").classList.toggle("d-none", isReturn);
-        document.getElementById("notesRequired").classList.toggle("d-none", !isReturn);
-        document.getElementById("btnSubmit").innerHTML = isReturn
-          ? '<i class="fa-solid fa-rotate-left me-1"></i>ลงนาม และ ส่งกลับนิติกรแก้ไข'
-          : '<i class="fa-solid fa-signature me-1"></i>ลงนาม ตรวจสอบ และ เสนอ ผอ.กองกฎหมาย';
+      function renderDocTabs(c, docs) {
+        DOC_KEYS.forEach((k) => {
+          const name = signedNameOf(c, docs, k);
+          ECMIS103.renderAttachments("f_signed_" + k, name ? [name] : []);
+        });
+        if (!c.l3LiveDocs) {
+          DOC_KEYS.forEach((k) => {
+            document.getElementById("pv_doc_" + k).innerHTML = '<div class="read-box">ไม่มีร่างเอกสารสดในระบบ (เรื่องเดิม) — ดูไฟล์ฉบับลงนามจริงด้านบน</div>';
+          });
+          return;
+        }
+        docModels = ECMIS103Docs.answerSetFromCase(c);
+        const black = c.blackCaseNo || "";
+        docViewers = {
+          memo: ECMIS103Docs.createViewer("pv_doc_memo", { title: "บันทึกข้อความเสนอร่างคำให้การ", fileName: "บันทึกข้อความเสนอร่างคำให้การ " + black }),
+          letter: ECMIS103Docs.createViewer("pv_doc_letter", { title: "หนังสือขอให้แก้ต่างถึงอธิบดีอัยการ", fileName: "หนังสือถึงอธิบดีอัยการ " + black }),
+          answer: ECMIS103Docs.createViewer("pv_doc_answer", { title: "คำให้การ (ค.๓)", fileName: "คำให้การ " + black }),
+        };
+        docViewers.memo.render(docModels.memo);
+      }
+
+      /* วาดพรีวิวเมื่อเปิดแท็บ (แท็บที่ซ่อนวัดขนาดหน้าไม่ได้) */
+      function showDocTab(key) {
+        document.querySelectorAll("#docsCard .l3-doc-tab").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === key));
+        DOC_KEYS.concat("files").forEach((k) => { document.getElementById("pane_" + k).hidden = k !== key; });
+        if (docModels && docViewers[key]) docViewers[key].render(docModels[key]);
       }
 
       function warn(title, text) {
         Swal.fire({ icon: "warning", title: title, text: text, confirmButtonColor: "#1e3a8a" });
       }
 
+      function reviewRecord(decision, notes) {
+        return {
+          decisionAnswer: decision,
+          decisionLetter: decision,
+          checkedAnswer: decision === "APPROVE",
+          checkedLetter: decision === "APPROVE",
+          notes: notes,
+          reviewedBy: ECMIS103.signerLabel("case_group_director"),
+          reviewedAt: ECMIS103.formatThaiDateTime(new Date()),
+        };
+      }
+
+      /* เห็นชอบ → เสนอ ผอ.กองกฎหมาย */
       function submitForm() {
         if (!currentCase) return;
-        const decisionAnswer = getDecision("answer");
-        const decisionLetter = getDecision("letter");
-        const isReturn = decisionAnswer === "RETURN" || decisionLetter === "RETURN";
-        const notesRaw = document.getElementById("in_reviewNotes").value.trim();
-        if (isReturn && !notesRaw) {
-          return warn("กรุณาระบุความเห็น", "กรณีไม่เห็นชอบ กรุณาระบุประเด็นที่ต้องให้นิติกรแก้ไข");
-        }
-        const notes = notesRaw || "-";
-        const forwardTo = isReturn ? (currentCase.officer || ECMIS103.signerLabel("case_legal_officer")) : ECMIS103.signerLabel("dir_legal");
-        const docs = currentCase.l3AnswerDocs || {};
-        const label = (d) => (d === "APPROVE" ? "เห็นชอบ" : "ไม่เห็นชอบ");
+        const notes = document.getElementById("in_reviewNotes").value.trim() || "-";
+        const forwardTo = ECMIS103.signerLabel("dir_legal");
         const dueText = document.getElementById("f_currentDue").textContent + " (" + document.getElementById("f_daysLeft").textContent + ")";
-
         Swal.fire({
-          icon: isReturn ? "warning" : "question",
-          title: isReturn ? "ยืนยันส่งกลับให้นิติกรแก้ไข?" : "ยืนยันผลการตรวจสอบร่างคำให้การ?",
+          icon: "question",
+          title: "ยืนยันผลการตรวจสอบร่างคำให้การ?",
           html: `
  <div class="emd-summary">
  <p><strong>สำนวนคดี:</strong> ${esc(currentCase.lawReceiveNo || currentCase.id)}</p>
  <p><strong>ครบกำหนดยื่นคำให้การ:</strong> ${esc(dueText)}</p>
- <p><strong>ร่างคำให้การแก้คำฟ้อง:</strong> ${label(decisionAnswer)} (${esc((docs.answerFileNames || []).join(", ") || "-")})</p>
- <p><strong>ร่างหนังสือนำส่ง:</strong> ${label(decisionLetter)} (${esc((docs.letterFileNames || []).join(", ") || "-")})</p>
+ <p><strong>ผลการตรวจ:</strong> เห็นชอบ (บันทึกข้อความ / หนังสือนำส่ง / คำให้การ)</p>
  <p><strong>ความเห็น ผอ.กลุ่มงานคดี:</strong> ${esc(notes)}</p>
- <p><strong>ส่งต่อให้:</strong> ${esc(forwardTo)}</p>
- <p class="${isReturn ? "emd-strong-bad" : "emd-strong-ok"}"><strong>สถานะ:</strong> ${isReturn ? "ส่งกลับ นิติกร แก้ไขร่างคำให้การ" : "ส่ง ผอ.กองกฎหมาย ตรวจสอบร่างคำให้การ"}</p>
+ <p class="emd-strong-ok"><strong>สถานะ:</strong> ส่ง ${esc(forwardTo)} ตรวจสอบร่างคำให้การ</p>
  </div>
  `,
           showCancelButton: true,
-          confirmButtonText: isReturn ? "ยืนยันส่งกลับแก้ไข" : "ยืนยันตรวจสอบและเสนอต่อ",
+          confirmButtonText: "ยืนยันตรวจสอบและเสนอต่อ",
           cancelButtonText: "ยกเลิก",
-          confirmButtonColor: isReturn ? "#dc2626" : "#16a34a",
+          confirmButtonColor: "#16a34a",
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          ECMIS103.openSignatureModal(
-            {
-              title: isReturn ? "ลงนามส่งกลับร่างคำให้การให้นิติกรแก้ไข" : "ลงนามตรวจสอบร่างคำให้การแก้คำฟ้อง",
-              signer: ECMIS103.signerLabel("case_group_director"),
-              certId: "PACC-CASEGROUPDIR-2569-103",
-            },
-            (image) => {
-              const review = {
-                decisionAnswer: decisionAnswer,
-                decisionLetter: decisionLetter,
-                checkedAnswer: decisionAnswer === "APPROVE",
-                checkedLetter: decisionLetter === "APPROVE",
-                notes: notes,
-                reviewedBy: ECMIS103.signerLabel("case_group_director"),
-                reviewedAt: ECMIS103.formatThaiDateTime(new Date()),
-              };
-              Activity103.sign(currentCase.id, STEP_CODE, image);
-              if (isReturn) {
-                Activity103.advance(currentCase.id, STEP_CODE, {
-                  status: "นิติกรแก้ไขร่างคำให้การ (ผอ.กลุ่มงานคดีไม่เห็นชอบ)",
-                  statusCode: "L3_PENDING_LAWYER_EXTENSION",
-                  statusBadge: "bg-danger text-white",
-                  l3Step: "L3-21",
-                  l3StepSeq: 3,
-                  l3AnswerGroupReview: review,
-                  l3AnswerReturn: Object.assign({ from: "case_group_director" }, review),
-                  assignedRole: "case_legal_officer",
-                });
-              } else {
-                Activity103.advance(currentCase.id, STEP_CODE, {
-                  l3AnswerGroupReview: review,
-                  l3AnswerReturn: undefined,
-                  assignedRole: "dir_legal",
-                });
-              }
+          ECMIS103.confirmRecord({}, (image) => {
+            Activity103.sign(currentCase.id, STEP_CODE, image);
+            Activity103.advance(currentCase.id, STEP_CODE, {
+              l3AnswerGroupReview: reviewRecord("APPROVE", notes),
+              l3AnswerReturn: undefined,
+              assignedRole: "dir_legal",
+            });
+            Swal.fire({
+              icon: "success",
+              title: "ตรวจสอบร่างคำให้การสำเร็จ!",
+              text: "เสนอร่างคำให้การและหนังสือนำส่งให้ " + forwardTo + " ตรวจสอบเรียบร้อยแล้ว",
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(ECMIS103.goInbox);
+          });
+        });
+      }
 
-              Swal.fire({
-                icon: "success",
-                title: isReturn ? "ส่งกลับแก้ไขสำเร็จ!" : "ตรวจสอบร่างคำให้การสำเร็จ!",
-                text: isReturn
-                  ? "ส่งร่างคำให้การกลับให้ " + forwardTo + " แก้ไขเรียบร้อยแล้ว"
-                  : "เสนอร่างคำให้การและหนังสือนำส่งให้ " + forwardTo + " ตรวจสอบเรียบร้อยแล้ว",
-                timer: 2000,
-                showConfirmButton: false,
-              }).then(ECMIS103.goInbox);
-            },
-          );
+      /* ส่งกลับนิติกร (10-3-13) — เหตุผลจากการ์ดส่งกลับ */
+      function sendBack(reason) {
+        const review = reviewRecord("RETURN", reason);
+        Activity103.sign(currentCase.id, STEP_CODE, null);
+        Activity103.advance(currentCase.id, STEP_CODE, {
+          status: "นิติกรแก้ไขร่างคำให้การ (ผอ.กลุ่มงานคดีส่งกลับ)",
+          statusCode: "L3_PENDING_LAWYER_EXTENSION",
+          statusBadge: "bg-danger text-white",
+          l3Step: "L3-21",
+          l3StepSeq: 3,
+          l3AnswerGroupReview: review,
+          l3AnswerReturn: Object.assign({ from: "case_group_director" }, review),
+          assignedRole: "case_legal_officer",
         });
       }
 
@@ -830,5 +822,6 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <script src="assets/ecmis-10-3-stay-edit.js?v=20261022_2"></script>
   </body>
 </html>

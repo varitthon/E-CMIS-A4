@@ -19,7 +19,7 @@
     { key: "caseNatureOther", col: "Y", label: "ระบุ (อื่นๆ)" },
     { key: "trackingGroup", col: "Z", label: "กลุ่มงานบริหารติดตามรับเรื่อง" },
     { key: "verdictType", col: "AA", label: "ประเภทคำพิพากษา" },
-    { key: "verdictStage", col: "AH", label: "สถานะชั้นคำพิพากษา (fz)" },
+    { key: "verdictStage", col: "AH", label: "สถานะชั้นคำพิพากษา" },
     { key: "resultDetail", col: "AI", label: "รายละเอียด" },
     { key: "offenseLaw", col: "AJ", label: "ความผิดตามกฎหมาย/ระเบียบ" },
     { key: "offenseLawOther", col: "AJ", label: "ระบุ (อื่นๆ)" },
@@ -107,7 +107,8 @@
     const n = normalizeFields(input);
     errors.push.apply(errors, n.errors);
     if (status === "done") {
-      if (!n.fields.verdictType) errors.push("กรุณาเลือกประเภทคำพิพากษา");
+      /* ประเภทคำพิพากษา (ลงโทษ/ยกฟ้อง) ใช้กับส่วนศาลคดีอาญาเท่านั้น — ศาลปกครองไม่บังคับ */
+      if (!n.fields.verdictType && L().levelPart(level) !== "ADMIN") errors.push("กรุณาเลือกประเภทคำพิพากษา");
       if (!n.fields.verdictStage) errors.push("กรุณาเลือกสถานะชั้นคำพิพากษา");
     }
     return errors;
@@ -117,11 +118,47 @@
     const i = L().LEVELS.findIndex((l) => l.code === code);
     return i < 0 ? 99 : i;
   }
-  function getRecords(kase) {
-    return ((kase && kase.verdictRecords) || []).slice().sort((a, b) => levelOrder(a.level) - levelOrder(b.level));
+
+  /* ---------- บุคคล (ผู้ถูกกล่าวหา/จำเลย) — 1 บันทึก = ชั้นศาล × บุคคล ---------- */
+  /* แยกรายชื่อจากข้อความ "นาย ก, นาง ข และ นาย ค" (ตัดวงเล็บตำแหน่งท้ายชื่อ) */
+  function splitNames(text) {
+    return String(text == null ? "" : text)
+      .split(/\s*,\s*|\s+และ\s+/)
+      .map((s) => clean(s.replace(/\s*\([^)]*\)\s*$/, "")))
+      .filter((s) => s && s !== "-");
   }
-  function getRecord(kase, level) {
-    return getRecords(kase).find((r) => r.level === level) || null;
+  /* รายชื่อให้เลือก: จำเลยที่กรอกในหน้า 02 + ผู้ถูกกล่าวหาในสำนวนเดิม + ผู้ถูกกล่าวหาของสำนวน (ไม่ซ้ำ) */
+  function personCandidates(kase, pacc) {
+    const k = kase || {};
+    const out = [];
+    const add = (n) => {
+      if (n && out.indexOf(n) < 0) out.push(n);
+    };
+    (Array.isArray(k.defendants) ? k.defendants : []).forEach((d) => splitNames(d).forEach(add));
+    splitNames(pacc && pacc.accused).forEach(add);
+    splitNames(k.accused).forEach(add);
+    return out;
+  }
+  /* บันทึกเดิม (ก่อนแยกรายบุคคล) ไม่มี person → ถือเป็นผู้ถูกกล่าวหาคนแรกของสำนวน */
+  function defaultPerson(kase) {
+    return personCandidates(kase, null)[0] || "ผู้ถูกกล่าวหา";
+  }
+  function withPerson(kase, rec) {
+    return rec.person ? rec : Object.assign({}, rec, { person: defaultPerson(kase) });
+  }
+  function getRecords(kase) {
+    const list = ((kase && kase.verdictRecords) || []).map((r) => withPerson(kase, r));
+    const order = list.map((r) => r.person).filter((p, i, all) => all.indexOf(p) === i);
+    return list.sort((a, b) => levelOrder(a.level) - levelOrder(b.level) || order.indexOf(a.person) - order.indexOf(b.person));
+  }
+  /* ไม่ระบุบุคคล = บันทึกแรกของชั้นนั้น */
+  function getRecord(kase, level, person) {
+    return getRecords(kase).find((r) => r.level === level && (!person || r.person === person)) || null;
+  }
+  function personsAt(kase, level) {
+    return getRecords(kase)
+      .filter((r) => r.level === level)
+      .map((r) => r.person);
   }
   /* judgment ที่ฟอร์มนี้ดูแลของชั้นนั้น: รายการที่ฟอร์มเคยเขียน (verdictRecordLevel) ก่อน
      ถ้ายังไม่มี และชั้นนั้นมีรายการจาก popup เดิมเพียงรายการเดียว → รับรายการนั้นมาดูแลต่อ
@@ -140,69 +177,195 @@
     return stripNo(fields.verdictStage) || (type ? type.name : "") || clean(prevResult);
   }
 
-  /* ตัวสร้าง patch (pure, immutable) — upsert verdictRecords[level] และ judgments[] ชั้นเดียวกัน
-     opts = { status, by, when, court:{name,blackNo,redNo,date}, fileNames[] }; ไม่ผ่าน → null */
+  /* ศาลของชั้น (ใช้ร่วมทุกคนในชั้นเดียวกัน): type = ประเภทศาล (ECMISCourtLists.COURT_TYPES) — ไม่ระบุ = เดาจากชื่อศาล */
+  function normalizeCourt(c) {
+    const x = c || {};
+    const CL = global.ECMISCourtLists;
+    const name = clean(x.name);
+    return {
+      /* รหัสเดิม MISCONDUCT → ศาลแขวง/ศาลจังหวัดตามชื่อศาล; ไม่ระบุ = เดาจากชื่อศาล */
+      type: CL ? CL.normalizeType(clean(x.type), name) : clean(x.type),
+      name: name,
+      blackNo: clean(x.blackNo),
+      redNo: clean(x.redNo),
+      date: clean(x.date),
+    };
+  }
+
+  /* สรุปผลรายชั้นสำหรับ judgments[] (สารบบ/รายงานเดิม): 1 คน = ผลของคนนั้น, หลายคน = "ชื่อ: ผล / ..." */
+  /* หลายคนในชั้นเดียว: ทุกคนสถานะชั้นเดียวกัน → สถานะชั้นครั้งเดียว ตามด้วยประเภทคำพิพากษารายบุคคล
+     เช่น "ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย — นาย ก: ลงโทษ / นาย ข: ยกฟ้อง"
+     สถานะชั้นต่างกัน → สถานะชั้นรายบุคคล "นาย ก: ...ลงโทษ / นาย ข: ...ยกฟ้อง" */
+  function multiPersonResultText(levelRecs) {
+    const stages = Array.from(new Set(levelRecs.map((r) => stripNo(r.fields.verdictStage))));
+    const shared = stages.length === 1 ? stages[0] : "";
+    const perPerson = levelRecs
+      .map((r) => {
+        const type = L().VERDICT_TYPES.find((t) => t.code === r.fields.verdictType);
+        const text = shared ? (type ? type.name : "") : judgmentResultText(r.fields, "");
+        return text ? r.person + ": " + text : "";
+      })
+      .filter(Boolean)
+      .join(" / ");
+    return [shared, perPerson].filter(Boolean).join(" — ");
+  }
+
+  function judgmentForLevel(levelRecs, prev, by, when) {
+    const p = prev || {};
+    const single = levelRecs.length === 1;
+    /* ข้อความเดิมใช้เป็นค่าสำรองได้เฉพาะรายการจาก popup เดิม (ไม่ใช่ข้อความสรุปที่ฟอร์มเขียนไว้) */
+    const legacyResult = p.verdictRecordLevel ? "" : p.result;
+    const result = single ? judgmentResultText(levelRecs[0].fields, legacyResult) : multiPersonResultText(levelRecs);
+    if (!result) return null;
+    const court = levelRecs[0].court || {};
+    const details = levelRecs.map((r) => (single ? "" : r.person + ": ") + clean(r.fields.resultDetail)).filter((s) => clean(s.replace(/^.*?:\s*/, "")));
+    return Object.assign({}, p, {
+      level: levelRecs[0].level,
+      issuer: court.name || p.issuer || "",
+      blackNo: court.blackNo || p.blackNo || "",
+      redNo: court.redNo || p.redNo || "",
+      date: court.date || p.date || "",
+      result: result,
+      summary: details.join("\n") || p.summary || "",
+      isFinal: levelRecs.every((r) => !!r.fields.isFinal),
+      fileNames: levelRecs[0].fileNames && levelRecs[0].fileNames.length ? levelRecs[0].fileNames : p.fileNames || [],
+      recordedBy: p.recordedBy || by || "",
+      recordedAt: p.recordedAt || when,
+      verdictRecordLevel: levelRecs[0].level,
+    });
+  }
+
+  /* เขียน judgments[] ของชั้นนั้นใหม่จากบันทึกรายบุคคล (ไม่มีบันทึกเหลือ = ลบรายการที่ฟอร์มดูแล) */
+  function syncJudgment(kase, records, level, by, when) {
+    const judgments = ((kase && kase.judgments) || []).slice();
+    const idx = judgmentIndexForLevel(kase, level);
+    const levelRecs = records.filter((r) => r.level === level);
+    const merged = levelRecs.length ? judgmentForLevel(levelRecs, idx >= 0 ? judgments[idx] : null, by, when) : null;
+    if (merged && idx >= 0) judgments[idx] = merged;
+    else if (merged) judgments.push(merged);
+    else if (idx >= 0 && judgments[idx].verdictRecordLevel === level) judgments.splice(idx, 1);
+    return judgments;
+  }
+
+  /* ตัวสร้าง patch (pure, immutable) — upsert บันทึกของ (ชั้นศาล, บุคคล), ศาล/ไฟล์ใช้ร่วมทั้งชั้น,
+     และสรุป judgments[] ของชั้นนั้น
+     opts = { person, status, by, when, court:{type,name,blackNo,redNo,date}, fileNames[] }; ไม่ผ่าน → null */
   function buildRecordPatch(kase, level, input, opts) {
     const o = opts || {};
-    const prevRec = getRecord(kase, level);
+    const person = clean(o.person) || defaultPerson(kase);
+    const prevRec = getRecord(kase, level, person);
     const asked = o.status === "done" ? "done" : "draft";
     if (validate(level, input, asked).length) return null;
     /* บันทึกร่างทับบันทึกที่ "บันทึกแล้ว" และยังกรอกครบ → คงสถานะบันทึกแล้ว ไม่ลดเป็นร่าง */
     const keepDone = asked === "draft" && prevRec && prevRec.status === "done" && !validate(level, input, "done").length;
-    const status = keepDone ? "done" : asked;
-    const fields = normalizeFields(input).fields;
     const when = o.when || new Date().toISOString();
-    const c = o.court || {};
-    const court = { name: clean(c.name), blackNo: clean(c.blackNo), redNo: clean(c.redNo), date: clean(c.date) };
+    const court = normalizeCourt(o.court);
     const fileNames = (o.fileNames || (prevRec && prevRec.fileNames) || []).map(clean).filter(Boolean);
     const record = {
       level: level,
-      status: status,
-      fields: fields,
+      person: person,
+      status: keepDone ? "done" : asked,
+      fields: normalizeFields(input).fields,
       court: court,
       fileNames: fileNames,
       createdAt: (prevRec && prevRec.createdAt) || when,
       updatedBy: o.by || "",
       updatedAt: when,
     };
-    const records = ((kase && kase.verdictRecords) || []).filter((r) => r.level !== level).concat([record]);
-
-    const judgments = ((kase && kase.judgments) || []).slice();
-    const idx = judgmentIndexForLevel(kase, level);
-    const prev = idx >= 0 ? judgments[idx] : {};
-    const result = judgmentResultText(fields, prev.result);
-    if (result) {
-      const merged = Object.assign({}, prev, {
-        level: level,
-        issuer: court.name || prev.issuer || "",
-        blackNo: court.blackNo || prev.blackNo || "",
-        redNo: court.redNo || prev.redNo || "",
-        date: court.date || prev.date || "",
-        result: result,
-        summary: fields.resultDetail || prev.summary || "",
-        isFinal: fields.isFinal,
-        fileNames: fileNames.length ? fileNames : prev.fileNames || [],
-        recordedBy: prev.recordedBy || o.by || "",
-        recordedAt: prev.recordedAt || when,
-        verdictRecordLevel: level,
-      });
-      if (idx >= 0) judgments[idx] = merged;
-      else judgments.push(merged);
-    }
-    return { verdictRecords: records, judgments: judgments };
+    const others = getRecords(kase)
+      .filter((r) => !(r.level === level && r.person === person))
+      .map((r) => (r.level === level ? Object.assign({}, r, { court: court, fileNames: fileNames }) : r));
+    const records = others.concat([record]);
+    return { verdictRecords: records, judgments: syncJudgment(kase, records, level, o.by, when) };
   }
 
-  /* ค่าเริ่มต้นของฟอร์ม — บันทึกเดิม หรือ judgments[] ชั้นเดียวกัน (popup เดิม) หรือเลขคดีจากหน้า 02 */
-  function initialState(kase, level) {
-    const rec = getRecord(kase, level);
+  /* บันทึกหลายคนในชั้นเดียวพร้อมกัน (pure) — entries [{ person, fields, status }] ใช้ศาล/ไฟล์ชุดเดียวกัน (opts.court, opts.fileNames)
+     ตรวจทุกคนก่อน: มีคนใดผิด → { patch: null, errors: [{ person, errors }] } ไม่บันทึกใครเลย */
+  function buildLevelPatch(kase, level, entries, opts) {
+    const list = entries || [];
+    const errors = list
+      .map((e) => ({ person: e.person, errors: validate(level, e.fields, e.status === "done" ? "done" : "draft") }))
+      .filter((x) => x.errors.length);
+    if (!list.length) errors.push({ person: "", errors: ["กรุณากรอกผลคำพิพากษาอย่างน้อย 1 คน"] });
+    if (errors.length) return { patch: null, errors: errors };
+    const when = (opts && opts.when) || new Date().toISOString();
+    let work = Object.assign({}, kase);
+    list.forEach((e) => {
+      const p = buildRecordPatch(work, level, e.fields, Object.assign({}, opts, { person: e.person, status: e.status, when: when }));
+      work = Object.assign({}, work, p);
+    });
+    return { patch: { verdictRecords: work.verdictRecords || [], judgments: work.judgments || [] }, errors: [] };
+  }
+
+  /* ---------- แท็บรายบุคคล ---------- */
+  /* ลำดับแท็บ: รายชื่อจากสำนวน (จำเลย/สำนวนเดิม) ก่อน แล้วต่อด้วยคนที่มีบันทึก/เพิ่มเองแต่ไม่อยู่ในรายชื่อ */
+  function tabOrder(candidates, extra) {
+    const out = [];
+    (candidates || []).concat(extra || []).forEach((n) => {
+      const c = clean(n);
+      if (c && out.indexOf(c) < 0) out.push(c);
+    });
+    return out;
+  }
+  function previousPerson(order, person) {
+    const i = (order || []).indexOf(person);
+    return i > 0 ? order[i - 1] : "";
+  }
+  /* ค่าเริ่มต้นรายแท็บ { person: { fields, status } } — ข้อความจาก popup เดิม (judgments[]) ใส่เฉพาะแท็บแรก ไม่ซ้ำให้ทุกคน */
+  function tabStates(kase, level, order) {
+    const out = {};
+    (order || []).forEach((p, i) => {
+      const st = initialState(kase, level, p);
+      const own = getRecord(kase, level, p);
+      out[p] = { fields: i > 0 && !own ? emptyFields() : st.fields, status: own ? own.status : "" };
+    });
+    return out;
+  }
+  /* คนในรายชื่อสำนวนที่ผู้ใช้ลบแท็บออกจากชั้นนี้ (เช่น ยกฟ้องชั้นต้นแล้วไม่มีในชั้นอุทธรณ์) — kase.verdictHiddenPersons[level] */
+  function hiddenPersons(kase, level) {
+    const map = (kase && kase.verdictHiddenPersons) || {};
+    return (map[level] || []).slice();
+  }
+  /* (pure) ซ่อน/เลิกซ่อนบุคคลในชั้นนี้ → { verdictHiddenPersons } */
+  function hiddenPatch(kase, level, names, hide) {
+    const list = Array.isArray(names) ? names : [names];
+    const cur = hiddenPersons(kase, level);
+    const next = hide ? tabOrder(cur, list) : cur.filter((n) => list.indexOf(n) < 0);
+    return { verdictHiddenPersons: Object.assign({}, (kase && kase.verdictHiddenPersons) || {}, { [level]: next }) };
+  }
+
+  /* คัดลอกผลของอีกคน: ทุกช่องที่ผู้ใช้กรอก (3 ส่วน) — ศาล/ไฟล์ใช้ร่วมกันอยู่แล้วจึงไม่อยู่ในนี้ */
+  function copyFields(src) {
+    const s = src || {};
+    const out = emptyFields();
+    INPUT_FIELDS.forEach((d) => {
+      if (s[d.key] !== undefined) out[d.key] = s[d.key];
+    });
+    return out;
+  }
+
+  /* ลบบุคคลออกจากชั้นศาล (pure) */
+  function removePersonPatch(kase, level, person, when) {
+    const records = getRecords(kase).filter((r) => !(r.level === level && r.person === person));
+    return { verdictRecords: records, judgments: syncJudgment(kase, records, level, "", when || new Date().toISOString()) };
+  }
+
+  const EMPTY_COURT = { type: "", name: "", blackNo: "", redNo: "", date: "" };
+  /* ค่าเริ่มต้นของฟอร์ม (ชั้น, บุคคล) — บันทึกเดิม / ศาลของคนอื่นในชั้นเดียวกัน / judgments[] ชั้นเดียวกัน (popup เดิม)
+     / เลขคดีและประเภทศาลจากหน้า 02 */
+  function initialState(kase, level, person) {
+    const k = kase || {};
+    const rec = getRecord(k, level, person);
     if (rec)
       return {
         fields: Object.assign(emptyFields(), rec.fields),
-        court: Object.assign({ name: "", blackNo: "", redNo: "", date: "" }, rec.court),
+        court: Object.assign({}, EMPTY_COURT, normalizeCourt(rec.court)),
         fileNames: rec.fileNames || [],
         status: rec.status,
       };
-    const k = kase || {};
+    const sibling = getRecord(k, level);
+    if (sibling)
+      return { fields: emptyFields(), court: Object.assign({}, EMPTY_COURT, normalizeCourt(sibling.court)), fileNames: sibling.fileNames || [], status: "" };
     const idx = judgmentIndexForLevel(k, level);
     const j = idx >= 0 ? k.judgments[idx] : null;
     const useCaseCourt = !j && !(k.verdictRecords || []).length;
@@ -211,17 +374,17 @@
       fields.resultDetail = clean(j.summary || j.result);
       fields.isFinal = !!j.isFinal;
     }
-    return {
-      fields: fields,
-      court: {
-        name: clean(j ? j.issuer : useCaseCourt ? k.courtName : ""),
-        blackNo: clean(j ? j.blackNo : useCaseCourt ? k.courtBlackNo : ""),
-        redNo: clean(j ? j.redNo : useCaseCourt ? k.courtRedNo : ""),
-        date: clean(j ? j.date : ""),
-      },
-      fileNames: j ? j.fileNames || [] : [],
-      status: "",
-    };
+    const court = normalizeCourt({
+      name: j ? j.issuer : useCaseCourt ? k.courtName : "",
+      blackNo: j ? j.blackNo : useCaseCourt ? k.courtBlackNo : "",
+      redNo: j ? j.redNo : useCaseCourt ? k.courtRedNo : "",
+      date: j ? j.date : "",
+    });
+    /* ประเภทศาลจากหน้า 02 ใช้เฉพาะเมื่อตรงกับส่วนของชั้นนี้ (ศาลอาญา/ศาลปกครอง) */
+    const CLs = global.ECMISCourtLists;
+    const sys = CLs ? CLs.normalizeType(clean(k.courtSystem), court.name) : clean(k.courtSystem);
+    if (!court.type && sys && (!CLs || CLs.courtTypesForLevel(level).some((t) => t.code === sys))) court.type = sys;
+    return { fields: fields, court: court, fileNames: j ? j.fileNames || [] : [], status: "" };
   }
 
   /* ---------- ข้อมูลที่ไม่ได้กรอก (สำนวนเดิม / กิจกรรม 7 / ระบบ) ---------- */
@@ -247,6 +410,49 @@
   function latestRecommendation(kase) {
     const list = ((kase && kase.judgmentAnalyses) || []).filter((a) => clean(a.recommendation));
     return list.length ? list[list.length - 1].recommendation : "";
+  }
+
+  /* รายละเอียดที่ดึงจากสำนวนเดิม + กิจกรรม 7 สำหรับแถวขยายในแท็บฐานข้อมูลคำพิพากษา (รูปแบบเดียวกับการ์ดหน้า 02)
+     คืน { paccId, main: { caseNo, blackNo, allegation, owner, resolutionType, unit, accuser, accused },
+           rows: [{ label, value }] (ข้อมูลเพิ่มเติม) } — ค่าว่าง = "-" (ยังไม่มีข้อมูลในสำนวนเดิม) */
+  function paccDetailRows(kase, deps) {
+    const c = buildContext(kase, deps);
+    const pacc = paccOf(kase, (deps || {}).paccDb) || {};
+    const dash = (v) => clean(v) || "-";
+    const outcomes = L()
+      .BOARD_OUTCOMES.filter((b, i) => c.boardOutcomes[i])
+      .map((b) => b.label)
+      .join(", ");
+    const board = [
+      c.boardMeetingNo ? "ครั้งที่ " + c.boardMeetingNo : "",
+      c.boardMeetingDate ? "วันที่ " + c.boardMeetingDate : "",
+      c.boardAgendaNo ? "วาระ " + c.boardAgendaNo : "",
+    ].filter(Boolean).join(" · ");
+    const subcommittee = [
+      c.subcommitteeCriminal ? "อาญา: " + c.subcommitteeCriminal : "",
+      c.subcommitteeDisciplinary ? "วินัย: " + c.subcommitteeDisciplinary : "",
+    ].filter(Boolean).join(" / ");
+    const main = {
+      caseNo: dash(clean(pacc.paccCaseNo) || String(c.paccId || "").replace(/^.*?-/, "")),
+      blackNo: dash(c.paccBlackNo),
+      allegation: dash(c.allegation),
+      owner: dash(c.officer),
+      /* ประเภทมติชี้มูล = ผลมติคณะกรรมการ ป.ป.ท. ที่ติ๊กไว้ (กิจกรรม 7) */
+      resolutionType: dash(outcomes || (kase && kase.boardResolutionType)),
+      unit: dash(c.unit),
+      accuser: dash(c.accuser),
+      accused: dash(c.accused),
+    };
+    const rows = [
+      ["ประเภทความผิด", c.offenseType],
+      ["ต้นสังกัด", [c.ministry, c.department, c.agency].filter(Boolean).join(" / ")],
+      ["ที่เกิดเหตุ", c.place],
+      ["คำสั่งไต่สวนข้อเท็จจริง", [c.inquiryOrderNo, c.inquiryOrderDate ? "ลงวันที่ " + c.inquiryOrderDate : ""].filter(Boolean).join(" ")],
+      ["มติคณะกรรมการ ป.ป.ท.", board],
+      ["ความเห็นคณะอนุกรรมการไต่สวน", subcommittee],
+      ["ฐานความผิดที่อัยการส่งฟ้อง", c.prosecutedOffenses],
+    ];
+    return { paccId: c.paccId, main: main, rows: rows.map((r) => ({ label: r[0], value: dash(r[1]) })) };
   }
 
   function buildContext(kase, deps) {
@@ -276,7 +482,8 @@
       boardOutcomes: L().BOARD_OUTCOMES.map((b) => !!outcomes[b.key]),
       plaintiff: joinList(k.plaintiffs) || clean(pacc.plaintiff),
       defendant: joinList(k.defendants) || clean(pacc.defendant) || clean(k.accused),
-      prosecutorStatus: stripNo(k.oagVerdictCaseTypeName || k.prosecutorCaseTypeName || ""),
+      /* AG: ค่าที่เลือกจาก dropdown (ชีต DD) ก่อน — ยังไม่เลือก = ใช้กรณีอัยการของสำนวนแทน */
+      prosecutorStatus: stripNo(k.verdictProsecutorStatus || k.oagVerdictCaseTypeName || k.prosecutorCaseTypeName || ""),
       inquiryOrderNo: clean(act7.inquiryOrderNo),
       inquiryOrderDate: act7.inquiryOrderDate ? fmt(act7.inquiryOrderDate) : "",
       subcommitteeCriminal: clean(act7.subcommitteeCriminal),
@@ -373,14 +580,15 @@
     const f = Object.assign(emptyFields(), rec.fields);
     const court = rec.court || {};
     return [
-      seq, ctx.unit, ctx.officer, ctx.paccBlackNo, ctx.accuser, ctx.accused, ctx.allegation, ctx.offenseType,
+      /* F ผู้ถูกกล่าวหา / AF จำเลย = บุคคลของแถวนี้ (1 แถว = ชั้นศาล × บุคคล) */
+      seq, ctx.unit, ctx.officer, ctx.paccBlackNo, ctx.accuser, rec.person || ctx.accused, ctx.allegation, ctx.offenseType,
       ctx.ministry, ctx.department, ctx.agency, ctx.place,
       ctx.boardMeetingNo, ctx.boardMeetingDate, ctx.boardAgendaNo,
     ]
       .concat(ctx.boardOutcomes.map((b) => (b ? "✓" : "")))
       .concat([
         f.statCountAs, caseNatureText(f), f.trackingGroup, verdictTypeText(f),
-        court.blackNo || "", court.redNo || "", court.date ? fmt(court.date) : "", ctx.plaintiff, ctx.defendant,
+        court.blackNo || "", court.redNo || "", court.date ? fmt(court.date) : "", ctx.plaintiff, rec.person || ctx.defendant,
         ctx.prosecutorStatus, stripNo(f.verdictStage),
         f.resultDetail, offenseLawText(f), f.jailMonths, f.jailYears, f.fine, restitutionText(f), f.refundUnit,
         f.actualJailMonths, f.actualJailYears, f.actualFine, f.suspendedYears, f.probationYears, f.communityHours, f.actualOther,
@@ -401,15 +609,27 @@
     return out;
   }
 
-  /* ตัวอย่างเดโม → [{ caseId, patch }] เฉพาะสำนวนที่มีอยู่ เป็น 10.1 และยังไม่มีบันทึกผลคำพิพากษา (ไม่ทับข้อมูลจริง) */
+  /* บันทึกของสำนวนนี้มาจากตัวอย่างรุ่นก่อนทั้งหมด (เลขคดีดำตรงกับตัวอย่าง) → แทนที่ด้วยตัวอย่างรุ่นใหม่ได้ ไม่ทับข้อมูลจริง */
+  function isOldSample(kase, s) {
+    const recs = (kase && kase.verdictRecords) || [];
+    const sampleBlack = s.records.map((r) => clean(r.court && r.court.blackNo)).filter(Boolean);
+    return recs.length > 0 && recs.every((r) => sampleBlack.indexOf(clean(r.court && r.court.blackNo)) >= 0);
+  }
+
+  /* ตัวอย่างเดโม → [{ caseId, patch }] เฉพาะสำนวน 10.1 ที่มีอยู่ และยังไม่มีบันทึก (หรือมีแต่ตัวอย่างรุ่นก่อน) */
   function samplePatches(cases, samples) {
     const out = [];
     (samples || []).forEach((s) => {
       const kase = (cases || []).find((c) => c.id === s.caseId);
-      if (!kase || (kase.category && kase.category !== "10.1") || (kase.verdictRecords || []).length) return;
-      let work = Object.assign({}, kase);
+      if (!kase || (kase.category && kase.category !== "10.1")) return;
+      if ((kase.verdictRecords || []).length && !isOldSample(kase, s)) return;
+      let work = Object.assign({}, kase, {
+        verdictRecords: [],
+        judgments: (kase.judgments || []).filter((j) => !j.verdictRecordLevel),
+      });
       s.records.forEach((r) => {
-        const p = buildRecordPatch(work, r.level, r.fields, { status: r.status, by: s.by, court: r.court, fileNames: r.fileNames });
+        const opts = { person: r.person, status: r.status, by: s.by, court: r.court, fileNames: r.fileNames };
+        const p = buildRecordPatch(work, r.level, r.fields, opts);
         if (p) work = Object.assign(work, p);
       });
       const patch = { verdictRecords: work.verdictRecords || [], judgments: work.judgments || [] };
@@ -420,10 +640,12 @@
         if (cur == null || cur === "" || (Array.isArray(cur) && !cur.length)) patch[key] = s.caseFields[key];
       });
       /* ผลวิเคราะห์คำพิพากษา (ข้อเสนอแนะทางคดีในแบบสรุป) — ต่อท้ายรูปแบบเดียวกับ Activity10.buildJudgmentAnalysisPatch */
-      if ((s.analyses || []).length) {
-        const prev = kase.judgmentAnalyses || [];
+      const prevAnalyses = kase.judgmentAnalyses || [];
+      const alreadyHas = (a) => prevAnalyses.some((x) => clean(x.recommendation) === clean(a.recommendation));
+      if ((s.analyses || []).some((a) => !alreadyHas(a))) {
+        const prev = prevAnalyses;
         patch.judgmentAnalyses = prev.concat(
-          s.analyses.map((a, i) => ({
+          s.analyses.filter((a) => !alreadyHas(a)).map((a, i) => ({
             id: "JA-" + String(prev.length + i + 1).padStart(3, "0"),
             judgmentRef: "",
             issue: clean(a.issue),
@@ -443,8 +665,56 @@
     return out;
   }
 
+  /* คืนค่าตัวอย่าง (ขั้นที่ 1): ล้างบันทึกผลคำพิพากษาของสำนวนตัวอย่างที่มีอยู่ → แล้วเติมใหม่ด้วย samplePatches()
+     คงคำพิพากษาจาก popup เดิม (judgments ที่ไม่ใช่ของฟอร์มนี้) และผลวิเคราะห์ไว้; สำนวนอื่นไม่ถูกแตะ */
+  function clearSamplePatches(cases, samples) {
+    return (samples || [])
+      .map((s) => (cases || []).find((c) => c.id === s.caseId))
+      .filter(Boolean)
+      .map((kase) => ({
+        caseId: kase.id,
+        patch: {
+          verdictRecords: [],
+          judgments: (kase.judgments || []).filter((j) => !j.verdictRecordLevel),
+          verdictHiddenPersons: {},
+          verdictProsecutorStatus: "",
+        },
+      }));
+  }
+
+  /* สำนวนตัวอย่างที่ต้องสร้างใหม่ (sample.createCase) เมื่อยังไม่มี id นี้ในระบบ
+     วันรับ/กำหนดเสร็จนับจาก today (ค่าเริ่มต้น = วันนี้) เหมือนสำนวนตั้งต้นใน ecmis-activity10.js */
+  function sampleNewCases(cases, samples, today) {
+    const base = today ? new Date(today) : new Date();
+    const offset = (days) => {
+      const d = new Date(base.getTime());
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split("T")[0];
+    };
+    const have = new Set((cases || []).map((c) => c.id));
+    return (samples || [])
+      .filter((s) => s.createCase && !have.has(s.caseId))
+      .map((s) =>
+        Object.assign(
+          { dateReceived: offset(-5), dueDate: offset(10), verdictRecords: [], judgments: [] },
+          s.createCase,
+          { id: s.caseId },
+        ),
+      );
+  }
+
   global.ECMISVerdictRecord = {
     samplePatches: samplePatches,
+    sampleNewCases: sampleNewCases,
+    clearSamplePatches: clearSamplePatches,
+    buildLevelPatch: buildLevelPatch,
+    tabOrder: tabOrder,
+    previousPerson: previousPerson,
+    tabStates: tabStates,
+    copyFields: copyFields,
+    hiddenPersons: hiddenPersons,
+    paccDetailRows: paccDetailRows,
+    hiddenPatch: hiddenPatch,
     INPUT_FIELDS: INPUT_FIELDS,
     levelName: levelName,
     levelFromProsecutorLevel: levelFromProsecutorLevel,
@@ -454,8 +724,13 @@
     validate: validate,
     getRecords: getRecords,
     getRecord: getRecord,
+    personsAt: personsAt,
+    personCandidates: personCandidates,
+    defaultPerson: defaultPerson,
+    normalizeCourt: normalizeCourt,
     initialState: initialState,
     buildRecordPatch: buildRecordPatch,
+    removePersonPatch: removePersonPatch,
     paccOf: paccOf,
     buildContext: buildContext,
     caseNatureText: caseNatureText,

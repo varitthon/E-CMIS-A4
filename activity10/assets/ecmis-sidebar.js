@@ -22,6 +22,7 @@
     mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
     report: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
     book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+    archive: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>',
     chart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/></svg>'
   };
   /* กลุ่มเมนู (หัวข้อคงที่) — เลือกหมวดงาน 10.1/10.2/10.3 ที่การ์ดในหน้ารายการงาน;
@@ -32,7 +33,8 @@
       { href: 'notices.html', label: 'หนังสือแจ้งจากหน่วยงานอื่น', icon: 'mail', count: noticeCount }
     ] },
     { id: 'search', label: 'ค้นหา', items: [
-      { href: 'search-case.html', label: 'ค้นหาสำนวน', icon: 'search' }
+      { href: 'search-case.html', label: 'ค้นหาสำนวน', icon: 'search' },
+      { href: 'search-case.html?tab=legacy', label: 'ค้นหาข้อมูลระบบเดิม', icon: 'archive' }
     ] },
     { id: 'reports', label: 'รายงาน', legalOnly: true, items: [
       { href: 'board-report.html', label: 'รายงานผลตามมติคณะกรรมการ', icon: 'report' },
@@ -83,8 +85,13 @@
       + '</a>';
   }
 
+  /* เมนูที่ href มี ?query (เช่น search-case.html?tab=legacy) ตรงก่อน ถ้าไม่มีจึงเทียบชื่อไฟล์ */
   function navMarkup() {
-    const file = currentFile();
+    const withQuery = currentFile() + global.location.search;
+    const hasExact = NAV_GROUPS.some(function (g) {
+      return g.items.some(function (item) { return item.href === withQuery; });
+    });
+    const file = hasExact ? withQuery : currentFile();
     const legal = isLegalRole();
     return '<nav class="ecmis-sidebar-nav" aria-label="เมนูหลัก">'
       + NAV_GROUPS.filter(function (g) { return !g.legalOnly || legal; }).map(function (g) {

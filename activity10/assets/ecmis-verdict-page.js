@@ -1,6 +1,7 @@
 /* ECMIS 10.1 บันทึกผลคำพิพากษา — ตัวควบคุมหน้า verdict-form.html
-   ?id=<สำนวน>&level=FIRST|APPEAL|SUPREME (ไม่ระบุชั้น = ชั้นล่าสุดที่มีบันทึก หรือศาลชั้นต้น)
-   ปุ่มชั้นศาลด้านบนสลับบันทึกรายชั้น; บันทึกร่างไม่บังคับช่อง, บันทึกต้องมีประเภท + สถานะชั้นคำพิพากษา
+   ?id=<สำนวน>&level=FIRST|APPEAL|SUPREME[&person=<แท็บที่เปิด>] (ไม่ระบุชั้น = ชั้นล่าสุดที่มีบันทึก หรือศาลชั้นต้น)
+   ปุ่มชั้นศาลด้านบนสลับบันทึกรายชั้น; ในชั้นเดียว: แถบศาล (ใช้ร่วม) + แท็บรายบุคคล (ECMISVerdictTabs)
+   ปุ่มบันทึก/บันทึกร่างบันทึกทุกคนที่กรอกพร้อมกัน; บันทึกร่างไม่บังคับช่อง, บันทึกต้องมีประเภท + สถานะชั้นคำพิพากษาทุกคน
    บทบาทที่ไม่อยู่ใน ECMISVerdictForm.EDIT_ROLES ดูได้อย่างเดียว; บทบาทนอกสายกฎหมายเห็นข้อความแจ้ง */
 (function (global) {
   "use strict";
@@ -14,10 +15,14 @@
 
   function params() {
     const q = new URLSearchParams(global.location.search);
-    return { id: q.get("id") || "", level: q.get("level") || "" };
+    return { id: q.get("id") || "", level: q.get("level") || "", person: q.get("person") || "" };
   }
-  function go(id, level) {
-    global.location.href = "verdict-form.html?id=" + encodeURIComponent(id) + "&level=" + encodeURIComponent(level);
+  function go(id, level, person) {
+    global.location.href =
+      "verdict-form.html?id=" + encodeURIComponent(id) + "&level=" + encodeURIComponent(level) + (person ? "&person=" + encodeURIComponent(person) : "");
+  }
+  function candidates(kase) {
+    return R().personCandidates(kase, R().paccOf(kase, A().getPaccIntakeDatabase()));
   }
   function defaultLevel(kase) {
     const recs = R().getRecords(kase);
@@ -49,7 +54,7 @@
     const db = (A().getPaccIntakeDatabase() || []).filter((p) => (p.category || "10.1") === "10.1");
     const options = { "": "— ไม่ผูกสำนวนเดิม —" };
     db.forEach((p) => {
-      options[p.id] = p.id + " · " + (p.accused || "-") + " · " + String(p.title || "").slice(0, 60);
+      options[p.id] = F().esc(p.id + " · " + (p.accused || "-") + " · " + String(p.title || "").slice(0, 60));
     });
     const current = R().paccOf(kase, A().getPaccIntakeDatabase());
     const apply = (id) => {
@@ -77,14 +82,33 @@
     });
   }
 
+  /* สถานะรายชั้น: ยังไม่บันทึก / ร่าง / บันทึกแล้ว / "บันทึกแล้ว 1/2 คน" */
+  function levelStatus(kase, level) {
+    const recs = R().getRecords(kase).filter((r) => r.level === level);
+    if (!recs.length) return "ยังไม่บันทึก";
+    const done = recs.filter((r) => r.status === "done").length;
+    if (recs.length === 1) return done ? "บันทึกแล้ว" : "ร่าง";
+    return "บันทึกแล้ว " + done + "/" + recs.length + " คน";
+  }
+
   function headerHtml(kase, level, editable) {
     const esc = F().esc;
-    const chips = global.ECMISVerdictLists.LEVELS.map((l) => {
-      const rec = R().getRecord(kase, l.code);
-      const st = rec ? (rec.status === "done" ? "บันทึกแล้ว" : "ร่าง") : "ยังไม่บันทึก";
+    /* 2 ส่วน: ศาลคดีอาญาทุจริตและประพฤติมิชอบ / ศาลปกครอง — แถวละส่วน */
+    const LS = global.ECMISVerdictLists;
+    const chips = LS.PARTS.map((part) => {
+      const btns = LS.LEVELS.filter((l) => l.part === part.code)
+        .map((l) => {
+          const st = levelStatus(kase, l.code);
+          return (
+            '<button type="button" class="vr-chip' + (l.code === level ? " on" : "") + '" data-vr-level="' + l.code + '">' +
+            esc(l.name) + ' <span style="opacity:.75">· ' + st + "</span></button>"
+          );
+        })
+        .join("");
       return (
-        '<button type="button" class="vr-chip' + (l.code === level ? " on" : "") + '" data-vr-level="' + l.code + '">' +
-        esc(l.name) + ' <span style="opacity:.75">· ' + st + "</span></button>"
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">' +
+        '<span class="vr-sub" style="min-width:230px;font-weight:600">' + esc(part.name) + "</span>" +
+        '<div class="vr-chips" role="group" aria-label="' + esc(part.name) + '">' + btns + "</div></div>"
       );
     }).join("");
     return (
@@ -99,7 +123,7 @@
       '<button type="button" class="btn btn-outline" data-vr-act="excel"><i class="fa-solid fa-file-excel"></i>Excel</button>' +
       "</div></div>" +
       linkInfoHtml(kase, editable) +
-      '<div class="vr-chips" style="margin-top:12px" role="group" aria-label="ชั้นศาล">' + chips + "</div>" +
+      '<div style="margin-top:6px">' + chips + "</div>" +
       (editable ? "" : '<div class="vr-sub" style="margin-top:10px"><i class="fa-solid fa-eye"></i> ดูได้อย่างเดียว — ผู้บันทึกได้คือธุรการกองกฎหมายและนิติกร</div>') +
       "</div></div>"
     );
@@ -110,37 +134,53 @@
     if (!editable) return '<div style="display:flex;justify-content:flex-end">' + back + "</div>";
     return (
       '<div id="vr_errors" class="vr-err" role="alert"></div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">' + back +
-      '<button type="button" class="btn btn-outline" data-vr-act="draft"><i class="fa-solid fa-floppy-disk"></i>บันทึกร่าง</button>' +
-      '<button type="button" class="btn btn-primary" data-vr-act="done" style="background:#1e3a8a"><i class="fa-solid fa-check"></i>บันทึก</button>' +
+      '<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">' +
+      '<span class="vr-sub">บันทึกทุกคนที่กรอกในชั้นนี้พร้อมกัน</span>' + back +
+      '<button type="button" class="btn btn-outline" data-vr-act="draft">บันทึกร่าง</button>' +
+      '<button type="button" class="btn btn-primary" data-vr-act="done" style="background:#1e3a8a">บันทึก</button>' +
       "</div>"
     );
   }
 
-  function onSave(kase, level, status) {
-    const res = F().save(kase.id, level, F().collect(doc.getElementById("vr_form"), P), status);
-    const box = doc.getElementById("vr_errors");
-    if (!res.ok) {
-      box.innerHTML = res.errors.map((e) => "<div>" + F().esc(e) + "</div>").join("");
-      return;
-    }
-    box.innerHTML = "";
-    const reload = () => go(kase.id, level);
-    if (!global.Swal) return reload();
-    global.Swal.fire({ icon: "success", title: status === "done" ? "บันทึกแล้ว" : "บันทึกร่างแล้ว", timer: 1100, showConfirmButton: false }).then(reload);
+  const LEGEND =
+    '<div class="vr-legend"><span><span class="vr-dot done"></span>บันทึกแล้ว</span><span><span class="vr-dot draft"></span>ร่าง</span>' +
+    '<span><span class="vr-dot"></span>ยังไม่กรอก</span><span><span class="vr-dot err"></span>มีข้อผิดพลาด</span>' +
+    '<span><span class="vr-dirty" style="color:#b45309">แก้ไข</span> ยังไม่บันทึก</span></div>';
+
+  /* เพิ่มบุคคล: ติ๊กจากสำนวนเดิม/จำเลยที่ยังไม่มีแท็บ (รวมคนที่เคยลบออกจากชั้นนี้) หรือพิมพ์ชื่ออื่น
+     → เลิกซ่อนคนที่เลือกในชั้นนี้ (บันทึกทันที) แล้วเปิดแท็บ */
+  function addPersons(kase, level, taken) {
+    return global.ECMISVerdictTabs.pickPersons(candidates(kase), taken).then((names) => {
+      const fresh = A().findCaseById(kase.id);
+      if (names.some((n) => R().hiddenPersons(fresh, level).indexOf(n) >= 0)) {
+        A().updateCase(kase.id, R().hiddenPatch(fresh, level, names, false));
+      }
+      return names;
+    });
   }
 
-  function onClick(kase, level, e) {
-    const chip = e.target.closest("[data-vr-level]");
-    if (chip) return go(kase.id, chip.getAttribute("data-vr-level"));
-    const act = e.target.closest("[data-vr-act]");
-    if (!act) return;
-    const a = act.getAttribute("data-vr-act");
-    if (a === "link") openLinkDialog(kase, level);
-    else if (a === "draft" || a === "done") onSave(kase, level, a);
-    else if (a === "word") F().downloadWord(kase.id);
-    else if (a === "print") F().printSummary(kase.id);
-    else if (a === "excel") F().downloadExcel([A().findCaseById(kase.id)], "ฐานข้อมูลคำพิพากษา_" + kase.id);
+  /* ลบบุคคลออกจากชั้นนี้ (ยืนยันก่อน): ลบผลที่บันทึกไว้ (ถ้ามี) และซ่อนชื่อจากสำนวนเดิมในชั้นนี้ ไม่ให้กลับมาเมื่อเปิดหน้าใหม่
+     เพิ่มกลับได้จาก "+ เพิ่มบุคคล" — แท็บอื่นที่ยังไม่บันทึกยังอยู่ */
+  function removePerson(kase, level, person) {
+    const fresh = A().findCaseById(kase.id);
+    const hasRecord = !!R().getRecord(fresh, level, person);
+    const run = () => {
+      let k = A().findCaseById(kase.id);
+      if (hasRecord) k = A().updateCase(kase.id, R().removePersonPatch(k, level, person)) || A().findCaseById(kase.id);
+      if (candidates(k).indexOf(person) >= 0) A().updateCase(kase.id, R().hiddenPatch(k, level, person, true));
+      return true;
+    };
+    if (!global.Swal) return Promise.resolve(run());
+    return global.Swal.fire({
+      icon: "warning",
+      width: 400,
+      title: "ลบ " + F().esc(person) + " ออกจากชั้นนี้?",
+      text: hasRecord ? "ผลคำพิพากษาของบุคคลนี้ในชั้นนี้จะถูกลบ" : "เพิ่มกลับได้จาก + เพิ่มบุคคล",
+      showCancelButton: true,
+      confirmButtonText: "ลบ",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#b91c1c",
+    }).then((r) => (r.isConfirmed ? run() : false));
   }
 
   function render() {
@@ -156,14 +196,112 @@
     }
     const level = R().levelName(q.level) ? q.level : defaultLevel(kase);
     const editable = F().canEdit();
+    const hidden = R().hiddenPersons(kase, level);
+    const names = candidates(kase).filter((n) => hidden.indexOf(n) < 0);
+    const order = R().tabOrder(names, R().personsAt(kase, level).concat(q.person ? [q.person] : []));
+    const shared = R().initialState(kase, level, order[0] || "");
     host.innerHTML =
       headerHtml(kase, level, editable) +
-      '<div id="vr_form">' + F().formHtml(P, R().initialState(kase, level), level) + "</div>" +
+      /* AG ระดับสำนวน — ค่าเดียวกันทุกชั้นศาลและทุกแถว Excel ของสำนวนนี้ */
+      '<div class="vr-card"><div class="vr-card-h"><i class="fa-solid fa-user-tie"></i>ชั้นพนักงานอัยการ ' +
+      '<span class="vr-sub" style="font-weight:400">ใช้ทั้งสำนวน</span></div><div class="vr-card-b"><div class="vr-grid" style="margin-bottom:0">' +
+      F().prosecutorStatusHtml(P, kase.verdictProsecutorStatus || "") + "</div></div></div>" +
+      '<div id="vr_court">' + F().courtStripHtml(P, shared.court, shared.fileNames, level) + "</div>" +
+      '<div class="vr-card"><div class="vr-card-h"><i class="fa-solid fa-users"></i>ผลคำพิพากษารายบุคคล</div><div class="vr-card-b">' +
+      '<div id="vr_tabs" class="vr-tabs" aria-label="บุคคล"></div><div id="vr_panel" class="vr-tabpanel"></div>' + LEGEND +
+      "</div></div>" +
       footerHtml(editable);
-    const form = doc.getElementById("vr_form");
-    F().bindForm(form, P);
-    if (!editable) F().setDisabled(form, true);
-    host.addEventListener("click", (e) => onClick(kase, level, e));
+
+    const courtHost = doc.getElementById("vr_court");
+    F().bindForm(courtHost, P);
+    if (!editable) F().setDisabled(courtHost, true);
+    const agEl = doc.getElementById(P + "prosecutorStatus");
+    if (!editable && agEl) agEl.disabled = true;
+    const courtSnap = () => {
+      const c = F().collect(courtHost, P);
+      return JSON.stringify(c.court) + "|" + c.newFileNames.length + "|" + (agEl ? agEl.value : "");
+    };
+    const courtBase = courtSnap();
+
+    const tabs = global.ECMISVerdictTabs.create({
+      bar: doc.getElementById("vr_tabs"),
+      panel: doc.getElementById("vr_panel"),
+      prefix: P,
+      level: level,
+      order: order,
+      states: R().tabStates(kase, level, order),
+      active: q.person,
+      editable: editable,
+      showStatus: true,
+      emptyHint: "ยังไม่มีรายชื่อผู้ถูกกล่าวหา — กดเพิ่มบุคคล หรือผูกสำนวนเดิม",
+      canRemove: () => true,
+      onAdd: (taken) => addPersons(kase, level, taken),
+      onRemove: (p) => removePerson(kase, level, p),
+    });
+
+    let leaving = false;
+    const dirty = () => editable && (tabs.anyDirty() || courtSnap() !== courtBase);
+    const leave = (fn) => {
+      if (!dirty() || !global.Swal) {
+        leaving = true;
+        return fn();
+      }
+      global.Swal.fire({
+        icon: "warning",
+        text: "มีผลคำพิพากษาที่ยังไม่บันทึก ออกจากหน้านี้โดยไม่บันทึก?",
+        showCancelButton: true,
+        confirmButtonText: "ออกโดยไม่บันทึก",
+        cancelButtonText: "อยู่ต่อ",
+        confirmButtonColor: "#b91c1c",
+      }).then((r) => {
+        if (!r.isConfirmed) return;
+        leaving = true;
+        fn();
+      });
+    };
+    global.addEventListener("beforeunload", (e) => {
+      if (leaving || !dirty()) return;
+      e.preventDefault();
+      e.returnValue = "";
+    });
+
+    function onSave(status) {
+      const entries = tabs.entries().map((x) => Object.assign(x, { status: status }));
+      const res = F().saveLevel(kase.id, level, F().collect(courtHost, P), entries, {
+        verdictProsecutorStatus: agEl ? agEl.value : kase.verdictProsecutorStatus || "",
+      });
+      const box = doc.getElementById("vr_errors");
+      if (!res.ok) {
+        tabs.markErrors(res.errors);
+        box.innerHTML = res.errors
+          .map((x) => "<div>" + F().esc((x.person ? x.person + ": " : "") + x.errors.join(" · ")) + "</div>")
+          .join("");
+        return;
+      }
+      box.innerHTML = "";
+      leaving = true;
+      const reload = () => go(kase.id, level, tabs.active());
+      if (!global.Swal) return reload();
+      global.Swal.fire({
+        icon: "success",
+        title: (status === "done" ? "บันทึกแล้ว " : "บันทึกร่างแล้ว ") + entries.length + " คน",
+        timer: 1100,
+        showConfirmButton: false,
+      }).then(reload);
+    }
+
+    host.addEventListener("click", (e) => {
+      const chip = e.target.closest("[data-vr-level]");
+      if (chip && chip.classList.contains("vr-chip")) return leave(() => go(kase.id, chip.getAttribute("data-vr-level")));
+      const act = e.target.closest("[data-vr-act]");
+      if (!act) return;
+      const a = act.getAttribute("data-vr-act");
+      if (a === "link") leave(() => openLinkDialog(kase, level));
+      else if (a === "draft" || a === "done") onSave(a);
+      else if (a === "word") F().downloadWord(kase.id);
+      else if (a === "print") F().printSummary(kase.id);
+      else if (a === "excel") F().downloadExcel([A().findCaseById(kase.id)], "ฐานข้อมูลคำพิพากษา_" + kase.id);
+    });
   }
 
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", render);

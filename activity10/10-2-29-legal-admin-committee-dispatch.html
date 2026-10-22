@@ -25,9 +25,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-2.css?v=20260904_2" />
 
@@ -123,7 +124,7 @@
       <div class="content">
         <div id="statusBadges" style="display: flex; gap: 6px; margin-bottom: 14px"></div>
         <div class="stepper-card">
-          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอกิจกรรมที่ 7</div>
+          <div class="stepper-row-label"><i class="fa-solid fa-paper-plane"></i> ส่งเสนอคณะกรรมการ ป.ป.ท.</div>
           <div class="stepper" id="stepperPart1"></div>
           <div class="stepper-row-label"><i class="fa-solid fa-gavel"></i> หลังบอร์ดมีมติ</div>
           <div class="stepper" id="stepperPart2"></div>
@@ -179,7 +180,7 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>เลขที่หนังสือส่งกองกฎหมาย (ปี พ.ศ./เลขส่ง) <span style="color: #dc2626">*</span></label>
-                  <div class="read-box font-monospace fw-bold text-primary" id="f_docNumber">ปป 0002/ — รอออกเลข</div>
+                  <input type="text" id="f_docNumber" class="form-control font-monospace fw-bold text-primary" placeholder="เช่น ปป 0002/4451" data-doc-no="ปป 0002/" data-doc-no-date="in_dispatchDate" />
                 </div>
                 <div class="form-group">
                   <label>วันที่ออกหนังสือส่ง <span style="color: #dc2626">*</span></label>
@@ -203,11 +204,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-2.js?v=20261014_6"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
 
     <script>
       const STEP_CODE = "L2-COMMITTEE-DISPATCH";
@@ -272,7 +274,7 @@
           title: "ยืนยันการออกเลขส่งเสนอรองเลขาธิการ ป.ป.ท.?",
           html:
             '<div class="emd-summary">' +
-            "<p>คำร้องนี้จะเข้าสู่สถานะรอมติบอร์ด (กิจกรรมที่ 7) หลังยืนยัน</p></div>",
+            "<p>คำร้องนี้จะเข้าสู่สถานะรอมติบอร์ด หลังยืนยัน</p></div>",
           showCancelButton: true,
           confirmButtonText: "ยืนยันออกเลขส่ง",
           cancelButtonText: "ยกเลิก",
@@ -281,6 +283,7 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
 
+          ECMISDocNo.commit("f_docNumber", currentCase.id, "l2CommitteeDispatchDocNo", "l2CommitteeDispatchDocDate");
           const docNo = Activity102.issueDocNo(currentCase.id, "l2CommitteeDispatchDocNo", "l2CommitteeDispatchDocDate");
 
           Activity102.advance(currentCase.id, STEP_CODE, {
@@ -294,7 +297,7 @@
               title: "ออกเลขส่งเรียบร้อย",
               html:
                 '<div class="emd-summary"><p><strong>เลขที่หนังสือ:</strong> ' + docNo + "</p>" +
-                "<p>คำร้องนี้อยู่ระหว่างรอมติบอร์ดจากกิจกรรมที่ 7</p></div>",
+                "<p>คำร้องนี้อยู่ระหว่างรอมติบอร์ดจากคณะกรรมการ ป.ป.ท.</p></div>",
               confirmButtonColor: "#1e3a8a",
               confirmButtonText: "กลับหน้าคิวงาน",
             }).then(ECMIS102.goInbox);
@@ -321,5 +324,6 @@
         if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove("show");
       });
     </script>
+    <script src="assets/ecmis-doc-no.js?v=20261022_1"></script>
   </body>
 </html>

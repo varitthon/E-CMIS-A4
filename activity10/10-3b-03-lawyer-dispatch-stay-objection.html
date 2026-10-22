@@ -23,11 +23,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-shipping.css?v=20261022_2" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -352,11 +355,8 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           <div>
             <strong>ยังไม่มีคดีในขั้นตอนนี้</strong><br />
-            รอธุรการกองกฎหมายบันทึกผลการลงนามจริงคำชี้แจงคัดค้าน (ประธานกรรมการ ป.ป.ท. ลงนามบนกระดาษ) ที่หน้า
-            <a href="10-3b-02-chairman-sign-stay-objection.html"
-              >ธุรการ บันทึกผลการลงนามจริงคำชี้แจงคัดค้าน</a
-            >
-            ก่อน
+            รอ ผอ.กองกฎหมายเห็นชอบร่างคำชี้แจงคัดค้าน (ล็อกฉบับจริงและพิมพ์เสนอประธานกรรมการ ป.ป.ท. ลงนาม) ที่หน้า
+            <a href="10-3b-01b-legal-director-review-stay-objection.html">ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน</a> ก่อน
           </div>
         </div>
 
@@ -367,14 +367,14 @@
           >
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              <strong>เคสนี้เป็นสาขาคู่ขนานของกิจกรรมที่ 1</strong><br />
+              <strong>เคสนี้เป็นสาขาคู่ขนานของคดีหลัก</strong><br />
               เดินสถานะแยกต่างหากจากคดีหลัก
               <span class="font-monospace" id="f_parentCaseId">-</span>
               ไม่กระทบขั้นตอนของคดีหลักที่กำลังดำเนินอยู่
             </div>
           </div>
 
-          <div class="form-card">
+          <div class="form-card" data-prev-step="ข้อมูลคดี (อ้างอิงจากคดีหลัก)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-lines text-primary me-2"></i
@@ -411,7 +411,32 @@
             </div>
           </div>
 
-          <div class="form-card" data-prev-step="คำชี้แจงคัดค้าน — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)">
+          <div id="stayPrev"></div>
+          <div class="form-card" id="printCard" data-prev-step="ฉบับจริงสำหรับลงนาม (พิมพ์จากฉบับที่ ผอ.กองกฎหมายล็อก)" data-prev-step-hide-head>
+            <div class="form-card-body">
+              <div class="l3-note l3-note-info" style="margin-bottom: 12px">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                  พิมพ์คำชี้แจงคัดค้านจากฉบับที่ล็อกไว้ (ช่องลงนามเว้นว่าง) เสนอประธานกรรมการ ป.ป.ท. ลงนามด้วยหมึก
+                  แล้วแนบสแกนฉบับลงนามจริงด้านล่างก่อนส่งศาล
+                </div>
+              </div>
+              <div id="printDocs"></div>
+            </div>
+          </div>
+          <div id="wetSignRecorderWrap" class="d-none">
+            <div id="wetSignRecorder"></div>
+            <div class="l3-note l3-note-warn" style="margin: -8px 0 16px">
+              <i class="fa-solid fa-rotate-left"></i>
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%">
+                <span>ประธานกรรมการ ป.ป.ท. ไม่ลงนาม หรือแก้ไขเอกสารด้วยลายมือ — ปลดล็อกให้นิติกรแก้ไขร่างและเสนอใหม่ตามลำดับชั้น</span>
+                <button type="button" class="btn btn-outline-danger" onclick="returnForm()">
+                  <i class="fa-solid fa-rotate-left me-1"></i>ส่งกลับแก้ไขร่าง
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-card" id="signedCard" data-prev-step="คำชี้แจงคัดค้าน — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)">
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-file-signature text-primary me-2"></i
@@ -600,19 +625,24 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
-    <script src="assets/ecmis-wetsign.js?v=20261015_2"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_3"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261022_rm181922"></script>
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261021_2"></script>
 
     <script>
       const STEP_CODE = "LAW0099";
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
       let docCopyFiles = [];
+      const DOC_KEY = "stayObjection";
+      const DOC_LABEL = "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ";
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -621,17 +651,17 @@
         loadCase();
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
         ECMIS103CaseEdit.mount({
+          collapsible: true,
           getCase: function () { return currentCase; },
           onSaved: function (c) { currentCase = c; },
         });
       });
 
-      /* ขั้นก่อนหน้าคือ LAW0098 (ธุรการ บันทึกผลการลงนามจริงของประธานฯ ที่ 10-3b-02) —
-         เหมือน 10-3b-02 ระบุ statusCode ของขั้นก่อนหน้าตรงๆ แทนการไล่ index
-         ใน Activity103.STEPS เพราะ STAY_STEPS เป็นคนละอาเรย์ */
+      /* ขั้นก่อนหน้าคือ LAW0097B (ผอ.กองเห็นชอบ ล็อกและพิมพ์ฉบับจริง ที่ 10-3b-01b — ตัด 10-3b-02 ธุรการแล้ว 2026-10-22)
+         ระบุ statusCode ของขั้นก่อนหน้าตรงๆ แทนการไล่ index ใน Activity103.STEPS เพราะ STAY_STEPS เป็นคนละอาเรย์ */
       function loadCase() {
         const id = new URLSearchParams(window.location.search).get("id");
-        const prev = Activity103.stepByCode("LAW0098");
+        const prev = Activity103.stepByCode("LAW0097B");
         const found = Activity103.getCase(id, prev ? prev.statusCode : null);
 
         if (!found || !Activity103.isStayObjectionCase(found)) {
@@ -661,28 +691,129 @@
           c.l3StayObjectionSupportingAttachments,
         );
         ECMIS103.renderAttachments("f_memoFiles", c.l3StayObjectionMemoAttachments);
-        /* ฉบับลงนามจริง (ธุรการบันทึกที่ 10-3b-02) — สำนวนเดิมที่ไม่มี l3WetSign แสดงไฟล์แนบเดิมแทน */
-        const hasWet = !!(c.l3WetSign && c.l3WetSign.stayObjection);
-        document.getElementById("legacySignedGroup").classList.toggle("d-none", hasWet);
-        document.getElementById("wetSignStayView").classList.toggle("d-none", !hasWet);
-        if (hasWet) {
-          ECMISWetSign.renderSignedView(
-            "wetSignStayView",
-            c,
-            "stayObjection",
-            "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ",
-          );
-        } else {
-          ECMIS103.renderAttachments("f_stayObjectionFiles", c.l3StayObjectionAttachments);
-          ECMIS103.renderAttachments("f_staySignedFiles", c.l3StayObjectionSignedAttachments);
-          ECMIS103.setText("f_chairmanNotes", c.l3StayObjectionChairmanNotes);
-        }
-
+        ECMIS103Prev.renderStay("stayPrev", c, ["stayReviews"]);
+        renderSignedPart(c);
         document.getElementById("in_sentDate").value = todayISO();
         document.getElementById("in_handDate").value = todayISO();
         toggleSendMethod();
       }
 
+      /* ฉบับลงนามจริง — นิติกรแนบสแกนเอง (ตัด 10-3b-02 ธุรการ 2026-10-22)
+         เคสเดิมที่ธุรการบันทึกไว้แล้ว (l3WetSign / ไฟล์แนบเดิม) แสดงอ่านอย่างเดียว */
+      function hasSigned(c) {
+        return !!((c.l3WetSign || {})[DOC_KEY]) || !!(c.l3StayObjectionSignedAttachments || []).length;
+      }
+      function renderSignedPart(c) {
+        const signed = hasSigned(c);
+        const hasWet = !!((c.l3WetSign || {})[DOC_KEY]);
+        document.getElementById("wetSignRecorderWrap").classList.toggle("d-none", signed);
+        document.getElementById("signedCard").classList.toggle("d-none", !signed);
+        document.getElementById("legacySignedGroup").classList.toggle("d-none", hasWet || !signed);
+        document.getElementById("wetSignStayView").classList.toggle("d-none", !hasWet);
+        const live = !!(c.l3LiveDocs || {})[DOC_KEY];
+        document.getElementById("printCard").classList.toggle("d-none", !live || signed);
+        if (live && !signed) {
+          ECMISWetSign.renderPrintDocs("printDocs", c, {
+            docs: [{ docKey: DOC_KEY, label: DOC_LABEL, fileName: DOC_LABEL + " " + (c.blackCaseNo || "") }],
+          });
+        }
+        if (hasWet) {
+          ECMISWetSign.renderSignedView("wetSignStayView", c, DOC_KEY, DOC_LABEL);
+        } else if (signed) {
+          ECMIS103.renderAttachments("f_stayObjectionFiles", c.l3StayObjectionAttachments);
+          ECMIS103.renderAttachments("f_staySignedFiles", c.l3StayObjectionSignedAttachments);
+          ECMIS103.setText("f_chairmanNotes", c.l3StayObjectionChairmanNotes);
+        }
+        if (!signed) {
+          ECMISWetSign.renderRecorder("wetSignRecorder", {
+            docKey: DOC_KEY,
+            docLabel: DOC_LABEL,
+            signerLabel: ECMIS103.signerLabel("chairman"),
+            caseObj: c,
+            noteLabel: "ข้อสั่งการประธานกรรมการ / ฉบับจริงอยู่ที่ / หมายเหตุ",
+            notePlaceholder: "เช่น ได้รับฉบับจริงแล้ว (ระบุข้อสั่งการประธานกรรมการ ถ้ามี)",
+          });
+        }
+      }
+      /* คืน patch ฉบับลงนามจริงที่นิติกรแนบ ({} ถ้ามีอยู่แล้ว) หรือ null ถ้ายังไม่ครบ */
+      function signedPatch() {
+        if (hasSigned(currentCase)) return {};
+        const missing = ECMISWetSign.validate("wetSignRecorder");
+        if (missing) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: missing, confirmButtonColor: "#1e3a8a" });
+          return null;
+        }
+        const wet = ECMISWetSign.collect("wetSignRecorder", {
+          docKey: DOC_KEY,
+          signerRole: "chairman",
+          signerName: ECMIS103.signerLabel("chairman"),
+          recordedBy: ECMIS103.signerLabel("case_legal_officer"),
+        });
+        return {
+          l3WetSign: Object.assign({}, currentCase.l3WetSign, wet),
+          l3StayObjectionSignedAttachments: wet[DOC_KEY].scanFiles.slice(),
+          l3StayObjectionChairmanNotes: wet[DOC_KEY].note || "-",
+        };
+      }
+      /* ประธานฯ ไม่ลงนาม / แก้ไขด้วยลายมือ → นิติกร 3b-01 (ปลดล็อก แก้ร่างและเสนอใหม่ตามลำดับชั้น) */
+      function returnForm() {
+        if (!currentCase) return;
+        const back = Activity103.STAY_SENDBACK.LAWYER;
+        Swal.fire({
+          icon: "warning",
+          title: "ส่งกลับแก้ไขร่างคำชี้แจงคัดค้าน?",
+          html:
+            '<div class="emd-summary"><p>ประธานกรรมการ ป.ป.ท. ไม่ลงนามหรือแก้ไขเอกสารด้วยลายมือ — ระบบจะปลดล็อกคำชี้แจงคัดค้าน ' +
+            "ให้นิติกรแก้ไขและเสนอใหม่ตามลำดับชั้น (พิมพ์ฉบับใหม่)</p></div>",
+          input: "textarea",
+          inputLabel: "เหตุผล / ประเด็นที่ต้องแก้ไข (จำเป็น)",
+          inputPlaceholder: "เช่น ประธานกรรมการให้แก้ไขข้อ 3",
+          inputValidator: (v) => (!v || !v.trim() ? "กรุณาระบุเหตุผลการส่งกลับ" : undefined),
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันส่งกลับแก้ไข",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          const reason = String(res.value || "").trim();
+          ECMIS103.openSignatureModal(
+            {
+              title: "ยืนยันส่งกลับแก้ไขร่างคำชี้แจงคัดค้าน",
+              signer: ECMIS103.signerLabel("case_legal_officer"),
+              certId: "PACC-CASELEGAL-2569-103B",
+            },
+            (image) => {
+              Activity103.sign(currentCase.id, STEP_CODE, image);
+              Activity103.advance(
+                currentCase.id,
+                STEP_CODE,
+                Object.assign(
+                  {
+                    status: back.status,
+                    statusCode: back.statusCode,
+                    statusBadge: "bg-danger text-white",
+                    assignedRole: back.assignedRole,
+                    l3Step: null,
+                    l3StepSeq: 0,
+                    l3bSendBackNotes: reason,
+                    l3bSendBackBy: "นิติกร (ประธานกรรมการ ป.ป.ท. ไม่ลงนาม/แก้ไขด้วยลายมือ)",
+                    l3bSendBackAt: ECMIS103.formatThaiDateTime(new Date()),
+                  },
+                  ECMISWetSign.unlockDocs(currentCase, [DOC_KEY]),
+                ),
+              );
+              Swal.fire({
+                icon: "success",
+                title: "ส่งกลับแก้ไขสำเร็จ!",
+                text: "ปลดล็อกคำชี้แจงคัดค้านให้แก้ไขและเสนอใหม่เรียบร้อยแล้ว",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(ECMIS103.goInbox);
+            },
+          );
+        });
+      }
       function toggleSendMethod() {
         const method = document.getElementById("in_sendMethod").value;
         document
@@ -766,6 +897,8 @@
       }
 
       function submitForm() {
+        const signed = signedPatch();
+        if (!signed) return;
         const method = document.getElementById("in_sendMethod").value;
         if (!method) {
           Swal.fire({
@@ -822,7 +955,7 @@
             },
             (image) => {
               Activity103.sign(currentCase.id, STEP_CODE, image);
-              Activity103.advance(currentCase.id, STEP_CODE, {
+              Activity103.advance(currentCase.id, STEP_CODE, Object.assign({}, signed, {
                 l3StayDispatchMethod: "hand",
                 l3StayHandDeliveryDate: handDate,
                 l3StayHandDeliveryLocation: handLocation,
@@ -830,7 +963,7 @@
                 l3StayDispatchEmsTracking: null,
                 l3StayDispatchDocCopies: docCopies,
                 l3StayCloseNotes: notes,
-              });
+              }));
               doneAndBack(
                 "ส่งคำชี้แจงคัดค้านต่อศาลปกครองและปิดสำนวนเรียบร้อยแล้ว — จบขั้นตอนของสาขาคำขอทุเลาการบังคับคดี",
               );
@@ -858,7 +991,7 @@
           },
           (image) => {
             Activity103.sign(currentCase.id, STEP_CODE, image);
-            Activity103.advance(currentCase.id, STEP_CODE, {
+            Activity103.advance(currentCase.id, STEP_CODE, Object.assign({}, signed, {
               l3StayDispatchMethod: "post",
               l3StayDispatchDate: sentDate,
               l3StayDispatchEmsTracking:
@@ -868,7 +1001,7 @@
               l3StayHandDeliveryLocation: null,
               l3StayDispatchDocCopies: docCopies,
               l3StayCloseNotes: notes,
-            });
+            }));
             doneAndBack(
               "ส่งคำชี้แจงคัดค้านต่อศาลปกครองและปิดสำนวนเรียบร้อยแล้ว — จบขั้นตอนของสาขาคำขอทุเลาการบังคับคดี",
             );
@@ -897,6 +1030,21 @@
         if (dropdown && !dropdown.contains(e.target))
           dropdown.classList.remove("show");
       });
+    </script>
+    <script src="assets/ecmis-shipping.js?v=20261022_2"></script>
+    <script>
+      /* 2026-10-22 เลือกไปรษณีย์ → หลักฐานการส่ง (กล่อง EMS) แทนช่องเลข EMS เดิม — กด "ส่ง" บันทึกหลักฐานอย่างเดียว ไม่เปลี่ยนสถานะ */
+      document.addEventListener("DOMContentLoaded", () => setTimeout(() => {
+        if (typeof currentCase === "undefined" || !currentCase) return;
+        ECMISShipping.link({
+          field: "in_emsTracking",
+          key: "3b-03",
+          getCase: () => currentCase,
+          active: () => document.getElementById("in_sendMethod").value === "post",
+          submit: '[onclick*="submitForm"]',
+          readOnly: typeof viewOnly !== "undefined" && viewOnly,
+        });
+      }, 0));
     </script>
   </body>
 </html>

@@ -25,12 +25,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
-    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261014_1" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -386,7 +387,7 @@
           >
             <i class="fa-solid fa-circle-info"></i>
             <div>
-              <strong>เคสนี้เป็นสาขาคู่ขนานของกิจกรรมที่ 1</strong><br />
+              <strong>เคสนี้เป็นสาขาคู่ขนานของคดีหลัก</strong><br />
               เดินสถานะแยกต่างหากจากคดีหลัก
               <span class="font-monospace" id="f_parentCaseId">-</span>
               ไม่กระทบขั้นตอนของคดีหลักที่กำลังดำเนินอยู่
@@ -450,6 +451,112 @@
             </button>
           </div>
 
+          <div id="stayPrev"></div>
+          <div class="l3-split l3-split--doc">
+            <div class="l3-split-form">
+              <div class="form-card" style="border: 2px solid #1e3a8a">
+                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
+                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสารสด — คำชี้แจงคัดค้านคำขอทุเลาการบังคับ</span>
+                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
+                </div>
+                <div class="form-card-body">
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-scale-balanced"></i>ส่วนหัวคำชี้แจง</div>
+                  <div class="form-group">
+                    <label>ชื่อเอกสาร <span style="color: #dc2626">*</span></label>
+                    <input type="text" id="s_title" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>ประทับคำว่า</label>
+                    <select id="s_copyMark" class="form-control">
+                      <option value="ฉบับจริง">ไม่ประทับ (ฉบับจริง)</option><option value="สำเนา">สำเนา</option>
+                    </select>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ถูกฟ้องคดีที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_respondentNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>ศาล <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_court" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>คดีหมายเลขดำที่ <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_blackNo" class="form-control font-monospace" />
+                    </div>
+                    <div class="form-group">
+                      <label>คดีหมายเลขแดงที่ <span class="l3-optional">(ถ้ามี)</span></label>
+                      <input type="text" id="s_redNo" class="form-control font-monospace" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>วันที่ยื่นคำชี้แจง <span style="color: #dc2626">*</span></label>
+                      <input type="date" id="s_date" class="form-control" lang="th-TH-u-ca-buddhist" />
+                    </div>
+                    <div class="form-group">
+                      <label>เรื่อง <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_subject" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-id-card"></i>ข้อมูลผู้ชี้แจง</div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ข้าพเจ้า <span style="color: #dc2626">*</span></label>
+                      <input type="text" id="s_meName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ฐานะ</label>
+                      <input type="text" id="s_meRole" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>อยู่ที่</label>
+                      <input type="text" id="s_address" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>โทรศัพท์</label>
+                      <input type="text" id="s_phone" class="form-control font-monospace" />
+                    </div>
+                  </div>
+
+                  <div class="l3-doc-group-title"><i class="fa-solid fa-align-left"></i>เนื้อหาคำชี้แจงคัดค้าน</div>
+                  <div class="form-group">
+                    <label>ข้อ ๑ … ข้อสุดท้าย <span style="color: #dc2626">*</span></label>
+                    <div class="l3-tiptap-wrap">
+                      <div class="l3-tiptap-toolbar" id="tb_s_body">
+                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
+                      </div>
+                      <div id="s_body"></div>
+                    </div>
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
+                      <input type="text" id="s_signerName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>ตำแหน่งผู้ลงนาม</label>
+                      <input type="text" id="s_signerPos" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="l3-note l3-note-info" style="margin-bottom: 0">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <div>ช่องลงนามเว้นว่างไว้สำหรับประธานกรรมการ ป.ป.ท. ลงนามด้วยหมึกบนฉบับพิมพ์</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="stayPreviewCol"></div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
@@ -467,7 +574,7 @@
               <div class="l3-note l3-note-info">
                 <i class="fa-solid fa-circle-info"></i>
                 <div>
-                  คำชี้แจงคัดค้านจัดทำเป็น <strong>เอกสารสด</strong> บนแบบคำคู่ความยื่นต่อศาลปกครอง (ด้านล่าง) —
+                  คำชี้แจงคัดค้านจัดทำเป็น <strong>เอกสารสด</strong> บนแบบคำคู่ความยื่นต่อศาลปกครอง (ด้านบน) —
                   เสนอ ผอ.กลุ่มงานคดี และ ผอ.กองกฎหมาย ตรวจร่าง แล้วพิมพ์ฉบับจริงให้ประธานกรรมการ ป.ป.ท.
                   ลงนามด้วยหมึก (ช่องลงนามเว้นว่าง ไม่มีลายเซ็นอิเล็กทรอนิกส์)
                 </div>
@@ -581,111 +688,6 @@
           </div>
 
           <!-- ========== เอกสารสด — คำชี้แจงคัดค้านคำขอทุเลาการบังคับ (แบบคำคู่ความต่อศาลปกครอง) ========== -->
-          <div class="l3-split l3-split--doc">
-            <div class="l3-split-form">
-              <div class="form-card" style="border: 2px solid #1e3a8a">
-                <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
-                  <span><i class="fa-solid fa-file-pen text-primary me-2"></i>เอกสารสด — คำชี้แจงคัดค้านคำขอทุเลาการบังคับ</span>
-                  <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-pen me-1"></i>นิติกร กลุ่มงานคดี</span>
-                </div>
-                <div class="form-card-body">
-                  <div class="l3-doc-group-title"><i class="fa-solid fa-scale-balanced"></i>ส่วนหัวคำชี้แจง</div>
-                  <div class="form-group">
-                    <label>ชื่อเอกสาร <span style="color: #dc2626">*</span></label>
-                    <input type="text" id="s_title" class="form-control" />
-                  </div>
-                  <div class="form-group">
-                    <label>ประทับคำว่า</label>
-                    <select id="s_copyMark" class="form-control">
-                      <option value="ฉบับจริง">ไม่ประทับ (ฉบับจริง)</option><option value="สำเนา">สำเนา</option>
-                    </select>
-                  </div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>ผู้ถูกฟ้องคดีที่ <span style="color: #dc2626">*</span></label>
-                      <input type="text" id="s_respondentNo" class="form-control font-monospace" />
-                    </div>
-                    <div class="form-group">
-                      <label>ศาล <span style="color: #dc2626">*</span></label>
-                      <input type="text" id="s_court" class="form-control" />
-                    </div>
-                  </div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>คดีหมายเลขดำที่ <span style="color: #dc2626">*</span></label>
-                      <input type="text" id="s_blackNo" class="form-control font-monospace" />
-                    </div>
-                    <div class="form-group">
-                      <label>คดีหมายเลขแดงที่ <span class="l3-optional">(ถ้ามี)</span></label>
-                      <input type="text" id="s_redNo" class="form-control font-monospace" />
-                    </div>
-                  </div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>วันที่ยื่นคำชี้แจง <span style="color: #dc2626">*</span></label>
-                      <input type="date" id="s_date" class="form-control" lang="th-TH-u-ca-buddhist" />
-                    </div>
-                    <div class="form-group">
-                      <label>เรื่อง <span style="color: #dc2626">*</span></label>
-                      <input type="text" id="s_subject" class="form-control" />
-                    </div>
-                  </div>
-
-                  <div class="l3-doc-group-title"><i class="fa-solid fa-id-card"></i>ข้อมูลผู้ชี้แจง</div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>ข้าพเจ้า <span style="color: #dc2626">*</span></label>
-                      <input type="text" id="s_meName" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                      <label>ฐานะ</label>
-                      <input type="text" id="s_meRole" class="form-control" />
-                    </div>
-                  </div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>อยู่ที่</label>
-                      <input type="text" id="s_address" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                      <label>โทรศัพท์</label>
-                      <input type="text" id="s_phone" class="form-control font-monospace" />
-                    </div>
-                  </div>
-
-                  <div class="l3-doc-group-title"><i class="fa-solid fa-align-left"></i>เนื้อหาคำชี้แจงคัดค้าน</div>
-                  <div class="form-group">
-                    <label>ข้อ ๑ … ข้อสุดท้าย <span style="color: #dc2626">*</span></label>
-                    <div class="l3-tiptap-wrap">
-                      <div class="l3-tiptap-toolbar" id="tb_s_body">
-                        <button type="button" data-cmd="bold" title="ตัวหนา"><i class="fa-solid fa-bold"></i></button>
-                        <button type="button" data-cmd="italic" title="ตัวเอียง"><i class="fa-solid fa-italic"></i></button>
-                        <button type="button" data-cmd="bulletList" title="รายการหัวข้อ"><i class="fa-solid fa-list-ul"></i></button>
-                        <button type="button" data-cmd="orderedList" title="รายการลำดับเลข"><i class="fa-solid fa-list-ol"></i></button>
-                      </div>
-                      <div id="s_body"></div>
-                    </div>
-                  </div>
-                  <div class="form-grid-2">
-                    <div class="form-group">
-                      <label>ผู้ลงนาม (ชื่อในวงเล็บ)</label>
-                      <input type="text" id="s_signerName" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                      <label>ตำแหน่งผู้ลงนาม</label>
-                      <input type="text" id="s_signerPos" class="form-control" />
-                    </div>
-                  </div>
-                  <div class="l3-note l3-note-info" style="margin-bottom: 0">
-                    <i class="fa-solid fa-pen-nib"></i>
-                    <div>ช่องลงนามเว้นว่างไว้สำหรับประธานกรรมการ ป.ป.ท. ลงนามด้วยหมึกบนฉบับพิมพ์</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="stayPreviewCol"></div>
-          </div>
-
           <div class="form-actions" id="actionBar">
             <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
             <div class="l3-actions-right">
@@ -704,13 +706,16 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_3"></script>
+    <script src="assets/ecmis-wetsign.js?v=20261022_rm181922"></script>
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
-    <script src="assets/ecmis-10-3-case-edit.js?v=20261014_9"></script>
-    <script src="assets/ecmis-10-3-docs.js?v=20261015_2"></script>
+    <script src="assets/ecmis-10-3-case-edit.js?v=20261021_2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
 
     <script>
       /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — คำชี้แจงคัดค้านเป็นเอกสารสดบนแบบคำคู่ความ
@@ -740,6 +745,7 @@
         loadCase();
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
         ECMIS103CaseEdit.mount({
+          collapsible: true,
           getCase: function () {
             return currentCase;
           },
@@ -779,6 +785,7 @@
 
       function populate() {
         const c = currentCase;
+        ECMIS103Prev.renderStay("stayPrev", c, []);
         ECMIS103.setText("f_parentCaseId", c.l3ParentCaseId);
         ECMIS103.setText("f_caseNo", c.id);
         ECMIS103.setText("f_courtName", c.courtName);

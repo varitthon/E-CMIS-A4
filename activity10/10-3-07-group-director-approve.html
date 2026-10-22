@@ -23,11 +23,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -247,6 +249,47 @@
       .d-none {
         display: none !important;
       }
+      /* การ์ดเลือกผลการพิจารณา (เห็นชอบ / ส่งกลับนิติกร) — พอร์ตจาก
+         .decision-grid/.decision-card ใน 10-3v-06-legal-director-decide.html */
+      .decision-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .decision-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+      .decision-card:hover {
+        border-color: #93c5fd;
+        background: rgba(37, 99, 235, 0.02);
+      }
+      .decision-grid .decision-card {
+        margin-bottom: 0;
+        justify-content: flex-start;
+      }
+      .decision-card.active-win {
+        border-color: #16a34a;
+        background: rgba(22, 163, 74, 0.05);
+      }
+      .decision-card.active-lose {
+        border-color: #dc2626;
+        background: rgba(220, 38, 38, 0.05);
+      }
+      @media (max-width: 1024px) {
+        .decision-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -393,7 +436,7 @@
             <div class="form-card-header">
               <span
                 ><i class="fa-solid fa-pen-to-square text-primary me-2"></i
-                >บันทึกสรุปความเห็น (จัดทำโดยนิติกร)</span
+                >บันทึกเสนอเข้าบอร์ดเพื่อมีมติ (จัดทำโดยนิติกร)</span
               >
             </div>
             <div class="form-card-body">
@@ -407,6 +450,12 @@
                 <label>เอกสารแนบประกอบความเห็น</label>
                 <div id="f_opinionAttachments"></div>
               </div>
+              <div class="form-group">
+                <label>บันทึกฉบับลงนามจริง (ผู้เสนอ)</label>
+                <div id="f_boardMemoSigned"></div>
+              </div>
+              <!-- พรีวิวบันทึกเสนอเข้าบอร์ด (เอกสารสดจาก 10-3-04) — .l3-split--doc ให้ตัวแสดงผลไม่ sticky -->
+              <div class="l3-split--doc"><div id="boardMemoPreview"></div></div>
             </div>
           </div>
 
@@ -425,7 +474,92 @@
             </div>
             <div class="form-card-body">
               <div class="form-group">
-                <label>ความเห็นเพิ่มเติม / หมายเหตุ</label>
+                <label
+                  >ผลการพิจารณา <span style="color: #dc2626">*</span></label
+                >
+                <div class="decision-grid">
+                  <label
+                    class="decision-card"
+                    id="label_decision_approve"
+                    onclick="selectDecision('APPROVE')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_decision"
+                      id="decision_approve"
+                      value="APPROVE"
+                      style="accent-color: #16a34a; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #16a34a;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-check me-1"></i>เห็นชอบ
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (ส่งต่อ ผอ.กองกฎหมาย ลงนาม)
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    class="decision-card"
+                    id="label_decision_sendback"
+                    onclick="selectDecision('SENDBACK')"
+                  >
+                    <input
+                      type="radio"
+                      name="in_decision"
+                      id="decision_sendback"
+                      value="SENDBACK"
+                      style="accent-color: #dc2626; width: 18px; height: 18px"
+                    />
+                    <div style="display: flex; flex-direction: column">
+                      <div
+                        style="
+                          font-weight: 700;
+                          color: #dc2626;
+                          font-size: 0.92em;
+                        "
+                      >
+                        <i class="fa-solid fa-rotate-left me-1"></i
+                        >ส่งกลับนิติกร
+                      </div>
+                      <div style="font-size: 0.78em; color: #64748b">
+                        (แก้ไขบันทึกความเห็น / ผลตรวจคำฟ้อง)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div
+                class="form-group d-none"
+                id="grp_sendBackReason"
+                style="
+                  background: rgba(220, 38, 38, 0.05);
+                  border: 1px solid #fca5a5;
+                  border-radius: 8px;
+                  padding: 14px 16px;
+                "
+              >
+                <label
+                  >เหตุผลที่ส่งกลับนิติกร
+                  <span style="color: #dc2626">*</span></label
+                >
+                <textarea
+                  id="in_sendBackReason"
+                  class="form-control"
+                  rows="3"
+                  placeholder="ระบุประเด็นที่ต้องให้นิติกรแก้ไข..."
+                ></textarea>
+              </div>
+
+              <div class="form-group" id="grp_approveNotes">
+                <label>ความเห็นเพิ่มเติม</label>
                 <textarea
                   id="in_approveNotes"
                   class="form-control"
@@ -443,7 +577,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-check me-1"></i>เห็นชอบ และ ส่งต่อ
+                <i class="fa-solid fa-check me-1" id="submitIcon"></i
+                ><span id="submitLabel">เห็นชอบ และ ส่งต่อ</span>
               </button>
             </div>
           </div>
@@ -453,10 +588,12 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
 
     <script>
       const STEP_CODE = "LAW0093";
@@ -514,25 +651,129 @@
         populateCommon();
       }
 
+      let decision = "";
+
+      /* เลือกผลการพิจารณา — แพทเทิร์นเดียวกับ selectDecision() ใน 10-3v-05
+         ส่งกลับ → แสดงช่องเหตุผล (บังคับ) และเปลี่ยนป้ายปุ่ม */
+      function selectDecision(type) {
+        const cards = {
+          APPROVE: document.getElementById("label_decision_approve"),
+          SENDBACK: document.getElementById("label_decision_sendback"),
+        };
+        Object.values(cards).forEach((el) => {
+          if (el) el.className = "decision-card";
+        });
+
+        const t = (type || "").toUpperCase();
+        decision = t;
+        if (t === "APPROVE") {
+          document.getElementById("decision_approve").checked = true;
+          if (cards.APPROVE) cards.APPROVE.className = "decision-card active-win";
+        } else if (t === "SENDBACK") {
+          document.getElementById("decision_sendback").checked = true;
+          if (cards.SENDBACK)
+            cards.SENDBACK.className = "decision-card active-lose";
+        }
+
+        const isSendBack = t === "SENDBACK";
+        document
+          .getElementById("grp_sendBackReason")
+          .classList.toggle("d-none", !isSendBack);
+        document
+          .getElementById("grp_approveNotes")
+          .classList.toggle("d-none", isSendBack);
+        document.getElementById("submitIcon").className = isSendBack
+          ? "fa-solid fa-rotate-left me-1"
+          : "fa-solid fa-check me-1";
+        document.getElementById("submitLabel").textContent = isSendBack
+          ? "ส่งกลับนิติกร"
+          : "เห็นชอบ และ ส่งต่อ";
+      }
+
       function submitForm() {
+        if (!decision) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกผลการพิจารณา",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
+        if (decision === "SENDBACK") {
+          submitSendBack();
+          return;
+        }
+
         const notes =
           document.getElementById("in_approveNotes").value.trim() || "-";
 
+        /* ลงนามความเห็นข้อ ๕ ในบันทึกเสนอเข้าบอร์ด — ลายเซ็นไปแสดงในเอกสารที่ 10-3-08 */
+        ECMIS103.openSignatureModal(
+          {
+            title: "ลงนามความเห็น (ข้อ ๕)",
+            signer: ECMIS103.signerLabel("case_group_director"),
+            certId: "PACC-GROUPDIR-2569-103",
+          },
+          (image) => {
+          Activity103.sign(currentCase.id, STEP_CODE, image);
+          Activity103.advance(currentCase.id, STEP_CODE, {
+            l3GroupApproveNotes: notes,
+            /* ผ่านขั้นนี้แล้ว — ล้างเหตุผลส่งกลับรอบก่อน */
+            l3ReviewSendBackNotes: null,
+            l3ReviewSendBackBy: null,
+          });
+          doneAndBack("ลงนามความเห็นชอบเรียบร้อยแล้ว");
+          },
+        );
+      }
+
+      /* ส่งกลับนิติกร (10-3-04) — statusCode ใน patch ทับค่าตั้งต้นของขั้น
+         (แบบเดียวกับ 10-3v-05) ผู้รับงานคือนิติกรที่ได้รับมอบหมาย (l3GroupAssignTarget) */
+      function submitSendBack() {
+        const reasonEl = document.getElementById("in_sendBackReason");
+        const reason = reasonEl.value.trim();
+        if (!reason) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุเหตุผลที่ส่งกลับนิติกร",
+            confirmButtonColor: "#1e3a8a",
+          });
+          reasonEl.focus();
+          return;
+        }
+        /* สถานะเดียวกับที่ ผอ.กลุ่มงานมอบหมาย (LAW0089) เขียนให้หน้า 10-3-04 */
+        const target = Activity103.stepByCode("LAW0089");
+        const lawyer = currentCase.l3GroupAssignTarget;
+
         Swal.fire({
           icon: "question",
-          title: "ยืนยันเห็นชอบ",
-          text: "เห็นชอบบันทึกความเห็นและส่งต่อ ผอ.กองกฎหมาย เพื่อลงนาม",
+          title: "ยืนยันส่งกลับนิติกร",
+          text: "ส่งเรื่องกลับให้นิติกรแก้ไขบันทึกความเห็น / ผลตรวจคำฟ้อง",
           showCancelButton: true,
-          confirmButtonText: "ยืนยันเห็นชอบ",
+          confirmButtonText: "ยืนยันส่งกลับ",
           cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
+          confirmButtonColor: "#dc2626",
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          Activity103.advance(currentCase.id, STEP_CODE, {
-            l3GroupApproveNotes: notes,
-          });
-          doneAndBack("บันทึกความเห็นชอบเรียบร้อยแล้ว");
+          Activity103.advance(
+            currentCase.id,
+            STEP_CODE,
+            Object.assign(
+              {
+                status: target.status,
+                statusCode: target.statusCode,
+                assignedRole: "case_legal_officer",
+                l3ReviewSendBackNotes: reason,
+                l3ReviewSendBackBy: "ผอ.กลุ่มงานคดี",
+              },
+              /* ไม่รู้ชื่อนิติกร → คง officer เดิมไว้ */
+              lawyer ? { officer: lawyer } : {},
+            ),
+          );
+          doneAndBack("ส่งเรื่องกลับให้นิติกรแก้ไขเรียบร้อยแล้ว");
         });
       }
 
@@ -558,5 +799,22 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <!-- บันทึกเสนอเข้าบอร์ด (เอกสารสดจาก 10-3-04, ref PDF 3) 2026-10-21 — ความเห็นในหน้านี้เติมข้อ ๕ -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (!currentCase || !currentCase.l3BoardMemo) return;
+        const viewer = ECMIS103Docs.createViewer("boardMemoPreview", {
+          title: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ",
+          fileName: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ " + (currentCase.blackCaseNo || ""),
+        });
+        /* ข้อความในบันทึกครบตั้งแต่นิติกร (10-3-04) — ความเห็นเพิ่มเติมหน้านี้ไม่ลงเอกสาร */
+        viewer.render(ECMIS103Docs.boardMemoFromCase(currentCase));
+        /* ไฟล์บันทึกฉบับลงนามจริงที่นิติกรอัปโหลดที่ 10-3-04 — แสดงเป็นไฟล์แนบเปิดดูได้ */
+        ECMIS103.renderAttachments("f_boardMemoSigned", currentCase.l3BoardMemoSignedFile ? [currentCase.l3BoardMemoSignedFile] : []);
+        /* เนื้อความอยู่ในพรีวิวแล้ว — ซ่อนช่องสรุปความเห็นแบบเดิม (เคสเก่าที่ไม่มีบันทึกยังเห็น) */
+        document.getElementById("f_opinionText").closest(".form-group").style.display = "none";
+      });
+    </script>
+    <script src="assets/ecmis-10-3-stay-edit.js?v=20261022_2"></script>
   </body>
 </html>

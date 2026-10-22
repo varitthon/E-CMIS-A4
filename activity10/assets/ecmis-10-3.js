@@ -27,15 +27,27 @@
       page: "02-board-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย",
+      statusCode: "L3_PENDING_DIRECTOR_ASSIGN",
+      nextRole: "dir_legal",
+      label: "ธุรการกองกฎหมาย รับเรื่องและเสนอ ผอ.กองกฎหมาย",
+      stepName: "ธุรการ รับเรื่อง",
+    },
+    /* 10-3-02 (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 แล้วนำกลับมา 2026-10-21
+       (เรื่องเข้าใหม่ต้องผ่าน ผอ.กองกฎหมาย มอบหมายก่อน) */
+    {
+      code: "LAW0088",
+      seq: 2,
+      page: "10-3-02-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
       status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร",
       statusCode: "L3_PENDING_GROUP_ASSIGN",
       nextRole: "case_group_director",
       nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
-      label: "ธุรการกองกฎหมาย รับเรื่องและเสนอ ผอ.กลุ่มงานคดี",
-      stepName: "ธุรการ รับเรื่อง",
+      label: "ผอ.กองกฎหมาย ลงนามมอบหมาย",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
     },
-    /* 10-3-02-legal-director-assign.html (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 — ขั้นก่อนหน้าส่งตรงถึง
-       ผอ.กลุ่มงาน ดู docs/remove-dir-legal-assign/plan.md */
     {
       code: "LAW0089",
       seq: 3,
@@ -127,32 +139,22 @@
     },
     {
       /* ผอ.กองเห็นชอบ = ล็อกฉบับและพิมพ์ฉบับจริงให้ประธานฯ ลงนามบนกระดาษ
-         (statusCode เดิม L3B_PENDING_CHAIRMAN_SIGN คงไว้ให้เคสค้างเก่าเข้า 3b-02 ได้) */
+         2026-10-22 ตัด 10-3b-02 (ธุรการบันทึกผลลงนาม) — ส่งตรงนิติกร 3b-03 แนบสแกนฉบับลงนามจริงเอง
+         (เคสค้าง L3B_PENDING_CHAIRMAN_SIGN ย้ายมา 3b-03 ที่ ecmis-activity10.js) */
       code: "LAW0097B",
       seq: 3,
       page: "10-3b-01b-legal-director-review-stay-objection.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — ธุรการบันทึกผลการลงนามจริง",
-      statusCode: "L3B_PENDING_CHAIRMAN_SIGN",
-      nextRole: "admin_legal",
+      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — นิติกรแนบฉบับลงนามจริงและส่งต่อศาล",
+      statusCode: "L3B_PENDING_LAWYER_DISPATCH",
+      nextRole: "case_legal_officer",
       label: "ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน และพิมพ์ฉบับจริงเสนอประธานฯ ลงนาม",
       stepName: "ผอ.กอง ตรวจร่าง/พิมพ์",
     },
     {
-      code: "LAW0098",
-      seq: 4,
-      page: "10-3b-02-chairman-sign-stay-objection.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรส่งคำชี้แจงต่อศาล",
-      statusCode: "L3B_PENDING_LAWYER_DISPATCH",
-      label: "ธุรการ บันทึกผลการลงนามจริงคำชี้แจงคัดค้าน (ประธานกรรมการ ป.ป.ท.)",
-      stepName: "ธุรการ บันทึกผลลงนาม",
-    },
-    {
       code: "LAW0099",
-      seq: 5,
+      seq: 4,
       page: "10-3b-03-lawyer-dispatch-stay-objection.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
@@ -164,7 +166,7 @@
   ];
 
   /* ส่งกลับในสายคัดค้านทุเลา (แบบ B) — 1 ขั้น ต้องระบุเหตุผลเสมอ
-     LAWYER: กลับนิติกร 3b-01 (จาก 3b-01a หรือจาก 3b-02 เมื่อประธานฯ ไม่ลงนาม/แก้ด้วยลายมือ)
+     LAWYER: กลับนิติกร 3b-01 (จาก 3b-01a หรือจาก 3b-03 เมื่อประธานฯ ไม่ลงนาม/แก้ด้วยลายมือ)
      GROUP: กลับ ผอ.กลุ่มงาน 3b-01a (จาก 3b-01b) */
   const STAY_SENDBACK = {
     LAWYER: {
@@ -226,36 +228,14 @@
   };
 
   const ANSWER_STEPS = [
-    {
-      code: "L3-19",
-      seq: 1,
-      page: "10-3-10-legal-admin-resolution-notice.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กลุ่มงานคดีพิจารณาเห็นชอบ",
-      statusCode: "L3_PENDING_GROUP_RESOLUTION_APPROVE",
-      nextRole: "case_group_director",
-      /* ไม่ระบุ nextOfficer — officer ต้องคงเป็นนิติกรเจ้าของสำนวน (มอบหมายที่ 3-03)
-         เพราะ 3-12 เห็นชอบแล้วส่งกลับนิติกรคนเดิมที่ 3-13 (ลงนามด้วยชื่อ officer) */
-      label: "ธุรการกองกฎหมาย รับเรื่องและแจ้งผลมติคณะกรรมการ ป.ป.ท.",
-      stepName: "ธุรการ รับเรื่อง/แจ้งผลมติ",
-    },
-    /* 10-3-11-legal-director-assign-resolution.html (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 — ขั้นก่อนหน้าส่งตรงถึง
-       ผอ.กลุ่มงาน ดู docs/remove-dir-legal-assign/plan.md */
-    {
-      code: "L3-21",
-      seq: 3,
-      page: "10-3-12-group-director-approve-resolution.html",
-      role: "case_group_director",
-      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "นิติกรยื่นคำขอขยายเวลาต่อศาล",
-      statusCode: "L3_PENDING_LAWYER_EXTENSION",
-      label: "ผอ.กลุ่มงานคดี พิจารณาและเห็นชอบผลมติ/ข้อสั่งการ",
-      stepName: "ผอ.กลุ่มงานคดี เห็นชอบ",
-    },
+    /* 10-3-10 (L3-19 ธุรการแจ้งผลมติ) และ 10-3-12 (L3-21 ผอ.กลุ่มงานเห็นชอบ) ถูกตัดออก
+       2026-10-21 — ผลมติจากกิจกรรมที่ 7 (ป๊อปอัป B3, ecmis-act7-bypass.js) ส่งตรงถึง
+       นิติกรที่ 10-3-13; สำเนาหน้าอยู่ที่ _backup-remove-3-10-3-12-20261021/ */
     {
       code: "L3-22",
       seq: 4,
+      /* ขาเข้าจาก B3 — L3_READY_FOR_BOARD ไม่มี route (รอกิจกรรมที่ 7 ที่กล่องงาน) */
+      entryStatus: "L3_PENDING_LAWYER_EXTENSION",
       page: "10-3-13-lawyer-request-extension.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
@@ -292,54 +272,13 @@
       page: "10-3-17-legal-admin-internal-dispatch-answer.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
-      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
-      label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายในและเสนอผู้ลงนาม",
-      stepName: "ธุรการ ออกเลขส่งภายใน",
-    },
-    {
-      code: "L3-27A",
-      seq: 8,
-      page: "10-3-18-secgen-sign-cover-letter.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      entryStatus: "L3_PENDING_SECGEN_COVER_SIGN",
-      altGroup: "cover-sign",
-      /* ลงนามแล้วระบบออกเลขหนังสือส่งออกให้เอง (autoExternalDocNo) — ไม่มีขั้นสารบรรณกลางแล้ว */
+      /* 2026-10-22 ตัด 10-3-18 / 10-3-19 / 10-3-22 (ธุรการบันทึกผลลงนามจริง) — ฉบับลงนามจริงแนบครบที่ 10-3-13
+         ธุรการออกเลขส่งภายใน + เลขส่งออก และบันทึกผู้ลงนามหนังสือนำส่ง แล้วส่งนิติกรรวบรวมเอกสาร (10-3-23) ทันที */
       autoExternalDocNo: true,
-      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำให้การ (บนกระดาษ) — ธุรการกองกฎหมายบันทึกผลการลงนามจริงและรวบรวมฉบับจริง",
-      statusCode: "L3_PENDING_CHAIRMAN_ANSWER_SIGN",
-      label: "ธุรการ บันทึกผลการลงนามจริงหนังสือนำส่ง (เลขาธิการ ป.ป.ท.)",
-      stepName: "ธุรการ บันทึกผลลงนามหนังสือนำส่ง",
-    },
-    {
-      code: "L3-27B",
-      seq: 8,
-      page: "10-3-19-deputy-sg-sign-cover-letter.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      entryStatus: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
-      altGroup: "cover-sign",
-      /* ลงนามแล้วระบบออกเลขหนังสือส่งออกให้เอง (autoExternalDocNo) — ไม่มีขั้นสารบรรณกลางแล้ว */
-      autoExternalDocNo: true,
-      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำให้การ (บนกระดาษ) — ธุรการกองกฎหมายบันทึกผลการลงนามจริงและรวบรวมฉบับจริง",
-      statusCode: "L3_PENDING_CHAIRMAN_ANSWER_SIGN",
-      label: "ธุรการ บันทึกผลการลงนามจริงหนังสือนำส่ง (รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน))",
-      stepName: "ธุรการ บันทึกผลลงนามหนังสือนำส่ง",
-    },
-    /* 2026-10-15: 10-3-21 (ประธานฯ เข้าระบบลงนามคำให้การ) ถูกรวมเข้า 10-3-22 —
-       ประธานฯ ลงนามบนกระดาษ แล้วธุรการบันทึกผลการลงนามจริง (สแกน+วันที่) และ
-       รวบรวมฉบับจริงในหน้าเดียว ดู docs/wet-sign/plan.md */
-    {
-      code: "L3-30",
-      seq: 11,
-      page: "10-3-22-legal-admin-collect-originals.html",
-      role: "admin_legal",
-      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรรวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
+      status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
       statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
-      label: "ธุรการ บันทึกผลการลงนามจริงคำให้การและรวบรวมฉบับจริง",
-      stepName: "ธุรการ บันทึกผลลงนาม/รวบรวมฉบับจริง",
+      label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน/ส่งออก และบันทึกผู้ลงนาม",
+      stepName: "ธุรการ ออกเลขส่งภายใน",
     },
     {
       code: "L3-31",
@@ -347,47 +286,23 @@
       page: "10-3-23-lawyer-collect-documents.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "นิติกรจัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
-      statusCode: "L3_PENDING_LAWYER_POST_TO_PROSECUTOR",
-      label: "นิติกร กลุ่มงานคดี รวบรวมร่างคำให้การและเอกสารที่เกี่ยวข้อง",
-      stepName: "นิติกร รวบรวมเอกสาร",
-    },
-    {
-      code: "L3-32",
-      seq: 13,
-      page: "10-3-24-lawyer-post-to-prosecutor.html",
-      role: "case_legal_officer",
-      roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "นิติกรติดตามสถานะการจัดส่งและใบตอบรับ",
-      statusCode: "L3_PENDING_LAWYER_TRACK_STATUS",
-      label: "นิติกรเจ้าของเรื่อง จัดส่งทางไปรษณีย์ไปยังสำนักงานคดีปกครอง",
-      stepName: "นิติกร ส่งไปรษณีย์ถึงอัยการ",
-    },
-    {
-      code: "L3-33",
-      seq: 14,
-      page: "10-3-25-lawyer-track-status.html",
-      role: "case_legal_officer",
-      roleTitle: "นิติกร กลุ่มงานคดี",
+      /* 2026-10-22 รวม 10-3-23 / 10-3-24 / 10-3-25 เป็นหน้าเดียว — แนบสแกนชุดเอกสาร + หลักฐานการส่ง (EMS) แล้วปิดขั้นตอน */
       status: "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา",
       statusCode: "L3_AWAITING_JUDGMENT",
-      label: "นิติกร ติดตามสถานะการจัดส่งและใบตอบรับ",
-      stepName: "นิติกร ติดตามสถานะ",
+      label: "นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+      stepName: "นิติกร ส่งเอกสารถึงอัยการ",
     },
   ];
 
+  /* ผู้ลงนามหนังสือนำส่ง (ลงนามบนกระดาษ) ที่ธุรการบันทึกไว้ที่ 10-3-17 — ไม่ได้เป็นขั้นตอนในระบบแล้ว (2026-10-22) */
   const COVER_SIGNER_ROUTES = {
     secgen: {
       role: "secgen",
       label: "เลขาธิการ ป.ป.ท.",
-      status: "เลขาธิการ ป.ป.ท. ตรวจคำให้การและลงนามหนังสือนำส่ง",
-      statusCode: "L3_PENDING_SECGEN_COVER_SIGN",
     },
     deputy_sg: {
       role: "deputy_sg",
       label: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทนเลขาธิการ)",
-      status: "รองเลขาธิการ ป.ป.ท. (ปฏิบัติราชการแทน) ตรวจคำให้การและลงนามหนังสือนำส่ง",
-      statusCode: "L3_PENDING_DEPUTY_SG_COVER_SIGN",
     },
   };
 
@@ -414,15 +329,27 @@
       page: "10-3v-00-legal-admin-verdict-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "ผอ.กองกฎหมายพิจารณามอบหมาย (คำพิพากษา)",
+      statusCode: "L3V_PENDING_DIRECTOR_ASSIGN",
+      nextRole: "dir_legal",
+      label: "ธุรการ รับหนังสือแจ้งผลคำพิพากษาและลงทะเบียนคดีปกครอง",
+      stepName: "ธุรการ รับเรื่อง/ลงทะเบียน",
+    },
+    /* 10-3v-02 (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 แล้วนำกลับมา 2026-10-21
+       (หนังสือคำพิพากษาเป็นเรื่องเข้าใหม่ ต้องผ่าน ผอ.กองกฎหมาย มอบหมายก่อน) */
+    {
+      code: "LAW0121",
+      seq: 1,
+      page: "10-3v-02-legal-director-assign.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
       status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (คำพิพากษา)",
       statusCode: "L3V_PENDING_GROUP_ASSIGN",
       nextRole: "case_group_director",
       nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
-      label: "ธุรการ รับหนังสือแจ้งผลคำพิพากษาและลงทะเบียนคดีปกครอง",
-      stepName: "ธุรการ รับเรื่อง/ลงทะเบียน",
+      label: "ผอ.กองกฎหมาย แจกจ่าย/มอบหมาย (คำพิพากษา)",
+      stepName: "ผอ.กองกฎหมาย มอบหมาย",
     },
-    /* 10-3v-02-legal-director-assign.html (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 — ขั้นก่อนหน้าส่งตรงถึง
-       ผอ.กลุ่มงาน ดู docs/remove-dir-legal-assign/plan.md */
     {
       code: "LAW0122",
       seq: 2,
@@ -1089,6 +1016,7 @@
      "ขั้นตอนถัดไปยังไม่ implement" แทนการพาไปหน้า 404) เพิ่มชื่อไฟล์ที่นี่เมื่อสร้างหน้าใหม่
      (10-3v-00 ไม่ต้องอยู่ในนี้ เพราะเป็นจุดเริ่มที่เข้าด้วยปุ่ม ไม่ใช่ปลายทางของ ROUTES) */
   const VERDICT_BUILT_PAGES = [
+    "10-3v-02-legal-director-assign.html",
     "10-3v-03-group-director-assign.html",
     "10-3v-04-lawyer-verdict-analysis.html",
     "10-3v-05-group-director-approve.html",
@@ -1634,6 +1562,30 @@
       return Activity10.updateCase(caseId, next);
     },
 
+    /* ผอ.กองกฎหมายมอบหมายนิติกรโดยตรง (10-3-02 / 10-3v-02, 2026-10-21) — บันทึกขั้น ผอ.กอง
+       แล้วเดินผ่านขั้น ผอ.กลุ่มงานมอบหมาย (groupStepCode) ทันทีโดยเขียน l3GroupAssignTarget
+       เหมือนหน้า ผอ.กลุ่มงาน (ขั้นหลังใช้ชื่อนิติกรจากช่องนี้) และจดขั้นที่ข้ามไว้ใน
+       l3SkippedSteps ให้แถบขั้นตอนซ่อน */
+    assignLawyerDirect: function (caseId, dirStepCode, groupStepCode, dirPatch, lawyer) {
+      const dirStep = stepByCode(dirStepCode);
+      const groupStep = stepByCode(groupStepCode);
+      if (!dirStep || !groupStep || !lawyer || !lawyer.name) return null;
+      const kase = Activity10.getCaseById(caseId);
+      if (!kase) return null;
+      Activity103.advance(caseId, dirStepCode, Object.assign({}, dirPatch, {
+        l3DirectAssignLawyer: true,
+      }));
+      const skipped = (kase.l3SkippedSteps || []).filter(function (c) { return c !== groupStepCode; });
+      return Activity103.advance(caseId, groupStepCode, {
+        l3GroupAssignTarget: lawyer.name,
+        l3GroupAssignDate: lawyer.date || "",
+        l3GroupAssignNotes: "",
+        l3SkippedSteps: skipped.concat(groupStepCode),
+        assignedRole: "case_legal_officer",
+        officer: lawyer.name,
+      });
+    },
+
     /* บันทึกลายเซ็นลงช่องของบทบาทที่กำลังลงนามอยู่ */
     sign: function (caseId, slot, imageDataUrl, extra) {
       const kase = Activity10.getCaseById(caseId);
@@ -1701,7 +1653,8 @@
         plaintiffs: parentCase.plaintiffs,
         defendants: parentCase.defendants,
         assignedRole: "case_legal_officer",
-        officer: parentCase.officer,
+        /* สร้างได้ทุกขั้นของคดีหลัก (ecmis-10-3-stay-edit.js) — ใช้นิติกรที่ได้รับมอบหมาย ไม่ใช่ผู้ถือเรื่องขณะนั้น */
+        officer: parentCase.l3GroupAssignTarget || parentCase.officer,
         status: "นิติกรจัดทำคำชี้แจงคัดค้าน",
         statusCode: "L3B_PENDING_LAWYER_DRAFT",
         statusBadge: "bg-primary text-white",
@@ -1838,6 +1791,14 @@
     ctx.fillStyle = "#16A34A";
     ctx.fillText(new Date().toLocaleString("th-TH"), 20, 150);
     return canvas.toDataURL("image/png");
+  }
+
+  /* บันทึกของธุรการ — ไม่มีแผงลายเซ็น (2026-10-21: ธุรการไม่ลงนาม)
+     ใช้แทน openSignatureModal ในหน้าธุรการ (10-3-17/18/19/22, 10-3b-02) ซึ่งถามยืนยันด้วย
+     Swal ของหน้าเองแล้ว จึงบันทึกทันที; onConfirm(null) → Activity103.sign(..., null)
+     ยังจดว่าขั้นนี้ทำแล้ว (ใช้เปิดโหมดดูอย่างเดียว) แต่ไม่มีภาพลายมือชื่อ */
+  function confirmRecord(opts, onConfirm) {
+    onConfirm(null);
   }
 
   function openSignatureModal(opts, onConfirm) {
@@ -2106,7 +2067,9 @@
       const id = (idEl && idEl.textContent.trim()) || new URLSearchParams(global.location.search).get("id");
       const A10 = global.Activity10;
       const kase = id && A10 && A10.findCaseById ? A10.findCaseById(id) : null;
-      if (kase) renderCaseDetailExtras(kase);
+      /* เคสลูกทุเลา (-B) ไม่มีข้อมูลการรับเรื่องของตัวเอง — แสดงของคดีหลัก (เคสแม่) */
+      const parent = kase && kase.l3ParentCaseId ? A10.findCaseById(kase.l3ParentCaseId) : null;
+      if (kase) renderCaseDetailExtras(parent || kase);
     }, 0);
   }
 
@@ -2216,10 +2179,23 @@
   }
 
   /* แถบขั้นตอน — แต่ละสายงาน (Part 1 / 1b / 5–6) เป็นเส้นตรง แสดงเฉพาะสายที่ขั้นนั้นสังกัด */
-  function renderStepper(containerId, currentCode, endCode) {
+  /* ขั้นที่เคสนี้ข้าม (ผอ.กองมอบหมายนิติกรโดยตรง — l3SkippedSteps) ไม่แสดงในแถบขั้นตอน
+     kase ไม่ส่งมา = ใช้เคสจาก ?id= ของหน้า */
+  function caseFromUrl() {
+    if (typeof location === "undefined") return null;
+    const id = new URLSearchParams(location.search).get("id");
+    return id ? Activity10.getCaseById(id) : null;
+  }
+  function withoutSkipped(flow, kase) {
+    const skipped = (kase && kase.l3SkippedSteps) || [];
+    if (!skipped.length) return flow;
+    return flow.filter(function (s) { return skipped.indexOf(s.code) === -1; });
+  }
+
+  function renderStepper(containerId, currentCode, endCode, kase) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    let flow = flowOf(currentCode);
+    let flow = withoutSkipped(flowOf(currentCode), kase || caseFromUrl());
     const curIdx = flow.findIndex(function (s) { return s.code === currentCode; });
     if (endCode) {
       const endIdx = flow.findIndex(function (s) { return s.code === endCode; });
@@ -2244,23 +2220,18 @@
 
   /* แถบขั้นตอน 2 แถวของหน้า Part 4 (10-3-10 … 10-3-25 เรียกใช้ แต่เดิมไม่มีฟังก์ชันนี้ ทำให้หน้า error ตั้งแต่โหลด)
      แถวบน = Part 1 ก่อนคณะกรรมการ ป.ป.ท. มีมติ (เสร็จแล้วทั้งหมด)
-     แถวล่าง = ANSWER_STEPS แสดงเฉพาะผู้ลงนามหนังสือนำส่งที่เลือกไว้ที่ 10-3-17
-     (L3-27A เลขาธิการ เป็นค่าเริ่มต้น / L3-27B รองเลขาธิการ)
+     แถวล่าง = ANSWER_STEPS (ไม่มีขั้นบันทึกผลลงนามของธุรการ 10-3-18/19/22 แล้ว — 2026-10-22)
      currentCode = null (โหมดดูอย่างเดียว) → ถือว่าขั้นล่าสุดของคดี (l3Step) เสร็จแล้ว */
   function renderStepperV2(part1ContainerId, part2ContainerId, currentCode, kase) {
     const el1 = document.getElementById(part1ContainerId);
     const el2 = document.getElementById(part2ContainerId);
     if (!el1 || !el2) return;
-    const signer = kase && kase.l3CoverLetterSignerRole;
-    const answer = ANSWER_STEPS.filter(function (s) {
-      if (s.code === "L3-27A") return signer !== "deputy_sg";
-      if (s.code === "L3-27B") return signer === "deputy_sg";
-      return true;
-    });
+    const answer = ANSWER_STEPS;
     const code = currentCode || (kase && kase.l3Step) || null;
     let curIdx = answer.findIndex(function (s) { return s.code === code; });
     if (!currentCode && curIdx >= 0) curIdx += 1;
-    el1.innerHTML = stepItemsHtml(STEPS, STEPS.length);
+    const part1 = withoutSkipped(STEPS, kase || caseFromUrl());
+    el1.innerHTML = stepItemsHtml(part1, part1.length);
     el2.innerHTML = stepItemsHtml(answer, curIdx);
   }
 
@@ -2703,6 +2674,7 @@
     currentRole: currentRole,
     signerLabel: signerLabel,
     openSignatureModal: openSignatureModal,
+    confirmRecord: confirmRecord,
     initUserProfile: initUserProfile,
     guardRole: guardRole,
     applyViewOnlyMode: applyViewOnlyMode,

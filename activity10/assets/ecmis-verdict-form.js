@@ -88,7 +88,23 @@
       ".vr-files{font-size:.82em;color:#2563eb;margin-top:4px}" +
       ".vr-badge{display:inline-block;font-size:.78em;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0}" +
       ".vr-badge.done{background:#dcfce7;color:#166534}.vr-badge.draft{background:#fef3c7;color:#92400e}.vr-badge.none{background:#f1f5f9;color:#64748b}" +
-      ".vr-err{color:#dc2626;font-size:.85em;margin-top:6px}";
+      ".vr-err{color:#dc2626;font-size:.85em;margin-top:6px}" +
+      /* แท็บรายบุคคล */
+      ".vr-tabs{display:flex;gap:2px;align-items:flex-end;border-bottom:1px solid var(--border-color,#cbd5e1);overflow-x:auto;scrollbar-width:thin}" +
+      ".vr-tab{display:flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;background:none;padding:8px 14px;font:inherit;font-size:.9em;color:#64748b;cursor:pointer;margin-bottom:-1px}" +
+      ".vr-tab:hover{color:#1e3a8a;background:rgba(30,58,138,.05)}" +
+      ".vr-tab:focus-visible{outline:2px solid #1e3a8a;outline-offset:-2px}" +
+      ".vr-tab[aria-selected=true]{background:var(--bg-card,#fff);border-color:var(--border-color,#cbd5e1);color:var(--text-title,#1e293b);font-weight:600}" +
+      ".vr-tab .vr-no{font-size:.8em;min-width:20px;height:20px;border-radius:999px;background:#e2e8f0;color:#334155;display:inline-flex;align-items:center;justify-content:center}" +
+      ".vr-tab[aria-selected=true] .vr-no{background:#1e3a8a;color:#fff}" +
+      ".vr-dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;flex:none}" +
+      ".vr-dot.done{background:#16a34a}.vr-dot.draft{background:#f59e0b}.vr-dot.err{background:#dc2626}" +
+      ".vr-tab .vr-dirty{color:#b45309;font-size:.8em}" +
+      ".vr-tab.add{color:#1e3a8a;border-style:dashed;border-color:transparent}" +
+      ".vr-tabpanel{border:1px solid var(--border-color,#cbd5e1);border-top:none;border-radius:0 0 10px 10px;padding:14px;background:var(--bg-body,#f8fafc)}" +
+      ".vr-tabbar-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}" +
+      ".vr-tabbar-tools .btn,.vr-tabbar-tools button{height:32px;padding:4px 12px;font-size:.85em}" +
+      ".vr-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78em;color:#64748b;margin-top:8px}.vr-legend span{display:inline-flex;align-items:center;gap:5px}";
     doc.head.appendChild(s);
   }
 
@@ -126,18 +142,20 @@
     return /โปรดระบุ/.test(item.name);
   }
 
+  const isAdmin = (level) => LS().levelPart(level) === "ADMIN";
+
   function classifySection(p, f, level) {
     const natures = LS().CASE_NATURES.map((n) => [n.no, n.no + ". " + n.name]);
     const subs = natureSubOptions(f.caseNatureNo);
     const stages = LS().VERDICT_STAGES[level] || [];
     return card(
       "fa-tags",
-      "1. การจัดประเภท",
+      "การจัดประเภท",
       '<div class="vr-grid">' +
         field(p, "statCountAs", "นับสถิติเป็น", "X", text(p, "statCountAs", f.statCountAs, "รอรายการตัวเลือก")) +
         field(p, "trackingGroup", "กลุ่มงานบริหารติดตามรับเรื่อง", "Z", text(p, "trackingGroup", f.trackingGroup, "รอรายการตัวเลือก")) +
-        field(p, "verdictType", 'ประเภทคำพิพากษา <span class="vr-req">*</span>', "AA", select(p, "verdictType", LS().VERDICT_TYPES.map((t) => [t.code, t.code + ". " + t.name]), f.verdictType)) +
-        field(p, "verdictStage", 'สถานะชั้นคำพิพากษา (fz) <span class="vr-req">*</span>', "AH", select(p, "verdictStage", stages, f.verdictStage)) +
+        field(p, "verdictType", "ประเภทคำพิพากษา" + (isAdmin(level) ? "" : ' <span class="vr-req">*</span>'), "AA", select(p, "verdictType", LS().VERDICT_TYPES.map((t) => [t.code, t.code + ". " + t.name]), f.verdictType)) +
+        field(p, "verdictStage", 'สถานะชั้นคำพิพากษา <span class="vr-req">*</span>', "AH", select(p, "verdictStage", stages, f.verdictStage)) +
         "</div>" +
         '<div class="vr-grid">' +
         field(p, "caseNatureNo", "ประเภท/ลักษณะคดี", "Y", select(p, "caseNatureNo", natures, f.caseNatureNo), "vr-wide") +
@@ -147,18 +165,75 @@
     );
   }
 
-  function resultSection(p, f, court, fileNames) {
-    const files = fileNames.length ? '<div class="vr-files"><i class="fa-solid fa-paperclip"></i> ' + esc(fileNames.join(", ")) + "</div>" : "";
+  /* ---------- ศาล: ประเภทศาล → (ชั้นศาล) → ชื่อศาล (รายการจาก ECMISCourtLists) ---------- */
+  const CL = () => global.ECMISCourtLists;
+  /* รายชื่อศาลเป็นรายการตัวอย่าง ไม่มี "อื่นๆ" — ชื่อเดิมที่ไม่อยู่ในรายการ (ข้อมูลเก่า) คงไว้เป็นตัวเลือกให้เห็น ไม่หายตอนบันทึก */
+  function courtNameOptions(type, level, selected) {
+    const list = CL().courtsFor(type, level);
+    const head = type ? "-- เลือกชื่อศาล --" : "-- เลือกประเภทศาลก่อน --";
+    const legacy = selected && list.indexOf(selected) < 0 ? opt(selected, selected, selected) : "";
+    return opt("", head, selected) + list.map((n) => opt(n, n, selected)).join("") + legacy;
+  }
+  /* ประเภทศาลที่เลือกได้ในชั้นนี้: ชั้นศาลอาญา = ทุจริต/แขวง/จังหวัด, ชั้นศาลปกครอง = ศาลปกครอง (เลือกให้อัตโนมัติ) */
+  function courtTypeOptions(level, selected) {
+    const types = CL().courtTypesForLevel(level);
+    const cur = types.length === 1 ? types[0].code : types.some((t) => t.code === selected) ? selected : "";
+    return { html: opt("", "-- เลือก --", cur) + types.map((t) => opt(t.code, t.name, cur)).join(""), value: cur };
+  }
+  function courtFieldsHtml(p, court, level) {
+    const t = courtTypeOptions(level, court.type);
+    return (
+      field(p, "courtType", "ประเภทศาล", "", '<select id="' + p + 'courtType" data-vr="courtType" data-vr-level="' + esc(level) + '">' + t.html + "</select>") +
+      field(
+        p,
+        "courtName",
+        "ชื่อศาล",
+        "",
+        '<select id="' + p + 'courtName" data-vr="courtName">' + courtNameOptions(t.value, level, court.name) + "</select>" +
+          '<div class="vr-sub" style="margin-top:3px">รายการตัวอย่าง (ฉบับร่าง)</div>',
+      )
+    );
+  }
+  /* ประเภทศาล/ชั้นศาลเปลี่ยน → ตัวเลือกประเภทศาลและรายชื่อศาลใหม่ (คงค่าเดิมถ้ายังใช้ได้) */
+  function refreshCourtNames(host, p, level) {
+    const typeSel = host.querySelector("#" + p + "courtType");
+    const nameSel = host.querySelector("#" + p + "courtName");
+    if (!typeSel || !nameSel) return;
+    /* setStages ส่งชั้นมาเสมอ (รวมค่าว่าง = ยังไม่เลือกชั้น) → สร้างตัวเลือกประเภทศาลใหม่ */
+    if (level !== undefined) {
+      typeSel.setAttribute("data-vr-level", level);
+      const t = courtTypeOptions(level, typeSel.value);
+      typeSel.innerHTML = t.html;
+      typeSel.value = t.value;
+    }
+    const lv = typeSel.getAttribute("data-vr-level");
+    const keep = CL().courtsFor(typeSel.value, lv).indexOf(nameSel.value) >= 0 ? nameSel.value : "";
+    nameSel.innerHTML = courtNameOptions(typeSel.value, lv, keep);
+  }
+
+  /* ศาลของชั้น (ใช้ร่วมทุกคนในชั้นเดียวกัน): ประเภท/ชื่อศาล เลขคดี วันที่ ไฟล์ — อยู่เหนือแท็บรายบุคคล */
+  function courtStripHtml(p, court, fileNames, level) {
+    const names = fileNames || [];
+    const files = names.length ? '<div class="vr-files"><i class="fa-solid fa-paperclip"></i> ' + esc(names.join(", ")) + "</div>" : "";
     const date = '<input id="' + p + 'courtDate" data-vr="courtDate" type="date" lang="th-TH-u-ca-buddhist" value="' + esc(court.date) + '">';
     return card(
-      "fa-scale-balanced",
-      "2. ผลคำพิพากษา",
+      "fa-building-columns",
+      "รายละเอียดศาล <span class=\"vr-sub\" style=\"font-weight:400\">ใช้ร่วมทุกคน</span>",
       '<div class="vr-grid">' +
-        field(p, "courtName", "ศาล", "", text(p, "courtName", court.name, "เช่น ศาลอาญาคดีทุจริตและประพฤติมิชอบกลาง")) +
+        courtFieldsHtml(p, court, level) +
         field(p, "courtBlackNo", "คดีหมายเลขดำที่", "AB", text(p, "courtBlackNo", court.blackNo, "อท.../....")) +
         field(p, "courtRedNo", "คดีหมายเลขแดงที่", "AC", text(p, "courtRedNo", court.redNo, "อท.../....")) +
         field(p, "courtDate", "วันที่ศาลมีคำพิพากษา", "AD", date) +
-        '<div class="vr-sub vr-wide" style="margin-top:-6px">ข้อมูลศาลดึงจากสำนวนให้อัตโนมัติ แก้ไขได้เมื่อเป็นชั้นศาลใหม่</div>' +
+        field(p, "files", "ไฟล์คำพิพากษา", "", '<input id="' + p + 'files" type="file" multiple accept="' + ACCEPT + '">' + files) +
+        "</div>",
+    );
+  }
+
+  function resultSection(p, f) {
+    return card(
+      "fa-scale-balanced",
+      "ผลคำพิพากษา",
+      '<div class="vr-grid">' +
         field(p, "resultDetail", "รายละเอียด", "AI", '<textarea id="' + p + 'resultDetail" data-vr="resultDetail" rows="3">' + esc(f.resultDetail) + "</textarea>", "vr-wide") +
         field(p, "offenseLaw", "ความผิดตามกฎหมาย/ระเบียบ", "AJ", select(p, "offenseLaw", LS().OFFENSE_LAWS, f.offenseLaw)) +
         field(p, "offenseLawOther", "ระบุ (อื่นๆ)", "", text(p, "offenseLawOther", f.offenseLawOther, "โปรดระบุกฎหมาย/มาตรา"), /^อื่นๆ/.test(f.offenseLaw || "") ? "" : "vr-hide") +
@@ -172,7 +247,6 @@
         '<div class="vr-grid">' +
         '<div class="vr-f"><label class="vr-check"><input id="' + p + 'isFinal" data-vr="isFinal" type="checkbox"' + (f.isFinal ? " checked" : "") + "> คดีถึงที่สุดแล้ว</label></div>" +
         field(p, "finalLetterNo", "เลขหนังสือคดีถึงที่สุด", "", text(p, "finalLetterNo", f.finalLetterNo, "เลขที่หนังสือ"), f.isFinal ? "" : "vr-hide") +
-        field(p, "files", "ไฟล์คำพิพากษา", "", '<input id="' + p + 'files" type="file" multiple accept="' + ACCEPT + '">' + files) +
         "</div>",
     );
   }
@@ -180,7 +254,7 @@
   function actualSection(p, f) {
     return card(
       "fa-gavel",
-      "3. การลงโทษจริง",
+      "การลงโทษจริง",
       '<div class="vr-grid">' +
         field(p, "actualJailYears", "จำคุก (ปี)", "AQ", number(p, "actualJailYears", f.actualJailYears)) +
         field(p, "actualJailMonths", "จำคุก (เดือน)", "AP", number(p, "actualJailMonths", f.actualJailMonths)) +
@@ -194,9 +268,9 @@
     );
   }
 
-  /* HTML ของฟอร์ม; state = ECMISVerdictRecord.initialState(...) */
-  function formHtml(p, state, level) {
-    return classifySection(p, state.fields, level) + resultSection(p, state.fields, state.court, state.fileNames || []) + actualSection(p, state.fields);
+  /* ฟอร์มของบุคคลหนึ่งคน (3 ส่วน) — แสดงในแท็บรายบุคคล; ศาลปกครองไม่มี "การลงโทษจริง" */
+  function personFormHtml(p, fields, level) {
+    return classifySection(p, fields, level) + resultSection(p, fields) + (isAdmin(level) ? "" : actualSection(p, fields));
   }
 
   /* ซ่อน/แสดงช่องที่ขึ้นกับตัวเลือก + เติมหัวข้อย่อยของ Y (ผูกครั้งเดียวต่อ host) */
@@ -220,11 +294,21 @@
       }
       if (key === "offenseLaw") toggle("offenseLawOther", /^อื่นๆ/.test(e.target.value));
       if (key === "isFinal") toggle("finalLetterNo", e.target.checked);
+      if (key === "courtType") refreshCourtNames(host, p);
     });
   }
 
-  /* เปลี่ยนชั้นศาล → ตัวเลือกสถานะชั้นคำพิพากษาเปลี่ยนตาม */
+  /* ตั้งประเภทศาล (ค่าเริ่มต้นจากส่วนคำสั่งอัยการหน้า 02) แล้วเติมรายชื่อศาล */
+  function setCourtType(host, p, type) {
+    const sel = host.querySelector("#" + p + "courtType");
+    if (!sel || sel.value === type) return;
+    sel.value = type || "";
+    refreshCourtNames(host, p);
+  }
+
+  /* เปลี่ยนชั้นศาล → ตัวเลือกสถานะชั้นคำพิพากษาและรายชื่อศาลเปลี่ยนตาม */
   function setStages(host, p, level) {
+    refreshCourtNames(host, p, level);
     const sel = host.querySelector("#" + p + "verdictStage");
     if (!sel) return;
     const cur = sel.value;
@@ -248,7 +332,13 @@
     const fileEl = host.querySelector("#" + p + "files");
     return {
       fields: input,
-      court: { name: input.courtName, blackNo: input.courtBlackNo, redNo: input.courtRedNo, date: input.courtDate },
+      court: {
+        type: input.courtType || "",
+        name: input.courtName || "",
+        blackNo: input.courtBlackNo,
+        redNo: input.courtRedNo,
+        date: input.courtDate,
+      },
       newFileNames: fileEl && fileEl.files ? Array.from(fileEl.files).map((x) => x.name) : [],
     };
   }
@@ -264,23 +354,46 @@
     );
   }
 
-  /* บันทึกลงสำนวน — status "draft" | "done"; คืน { ok, errors, kase } */
-  function save(caseId, level, collected, status) {
+  /* AG สถานะชั้นพนักงานอัยการ (ระดับสำนวน) — select มีหัวข้อกลุ่ม 3. / 4. เป็น optgroup */
+  function prosecutorStatusHtml(p, value) {
+    const list = LS().PROSECUTOR_STATUSES || [];
+    const known = [];
+    const body = list
+      .map((x) => {
+        if (typeof x === "string") {
+          known.push(x);
+          return opt(x, x, value);
+        }
+        x.items.forEach((i) => known.push(i));
+        return '<optgroup label="' + esc(x.group) + '">' + x.items.map((i) => opt(i, i, value)).join("") + "</optgroup>";
+      })
+      .join("");
+    /* ค่าเดิมที่ไม่อยู่ในรายการ (รายการเปลี่ยนภายหลัง) คงไว้ให้เห็น */
+    const extra = value && known.indexOf(value) < 0 ? opt(value, value, value) : "";
+    return field(
+      p,
+      "prosecutorStatus",
+      "สถานะชั้นพนักงานอัยการ",
+      "AG",
+      '<select id="' + p + 'prosecutorStatus">' + opt("", "-- เลือก --", value) + body + extra + "</select>",
+    );
+  }
+
+  /* บันทึกทุกคนในชั้นเดียวพร้อมกัน — courtPart = collect(แถบศาล), entries = [{ person, fields, status }]
+     caseFields = ช่องระดับสำนวนที่บันทึกพร้อมกัน (เช่น { verdictProsecutorStatus })
+     คืน { ok, errors: [{ person, errors }], kase } ; มีคนใดผิด = ไม่บันทึกใครเลย */
+  function saveLevel(caseId, level, courtPart, entries, caseFields) {
     const kase = A().findCaseById(caseId);
-    if (!kase) return { ok: false, errors: ["ไม่พบสำนวน " + caseId] };
-    const errors = R().validate(level, collected.fields, status);
-    if (errors.length) return { ok: false, errors: errors };
-    /* ไฟล์เดิม = ของบันทึกนี้ หรือของคำพิพากษาจาก popup เดิมที่ฟอร์มแสดงอยู่ (initialState) */
-    const shown = R().initialState(kase, level).fileNames || [];
-    const fileNames = shown.concat(collected.newFileNames || []).filter((n, i, all) => all.indexOf(n) === i);
-    const patch = R().buildRecordPatch(kase, level, collected.fields, {
-      status: status,
-      by: currentActor(),
-      court: collected.court,
-      fileNames: fileNames,
-    });
-    if (!patch) return { ok: false, errors: ["บันทึกไม่สำเร็จ"] };
-    return { ok: true, errors: [], kase: A().updateCase(caseId, patch) };
+    if (!kase) return { ok: false, errors: [{ person: "", errors: ["ไม่พบสำนวน " + caseId] }] };
+    const court = (courtPart && courtPart.court) || {};
+    if (court.name && !court.type) return { ok: false, errors: [{ person: "", errors: ["กรุณาเลือกประเภทศาล"] }] };
+    /* ไฟล์เดิมของชั้นนี้ (หรือของคำพิพากษาจาก popup เดิม) + ไฟล์ที่เลือกใหม่ */
+    const first = entries && entries[0] ? entries[0].person : "";
+    const shown = R().initialState(kase, level, first).fileNames || [];
+    const fileNames = shown.concat((courtPart && courtPart.newFileNames) || []).filter((n, i, all) => all.indexOf(n) === i);
+    const res = R().buildLevelPatch(kase, level, entries, { by: currentActor(), court: court, fileNames: fileNames });
+    if (!res.patch) return { ok: false, errors: res.errors };
+    return { ok: true, errors: [], kase: A().updateCase(caseId, Object.assign({}, caseFields || {}, res.patch)) };
   }
 
   /* ---------- ส่งออก ---------- */
@@ -345,11 +458,14 @@
   }
 
   /* เติมตัวอย่างบันทึกผลคำพิพากษา (ECMISVerdictLists.SAMPLE_RECORDS) ครั้งเดียวต่อเบราว์เซอร์ */
-  /* v2 = เพิ่มตัวอย่างครบทุกส่วน (คดี-100003); สำนวนที่มีบันทึกแล้วจะไม่ถูกเติมซ้ำ */
-  const SAMPLE_FLAG = "ecmis_verdict_samples_v2";
+  /* v3 = แยกรายบุคคล + ประเภทศาล (คดี-100004 มี 2 คน); สำนวนที่มีบันทึกจริงไม่ถูกทับ — แทนเฉพาะตัวอย่างรุ่นก่อน */
+  const SAMPLE_FLAG = "ecmis_verdict_samples_v4";
   function ensureSamples() {
     try {
       if (global.localStorage.getItem(SAMPLE_FLAG)) return 0;
+      const cases = A().getCases();
+      const created = R().sampleNewCases(cases, LS().SAMPLE_RECORDS);
+      if (created.length) A().saveCases(cases.concat(created));
       const list = R().samplePatches(A().getCases(), LS().SAMPLE_RECORDS);
       list.forEach((x) => A().updateCase(x.caseId, x.patch));
       global.localStorage.setItem(SAMPLE_FLAG, new Date().toISOString());
@@ -357,6 +473,26 @@
     } catch (e) {
       if (global.console) console.warn("ensureSamples", e);
       return 0;
+    }
+  }
+
+  /* ปุ่ม "คืนค่าตัวอย่างคำพิพากษา" (registry): คืนสำนวนตัวอย่างใน SAMPLE_RECORDS กลับเป็นข้อมูลตั้งต้น
+     สร้างสำนวนตัวอย่างที่ถูกลบกลับมา → ล้างบันทึกของสำนวนตัวอย่าง → เติมตัวอย่างใหม่; สำนวนอื่นไม่ถูกแตะ
+     คืน { ok, count, error } */
+  function resetSamples() {
+    try {
+      const samples = LS().SAMPLE_RECORDS;
+      const cases = A().getCases();
+      const created = R().sampleNewCases(cases, samples);
+      if (created.length) A().saveCases(cases.concat(created));
+      R().clearSamplePatches(A().getCases(), samples).forEach((x) => A().updateCase(x.caseId, x.patch));
+      const list = R().samplePatches(A().getCases(), samples);
+      list.forEach((x) => A().updateCase(x.caseId, x.patch));
+      global.localStorage.setItem(SAMPLE_FLAG, new Date().toISOString());
+      return { ok: true, count: list.length };
+    } catch (e) {
+      if (global.console) console.error("resetSamples", e);
+      return { ok: false, count: 0, error: String((e && e.message) || e) };
     }
   }
 
@@ -368,13 +504,16 @@
   global.ECMISVerdictForm = {
     EDIT_ROLES: EDIT_ROLES,
     injectStyle: injectStyle,
-    formHtml: formHtml,
+    courtStripHtml: courtStripHtml,
+    personFormHtml: personFormHtml,
+    prosecutorStatusHtml: prosecutorStatusHtml,
     bindForm: bindForm,
     setStages: setStages,
+    setCourtType: setCourtType,
     setDisabled: setDisabled,
     collect: collect,
     hasInput: hasInput,
-    save: save,
+    saveLevel: saveLevel,
     deps: deps,
     canEdit: canEdit,
     canView: canView,
@@ -384,6 +523,7 @@
     downloadExcel: downloadExcel,
     statusBadge: statusBadge,
     ensureSamples: ensureSamples,
+    resetSamples: resetSamples,
     esc: esc,
   };
 })(window);

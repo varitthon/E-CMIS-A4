@@ -5,8 +5,15 @@
    (ใช้คู่กับ assets/ecmis-10-3-docs.js)
    ===================================================================== */
 
+/* ตรายาง "ด่วนที่สุด" / "ลับ" — Noto Sans Thai Looped (หัวกลม ไม่มีเชิง ตัวสูงแคบ) ใกล้ตรายางจริงใน PDF 3/5
+   @import ต้องอยู่บนสุดของไฟล์ */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Thai+Looped:wdth,wght@62.5..100,700&display=swap");
+
 :root {
   --l3p-red: #d61f26;
+  /* หมึกตรายางสีแดงอมชมพูตามฉบับจริง */
+  --l3p-stamp-red: #e0436a;
+  --l3p-stamp-font: "Noto Sans Thai Looped", "Sarabun", sans-serif;
   --l3p-blue: #2f5bd3;
   --l3p-ink: #111827;
   --l3p-dot: #6b7280;
@@ -129,9 +136,11 @@
   padding: 25mm 20mm 20mm 30mm;
   background: #fff;
   color: var(--l3p-ink);
+  /* Sarabun (Google) 12pt ≈ TH Sarabun New 16pt ตามระเบียบงานสารบรรณ — ขนาดอื่นในไฟล์นี้เทียบอัตราเดียวกัน */
   font-family: "Sarabun", "TH Sarabun New", sans-serif;
-  font-size: 14pt;
-  line-height: 1.55;
+  font-size: 12pt;
+  /* ระยะบรรทัด ≈ 6.8 มม. เท่า PDF 3 */
+  line-height: 1.6;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   flex-shrink: 0;
@@ -159,15 +168,17 @@
   right: 0;
   text-align: center;
 }
+/* "ลับ" กึ่งกลางพื้นที่พิมพ์ (ขอบซ้าย 3 / ขวา 2 ซม. → 110 มม.) ตามฉบับจริง PDF 5 */
 .l3p-secret {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 30mm;
+  right: 20mm;
   text-align: center;
-  color: var(--l3p-red);
-  font-family: "Prompt", sans-serif;
-  font-weight: 800;
-  font-size: 26pt;
+  color: var(--l3p-stamp-red);
+  font-family: var(--l3p-stamp-font);
+  font-weight: 700;
+  font-stretch: 62.5%;
+  font-size: 33.5pt;
   line-height: 1;
 }
 .l3p-secret.is-top {
@@ -191,19 +202,30 @@
 }
 
 /* ------------------------------------------------------------------- stamps */
+/* ตราประทับ (ลับ / ด่วนที่สุด / สำเนา) = ซ้อนหน้าข้อความ ไม่กินพื้นที่บรรทัด — ไม่ดันเค้าโครงหน้า 2026-10-22 */
+.l3p-stamp,
+.l3p-secret {
+  z-index: 5;
+  pointer-events: none;
+  white-space: nowrap;
+}
 .l3p-stamp {
+  position: absolute;
   font-family: "Prompt", sans-serif;
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.02em;
 }
 .l3p-stamp-urgent {
-  color: var(--l3p-red);
-  font-size: 28pt;
+  color: var(--l3p-stamp-red);
+  font-family: var(--l3p-stamp-font);
+  font-weight: 700;
+  font-stretch: 100%;
+  font-size: 29.5pt;
 }
 .l3p-stamp-copy {
   color: var(--l3p-blue);
-  font-size: 30pt;
+  font-size: 26pt;
   text-align: center;
 }
 .l3p-garuda {
@@ -231,7 +253,7 @@
   white-space: nowrap;
 }
 .l3p-key.is-lg {
-  font-size: 17pt;
+  font-size: 14pt;
 }
 .l3p-key.is-plain {
   font-weight: 400;
@@ -298,7 +320,7 @@
   align-items: center;
   justify-content: center;
   color: #9ca3af;
-  font-size: 11pt;
+  font-size: 9.5pt;
   font-style: italic;
 }
 .l3p-sign-date {
@@ -306,18 +328,45 @@
   font-weight: 700;
 }
 
-/* ------------------------------------------------- memo header (T1) */
+/* ------------------------------------------------- memo header (T1)
+   ตาราง 3 ช่อง (5.8 | 4.4 | 5.8 ซม.) — "บันทึกข้อความ" กึ่งกลางพื้นที่พิมพ์ 110 มม. (ดู memo() ใน ecmis-10-3-docs.js) */
 .l3p-memo-head {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  margin-bottom: 8px;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-bottom: 6px;
+}
+.l3p-memo-head td {
+  padding: 0;
+  vertical-align: bottom;
+}
+.l3p-memo-head .l3p-mh-mid {
+  text-align: center;
+  white-space: nowrap;
+}
+.l3p-mh-left .l3p-garuda {
+  display: inline-block;
+  vertical-align: bottom;
+}
+.l3p-mh-left {
+  position: relative;
+}
+.l3p-mh-left .l3p-stamp-urgent {
+  /* ข้างครุฑ (กว้าง 1.5 ซม.) ชิดฐานบรรทัด */
+  left: calc(1.5cm + 2mm);
+  bottom: 0;
+}
+/* สำเนา หัวกระดาษ (คำให้การ / คำชี้แจง) — วางในขอบบน เหนือพื้นที่พิมพ์ */
+.l3p-stamp-copy.is-page-top {
+  top: -17mm;
+  left: 0;
+  right: 0;
 }
 .l3p-memo-title {
   font-weight: 800;
-  font-size: 25pt;
+  /* กว้าง ≈ 40 มม. ตามฉบับจริง */
+  font-size: 18.5pt;
   line-height: 1;
-  margin-left: 6px;
 }
 .l3p-recv {
   position: absolute;
@@ -326,7 +375,7 @@
   border: 1.5px solid var(--l3p-blue);
   color: var(--l3p-blue);
   padding: 2px 8px;
-  font-size: 10.5pt;
+  font-size: 9pt;
   line-height: 1.4;
   min-width: 4.4cm;
 }
@@ -405,7 +454,7 @@
 }
 .l3p-letter-foot {
   margin-top: 16px;
-  font-size: 13pt;
+  font-size: 11pt;
   line-height: 1.45;
 }
 .l3p-ctrlbox {
@@ -415,7 +464,7 @@
   border: 1.5px solid var(--l3p-blue);
   color: var(--l3p-blue);
   padding: 2px 8px;
-  font-size: 10pt;
+  font-size: 8.5pt;
   line-height: 1.5;
   min-width: 5.6cm;
 }
@@ -451,7 +500,7 @@
   text-align: center;
   color: var(--l3p-blue);
   font-weight: 700;
-  font-size: 15pt;
+  font-size: 13pt;
 }
 .l3p-circle {
   display: inline-block;
@@ -472,7 +521,7 @@
 }
 .l3p-between > .l3p-key {
   align-self: center;
-  font-size: 15pt;
+  font-size: 13pt;
 }
 .l3p-brace {
   border: 1.5px solid var(--l3p-ink);

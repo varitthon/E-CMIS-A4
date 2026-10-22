@@ -52,26 +52,31 @@
   }
 
   /* ---------- ส่วนของแถว ---------- */
-  function courtNumbersLabel(recs, dotsBlack, dotsRed) {
-    const many = recs.length > 1;
+  /* ป้ายบรรทัด: "ศาลชั้นต้น" หรือ "ศาลชั้นต้น › ชื่อบุคคล" เมื่อชั้นนั้นมีหลายคน (rec.tag ตั้งใน bodyRows) */
+  const tagOf = (rec) => b(esc(rec.tag || levelName(rec)));
+  const verdictOf = (f) => {
+    const law = R().offenseLawText(f);
+    return esc(verdictWord(f)) + (law ? " ตาม" + esc(law) : "");
+  };
+
+  /* firstOfLevels = บันทึกแรกของแต่ละชั้น (ศาลใช้ร่วมทั้งชั้น) */
+  function courtNumbersLabel(firstOfLevels, dotsBlack, dotsRed) {
+    const many = firstOfLevels.length > 1;
     const join = (key) =>
-      recs
+      firstOfLevels
         .map((r) => (r.court && has(r.court[key]) ? esc(r.court[key]) + (many ? " (" + esc(levelName(r)) + ")" : "") : ""))
         .filter(Boolean)
         .join(", ");
     return "คดีหมายเลขดำที่ " + (join("blackNo") || dotsBlack) + "<br>คดีหมายเลขแดงที่ " + (join("redNo") || dotsRed);
   }
 
-  function courtVerdictLine(rec, fmt) {
-    const f = rec.fields || {};
-    const c = rec.court || {};
-    const law = R().offenseLawText(f);
-    return (
-      b("คำพิพากษา" + esc(levelName(rec))) +
-      (has(c.name) ? " " + esc(c.name) : "") +
-      (has(c.date) ? " ลงวันที่ " + esc(fmt(c.date)) : "") +
-      " " + esc(verdictWord(f)) + (law ? " ตาม" + esc(law) : "")
-    );
+  /* 1 ชั้น: "คำพิพากษาศาลชั้นต้น <ศาล> ลงวันที่ … พิพากษาลงโทษ ตาม…" — หลายคน: ผลแยกบรรทัดละคน */
+  function courtVerdictLines(levelRecs, fmt) {
+    const c = levelRecs[0].court || {};
+    const head =
+      b("คำพิพากษา" + esc(levelName(levelRecs[0]))) + (has(c.name) ? " " + esc(c.name) : "") + (has(c.date) ? " ลงวันที่ " + esc(fmt(c.date)) : "");
+    if (levelRecs.length === 1) return head + " " + verdictOf(levelRecs[0].fields || {});
+    return head + levelRecs.map((r) => "<br>– " + esc(r.person) + ": " + verdictOf(r.fields || {})).join("");
   }
 
   function resultLine(rec) {
@@ -86,7 +91,7 @@
       rest ? esc(rest) + " บาท (รวมดอกเบี้ย)" : "",
       has(f.refundUnit) ? "หน่วยงานที่รับเงินคืน " + esc(f.refundUnit) : "",
     ].filter(Boolean);
-    return bits.length ? b(esc(levelName(rec))) + " " + bits.join(" / ") : "";
+    return bits.length ? tagOf(rec) + " " + bits.join(" / ") : "";
   }
 
   function actualLine(rec) {
@@ -99,13 +104,13 @@
       hasNum(f.communityHours) ? "ทำงานบริการสาธารณะ " + esc(f.communityHours) + " ชั่วโมง" : "",
       has(f.actualOther) ? esc(f.actualOther) : "",
     ].filter(Boolean);
-    return bits.length ? b(esc(levelName(rec))) + " " + bits.join(" / ") : "";
+    return bits.length ? tagOf(rec) + " " + bits.join(" / ") : "";
   }
 
   function finalLine(rec) {
     const f = rec.fields || {};
     if (!f.isFinal) return "";
-    return b(esc(levelName(rec))) + " คดีถึงที่สุด" + (has(f.finalLetterNo) ? " ตามหนังสือเลขที่ " + esc(f.finalLetterNo) : "");
+    return tagOf(rec) + " คดีถึงที่สุด" + (has(f.finalLetterNo) ? " ตามหนังสือเลขที่ " + esc(f.finalLetterNo) : "");
   }
 
   /* ผลมติ: อาญา+วินัย → "ชี้มูลความผิดทางอาญาและทางวินัย" ตามต้นฉบับ; ผลมติอื่นต่อท้ายด้วยชื่อ */
@@ -165,12 +170,32 @@
     "</td></tr>";
   const SAME_LABEL = "<br>(รายละเอียด /จำคุก เดือน ปี/ปรับ<br>(บาท)/ชดใช้/คืน (รวมดอกเบี้ย)/<br>หน่วยงานที่รับเงินคืน";
 
-  function bodyRows(k, ctx, recs, d) {
+  /* แถวศาลในแบบสรุป: "MISCONDUCT" = ศาลแขวง/ศาลจังหวัด, "ADMIN" = ศาลปกครอง, "CORRUPTION" = ศาลคดีทุจริต
+     ส่วนศาลปกครอง (ชั้น ADMIN_*) และประเภทศาลที่เลือกไว้ (court.type) มาก่อน ไม่มีค่อยเดาจากชื่อศาล */
+  function courtRowOf(r) {
+    const LS = global.ECMISVerdictLists;
+    if (LS && LS.levelPart && LS.levelPart(r.level) === "ADMIN") return "ADMIN";
+    const c = r.court || {};
+    const CL = global.ECMISCourtLists;
+    const type = CL ? CL.normalizeType(c.type, c.name) : c.type;
+    if (type === "ADMIN") return "ADMIN";
+    if (type === "DISTRICT" || type === "PROVINCIAL" || type === "MISCONDUCT") return "MISCONDUCT";
+    if (type) return "CORRUPTION";
+    return isMisconductCourt(c.name) ? "MISCONDUCT" : "CORRUPTION";
+  }
+
+  function bodyRows(k, ctx, rawRecs, d) {
     const fmt = d.formatDate || ((x) => x || "");
-    const courtOf = (r) => r.court && r.court.name;
-    const misconduct = recs.filter((r) => isMisconductCourt(courtOf(r)));
-    const corruption = recs.filter((r) => !isMisconductCourt(courtOf(r)));
+    const countAt = (lv) => rawRecs.filter((r) => r.level === lv).length;
+    const recs = rawRecs.map((r) => Object.assign({}, r, { tag: levelName(r) + (countAt(r.level) > 1 ? " › " + r.person : "") }));
+    const levels = recs.map((r) => r.level).filter((lv, i, all) => all.indexOf(lv) === i);
+    const byLevel = levels.map((lv) => recs.filter((r) => r.level === lv));
+    const misconduct = byLevel.filter((g) => courtRowOf(g[0]) === "MISCONDUCT");
+    const corruption = byLevel.filter((g) => courtRowOf(g[0]) === "CORRUPTION");
+    const admin = byLevel.filter((g) => courtRowOf(g[0]) === "ADMIN");
     const damage = recs.map((r) => r.fields && r.fields.damageValue).filter((v) => v !== "" && v != null);
+    const persons = recs.map((r) => r.person).filter((p, i, all) => p && all.indexOf(p) === i);
+    const accusedText = persons.length > 1 ? persons.join(", ") : ctx.accused;
     const agencyLine = [ctx.ministry, ctx.department, ctx.agency].filter(Boolean).join(" / ");
     const caseNo = [k.id, ctx.paccId ? "(สำนวนเดิม " + ctx.paccId + ")" : ""].filter(Boolean).join(" ");
     return (
@@ -178,7 +203,7 @@
       row("คำสั่งไต่สวนข้อเท็จจริงฯ", orDots(ctx.inquiryOrderNo, "............./..............") + " ลงวันที่ " + orDots(ctx.inquiryOrderDate, "........................")) +
       row("ผู้รับผิดชอบสำนวนคดี", esc(ctx.officer)) +
       row("ชื่อผู้กล่าวหา", esc(ctx.accuser)) +
-      row("ชื่อผู้ถูกกล่าวหา", esc(ctx.accused)) +
+      row("ชื่อผู้ถูกกล่าวหา", esc(accusedText)) +
       row("หน่วยงานต้นสังกัดผู้ถูกกล่าวหา", esc(agencyLine)) +
       row("พฤติการณ์", esc(ctx.allegation)) +
       row(
@@ -188,14 +213,24 @@
       row("มติคณะกรรมการ ป.ป.ท.<br>วินิจฉัยชี้มูลไต่สวนข้อเท็จจริง", boardText(ctx)) +
       row("ฐานความผิดที่พนักงานอัยการส่ง<br>ฟ้อง", b("ฐานความผิดที่พนักงานอัยการส่งฟ้อง") + " " + esc(ctx.prosecutedOffenses)) +
       row(
-        "คำพิพากษาศาลคดีประพฤติมิชอบ<br>(ศาลแขวง/ศาลจังหวัด)<br>" + courtNumbersLabel(misconduct, "อท....../.....", "อท...../...."),
-        lines(misconduct.map((r) => courtVerdictLine(r, fmt))),
+        "คำพิพากษาศาลคดีประพฤติมิชอบ<br>(ศาลแขวง/ศาลจังหวัด)<br>" +
+          courtNumbersLabel(misconduct.map((g) => g[0]), "อท....../.....", "อท...../...."),
+        lines(misconduct.map((g) => courtVerdictLines(g, fmt))),
       ) +
       row(
-        "คำพิพากษาศาลคดีทุจริต ในแต่ละ<br>ชั้น<br>(ศาลชั้นต้น/ศาลอุทธรณ์/ศาลฎีกา)<br>" + courtNumbersLabel(corruption, "อท....../.....", "อท...../...."),
-        lines(corruption.map((r) => courtVerdictLine(r, fmt))),
+        "คำพิพากษาศาลคดีทุจริต ในแต่ละ<br>ชั้น<br>(ศาลชั้นต้น/ศาลอุทธรณ์/ศาลฎีกา)<br>" +
+          courtNumbersLabel(corruption.map((g) => g[0]), "อท....../.....", "อท...../...."),
+        lines(corruption.map((g) => courtVerdictLines(g, fmt))),
       ) +
-      row("ศาลพิพากษาลงโทษ", lines(recs.map((r) => b(esc(levelName(r)) + " " + esc(verdictWord(r.fields || {})))))) +
+      /* ส่วนศาลปกครอง — แถวเพิ่มจากแบบฟอร์มเดิม แสดงเมื่อมีบันทึก */
+      (admin.length
+        ? row(
+            "คำพิพากษาศาลปกครอง<br>(ศาลปกครองชั้นต้น/ศาลปกครองสูงสุด)<br>" +
+              courtNumbersLabel(admin.map((g) => g[0]), "......./.....", "......./....."),
+            lines(admin.map((g) => courtVerdictLines(g, fmt))),
+          )
+        : "") +
+      row("ศาลพิพากษาลงโทษ", lines(recs.map((r) => b(esc(r.tag) + " " + esc(verdictWord(r.fields || {})))))) +
       row("ผลของคำพิพากษา" + SAME_LABEL, lines(recs.map(resultLine))) +
       row("การลงโทษจริง" + SAME_LABEL, lines(recs.map(actualLine))) +
       row("มูลค่าความเสียหาย", damage.length ? esc(R().money(damage[damage.length - 1])) + " บาท" : "") +

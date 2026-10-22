@@ -23,11 +23,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
+    <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261014_12" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
-    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261014_9" />
+    <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
+    <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
       h1,
@@ -390,6 +392,12 @@
                   -
                 </div>
               </div>
+              <div class="form-group">
+                <label>บันทึกฉบับลงนามจริง (ผู้เสนอ)</label>
+                <div id="f_boardMemoSigned"></div>
+              </div>
+              <!-- พรีวิวบันทึกเสนอเข้าบอร์ด (อ่านอย่างเดียว) — ข้อ ๕ / ๖ พร้อมลายเซ็นจาก 10-3-07 / 10-3-08 -->
+              <div class="l3-split--doc"><div id="boardMemoPreview"></div></div>
             </div>
           </div>
 
@@ -451,6 +459,10 @@
                   </option>
                   <option value="secgen">เลขาธิการ ป.ป.ท.</option>
                 </select>
+                <!-- ชื่อผู้บริหารที่เลือก (ECMIS.ROLES) แสดงทันทีเมื่อเปลี่ยนตัวเลือก -->
+                <div class="read-box mt-2" id="f_proposeToName" style="display: none; font-weight: 600; color: #1e3a8a">
+                  <i class="fa-solid fa-user-tie me-1"></i><span></span>
+                </div>
               </div>
               <div class="form-group">
                 <label>หมายเหตุ</label>
@@ -481,11 +493,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261014_6"></script>
-    <script src="assets/ecmis-activity10.js?v=20261015_1"></script>
-    <script src="assets/ecmis-shell.js?v=20261014_10"></script>
-    <script src="assets/ecmis-10-3.js?v=20261015_1"></script>
-    <script src="assets/ecmis-act7-bypass.js?v=20261014_6"></script>
+    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
+    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
 
     <script>
       const STEP_CODE = "LAW0095";
@@ -530,6 +544,7 @@
         if (c.l3ProposeTo) {
           document.getElementById("in_proposeTo").value = c.l3ProposeTo;
         }
+        showProposeToName();
       }
 
       function doneAndBack(text) {
@@ -562,6 +577,14 @@
           showConfirmButton: false,
         });
       }
+
+      function showProposeToName() {
+        const role = document.getElementById("in_proposeTo").value;
+        const box = document.getElementById("f_proposeToName");
+        box.style.display = role ? "" : "none";
+        box.querySelector("span").textContent = role ? ECMIS103.signerLabel(role) : "";
+      }
+      document.getElementById("in_proposeTo").addEventListener("change", showProposeToName);
 
       function submitForm() {
         const docNo = document.getElementById("in_internalDocNo").value.trim();
@@ -598,7 +621,7 @@
           icon: "question",
           title: "ยืนยันเสนอตามลำดับชั้น",
           html:
-            "ส่งเรื่องเข้ากิจกรรมที่ 7 (เสนอบอร์ด) ด้วยเลขที่หนังสือ <strong>" +
+            "ส่งเรื่องเสนอคณะกรรมการ ป.ป.ท. (เสนอบอร์ด) ด้วยเลขที่หนังสือ <strong>" +
             docNo +
             "</strong><br/>เสนอต่อ: <strong>" +
             proposeToLabel +
@@ -619,9 +642,9 @@
           });
           const finish = () =>
             doneAndBack(
-              "เสนอตามลำดับชั้นเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด (กิจกรรมที่ 7)",
+              "เสนอตามลำดับชั้นเรียบร้อยแล้ว — สถานะ: รอเสนอบอร์ด",
             );
-          /* P12 (B3): สวิตช์ ON → ป๊อปอัปจำลองมติมอบอำนาจหลังส่ง; [บันทึกผลทันที] → 10-3-10 ผ่านไปแล้ว
+          /* P12 (B3): สวิตช์ ON → ป๊อปอัปจำลองมติมอบอำนาจหลังส่ง; [บันทึกผลทันที] → ส่งตรงถึงนิติกร 10-3-13 (ตัด 10-3-10/12 แล้ว 2026-10-21)
              (ข้ามลายเซ็นธุรการ) / [ภายหลัง] → ค้าง L3_READY_FOR_BOARD */
           if (!promptAct7AfterOutbound(currentCase.id, "B3", finish)) finish();
         });
@@ -649,5 +672,28 @@
           dropdown.classList.remove("show");
       });
     </script>
+    <!-- บันทึกเสนอเข้าบอร์ด (เอกสารสดจาก 10-3-04) — ฉบับครบความเห็น/ลายเซ็นข้อ ๕ ๖ ก่อนออกเลขส่ง -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const memoCard = document.getElementById("boardMemoPreview");
+        if (!currentCase || !currentCase.l3BoardMemo) {
+          memoCard.closest(".l3-split--doc").style.display = "none";
+          document.getElementById("f_boardMemoSigned").closest(".form-group").style.display = "none";
+          return;
+        }
+        const sigs = currentCase.l3Signatures || {};
+        ECMIS103Docs.createViewer("boardMemoPreview", {
+          title: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ",
+          fileName: "บันทึกเสนอเข้าบอร์ดเพื่อมีมติ " + (currentCase.blackCaseNo || ""),
+        }).render(ECMIS103Docs.boardMemoFromCase(currentCase, {
+          groupSig: sigs.LAW0093,
+          directorSig: sigs.LAW0094,
+        }));
+        /* ไฟล์บันทึกฉบับลงนามจริงที่นิติกรอัปโหลดที่ 10-3-04 — แสดงเป็นไฟล์แนบเปิดดูได้ */
+        ECMIS103.renderAttachments("f_boardMemoSigned", currentCase.l3BoardMemoSignedFile ? [currentCase.l3BoardMemoSignedFile] : []);
+        document.getElementById("f_opinionText").closest(".form-group").style.display = "none";
+      });
+    </script>
+    <script src="assets/ecmis-10-3-stay-edit.js?v=20261022_2"></script>
   </body>
 </html>
