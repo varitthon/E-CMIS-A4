@@ -483,6 +483,8 @@
               </div>
               <div id="originCaseResults" class="d-none" style="margin-bottom: 20px"></div>
               <div id="originCaseSelected" style="margin-bottom: 16px"></div>
+              <!-- ข้อมูลจากคดีรับคำฟ้องเดิม (อ่านอย่างเดียว) — ECMIS103VerdictLink.renderOriginInfo -->
+              <div id="originInfo"></div>
 
               <div class="form-grid-2">
                 <div class="form-group">
@@ -707,6 +709,9 @@
             </div>
           </div>
 
+          <!-- บันทึกผลคำพิพากษา (ศาลปกครองชั้นต้น) → สารบบคำพิพากษา — ECMIS103VerdictLink.mountRecord -->
+          <div id="verdictRecordHost"></div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
@@ -790,6 +795,10 @@
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-court-prosecutor-lists.js?v=20261022_1"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261022_1"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261022_3"></script>
+    <script src="assets/ecmis-10-3-verdict-link.js?v=20261022_2"></script>
 
     <script>
       /* LAW0119 — ธุรการกองกฎหมาย รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
@@ -815,6 +824,7 @@
         });
         renderCourtPlaintiffList();
         renderCourtDefendantList();
+        if (window.ECMIS103VerdictLink) ECMIS103VerdictLink.mountRecord("verdictRecordHost");
         prefillOriginFromQuery();
       });
 
@@ -1096,10 +1106,22 @@
         const resultsEl = document.getElementById("originCaseResults");
         if (resultsEl) resultsEl.classList.add("d-none");
         renderSelectedOriginCourtCase();
+        /* ป้าย "เติมจากสำนวนเดิม" + เติมช่องเพิ่ม (เฉพาะที่ยังเป็นค่าตั้งต้น) + กล่องข้อมูลคดีเดิม */
+        if (window.ECMIS103VerdictLink) {
+          const extra = ECMIS103VerdictLink.fillExtra(c, ORIGIN_FILL_DEFAULTS);
+          const base = [c.courtName ? "in_courtName" : "", c.blackCaseNo ? "in_blackCaseNo" : "",
+            (c.plaintiffs || []).length ? "courtPlaintiffList" : "", (c.defendants || []).length ? "courtDefendantList" : ""].filter(Boolean);
+          ECMIS103VerdictLink.markAutofill(base.concat(extra));
+          ECMIS103VerdictLink.renderOriginInfo(c);
+        }
       }
+      /* ค่าตั้งต้นของหน้า — ถือว่า "ยังว่าง" ให้เติมจากคดีเดิมทับได้ */
+      const ORIGIN_FILL_DEFAULTS = { in_redCaseNo: "อ. 55/2570", in_receivingUnit: "กองกฎหมาย", in_courtRemark: "-" };
       function clearOriginCourtCase() {
         selectedOriginCourtCase = null;
         renderSelectedOriginCourtCase();
+        /* ค่าที่เติมไว้คงอยู่ — เอาเฉพาะป้ายและกล่องข้อมูลคดีเดิมออก */
+        if (window.ECMIS103VerdictLink) ECMIS103VerdictLink.clearAutofill();
       }
       function renderSelectedOriginCourtCase() {
         const el = document.getElementById("originCaseSelected");
@@ -1109,7 +1131,7 @@
           ? `
  <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid #16a34a; background:rgba(22,163,74,0.06); border-radius:6px; font-size:0.85em;">
  <i class="fa-solid fa-link" style="color:#16a34a;"></i>
- <span style="flex:1;">เชื่อมกับคดีเดิม <b>${escapeHtml(c.id)}</b> (คดีดำ ${escapeHtml(c.blackCaseNo || "-")}) — คัดลอกศาล/เลขคดีดำ/คู่ความให้แล้ว แก้ไขได้</span>
+ <span style="flex:1;">เชื่อมกับคดีเดิม <b>${escapeHtml(c.id)}</b> (คดีดำ ${escapeHtml(c.blackCaseNo || "-")}) — เติมช่องที่มีป้าย “เติมจากสำนวนเดิม” ให้แล้ว แก้ไขได้</span>
  <button type="button" class="btn btn-secondary" style="padding:2px 10px; font-size:0.8em;" onclick="clearOriginCourtCase()">ยกเลิกการเชื่อม</button>
  </div>`
           : "";
@@ -1242,10 +1264,15 @@
             boardAdminOfficer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
           });
 
+          /* บันทึกผลคำพิพากษา → สารบบคำพิพากษา (ชั้นศาลปกครองชั้นต้น) — ไม่กรอก = ข้าม */
+          const savedToRegistry = window.ECMIS103VerdictLink
+            ? ECMIS103VerdictLink.saveRecord(newCase.id, ECMIS103VerdictLink.collectRecord(), { by: ECMIS103.signerLabel("admin_legal") })
+            : null;
+
           Swal.fire({
             icon: "success",
             title: "บันทึกและส่งเสนอสำเร็จ",
-            text: `ลงทะเบียนคดีปกครองเลขที่ ${val("in_verdictRegNo")} และส่งต่อ ผอ.กองกฎหมายแล้ว`,
+            text: `ลงทะเบียนคดีปกครองเลขที่ ${val("in_verdictRegNo")} และส่งต่อ ผอ.กองกฎหมายแล้ว` + (savedToRegistry ? " · บันทึกผลคำพิพากษาลงสารบบคำพิพากษาแล้ว" : ""),
             timer: 1800,
             showConfirmButton: false,
           }).then(() => {

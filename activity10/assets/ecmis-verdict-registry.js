@@ -22,6 +22,17 @@
   function cases101() {
     return (A().getCases() || []).filter(A().isCase101);
   }
+  /* 10.3 คดีปกครอง — เคสรับคำพิพากษา (10-3v-00 บันทึกชั้นศาลปกครองชั้นต้นลงสารบบ) 2026-10-22
+     หน้า verdict-form.html รับเฉพาะ 10.1 → แถว 10.3 ดูอย่างเดียว (กางรายละเอียดในตาราง) */
+  function cases103() {
+    return (A().getCases() || []).filter((c) => c.l3CaseType === "verdict");
+  }
+  function casesAll() {
+    return cases101().concat(cases103());
+  }
+  function is103(kase) {
+    return !!kase && kase.l3CaseType === "verdict";
+  }
   function matches(kase) {
     const recs = R().getRecords(kase);
     if (state.filter === "has" && !recs.length) return false;
@@ -33,7 +44,7 @@
   /* 2 ส่วน: ศาลคดีอาญาทุจริตและประพฤติมิชอบ (ชั้นต้น/อุทธรณ์/ฎีกา) และ ศาลปกครอง (ชั้นต้น/สูงสุด) แยกบรรทัด */
   function levelLinks(kase) {
     const LS = global.ECMISVerdictLists;
-    return LS.PARTS.map(
+    return LS.PARTS.filter((part) => !is103(kase) || part.code === "ADMIN").map(
       (part) =>
         '<div style="margin:2px 0"><span class="vr-sub" style="display:inline-block;min-width:64px">' +
         (part.code === "ADMIN" ? "ปกครอง" : "อาญา") + "</span>" +
@@ -48,6 +59,7 @@
       const done = recs.filter((r) => r.status === "done").length;
       const cls = !recs.length ? "none" : done === recs.length ? "done" : "draft";
       const st = !recs.length ? "ยังไม่บันทึก" : recs.length > 1 ? "บันทึกแล้ว " + done + "/" + recs.length + " คน" : done ? "บันทึกแล้ว" : "ร่าง";
+      if (is103(kase)) return '<span class="vr-badge ' + cls + '">' + esc(l.name) + " · " + st + "</span>";
       return (
         '<a class="vr-badge ' + cls + '" style="text-decoration:none" href="verdict-form.html?id=' + encodeURIComponent(kase.id) + "&level=" + l.code + '">' +
         esc(l.name) + " · " + st + "</a>"
@@ -83,7 +95,44 @@
 
   /* แถวขยาย: รายละเอียดที่ดึงจากสำนวนเดิม + กิจกรรม 7 (ข้อมูลชุดเดียวกับที่ลง Excel/Word)
      ช่องหลัก: เลขสำนวน · พฤติการณ์ · เจ้าของสำนวน · ประเภทมติชี้มูล · หน่วยงาน (+ เลขดำ ผู้กล่าวหา ผู้ถูกกล่าวหา) */
+  function thaiDate(iso) {
+    if (!/^\d{4}-\d{2}-\d{2}/.test(String(iso || ""))) return iso || "";
+    return new Date(String(iso).slice(0, 10) + "T00:00:00").toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  /* แถวขยายของ 10.3: ผลที่บันทึกรายชั้นศาลปกครอง (อ่านอย่างเดียว) */
+  function detail103Html(kase) {
+    const esc = F().esc;
+    const LS = global.ECMISVerdictLists;
+    const recs = R().getRecords(kase);
+    const val = (label, v, wide) =>
+      '<div class="' + (wide ? "vrr-wide" : "") + '"><label>' + esc(label) + '</label><div class="vrr-val' + (v ? "" : " empty") + '">' + esc(v || "-") + "</div></div>";
+    const body = recs.length
+      ? recs.map((r) => {
+          const f = r.fields || {};
+          const c = r.court || {};
+          const n = LS.CASE_NATURES.find((x) => x.no === f.caseNatureNo);
+          return '<div class="vrr-grid">' +
+            val("ชั้นศาล", R().levelName ? R().levelName(r.level) : r.level) +
+            val("ศาล / วันที่พิพากษา", [c.name, thaiDate(c.date)].filter(Boolean).join(" · ")) +
+            val("คดีหมายเลขดำ / แดง", [c.blackNo, c.redNo].filter(Boolean).join(" / ")) +
+            val("สถานะชั้นคำพิพากษา", f.verdictStage) +
+            val("ประเภท/ลักษณะคดี", n ? n.no + ". " + n.name + (f.caseNatureSub ? " — " + f.caseNatureSub : "") : "", true) +
+            val("รายละเอียดผลคำพิพากษา", f.resultDetail, true) +
+            val("คดีถึงที่สุด", f.isFinal ? "ถึงที่สุดแล้ว" + (f.finalLetterNo ? " — " + f.finalLetterNo : "") : "ยังไม่ถึงที่สุด") +
+            val("สถานะบันทึก", (r.status === "done" ? "บันทึกแล้ว" : "ร่าง") + (r.updatedBy ? " · " + r.updatedBy : "")) +
+            "</div>";
+        }).join("")
+      : '<div style="color:#b45309">ยังไม่มีบันทึกผลคำพิพากษา — บันทึกได้ตอนรับคำพิพากษา (10-3v-00)</div>';
+    return (
+      '<tr class="vrr-detail"><td colspan="5" style="padding:10px 12px 14px">' +
+      '<div class="vrr-pacc"><div class="vrr-pacc-title"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>ผลคำพิพากษาศาลปกครอง' +
+      (kase.l3OriginCaseId ? ' <span style="font-weight:400;color:#64748b">· คดีรับคำฟ้องเดิม ' + esc(kase.l3OriginCaseId) + "</span>" : "") + "</div>" + body + "</div></td></tr>"
+    );
+  }
+
   function detailHtml(kase) {
+    if (is103(kase)) return detail103Html(kase);
     const esc = F().esc;
     const d = R().paccDetailRows(kase, F().deps());
     const m = d.main;
@@ -122,19 +171,24 @@
     return (
       '<tr><td style="white-space:nowrap">' + toggle + "<strong>" + esc(kase.id) + "</strong>" +
       (kase.paccSourceId ? '<div class="vr-sub">สำนวนเดิม ' + esc(kase.paccSourceId) + "</div>" : "") + "</td>" +
-      "<td>ผู้กล่าวหา: " + esc(kase.accuser || "-") + "<br>ผู้ถูกกล่าวหา: " + esc(kase.accused || "-") + "</td>" +
-      "<td>" + esc(kase.prosecutorCaseTypeName || "-") + "</td>" +
-      "<td>" + levelLinks(kase) + "</td>" +
-      '<td style="white-space:nowrap">' +
-      '<a class="btn btn-outline" href="verdict-form.html?id=' + encodeURIComponent(kase.id) + '"><i class="fa-solid fa-pen-to-square"></i>' + (F().canEdit() ? "บันทึก" : "ดู") + "</a> " +
-      (hasRec ? '<button type="button" class="btn btn-outline" data-vrr-word="' + esc(kase.id) + '"><i class="fa-solid fa-file-word"></i>สรุปคำพิพากษา</button>' : "") +
-      "</td></tr>" +
+      (is103(kase)
+        ? "<td>ผู้ฟ้องคดี: " + esc((kase.plaintiffs || []).join(", ") || "-") + "<br>ผู้ถูกฟ้องคดี: " + esc((kase.defendants || []).join(", ") || "-") + "</td>" +
+          '<td>คดีปกครอง (10.3)<div class="vr-sub">บันทึกตอนรับคำพิพากษา 10-3v-00</div></td>' +
+          "<td>" + levelLinks(kase) + "</td>" +
+          '<td style="white-space:nowrap"><button type="button" class="btn btn-outline" data-vrr-toggle="' + esc(kase.id) + '"><i class="fa-solid fa-eye"></i>ดูผล</button></td></tr>'
+        : "<td>ผู้กล่าวหา: " + esc(kase.accuser || "-") + "<br>ผู้ถูกกล่าวหา: " + esc(kase.accused || "-") + "</td>" +
+          "<td>" + esc(kase.prosecutorCaseTypeName || "-") + "</td>" +
+          "<td>" + levelLinks(kase) + "</td>" +
+          '<td style="white-space:nowrap">' +
+          '<a class="btn btn-outline" href="verdict-form.html?id=' + encodeURIComponent(kase.id) + '"><i class="fa-solid fa-pen-to-square"></i>' + (F().canEdit() ? "บันทึก" : "ดู") + "</a> " +
+          (hasRec ? '<button type="button" class="btn btn-outline" data-vrr-word="' + esc(kase.id) + '"><i class="fa-solid fa-file-word"></i>สรุปคำพิพากษา</button>' : "") +
+          "</td></tr>") +
       (open ? detailHtml(kase) : "")
     );
   }
 
   function tableHtml() {
-    const list = cases101().filter(matches);
+    const list = casesAll().filter(matches);
     const body = list.length
       ? list.map(rowHtml).join("")
       : '<tr><td colspan="5" style="text-align:center;color:#64748b;padding:20px">ไม่พบสำนวนตามเงื่อนไข</td></tr>';
@@ -154,9 +208,9 @@
       return;
     }
     const esc = F().esc;
-    const recCount = cases101().reduce((n, c) => n + R().getRecords(c).length, 0);
+    const recCount = casesAll().reduce((n, c) => n + R().getRecords(c).length, 0);
     hostEl.innerHTML =
-      '<div class="table-title-bar"><span>ฐานข้อมูลคำพิพากษา (บันทึกผลคำพิพากษารายชั้นศาล)</span>' +
+      '<div class="table-title-bar"><span>ฐานข้อมูลคำพิพากษา (บันทึกผลคำพิพากษารายชั้นศาล · 10.1 คดีอาญา + 10.3 คดีปกครอง)</span>' +
       '<span style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
       '<select data-vrr-filter="filter" aria-label="ตัวกรอง">' +
       FILTERS.map((f) => '<option value="' + f[0] + '"' + (f[0] === state.filter ? " selected" : "") + ">" + f[1] + "</option>").join("") +

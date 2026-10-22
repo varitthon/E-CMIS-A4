@@ -836,6 +836,7 @@
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
     <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
     <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3-additional.js?v=20261022_7"></script>
     <script>
       /* ลิงก์จากการแจ้งเตือน: ?alert=<เลขสำนวน> เปิดหมวดของสำนวนแล้วกรองด้วยเลขสำนวน,
          ?openCase=<เลขสำนวน> เปิดหน้าสำนวน (ปุ่ม "เปิดสำนวน" ของ notices.html)
@@ -2684,7 +2685,18 @@
         if (typeof renderTable === "function") renderTable();
       });
 
+      /* รับเรื่องเพิ่มเติม 10.3 (ecmis-10-3-additional.js) — ปุ่มเสริมต่อท้ายปุ่มหลัก
+         สำหรับคดีที่ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา (ไม่มีหน้า 10-3 ให้เปิด) */
       function getActionButton(item, roleId) {
+        const extra =
+          typeof ECMIS103Additional !== "undefined" ? ECMIS103Additional.inboxButton(item, roleId) : "";
+        const base = baseActionButton(item, roleId);
+        if (!extra) return base;
+        /* วางปุ่มหลัก + ปุ่มรับเรื่องเพิ่มเติมในแถวเดียว กึ่งกลางแนวตั้ง */
+        return `<span style="display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap">${base}${extra}</span>`;
+      }
+
+      function baseActionButton(item, roleId) {
         const caseId = item.id || item.caseNo;
         const statusCode = item.statusCode || "";
 
