@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
@@ -191,6 +191,28 @@
         padding: 10px 12px;
       }
 
+      .appeal-due-badge:empty {
+        display: none;
+      }
+      .appeal-due-badge {
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 0.8em;
+        font-weight: 600;
+      }
+      .appeal-due-badge.tone-open {
+        background: #ffedd5;
+        color: #c2410c;
+      }
+      .appeal-due-badge.tone-today {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .appeal-due-badge.tone-expired {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
       .form-actions {
         padding: 16px 20px;
         background: var(--bg-card);
@@ -198,6 +220,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
         border-radius: 10px;
         margin-bottom: 20px;
       }
@@ -511,6 +535,9 @@
 -</textarea
                 >
               </div>
+              <!-- มูลเหตุ เลือกได้หลายข้อ (l3Causes) เติมจากคดีรับคำฟ้องเดิมถ้าเคสนี้ยังไม่มี -->
+              <div id="causesHost"></div>
+              <div id="causesOriginNote" class="l3-note l3-note-info" style="margin-top: 4px" hidden></div>
             </div>
           </div>
 
@@ -545,7 +572,7 @@
                           font-size: 0.92em;
                         "
                       >
-                        <i class="fa-solid fa-circle-check me-1"></i>ชนะคดี
+                        <i class="fa-solid fa-circle-check me-1"></i>ศาลพิพากษายกฟ้อง
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (ระบุว่าผู้ฟ้องยื่นอุทธรณ์หรือไม่)
@@ -572,7 +599,7 @@
                           font-size: 0.92em;
                         "
                       >
-                        <i class="fa-solid fa-circle-xmark me-1"></i>แพ้คดี
+                        <i class="fa-solid fa-circle-xmark me-1"></i>ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
                         (พิจารณาความเห็นควรอุทธรณ์)
@@ -600,14 +627,29 @@
                         "
                       >
                         <i class="fa-solid fa-circle-half-stroke me-1"></i
-                        >แพ้บางส่วน
+                        >คำพิพากษา/คำสั่งอื่น
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
-                        (พิจารณาความเห็นควรอุทธรณ์)
+                        (ระบุรายละเอียด · พิจารณาความเห็นควรอุทธรณ์)
                       </div>
                     </div>
                   </label>
                 </div>
+              </div>
+
+              <!-- คำพิพากษา/คำสั่งอื่น (ค่าเก็บ "แพ้บางส่วน") — ต้องระบุรายละเอียด -->
+              <div class="form-group d-none" id="grp_verdictResultOther">
+                <label for="in_verdictResultOther"
+                  >ระบุคำพิพากษา/คำสั่งอื่น
+                  <span style="color: #dc2626">*</span></label
+                >
+                <input
+                  type="text"
+                  id="in_verdictResultOther"
+                  class="form-control"
+                  maxlength="500"
+                  placeholder="ระบุรายละเอียดคำพิพากษา/คำสั่ง"
+                />
               </div>
 
               <div class="form-group">
@@ -653,7 +695,7 @@
                     id="in_appealDeadline"
                     class="form-control font-monospace"
                     lang="th-TH-u-ca-buddhist"
-                    oninput="appealDeadlineTouched = true"
+                    oninput="appealDeadlineTouched = true; renderAppealDeadlineBadge()"
                   />
                 </div>
               </div>
@@ -661,8 +703,12 @@
               <div class="form-group d-none" id="grp_appealByPlaintiff">
                 <label
                   >ผู้ฟ้องคดียื่นอุทธรณ์?
-                  <span style="color: #dc2626">*</span></label
+                  <span style="color: #dc2626">*</span>
+                  <span id="f_appealDeadlineBadge" class="appeal-due-badge"></span></label
                 >
+                <div class="helper-text" style="margin-bottom: 8px">
+                  ยังไม่ทราบผลอุทธรณ์ กด [บันทึกร่าง] ไว้ก่อน แล้วกลับมาเลือกภายหลังได้
+                </div>
                 <div
                   class="decision-grid"
                   style="grid-template-columns: repeat(2, 1fr)"
@@ -873,17 +919,36 @@
                 id="f_proposedBranch"
                 style="font-weight: 700; font-size: 1.02em; color: #1e3a8a"
               >
-                — เลือกผลคดีด้านบนก่อน —
+                กรุณาเลือกผลคดีด้านบนก่อน
               </div>
               <div
                 class="helper-text"
                 style="margin-top: 6px; font-size: 0.82em; color: #64748b"
               >
-                แนวทางนี้คำนวณอัตโนมัติจากผลคดี — ผอ.กองกฎหมายจะยืนยันหรือเปลี่ยนแนวทางในขั้นตอนถัดไป
+                แนวทางนี้คำนวณอัตโนมัติจากผลคดี ผอ.กองกฎหมายจะยืนยันหรือเปลี่ยนแนวทางในขั้นตอนถัดไป
               </div>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
+              <span
+                id="f_draftMeta"
+                style="margin-left: auto; font-size: 0.8em; color: #64748b"
+              ></span>
+              <button
+                type="button"
+                class="btn btn-secondary d-none"
+                id="btnClearDraft"
+                onclick="resetDraft()"
+              >
+                <i class="fa-solid fa-eraser me-1"></i>ล้างร่าง
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="saveDraftNow()"
+              >
+                <i class="fa-solid fa-floppy-disk me-1"></i>บันทึกร่าง
+              </button>
               <button
                 type="button"
                 class="btn btn-primary"
@@ -903,10 +968,11 @@
     <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
-    <script src="assets/ecmis-verdict-lists.js?v=20261022_1"></script>
-    <script src="assets/ecmis-verdict-record.js?v=20261022_3"></script>
-    <script src="assets/ecmis-10-3-verdict-link.js?v=20261022_2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_7"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-verdict-link.js?v=20261027_causes"></script>
     <script src="assets/ecmis-capture.js"></script>
 
     <script>
@@ -1013,8 +1079,124 @@
 
         document.getElementById("in_verdictReadDate").value = todayISO();
         renderSendBackNotice(c);
+        mountCauses(c);
         restoreDraft(c);
+        onReadDateChange();
+        showDraftMeta(c);
         updateProposedBranch();
+        renderAppealDeadlineBadge();
+      }
+
+      /* มูลเหตุ (l3Causes) — ค่าของเคสนี้ (ร่าง/ถูกส่งกลับ/ธุรการเลือกตอนรับคำพิพากษา) ก่อน
+         ไม่มี ⇒ เติมจากคดีรับคำฟ้องเดิม (l3OriginCaseId → l3Causes ที่นิติกรเลือกไว้ใน 10-3-04) */
+      function mountCauses(c) {
+        const VL = ECMIS103VerdictLink;
+        let value = VL.normalizeCauses(c.l3Causes);
+        let fromOrigin = false;
+        if (!value && c.l3OriginCaseId) {
+          const origin = Activity10.getCaseById(c.l3OriginCaseId);
+          const originCauses = origin ? VL.normalizeCauses(origin.l3Causes) : null;
+          if (originCauses) {
+            value = originCauses;
+            fromOrigin = true;
+          }
+        }
+        VL.mountCauses("causesHost", "cs_", value);
+        const note = document.getElementById("causesOriginNote");
+        note.textContent = "";
+        note.hidden = !fromOrigin;
+        if (!fromOrigin) return;
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-link";
+        const text = document.createElement("div");
+        text.textContent = "เติมมูลเหตุจากคดีรับคำฟ้องเดิม " + c.l3OriginCaseId + " (แก้ไขได้)";
+        note.appendChild(icon);
+        note.appendChild(text);
+      }
+
+      /* แบดจ์ข้างคำถาม "ผู้ฟ้องคดียื่นอุทธรณ์?" — ยังอยู่ในระยะอุทธรณ์ / หมดเวลาแล้ว */
+      function renderAppealDeadlineBadge() {
+        const el = document.getElementById("f_appealDeadlineBadge");
+        if (!el) return;
+        const s = Activity103.appealDeadlineStatus(
+          document.getElementById("in_appealDeadline").value,
+        );
+        el.className = "appeal-due-badge" + (s ? " tone-" + s.tone : "");
+        el.textContent = s ? s.text : "";
+      }
+
+      /* ---- บันทึกร่าง (ไม่เปลี่ยนสถานะ ไม่ตรวจช่องบังคับ) — เก็บลงช่องเดียวกับตอนส่ง
+         restoreDraft() จึงคืนค่าได้เลย · meta ที่ l3DocDraft[STEP_CODE] (รูปแบบเดียวกับ ECMIS103Docs.saveDraft) */
+      const DRAFT_FIELD_KEYS = [
+        "l3VerdictIssues", "l3VerdictResult", "l3VerdictResultOther", "l3VerdictSummary",
+        "l3VerdictReadDate", "l3AppealDeadline", "l3AppealByPlaintiff", "l3VerdictOpinionText",
+        "l8ProposedBranch", "l3Causes",
+      ];
+      function draftNowThai() {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return ECMIS103.formatThaiDate(d) + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + " น.";
+      }
+      function saveDraftNow() {
+        if (!currentCase) return;
+        const v = (id) => document.getElementById(id).value.trim();
+        const result = getResult();
+        let by = "";
+        try {
+          const role = ECMIS103.currentRole ? ECMIS103.currentRole() : null;
+          by = role ? role.name : "";
+        } catch (e) {
+          by = "";
+        }
+        const meta = { savedAt: draftNowThai(), savedBy: by };
+        const drafts = { ...(currentCase.l3DocDraft || {}), [STEP_CODE]: meta };
+        Activity10.updateCase(currentCase.id, {
+          l3VerdictIssues: v("in_verdictIssues"),
+          l3Causes: ECMIS103VerdictLink.collectCauses("cs_"),
+          l3VerdictResult: result || null,
+          l3VerdictResultOther: result === "แพ้บางส่วน" ? v("in_verdictResultOther") : null,
+          l3VerdictSummary: v("in_verdictSummary"),
+          l3VerdictReadDate: v("in_verdictReadDate"),
+          l3AppealDeadline: v("in_appealDeadline"),
+          l3AppealByPlaintiff: result === "ชนะ" ? getAppealByPlaintiff() || null : null,
+          l3VerdictOpinionText: v("in_verdictOpinionText"),
+          l8ProposedBranch: result && result !== "ชนะ" ? getAppealOpinion() || null : null,
+          l3DocDraft: drafts,
+        });
+        currentCase = Activity10.getCaseById(currentCase.id) || currentCase;
+        showDraftMeta(currentCase);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "บันทึกร่างแล้ว " + meta.savedAt,
+          showConfirmButton: false,
+          timer: 2200,
+        });
+      }
+      function showDraftMeta(c) {
+        const d = (c.l3DocDraft || {})[STEP_CODE];
+        ECMIS103.setText("f_draftMeta", d ? "บันทึกร่างล่าสุด " + d.savedAt + (d.savedBy ? " โดย " + d.savedBy : "") : "");
+        document.getElementById("btnClearDraft").classList.toggle("d-none", !d);
+      }
+      function resetDraft() {
+        Swal.fire({
+          icon: "question",
+          title: "ล้างร่างและกลับเป็นค่าตั้งต้น?",
+          text: "ข้อมูลที่บันทึกร่างไว้ในขั้นตอนนี้จะถูกลบ",
+          showCancelButton: true,
+          confirmButtonText: "ล้างร่าง",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#dc2626",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          const drafts = { ...(currentCase.l3DocDraft || {}) };
+          delete drafts[STEP_CODE];
+          const cleared = Object.fromEntries(DRAFT_FIELD_KEYS.map((k) => [k, null]));
+          Activity10.updateCase(currentCase.id, { ...cleared, l3DocDraft: drafts });
+          window.location.reload();
+        });
       }
 
       /* การ์ดเตือนเหตุผลที่ถูกส่งกลับ (l3VerdictSendBackNotes จาก 10-3v-05/06)
@@ -1053,6 +1235,7 @@
           setVal("in_appealDeadline", c.l3AppealDeadline);
           appealDeadlineTouched = true;
         }
+        setVal("in_verdictResultOther", c.l3VerdictResultOther);
         const resultType = RESULT_TYPE_BY_VALUE[c.l3VerdictResult];
         if (!resultType) return;
         selectVerdictResult(resultType);
@@ -1160,6 +1343,9 @@
         document
           .getElementById("grp_appealOpinion")
           .classList.toggle("d-none", !isLose);
+        document
+          .getElementById("grp_verdictResultOther")
+          .classList.toggle("d-none", result !== "แพ้บางส่วน");
         if (!isWin) {
           clearRadioGroup("in_appealByPlaintiff", [
             "label_appeal_yes",
@@ -1184,6 +1370,7 @@
         document.getElementById("in_appealDeadline").value = d
           .toISOString()
           .split("T")[0];
+        renderAppealDeadlineBadge();
       }
 
       function getResult() {
@@ -1228,15 +1415,15 @@
         const el = document.getElementById("f_proposedBranch");
         if (!key) {
           el.textContent = getResult()
-            ? "— เลือก \"ผู้ฟ้องคดียื่นอุทธรณ์?\" ด้านบนก่อน —"
-            : "— เลือกผลคดีด้านบนก่อน —";
+            ? "กรุณาเลือก \"ผู้ฟ้องคดียื่นอุทธรณ์?\" ด้านบนก่อน"
+            : "กรุณาเลือกผลคดีด้านบนก่อน";
           return;
         }
         const branch = Activity103.VERDICT_BRANCHES[key];
         const opinion = APPEAL_OPINION_LABELS[getAppealOpinion()];
         el.textContent =
           branch.label +
-          " → " +
+          ": " +
           branch.proposal +
           (key === "APPEAL_CONSIDER" && opinion ? " (" + opinion + ")" : "");
       }
@@ -1331,6 +1518,12 @@
       }
 
       function submitForm() {
+        const causes = ECMIS103VerdictLink.collectCauses("cs_");
+        const causesMissing = ECMIS103VerdictLink.validateCauses(causes);
+        if (causesMissing) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: causesMissing, confirmButtonColor: "#1e3a8a" });
+          return;
+        }
         const result = getResult();
         if (!result) {
           Swal.fire({
@@ -1349,6 +1542,20 @@
             text: "กรุณาระบุวันที่อ่าน/รับทราบคำพิพากษา",
             confirmButtonColor: "#1e3a8a",
           });
+          return;
+        }
+        const resultOther =
+          result === "แพ้บางส่วน"
+            ? document.getElementById("in_verdictResultOther").value.trim()
+            : "";
+        if (result === "แพ้บางส่วน" && !resultOther) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาระบุคำพิพากษา/คำสั่งอื่น",
+            confirmButtonColor: "#1e3a8a",
+          });
+          document.getElementById("in_verdictResultOther").focus();
           return;
         }
         const appealByPlaintiff = getAppealByPlaintiff();
@@ -1407,7 +1614,7 @@
           html:
             "แนวทางที่เสนอ: <strong>" +
             branch.label +
-            " → " +
+            ": " +
             branch.proposal +
             "</strong>" +
             (appealOpinionLabel
@@ -1426,7 +1633,9 @@
             l3VerdictIssues:
               document.getElementById("in_verdictIssues").value.trim() ||
               "-",
+            l3Causes: causes,
             l3VerdictResult: result,
+            l3VerdictResultOther: resultOther || null,
             l3VerdictSummary:
               document.getElementById("in_verdictSummary").value.trim() ||
               "-",
@@ -1441,6 +1650,10 @@
             l3ProposedBranch: branchKey,
             l8ProposedBranch: proposedAppealBranch,
             l3AppealOpinion: appealOpinionLabel,
+            /* ส่งแล้ว — ร่างของขั้นตอนนี้หมดหน้าที่ */
+            l3DocDraft: Object.fromEntries(
+              Object.entries(currentCase.l3DocDraft || {}).filter(([k]) => k !== STEP_CODE),
+            ),
             /* ส่งใหม่แล้ว — ล้างเหตุผลส่งกลับรอบก่อน */
             l3VerdictSendBackNotes: null,
             l3VerdictSendBackBy: null,

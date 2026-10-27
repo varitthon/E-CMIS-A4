@@ -57,7 +57,7 @@ t("สถานะ 10.3.3.1 มีครบ 4 ประเภท และ 10.3.
   );
   assert.deepEqual(
     Activity10.L3_CASE_STATUS.map((s) => s.code),
-    ["FIRST_PENDING", "SUPREME_PENDING", "FINAL", "STRUCK_OUT", "OTHER"],
+    ["FIRST_PENDING", "FIRST_JUDGED", "SUPREME_PENDING", "FINAL", "STRUCK_OUT", "OTHER"],
   );
 });
 t("จำหน่ายคดี มีชื่อแสดงผล", () => {
@@ -183,7 +183,7 @@ t("บันทึกผลศาลปกครองสูงสุด → ค
   assert.equal(patch.statusCode, "L10_SUPREME_JUDGED");
   assert.equal(patch.caseStatus, "FINAL");
   assert.equal(patch.l3SupremeJudgment.result, "WIN");
-  assert.equal(patch.l3SupremeJudgment.resultName, "ชนะคดี");
+  assert.equal(patch.l3SupremeJudgment.resultName, "ศาลพิพากษายกฟ้อง");
   assert.equal(patch.l3StatusHistory.length, 1);
 });
 t("สายมติบอร์ด (L9A) ได้สถานะปิดของตัวเอง", () => {
@@ -194,7 +194,7 @@ t("สายมติบอร์ด (L9A) ได้สถานะปิดข�
     "t",
   );
   assert.equal(patch.statusCode, "L9A_SUPREME_JUDGED");
-  assert.equal(patch.l3SupremeJudgment.resultName, "แพ้คดี");
+  assert.equal(patch.l3SupremeJudgment.resultName, "ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง");
 });
 
 console.log(`\n${passed} passed\n`);

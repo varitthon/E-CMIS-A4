@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="assets/ecmis-case-search.css?v=20261014_3" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
     <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
@@ -659,6 +659,8 @@
 -</textarea
                 >
               </div>
+              <!-- มูลเหตุ เลือกได้หลายข้อ (ECMIS103VerdictLink.mountCauses) เก็บบนเคสเป็น l3Causes -->
+              <div id="causesHost"></div>
               <div class="form-group">
                 <div class="l3-checkbox-row">
                   <input type="checkbox" id="in_hasStayRequest" />
@@ -753,8 +755,10 @@
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-case-search.js?v=20261022_legacy"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
     <script src="assets/ecmis-10-3-docs.js?v=20261022_rm181922"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-verdict-link.js?v=20261027_causes"></script>
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
     <script src="assets/ecmis-10-3-case-edit.js?v=20261021_2"></script>
 
@@ -824,6 +828,8 @@
         prefillReturned(currentCase);
         syncStayFromIntake(currentCase);
         initBoardMemo(currentCase);
+        /* มูลเหตุ — คืนค่าที่เคยบันทึก (ร่าง / ถูกส่งกลับ) */
+        ECMIS103VerdictLink.mountCauses("causesHost", "cs_", currentCase.l3Causes);
       }
 
       /* คำขอทุเลา — ธุรการระบุไว้แล้วตอนรับเรื่อง (l3HasStayObjectionSummons + หมายศาล)
@@ -1111,6 +1117,10 @@
       function saveBoardMemoDraft() {
         if (!currentCase) return;
         const saved = ECMIS103Docs.saveDraft(currentCase.id, STEP_CODE, collectBoardMemo());
+        /* มูลเหตุ — เก็บลงช่องเดียวกับตอนส่ง (ร่างไม่ตรวจช่องบังคับ) */
+        currentCase =
+          Activity10.updateCase(currentCase.id, { l3Causes: ECMIS103VerdictLink.collectCauses("cs_") }) ||
+          currentCase;
         Swal.fire({
           icon: "success",
           title: "บันทึกร่างแล้ว",
@@ -1166,6 +1176,12 @@
       /* ---- page specific ---- */
 
       function submitForm() {
+        const causes = ECMIS103VerdictLink.collectCauses("cs_");
+        const causesMissing = ECMIS103VerdictLink.validateCauses(causes);
+        if (causesMissing) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: causesMissing, confirmButtonColor: "#1e3a8a" });
+          return;
+        }
         const missing = missingBoardMemo();
         if (missing || !bmSignedFile) {
           Swal.fire({
@@ -1201,6 +1217,7 @@
           if (!res.isConfirmed) return;
           Activity103.advance(currentCase.id, STEP_CODE, {
             l3ReviewNotes: reviewNotes,
+            l3Causes: causes,
             l3HasStayRequest: hasStayRequest,
             l3RelatedCaseNo: relatedCaseNo,
             l3OpinionText: opinionText,

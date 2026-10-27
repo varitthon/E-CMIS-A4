@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css?v=20260904_1" />
     <style>
       body {
@@ -834,7 +834,7 @@
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
     <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
     <script src="assets/ecmis-10-3-additional.js?v=20261022_7"></script>
     <script>
@@ -2512,7 +2512,7 @@
         if (!branch) return "";
         let html = ` <span class="badge" style="background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; font-weight:600;" title="ผอ.กองกฎหมายกำหนดแนวทางแล้ว">ผอ.กองกฎหมายมีความเห็นแล้ว</span>`;
         if (branch.resultLabel) {
-          const isWin = branch.resultLabel === "ชนะคดี";
+          const isWin = branch.resultLabel === "ศาลพิพากษายกฟ้อง";
           const bg = isWin ? "#dcfce7" : "#fee2e2";
           const fg = isWin ? "#15803d" : "#b91c1c";
           const border = isWin ? "#86efac" : "#fca5a5";
@@ -2522,6 +2522,29 @@
           html += ` <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-weight:600;">${branch.appealNote}</span>`;
         }
         return html;
+      }
+
+      /* นิติกรบันทึกร่างที่ 10-3v-04 (LAW0123) แล้วยังไม่ส่ง — แสดงผลคดีที่เลือกไว้
+         + (ศาลพิพากษายกฟ้อง ยังไม่ทราบผลอุทธรณ์) ระยะเวลาอุทธรณ์ที่เหลือ/หมดแล้ว */
+      function verdictDraftBadge(item) {
+        const kase = item && item.raw;
+        if (!kase || typeof Activity103 === "undefined") return "";
+        if (!Activity103.isVerdictCase(kase) || !(kase.l3DocDraft || {}).LAW0123) return "";
+        const label = Activity103.verdictResultText(kase);
+        if (!label) return "";
+        const badge = (text, bg, fg, border) =>
+          ` <span class="badge" style="background:${bg}; color:${fg}; border:1px solid ${border}; font-weight:600;">${text}</span>`;
+        const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const html = badge(esc(label), "#f8fafc", "#334155", "#cbd5e1");
+        if (kase.l3VerdictResult !== "ชนะ") return html;
+        if (kase.l3AppealByPlaintiff) {
+          return html + badge(kase.l3AppealByPlaintiff === "ยื่น" ? "ผู้ฟ้องยื่นอุทธรณ์" : "ผู้ฟ้องไม่ยื่นอุทธรณ์", "#f1f5f9", "#475569", "#e2e8f0");
+        }
+        const s = Activity103.appealDeadlineStatus(kase.l3AppealDeadline);
+        const text = "รอผลอุทธรณ์" + (s ? " (" + s.text + ")" : "");
+        return html + (s && s.tone === "expired"
+          ? badge(text, "#fee2e2", "#b91c1c", "#fca5a5")
+          : badge(text, "#ffedd5", "#c2410c", "#fdba74"));
       }
 
       /* แบดจ์ความเห็นที่นิติกรเสนอ (เห็นควรอุทธรณ์/เห็นควรไม่อุทธรณ์ — LAW0145
@@ -3037,7 +3060,7 @@
  <td style="max-width:200px;">${renderSummonsBadge103(item)}</td>
  <td style="max-width:260px; white-space:normal; font-weight:500; color:var(--text-title);">${item.title}</td>
  <td>${item.officer}</td>
- <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${caseStatusBadge103(item)}${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}${act7WaitBadge(item)}</td>
+ <td><span class="badge badge-status ${item.statusBadge || ""}">${item.status}</span>${caseStatusBadge103(item)}${resolutionBadge(item)}${caseStateBadge(item)}${verdictBranchBadge(item)}${verdictDraftBadge(item)}${appealConsiderProposalBadge(item)}${appealDraftStepBadge(item)}${appealBoardStepBadge(item)}${boardDecisionBadge(item)}${branchAStepBadge(item)}${branchBStepBadge(item)}${act7WaitBadge(item)}</td>
  <td>${renderSlaBadge(item)}</td>
  <td style="text-align: center;">${getActionButton(item, currentRole)}</td>
  </tr>`;

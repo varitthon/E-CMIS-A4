@@ -38,8 +38,10 @@
     ] },
     { id: 'reports', label: 'รายงาน', legalOnly: true, items: [
       { href: 'board-report.html', label: 'รายงานผลตามมติคณะกรรมการ', icon: 'report' },
-      { href: 'registry.html', label: 'สารบบคำวินิจฉัย/คำพิพากษา', icon: 'book' },
-      { href: 'dasdbord.html', label: 'แดชบอร์ดสถิติ', icon: 'chart' }
+      /* ผู้เพิ่มคำพิพากษาได้ทุกบทบาท (Activity10.VERDICT_EDIT_ROLES) เห็นเมนูนี้ด้วย */
+      { href: 'registry.html', label: 'สารบบคำวินิจฉัย/คำพิพากษา', icon: 'book', verdictEditorsToo: true },
+      /* นิติกรเห็นด้วย — แดชบอร์ดแสดง "ภาพรวมของฉัน" ตามบทบาท (ecmis-dash-103.js) */
+      { href: 'dasdbord.html', label: 'แดชบอร์ดสถิติ', icon: 'chart', assignedRolesToo: true }
     ] }
   ];
 
@@ -93,11 +95,21 @@
     });
     const file = hasExact ? withQuery : currentFile();
     const legal = isLegalRole();
+    const A = global.Activity10;
+    const assignedOnly = !!(A && typeof A.isAssignedOnlyRole === 'function' && A.isAssignedOnlyRole(sessionRole()));
+    /* กลุ่ม legalOnly: บทบาทอื่นไม่เห็น ยกเว้นรายการที่ assignedRolesToo (เช่น แดชบอร์ดของนิติกร) */
+    const verdictEditor = !!(A && (A.VERDICT_EDIT_ROLES || []).indexOf(sessionRole()) >= 0);
+    const visibleItems = function (g) {
+      if (!g.legalOnly || legal) return g.items;
+      return g.items.filter(function (item) {
+        return (assignedOnly && item.assignedRolesToo) || (verdictEditor && item.verdictEditorsToo);
+      });
+    };
     return '<nav class="ecmis-sidebar-nav" aria-label="เมนูหลัก">'
-      + NAV_GROUPS.filter(function (g) { return !g.legalOnly || legal; }).map(function (g) {
+      + NAV_GROUPS.filter(function (g) { return visibleItems(g).length; }).map(function (g) {
         return '<div class="ecmis-sidebar-group" data-group="' + g.id + '">'
           + '<div class="ecmis-sidebar-group-title">' + esc(g.label) + '</div>'
-          + g.items.map(function (item) { return linkMarkup(item, file); }).join('')
+          + visibleItems(g).map(function (item) { return linkMarkup(item, file); }).join('')
           + '</div>';
       }).join('')
       + '</nav>';

@@ -27,6 +27,16 @@
   const esc = (v) => F().esc(v);
 
   /* แสดงการ์ดทุกหมวด/ทุกกรณีอัยการ ยกเว้นคดีปกครอง (10.3) ซึ่งมีขั้นตอนคำพิพากษาของตัวเอง (ผู้ใช้ขอ 20/10/2569) */
+  /* AG ตั้งต้นจาก "กรณีความเห็น/คำสั่งพนักงานอัยการ" ของหน้า 02 (เฉพาะ 10.1) จนกว่าผู้ใช้จะเลือกเอง */
+  let agTouched = false;
+  function applyAgDefault() {
+    const sel = $(P + "prosecutorStatus");
+    const src = $("in_prosecutorCaseType");
+    if (!sel || agTouched) return;
+    const text = val("in_category") === "10.1" && src && src.selectedIndex >= 0 ? src.options[src.selectedIndex].text : "";
+    sel.value = R().defaultProsecutorStatus({ prosecutorCaseTypeName: text });
+  }
+
   function isApplicable() {
     return val("in_category") !== "10.3";
   }
@@ -143,6 +153,10 @@
       onRemove: confirmRemove,
     });
 
+    applyAgDefault();
+    $(P + "prosecutorStatus").addEventListener("change", () => {
+      agTouched = true;
+    });
     $(P + "hasVerdict").addEventListener("change", (e) => {
       $(P + "body").classList.toggle("vr-hide", !e.target.checked);
       if (e.target.checked) syncNames();
@@ -257,6 +271,7 @@
     if (!show) return;
     if (!rendered) return render();
     syncNames();
+    applyAgDefault();
     const courtHost = $(P + "court");
     if (!typeTouched) F().setCourtType(courtHost, P, courtSystem());
     if (levelTouched) return;
@@ -301,7 +316,14 @@
   function saveFor(caseId) {
     if (!hasVerdict() || !savedStatus) return { saved: false };
     const level = val(P + "level");
-    const entries = tabs.entries().map((e) => Object.assign(e, { status: savedStatus }));
+    const agCase = val(P + "prosecutorStatus");
+    /* คนที่ไม่ได้เลือก AG เอง ใช้ค่า AG ของการ์ด (ตั้งต้นจากกรณีอัยการ) */
+    const entries = tabs.entries().map((e) =>
+      Object.assign(e, {
+        status: savedStatus,
+        fields: e.fields && !e.fields.prosecutorStatus && agCase ? Object.assign({}, e.fields, { prosecutorStatus: agCase }) : e.fields,
+      }),
+    );
     if (!entries.length) return { saved: false };
     const kase = global.Activity10.findCaseById(caseId) || {};
     const c = F().collect($(P + "court"), P);

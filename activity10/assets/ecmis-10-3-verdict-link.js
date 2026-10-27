@@ -36,7 +36,14 @@
       ".vl-info{border:1px solid #bfdbfe;background:rgba(37,99,235,.04);border-radius:8px;margin-bottom:16px}" +
       ".vl-info summary{cursor:pointer;padding:10px 14px;font-weight:700;color:#1e3a8a}" +
       ".vl-info dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 16px;margin:0;padding:2px 14px 14px}" +
-      ".vl-info dt{font-weight:400;font-size:.78em;color:#64748b}.vl-info dd{margin:0;font-weight:600;font-size:.88em;word-break:break-word}";
+      ".vl-info dt{font-weight:400;font-size:.78em;color:#64748b}.vl-info dd{margin:0;font-weight:600;font-size:.88em;word-break:break-word}" +
+      /* มูลเหตุ (checkbox หลายข้อ) 2 คอลัมน์ · จอแคบ 1 คอลัมน์ */
+      ".vl-cause-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;padding:10px 12px;border:1px solid rgba(100,116,139,.35);border-radius:8px}" +
+      "@media (max-width:640px){.vl-cause-grid{grid-template-columns:1fr}}" +
+      ".vl-causes label.vl-cause-item{display:flex !important;align-items:flex-start;justify-content:flex-start !important;gap:8px;margin:0;font-weight:400;cursor:pointer;line-height:1.4}" +
+      ".vl-causes label.vl-cause-item input{margin-top:3px;flex:0 0 auto;width:16px;height:16px;cursor:pointer}" +
+      ".vl-cause-other{margin-top:10px}" +
+      ".vl-causes > label.vl-causes-label{justify-content:flex-start !important;gap:4px;flex-wrap:wrap}.vl-causes-hint{margin-left:auto}";
     document.head.appendChild(s);
   }
 
@@ -123,6 +130,8 @@
   }
 
   function renderOriginInfo(c) {
+    /* ขั้นตอนทั้งหมดของคดีเดิม — กลุ่มพับบนสุดของหน้า (ECMIS103Prev.mountOriginGroup ใน ecmis-10-3-prev.js) */
+    if (global.ECMIS103Prev) global.ECMIS103Prev.mountOriginGroup(c);
     const host = $("originInfo");
     if (!host) return;
     if (!c) {
@@ -148,16 +157,27 @@
       }).join("");
   }
 
-  function natureSubs(no) {
-    const n = global.ECMISVerdictLists.CASE_NATURES.find(function (x) { return x.no === no; });
-    return (n && n.sub) || [];
+  /* p = prefix ของ id ช่อง (ค่าเริ่ม "vl_") — 10-3v-00 ใช้หลายชุดต่อหน้า (1 ชุดต่อคำพิพากษา)
+     f.causes = มูลเหตุที่เติมไว้ล่วงหน้า (จาก l3Causes ของเคส) แก้ไขได้ */
+  function recordFieldsHTML(f, p) {
+    p = p || "vl_";
+    const L = global.ECMISVerdictLists;
+    return (
+      '<div class="form-group"><label for="' + p + 'verdictStage">สถานะชั้นคำพิพากษา</label>' +
+      '<select id="' + p + 'verdictStage" class="form-control">' + optionList(L.VERDICT_STAGES[LEVEL] || [], f.verdictStage) + "</select></div>" +
+      causesFieldHTML(p, f.causes, { required: false }) +
+      '<div class="form-group"><label for="' + p + 'resultDetail">รายละเอียดผลคำพิพากษา</label>' +
+      '<textarea id="' + p + 'resultDetail" class="form-control" rows="3" placeholder="สรุปผลคำพิพากษา">' + esc(f.resultDetail) + "</textarea></div>" +
+      '<div class="form-grid-2">' +
+      '<div class="form-group"><div class="l3-checkbox-row"><input type="checkbox" id="' + p + 'isFinal"' + (f.isFinal ? " checked" : "") + " />" +
+      '<label for="' + p + 'isFinal">คดีถึงที่สุดแล้ว</label></div></div>' +
+      '<div class="form-group" id="' + p + 'finalGroup"' + (f.isFinal ? "" : " hidden") + '><label for="' + p + 'finalLetterNo">เลขหนังสือคดีถึงที่สุด</label>' +
+      '<input type="text" id="' + p + 'finalLetterNo" class="form-control font-monospace" value="' + esc(f.finalLetterNo) + '" placeholder="เลขที่หนังสือ" /></div>' +
+      "</div>"
+    );
   }
 
   function recordCardHTML(f) {
-    const L = global.ECMISVerdictLists;
-    const natures = L.CASE_NATURES.map(function (n) { return [n.no, n.no + ". " + n.name]; });
-    const subs = natureSubs(f.caseNatureNo);
-    const needOther = /โปรดระบุ/.test(f.caseNatureSub || "") || f.caseNatureNo === "20";
     return (
       '<div class="form-card" id="verdictRecordCard"><div class="form-card-header">' +
       '<span><i class="fa-solid fa-book-bookmark text-primary me-2"></i>บันทึกผลคำพิพากษา (ศาลปกครองชั้นต้น)</span>' +
@@ -168,68 +188,41 @@
       "ใช้ช่องชุดเดียวกับบันทึกผลคำพิพากษา (เฉพาะที่ใช้กับศาลปกครอง) ดูภายหลังได้ที่เมนู " +
       '<a href="registry.html">สารบบคำวินิจฉัย/คำพิพากษา</a> · ไม่บังคับกรอก ' +
       "(ศาล / เลขคดีดำ-แดง / วันที่พิพากษา / ไฟล์ ใช้จากช่องด้านบน)</div></div>" +
-      '<div class="form-grid-2">' +
-      '<div class="form-group"><label for="vl_verdictStage">สถานะชั้นคำพิพากษา</label>' +
-      '<select id="vl_verdictStage" class="form-control">' + optionList(L.VERDICT_STAGES[LEVEL] || [], f.verdictStage) + "</select></div>" +
-      '<div class="form-group"><label for="vl_caseNatureNo">ประเภท/ลักษณะคดี</label>' +
-      '<select id="vl_caseNatureNo" class="form-control">' + optionList(natures, f.caseNatureNo) + "</select></div>" +
-      "</div>" +
-      '<div class="form-grid-2">' +
-      '<div class="form-group" id="vl_subGroup"' + (subs.length ? "" : " hidden") + '><label for="vl_caseNatureSub">หัวข้อย่อย</label>' +
-      '<select id="vl_caseNatureSub" class="form-control">' + optionList(subs, f.caseNatureSub) + "</select></div>" +
-      '<div class="form-group" id="vl_otherGroup"' + (needOther ? "" : " hidden") + '><label for="vl_caseNatureOther">ระบุ (อื่นๆ)</label>' +
-      '<input type="text" id="vl_caseNatureOther" class="form-control" value="' + esc(f.caseNatureOther) + '" placeholder="โปรดระบุ" /></div>' +
-      "</div>" +
-      '<div class="form-group"><label for="vl_resultDetail">รายละเอียดผลคำพิพากษา</label>' +
-      '<textarea id="vl_resultDetail" class="form-control" rows="3" placeholder="สรุปผลคำพิพากษา">' + esc(f.resultDetail) + "</textarea></div>" +
-      '<div class="form-grid-2">' +
-      '<div class="form-group"><div class="l3-checkbox-row"><input type="checkbox" id="vl_isFinal"' + (f.isFinal ? " checked" : "") + " />" +
-      '<label for="vl_isFinal">คดีถึงที่สุดแล้ว</label></div></div>' +
-      '<div class="form-group" id="vl_finalGroup"' + (f.isFinal ? "" : " hidden") + '><label for="vl_finalLetterNo">เลขหนังสือคดีถึงที่สุด</label>' +
-      '<input type="text" id="vl_finalLetterNo" class="form-control font-monospace" value="' + esc(f.finalLetterNo) + '" placeholder="เลขที่หนังสือ" /></div>' +
-      "</div></div></div>"
+      recordFieldsHTML(f, "vl_") +
+      "</div></div>"
     );
   }
 
-  function wireRecord() {
-    const no = $("vl_caseNatureNo");
-    const sub = $("vl_caseNatureSub");
-    const syncOther = function () {
-      $("vl_otherGroup").hidden = !(/โปรดระบุ/.test(sub.value || "") || no.value === "20");
-    };
-    no.addEventListener("change", function () {
-      const subs = natureSubs(no.value);
-      sub.innerHTML = optionList(subs, "");
-      $("vl_subGroup").hidden = !subs.length;
-      syncOther();
-    });
-    sub.addEventListener("change", syncOther);
-    $("vl_isFinal").addEventListener("change", function () { $("vl_finalGroup").hidden = !$("vl_isFinal").checked; });
+  function wireRecord(p) {
+    p = p || "vl_";
+    wireCauses(p);
+    $(p + "isFinal").addEventListener("change", function () { $(p + "finalGroup").hidden = !$(p + "isFinal").checked; });
   }
 
   function mountRecord(hostId) {
     const host = $(hostId);
     if (!host || !global.ECMISVerdictLists) return;
     host.innerHTML = recordCardHTML({});
-    wireRecord();
+    wireRecord("vl_");
   }
 
-  function collectRecord() {
-    if (!$("vl_verdictStage")) return {};
-    const v = function (id) { return $(id) ? $(id).value.trim() : ""; };
+  /* fields.causes = { codes, other } หรือ null (ไม่ได้เลือก) */
+  function collectRecord(p) {
+    p = p || "vl_";
+    if (!$(p + "verdictStage")) return {};
+    const v = function (id) { return $(p + id) ? $(p + id).value.trim() : ""; };
     return {
-      verdictStage: v("vl_verdictStage"),
-      caseNatureNo: v("vl_caseNatureNo"),
-      caseNatureSub: $("vl_subGroup").hidden ? "" : v("vl_caseNatureSub"),
-      caseNatureOther: $("vl_otherGroup").hidden ? "" : v("vl_caseNatureOther"),
-      resultDetail: v("vl_resultDetail"),
-      isFinal: $("vl_isFinal").checked,
-      finalLetterNo: $("vl_isFinal").checked ? v("vl_finalLetterNo") : "",
+      verdictStage: v("verdictStage"),
+      causes: collectCauses(p),
+      resultDetail: v("resultDetail"),
+      isFinal: $(p + "isFinal").checked,
+      finalLetterNo: $(p + "isFinal").checked ? v("finalLetterNo") : "",
     };
   }
 
+  /* มูลเหตุอย่างเดียวไม่นับ (เติมล่วงหน้าจากเคส) จึงไม่สร้างบันทึกสารบบเปล่า ๆ แต่หน้า 10-3v-00 ยังเขียนกลับ l3Causes ของเคส */
   function hasAny(f) {
-    return !!(f && (f.verdictStage || f.caseNatureNo || f.resultDetail || f.isFinal));
+    return !!(f && (f.verdictStage || f.resultDetail || f.isFinal));
   }
 
   /* ผู้ถูกฟ้องฝั่ง ป.ป.ท. เป็น "บุคคล" ของบันทึก (สารบบแยกรายบุคคล) */
@@ -246,12 +239,16 @@
     const kase = A10.findCaseById(caseId);
     if (!kase) return null;
     const e = extra || {};
+    /* extra.person / extra.court / extra.fileNames — แทนค่าจากเคส (10-3v-00: 1 บันทึกต่อผู้ถูกฟ้อง ต่อคำพิพากษา) */
     const patch = R.buildRecordPatch(kase, LEVEL, fields, {
-      person: personOf(kase),
+      person: e.person || personOf(kase),
       status: fields.verdictStage ? "done" : "draft",
       by: e.by || "",
-      court: { type: "ADMIN", name: kase.courtName, blackNo: kase.blackCaseNo, redNo: kase.redCaseNo, date: kase.verdictDate },
-      fileNames: kase.attachmentFileNames || [],
+      court: Object.assign(
+        { type: "ADMIN", name: kase.courtName, blackNo: kase.blackCaseNo, redNo: kase.redCaseNo, date: kase.verdictDate },
+        e.court || {}
+      ),
+      fileNames: e.fileNames || kase.attachmentFileNames || [],
     });
     return patch ? A10.updateCase(caseId, patch) : null;
   }
@@ -259,20 +256,18 @@
   /* อ่านอย่างเดียว (หน้า v-04 นิติกรวิเคราะห์ผล) */
   function readOnlyHTML(kase) {
     const R = global.ECMISVerdictRecord;
-    const L = global.ECMISVerdictLists;
     const rec = R && kase ? R.getRecords(kase).find(function (r) { return r.level === LEVEL; }) : null;
     if (!rec) return '<div class="read-box l3-optional">ธุรการยังไม่ได้บันทึกผลคำพิพากษาลงสารบบคำพิพากษา</div>';
     const f = rec.fields || {};
-    const nature = L.CASE_NATURES.find(function (n) { return n.no === f.caseNatureNo; });
     const box = function (label, v, wide) {
       return '<div class="form-group"' + (wide ? ' style="grid-column:1/-1"' : "") + "><label>" + esc(label) + '</label><div class="read-box' + (wide ? " read-box-textarea" : "") + '">' + (esc(clean(v)) || "-") + "</div></div>";
     };
     return (
       '<div class="l3-note l3-note-info" style="margin-bottom:12px"><i class="fa-solid fa-book-bookmark"></i><div>' +
-      'ข้อมูลจาก<strong>สารบบคำพิพากษา</strong> ชั้นศาลปกครองชั้นต้น ที่ธุรการบันทึกตอนรับคำพิพากษา (10-3v-00) — ดูทั้งหมดที่ <a href="registry.html">สารบบคำวินิจฉัย/คำพิพากษา</a></div></div>' +
+      'ข้อมูลจาก<strong>สารบบคำพิพากษา</strong> ชั้นศาลปกครองชั้นต้น ที่ธุรการบันทึกตอนรับคำพิพากษา — ดูทั้งหมดที่ <a href="registry.html">สารบบคำวินิจฉัย/คำพิพากษา</a></div></div>' +
       '<div class="form-grid-2">' +
       box("สถานะชั้นคำพิพากษา", f.verdictStage) +
-      box("ประเภท/ลักษณะคดี", nature ? nature.no + ". " + nature.name + (f.caseNatureSub ? " — " + f.caseNatureSub : "") + (f.caseNatureOther ? " (" + f.caseNatureOther + ")" : "") : "") +
+      box(CAUSES_LABEL, causesText(f.causes || kase.l3Causes)) +
       box("รายละเอียดผลคำพิพากษา", f.resultDetail, true) +
       box("คดีถึงที่สุด", f.isFinal ? "ถึงที่สุดแล้ว" + (f.finalLetterNo ? " — เลขหนังสือ " + f.finalLetterNo : "") : "ยังไม่ถึงที่สุด") +
       box("สถานะในสารบบ", (rec.status === "done" ? "บันทึกแล้ว" : "ร่าง") + (rec.updatedBy ? " · " + rec.updatedBy : "")) +
@@ -280,13 +275,155 @@
     );
   }
 
+  /* ---------------------------------------------------------------- 4) มูลเหตุ (เลือกได้หลายข้อ, 2026-10-27)
+     รายการ ECMISVerdictLists.ADMIN_CAUSES (รหัส "1".."7", ข้อ 7 อื่นๆ ต้องระบุ)
+     ค่าเดียวของเคส: l3Causes = { codes: ["1","3"], other: "<ข้อความเมื่อเลือก 7>" } หรือ null
+     ใช้ที่หน้านิติกร 10-3-04 / 10-3v-04 และสารบบ 10.3 (10-3v-00, แผงศาลปกครองสูงสุด 15/25/36)
+     id: p+"causesGroup", checkbox p+"cause_<code>" (name p+"causes"), p+"causeOtherGroup", p+"causeOther" */
+  const CAUSES_LABEL = "มูลเหตุ";
+  const OTHER_CODE = "7";
+
+  function causeList() {
+    const L = global.ECMISVerdictLists;
+    return (L && L.ADMIN_CAUSES) || [];
+  }
+
+  /* ทำความสะอาด: เฉพาะรหัสที่อยู่ในรายการ เรียงตามรายการ · ไม่มีข้อที่เลือก = null */
+  function normalizeCauses(v) {
+    if (!v || !Array.isArray(v.codes)) return null;
+    const picked = v.codes.map(function (c) { return String(c).trim(); });
+    const codes = causeList().map(function (c) { return c.code; }).filter(function (c) { return picked.indexOf(c) >= 0; });
+    if (!codes.length) return null;
+    return { codes: codes, other: codes.indexOf(OTHER_CODE) >= 0 ? clean(v.other) : "" };
+  }
+
+  /* รวมหลายชุด (union) ข้อความอื่นๆ ที่ต่างกันต่อด้วย ", " · คืน null ถ้าไม่มีข้อที่เลือกเลย */
+  function mergeCauses(list) {
+    const codes = [];
+    const others = [];
+    (list || []).forEach(function (v) {
+      const n = normalizeCauses(v);
+      if (!n) return;
+      n.codes.forEach(function (c) { if (codes.indexOf(c) < 0) codes.push(c); });
+      if (n.other && others.indexOf(n.other) < 0) others.push(n.other);
+    });
+    return normalizeCauses({ codes: codes, other: others.join(", ") });
+  }
+
+  /* opts.required (ค่าเริ่ม true) = แสดง * สีแดง */
+  function causesFieldHTML(p, value, opts) {
+    p = p || "cs_";
+    injectStyle();
+    const v = normalizeCauses(value) || { codes: [], other: "" };
+    const required = !(opts && opts.required === false);
+    const star = ' <span style="color: #dc2626">*</span>';
+    const hasOther = v.codes.indexOf(OTHER_CODE) >= 0;
+    return (
+      '<div class="form-group vl-causes" id="' + p + 'causesGroup">' +
+      '<label class="vl-causes-label" id="' + p + 'causesLabel">' + esc(CAUSES_LABEL) + (required ? star : "") +
+      ' <span class="vl-causes-hint" style="font-weight:400;color:#64748b;font-size:.85em">(เลือกได้มากกว่า 1 ข้อ)</span></label>' +
+      '<div class="vl-cause-grid" role="group" aria-labelledby="' + p + 'causesLabel">' +
+      causeList().map(function (c) {
+        const id = p + "cause_" + c.code;
+        return '<label class="vl-cause-item" for="' + id + '"><input type="checkbox" id="' + id + '" name="' + p + 'causes" value="' + esc(c.code) + '"' +
+          (v.codes.indexOf(c.code) >= 0 ? " checked" : "") + " /><span>" + esc(c.code + ". " + c.name) + "</span></label>";
+      }).join("") +
+      "</div>" +
+      '<div class="vl-cause-other" id="' + p + 'causeOtherGroup"' + (hasOther ? "" : " hidden") + ">" +
+      '<label for="' + p + 'causeOther">ระบุมูลเหตุอื่นๆ' + star + "</label>" +
+      '<input type="text" id="' + p + 'causeOther" class="form-control" maxlength="500" value="' + esc(v.other) + '" placeholder="ระบุมูลเหตุอื่นๆ" /></div>' +
+      "</div>"
+    );
+  }
+
+  /* ใส่ช่องลงใน host แล้วผูก event คืน true ถ้าสำเร็จ */
+  function mountCauses(hostId, p, value, opts) {
+    const host = $(hostId);
+    if (!host || !global.ECMISVerdictLists) return false;
+    host.innerHTML = causesFieldHTML(p, value, opts);
+    wireCauses(p);
+    return true;
+  }
+
+  function syncCauseOther(p) {
+    const box = $(p + "cause_" + OTHER_CODE);
+    const group = $(p + "causeOtherGroup");
+    if (box && group) group.hidden = !box.checked;
+  }
+
+  function wireCauses(p) {
+    p = p || "cs_";
+    const box = $(p + "cause_" + OTHER_CODE);
+    if (!box || box.dataset.vlCauseBound) return;
+    box.dataset.vlCauseBound = "1";
+    box.addEventListener("change", function () {
+      syncCauseOther(p);
+      if (box.checked && $(p + "causeOther")) $(p + "causeOther").focus();
+    });
+  }
+
+  /* ตั้งค่าใหม่ให้ชุดช่องที่ mount แล้ว (เช่น เติมจากคดีเดิมหลังเลือกคดี) */
+  function setCauses(p, value) {
+    p = p || "cs_";
+    const v = normalizeCauses(value) || { codes: [], other: "" };
+    causeList().forEach(function (c) {
+      const box = $(p + "cause_" + c.code);
+      if (box) box.checked = v.codes.indexOf(c.code) >= 0;
+    });
+    if ($(p + "causeOther")) $(p + "causeOther").value = v.other;
+    syncCauseOther(p);
+  }
+
+  /* คืน { codes, other } หรือ null ถ้ายังไม่เลือก */
+  function collectCauses(p) {
+    p = p || "cs_";
+    const codes = causeList().map(function (c) { return c.code; }).filter(function (code) {
+      const box = $(p + "cause_" + code);
+      return !!(box && box.checked);
+    });
+    if (!codes.length) return null;
+    const other = $(p + "causeOther");
+    return { codes: codes, other: codes.indexOf(OTHER_CODE) >= 0 && other ? other.value.trim() : "" };
+  }
+
+  /* ตรวจตอนส่ง คืนข้อความเตือน หรือ "" ถ้าครบ */
+  function validateCauses(v) {
+    if (!v || !Array.isArray(v.codes) || !v.codes.length) return "กรุณาเลือกมูลเหตุอย่างน้อย 1 ข้อ";
+    if (v.codes.indexOf(OTHER_CODE) >= 0 && !clean(v.other)) return "กรุณาระบุมูลเหตุอื่นๆ";
+    return "";
+  }
+
+  /* ข้อความอ่านอย่างเดียว เช่น "1. คณะกรรมการ ป.ป.ท. มีมติชี้มูลความผิด; 7. อื่นๆ (ข้อความ)" */
+  function causesText(v) {
+    const n = normalizeCauses(v);
+    if (!n) return "";
+    return n.codes.map(function (code) {
+      const item = causeList().find(function (c) { return c.code === code; });
+      const name = item ? item.code + ". " + item.name : code;
+      return code === OTHER_CODE && n.other ? name + " (" + n.other + ")" : name;
+    }).join("; ");
+  }
+
   global.ECMIS103VerdictLink = {
     LEVEL: LEVEL,
+    CAUSES_LABEL: CAUSES_LABEL,
+    causeList: causeList,
+    normalizeCauses: normalizeCauses,
+    mergeCauses: mergeCauses,
+    causesFieldHTML: causesFieldHTML,
+    mountCauses: mountCauses,
+    wireCauses: wireCauses,
+    setCauses: setCauses,
+    collectCauses: collectCauses,
+    validateCauses: validateCauses,
+    causesText: causesText,
     markAutofill: markAutofill,
     clearAutofill: clearAutofill,
     fillExtra: fillExtra,
     renderOriginInfo: renderOriginInfo,
     mountRecord: mountRecord,
+    recordFieldsHTML: recordFieldsHTML,
+    wireRecord: wireRecord,
     collectRecord: collectRecord,
     saveRecord: saveRecord,
     readOnlyHTML: readOnlyHTML,

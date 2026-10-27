@@ -252,7 +252,7 @@ t("บันทึกแล้วอ่านใหม่ผ่าน getCases �
   const reread = A.getCases().find((c) => c.id === id); // อ่านใหม่ทั้งชุด ไม่ใช้ object ที่ฟังก์ชันคืนมาโดยตรง
   const rec = reread.dispatchRecipients.find((r) => r.key === "oag");
   assert.equal(rec.trackingNo, "ED887711223TH");
-  assert.equal(reread.status, "นิติกรจัดส่งหนังสือ (บันทึกแล้ว 1/2)");
+  assert.equal(reread.status, "นิติกร ส่งหนังสือ (1/2)");
 });
 
 console.log("\n" + passed + " passed\n");

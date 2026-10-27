@@ -72,11 +72,35 @@
   ];
 
   /* AA ประเภทคำพิพากษา (ชีต "ประเภท ลักษณะของคดี" หัวข้อ "คำพิพากษาใน Script") */
+  /* 2026-10-27 "ลงโทษ" แยกเป็นกลุ่ม 3 ข้อ (1.1–1.3), เพิ่ม "รอการลงโทษ",
+     "อื่นๆ - ศาลสั่งยุติ" → "จำหน่ายคดี" + ช่องสาเหตุ (verdictTypeOther)
+     รหัส "1" เดิม (ลงโทษ ไม่ระบุแบบ) ยังอ่านได้ แต่ไม่มีให้เลือกใหม่ */
   const VERDICT_TYPES = [
-    { code: "1", name: "ลงโทษ" },
+    { code: "1.1", name: "ลงโทษจำคุก", group: "ลงโทษ" },
+    { code: "1.2", name: "ลงโทษปรับ", group: "ลงโทษ" },
+    { code: "1.3", name: "ลงโทษทั้งจำทั้งปรับ", group: "ลงโทษ" },
+    { code: "5", name: "รอการลงโทษ" },
     { code: "2", name: "ยกฟ้อง" },
+    { code: "4", name: "จำหน่ายคดี", needsReason: true },
+  ];
+  /* 2026-10-27 ตัด "อัยการสั่งไม่ฟ้อง" (3) ออกจากตัวเลือก — ข้อมูลเดิมยังอ่านได้ */
+  const LEGACY_VERDICT_TYPES = [
+    { code: "1", name: "ลงโทษ" },
     { code: "3", name: "อัยการสั่งไม่ฟ้อง" },
-    { code: "4", name: "อื่นๆ - ศาลสั่งยุติ (ตาย, ขาดอายุความ)" },
+  ];
+  const verdictType = (code) =>
+    VERDICT_TYPES.concat(LEGACY_VERDICT_TYPES).find((t) => t.code === code) || null;
+  const isPunishVerdict = (code) => /^1(\.|$)/.test(code || "");
+
+  /* มูลเหตุ คดีปกครอง 10.3 (เลือกได้หลายข้อ) เก็บบนเคสเป็น l3Causes: { codes: ["1","3"], other } (2026-10-27) */
+  const ADMIN_CAUSES = [
+    { code: "1", name: "คณะกรรมการ ป.ป.ท. มีมติชี้มูลความผิด" },
+    { code: "2", name: "พ.ร.บ. ข้อมูลข้าวสารฯ" },
+    { code: "3", name: "ความรับผิดทางละเมิดเจ้าหน้าที่" },
+    { code: "4", name: "ปฏิบัติหน้าที่ละเลยล่าช้า" },
+    { code: "5", name: "ยุติไม่รับไว้ไต่สวนเพื่อวินิจฉัยชี้มูล" },
+    { code: "6", name: "คดีเกี่ยวกับการบริหารงานบุคคลของ ป.ป.ท." },
+    { code: "7", name: "อื่นๆ", needsOther: true },
   ];
 
   /* AH สถานะชั้นคำพิพากษา (fz) แยกตามชั้นศาล — ตัด "ลงโทษบางราย" / "ยกฟ้องบางราย" ที่ Excel ให้ลบออก
@@ -121,7 +145,34 @@
   ];
 
   /* AN ประเภทการชดใช้ทางแพ่ง */
-  const RESTITUTION_TYPES = ["ชดใช้เงิน", "คืนเงิน"];
+  /* 2026-10-27 เพิ่ม "คืนของกลาง" และ "อื่นๆ" (ระบุในช่อง restitutionOther) */
+  const RESTITUTION_TYPES = ["ชดใช้เงิน", "คืนเงิน", "คืนของกลาง", "อื่นๆ"];
+
+  /* ปุ่มแนะนำข้อความ (กดแล้วเติมลงช่อง) — ฐานความผิด (รวมกับฐานความผิดของสำนวน offenseBases) และรายละเอียดการลงโทษ (AV) */
+  const OFFENSE_BASIS_SUGGESTIONS = [
+    "ประมวลกฎหมายอาญา มาตรา 147 (เจ้าพนักงานเบียดบังทรัพย์)",
+    "ประมวลกฎหมายอาญา มาตรา 151 (เจ้าพนักงานใช้อำนาจในตำแหน่งโดยทุจริต เป็นเหตุให้เกิดความเสียหาย)",
+    "ประมวลกฎหมายอาญา มาตรา 157 (เจ้าพนักงานปฏิบัติหรือละเว้นการปฏิบัติหน้าที่โดยมิชอบ)",
+    "ประมวลกฎหมายอาญา มาตรา 162 (เจ้าพนักงานรับรองเอกสารอันเป็นเท็จ)",
+    "พ.ร.บ.ว่าด้วยความผิดเกี่ยวกับการเสนอราคาต่อหน่วยงานของรัฐ พ.ศ. 2542 มาตรา 12",
+  ];
+  /* ประเด็นอุทธรณ์ — แสดงเฉพาะชั้นศาลอุทธรณ์ (APPEAL) */
+  const APPEAL_ISSUE_SUGGESTIONS = [
+    "อุทธรณ์ในข้อเท็จจริง",
+    "อุทธรณ์ในข้อกฎหมาย",
+    "อุทธรณ์ขอให้ยกฟ้อง",
+    "อุทธรณ์ขอให้ลงโทษสถานเบา/รอการลงโทษ",
+    "อุทธรณ์ขอให้ลงโทษจำเลยหนักขึ้น",
+    "อุทธรณ์คัดค้านการกำหนดโทษและค่าเสียหาย",
+  ];
+  const PUNISH_DETAIL_SUGGESTIONS = [
+    "ลดโทษให้หนึ่งในสาม เนื่องจากรับสารภาพ",
+    "ลดโทษให้กึ่งหนึ่ง",
+    "โทษจำคุกให้รอการลงโทษไว้",
+    "คุมความประพฤติ รายงานตัวต่อพนักงานคุมประพฤติ",
+    "ให้ทำงานบริการสังคมหรือสาธารณประโยชน์",
+    "ริบของกลาง",
+  ];
 
   /* AG สถานะชั้นพนักงานอัยการ — ชีต DD "สถานะคดีผลการพิจารณาของพนักงานอัยการ" หลังแก้ตาม เพิ่ม/ลบออก
      (ลบออกเฉพาะ 3.1 เดิม "แจ้งคำสั่งฟ้อง" → แทนด้วย ฟ้องทุกราย/ฟ้องบางราย; 3.2–3.4 เดิมเลื่อนเป็น 3.3–3.5)
@@ -325,7 +376,7 @@
         {
           level: "FIRST", person: MULTI_P1, status: "done", court: MULTI_FIRST_COURT,
           fields: {
-            caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            caseNatureNo: "1", verdictType: "1.1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
             resultDetail: "จำเลยที่ 1 มีความผิดตามประมวลกฎหมายอาญา มาตรา 151 จำคุก 3 ปี ปรับ 60,000 บาท และให้ชดใช้เงิน 480,000 บาท",
             offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 151",
             jailYears: 3, fine: 60000, restitutionType: "ชดใช้เงิน", restitutionAmount: 480000,
@@ -336,7 +387,7 @@
         {
           level: "FIRST", person: MULTI_P2, status: "done", court: MULTI_FIRST_COURT,
           fields: {
-            caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            caseNatureNo: "1", verdictType: "1.1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
             resultDetail: "จำเลยที่ 2 มีความผิดตามประมวลกฎหมายอาญา มาตรา 157 จำคุก 2 ปี ปรับ 20,000 บาท โทษจำคุกให้รอการลงโทษไว้ 2 ปี",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 2, fine: 20000, actualFine: 20000, suspendedYears: 2, probationYears: 1, communityHours: 36, damageValue: 480000,
@@ -356,7 +407,7 @@
         {
           level: "APPEAL", person: MULTI_P1, status: "done", court: MULTI_APPEAL_COURT,
           fields: {
-            caseNatureNo: "1", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            caseNatureNo: "1", verdictType: "1.1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาแก้เป็นจำคุก 2 ปี 6 เดือน นอกจากที่แก้ให้เป็นไปตามคำพิพากษาศาลชั้นต้น",
             offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 151",
             jailYears: 2, jailMonths: 6, fine: 60000, restitutionType: "ชดใช้เงิน", restitutionAmount: 480000,
@@ -368,7 +419,7 @@
         {
           level: "APPEAL", person: MULTI_P2, status: "draft", court: MULTI_APPEAL_COURT,
           fields: {
-            caseNatureNo: "1", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            caseNatureNo: "1", verdictType: "1.1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษายืนตามคำพิพากษาศาลชั้นต้น (อยู่ระหว่างตรวจสอบรายละเอียด)",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 2, fine: 20000, damageValue: 480000,
@@ -405,7 +456,7 @@
           court: { type: "PROVINCIAL", name: "ศาลจังหวัดชลบุรี", blackNo: "อ. 1185/2567", redNo: "อ. 2210/2568", date: "2025-11-20" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
-            caseNatureNo: "5", verdictType: "1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
+            caseNatureNo: "5", verdictType: "1.1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาว่าจำเลยมีความผิดฐานเป็นเจ้าพนักงานเรียกรับทรัพย์สินโดยมิชอบและปฏิบัติหน้าที่โดยมิชอบ",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 4, jailMonths: 6, fine: 60000,
@@ -421,7 +472,7 @@
           court: { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 310/2568", redNo: "อท. 88/2569", date: "2026-04-22" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
-            caseNatureNo: "5", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            caseNatureNo: "5", verdictType: "1.1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาแก้เป็นจำคุก 3 ปี ปรับ 40,000 บาท นอกจากที่แก้ให้เป็นไปตามคำพิพากษาศาลชั้นต้น",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 3, fine: 40000,
@@ -437,7 +488,7 @@
           court: { type: "CORRUPTION", name: "ศาลฎีกา แผนกคดีทุจริตและประพฤติมิชอบ", blackNo: "ฎท. 45/2569", redNo: "ฎท. 102/2569", date: "2026-09-30" },
           fields: {
             statCountAs: "คดีชี้มูลที่ศาลพิพากษาลงโทษ", trackingGroup: "กลุ่มงานติดตามผลคดี",
-            caseNatureNo: "5", verdictType: "1", verdictStage: "3.1 ศาลฎีกาพิพากษาลงโทษทุกราย",
+            caseNatureNo: "5", verdictType: "1.1", verdictStage: "3.1 ศาลฎีกาพิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษายืนตามคำพิพากษาศาลอุทธรณ์",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 3, fine: 40000,
@@ -462,7 +513,7 @@
           status: "done",
           court: { type: "CORRUPTION", name: "ศาลอาญาคดีทุจริตและประพฤติมิชอบภาค 1", blackNo: "อท. 58/2568", redNo: "อท. 112/2569", date: "2026-03-18" },
           fields: {
-            caseNatureNo: "3", verdictType: "1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
+            caseNatureNo: "3", verdictType: "1.1", verdictStage: "1.1 ศาลชั้นต้นพิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาว่าจำเลยมีความผิดฐานเป็นเจ้าพนักงานเบียดบังทรัพย์ จำคุก 3 ปี และให้คืนเงิน 85,000 บาท",
             offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 147",
             jailYears: 3, restitutionType: "คืนเงิน", restitutionAmount: 85000,
@@ -476,7 +527,7 @@
           status: "done",
           court: { type: "CORRUPTION", name: "ศาลอุทธรณ์คดีพิเศษ", blackNo: "อท. 21/2569", redNo: "อท. 64/2569", date: "2026-08-27" },
           fields: {
-            caseNatureNo: "3", verdictType: "1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
+            caseNatureNo: "3", verdictType: "1.1", verdictStage: "2.1 ศาลอุทธรณ์พิพากษาลงโทษทุกราย",
             resultDetail: "พิพากษาแก้เป็นจำคุก 2 ปี นอกจากที่แก้ให้เป็นไปตามคำพิพากษาศาลชั้นต้น",
             offenseLaw: "อื่นๆ (โปรดระบุ)", offenseLawOther: "ประมวลกฎหมายอาญา มาตรา 147",
             jailYears: 2, restitutionType: "คืนเงิน", restitutionAmount: 85000,
@@ -519,7 +570,7 @@
           status: "done",
           court: { type: "PROVINCIAL", name: "ศาลจังหวัดสระบุรี", blackNo: "อ. 230/2568", redNo: "อ. 512/2569", date: "2026-09-15" },
           fields: {
-            caseNatureNo: "1", verdictType: "1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
+            caseNatureNo: "1", verdictType: "1.1", verdictStage: "1.3 ศาลชั้นต้นพิพากษาลงโทษบางรายและยกฟ้องบางราย",
             resultDetail: "จำเลยที่ 1 มีความผิด จำคุก 1 ปี 6 เดือน ปรับ 30,000 บาท โทษจำคุกให้รอการลงโทษไว้ 2 ปี",
             offenseLaw: "ประมวลกฎหมายอาญา มาตรา 157",
             jailYears: 1, jailMonths: 6, fine: 30000,
@@ -551,10 +602,16 @@
     PARTS: PARTS,
     levelPart: (code) => (LEVELS.find((l) => l.code === code) || {}).part || "",
     CASE_NATURES: CASE_NATURES,
+    ADMIN_CAUSES: ADMIN_CAUSES,
     VERDICT_TYPES: VERDICT_TYPES,
+    verdictType: verdictType,
+    isPunishVerdict: isPunishVerdict,
     VERDICT_STAGES: VERDICT_STAGES,
     OFFENSE_LAWS: OFFENSE_LAWS,
     RESTITUTION_TYPES: RESTITUTION_TYPES,
+    OFFENSE_BASIS_SUGGESTIONS: OFFENSE_BASIS_SUGGESTIONS,
+    PUNISH_DETAIL_SUGGESTIONS: PUNISH_DETAIL_SUGGESTIONS,
+    APPEAL_ISSUE_SUGGESTIONS: APPEAL_ISSUE_SUGGESTIONS,
     PROSECUTOR_STATUSES: PROSECUTOR_STATUSES,
     BOARD_OUTCOMES: BOARD_OUTCOMES,
     ACT7_SAMPLE: ACT7_SAMPLE,

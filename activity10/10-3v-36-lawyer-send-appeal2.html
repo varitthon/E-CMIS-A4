@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
     <link rel="stylesheet" href="assets/ecmis-shipping.css?v=20261022_2" />
@@ -151,6 +151,16 @@
 
           <!-- TOR 10.3.4.2 บันทึกผลคำพิพากษาศาลปกครองสูงสุด (หลังส่งคำอุทธรณ์แล้ว) -->
           <div id="supremeResultPanel"></div>
+
+          <!-- เอกสารสำหรับจัดส่ง (นิติกรต้องส่งเอกสารฉบับจริง) ดาวน์โหลดทีละไฟล์ได้อิสระ -->
+          <div class="form-card" id="shipDocsCard">
+            <div class="form-card-header">
+              <span><i class="fa-solid fa-folder-open text-primary me-2"></i>เอกสารสำหรับจัดส่ง</span>
+              <span class="badge" style="background: #dbeafe; color: #1e3a8a"><i class="fa-solid fa-print me-1"></i>ดาวน์โหลดเพื่อพิมพ์และจัดส่ง</span>
+            </div>
+            <div class="form-card-body" id="shipDocsBody"></div>
+          </div>
+
           <div class="form-card" id="sendCard" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30, 58, 138, 0.05)">
               <span><i class="fa-solid fa-paper-plane text-primary me-2"></i>ส่งหนังสือและคำอุทธรณ์ไปสำนักงานคดีปกครอง</span>
@@ -226,7 +236,11 @@
     <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-verdict-link.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_7"></script>
 
     <script>
       /* LAW0160B — นิติกร ส่งหนังสือและคำอุทธรณ์ไปสำนักงานคดีปกครอง (Branch A
@@ -309,10 +323,160 @@
         ECMIS103.setText("f_caseRegNo", c.l8CaseRegNo);
         ECMIS103.setText("f_externalDocNo", c.l9aExternalDocNo);
         ECMIS103.renderAttachments("f_draftAttachments", c.l9aDraftAttachments);
+        renderShipDocs(c);
 
         document.getElementById("in_sentDate").value = todayISO();
         document.getElementById("in_handDate").value = todayISO();
         toggleSendMethod();
+      }
+
+      /* ---- เอกสารสำหรับจัดส่ง ----
+         หน้าสายมติบอร์ด (10-3v-32..35) ไม่มีตัวสร้างเอกสาร (ECMIS103Docs) และระบบ
+         mockup เก็บไฟล์แนบเป็นชื่อไฟล์อย่างเดียว ปุ่มดาวน์โหลดจึงสร้างไฟล์ตัวแทน
+         (text/plain) ตามชื่อไฟล์ที่บันทึกไว้ ส่วนหนังสือนำส่ง/หนังสือแจ้งมติบอร์ด
+         ที่ไม่มีไฟล์แนบ สร้างไฟล์สรุปข้อมูลจากเคส */
+      function thaiDateOrDash(iso) {
+        return iso ? ECMIS103.formatThaiDate(new Date(iso)) : "-";
+      }
+
+      function uniqueNames(list) {
+        return Array.from(new Set((list || []).filter(Boolean).map(String)));
+      }
+
+      function fileRow(name, sub) {
+        return { label: name, sub: sub || "", fileName: name, content: null };
+      }
+
+      function buildShipDocGroups(c) {
+        const appealFiles = uniqueNames(c.l9aDraftAttachments).map((n) => fileRow(n));
+
+        const coverRows = [];
+        if (c.l9aExternalDocNo) {
+          coverRows.push({
+            label: "หนังสือนำส่งคำอุทธรณ์ เลขที่ " + c.l9aExternalDocNo,
+            sub: "ลงนามโดย ผอ.กองกฎหมาย ลงวันที่ " + thaiDateOrDash(c.l9aExternalDocDate),
+            fileName: "หนังสือนำส่งคำอุทธรณ์_" + String(c.l9aExternalDocNo).replace(/[\\/:*?"<>|\s]+/g, "-") + ".txt",
+            content: [
+              "หนังสือนำส่งคำอุทธรณ์",
+              "เลขที่หนังสือ: " + c.l9aExternalDocNo,
+              "ลงวันที่: " + thaiDateOrDash(c.l9aExternalDocDate),
+              "เลขคดี: " + (c.id || "-"),
+              "หมายเลขคดีดำ: " + (c.blackCaseNo || "-"),
+              "ศาล: " + (c.courtName || "-"),
+              "ผู้ลงนาม: ผอ.กองกฎหมาย",
+              "ความเห็นผู้ลงนาม: " + (c.l9aDirectorSignNotes || "-"),
+            ].join("\r\n"),
+          });
+        }
+
+        const verdictRows = [];
+        const seen = new Set();
+        (c.verdicts || []).forEach((v, i) => {
+          uniqueNames(v.attachmentFileNames).forEach((n) => {
+            if (seen.has(n)) return;
+            seen.add(n);
+            verdictRows.push(fileRow(n, "คำพิพากษาที่ " + (v.no || i + 1) + (v.redCaseNo ? " คดีหมายเลขแดง " + v.redCaseNo : "")));
+          });
+        });
+        uniqueNames(c.attachmentFileNames).forEach((n) => {
+          if (seen.has(n)) return;
+          seen.add(n);
+          verdictRows.push(fileRow(n));
+        });
+
+        const boardRows = [];
+        if (c.l9BoardResolutionNo || c.l9aReceiveNo) {
+          boardRows.push({
+            label: "หนังสือแจ้งมติบอร์ด" + (c.l9BoardResolutionNo ? " มติที่ " + c.l9BoardResolutionNo : ""),
+            sub: "เลขรับ " + (c.l9aReceiveNo || "-") + " รับวันที่ " + thaiDateOrDash(c.l9aReceiveDate),
+            fileName: "หนังสือแจ้งมติบอร์ด_" + String(c.id || "").replace(/[\\/:*?"<>|\s]+/g, "-") + ".txt",
+            content: [
+              "หนังสือแจ้งมติบอร์ดเห็นชอบให้อุทธรณ์",
+              "เลขที่มติบอร์ด: " + (c.l9BoardResolutionNo || "-"),
+              "วันประชุมบอร์ด: " + thaiDateOrDash(c.l9BoardMeetingDate),
+              "หมายเหตุมติบอร์ด: " + (c.l9BoardNotes || "-"),
+              "เลขรับเรื่อง (สารบรรณ): " + (c.l9aReceiveNo || "-"),
+              "วันที่รับเรื่อง: " + thaiDateOrDash(c.l9aReceiveDate),
+              "เลขคดี: " + (c.id || "-"),
+            ].join("\r\n"),
+          });
+        }
+        uniqueNames(c.l8OpinionAttachments).forEach((n) => boardRows.push(fileRow(n, "เอกสารแนบบันทึกเสนอบอร์ด")));
+
+        return [
+          { title: "คำอุทธรณ์", icon: "fa-file-signature", rows: appealFiles },
+          { title: "หนังสือนำส่ง", icon: "fa-envelope-open-text", rows: coverRows },
+          { title: "คำพิพากษา", icon: "fa-gavel", rows: verdictRows },
+          { title: "หนังสือแจ้งมติบอร์ด", icon: "fa-users-rectangle", rows: boardRows },
+        ];
+      }
+
+      function renderShipDocs(c) {
+        const body = document.getElementById("shipDocsBody");
+        if (!body) return;
+        body.textContent = "";
+        buildShipDocGroups(c).forEach((group) => {
+          const wrap = document.createElement("div");
+          wrap.className = "form-group";
+          const label = document.createElement("label");
+          label.style.justifyContent = "flex-start";
+          const icon = document.createElement("i");
+          icon.className = "fa-solid " + group.icon + " me-2";
+          icon.style.color = "#2563eb";
+          label.appendChild(icon);
+          label.appendChild(document.createTextNode(group.title + " (" + group.rows.length + ")"));
+          wrap.appendChild(label);
+
+          if (!group.rows.length) {
+            const empty = document.createElement("div");
+            empty.className = "read-box l3-optional";
+            empty.textContent = "ไม่มีไฟล์";
+            wrap.appendChild(empty);
+          }
+          group.rows.forEach((row) => wrap.appendChild(shipDocRow(row)));
+          body.appendChild(wrap);
+        });
+      }
+
+      function shipDocRow(row) {
+        const el = document.createElement("div");
+        el.className = "l3-attachment-row";
+        const name = document.createElement("div");
+        name.className = "l3-attachment-name";
+        const clip = document.createElement("i");
+        clip.className = "fa-solid fa-paperclip me-2";
+        name.appendChild(clip);
+        name.appendChild(document.createTextNode(row.label));
+        if (row.sub) {
+          const sub = document.createElement("span");
+          sub.style.cssText = "color:#64748b; font-size:0.85em; margin-left:8px;";
+          sub.textContent = row.sub;
+          name.appendChild(sub);
+        }
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn btn-secondary";
+        btn.style.cssText = "height: 28px; padding: 0 10px; font-size: 0.8em";
+        btn.innerHTML = '<i class="fa-solid fa-download me-1"></i>ดาวน์โหลด';
+        btn.addEventListener("click", () => downloadShipDoc(row));
+        el.appendChild(name);
+        el.appendChild(btn);
+        return el;
+      }
+
+      function downloadShipDoc(row) {
+        const text =
+          row.content ||
+          ["ไฟล์ตัวอย่าง (ระบบต้นแบบเก็บเฉพาะชื่อไฟล์)", "ชื่อไฟล์: " + row.fileName, "เลขคดี: " + ((currentCase && currentCase.id) || "-")].join("\r\n");
+        const blob = new Blob(["﻿" + text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = row.fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
       /* สลับฟิลด์ตามวิธีการจัดส่งที่เลือก — ตอนโหลดหน้ายังไม่เลือกอะไรไว้

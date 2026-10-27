@@ -46,7 +46,8 @@
 
   /* "ศาลพิพากษาลงโทษ" — ต้นฉบับ: พิพากษาลงโทษ / พิพากษายกฟ้อง */
   function verdictWord(f) {
-    if (f.verdictType === "1") return "พิพากษาลงโทษ";
+    /* ลงโทษ 1.1–1.3 → "พิพากษาลงโทษจำคุก" ฯลฯ; รหัส "1" เดิม → "พิพากษาลงโทษ" */
+    if (/^1(\.|$)/.test(f.verdictType || "")) return "พิพากษา" + R().verdictTypeText(f);
     if (f.verdictType === "2") return "พิพากษายกฟ้อง";
     return R().verdictTypeText(f) || "-";
   }

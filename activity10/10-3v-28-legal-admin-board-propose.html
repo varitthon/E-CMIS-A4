@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ธุรการ ส่งมติเสนอบอร์ด | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>ธุรการเสนอมติตามลำดับชั้น | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
@@ -273,7 +273,7 @@
           <div class="breadcrumb">
             <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >ธุรการ ส่งมติเสนอบอร์ด</span
+              >ธุรการเสนอมติตามลำดับชั้น</span
             >
           </div>
         </div>
@@ -430,7 +430,7 @@
             </div>
           </div>
 
-          <!-- B5 (P10): หลังส่งมติเสนอบอร์ดแล้ว (L9_PROPOSED_TO_BOARD) หน้านี้รอผลกิจกรรมที่ 7 —
+          <!-- B5 (P10): หลังเสนอมติตามลำดับชั้นแล้ว (L9_PROPOSED_TO_BOARD) หน้านี้รอผลกิจกรรมที่ 7 —
                สวิตช์ bypass เปิด + ธุรการกองกฎหมาย → ปุ่มบันทึกผลพิจารณาแทนกิจกรรมที่ 7 -->
           <div class="form-card d-none" id="act7Card" style="border: 2px solid #1e3a8a">
             <div
@@ -447,7 +447,7 @@
             </div>
             <div class="form-card-body">
               <div class="read-box" id="act7WaitNote">
-                ส่งมติเสนอบอร์ดแล้ว — ระหว่างรอการประชุมคณะกรรมการ ป.ป.ท. พิจารณา
+                เสนอมติตามลำดับชั้นแล้ว — ระหว่างรอการประชุมคณะกรรมการ ป.ป.ท. พิจารณา
               </div>
               <button type="button" class="btn btn-primary d-none" id="btnAct7Save" onclick="openAct7Popup()" style="margin-top: 12px">
                 <i class="fa-solid fa-clipboard-check me-1"></i>บันทึกผลพิจารณาของคณะกรรมการ ป.ป.ท.
@@ -462,7 +462,7 @@
             >
               <span
                 ><i class="fa-solid fa-paper-plane text-primary me-2"></i
-                >ส่งมติเสนอบอร์ด</span
+                >เสนอมติตามลำดับชั้น</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
                 ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
@@ -480,13 +480,29 @@
                     style="font-weight: 700; color: #1e3a8a" data-doc-no="ปป 0003/" data-doc-no-date="in_dispatchDate" />
                 </div>
                 <div class="form-group">
-                  <label>วันที่ส่งมติเสนอบอร์ด</label>
+                  <label>วันที่เสนอมติตามลำดับชั้น</label>
                   <input
                     type="date"
                     id="in_dispatchDate"
                     class="form-control font-monospace"
                     lang="th-TH-u-ca-buddhist"
                   />
+                </div>
+              </div>
+              <!-- เสนอต่อผู้บริหาร — แบบเดียวกับ 10-3-09 (in_proposeTo) -->
+              <div class="form-group">
+                <label for="in_proposeTo"
+                  >เสนอต่อ <span style="color: #dc2626">*</span></label
+                >
+                <select id="in_proposeTo" class="form-control" onchange="showProposeToName()">
+                  <option value="">-- เลือกผู้บริหารที่เสนอต่อ --</option>
+                  <option value="deputy_sg">
+                    รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.
+                  </option>
+                  <option value="secgen">เลขาธิการ ป.ป.ท.</option>
+                </select>
+                <div class="read-box mt-2" id="f_proposeToName" style="display: none; font-weight: 600; color: #1e3a8a">
+                  <i class="fa-solid fa-user-tie me-1"></i><span></span>
                 </div>
               </div>
               <div class="form-group">
@@ -508,7 +524,7 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>ส่งมติเสนอบอร์ด
+                <i class="fa-solid fa-paper-plane me-1"></i>เสนอมติตามลำดับชั้น
               </button>
             </div>
           </div>
@@ -523,7 +539,8 @@
     <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_7"></script>
     <script src="assets/ecmis-act7-bypass.js?v=20261022_actref"></script>
 
     <script>
@@ -623,6 +640,15 @@
           c.l9InternalDocNo || "";
         document.getElementById("in_dispatchDate").value =
           c.l9SentDate || todayISO();
+        if (c.l9ProposeTo) document.getElementById("in_proposeTo").value = c.l9ProposeTo;
+        showProposeToName();
+      }
+
+      function showProposeToName() {
+        const role = document.getElementById("in_proposeTo").value;
+        const box = document.getElementById("f_proposeToName");
+        box.style.display = role ? "" : "none";
+        box.querySelector("span").textContent = role ? ECMIS103.signerLabel(role) : "";
       }
 
       function doneAndBack(text) {
@@ -641,11 +667,26 @@
           document.getElementById("in_dispatchDate").value || todayISO();
         const notes =
           document.getElementById("in_dispatchNotes").value.trim() || "-";
+        const proposeSel = document.getElementById("in_proposeTo");
+        if (!proposeSel.value) {
+          Swal.fire({
+            icon: "warning",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณาเลือกผู้บริหารที่เสนอต่อ",
+            confirmButtonColor: "#1e3a8a",
+          });
+          proposeSel.focus();
+          return;
+        }
+        const proposeToLabel = proposeSel.options[proposeSel.selectedIndex].text.trim();
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยันส่งมติเสนอบอร์ด",
-          text: "ส่งมติอุทธรณ์เสนอคณะกรรมการ ป.ป.ท. (เสนอมติต่อบอร์ด)",
+          title: "ยืนยันเสนอมติตามลำดับชั้น",
+          html:
+            "ส่งมติอุทธรณ์เสนอคณะกรรมการ ป.ป.ท. (เสนอมติต่อบอร์ด)<br/>เสนอต่อ: <strong>" +
+            proposeToLabel +
+            "</strong>",
           showCancelButton: true,
           confirmButtonText: "ยืนยันส่ง",
           cancelButtonText: "ยกเลิก",
@@ -657,6 +698,8 @@
             l9InternalDocNo: docNo || "-",
             l9SentDate: docDate,
             l9SendNotes: notes,
+            l9ProposeTo: proposeSel.value,
+            l9ProposeToLabel: proposeToLabel,
           });
           const finish = () => doneAndBack("ส่งมติอุทธรณ์เสนอบอร์ดเรียบร้อยแล้ว");
           /* P12 (B5): สวิตช์ ON → ป๊อปอัปจำลองมติบอร์ด (อุทธรณ์/ไม่อุทธรณ์) หลังส่ง

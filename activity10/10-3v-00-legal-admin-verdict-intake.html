@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-legacy.css?v=20261022_3" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-modal.css" />
     <link rel="stylesheet" href="assets/ecmis-10-3.css?v=20261022_m2325" />
 
@@ -168,6 +168,74 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+      }
+      /* ศาล / เลขคดีดำ — ล็อกตามคดีเดิม */
+      .form-group label:has(.locked-tag) {
+        justify-content: flex-start;
+        gap: 4px;
+      }
+      .locked-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.78em;
+        font-weight: 600;
+      }
+      .form-control.locked-field {
+        background: var(--bg-body);
+        color: var(--text-title);
+        cursor: not-allowed;
+      }
+      /* ชุดคำพิพากษา (1 ชุดต่อคำพิพากษา) */
+      .verdict-block {
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #1e3a8a;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .verdict-block-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        color: #1e3a8a;
+      }
+      .verdict-block-body {
+        padding: 14px;
+      }
+      .verdict-sub-title {
+        font-weight: 700;
+        font-size: 0.85em;
+        color: #64748b;
+        margin: 4px 0 10px;
+      }
+      .defendant-pick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .defendant-pick label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-weight: 500;
+        margin: 0;
+        cursor: pointer;
+      }
+      .defendant-pick label.is-taken {
+        opacity: 0.55;
+        cursor: not-allowed;
       }
 
       .form-control {
@@ -382,7 +450,7 @@
         <div class="page-header-bar" style="margin-bottom: 16px">
           <div class="page-title">
             <i class="fa-solid fa-gavel"></i>
-            รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
+            <span id="pageTitleText">รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น</span>
           </div>
         </div>
 
@@ -447,14 +515,57 @@
               >
             </div>
             <div class="form-card-body">
-              <!-- ค้นหาคดีรับคำฟ้องเดิม (ไม่บังคับ) — รูปแบบเดียวกับ
+              <!-- ชั้นศาลที่มีคำพิพากษา: ชั้นต้น = สร้างเคสคำพิพากษาใหม่ (flow เดิม) ·
+                   สูงสุด = ปิดคดีที่รอศาลปกครองสูงสุด (*_SENT_TO_PROSECUTOR) เป็นคดีถึงที่สุด -->
+              <div class="form-group">
+                <label
+                  >ชั้นศาลที่มีคำพิพากษา
+                  <span style="color: #dc2626">*</span></label
+                >
+                <div class="l3-decision-grid">
+                  <label class="l3-decision-card active-approve" id="courtLevelCard_FIRST">
+                    <input
+                      type="radio"
+                      name="in_courtLevel"
+                      value="FIRST"
+                      checked
+                      onchange="setCourtLevel(this.value)"
+                    />
+                    <div>
+                      <div class="l3-decision-title">ศาลปกครองชั้นต้น</div>
+                      <div class="l3-decision-sub">
+                        สร้างสำนวนคำพิพากษาใหม่ และเสนอ ผอ.กองกฎหมาย
+                      </div>
+                    </div>
+                  </label>
+                  <label class="l3-decision-card" id="courtLevelCard_SUPREME">
+                    <input
+                      type="radio"
+                      name="in_courtLevel"
+                      value="SUPREME"
+                      onchange="setCourtLevel(this.value)"
+                    />
+                    <div>
+                      <div class="l3-decision-title">ศาลปกครองสูงสุด</div>
+                      <div class="l3-decision-sub">
+                        บันทึกผลในสำนวนที่รอศาลปกครองสูงสุด และปิดสำนวน (คดีถึงที่สุด)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- ค้นหาคดีรับคำฟ้องเดิม (บังคับ — ศาล/เลขคดีดำมาจากคดีนี้) — รูปแบบเดียวกับ
                    "ค้นหาฐานข้อมูลสำนวนคดีเดิม" ใน 02-board-intake.html -->
               <div class="form-grid-3" style="margin-bottom: 0">
                 <div
                   class="form-group"
                   style="margin-bottom: 0; grid-column: span 2 / span 3"
                 >
-                  <label>ค้นหาคดีรับคำฟ้องเดิม (ไม่บังคับ)</label>
+                  <label
+                    ><span id="originSearchLabel">ค้นหาคดีรับคำฟ้องเดิม</span>
+                    <span style="color: #dc2626">*</span></label
+                  >
                   <input
                     type="text"
                     id="in_originBlackNo"
@@ -475,137 +586,60 @@
                   </button>
                 </div>
               </div>
-              <div class="helper-text" style="margin-bottom: 16px">
+              <div
+                id="supremeSearchHelp"
+                class="helper-text d-none"
+                style="margin-bottom: 16px"
+              >
+                * แสดงเฉพาะสำนวนที่ส่งอุทธรณ์/คำแก้อุทธรณ์แล้ว และรอผลศาลปกครองสูงสุด
+                ค้นหาได้จากหมายเลขคดีดำ ชื่อผู้ฟ้อง หรือชื่อผู้ถูกฟ้อง
+              </div>
+              <div id="firstSearchHelp" class="helper-text" style="margin-bottom: 16px">
                 * ค้นหาได้จาก: <strong>หมายเลขคดีดำ</strong> (เช่น อ.
                 104/2569), <strong>ชื่อผู้ฟ้อง</strong> หรือ
-                <strong>ชื่อผู้ถูกฟ้อง</strong> — เลือกแล้วจะคัดลอกศาล/เลขคดีดำ/คู่ความมาให้
-                แก้ไขได้
+                <strong>ชื่อผู้ถูกฟ้อง</strong> — ต้องเลือกคดีเดิมก่อน ระบบดึงศาล/เลขคดีดำ
+                (แก้ไขไม่ได้) และคู่ความ (แก้ไขได้) มาให้
               </div>
               <div id="originCaseResults" class="d-none" style="margin-bottom: 20px"></div>
               <div id="originCaseSelected" style="margin-bottom: 16px"></div>
               <!-- ข้อมูลจากคดีรับคำฟ้องเดิม (อ่านอย่างเดียว) — ECMIS103VerdictLink.renderOriginInfo -->
               <div id="originInfo"></div>
 
+              <!-- ศาล / หมายเลขคดีดำ — ดึงจากคดีรับคำฟ้องเดิมเท่านั้น (อ่านอย่างเดียว) -->
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label>ศาล <span style="color: #dc2626">*</span></label>
-                  <select id="in_courtName" class="form-control">
-                    <option value="ศาลปกครองสูงสุด">ศาลปกครองสูงสุด</option>
-                    <option value="ศาลปกครองกลาง" selected>
-                      ศาลปกครองกลาง
-                    </option>
-                    <option value="ศาลปกครองเชียงใหม่">
-                      ศาลปกครองเชียงใหม่
-                    </option>
-                    <option value="ศาลปกครองสงขลา">ศาลปกครองสงขลา</option>
-                    <option value="ศาลปกครองนครราชสีมา">
-                      ศาลปกครองนครราชสีมา
-                    </option>
-                    <option value="ศาลปกครองขอนแก่น">ศาลปกครองขอนแก่น</option>
-                    <option value="ศาลปกครองพิษณุโลก">ศาลปกครองพิษณุโลก</option>
-                    <option value="ศาลปกครองระยอง">ศาลปกครองระยอง</option>
-                    <option value="ศาลปกครองนครศรีธรรมราช">
-                      ศาลปกครองนครศรีธรรมราช
-                    </option>
-                    <option value="ศาลปกครองอุดรธานี">ศาลปกครองอุดรธานี</option>
-                    <option value="ศาลปกครองอุบลราชธานี">
-                      ศาลปกครองอุบลราชธานี
-                    </option>
-                    <option value="ศาลปกครองเพชรบุรี">ศาลปกครองเพชรบุรี</option>
-                    <option value="ศาลปกครองนครสวรรค์">
-                      ศาลปกครองนครสวรรค์
-                    </option>
-                    <option value="ศาลปกครองสุพรรณบุรี">
-                      ศาลปกครองสุพรรณบุรี
-                    </option>
-                    <option value="ศาลปกครองภูเก็ต">ศาลปกครองภูเก็ต</option>
-                    <option value="ศาลปกครองยะลา">ศาลปกครองยะลา</option>
-                    <option value="อื่นๆ">อื่นๆ</option>
-                  </select>
-                </div>
-                <div class="form-group">
                   <label
-                    >วันที่ศาลมีคำพิพากษา
-                    <span style="color: #dc2626">*</span></label
+                    >ศาล <span style="color: #dc2626">*</span>
+                    <span class="locked-tag"
+                      ><i class="fa-solid fa-lock"></i><span id="courtLockedTagText">ดึงจากสำนวนเดิม — แก้ไขไม่ได้</span></span
+                    ></label
                   >
                   <input
-                    type="date"
-                    id="in_verdictDate"
-                    class="form-control"
-                    lang="th-TH-u-ca-buddhist"
+                    type="text"
+                    id="in_courtName"
+                    class="form-control locked-field"
+                    readonly
+                    tabindex="-1"
+                    placeholder="เลือกคดีรับคำฟ้องเดิมก่อน"
                   />
                 </div>
-              </div>
-
-              <div class="form-grid-2">
                 <div class="form-group">
                   <label
-                    >หมายเลขคดีดำ
-                    <span style="color: #dc2626">*</span></label
+                    >หมายเลขคดีดำ <span style="color: #dc2626">*</span>
+                    <span class="locked-tag"
+                      ><i class="fa-solid fa-lock"></i>ดึงจากสำนวนเดิม — แก้ไขไม่ได้</span
+                    ></label
                   >
                   <input
                     type="text"
                     id="in_blackCaseNo"
-                    class="form-control font-monospace"
+                    class="form-control font-monospace locked-field"
                     style="font-weight: 700"
-                    placeholder="เช่น อ. 104/2569"
-                    value="อ. 104/2569"
+                    readonly
+                    tabindex="-1"
+                    placeholder="เลือกคดีรับคำฟ้องเดิมก่อน"
                   />
                 </div>
-                <div class="form-group">
-                  <label
-                    >หมายเลขคดีแดง
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_redCaseNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น อ. 55/2570"
-                    value="อ. 55/2570"
-                  />
-                </div>
-              </div>
-
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >เลขที่หนังสือแจ้งผลคำพิพากษา (สำนักงานคดีปกครอง)
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_verdictNoticeNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น อส 0027.3/1234"
-                    value="อส 0027.3/1234"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >ลงวันที่หนังสือแจ้ง
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="date"
-                    id="in_verdictNoticeDate"
-                    class="form-control"
-                    lang="th-TH-u-ca-buddhist"
-                  />
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label
-                  >วันที่สำนักงาน ป.ป.ท. รับเรื่อง
-                  <span style="color: #dc2626">*</span></label
-                >
-                <input
-                  type="date"
-                  id="in_courtReceivedDate"
-                  class="form-control"
-                  lang="th-TH-u-ca-buddhist"
-                />
               </div>
 
               <div class="form-group">
@@ -634,143 +668,52 @@
                 </button>
               </div>
 
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>เลขสารบัญ <span style="color: #dc2626">*</span></label>
-                  <input
-                    type="text"
-                    id="in_courtSarabanNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น สบ.0021/2569"
-                    value="สบ.0021/2569"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >หน่วยงานที่รับเรื่อง
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_receivingUnit"
-                    class="form-control"
-                    value="กองกฎหมาย"
-                  />
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label
-                  >หมายเหตุ
-                  <span style="font-weight: 400; color: #64748b"
-                    >(ถ้ามี)</span
-                  ></label
-                >
-                <textarea
-                  id="in_courtRemark"
-                  class="form-control"
-                  rows="2"
-                  maxlength="2000"
-                  placeholder="-"
-                >
--</textarea
-                >
-              </div>
-
-              <div class="form-group">
-                <label
-                  >แนบเอกสาร (คำพิพากษา)
-                  <span style="font-weight: 400; color: #64748b"
-                    >(ถ้ามี)</span
-                  ></label
-                >
-                <div class="upload-box">
-                  <input
-                    type="file"
-                    id="in_courtAttachments"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    multiple
-                    onchange="handleCourtAttachmentsChange(this)"
-                  />
-                </div>
-                <div id="courtAttachmentsList" style="margin-top: 8px"></div>
-                <div
-                  class="info-box"
-                  style="margin-top: 10px; margin-bottom: 0"
-                >
-                  <div>
-                    <b>ข้อกำหนดการแนบไฟล์ประกอบ:</b><br />
-                    • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG,
-                    JPEG<br />
-                    • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
-          <!-- บันทึกผลคำพิพากษา (ศาลปกครองชั้นต้น) → สารบบคำพิพากษา — ECMIS103VerdictLink.mountRecord -->
-          <div id="verdictRecordHost"></div>
-
+          <!-- คำพิพากษา — 1 สำนวนมีได้หลายคำพิพากษา (แยกตามผู้ถูกฟ้อง) · renderVerdictBlocks() -->
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-book text-primary me-2"></i
-                >ลงทะเบียนคดีปกครอง</span
+                ><i class="fa-solid fa-scale-balanced text-primary me-2"></i
+                >คำพิพากษา</span
               >
-              <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
+              <span class="badge" style="background: #e0e7ff; color: #1e3a8a"
+                >สารบบคำพิพากษา</span
               >
             </div>
             <div class="form-card-body">
-              <div class="l3-note" style="margin-bottom: 16px">
+              <div class="l3-note l3-note-info" style="margin-bottom: 16px">
                 <i class="fa-solid fa-circle-info"></i>
                 <div>
-                  ลงทะเบียนคดีปกครองในระบบแทนสมุดคุม (MS Excel) — เลขทะเบียนพิมพ์เองได้
+                  สำนวนเดียวมีได้หลายคำพิพากษา — เพิ่ม 1 ชุดต่อคำพิพากษา แล้วเลือก<strong>ผู้ถูกฟ้อง</strong>ที่คำพิพากษานั้นครอบคลุม
+                  (ผู้ถูกฟ้อง 1 คนอยู่ได้เพียง 1 คำพิพากษา · ผู้ที่ยังไม่มีคำพิพากษาเว้นไว้ได้) ·
+                  ผลคำพิพากษาบันทึกลง <a href="registry.html">สารบบคำวินิจฉัย/คำพิพากษา</a> แยกรายผู้ถูกฟ้อง (ไม่บังคับกรอก)
                 </div>
               </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >เลขทะเบียนคดีปกครอง
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_verdictRegNo"
-                    class="form-control font-monospace"
-                    placeholder="เช่น ทบ.ปค. 0123/2569"
-                    style="font-weight: 700; color: #1e3a8a"
-                    oninput="onVerdictRegNoInput()"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>วันที่ลงทะเบียน</label>
-                  <input
-                    type="date"
-                    id="in_regDate"
-                    class="form-control font-monospace"
-                    lang="th-TH-u-ca-buddhist"
-                  />
-                </div>
-              </div>
-              <div class="form-group">
+              <!-- ศาลปกครองสูงสุดเท่านั้น: ผลคำพิพากษา (Activity103.SUPREME_RESULTS) — renderSupremeResultOptions() -->
+              <div id="supremeResultGroup" class="form-group d-none">
                 <label
-                  >หมายเหตุการลงทะเบียน
-                  <span style="font-weight: 400; color: #64748b"
-                    >(ถ้ามี)</span
-                  ></label
+                  >ผลคำพิพากษาศาลปกครองสูงสุด
+                  <span style="color: #dc2626">*</span></label
                 >
-                <textarea
-                  id="in_registerNotes"
-                  class="form-control"
-                  rows="2"
-                  placeholder="ระบุหมายเหตุ (ถ้ามี)..."
-                ></textarea>
+                <div id="supremeResultOptions"></div>
+                <div class="helper-text">
+                  ระบบบันทึกสถานะทางคดีเป็น "คดีถึงที่สุด" และปิดสำนวน ไม่มีขั้นตอนต่อ
+                  (ต้องแนบคำพิพากษาอย่างน้อย 1 ไฟล์)
+                </div>
               </div>
+              <div id="verdictBlocks"></div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="addVerdictBlock()"
+              >
+                <i class="fa-solid fa-plus"></i> เพิ่มคำพิพากษา
+              </button>
             </div>
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
@@ -779,8 +722,8 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>ยืนยัน และ เสนอ
-                ผอ.กองกฎหมาย
+                <span id="submitBtnText"><i class="fa-solid fa-paper-plane me-1"></i>ยืนยัน และ เสนอ
+                ผอ.กองกฎหมาย</span>
               </button>
             </div>
           </div>
@@ -794,11 +737,12 @@
     <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-10-3.js?v=20261022_stay2"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-prev.js?v=20261022_7"></script>
     <script src="assets/ecmis-court-prosecutor-lists.js?v=20261022_1"></script>
-    <script src="assets/ecmis-verdict-lists.js?v=20261022_1"></script>
-    <script src="assets/ecmis-verdict-record.js?v=20261022_3"></script>
-    <script src="assets/ecmis-10-3-verdict-link.js?v=20261022_2"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-verdict-record.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-10-3-verdict-link.js?v=20261027_causes"></script>
 
     <script>
       /* LAW0119 — ธุรการกองกฎหมาย รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น
@@ -813,18 +757,11 @@
         ECMIS103.renderSidebarMenu("sidebarMenu", STEP.page);
         ECMIS103.guardRole(STEP.role, STEP.roleTitle);
         const today = new Date().toISOString().slice(0, 10);
-        [
-          "in_physicalDocDate",
-          "in_verdictDate",
-          "in_verdictNoticeDate",
-          "in_courtReceivedDate",
-        ].forEach((id) => {
-          const el = document.getElementById(id);
-          if (el && !el.value) el.value = today;
-        });
+        const docDate = document.getElementById("in_physicalDocDate");
+        if (docDate && !docDate.value) docDate.value = today;
         renderCourtPlaintiffList();
         renderCourtDefendantList();
-        if (window.ECMIS103VerdictLink) ECMIS103VerdictLink.mountRecord("verdictRecordHost");
+        addVerdictBlock();
         prefillOriginFromQuery();
       });
 
@@ -837,20 +774,14 @@
         const c = Activity10.getCases().find((x) => x.id === origin);
         if (!c) return;
         const search = document.getElementById("in_originBlackNo");
+        /* สำนวนที่รอศาลปกครองสูงสุด → สลับเป็นโหมดศาลปกครองสูงสุดก่อนเชื่อม */
+        if (isSupremeWaitingCase(c)) {
+          const radio = document.querySelector('input[name="in_courtLevel"][value="SUPREME"]');
+          if (radio) radio.checked = true;
+          setCourtLevel("SUPREME");
+        }
         if (search) search.value = c.blackCaseNo || c.id;
         selectOriginCourtCase(c.id);
-      }
-
-      /* ประทับวันที่ลงทะเบียนอัตโนมัติครั้งแรกที่พิมพ์เลขทะเบียนคดี (ถ้ายังไม่ระบุ)
-         ผู้ใช้แก้วันที่เองได้ตลอดผ่านช่อง in_regDate (แทนปุ่ม "ออกเลขทะเบียน" ที่ตัดออก) */
-      function onVerdictRegNoInput() {
-        const hasValue = document
-          .getElementById("in_verdictRegNo")
-          .value.trim();
-        const regDateInput = document.getElementById("in_regDate");
-        if (hasValue && !regDateInput.value) {
-          regDateInput.value = new Date().toISOString().slice(0, 10);
-        }
       }
 
       /* ผู้ฟ้อง/ผู้ถูกฟ้อง — เพิ่มได้หลายรายการ (ports จาก 02-board-intake.html) */
@@ -916,38 +847,182 @@
         courtDefendants.splice(idx, 1);
         if (!courtDefendants.length) courtDefendants = [""];
         renderCourtDefendantList();
+        renderAllDefendantPicks();
       }
+      /* แก้ชื่อ → ชุดคำพิพากษาที่เลือกชื่อเดิมไว้ เปลี่ยนตามชื่อใหม่ */
       function updateCourtDefendant(idx, val) {
+        const oldName = (courtDefendants[idx] || "").trim();
+        const newName = val.trim();
         courtDefendants[idx] = val;
+        verdictBlocks = verdictBlocks.map((b) => ({
+          ...b,
+          defendants: b.defendants
+            .map((d) => (d === oldName ? newName : d))
+            .filter(Boolean),
+        }));
+        renderAllDefendantPicks();
       }
 
-      /* เอกสารแนบ (คำพิพากษา) */
-      let courtAttachedFiles = [];
-      function handleCourtAttachmentsChange(input) {
+      /* คำพิพากษา — หลายชุดต่อสำนวน (1 ชุดต่อคำพิพากษา) แต่ละชุดเลือกผู้ถูกฟ้องที่ครอบคลุม
+         ผู้ถูกฟ้อง 1 คนอยู่ได้เพียง 1 ชุด · ผลคำพิพากษาใช้ช่องสารบบ (ECMIS103VerdictLink.recordFieldsHTML) prefix vb<uid>_ */
+      const MAX_FILE_BYTES = 100 * 1024 * 1024;
+      const ALLOWED_EXTS = ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"];
+      let verdictBlocks = [];
+      let verdictUidSeq = 0;
+
+      function blockPrefix(uid) {
+        return `vb${uid}_`;
+      }
+      function findBlock(uid) {
+        return verdictBlocks.find((b) => b.uid === uid);
+      }
+      function setBlock(uid, patch) {
+        verdictBlocks = verdictBlocks.map((b) =>
+          b.uid === uid ? { ...b, ...patch } : b,
+        );
+      }
+
+      function verdictBlockHTML(uid) {
+        const p = blockPrefix(uid);
+        const today = new Date().toISOString().slice(0, 10);
+        /* มูลเหตุเติมจากคดีที่เลือกไว้แล้ว (ถ้ามี) แก้ไขได้ */
+        const recordHTML = window.ECMIS103VerdictLink
+          ? ECMIS103VerdictLink.recordFieldsHTML({ causes: caseCauses(selectedOriginCourtCase) }, p)
+          : "";
+        return `
+ <div class="verdict-block-head">
+ <span><i class="fa-solid fa-gavel me-1"></i><span class="verdict-block-no"></span></span>
+ <button type="button" class="btn btn-secondary verdict-block-del" style="padding:2px 10px; font-size:0.8em;" onclick="removeVerdictBlock(${uid})" title="ลบคำพิพากษานี้">
+ <i class="fa-solid fa-trash-can"></i> ลบ
+ </button>
+ </div>
+ <div class="verdict-block-body">
+ <div class="form-grid-2">
+ <div class="form-group">
+ <label for="${p}redCaseNo">หมายเลขคดีแดง <span style="color:#dc2626">*</span></label>
+ <input type="text" id="${p}redCaseNo" class="form-control font-monospace" placeholder="เช่น อ. 55/2570" />
+ </div>
+ <div class="form-group">
+ <label for="${p}verdictDate">วันที่ศาลมีคำพิพากษา <span style="color:#dc2626">*</span></label>
+ <input type="date" id="${p}verdictDate" class="form-control" lang="th-TH-u-ca-buddhist" value="${today}" />
+ </div>
+ </div>
+ <div class="form-group">
+ <label>ผู้ถูกฟ้องในคำพิพากษานี้ <span style="color:#dc2626">*</span></label>
+ <div id="${p}defendants" class="defendant-pick"></div>
+ </div>
+ <div class="verdict-sub-title"><i class="fa-solid fa-book-bookmark me-1"></i>บันทึกผลคำพิพากษา (สารบบ · ไม่บังคับ)</div>
+ ${recordHTML}
+ <div class="form-group">
+ <label for="${p}remark">หมายเหตุ <span style="font-weight:400; color:#64748b">(ถ้ามี)</span></label>
+ <textarea id="${p}remark" class="form-control" rows="2" maxlength="2000" placeholder="-"></textarea>
+ </div>
+ <div class="form-group">
+ <label>แนบเอกสาร (คำพิพากษา) <span style="font-weight:400; color:#64748b">(ถ้ามี)</span></label>
+ <div class="upload-box">
+ <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" multiple onchange="handleBlockFilesChange(${uid}, this)" />
+ </div>
+ <div id="${p}files" style="margin-top:8px"></div>
+ <div class="helper-text">PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG · ไม่เกิน 100 MB ต่อไฟล์ (แนบได้หลายไฟล์)</div>
+ </div>
+ </div>`;
+      }
+
+      function addVerdictBlock() {
+        const uid = ++verdictUidSeq;
+        verdictBlocks = [...verdictBlocks, { uid, defendants: [], files: [] }];
+        const el = document.createElement("div");
+        el.className = "verdict-block";
+        el.id = `verdictBlock_${uid}`;
+        el.innerHTML = verdictBlockHTML(uid);
+        document.getElementById("verdictBlocks").appendChild(el);
+        if (window.ECMIS103VerdictLink) ECMIS103VerdictLink.wireRecord(blockPrefix(uid));
+        if (isSupremeMode()) syncStageOptions([uid]);
+        refreshVerdictBlocks();
+      }
+
+      function removeVerdictBlock(uid) {
+        if (verdictBlocks.length <= 1) return;
+        verdictBlocks = verdictBlocks.filter((b) => b.uid !== uid);
+        const el = document.getElementById(`verdictBlock_${uid}`);
+        if (el) el.remove();
+        refreshVerdictBlocks();
+      }
+
+      /* เลขลำดับ "คำพิพากษาที่ N" + ปุ่มลบ + รายชื่อผู้ถูกฟ้อง */
+      function refreshVerdictBlocks() {
+        verdictBlocks.forEach((b, i) => {
+          const el = document.getElementById(`verdictBlock_${b.uid}`);
+          if (!el) return;
+          el.querySelector(".verdict-block-no").textContent = `คำพิพากษาที่ ${i + 1}`;
+          el.querySelector(".verdict-block-del").disabled = verdictBlocks.length <= 1;
+        });
+        renderAllDefendantPicks();
+      }
+
+      function defendantNames() {
+        return courtDefendants
+          .map((d) => d.trim())
+          .filter((d, i, all) => d && all.indexOf(d) === i);
+      }
+
+      function renderAllDefendantPicks() {
+        const names = defendantNames();
+        /* ตัดชื่อที่ไม่อยู่ในรายชื่อผู้ถูกฟ้องแล้วออกจากทุกชุด */
+        verdictBlocks = verdictBlocks.map((b) => ({
+          ...b,
+          defendants: b.defendants.filter((d) => names.includes(d)),
+        }));
+        verdictBlocks.forEach((b) => {
+          const host = document.getElementById(`${blockPrefix(b.uid)}defendants`);
+          if (!host) return;
+          if (!names.length) {
+            host.innerHTML = `<span class="helper-text">ระบุชื่อผู้ถูกฟ้องด้านบนก่อน</span>`;
+            return;
+          }
+          host.innerHTML = names
+            .map((name, idx) => {
+              const ownerIdx = verdictBlocks.findIndex(
+                (o) => o.uid !== b.uid && o.defendants.includes(name),
+              );
+              const checked = b.defendants.includes(name);
+              const taken = ownerIdx >= 0;
+              return `
+ <label class="${taken ? "is-taken" : ""}" title="${taken ? `อยู่ในคำพิพากษาที่ ${ownerIdx + 1} แล้ว` : ""}">
+ <input type="checkbox" data-idx="${idx}" ${checked ? "checked" : ""} ${taken ? "disabled" : ""} onchange="toggleBlockDefendant(${b.uid}, this)" />
+ ${escapeHtml(name)}${taken ? ` <span style="color:#94a3b8; font-size:0.85em;">(คำพิพากษาที่ ${ownerIdx + 1})</span>` : ""}
+ </label>`;
+            })
+            .join("");
+        });
+      }
+
+      function toggleBlockDefendant(uid, input) {
+        const name = defendantNames()[Number(input.dataset.idx)];
+        const b = findBlock(uid);
+        if (!b || !name) return;
+        const defendants = input.checked
+          ? [...b.defendants.filter((d) => d !== name), name]
+          : b.defendants.filter((d) => d !== name);
+        setBlock(uid, { defendants });
+        renderAllDefendantPicks();
+      }
+
+      /* เอกสารแนบ (คำพิพากษา) — รายชุด */
+      function handleBlockFilesChange(uid, input) {
         if (!input.files || !input.files.length) return;
-        const maxSizeBytes = 100 * 1024 * 1024;
-        const allowedExts = [
-          "pdf",
-          "doc",
-          "docx",
-          "xls",
-          "xlsx",
-          "png",
-          "jpg",
-          "jpeg",
-        ];
-        Array.from(input.files).forEach((file) => {
+        const accepted = Array.from(input.files).filter((file) => {
           const ext = file.name.split(".").pop().toLowerCase();
-          if (!allowedExts.includes(ext)) {
+          if (!ALLOWED_EXTS.includes(ext)) {
             Swal.fire({
               icon: "warning",
               title: "ชนิดไฟล์ไม่ถูกต้อง",
               text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
               confirmButtonColor: "#1e3a8a",
             });
-            return;
+            return false;
           }
-          if (file.size > maxSizeBytes) {
+          if (file.size > MAX_FILE_BYTES) {
             const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
             Swal.fire({
               icon: "warning",
@@ -955,32 +1030,34 @@
               text: `ไฟล์ "${file.name}" มีขนาด ${sizeMb} MB เกินกำหนดสูงสุด 100 MB`,
               confirmButtonColor: "#1e3a8a",
             });
-            return;
+            return false;
           }
-          courtAttachedFiles.push(file);
+          return true;
         });
         input.value = "";
-        renderCourtAttachmentsList();
+        const b = findBlock(uid);
+        if (!b) return;
+        setBlock(uid, { files: [...b.files, ...accepted] });
+        renderBlockFiles(uid);
       }
-      function removeCourtAttachment(index) {
-        courtAttachedFiles.splice(index, 1);
-        renderCourtAttachmentsList();
+      function removeBlockFile(uid, index) {
+        const b = findBlock(uid);
+        if (!b) return;
+        setBlock(uid, { files: b.files.filter((_, i) => i !== index) });
+        renderBlockFiles(uid);
       }
-      function renderCourtAttachmentsList() {
-        const el = document.getElementById("courtAttachmentsList");
-        if (!el) return;
-        if (!courtAttachedFiles.length) {
-          el.innerHTML = "";
-          return;
-        }
-        el.innerHTML = courtAttachedFiles
+      function renderBlockFiles(uid) {
+        const el = document.getElementById(`${blockPrefix(uid)}files`);
+        const b = findBlock(uid);
+        if (!el || !b) return;
+        el.innerHTML = b.files
           .map((file, idx) => {
             const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
             return `
  <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:6px; font-size:0.85em;">
  <i class="fa-solid fa-paperclip" style="color:#2563eb;"></i>
  <span style="flex:1;">${escapeHtml(file.name)} <span style="color:#94a3b8;">(${sizeMb} MB)</span></span>
- <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeCourtAttachment(${idx})" title="ลบไฟล์นี้">
+ <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.78em;" onclick="removeBlockFile(${uid}, ${idx})" title="ลบไฟล์นี้">
  <i class="fa-solid fa-trash-can"></i>
  </button>
  </div>`;
@@ -988,7 +1065,46 @@
           .join("");
       }
 
-      /* ค้นหาคดีรับคำฟ้องเดิม (ไม่บังคับ) — เชื่อมด้วย l3OriginCaseId
+      /* มูลเหตุของคดี (l3Causes) ถ้าเคสนี้ยังไม่มี ใช้ของคดีรับคำฟ้องเดิม (l3OriginCaseId) */
+      function caseCauses(c) {
+        const VL = window.ECMIS103VerdictLink;
+        if (!c || !VL) return null;
+        const own = VL.normalizeCauses(c.l3Causes);
+        if (own || !c.l3OriginCaseId) return own;
+        const origin = Activity10.getCases().find((x) => x.id === c.l3OriginCaseId);
+        return origin ? VL.normalizeCauses(origin.l3Causes) : null;
+      }
+
+      /* มูลเหตุของทุกชุดรวมกัน (union) เป็นค่าเดียวของเคส l3Causes · ไม่เลือกเลย = null */
+      function unionCauses(verdicts) {
+        const VL = window.ECMIS103VerdictLink;
+        return VL ? VL.mergeCauses(verdicts.map((v) => (v.record || {}).causes)) : null;
+      }
+
+      /* อ่านค่าทุกชุด (ลำดับตามหน้าจอ) */
+      function collectVerdicts() {
+        return verdictBlocks.map((b, i) => {
+          const p = blockPrefix(b.uid);
+          const v = (id) => {
+            const el = document.getElementById(p + id);
+            return el ? el.value.trim() : "";
+          };
+          return {
+            uid: b.uid,
+            no: i + 1,
+            redCaseNo: v("redCaseNo"),
+            verdictDate: v("verdictDate"),
+            defendants: b.defendants.slice(),
+            remark: v("remark"),
+            attachmentFileNames: b.files.map((f) => f.name),
+            record: window.ECMIS103VerdictLink
+              ? ECMIS103VerdictLink.collectRecord(p)
+              : {},
+          };
+        });
+      }
+
+      /* ค้นหาคดีรับคำฟ้องเดิม (บังคับ) — เชื่อมด้วย l3OriginCaseId
          รูปแบบตาราง/แถวคลิกเลือก เหมือน executeIntakeSearch()/selectIntakeCase()
          ใน 02-board-intake.html */
       let selectedOriginCourtCase = null;
@@ -998,6 +1114,124 @@
           c.l3CaseType !== "verdict" &&
           !c.l3ParentCaseId
         );
+      }
+
+      /* ชั้นศาลที่มีคำพิพากษา — "FIRST" (ค่าเริ่ม · flow เดิม) / "SUPREME" (ปิดสำนวนที่รอศาลปกครองสูงสุด)
+         สำนวนที่รอศาลปกครองสูงสุดอาจเป็นเคสคำพิพากษาเอง (l3CaseType "verdict") จึงใช้ตัวกรองแยก */
+      const SUPREME_WAITING_STATUSES = [
+        "L7_SENT_TO_PROSECUTOR",
+        "L10_SENT_TO_PROSECUTOR",
+        "L9A_SENT_TO_PROSECUTOR",
+      ];
+      const SUPREME_COURT_NAME = "ศาลปกครองสูงสุด";
+      let courtLevel = "FIRST";
+      function isSupremeMode() {
+        return courtLevel === "SUPREME";
+      }
+      function isSupremeWaitingCase(c) {
+        return (
+          String(c.category || "").indexOf("10.3") === 0 &&
+          SUPREME_WAITING_STATUSES.includes(c.statusCode)
+        );
+      }
+      function originCaseFilter(c) {
+        return isSupremeMode() ? isSupremeWaitingCase(c) : isComplaintCourtCase(c);
+      }
+
+      function renderSupremeResultOptions() {
+        const host = document.getElementById("supremeResultOptions");
+        if (!host || host.childElementCount) return;
+        /* การ์ดแบบเดียวกับ "ผลคดี" ใน 10-3v-04 (Activity103.supremeResultCardsHtml) */
+        host.innerHTML = Activity103.supremeResultCardsHtml("in_supremeResult");
+        host.addEventListener("change", syncSupremeResultCards);
+      }
+      function syncSupremeResultCards() {
+        Activity103.syncSupremeResultCards(document, "in_supremeResult");
+        /* คำพิพากษา/คำสั่งอื่น (PARTIAL) — ต้องระบุรายละเอียด */
+        const checked = document.querySelector('input[name="in_supremeResult"]:checked');
+        let group = document.getElementById("grp_supremeResultOther");
+        if (!group) {
+          document.getElementById("supremeResultOptions").insertAdjacentHTML(
+            "afterend",
+            `<div class="form-group" id="grp_supremeResultOther" hidden style="margin-top:8px">
+ <label for="in_supremeResultOther">ระบุคำพิพากษา/คำสั่งอื่น <span style="color:#dc2626">*</span></label>
+ <input type="text" id="in_supremeResultOther" class="form-control" maxlength="500" placeholder="ระบุรายละเอียดคำพิพากษา/คำสั่ง" />
+ </div>`,
+          );
+          group = document.getElementById("grp_supremeResultOther");
+        }
+        group.hidden = !(checked && checked.value === "PARTIAL");
+      }
+
+      /* ช่องสถานะชั้นคำพิพากษา (สารบบ) ของทุกชุด ใช้รายการตามชั้นศาล ADMIN_FIRST / ADMIN_SUPREME */
+      function verdictRecordLevel() {
+        return isSupremeMode() ? "ADMIN_SUPREME" : "ADMIN_FIRST";
+      }
+      function syncStageOptions(uids) {
+        const L = window.ECMISVerdictLists;
+        if (!L || !L.VERDICT_STAGES) return;
+        const stages = L.VERDICT_STAGES[verdictRecordLevel()] || [];
+        const options =
+          '<option value="">-- ไม่ระบุ --</option>' +
+          stages.map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+        (uids || verdictBlocks.map((b) => b.uid)).forEach((uid) => {
+          const sel = document.getElementById(blockPrefix(uid) + "verdictStage");
+          if (sel) sel.innerHTML = options;
+        });
+      }
+
+      function setCourtLevel(level) {
+        const next = level === "SUPREME" ? "SUPREME" : "FIRST";
+        if (next === courtLevel) return;
+        courtLevel = next;
+        const supreme = isSupremeMode();
+        ["FIRST", "SUPREME"].forEach((code) => {
+          const card = document.getElementById("courtLevelCard_" + code);
+          if (card) card.classList.toggle("active-approve", code === next);
+        });
+        /* เปลี่ยนชั้นศาล = ล้างการเชื่อมคดีเดิมและผลค้นหา */
+        clearOriginCourtCase();
+        const search = document.getElementById("in_originBlackNo");
+        if (search) search.value = "";
+        const resultsEl = document.getElementById("originCaseResults");
+        if (resultsEl) {
+          resultsEl.classList.add("d-none");
+          resultsEl.innerHTML = "";
+        }
+        const setText = (id, text) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = text;
+        };
+        setText(
+          "pageTitleText",
+          supreme
+            ? "รับหนังสือแจ้งผลคำพิพากษาศาลปกครองสูงสุด"
+            : "รับหนังสือแจ้งผลคำพิพากษาศาลปกครองชั้นต้น",
+        );
+        setText(
+          "originSearchLabel",
+          supreme ? "ค้นหาสำนวนที่รอผลศาลปกครองสูงสุด" : "ค้นหาคดีรับคำฟ้องเดิม",
+        );
+        setText(
+          "courtLockedTagText",
+          supreme ? "ชั้นศาลที่เลือก แก้ไขไม่ได้" : "ดึงจากสำนวนเดิม — แก้ไขไม่ได้",
+        );
+        ["in_courtName", "in_blackCaseNo"].forEach((id) => {
+          document.getElementById(id).placeholder = supreme
+            ? "เลือกสำนวนที่รอผลศาลปกครองสูงสุดก่อน"
+            : "เลือกคดีรับคำฟ้องเดิมก่อน";
+        });
+        document.getElementById("firstSearchHelp").classList.toggle("d-none", supreme);
+        document.getElementById("supremeSearchHelp").classList.toggle("d-none", !supreme);
+        document.getElementById("supremeResultGroup").classList.toggle("d-none", !supreme);
+        if (supreme) renderSupremeResultOptions();
+        const btn = document.getElementById("submitBtnText");
+        if (btn) {
+          btn.innerHTML = supreme
+            ? '<i class="fa-solid fa-floppy-disk me-1"></i>บันทึกคำพิพากษา และปิดสำนวน (คดีถึงที่สุด)'
+            : '<i class="fa-solid fa-paper-plane me-1"></i>ยืนยัน และ เสนอ ผอ.กองกฎหมาย';
+        }
+        syncStageOptions();
       }
 
       function handleOriginSearchKeyup(event) {
@@ -1028,7 +1262,7 @@
         }
 
         const matched = Activity10.getCases()
-          .filter(isComplaintCourtCase)
+          .filter(originCaseFilter)
           .filter((c) => {
             const plaintiffs = (c.plaintiffs || []).join(" ").toLowerCase();
             const defendants = (c.defendants || []).join(" ").toLowerCase();
@@ -1046,7 +1280,11 @@
         if (!matched.length) {
           resultsEl.innerHTML = `
  <div style="padding: 16px; background: var(--bg-body); border-radius: 6px; text-align: center; color: #64748b; border: 1px solid var(--border-color);">
- <i class="fa-solid fa-inbox me-1"></i>ไม่พบคดีรับคำฟ้องที่ตรงกับ "${escapeHtml(q)}" — กรอกข้อมูลคดีด้านล่างเองได้
+ <i class="fa-solid fa-inbox me-1"></i>${
+            isSupremeMode()
+              ? `ไม่พบสำนวนที่รอผลศาลปกครองสูงสุดที่ตรงกับ "${escapeHtml(q)}" ต้องเลือกสำนวนก่อนจึงบันทึกได้`
+              : `ไม่พบคดีรับคำฟ้องที่ตรงกับ "${escapeHtml(q)}" — ต้องเลือกคดีเดิมก่อนจึงบันทึกได้`
+          }
  </div>`;
           return;
         }
@@ -1089,12 +1327,11 @@
         const c = Activity10.getCases().find((x) => x.id === caseId);
         if (!c) return;
         selectedOriginCourtCase = c;
-        const setVal = (id, v) => {
-          const el = document.getElementById(id);
-          if (el && v) el.value = v;
-        };
-        setVal("in_courtName", c.courtName);
-        setVal("in_blackCaseNo", c.blackCaseNo);
+        /* ศาล/เลขคดีดำ ล็อกตามคดีเดิมเสมอ */
+        document.getElementById("in_courtName").value = isSupremeMode()
+          ? SUPREME_COURT_NAME
+          : c.courtName || "";
+        document.getElementById("in_blackCaseNo").value = c.blackCaseNo || "";
         if (Array.isArray(c.plaintiffs) && c.plaintiffs.length) {
           courtPlaintiffs = c.plaintiffs.slice();
           renderCourtPlaintiffList();
@@ -1102,25 +1339,32 @@
         if (Array.isArray(c.defendants) && c.defendants.length) {
           courtDefendants = c.defendants.slice();
           renderCourtDefendantList();
+          renderAllDefendantPicks();
         }
         const resultsEl = document.getElementById("originCaseResults");
         if (resultsEl) resultsEl.classList.add("d-none");
         renderSelectedOriginCourtCase();
-        /* ป้าย "เติมจากสำนวนเดิม" + เติมช่องเพิ่ม (เฉพาะที่ยังเป็นค่าตั้งต้น) + กล่องข้อมูลคดีเดิม */
+        /* ป้าย "เติมจากสำนวนเดิม" (คู่ความ — แก้ไขได้) + กล่องข้อมูลคดีเดิม */
         if (window.ECMIS103VerdictLink) {
-          const extra = ECMIS103VerdictLink.fillExtra(c, ORIGIN_FILL_DEFAULTS);
-          const base = [c.courtName ? "in_courtName" : "", c.blackCaseNo ? "in_blackCaseNo" : "",
-            (c.plaintiffs || []).length ? "courtPlaintiffList" : "", (c.defendants || []).length ? "courtDefendantList" : ""].filter(Boolean);
-          ECMIS103VerdictLink.markAutofill(base.concat(extra));
+          /* มูลเหตุ: เติมเฉพาะชุดที่ยังไม่ได้เลือก */
+          const causes = caseCauses(c);
+          if (causes) {
+            verdictBlocks.forEach((b) => {
+              const bp = blockPrefix(b.uid);
+              if (!ECMIS103VerdictLink.collectCauses(bp)) ECMIS103VerdictLink.setCauses(bp, causes);
+            });
+          }
+          const base = [(c.plaintiffs || []).length ? "courtPlaintiffList" : "", (c.defendants || []).length ? "courtDefendantList" : ""].filter(Boolean);
+          ECMIS103VerdictLink.markAutofill(base);
           ECMIS103VerdictLink.renderOriginInfo(c);
         }
       }
-      /* ค่าตั้งต้นของหน้า — ถือว่า "ยังว่าง" ให้เติมจากคดีเดิมทับได้ */
-      const ORIGIN_FILL_DEFAULTS = { in_redCaseNo: "อ. 55/2570", in_receivingUnit: "กองกฎหมาย", in_courtRemark: "-" };
       function clearOriginCourtCase() {
         selectedOriginCourtCase = null;
         renderSelectedOriginCourtCase();
-        /* ค่าที่เติมไว้คงอยู่ — เอาเฉพาะป้ายและกล่องข้อมูลคดีเดิมออก */
+        /* ศาล/เลขคดีดำ ต้องมาจากคดีเดิม — ยกเลิกการเชื่อมแล้วล้างค่า · คู่ความคงไว้ */
+        document.getElementById("in_courtName").value = "";
+        document.getElementById("in_blackCaseNo").value = "";
         if (window.ECMIS103VerdictLink) ECMIS103VerdictLink.clearAutofill();
       }
       function renderSelectedOriginCourtCase() {
@@ -1131,10 +1375,37 @@
           ? `
  <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid #16a34a; background:rgba(22,163,74,0.06); border-radius:6px; font-size:0.85em;">
  <i class="fa-solid fa-link" style="color:#16a34a;"></i>
- <span style="flex:1;">เชื่อมกับคดีเดิม <b>${escapeHtml(c.id)}</b> (คดีดำ ${escapeHtml(c.blackCaseNo || "-")}) — เติมช่องที่มีป้าย “เติมจากสำนวนเดิม” ให้แล้ว แก้ไขได้</span>
+ <span style="flex:1;">เชื่อมกับคดีเดิม <b>${escapeHtml(c.id)}</b> (คดีดำ ${escapeHtml(c.blackCaseNo || "-")}) — ศาล/เลขคดีดำล็อกตามคดีนี้ · คู่ความแก้ไขได้</span>
  <button type="button" class="btn btn-secondary" style="padding:2px 10px; font-size:0.8em;" onclick="clearOriginCourtCase()">ยกเลิกการเชื่อม</button>
  </div>`
           : "";
+      }
+
+      function warn(msg, el) {
+        Swal.fire({
+          icon: "warning",
+          title: "ข้อมูลไม่ครบถ้วน",
+          text: msg,
+          confirmButtonColor: "#1e3a8a",
+        });
+        if (el) el.focus();
+      }
+
+      /* คืนข้อผิดพลาดแรก { msg, id? } หรือ null */
+      function validateVerdicts(verdicts) {
+        if (!verdicts.length) return { msg: "กรุณาเพิ่มคำพิพากษาอย่างน้อย 1 รายการ" };
+        const seen = {};
+        for (const v of verdicts) {
+          const p = blockPrefix(v.uid);
+          if (!v.redCaseNo) return { msg: `คำพิพากษาที่ ${v.no}: กรุณาระบุหมายเลขคดีแดง`, id: p + "redCaseNo" };
+          if (!v.verdictDate) return { msg: `คำพิพากษาที่ ${v.no}: กรุณาระบุวันที่ศาลมีคำพิพากษา`, id: p + "verdictDate" };
+          if (!v.defendants.length) return { msg: `คำพิพากษาที่ ${v.no}: กรุณาเลือกผู้ถูกฟ้องอย่างน้อย 1 รายการ` };
+          for (const d of v.defendants) {
+            if (seen[d]) return { msg: `${d} อยู่ในคำพิพากษาที่ ${seen[d]} และ ${v.no} — ผู้ถูกฟ้อง 1 คนอยู่ได้เพียง 1 คำพิพากษา` };
+            seen[d] = v.no;
+          }
+        }
+        return null;
       }
 
       function submitForm() {
@@ -1146,55 +1417,34 @@
           ["in_centralSarabanNo", "กรุณาระบุเลขสารบรรณกลาง"],
           ["in_physicalDocDate", "กรุณาระบุวันที่รับเอกสาร"],
           ["in_lawReceiveNo", "กรุณาระบุเลขรับกองกฎหมาย"],
-          ["in_courtName", "กรุณาระบุศาล"],
-          ["in_verdictDate", "กรุณาระบุวันที่ศาลมีคำพิพากษา"],
-          ["in_blackCaseNo", "กรุณาระบุหมายเลขคดีดำ"],
-          ["in_redCaseNo", "กรุณาระบุหมายเลขคดีแดง"],
-          ["in_verdictNoticeNo", "กรุณาระบุเลขที่หนังสือแจ้งผลคำพิพากษา"],
-          ["in_verdictNoticeDate", "กรุณาระบุวันที่ของหนังสือแจ้ง"],
-          ["in_courtReceivedDate", "กรุณาระบุวันที่สำนักงาน ป.ป.ท. รับเรื่อง"],
-          ["in_courtSarabanNo", "กรุณาระบุเลขสารบัญ"],
-          ["in_receivingUnit", "กรุณาระบุหน่วยงานที่รับเรื่อง"],
-          ["in_verdictRegNo", "กรุณาระบุเลขทะเบียนคดีปกครอง"],
         ];
         for (const [id, msg] of checks) {
-          const el = document.getElementById(id);
-          if (!el || !el.value.trim()) {
-            Swal.fire({
-              icon: "warning",
-              title: "ข้อมูลไม่ครบถ้วน",
-              text: msg,
-              confirmButtonColor: "#1e3a8a",
-            });
-            if (el) el.focus();
-            return;
-          }
+          if (!val(id)) return warn(msg, document.getElementById(id));
+        }
+        if (isSupremeMode() && (!selectedOriginCourtCase || !val("in_blackCaseNo"))) {
+          return warn("กรุณาค้นหาและเลือกสำนวนที่รอผลศาลปกครองสูงสุด", document.getElementById("in_originBlackNo"));
+        }
+        if (!selectedOriginCourtCase || !val("in_courtName") || !val("in_blackCaseNo")) {
+          return warn("กรุณาค้นหาและเลือกคดีรับคำฟ้องเดิม (ศาล/เลขคดีดำดึงจากคดีเดิม)", document.getElementById("in_originBlackNo"));
         }
         const plaintiffs = courtPlaintiffs.map((p) => p.trim()).filter(Boolean);
-        if (!plaintiffs.length) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 รายการ",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
-        const defendants = courtDefendants.map((d) => d.trim()).filter(Boolean);
-        if (!defendants.length) {
-          Swal.fire({
-            icon: "warning",
-            title: "ข้อมูลไม่ครบถ้วน",
-            text: "กรุณาระบุชื่อผู้ถูกฟ้องอย่างน้อย 1 รายการ",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
+        if (!plaintiffs.length) return warn("กรุณาระบุชื่อผู้ฟ้องอย่างน้อย 1 รายการ");
+        const defendants = defendantNames();
+        if (!defendants.length) return warn("กรุณาระบุชื่อผู้ถูกฟ้องอย่างน้อย 1 รายการ");
+        const verdicts = collectVerdicts();
+        const err = validateVerdicts(verdicts);
+        if (err) return warn(err.msg, err.id ? document.getElementById(err.id) : null);
+        if (isSupremeMode()) return confirmSupremeSubmit(val, verdicts);
 
+        const covered = verdicts.reduce((n, v) => n + v.defendants.length, 0);
+        const pending = defendants.length - covered;
         Swal.fire({
           icon: "question",
           title: "ยืนยัน และ เสนอ ผอ.กองกฎหมาย",
-          text: "บันทึกรับหนังสือแจ้งผลคำพิพากษา ลงทะเบียนคดีปกครอง และส่งต่อ ผอ.กองกฎหมายพิจารณามอบหมาย",
+          text:
+            `บันทึกรับคำพิพากษา ${verdicts.length} รายการ (ผู้ถูกฟ้อง ${covered} คน` +
+            (pending > 0 ? ` · ยังไม่มีคำพิพากษา ${pending} คน` : "") +
+            ") และส่งต่อ ผอ.กองกฎหมายพิจารณามอบหมาย",
           showCancelButton: true,
           confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
@@ -1203,51 +1453,42 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
 
-          /* ผู้ใช้แก้วันที่ลงทะเบียนเองได้เสมอ — ถ้ายังไม่ระบุ ให้ประทับวันนี้ */
-          const finalRegDate =
-            document.getElementById("in_regDate").value ||
-            new Date().toISOString().slice(0, 10);
-
+          const first = verdicts[0];
           const title =
             "ผลคำพิพากษาศาลปกครองชั้นต้น คดีหมายเลขดำที่ " +
             val("in_blackCaseNo") +
             " หมายเลขแดงที่ " +
-            val("in_redCaseNo") +
+            verdicts.map((v) => v.redCaseNo).join(", ") +
             " (" +
             (plaintiffs.join(", ") || "-") +
             " ฟ้อง " +
             (defendants.join(", ") || "-") +
             ")";
 
+          /* verdicts[] = ข้อมูลหลัก · ช่องเดี่ยว (redCaseNo/verdictDate/...) = คำพิพากษาที่ 1
+             ให้หน้าถัดไปที่ยังอ่านแบบเดี่ยวใช้ได้ */
           const newCase = Activity10.addCase({
             category: "10.3",
             title: title,
             l3CaseType: "verdict",
-            l3OriginCaseId: selectedOriginCourtCase
-              ? selectedOriginCourtCase.id
-              : null,
+            l3OriginCaseId: selectedOriginCourtCase.id,
             courtName: val("in_courtName"),
             blackCaseNo: val("in_blackCaseNo"),
-            redCaseNo: val("in_redCaseNo"),
+            redCaseNo: first.redCaseNo,
+            verdictDate: first.verdictDate,
+            courtRemark: first.remark || "-",
+            attachmentFileNames: first.attachmentFileNames,
+            verdicts: verdicts.map(({ uid, record, ...v }) => v),
+            /* มูลเหตุ = union ของทุกชุดคำพิพากษา (ค่าเดียวของเคส ใช้ต่อที่ 10-3v-04 / สารบบ / แดชบอร์ด) */
+            l3Causes: unionCauses(verdicts),
             plaintiffs: plaintiffs,
             defendants: defendants,
             accuser: plaintiffs.join(", ") || "-",
             accused: defendants.join(", ") || "-",
-            courtReceivedDate: val("in_courtReceivedDate"),
-            verdictDate: val("in_verdictDate"),
-            verdictNoticeNo: val("in_verdictNoticeNo"),
-            verdictNoticeDate: val("in_verdictNoticeDate"),
-            courtSarabanNo: val("in_courtSarabanNo"),
-            courtRemark: val("in_courtRemark"),
-            receivingUnit: val("in_receivingUnit") || "กองกฎหมาย",
-            attachmentFileNames: courtAttachedFiles.map((f) => f.name),
+            receivingUnit: "กองกฎหมาย",
             lawReceiveNo: val("in_lawReceiveNo"),
             centralSarabanNo: val("in_centralSarabanNo"),
             physicalDocDate: val("in_physicalDocDate"),
-            l3VerdictRegNo: val("in_verdictRegNo"),
-            l3VerdictRegDate: finalRegDate,
-            l3VerdictRegNotes:
-              document.getElementById("in_registerNotes").value.trim() || "-",
             status: STEP.status,
             statusCode: STEP.statusCode,
             statusBadge: "bg-primary text-white",
@@ -1264,21 +1505,178 @@
             boardAdminOfficer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
           });
 
-          /* บันทึกผลคำพิพากษา → สารบบคำพิพากษา (ชั้นศาลปกครองชั้นต้น) — ไม่กรอก = ข้าม */
-          const savedToRegistry = window.ECMIS103VerdictLink
-            ? ECMIS103VerdictLink.saveRecord(newCase.id, ECMIS103VerdictLink.collectRecord(), { by: ECMIS103.signerLabel("admin_legal") })
-            : null;
+          /* บันทึกผลคำพิพากษา → สารบบคำพิพากษา (ชั้นศาลปกครองชั้นต้น) แยกรายผู้ถูกฟ้อง — ไม่กรอก = ข้าม */
+          let savedCount = 0;
+          if (window.ECMIS103VerdictLink) {
+            const by = ECMIS103.signerLabel("admin_legal");
+            verdicts.forEach((v) => {
+              v.defendants.forEach((person) => {
+                const saved = ECMIS103VerdictLink.saveRecord(newCase.id, v.record, {
+                  by,
+                  person,
+                  court: { redNo: v.redCaseNo, date: v.verdictDate },
+                  fileNames: v.attachmentFileNames,
+                });
+                if (saved) savedCount++;
+              });
+            });
+          }
 
           Swal.fire({
             icon: "success",
             title: "บันทึกและส่งเสนอสำเร็จ",
-            text: `ลงทะเบียนคดีปกครองเลขที่ ${val("in_verdictRegNo")} และส่งต่อ ผอ.กองกฎหมายแล้ว` + (savedToRegistry ? " · บันทึกผลคำพิพากษาลงสารบบคำพิพากษาแล้ว" : ""),
+            text:
+              `บันทึกรับคำพิพากษา ${verdicts.length} รายการ และส่งต่อ ผอ.กองกฎหมายแล้ว` +
+              (savedCount ? ` · บันทึกผลลงสารบบคำพิพากษา ${savedCount} รายการ` : ""),
             timer: 1800,
             showConfirmButton: false,
           }).then(() => {
             window.location.href = "01-work-inbox.html";
           });
         });
+      }
+
+      /* ---- ศาลปกครองสูงสุด: ไม่สร้างเคสใหม่ · ปิดสำนวนที่รอศาลปกครองสูงสุดด้วย
+         Activity103.buildSupremeJudgmentPatch (สถานะ *_SUPREME_JUDGED "คดีถึงที่สุด", สถานะทางคดี FINAL) ---- */
+      function confirmSupremeSubmit(val, verdicts) {
+        const checked = document.querySelector('input[name="in_supremeResult"]:checked');
+        if (!checked) {
+          return warn("กรุณาเลือกผลคำพิพากษาศาลปกครองสูงสุด", document.querySelector('input[name="in_supremeResult"]'));
+        }
+        const fileNames = verdicts.flatMap((v) => v.attachmentFileNames);
+        if (!fileNames.length) {
+          return warn("กรุณาแนบคำพิพากษาศาลปกครองสูงสุดอย่างน้อย 1 ไฟล์");
+        }
+        const result = checked.value;
+        const otherEl = document.getElementById("in_supremeResultOther");
+        const resultOther = result === "PARTIAL" && otherEl ? otherEl.value.trim() : "";
+        if (result === "PARTIAL" && !resultOther) {
+          return warn("กรุณาระบุคำพิพากษา/คำสั่งอื่น", otherEl);
+        }
+        const resultName =
+          ((Activity103.SUPREME_RESULTS || {})[result] || result) + (resultOther ? ` (${resultOther})` : "");
+        const target = selectedOriginCourtCase;
+        Swal.fire({
+          icon: "question",
+          title: "ยืนยันบันทึกคำพิพากษาศาลปกครองสูงสุด",
+          text:
+            `ผล: ${resultName} · บันทึกคำพิพากษา ${verdicts.length} รายการในสำนวน ${target.id} ` +
+            'และปิดสำนวน ระบบจะบันทึกสถานะทางคดีเป็น "คดีถึงที่สุด" โดยไม่มีขั้นตอนต่อ',
+          showCancelButton: true,
+          confirmButtonText: "ยืนยันบันทึก",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+          cancelButtonColor: "#64748b",
+        }).then((res) => {
+          if (!res.isConfirmed) return;
+          const savedCount = saveSupremeVerdict(val, verdicts, result, fileNames, resultOther);
+          if (savedCount < 0) {
+            Swal.fire({
+              icon: "error",
+              title: "บันทึกไม่สำเร็จ",
+              text: "ไม่พบสำนวนที่เลือกในระบบ กรุณาค้นหาและเลือกสำนวนใหม่",
+              confirmButtonColor: "#1e3a8a",
+            });
+            return;
+          }
+          Swal.fire({
+            icon: "success",
+            title: "บันทึกคำพิพากษาศาลปกครองสูงสุด และปิดสำนวน (คดีถึงที่สุด)",
+            text:
+              `สำนวน ${target.id} ผล: ${resultName}` +
+              (savedCount ? ` · บันทึกผลลงสารบบคำพิพากษา ${savedCount} รายการ` : ""),
+            timer: 2000,
+            showConfirmButton: false,
+          }).then(() => {
+            window.location.href = "01-work-inbox.html";
+          });
+        });
+      }
+
+      /* คืนจำนวนบันทึกสารบบที่บันทึก หรือ -1 เมื่อไม่พบสำนวน */
+      function saveSupremeVerdict(val, verdicts, result, fileNames, resultOther) {
+        const caseId = selectedOriginCourtCase.id;
+        const kase = Activity10.getCases().find((x) => x.id === caseId);
+        if (!kase) return -1;
+        const by = ECMIS103.signerLabel("admin_legal");
+        const first = verdicts[0];
+        const blackNo = val("in_blackCaseNo");
+        /* buildSupremeJudgmentPatch รับคำพิพากษาเดียว → ใช้ชุดที่ 1 · รายการเต็มเก็บใน l3SupremeVerdicts */
+        const judgmentPatch = Activity103.buildSupremeJudgmentPatch(
+          kase,
+          {
+            date: first.verdictDate,
+            blackNo: blackNo,
+            redNo: first.redCaseNo,
+            result: result,
+            resultOther: resultOther || "",
+            summary: (first.record && first.record.resultDetail) || first.remark || "",
+            fileNames: fileNames,
+          },
+          by,
+        );
+        const intake = {
+          lawReceiveNo: val("in_lawReceiveNo"),
+          centralSarabanNo: val("in_centralSarabanNo"),
+          physicalDocDate: val("in_physicalDocDate"),
+        };
+        /* มูลเหตุ = union ของทุกชุด เขียนกลับเคสเดิม (ไม่เลือกเลย = คงค่าเดิม) */
+        const causes = unionCauses(verdicts);
+        Activity10.updateCase(caseId, {
+          ...judgmentPatch,
+          ...(causes ? { l3Causes: causes } : {}),
+          l3SupremeVerdicts: verdicts.map(({ uid, record, ...v }) => ({ ...v, courtName: SUPREME_COURT_NAME, blackCaseNo: blackNo })),
+          l3SupremeIntake: {
+            ...intake,
+            plaintiffs: courtPlaintiffs.map((p) => p.trim()).filter(Boolean),
+            defendants: defendantNames(),
+            previousLawReceiveNo: kase.lawReceiveNo || "",
+            previousCentralSarabanNo: kase.centralSarabanNo || "",
+            previousPhysicalDocDate: kase.physicalDocDate || "",
+            recordedBy: by,
+            recordedAt: new Date().toISOString(),
+          },
+          ...intake,
+        });
+        Activity10.savePhysicalDocIntake(caseId, {
+          centralSarabanNo: intake.centralSarabanNo,
+          physicalDocDate: intake.physicalDocDate,
+          scannedDocFile: `เอกสารสแกนฉบับจริง_สารบรรณกลาง_${intake.lawReceiveNo}.pdf`,
+          boardAdminOfficer: "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)",
+        });
+        const resultText =
+          ((Activity103.SUPREME_RESULTS || {})[result] || "") + (resultOther ? " (" + resultOther + ")" : "");
+        return saveSupremeRegistry(caseId, verdicts, blackNo, by, resultText);
+      }
+
+      /* สารบบคำพิพากษา ชั้น ADMIN_SUPREME แยกรายผู้ถูกฟ้อง (ECMISVerdictRecord.buildRecordPatch)
+         ECMIS103VerdictLink.saveRecord ล็อกชั้น ADMIN_FIRST จึงเรียก ECMISVerdictRecord ตรง · ไม่กรอก = ข้าม */
+      function saveSupremeRegistry(caseId, verdicts, blackNo, by, resultText) {
+        const R = window.ECMISVerdictRecord;
+        if (!R || !R.buildRecordPatch) return 0;
+        let savedCount = 0;
+        verdicts.forEach((v) => {
+          /* ผลคำพิพากษาศาลปกครองสูงสุดลงสารบบทุกครั้ง — ผล (radio) นำหน้ารายละเอียด · คดีถึงที่สุด */
+          const rec = v.record || {};
+          const f = {
+            ...rec,
+            resultDetail: [resultText, rec.resultDetail].filter(Boolean).join(": "),
+            isFinal: true,
+          };
+          v.defendants.forEach((person) => {
+            const kase = Activity10.getCases().find((x) => x.id === caseId);
+            if (!kase) return;
+            const patch = R.buildRecordPatch(kase, "ADMIN_SUPREME", f, {
+              person,
+              status: f.verdictStage ? "done" : "draft",
+              by,
+              court: { type: "ADMIN", name: SUPREME_COURT_NAME, blackNo, redNo: v.redCaseNo, date: v.verdictDate },
+              fileNames: v.attachmentFileNames,
+            });
+            if (patch && Activity10.updateCase(caseId, patch)) savedCount++;
+          });
+        });
+        return savedCount;
       }
 
       /* ---- shell chrome (theme / font size / dropdown) ---- */

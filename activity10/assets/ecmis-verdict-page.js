@@ -123,10 +123,55 @@
       '<button type="button" class="btn btn-outline" data-vr-act="excel"><i class="fa-solid fa-file-excel"></i>Excel</button>' +
       "</div></div>" +
       linkInfoHtml(kase, editable) +
+      F().latestVerdictHtml(kase) +
       '<div style="margin-top:6px">' + chips + "</div>" +
-      (editable ? "" : '<div class="vr-sub" style="margin-top:10px"><i class="fa-solid fa-eye"></i> ดูได้อย่างเดียว — ผู้บันทึกได้คือธุรการกองกฎหมายและนิติกร</div>') +
+      (editable ? "" : '<div class="vr-sub" style="margin-top:10px"><i class="fa-solid fa-eye"></i> ดูได้อย่างเดียว — ผู้บันทึกได้คือธุรการกองกฎหมาย นิติกร และนักสืบ</div>') +
       "</div></div>"
     );
+  }
+
+  /* สถานะในศาลชั้นอื่นๆ (2026-10-27) — สรุปเฉพาะข้อมูลสำคัญของคำพิพากษาชั้นอื่นที่บันทึกไว้แล้ว
+     วางก่อนรายละเอียดศาลของชั้นที่กำลังบันทึก; กด "เปิดชั้นนี้" เพื่อไปแก้ชั้นนั้น */
+  function otherLevelsHtml(kase, level) {
+    const esc = F().esc;
+    const LS = global.ECMISVerdictLists;
+    const A10 = global.Activity10;
+    const dash = (v) => esc(v || "-");
+    const fmtDate = (d) => (d && A10 && A10.formatDisplayDate ? A10.formatDisplayDate(new Date(d)) : d || "");
+    const recs = R().getRecords(kase).filter((r) => r.level !== level);
+    const levels = LS.LEVELS.filter((l) => recs.some((r) => r.level === l.code));
+    const body = levels.length
+      ? levels
+          .map((l) => {
+            const rows = recs.filter((r) => r.level === l.code);
+            const court = rows[0].court || {};
+            const courtLine = [court.name, court.blackNo && "คดีดำ " + court.blackNo, court.redNo && "คดีแดง " + court.redNo, fmtDate(court.date)]
+              .filter(Boolean)
+              .join(" · ");
+            const tr = rows
+              .map((r) => {
+                const f = r.fields || {};
+                return (
+                  "<tr><td>" + dash(r.person) + "</td><td>" + (F().verdictHighlight({ verdictType: f.verdictType, verdictTypeOther: f.verdictTypeOther }) || "-") +
+                  "</td><td>" + dash(R().stripNo(f.verdictStage)) +
+                  "</td><td>" + dash(R().stripNo(f.prosecutorStatus)) + "</td><td>" + (f.isFinal ? F().verdictHighlight({ isFinal: true }) : "-") +
+                  '</td><td><span class="vr-sub">' + (r.status === "done" ? "บันทึกแล้ว" : "ร่าง") + "</span></td></tr>"
+                );
+              })
+              .join("");
+            return (
+              '<div style="margin-bottom:12px">' +
+              '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">' +
+              '<div><strong>' + esc(l.name) + '</strong> <span class="vr-sub">' + esc(courtLine) + "</span></div>" +
+              '<button type="button" class="btn btn-outline" style="height:30px;padding:2px 10px;font-size:.85em" data-vr-open-level="' + l.code + '">เปิดชั้นนี้</button></div>' +
+              '<div style="overflow-x:auto"><table class="table table-sm" style="font-size:.88em;margin:0"><thead><tr>' +
+              "<th>บุคคล</th><th>ประเภทคำพิพากษา</th><th>สถานะชั้นคำพิพากษา</th><th>สถานะชั้นพนักงานอัยการ</th><th>คดีถึงที่สุด</th><th>บันทึก</th>" +
+              "</tr></thead><tbody>" + tr + "</tbody></table></div></div>"
+            );
+          })
+          .join("")
+      : '<div class="vr-sub">ยังไม่มีบันทึกคำพิพากษาในศาลชั้นอื่น</div>';
+    return '<div class="vr-card"><div class="vr-card-h"><i class="fa-solid fa-layer-group"></i>สถานะในศาลชั้นอื่นๆ</div><div class="vr-card-b">' + body + "</div></div>";
   }
 
   function footerHtml(editable) {
@@ -200,12 +245,10 @@
     const names = candidates(kase).filter((n) => hidden.indexOf(n) < 0);
     const order = R().tabOrder(names, R().personsAt(kase, level).concat(q.person ? [q.person] : []));
     const shared = R().initialState(kase, level, order[0] || "");
+    F().setCaseContext(kase); /* ฐานความผิดที่แนะนำของสำนวนนี้ */
     host.innerHTML =
       headerHtml(kase, level, editable) +
-      /* AG ระดับสำนวน — ค่าเดียวกันทุกชั้นศาลและทุกแถว Excel ของสำนวนนี้ */
-      '<div class="vr-card"><div class="vr-card-h"><i class="fa-solid fa-user-tie"></i>ชั้นพนักงานอัยการ ' +
-      '<span class="vr-sub" style="font-weight:400">ใช้ทั้งสำนวน</span></div><div class="vr-card-b"><div class="vr-grid" style="margin-bottom:0">' +
-      F().prosecutorStatusHtml(P, kase.verdictProsecutorStatus || "") + "</div></div></div>" +
+      otherLevelsHtml(kase, level) +
       '<div id="vr_court">' + F().courtStripHtml(P, shared.court, shared.fileNames, level) + "</div>" +
       '<div class="vr-card"><div class="vr-card-h"><i class="fa-solid fa-users"></i>ผลคำพิพากษารายบุคคล</div><div class="vr-card-b">' +
       '<div id="vr_tabs" class="vr-tabs" aria-label="บุคคล"></div><div id="vr_panel" class="vr-tabpanel"></div>' + LEGEND +
@@ -215,12 +258,16 @@
     const courtHost = doc.getElementById("vr_court");
     F().bindForm(courtHost, P);
     if (!editable) F().setDisabled(courtHost, true);
-    const agEl = doc.getElementById(P + "prosecutorStatus");
-    if (!editable && agEl) agEl.disabled = true;
     const courtSnap = () => {
       const c = F().collect(courtHost, P);
-      return JSON.stringify(c.court) + "|" + c.newFileNames.length + "|" + (agEl ? agEl.value : "");
+      return JSON.stringify(c.court) + "|" + c.newFileNames.length;
     };
+    /* AG รายบุคคล (2026-10-27) — คนที่ยังไม่เคยบันทึก AG ตั้งต้นตาม R().defaultProsecutorStatus (สำนวน → อสส. → หน้า 02) */
+    const states = R().tabStates(kase, level, order);
+    Object.keys(states).forEach((name) => {
+      const f = states[name].fields;
+      if (f && !f.prosecutorStatus) f.prosecutorStatus = R().defaultProsecutorStatus(kase);
+    });
     const courtBase = courtSnap();
 
     const tabs = global.ECMISVerdictTabs.create({
@@ -229,7 +276,7 @@
       prefix: P,
       level: level,
       order: order,
-      states: R().tabStates(kase, level, order),
+      states: states,
       active: q.person,
       editable: editable,
       showStatus: true,
@@ -268,7 +315,7 @@
     function onSave(status) {
       const entries = tabs.entries().map((x) => Object.assign(x, { status: status }));
       const res = F().saveLevel(kase.id, level, F().collect(courtHost, P), entries, {
-        verdictProsecutorStatus: agEl ? agEl.value : kase.verdictProsecutorStatus || "",
+        verdictProsecutorStatus: kase.verdictProsecutorStatus || "",
       });
       const box = doc.getElementById("vr_errors");
       if (!res.ok) {
@@ -293,6 +340,8 @@
     host.addEventListener("click", (e) => {
       const chip = e.target.closest("[data-vr-level]");
       if (chip && chip.classList.contains("vr-chip")) return leave(() => go(kase.id, chip.getAttribute("data-vr-level")));
+      const openLevel = e.target.closest("[data-vr-open-level]");
+      if (openLevel) return leave(() => go(kase.id, openLevel.getAttribute("data-vr-open-level")));
       const act = e.target.closest("[data-vr-act]");
       if (!act) return;
       const a = act.getAttribute("data-vr-act");

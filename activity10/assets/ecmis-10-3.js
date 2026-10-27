@@ -90,7 +90,7 @@
       page: "10-3-08-legal-director-sign.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการออกเลขส่งและเสนอบอร์ด",
+      status: "ธุรการเสนอมติตามลำดับชั้น",
       statusCode: "L3_PENDING_ADMIN_DISPATCH",
       label: "ผอ.กองกฎหมาย ตรวจสอบและลงนามผ่านเรื่อง",
       stepName: "ผอ.กองกฎหมาย ลงนาม",
@@ -103,8 +103,8 @@
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
       status: "รอเสนอบอร์ด",
       statusCode: "L3_READY_FOR_BOARD",
-      label: "ธุรการ ออกเลขส่งภายในและส่งมติเสนอบอร์ด",
-      stepName: "ธุรการ ออกเลขส่ง/เสนอบอร์ด",
+      label: "ธุรการเสนอมติตามลำดับชั้น",
+      stepName: "ธุรการเสนอมติตามลำดับชั้น",
     },
   ];
 
@@ -146,7 +146,7 @@
       page: "10-3b-01b-legal-director-review-stay-objection.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — นิติกรแนบฉบับลงนามจริงและส่งต่อศาล",
+      status: "นิติกรส่งคำชี้แจงคัดค้านต่อศาล",
       statusCode: "L3B_PENDING_LAWYER_DISPATCH",
       nextRole: "case_legal_officer",
       label: "ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน และพิมพ์ฉบับจริงเสนอประธานฯ ลงนาม",
@@ -275,7 +275,7 @@
       /* 2026-10-22 ตัด 10-3-18 / 10-3-19 / 10-3-22 (ธุรการบันทึกผลลงนามจริง) — ฉบับลงนามจริงแนบครบที่ 10-3-13
          ธุรการออกเลขส่งภายใน + เลขส่งออก และบันทึกผู้ลงนามหนังสือนำส่ง แล้วส่งนิติกรรวบรวมเอกสาร (10-3-23) ทันที */
       autoExternalDocNo: true,
-      status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+      status: "นิติกรส่งเอกสารถึงอัยการ",
       statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
       label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน/ส่งออก และบันทึกผู้ลงนาม",
       stepName: "ธุรการ ออกเลขส่งภายใน",
@@ -287,7 +287,7 @@
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
       /* 2026-10-22 รวม 10-3-23 / 10-3-24 / 10-3-25 เป็นหน้าเดียว — แนบสแกนชุดเอกสาร + หลักฐานการส่ง (EMS) แล้วปิดขั้นตอน */
-      status: "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา",
+      status: "รอศาลมีคำพิพากษา",
       statusCode: "L3_AWAITING_JUDGMENT",
       label: "นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
       stepName: "นิติกร ส่งเอกสารถึงอัยการ",
@@ -415,31 +415,31 @@
   /* LAW0128 — 3 ทางหลัง ผอ.กองกฎหมายกำหนดแนวทาง (ทุกทางเป็น black box ไปกิจกรรมอื่น) */
   const VERDICT_BRANCHES = {
     APPEAL_REPLY: {
-      label: "ชนะคดี (ผู้ฟ้องคดียื่นอุทธรณ์)",
-      resultLabel: "ชนะคดี",
+      label: "ศาลพิพากษายกฟ้อง (ผู้ฟ้องคดียื่นอุทธรณ์)",
+      resultLabel: "ศาลพิพากษายกฟ้อง",
       appealNote: "ผู้ฟ้องคดียื่นอุทธรณ์",
       proposal: "จัดทำคำแก้อุทธรณ์",
       status: "รอจัดทำคำแก้อุทธรณ์",
       statusCode: "L3V_TO_APPEAL_REPLY",
     },
     APPEAL_CONSIDER: {
-      label: "แพ้คดี",
-      resultLabel: "แพ้คดี",
+      label: "ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง / คำพิพากษา/คำสั่งอื่น",
+      resultLabel: "ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง / คำพิพากษา/คำสั่งอื่น",
       appealNote: null,
       proposal: "พิจารณาความเห็นควรอุทธรณ์",
       /* ไม่รอหนังสือสำนักงานคดีปกครองแล้ว (ตัด 10-3v-16 ออก 2026-10-14) —
          ส่งตรงถึง ผอ.กลุ่มงานคดีมอบหมายนิติกร (10-3v-18) */
-      status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (พิจารณาความเห็นควรอุทธรณ์)",
+      status: "ผอ.กลุ่มงานมอบหมายนิติกร (พิจารณาอุทธรณ์)",
       statusCode: "L3V_TO_APPEAL_CONSIDER",
       nextRole: "case_group_director",
       nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
     },
     CLOSE: {
-      label: "ชนะคดี (ผู้ฟ้องคดีไม่ยื่นอุทธรณ์)",
-      resultLabel: "ชนะคดี",
+      label: "ศาลพิพากษายกฟ้อง (ผู้ฟ้องคดีไม่ยื่นอุทธรณ์)",
+      resultLabel: "ศาลพิพากษายกฟ้อง",
       appealNote: "ผู้ฟ้องคดีไม่ยื่นอุทธรณ์",
       proposal: "ยุติ/ปิดสำนวน",
-      status: "รอปิดสำนวน (LAW0163)",
+      status: "รอปิดสำนวน",
       statusCode: "L3V_TO_CLOSE",
     },
   };
@@ -539,7 +539,7 @@
       page: "10-3v-14-legal-admin-dispatch.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง",
+      status: "นิติกรส่งคำแก้อุทธรณ์",
       statusCode: "L7_PENDING_LAWYER_SEND",
       label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
       stepName: "ธุรการ ออกเลขส่ง",
@@ -552,7 +552,7 @@
       page: "10-3v-15-lawyer-send-appeal-reply.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "ส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครองแล้ว",
+      status: "ส่งคำแก้อุทธรณ์แล้ว",
       statusCode: "L7_SENT_TO_PROSECUTOR",
       label: "นิติกร ส่งหนังสือและคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง",
       stepName: "นิติกร ส่งหนังสือ",
@@ -650,7 +650,7 @@
       page: "10-3v-22-group-director-review-appeal.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "ผอ.กองกฎหมายพิจารณาและลงนามคำอุทธรณ์",
+      status: "ผอ.กองกฎหมายลงนามคำอุทธรณ์",
       statusCode: "L10_PENDING_DIRECTOR_SIGN",
       label: "ผอ.กลุ่มงาน ตรวจร่างคำอุทธรณ์",
       stepName: "ผอ.กลุ่มงาน ตรวจร่าง",
@@ -661,7 +661,7 @@
       page: "10-3v-23-legal-director-sign-appeal.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก",
+      status: "ธุรการออกเลขหนังสือ",
       statusCode: "L10_PENDING_DOC_NO",
       label: "ผอ.กองกฎหมาย พิจารณาและลงนามคำอุทธรณ์/หนังสือถึงสำนักงานคดีปกครอง",
       stepName: "ผอ.กองกฎหมาย ลงนาม",
@@ -672,7 +672,7 @@
       page: "10-3v-24-legal-admin-dispatch.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์",
+      status: "นิติกรส่งคำอุทธรณ์",
       statusCode: "L10_PENDING_LAWYER_SEND",
       label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
       stepName: "ธุรการ ออกเลขส่ง",
@@ -683,7 +683,7 @@
       page: "10-3v-25-lawyer-send-appeal.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "จัดส่งคำอุทธรณ์ไปยังสำนักงานคดีปกครองแล้ว (รอยื่นต่อศาลปกครองสูงสุด)",
+      status: "ส่งคำอุทธรณ์แล้ว",
       statusCode: "L10_SENT_TO_PROSECUTOR",
       label: "นิติกร ส่งหนังสือและคำอุทธรณ์ไปยังสำนักงานคดีปกครอง",
       stepName: "นิติกร ส่งคำอุทธรณ์",
@@ -715,7 +715,7 @@
       page: "10-3v-29-legal-admin-board-appeal-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กลุ่มงานคดีพิจารณาและเห็นชอบ (ดำเนินการอุทธรณ์)",
+      status: "ผอ.กลุ่มงานเห็นชอบ (อุทธรณ์)",
       statusCode: "L9A_PENDING_GROUP_APPROVE",
       nextRole: "case_group_director",
       nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
@@ -730,7 +730,7 @@
       page: "10-3v-31-group-director-assign2.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลและร่างคำอุทธรณ์",
+      status: "นิติกรร่างคำอุทธรณ์",
       statusCode: "L9A_PENDING_LAWYER_DRAFT",
       label: "ผอ.กลุ่มงานคดี พิจารณาเห็นชอบและมอบหมายนิติกรดำเนินการ",
       stepName: "ผอ.กลุ่มงาน เห็นชอบ/มอบหมาย",
@@ -752,7 +752,7 @@
       page: "10-3v-33-group-director-review-appeal2.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "ผอ.กองกฎหมายพิจารณาและลงนามคำอุทธรณ์",
+      status: "ผอ.กองกฎหมายลงนามคำอุทธรณ์",
       statusCode: "L9A_PENDING_DIRECTOR_SIGN",
       label: "ผอ.กลุ่มงาน ตรวจร่างคำอุทธรณ์",
       stepName: "ผอ.กลุ่มงาน ตรวจร่าง",
@@ -763,7 +763,7 @@
       page: "10-3v-34-legal-director-sign-appeal2.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก (สายมติบอร์ด)",
+      status: "ธุรการออกเลขหนังสือ",
       statusCode: "L9A_PENDING_DOC_NO",
       label: "ผอ.กองกฎหมาย พิจารณาและลงนามคำอุทธรณ์/หนังสือถึงสำนักงานคดีปกครอง",
       stepName: "ผอ.กองกฎหมาย ลงนาม",
@@ -774,7 +774,7 @@
       page: "10-3v-35-legal-admin-dispatch2.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์ (สายมติบอร์ด)",
+      status: "นิติกรส่งคำอุทธรณ์",
       statusCode: "L9A_PENDING_LAWYER_SEND",
       label: "ธุรการ ออกเลขหนังสือส่งภายนอก",
       stepName: "ธุรการ ออกเลขส่ง",
@@ -785,7 +785,7 @@
       page: "10-3v-36-lawyer-send-appeal2.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "จัดส่งคำอุทธรณ์ไปยังสำนักงานคดีปกครองแล้ว (รอยื่นต่อศาลปกครองสูงสุด)",
+      status: "ส่งคำอุทธรณ์แล้ว",
       statusCode: "L9A_SENT_TO_PROSECUTOR",
       label: "นิติกร ส่งหนังสือและคำอุทธรณ์ไปยังสำนักงานคดีปกครอง",
       stepName: "นิติกร ส่งคำอุทธรณ์",
@@ -824,7 +824,7 @@
       page: "10-3v-37-legal-admin-no-appeal-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กลุ่มงานคดีพิจารณาและมอบหมายนิติกร (แจ้งไม่อุทธรณ์)",
+      status: "ผอ.กลุ่มงานมอบหมายนิติกร (ไม่อุทธรณ์)",
       statusCode: "L9B_PENDING_GROUP_ASSIGN1",
       nextRole: "case_group_director",
       nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
@@ -839,7 +839,7 @@
       page: "10-3v-39-group-director-assign3.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลไม่อุทธรณ์",
+      status: "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
       statusCode: "L9B_PENDING_LAWYER_INTAKE",
       label: "ผอ.กลุ่มงานคดี พิจารณาและมอบหมายนิติกรดำเนินการ",
       stepName: "ผอ.กลุ่มงาน มอบหมาย",
@@ -861,7 +861,7 @@
       page: "10-3v-45-group-director-review3.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "ผอ.กองกฎหมายลงนามในหนังสือที่ส่งถึงอัยการ",
+      status: "ผอ.กองกฎหมายลงนามหนังสือ",
       statusCode: "L9B_PENDING_DIRECTOR_SIGN",
       label: "ผอ.กลุ่มงานคดี ตรวจสอบหนังสือ",
       stepName: "ผอ.กลุ่มงาน ตรวจหนังสือ",
@@ -872,7 +872,7 @@
       page: "10-3v-46-legal-director-sign3.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการกองกฎหมายออกเลขหนังสือ (แจ้งไม่อุทธรณ์)",
+      status: "ธุรการออกเลขหนังสือ (ไม่อุทธรณ์)",
       statusCode: "L9B_PENDING_DOC_NO",
       label: "ผอ.กองกฎหมาย ลงนามในหนังสือที่ส่งถึงอัยการ",
       stepName: "ผอ.กองกฎหมาย ลงนาม",
@@ -883,7 +883,7 @@
       page: "10-3v-47-legal-admin-dispatch3.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "นิติกรจัดส่งหนังสือแจ้งไม่อุทธรณ์ทางไปรษณีย์",
+      status: "นิติกรส่งหนังสือแจ้งไม่อุทธรณ์",
       statusCode: "L9B_PENDING_LAWYER_SEND",
       label: "ธุรการ ออกเลขหนังสือ",
       stepName: "ธุรการ ออกเลขส่ง",
@@ -894,7 +894,7 @@
       page: "10-3v-48-lawyer-send-close.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      status: "จัดส่งหนังสือแจ้งไม่อุทธรณ์แล้ว และปิดสำนวนคดี",
+      status: "ปิดสำนวน (ไม่อุทธรณ์)",
       statusCode: "L9B_CLOSED",
       label: "นิติกร ส่งหนังสือแจ้งความประสงค์ไม่อุทธรณ์ และปิดสำนวน",
       stepName: "นิติกร ส่ง/ปิดสำนวน",
@@ -921,7 +921,7 @@
       page: "10-3v-26-group-director-board-approve.html",
       role: "case_group_director",
       roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "ผอ.กองกฎหมายพิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
+      status: "ผอ.กองกฎหมายเห็นชอบ (เสนอมติบอร์ด)",
       statusCode: "L9_PENDING_DIRECTOR_APPROVE",
       label: "ผอ.กลุ่มงาน พิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
       stepName: "ผอ.กลุ่มงาน เห็นชอบ",
@@ -932,7 +932,7 @@
       page: "10-3v-27-legal-director-board-approve.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
-      status: "ธุรการกองกฎหมายส่งมติเสนอบอร์ด",
+      status: "ธุรการกองกฎหมายเสนอมติตามลำดับชั้น",
       statusCode: "L9_PENDING_DOC_SEND",
       label: "ผอ.กองกฎหมาย พิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)",
       stepName: "ผอ.กองกฎหมาย เห็นชอบ",
@@ -943,10 +943,10 @@
       page: "10-3v-28-legal-admin-board-propose.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "เสนอมติอุทธรณ์ต่อบอร์ดแล้ว (รอบอร์ดพิจารณา)",
+      status: "รอบอร์ดพิจารณา",
       statusCode: "L9_PROPOSED_TO_BOARD",
-      label: "ธุรการ ส่งมติเสนอบอร์ด",
-      stepName: "ธุรการ ส่งมติบอร์ด",
+      label: "ธุรการเสนอมติตามลำดับชั้น",
+      stepName: "ธุรการเสนอมติตามลำดับชั้น",
     },
   ];
 
@@ -1297,8 +1297,11 @@
   };
   const STATUS_FIELDS = ["opStatusType", "opStatusOther", "caseStatus", "caseStatusOther"];
 
+  /* สายหลังรับคำพิพากษาชั้นต้น (10-3v-00 เป็นต้นไป) — สถานะทางคดี "ศาลชั้นต้นมีคำพิพากษา" */
+  const FIRST_JUDGED_PREFIX = /^(L3V|L7|L8|L9|L9A|L9B|L10)_/;
   function initialCaseStatus(kase) {
-    return kase && kase.courtLevel === "SUPREME" ? "SUPREME_PENDING" : "FIRST_PENDING";
+    if (kase && kase.courtLevel === "SUPREME") return "SUPREME_PENDING";
+    return kase && FIRST_JUDGED_PREFIX.test(kase.statusCode || "") ? "FIRST_JUDGED" : "FIRST_PENDING";
   }
 
   function defaultStatusPatch(statusCode, kase) {
@@ -1311,7 +1314,11 @@
     } else if (!cur.opStatusType) {
       patch.opStatusType = "IN_PROGRESS";
     }
-    const cs = CASE_STATUS_BY_STATUS_CODE[statusCode];
+    const cs =
+      CASE_STATUS_BY_STATUS_CODE[statusCode] ||
+      (FIRST_JUDGED_PREFIX.test(statusCode || "") && (!cur.caseStatus || cur.caseStatus === "FIRST_PENDING")
+        ? "FIRST_JUDGED"
+        : "");
     if (cs) {
       patch.caseStatus = cs;
       patch.caseStatusOther = "";
@@ -1329,7 +1336,11 @@
         cur.opStatusType || OP_STATUS_BY_STATUS_CODE[cur.statusCode] || "IN_PROGRESS",
       opStatusOther: cur.opStatusOther || "",
       caseStatus:
-        cur.caseStatus || CASE_STATUS_BY_STATUS_CODE[cur.statusCode] || initialCaseStatus(cur),
+        (cur.caseStatus === "FIRST_PENDING" && FIRST_JUDGED_PREFIX.test(cur.statusCode || "")
+          ? "FIRST_JUDGED"
+          : cur.caseStatus) ||
+        CASE_STATUS_BY_STATUS_CODE[cur.statusCode] ||
+        initialCaseStatus(cur),
       caseStatusOther: cur.caseStatusOther || "",
     };
   }
@@ -1353,18 +1364,82 @@
     return patch;
   }
 
+  /* ผลคดีชั้นต้น (10-3v-04) — ค่าที่เก็บ (l3VerdictResult) คงเดิม แสดงด้วยชื่อใหม่ (2026-10-27)
+     "แพ้บางส่วน" = คำพิพากษา/คำสั่งอื่น + รายละเอียด l3VerdictResultOther */
+  const VERDICT_RESULT_LABELS = {
+    "ชนะ": "ศาลพิพากษายกฟ้อง",
+    "แพ้": "ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง",
+    "แพ้บางส่วน": "คำพิพากษา/คำสั่งอื่น",
+  };
+  function verdictResultText(kase) {
+    const c = kase || {};
+    const label = VERDICT_RESULT_LABELS[c.l3VerdictResult] || c.l3VerdictResult || "";
+    return c.l3VerdictResult === "แพ้บางส่วน" && c.l3VerdictResultOther
+      ? label + " (" + c.l3VerdictResultOther + ")"
+      : label;
+  }
+
+  /* วันครบกำหนดอุทธรณ์ (YYYY-MM-DD) เทียบวันนี้ → { text, tone: "open"|"today"|"expired" } หรือ null */
+  function appealDeadlineStatus(iso) {
+    if (!iso) return null;
+    const due = new Date(String(iso).slice(0, 10) + "T00:00:00");
+    if (isNaN(due.getTime())) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const days = Math.round((due - today) / 86400000);
+    if (days > 0) return { text: "เหลือ " + days + " วัน", tone: "open", days: days };
+    if (days === 0) return { text: "ครบกำหนดอุทธรณ์วันนี้", tone: "today", days: 0 };
+    return { text: "หมดเวลาอุทธรณ์แล้ว", tone: "expired", days: days };
+  }
+
   /* TOR 10.3.4.2 ผลคำพิพากษาศาลปกครองสูงสุด — บันทึกบนหน้าส่งคำอุทธรณ์เดิม
      (10-3v-25 / 10-3v-36) แล้วปิดสายงานด้วยสถานะ *_SUPREME_JUDGED */
   const SUPREME_RESULTS = {
-    WIN: "ชนะคดี",
-    LOSE: "แพ้คดี",
-    PARTIAL: "แพ้คดีบางส่วน",
+    WIN: "ศาลพิพากษายกฟ้อง",
+    LOSE: "ศาลพิพากษาเพิกถอนคำสั่งทางปกครอง",
+    /* คำพิพากษา/คำสั่งอื่น — ต้องระบุรายละเอียด (resultOther) */
+    PARTIAL: "คำพิพากษา/คำสั่งอื่น",
   };
   const SUPREME_JUDGED_STATUS = {
     L10_SENT_TO_PROSECUTOR: "L10_SUPREME_JUDGED",
     L9A_SENT_TO_PROSECUTOR: "L9A_SUPREME_JUDGED",
     L7_SENT_TO_PROSECUTOR: "L7_SUPREME_JUDGED",
   };
+
+  /* ผลศาลปกครองสูงสุด → สารบบคำพิพากษา ชั้น ADMIN_SUPREME (1 บันทึกต่อผู้ถูกฟ้อง)
+     ใช้ ECMISVerdictRecord ถ้าหน้าโหลดไว้ (ecmis-verdict-lists.js + ecmis-verdict-record.js) — ไม่มี = ข้าม
+     data: { date, blackNo, redNo, result, resultOther, summary, fileNames, verdictStage, causes }
+     causes = มูลเหตุ { codes, other } (เก็บใน fields.causes และเขียนกลับ l3Causes ของเคสที่ recordSupremeJudgment) */
+  function supremeRegistryPatch(kase, data, by, at) {
+    const VR = global.ECMISVerdictRecord;
+    if (!VR || !VR.buildRecordPatch || !kase) return null;
+    const d = data || {};
+    const resultText =
+      (SUPREME_RESULTS[d.result] || "") + (d.result === "PARTIAL" && d.resultOther ? " (" + d.resultOther + ")" : "");
+    const fields = {
+      verdictStage: d.verdictStage || "",
+      causes: d.causes || null,
+      resultDetail: [resultText, d.summary].filter(Boolean).join(": "),
+      isFinal: true,
+    };
+    const persons = (kase.defendants || []).map(function (p) { return String(p || "").trim(); }).filter(Boolean);
+    let work = kase;
+    let last = null;
+    (persons.length ? persons : [""]).forEach(function (person) {
+      const p = VR.buildRecordPatch(work, "ADMIN_SUPREME", fields, {
+        person: person,
+        status: fields.verdictStage ? "done" : "draft",
+        by: by || "",
+        when: at,
+        court: { type: "ADMIN", name: "ศาลปกครองสูงสุด", blackNo: d.blackNo, redNo: d.redNo, date: d.date },
+        fileNames: d.fileNames || [],
+      });
+      if (!p) return;
+      work = Object.assign({}, work, p);
+      last = p;
+    });
+    return last;
+  }
 
   function buildSupremeJudgmentPatch(kase, data, by, at) {
     const cur = kase || {};
@@ -1375,7 +1450,10 @@
       blackNo: d.blackNo || "",
       redNo: d.redNo || "",
       result: d.result || "",
-      resultName: SUPREME_RESULTS[d.result] || "",
+      resultOther: d.result === "PARTIAL" ? d.resultOther || "" : "",
+      resultName:
+        (SUPREME_RESULTS[d.result] || "") +
+        (d.result === "PARTIAL" && d.resultOther ? " (" + d.resultOther + ")" : ""),
       summary: d.summary || "",
       fileNames: (d.fileNames || []).slice(),
       recordedBy: by || "-",
@@ -1385,7 +1463,7 @@
       buildStatusChange(cur, { caseStatus: "FINAL", caseStatusOther: "" }, by, when) || {};
     return Object.assign({}, statusChange, {
       l3SupremeJudgment: judgment,
-      status: "บันทึกผลคำพิพากษาศาลปกครองสูงสุดแล้ว (คดีถึงที่สุด)",
+      status: "คดีถึงที่สุด",
       statusCode: SUPREME_JUDGED_STATUS[cur.statusCode] || "L10_SUPREME_JUDGED",
       statusBadge: "bg-success text-white",
     });
@@ -1410,6 +1488,9 @@
   const Activity103 = {
     VIEW_ROUTES: VIEW_ROUTES,
     SUPREME_RESULTS: SUPREME_RESULTS,
+    supremeResultCardsHtml: supremeResultCardsHtml,
+    syncSupremeResultCards: syncSupremeResultCards,
+    supremeRegistryPatch: supremeRegistryPatch,
     defaultStatusPatch: defaultStatusPatch,
     effectiveStatus: effectiveStatus,
     buildStatusChange: buildStatusChange,
@@ -1427,7 +1508,19 @@
     recordSupremeJudgment: function (caseId, data, by) {
       const kase = Activity10.getCases().find(function (c) { return c.id === caseId; });
       if (!kase) return null;
-      return Activity10.updateCase(caseId, buildSupremeJudgmentPatch(kase, data, by));
+      const when = new Date().toISOString();
+      /* บันทึกลงสารบบคำพิพากษาด้วย (แท็บ ฐานข้อมูลคำพิพากษา ใน registry.html)
+         มูลเหตุที่แก้ในสารบบ = ค่าเดียวของเคส → เขียนกลับ l3Causes */
+      const causes = data && data.causes && Array.isArray(data.causes.codes) && data.causes.codes.length ? data.causes : null;
+      return Activity10.updateCase(
+        caseId,
+        Object.assign(
+          {},
+          buildSupremeJudgmentPatch(kase, data, by, when),
+          supremeRegistryPatch(kase, data, by, when) || {},
+          causes ? { l3Causes: causes } : {},
+        ),
+      );
     },
 
     STEPS: STEPS,
@@ -1445,6 +1538,9 @@
     BOARD_APPROVED_APPEAL_STEPS: BOARD_APPROVED_APPEAL_STEPS,
     BOARD_NO_APPEAL_STEPS: BOARD_NO_APPEAL_STEPS,
     VERDICT_BRANCHES: VERDICT_BRANCHES,
+    VERDICT_RESULT_LABELS: VERDICT_RESULT_LABELS,
+    verdictResultText: verdictResultText,
+    appealDeadlineStatus: appealDeadlineStatus,
     VERDICT_SENDBACK: VERDICT_SENDBACK,
     STAY_SENDBACK: STAY_SENDBACK,
     ROUTES: ROUTES,
@@ -2541,13 +2637,51 @@
 
   /* ----------------------------------------- SUPREME COURT RESULT (TOR 10.3.4.2)
      แสดงบนหน้าส่งคำอุทธรณ์ (10-3v-25 / 10-3v-36) เมื่อคดีส่งคำอุทธรณ์แล้ว */
+  /* การ์ดผลคำพิพากษา — หน้าตาเดียวกับ "ผลคดี" ใน 10-3v-04 (decision-card เขียว/แดง/ส้ม)
+     ใช้ทั้งแผงบันทึกผลศาลปกครองสูงสุด (15/25/36) และ 10-3v-00 โหมดศาลปกครองสูงสุด */
+  const SUPREME_RESULT_CARD = {
+    WIN: { color: "#16a34a", bg: "rgba(22,163,74,.05)", icon: "fa-circle-check", sub: "" },
+    LOSE: { color: "#dc2626", bg: "rgba(220,38,38,.05)", icon: "fa-circle-xmark", sub: "" },
+    PARTIAL: { color: "#d97706", bg: "rgba(217,119,6,.05)", icon: "fa-circle-half-stroke", sub: "(ระบุรายละเอียด)" },
+  };
+  function injectSupremeCardStyle() {
+    if (document.getElementById("sr-card-style")) return;
+    const s = document.createElement("style");
+    s.id = "sr-card-style";
+    s.textContent =
+      ".sr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:6px}" +
+      "label.sr-card{border:2px solid var(--border-color);border-radius:8px;padding:14px 16px;background:var(--bg-card);cursor:pointer;" +
+      "transition:all .2s ease;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;margin:0;font-weight:400}" +
+      "label.sr-card:hover{border-color:#93c5fd;background:rgba(37,99,235,.02)}" +
+      "label.sr-card input{width:18px;height:18px;margin:0;flex:none}" +
+      "@media (max-width:1024px){.sr-grid{grid-template-columns:1fr}}";
+    document.head.appendChild(s);
+  }
+  function supremeResultCardsHtml(name) {
+    injectSupremeCardStyle();
+    return '<div class="sr-grid">' + Object.keys(SUPREME_RESULTS).map(function (code) {
+      const m = SUPREME_RESULT_CARD[code] || SUPREME_RESULT_CARD.WIN;
+      return '<label class="sr-card" data-supreme-result="' + code + '">' +
+        '<input type="radio" name="' + name + '" value="' + code + '" style="accent-color:' + m.color + '" />' +
+        '<div style="display:flex;flex-direction:column"><div style="font-weight:700;color:' + m.color + ';font-size:.92em">' +
+        '<i class="fa-solid ' + m.icon + ' me-1"></i>' + escText(SUPREME_RESULTS[code]) + "</div>" +
+        (m.sub ? '<div style="font-size:.78em;color:#64748b">' + escText(m.sub) + "</div>" : "") +
+        "</div></label>";
+    }).join("") + "</div>";
+  }
+  /* เน้นการ์ดที่เลือก (สีขอบ/พื้นตามผล) */
+  function syncSupremeResultCards(root, name) {
+    (root || document).querySelectorAll("label.sr-card").forEach(function (card) {
+      const input = card.querySelector('input[name="' + name + '"]');
+      if (!input) return;
+      const m = SUPREME_RESULT_CARD[input.value] || SUPREME_RESULT_CARD.WIN;
+      card.style.borderColor = input.checked ? m.color : "";
+      card.style.background = input.checked ? m.bg : "";
+    });
+  }
+
   function supremeResultFormHtml(kase) {
-    const results = Object.keys(SUPREME_RESULTS).map(function (code) {
-      /* label แบบ inline-flex + ระยะห่างคงที่ — ไม่พึ่ง Bootstrap และกัน .form-group label ที่เป็น block/กว้างเต็มแถว */
-      return '<label style="display:inline-flex;align-items:center;gap:6px;width:auto;margin:0 18px 6px 0;font-weight:400;cursor:pointer">' +
-        '<input type="radio" name="l3sr_result" value="' + code + '" style="width:auto;margin:0;flex:none" />' +
-        "<span>" + SUPREME_RESULTS[code] + "</span></label>";
-    }).join("");
+    const results = supremeResultCardsHtml("l3sr_result");
     return (
       '<div class="form-card" style="border:2px solid #1e3a8a"><div class="form-card-header" style="background:rgba(30,58,138,.05)">' +
       '<span><i class="fa-solid fa-scale-balanced text-primary me-2"></i>บันทึกผลคำพิพากษาศาลปกครองสูงสุด</span>' +
@@ -2555,7 +2689,10 @@
       '<div class="form-card-body"><div class="form-grid-2">' +
       '<div class="form-group"><label>วันที่ศาลปกครองสูงสุดมีคำพิพากษา</label>' +
       '<input type="date" id="l3sr_date" class="form-control font-monospace" lang="th-TH-u-ca-buddhist" /></div>' +
-      '<div class="form-group"><label>ผลคำพิพากษา <span style="color:#dc2626">*</span></label><div>' + results + "</div></div>" +
+      '<div class="form-group" style="grid-column:1/-1"><label>ผลคำพิพากษา <span style="color:#dc2626">*</span></label>' + results +
+      '<div id="l3sr_otherGroup" hidden style="margin-top:8px"><label for="l3sr_other">ระบุคำพิพากษา/คำสั่งอื่น <span style="color:#dc2626">*</span></label>' +
+      '<input type="text" id="l3sr_other" class="form-control" maxlength="500" placeholder="ระบุรายละเอียดคำพิพากษา/คำสั่ง" /></div></div>' +
+      supremeRegistryFieldsHtml(kase) +
       '<div class="form-group"><label>หมายเลขคดีดำ (ศาลปกครองสูงสุด)</label>' +
       '<input type="text" id="l3sr_black" class="form-control font-monospace" placeholder="เช่น อ. 12/2570" value="' + escText(kase.blackCaseNo || "") + '" /></div>' +
       '<div class="form-group"><label>หมายเลขคดีแดง (ศาลปกครองสูงสุด)</label>' +
@@ -2568,6 +2705,39 @@
       '<div style="text-align:right"><button type="button" id="l3sr_save" class="btn btn-primary">' +
       '<i class="fa-solid fa-floppy-disk me-1"></i>บันทึกผลคำพิพากษา (คดีถึงที่สุด)</button></div>' +
       "</div></div>"
+    );
+  }
+
+  /* มูลเหตุของเคส (l3Causes) ถ้ายังไม่มี ใช้ของคดีรับคำฟ้องเดิม (l3OriginCaseId) */
+  function caseCausesOf(kase) {
+    const VL = global.ECMIS103VerdictLink;
+    if (!kase || !VL) return null;
+    const own = VL.normalizeCauses(kase.l3Causes);
+    if (own || !kase.l3OriginCaseId) return own;
+    const origin = Activity10.getCases().find(function (c) { return c.id === kase.l3OriginCaseId; });
+    return origin ? VL.normalizeCauses(origin.l3Causes) : null;
+  }
+
+  /* ช่องสารบบคำพิพากษา (ชั้น ADMIN_SUPREME) — แสดงเมื่อหน้าโหลด ecmis-verdict-lists.js
+     มูลเหตุ (checkbox หลายข้อ, prefix l3sr_) แสดงเมื่อหน้าโหลด ecmis-10-3-verdict-link.js · เติมจาก l3Causes แก้ไขได้ ไม่บังคับ */
+  function supremeRegistryFieldsHtml(kase) {
+    const LS = global.ECMISVerdictLists;
+    if (!LS) return "";
+    const opt = function (list) {
+      return '<option value="">-- เลือก --</option>' + list.map(function (o) {
+        const v = Array.isArray(o) ? o[0] : o;
+        const t = Array.isArray(o) ? o[1] : o;
+        return '<option value="' + escText(v) + '">' + escText(t) + "</option>";
+      }).join("");
+    };
+    const VL = global.ECMIS103VerdictLink;
+    const causes = VL
+      ? '<div style="grid-column:1/-1">' + VL.causesFieldHTML("l3sr_", caseCausesOf(kase), { required: false }) + "</div>"
+      : "";
+    return (
+      '<div class="form-group"><label>สถานะชั้นคำพิพากษา (สารบบ) <span style="color:#dc2626">*</span></label>' +
+      '<select id="l3sr_stage" class="form-control">' + opt((LS.VERDICT_STAGES || {}).ADMIN_SUPREME || []) + "</select></div>" +
+      causes
     );
   }
 
@@ -2595,6 +2765,13 @@
     const fileEl = document.getElementById("l3sr_files");
     const fileNames = fileEl && fileEl.files ? Array.from(fileEl.files).map(function (f) { return f.name; }) : [];
     if (!checked) return { error: "กรุณาเลือกผลคำพิพากษา" };
+    const resultOther = checked.value === "PARTIAL" ? v("l3sr_other") : "";
+    if (checked.value === "PARTIAL" && !resultOther) return { error: "กรุณาระบุคำพิพากษา/คำสั่งอื่น" };
+    if (document.getElementById("l3sr_stage") && !v("l3sr_stage")) return { error: "กรุณาเลือกสถานะชั้นคำพิพากษา (สารบบ)" };
+    const VL = global.ECMIS103VerdictLink;
+    const causes = VL ? VL.collectCauses("l3sr_") : null;
+    /* มูลเหตุไม่บังคับที่นี่ แต่ถ้าเลือก "อื่นๆ" ต้องระบุ */
+    if (causes && VL.validateCauses(causes)) return { error: VL.validateCauses(causes) };
     if (!fileNames.length) return { error: "กรุณาแนบคำพิพากษาศาลปกครองสูงสุดอย่างน้อย 1 ไฟล์" };
     return {
       data: {
@@ -2602,6 +2779,9 @@
         blackNo: v("l3sr_black"),
         redNo: v("l3sr_red"),
         result: checked.value,
+        resultOther: resultOther,
+        verdictStage: v("l3sr_stage"),
+        causes: causes,
         summary: v("l3sr_summary"),
         fileNames: fileNames,
       },
@@ -2623,6 +2803,13 @@
       return;
     }
     host.innerHTML = supremeResultFormHtml(kase);
+    if (global.ECMIS103VerdictLink) global.ECMIS103VerdictLink.wireCauses("l3sr_");
+    host.querySelectorAll('input[name="l3sr_result"]').forEach(function (r) {
+      r.addEventListener("change", function () {
+        document.getElementById("l3sr_otherGroup").hidden = r.value !== "PARTIAL";
+        syncSupremeResultCards(host, "l3sr_result");
+      });
+    });
     document.getElementById("l3sr_save").addEventListener("click", function () {
       const read = readSupremeResultForm();
       if (read.error) {
@@ -2632,7 +2819,7 @@
       Swal.fire({
         icon: "question",
         title: "ยืนยันบันทึกผลคำพิพากษา",
-        text: "ผล: " + SUPREME_RESULTS[read.data.result] + " ระบบจะบันทึกสถานะทางคดีเป็น \"คดีถึงที่สุด\"",
+        text: "ผล: " + SUPREME_RESULTS[read.data.result] + (read.data.resultOther ? " (" + read.data.resultOther + ")" : "") + " ระบบจะบันทึกสถานะทางคดีเป็น \"คดีถึงที่สุด\"",
         showCancelButton: true,
         confirmButtonText: "ยืนยันบันทึก",
         cancelButtonText: "ยกเลิก",
@@ -2666,6 +2853,53 @@
   }
 
   /* -------------------------------------------------------------- EXPORTS */
+  /* 2026-10-27 ย่อชื่อสถานะ (chip ใน inbox) — เคสที่บันทึกไว้แล้วยังเก็บข้อความเดิม
+     แปลงเฉพาะข้อความที่ตรงกับชื่อเดิมทุกตัวอักษร (ไม่แตะสถานะอื่น) */
+  const RENAMED_STATUS_TEXT = {
+      "ธุรการออกเลขส่งและเสนอบอร์ด": "ธุรการเสนอมติตามลำดับชั้น",
+      "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — นิติกรแนบฉบับลงนามจริงและส่งต่อศาล": "นิติกรส่งคำชี้แจงคัดค้านต่อศาล",
+      "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง": "นิติกรส่งเอกสารถึงอัยการ",
+      "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา": "รอศาลมีคำพิพากษา",
+      "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (พิจารณาความเห็นควรอุทธรณ์)": "ผอ.กลุ่มงานมอบหมายนิติกร (พิจารณาอุทธรณ์)",
+      "รอปิดสำนวน (LAW0163)": "รอปิดสำนวน",
+      "นิติกรส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครอง": "นิติกรส่งคำแก้อุทธรณ์",
+      "ส่งคำแก้อุทธรณ์ไปสำนักงานคดีปกครองแล้ว": "ส่งคำแก้อุทธรณ์แล้ว",
+      "ผอ.กองกฎหมายพิจารณาและลงนามเห็นชอบ (เสนอมติบอร์ด)": "ผอ.กองกฎหมายเห็นชอบ (เสนอมติบอร์ด)",
+      "เสนอมติอุทธรณ์ต่อบอร์ดแล้ว (รอบอร์ดพิจารณา)": "รอบอร์ดพิจารณา",
+      "ผอ.กองกฎหมายพิจารณาและลงนามคำอุทธรณ์": "ผอ.กองกฎหมายลงนามคำอุทธรณ์",
+      "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก (สายมติบอร์ด)": "ธุรการออกเลขหนังสือ",
+      "ธุรการกองกฎหมายออกเลขหนังสือส่งภายนอก": "ธุรการออกเลขหนังสือ",
+      "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์ (สายมติบอร์ด)": "นิติกรส่งคำอุทธรณ์",
+      "นิติกรจัดส่งหนังสือและคำอุทธรณ์ทางไปรษณีย์": "นิติกรส่งคำอุทธรณ์",
+      "จัดส่งคำอุทธรณ์ไปยังสำนักงานคดีปกครองแล้ว (รอยื่นต่อศาลปกครองสูงสุด)": "ส่งคำอุทธรณ์แล้ว",
+      "ผอ.กลุ่มงานคดีพิจารณาและเห็นชอบ (ดำเนินการอุทธรณ์)": "ผอ.กลุ่มงานเห็นชอบ (อุทธรณ์)",
+      "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลและร่างคำอุทธรณ์": "นิติกรร่างคำอุทธรณ์",
+      "ผอ.กลุ่มงานคดีพิจารณาและมอบหมายนิติกร (แจ้งไม่อุทธรณ์)": "ผอ.กลุ่มงานมอบหมายนิติกร (ไม่อุทธรณ์)",
+      "นิติกรรับเรื่องเพื่อดำเนินการแจ้งผลไม่อุทธรณ์": "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
+      "ผอ.กองกฎหมายลงนามในหนังสือที่ส่งถึงอัยการ": "ผอ.กองกฎหมายลงนามหนังสือ",
+      "ธุรการกองกฎหมายออกเลขหนังสือ (แจ้งไม่อุทธรณ์)": "ธุรการออกเลขหนังสือ (ไม่อุทธรณ์)",
+      "นิติกรจัดส่งหนังสือแจ้งไม่อุทธรณ์ทางไปรษณีย์": "นิติกรส่งหนังสือแจ้งไม่อุทธรณ์",
+      "จัดส่งหนังสือแจ้งไม่อุทธรณ์แล้ว และปิดสำนวนคดี": "ปิดสำนวน (ไม่อุทธรณ์)",
+      "บันทึกผลคำพิพากษาศาลปกครองสูงสุดแล้ว (คดีถึงที่สุด)": "คดีถึงที่สุด"
+  };
+  function migrateRenamedStatusText() {
+    const A10 = global.Activity10;
+    if (!A10 || !A10.getCases || !A10.saveCases) return;
+    let changed = false;
+    const next = A10.getCases().map(function (k) {
+      const to = k && RENAMED_STATUS_TEXT[k.status];
+      if (!to) return k;
+      changed = true;
+      return Object.assign({}, k, { status: to });
+    });
+    if (changed) A10.saveCases(next);
+  }
+  try {
+    migrateRenamedStatusText();
+  } catch (e) {
+    /* ไม่มีข้อมูลเคส (เช่นหน้า test) — ข้าม */
+  }
+
   global.Activity103 = Activity103;
   global.ECMIS103 = {
     formatThaiDate: formatThaiDate,

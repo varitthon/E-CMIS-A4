@@ -45,7 +45,7 @@ const ALL = [mine, others, notYetAssigned, movedOn, court, appeal, appealOther, 
 const ids = (rows) => rows.map((c) => c.id).sort();
 
 t("ผอ.กอง / ผอ.กลุ่ม ทุกสายงานเห็นงานทุกสำนวน", () => {
-  for (const role of ["dir_legal", "group_director", "case_group_director", "case_bureau_director", "case_tracking_director", "Napas.S", "Arnon.C"]) {
+  for (const role of ["dir_legal", "group_director", "case_group_director", "case_bureau_director", "Napas.S", "Arnon.C"]) {
     assert.equal(A.seesAllCases(role), true, role);
     assert.deepEqual(ids(A.visibleCasesFor(ALL, role, "")), ids(ALL), role);
   }
@@ -100,7 +100,7 @@ t("ข้อมูลตัวอย่าง: ผอ.กลุ่มเห็�
 t("10.2: ผอ.กลุ่มงานคดีและ ผอ.สายกองบริหารคดีเห็นคำร้องเปิดเผยข้อมูลทุกเรื่อง", () => {
   const disclosure = A.getCases().find((c) => A2.isDisclosureCase(c));
   assert.ok(disclosure, "ต้องมีคำร้อง 10.2 ในข้อมูลตัวอย่าง");
-  for (const role of ["case_group_director", "case_bureau_director", "case_tracking_director"]) {
+  for (const role of ["case_group_director", "case_bureau_director"]) {
     assert.ok(A2.VISIBILITY_RULES.all.includes(role), role);
     assert.equal(A2.canView102({ ...disclosure, assignedRole: "secgen" }, role, ""), true, role);
   }

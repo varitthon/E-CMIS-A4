@@ -1326,7 +1326,6 @@
         "group_director",
         "case_group_director",
         "case_bureau_director",
-        "case_tracking_director",
       ],
       byStep: ["sub_secretariat", "subcommittee_screen", "secgen", "deputy_sg"],
       byUnit: ["district_admin"],

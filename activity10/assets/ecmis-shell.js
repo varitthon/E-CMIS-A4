@@ -24,6 +24,15 @@
     document.head.appendChild(s);
   })();
 
+  /* ช่องข้อความยาวมีไมค์พูดเป็นข้อความ + ทุก select ค้นหาได้ (ecmis-input-enhance.js) — ทุกหน้าที่ใช้ shell */
+  (function loadInputEnhance() {
+    const self = document.currentScript && document.currentScript.src;
+    if (!self || global.ECMISInputEnhance) return;
+    const s = document.createElement('script');
+    s.src = self.replace(/ecmis-shell\.js[^/]*$/, 'ecmis-input-enhance.js?v=20261027_2');
+    document.head.appendChild(s);
+  })();
+
   const ROLE_DISPLAY = {
     'admin_legal': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
     'Kanda.R': { name: 'นางกานดา รักษ์ธรรม', role: 'เจ้าหน้าที่ธุรการกองกฎหมาย', av: 'ก', intake: true },
@@ -442,15 +451,25 @@
      สลับบทบาทจากเมนูโปรไฟล์ (คลิกชื่อผู้ใช้ ไม่ต้องออกจากระบบ) — ชุดบทบาทเดียวกับ ROLE_GROUPS ใน login.html
      (แก้กลุ่มบทบาทที่นั่นแล้วต้องแก้ที่นี่คู่กัน) เปลี่ยนแล้วไปหน้ารายการงานของบทบาทใหม่ */
   const SWITCHER_GROUPS = [
-    { label: 'กิจกรรมที่ 10.1', ids: ['case_management', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
+    { label: 'กิจกรรมที่ 10.1', ids: ['case_bureau_investigator', 'admin_legal', 'dir_legal', 'group_director', 'legal_officer'] },
     { label: '10.2 — คำขอเปิดเผยข้อมูลข่าวสาร', ids: ['sub_secretariat', 'subcommittee_screen', 'deputy_sg', 'secgen'] },
-    { label: '10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'district_admin', 'case_bureau_director', 'case_tracking_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
-    { label: '10.3 — คดีปกครอง', ids: ['case_group_director', 'case_legal_officer', 'chairman'] }
+    { label: '10.2 — อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล', ids: ['case_bureau_admin', 'district_admin', 'case_bureau_director', 'appeal_subcommittee_secretariat', 'appeal_ruling_subcommittee', 'original_officer', 'case_tracking_secretary'] },
+    { label: '10.3 — คดีปกครอง', ids: ['case_group_director', 'case_legal_officer'] }
   ];
   const ROLE_LEGACY_IDS = {
     'Kanda.R': 'admin_legal', 'Napas.S': 'dir_legal', 'Arnon.C': 'group_director',
     'Nattapol.B': 'legal_officer', 'Surapong.W': 'deputy_sg', 'Apichat.S': 'secgen'
   };
+
+  /* บทบาทที่เพิ่มคำพิพากษาอย่างเดียว (Activity10.VERDICT_ONLY_ROLES) ไม่มีรายการงาน — ไปสารบบคำพิพากษาแทน */
+  (function redirectVerdictOnlyRole() {
+    const A = global.Activity10;
+    const role = sessionStorage.getItem('ecmis_role') || '';
+    const file = global.location.pathname.split('/').pop() || '01-work-inbox.html';
+    if (A && (A.VERDICT_ONLY_ROLES || []).indexOf(role) >= 0 && file === '01-work-inbox.html') {
+      global.location.replace('registry.html');
+    }
+  })();
 
   function switchRole(roleId) {
     if (!roleId || roleId === getCurrentRole()) return;

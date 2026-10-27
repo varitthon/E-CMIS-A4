@@ -452,7 +452,7 @@ t("buildSupremeJudgmentPatch: L7_SENT_TO_PROSECUTOR → L7_SUPREME_JUDGED + FINA
   );
   assert.equal(p.statusCode, "L7_SUPREME_JUDGED");
   assert.equal(p.caseStatus, "FINAL");
-  assert.equal(p.l3SupremeJudgment.resultName, "ชนะคดี");
+  assert.equal(p.l3SupremeJudgment.resultName, "ศาลพิพากษายกฟ้อง");
 });
 t("defaultStatusPatch(L7_SUPREME_JUDGED) → FINAL; VIEW_ROUTES มีรายการ", () => {
   assert.equal(A3.defaultStatusPatch("L7_SUPREME_JUDGED", {}).caseStatus, "FINAL");

@@ -100,30 +100,47 @@
     return new Date(String(iso).slice(0, 10) + "T00:00:00").toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  /* มูลเหตุ 10.3 (ECMISVerdictLists.ADMIN_CAUSES) เช่น "1. ...; 7. อื่นๆ (ข้อความ)" */
+  function causesText103(v) {
+    const list = (global.ECMISVerdictLists || {}).ADMIN_CAUSES || [];
+    if (!v || !Array.isArray(v.codes)) return "";
+    return list
+      .filter((c) => v.codes.indexOf(c.code) >= 0)
+      .map((c) => c.code + ". " + c.name + (c.needsOther && v.other ? " (" + v.other + ")" : ""))
+      .join("; ");
+  }
+  /* มูลเหตุของเคส: l3Causes ของเคส ถ้าไม่มีใช้ของคดีรับคำฟ้องเดิม */
+  function caseCauses103(kase) {
+    if (kase.l3Causes && (kase.l3Causes.codes || []).length) return kase.l3Causes;
+    const A10 = global.Activity10;
+    const origin = kase.l3OriginCaseId && A10 ? A10.getCases().find((c) => c.id === kase.l3OriginCaseId) : null;
+    return origin ? origin.l3Causes || null : null;
+  }
+
   /* แถวขยายของ 10.3: ผลที่บันทึกรายชั้นศาลปกครอง (อ่านอย่างเดียว) */
   function detail103Html(kase) {
     const esc = F().esc;
-    const LS = global.ECMISVerdictLists;
     const recs = R().getRecords(kase);
+    const caseCauses = caseCauses103(kase);
     const val = (label, v, wide) =>
       '<div class="' + (wide ? "vrr-wide" : "") + '"><label>' + esc(label) + '</label><div class="vrr-val' + (v ? "" : " empty") + '">' + esc(v || "-") + "</div></div>";
     const body = recs.length
       ? recs.map((r) => {
           const f = r.fields || {};
           const c = r.court || {};
-          const n = LS.CASE_NATURES.find((x) => x.no === f.caseNatureNo);
           return '<div class="vrr-grid">' +
             val("ชั้นศาล", R().levelName ? R().levelName(r.level) : r.level) +
+            val("ผู้ถูกฟ้องคดี", r.person) +
             val("ศาล / วันที่พิพากษา", [c.name, thaiDate(c.date)].filter(Boolean).join(" · ")) +
             val("คดีหมายเลขดำ / แดง", [c.blackNo, c.redNo].filter(Boolean).join(" / ")) +
             val("สถานะชั้นคำพิพากษา", f.verdictStage) +
-            val("ประเภท/ลักษณะคดี", n ? n.no + ". " + n.name + (f.caseNatureSub ? " — " + f.caseNatureSub : "") : "", true) +
+            val("มูลเหตุ", causesText103(f.causes || caseCauses), true) +
             val("รายละเอียดผลคำพิพากษา", f.resultDetail, true) +
             val("คดีถึงที่สุด", f.isFinal ? "ถึงที่สุดแล้ว" + (f.finalLetterNo ? " — " + f.finalLetterNo : "") : "ยังไม่ถึงที่สุด") +
             val("สถานะบันทึก", (r.status === "done" ? "บันทึกแล้ว" : "ร่าง") + (r.updatedBy ? " · " + r.updatedBy : "")) +
             "</div>";
         }).join("")
-      : '<div style="color:#b45309">ยังไม่มีบันทึกผลคำพิพากษา — บันทึกได้ตอนรับคำพิพากษา (10-3v-00)</div>';
+      : '<div style="color:#b45309">ยังไม่มีบันทึกผลคำพิพากษา — บันทึกได้ตอนธุรการรับคำพิพากษา</div>';
     return (
       '<tr class="vrr-detail"><td colspan="5" style="padding:10px 12px 14px">' +
       '<div class="vrr-pacc"><div class="vrr-pacc-title"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>ผลคำพิพากษาศาลปกครอง' +
@@ -173,12 +190,12 @@
       (kase.paccSourceId ? '<div class="vr-sub">สำนวนเดิม ' + esc(kase.paccSourceId) + "</div>" : "") + "</td>" +
       (is103(kase)
         ? "<td>ผู้ฟ้องคดี: " + esc((kase.plaintiffs || []).join(", ") || "-") + "<br>ผู้ถูกฟ้องคดี: " + esc((kase.defendants || []).join(", ") || "-") + "</td>" +
-          '<td>คดีปกครอง (10.3)<div class="vr-sub">บันทึกตอนรับคำพิพากษา 10-3v-00</div></td>' +
+          '<td>คดีปกครอง (10.3)<div class="vr-sub">บันทึกตอนธุรการรับคำพิพากษา</div></td>' +
           "<td>" + levelLinks(kase) + "</td>" +
           '<td style="white-space:nowrap"><button type="button" class="btn btn-outline" data-vrr-toggle="' + esc(kase.id) + '"><i class="fa-solid fa-eye"></i>ดูผล</button></td></tr>'
         : "<td>ผู้กล่าวหา: " + esc(kase.accuser || "-") + "<br>ผู้ถูกกล่าวหา: " + esc(kase.accused || "-") + "</td>" +
           "<td>" + esc(kase.prosecutorCaseTypeName || "-") + "</td>" +
-          "<td>" + levelLinks(kase) + "</td>" +
+          "<td>" + levelLinks(kase) + F().latestVerdictHtml(kase) + "</td>" +
           '<td style="white-space:nowrap">' +
           '<a class="btn btn-outline" href="verdict-form.html?id=' + encodeURIComponent(kase.id) + '"><i class="fa-solid fa-pen-to-square"></i>' + (F().canEdit() ? "บันทึก" : "ดู") + "</a> " +
           (hasRec ? '<button type="button" class="btn btn-outline" data-vrr-word="' + esc(kase.id) + '"><i class="fa-solid fa-file-word"></i>สรุปคำพิพากษา</button>' : "") +
@@ -217,6 +234,8 @@
       "</select>" +
       '<input type="search" data-vrr-filter="q" aria-label="ค้นหา" placeholder="ค้นหา เลขสำนวน / ผู้ถูกกล่าวหา / ผู้กล่าวหา" value="' + esc(state.q) + '" style="min-width:240px">' +
       '<button type="button" class="btn btn-outline" data-vrr-excel="1"><i class="fa-solid fa-file-excel"></i>Excel ทั้งหมด (' + recCount + " แถว)</button>" +
+      /* รีเฟรช = คืนข้อมูลตัวอย่างทั้งระบบ แบบเดียวกับปุ่ม "รีเฟรช" ในหน้ารายการงาน (Activity10.resetData) */
+      '<button type="button" class="btn btn-outline" data-vrr-refresh="1" title="รีเซ็ตข้อมูลตัวอย่าง"><i class="fa-solid fa-rotate"></i>รีเฟรช</button>' +
       (F().canEdit()
         ? '<button type="button" class="btn btn-outline" data-vrr-reset="1" title="คืนสำนวนตัวอย่างกลับเป็นข้อมูลตั้งต้น">' +
           '<i class="fa-solid fa-rotate-left"></i>คืนค่าตัวอย่างคำพิพากษา</button>'
@@ -228,6 +247,33 @@
   function refreshBody() {
     const body = hostEl && hostEl.querySelector("[data-vrr-body]");
     if (body) body.innerHTML = tableHtml();
+  }
+
+  /* รีเฟรช — คืนข้อมูลคดีทั้งหมดเป็นค่าเริ่มต้น (ข้อความยืนยันเดียวกับหน้ารายการงาน resetDemoData) */
+  function confirmRefreshAll() {
+    const done = () => {
+      if (A().resetData) A().resetData();
+      F().ensureSamples();
+      state.open.clear();
+      render(hostEl);
+    };
+    if (!global.Swal) {
+      done();
+      return;
+    }
+    global.Swal.fire({
+      title: "ยืนยันการรีเซ็ตข้อมูล?",
+      html: "ระบบจะคืนข้อมูลคดีและสำนวนกลับสู่ค่าเริ่มต้นสำหรับการสาธิต<br><b style='color:#b91c1c'>สำนวนที่สร้างหรือแก้ไขเองทั้งหมดจะถูกลบถาวร</b> และไม่สามารถกู้คืนได้",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ลบสำนวนที่สร้างเอง และรีเซ็ต",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#dc2626",
+    }).then((res) => {
+      if (!res.isConfirmed) return;
+      done();
+      global.Swal.fire({ icon: "success", title: "รีเซ็ตสำเร็จ", timer: 1000, showConfirmButton: false });
+    });
   }
 
   /* คืนค่าตัวอย่าง (ยืนยันก่อน) — เฉพาะสำนวนตัวอย่าง สำนวนอื่นไม่เปลี่ยน */
@@ -288,6 +334,7 @@
       if (w) return F().downloadWord(w.getAttribute("data-vrr-word"));
       if (e.target.closest("[data-vrr-excel]")) F().downloadExcel(cases101(), "ฐานข้อมูลคำพิพากษา");
       if (e.target.closest("[data-vrr-reset]")) confirmReset();
+      if (e.target.closest("[data-vrr-refresh]")) confirmRefreshAll();
     });
   }
 

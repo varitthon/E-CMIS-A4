@@ -19,14 +19,19 @@
     { key: "caseNatureOther", col: "Y", label: "ระบุ (อื่นๆ)" },
     { key: "trackingGroup", col: "Z", label: "กลุ่มงานบริหารติดตามรับเรื่อง" },
     { key: "verdictType", col: "AA", label: "ประเภทคำพิพากษา" },
+    { key: "verdictTypeOther", col: "AA", label: "สาเหตุจำหน่ายคดี" },
+    { key: "prosecutorStatus", col: "AG", label: "สถานะชั้นพนักงานอัยการ" },
     { key: "verdictStage", col: "AH", label: "สถานะชั้นคำพิพากษา" },
-    { key: "resultDetail", col: "AI", label: "รายละเอียด" },
+    { key: "resultDetail", col: "AI", label: "หมายเหตุ" },
+    { key: "offenseBasis", col: "AJ", label: "ฐานความผิด" },
+    { key: "appealIssue", col: "", label: "ประเด็นอุทธรณ์" },
     { key: "offenseLaw", col: "AJ", label: "ความผิดตามกฎหมาย/ระเบียบ" },
     { key: "offenseLawOther", col: "AJ", label: "ระบุ (อื่นๆ)" },
     { key: "jailMonths", col: "AK", label: "จำคุก (เดือน)", num: true },
     { key: "jailYears", col: "AL", label: "จำคุก (ปี)", num: true },
     { key: "fine", col: "AM", label: "ปรับ (บาท)", num: true },
     { key: "restitutionType", col: "AN", label: "ชดใช้/คืน" },
+    { key: "restitutionOther", col: "AN", label: "ระบุ (ชดใช้/คืน อื่นๆ)" },
     { key: "restitutionAmount", col: "AN", label: "จำนวนเงิน (บาท)", num: true },
     { key: "refundUnit", col: "AO", label: "หน่วยงานที่รับเงินคืน" },
     { key: "isFinal", col: "", label: "คดีถึงที่สุด", bool: true },
@@ -37,7 +42,7 @@
     { key: "suspendedYears", col: "AS", label: "รอลงโทษ (ปี)", num: true },
     { key: "probationYears", col: "AT", label: "รายงานตัวผู้คุมประพฤติ (ปี)", num: true },
     { key: "communityHours", col: "AU", label: "ทำสาธารณประโยชน์ (ชม.)", num: true },
-    { key: "actualOther", col: "AV", label: "อื่นๆ" },
+    { key: "actualOther", col: "AV", label: "รายละเอียดการลงโทษ" },
     { key: "damageValue", col: "AW", label: "มูลค่าความเสียหาย (บาท)", num: true },
   ];
 
@@ -97,7 +102,19 @@
       else fields[f.key] = n;
     });
     if (!fields.isFinal) fields.finalLetterNo = "";
+    /* มูลเหตุ 10.3 (ชั้น ADMIN_*) ไม่ใช่คอลัมน์ Excel ของ 10.1 จึงไม่อยู่ใน INPUT_FIELDS
+       เก็บเฉพาะเมื่อส่งมา เพื่อให้รูปข้อมูลของ 10.1 คงเดิม */
+    const causes = normalizeCauses(src.causes);
+    if (causes) fields.causes = causes;
     return { fields: fields, errors: errors };
+  }
+
+  /* { codes: ["1","3"], other } หรือ null (ไม่มีข้อที่เลือก) */
+  function normalizeCauses(v) {
+    if (!v || !Array.isArray(v.codes)) return null;
+    const codes = v.codes.map(clean).filter(Boolean).filter((c, i, a) => a.indexOf(c) === i);
+    if (!codes.length) return null;
+    return { codes: codes, other: codes.indexOf("7") >= 0 ? clean(v.other) : "" };
   }
 
   /* status "done" ต้องมีประเภทคำพิพากษาและสถานะชั้นคำพิพากษา; "draft" ไม่บังคับ */
@@ -109,6 +126,8 @@
     if (status === "done") {
       /* ประเภทคำพิพากษา (ลงโทษ/ยกฟ้อง) ใช้กับส่วนศาลคดีอาญาเท่านั้น — ศาลปกครองไม่บังคับ */
       if (!n.fields.verdictType && L().levelPart(level) !== "ADMIN") errors.push("กรุณาเลือกประเภทคำพิพากษา");
+      const type = L().verdictType(n.fields.verdictType);
+      if (type && type.needsReason && !n.fields.verdictTypeOther) errors.push("กรุณาระบุสาเหตุ" + type.name);
       if (!n.fields.verdictStage) errors.push("กรุณาเลือกสถานะชั้นคำพิพากษา");
     }
     return errors;
@@ -173,8 +192,7 @@
 
   /* ข้อความผลสำหรับ judgments[].result (สารบบ/รายงานเดิมใช้ช่องนี้) — ไม่มีประเภท/สถานะ = คงข้อความเดิม */
   function judgmentResultText(fields, prevResult) {
-    const type = L().VERDICT_TYPES.find((t) => t.code === fields.verdictType);
-    return stripNo(fields.verdictStage) || (type ? type.name : "") || clean(prevResult);
+    return stripNo(fields.verdictStage) || verdictTypeText(fields) || clean(prevResult);
   }
 
   /* ศาลของชั้น (ใช้ร่วมทุกคนในชั้นเดียวกัน): type = ประเภทศาล (ECMISCourtLists.COURT_TYPES) — ไม่ระบุ = เดาจากชื่อศาล */
@@ -201,8 +219,7 @@
     const shared = stages.length === 1 ? stages[0] : "";
     const perPerson = levelRecs
       .map((r) => {
-        const type = L().VERDICT_TYPES.find((t) => t.code === r.fields.verdictType);
-        const text = shared ? (type ? type.name : "") : judgmentResultText(r.fields, "");
+        const text = shared ? verdictTypeText(r.fields) : judgmentResultText(r.fields, "");
         return text ? r.person + ": " + text : "";
       })
       .filter(Boolean)
@@ -341,6 +358,8 @@
     INPUT_FIELDS.forEach((d) => {
       if (s[d.key] !== undefined) out[d.key] = s[d.key];
     });
+    const causes = normalizeCauses(s.causes);
+    if (causes) out.causes = causes;
     return out;
   }
 
@@ -507,12 +526,39 @@
     return /^อื่นๆ/.test(f.offenseLaw || "") ? f.offenseLawOther : f.offenseLaw;
   }
   function verdictTypeText(f) {
-    const t = L().VERDICT_TYPES.find((x) => x.code === f.verdictType);
-    return t ? t.name : "";
+    /* จำหน่ายคดี: ต่อท้ายสาเหตุ เช่น "จำหน่ายคดี (จำเลยถึงแก่ความตาย)" */
+    const t = L().verdictType(f.verdictType);
+    if (!t) return "";
+    return t.needsReason && clean(f.verdictTypeOther) ? t.name + " (" + clean(f.verdictTypeOther) + ")" : t.name;
   }
+  /* AG ตั้งต้น (2026-10-27) ใช้เมื่อบุคคลยังไม่มีค่า: ค่าระดับสำนวน → คำวินิจฉัย อสส. (หน้า 19) → กรณีอัยการหน้า 02
+     อสส. 1 ให้ฟ้อง → 4.1 · 2 ยืนตามคำสั่งไม่ฟ้อง → 4.2 · 6 ยืนตามไม่อุทธรณ์/ถอนอุทธรณ์ → 4.4
+     หน้า 02 "1. สั่งไม่ฟ้อง" → 3.3; กรณีอื่นไม่มีข้อที่ตรงกัน = ว่าง */
+  const AG_FROM_OAG = { 1: "4.1", 2: "4.2", 6: "4.4" };
+  const AG_FROM_INTAKE = { 1: "3.3" };
+  const leadNo = (t) => {
+    const m = String(t || "").match(/^\s*(\d+)\./);
+    return m ? Number(m[1]) : 0;
+  };
+  function prosecutorStatusByNo(no) {
+    if (!no) return "";
+    const flat = (L().PROSECUTOR_STATUSES || []).reduce((all, x) => all.concat(typeof x === "string" ? [x] : x.items), []);
+    return flat.find((s) => s.indexOf(no + " ") === 0) || "";
+  }
+  function defaultProsecutorStatus(kase) {
+    const k = kase || {};
+    if (clean(k.verdictProsecutorStatus)) return clean(k.verdictProsecutorStatus);
+    return (
+      prosecutorStatusByNo(AG_FROM_OAG[leadNo(k.oagVerdictCaseTypeName)]) ||
+      prosecutorStatusByNo(AG_FROM_INTAKE[leadNo(k.prosecutorCaseTypeName)])
+    );
+  }
+
   function restitutionText(f) {
     if (!f.restitutionType && (f.restitutionAmount === "" || f.restitutionAmount == null)) return "";
-    return [f.restitutionType, money(f.restitutionAmount)].filter(Boolean).join(" ");
+    /* "อื่นๆ" → ข้อความที่ระบุ (restitutionOther) */
+    const type = f.restitutionType === "อื่นๆ" ? clean(f.restitutionOther) || "อื่นๆ" : f.restitutionType;
+    return [type, money(f.restitutionAmount)].filter(Boolean).join(" ");
   }
 
   /* ---------- Excel (เค้าโครงชีต "ฐาน" หัวตาราง 3 แถว 49 คอลัมน์ A–AW) ---------- */
@@ -589,7 +635,8 @@
       .concat([
         f.statCountAs, caseNatureText(f), f.trackingGroup, verdictTypeText(f),
         court.blackNo || "", court.redNo || "", court.date ? fmt(court.date) : "", ctx.plaintiff, rec.person || ctx.defendant,
-        ctx.prosecutorStatus, stripNo(f.verdictStage),
+        /* AG รายบุคคล; บันทึกเดิมที่ยังไม่มี = ค่าระดับสำนวน */
+        stripNo(f.prosecutorStatus) || ctx.prosecutorStatus, stripNo(f.verdictStage),
         f.resultDetail, offenseLawText(f), f.jailMonths, f.jailYears, f.fine, restitutionText(f), f.refundUnit,
         f.actualJailMonths, f.actualJailYears, f.actualFine, f.suspendedYears, f.probationYears, f.communityHours, f.actualOther,
         f.damageValue,
@@ -721,6 +768,7 @@
     appliesToProsecutorType: appliesToProsecutorType,
     emptyFields: emptyFields,
     normalizeFields: normalizeFields,
+    normalizeCauses: normalizeCauses,
     validate: validate,
     getRecords: getRecords,
     getRecord: getRecord,
@@ -738,6 +786,7 @@
     verdictTypeText: verdictTypeText,
     restitutionText: restitutionText,
     stripNo: stripNo,
+    defaultProsecutorStatus: defaultProsecutorStatus,
     money: money,
     excelHeader: excelHeader,
     excelRows: excelRows,

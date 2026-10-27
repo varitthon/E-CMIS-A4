@@ -19,7 +19,7 @@
     <!-- E-CMIS Core Design System & Shell -->
     <link rel="stylesheet" href="assets/ecmis-shell.css?v=20261021_2" />
     <link rel="stylesheet" href="assets/ecmis-sidebar.css?v=20261014_12" />
-    <script src="assets/ecmis-sidebar.js?v=20261022_legacy" defer></script>
+    <script src="assets/ecmis-sidebar.js?v=20261027_dash" defer></script>
     <link rel="stylesheet" href="assets/ecmis-design-system.css" />
 
     <!-- Chart.js for data visualization -->
@@ -259,6 +259,37 @@
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
+      /* ภาพรวมคดีปกครอง 10.3 ตามบทบาท */
+      .d103-head { margin-bottom: var(--ds-space-4); }
+      .d103-head h2 {
+        font-family: var(--ds-font-heading);
+        font-size: 1.2em;
+        font-weight: 700;
+        color: var(--ds-ink-900);
+        display: flex;
+        align-items: center;
+        gap: var(--ds-space-2);
+        margin: 0 0 var(--ds-space-1);
+      }
+      .d103-head p { font-size: 0.88em; color: var(--ds-ink-500); margin: 0; }
+      .d103-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: var(--ds-space-4);
+      }
+      .d103-kpi-grid .dash-kpi-card:focus-visible {
+        outline: 2px solid var(--ds-blue-600);
+        outline-offset: 2px;
+      }
+      .d103-case-list { margin-top: var(--ds-space-4); }
+      .d103-list-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-family: var(--ds-font-heading); }
+      .d103-table { font-size: 0.84em; }
+      .d103-empty { padding: 12px; color: var(--ds-ink-500); font-size: 0.88em; }
+      .d103-sr {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap;
+      }
+
       /* Media queries */
       @media (max-width: 1024px) {
         .dash-chart-grid-2,
@@ -435,6 +466,81 @@
             </button>
           </div>
         </header>
+
+        <!-- ภาพรวมคดีปกครอง 10.3 ตามบทบาท (assets/ecmis-dash-103.js) -->
+        <section class="d103-section" id="d103Section" aria-labelledby="d103Title">
+          <div class="d103-head">
+            <h2 id="d103Title"><i class="fa-solid fa-user-check" style="color: var(--ds-blue-600)"></i><span>ภาพรวมของกอง</span></h2>
+            <p id="d103Subtitle">สำนวนคดีปกครอง (10.3)</p>
+          </div>
+
+          <div class="dash-chart-grid-3">
+            <div class="ds-card">
+              <div class="ds-card-header">
+                <span><i class="fa-solid fa-inbox me-2" style="color: var(--ds-blue-600)"></i>สถิติสถานะงานใน INBOX</span>
+                <span class="ds-badge ds-badge-info">คดีปกครอง 10.3</span>
+              </div>
+              <div class="ds-card-body">
+                <div class="d103-kpi-grid">
+                  <div class="dash-kpi-card" id="d103CardNEW" role="button" tabindex="0" aria-pressed="false">
+                    <div class="dash-kpi-top">
+                      <span class="dash-kpi-label">งานเข้าใหม่</span>
+                      <div class="dash-kpi-icon" style="background: var(--ds-info-bg); color: var(--ds-info-text)"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    </div>
+                    <div class="dash-kpi-value" style="color: #2563eb" id="d103CountNEW">0</div>
+                    <div class="dash-kpi-sub"><span>คลิกเพื่อดูรายการ</span></div>
+                  </div>
+                  <div class="dash-kpi-card" id="d103CardACTIVE" role="button" tabindex="0" aria-pressed="false">
+                    <div class="dash-kpi-top">
+                      <span class="dash-kpi-label">กำลังดำเนินการ</span>
+                      <div class="dash-kpi-icon" style="background: var(--ds-warning-bg); color: var(--ds-warning-text)"><i class="fa-solid fa-spinner"></i></div>
+                    </div>
+                    <div class="dash-kpi-value" style="color: #d97706" id="d103CountACTIVE">0</div>
+                    <div class="dash-kpi-sub"><span>คลิกเพื่อดูรายการ</span></div>
+                  </div>
+                  <div class="dash-kpi-card" id="d103CardDONE" role="button" tabindex="0" aria-pressed="false">
+                    <div class="dash-kpi-top">
+                      <span class="dash-kpi-label">เสร็จสิ้น</span>
+                      <div class="dash-kpi-icon" style="background: var(--ds-success-bg); color: var(--ds-success-text)"><i class="fa-solid fa-circle-check"></i></div>
+                    </div>
+                    <div class="dash-kpi-value" style="color: #16a34a" id="d103CountDONE">0</div>
+                    <div class="dash-kpi-sub"><span>คลิกเพื่อดูรายการ</span></div>
+                  </div>
+                </div>
+                <div class="d103-case-list" id="d103CaseList" hidden></div>
+              </div>
+            </div>
+
+            <div class="ds-card">
+              <div class="ds-card-header">
+                <span><i class="fa-solid fa-chart-pie me-2" style="color: var(--ds-navy-700)"></i>สัดส่วนสถานะงาน</span>
+              </div>
+              <div class="ds-card-body">
+                <div class="dash-chart-container" style="height: 240px;">
+                  <canvas id="d103StatusChart" aria-label="สัดส่วนสถานะงานคดีปกครอง"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ds-card" style="margin-bottom: var(--ds-space-6);">
+            <div class="ds-card-header">
+              <span><i class="fa-solid fa-chart-bar me-2" style="color: #4f46e5"></i>กราฟมูลเหตุ</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="ds-badge ds-badge-neutral" id="d103NatureTotal">รวม 0 สำนวน</span>
+                <label for="d103NatureYear" class="d103-sr">ปีงบประมาณ</label>
+                <select id="d103NatureYear" class="ds-form-control" style="width: auto; min-width: 190px;">
+                  <option value="ALL">ทั้งหมด</option>
+                </select>
+              </div>
+            </div>
+            <div class="ds-card-body">
+              <div class="dash-chart-container" style="height: 340px;">
+                <canvas id="d103NatureChart" aria-label="จำนวนสำนวนแยกตามมูลเหตุ"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- GLOBAL FILTER BAR -->
         <section class="dash-filter-card btn-no-print">
@@ -811,6 +917,9 @@
     <script src="assets/ecmis-app.js?v=20261022_actref"></script>
     <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
+    <script src="assets/ecmis-dash-103.js?v=20261027_causes"></script>
     <script>
       /* ==========================================================================
          E-CMIS Activity 10: Executive Analytics & Dashboard Engine

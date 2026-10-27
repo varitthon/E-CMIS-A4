@@ -3951,7 +3951,7 @@
       l8ProposedBranch: "BOARD",
       l8GroupApproveNotes: "เห็นชอบตามที่นิติกรเสนอ",
       l9GroupApproveNotes: "เห็นชอบตามบันทึกที่นิติกรเสนอ",
-      l9DirectorApproveNotes: "เห็นชอบและให้ส่งมติเสนอบอร์ด",
+      l9DirectorApproveNotes: "เห็นชอบและให้เสนอมติตามลำดับชั้น",
       l9InternalDocNo: "ทบ.มต. 0041/2569",
       l9SentDate: getDateWithOffset(-18),
       l9SendNotes: "-",
@@ -4032,7 +4032,7 @@
       l8ProposedBranch: "BOARD",
       l8GroupApproveNotes: "เห็นชอบตามที่นิติกรเสนอ",
       l9GroupApproveNotes: "เห็นชอบตามบันทึกที่นิติกรเสนอ",
-      l9DirectorApproveNotes: "เห็นชอบและให้ส่งมติเสนอบอร์ด",
+      l9DirectorApproveNotes: "เห็นชอบและให้เสนอมติตามลำดับชั้น",
       l9InternalDocNo: "ทบ.มต. 0042/2569",
       l9SentDate: getDateWithOffset(-16),
       l9SendNotes: "-",
@@ -4790,6 +4790,139 @@
     return { cases: migrated, changed: changed };
   }
 
+  /* 2026-10-27 สถานะ 10.1 / 10.2 แบบคำสั้น "ผู้ทำ + งาน" — หน้าต่าง ๆ ยังเขียน status/statusBadge
+     ของตัวเอง แต่ทุกหน้าบันทึกผ่าน saveCases จึงปรับข้อความและสีให้ตรงตารางนี้ที่จุดเดียว
+     สี = บทบาทผู้ถืองานตอนนี้ ยกเว้นสถานะงาน: ถูกส่งกลับ = แดง, สิ้นสุด = เขียว
+     ขั้นที่ถูกส่งกลับใช้ข้อความเดียวกับสถานะปกติของขั้นนั้น (แถบเหตุผลส่งกลับแสดงในหน้าเอง) */
+  const STATUS_ROLE_BADGE = {
+    doer: "bg-primary text-white", // นิติกร / ฝ่ายเลขานุการฯ (ผู้จัดทำ)
+    group: "bg-info text-dark", // ผอ.กลุ่มงาน
+    director: "bg-warning text-dark", // ผอ.กองกฎหมาย / ผอ.กองบริหารคดี
+    admin: "bg-secondary text-white", // ธุรการ / เจ้าหน้าที่รับเรื่อง
+    exec: "bg-dark text-white", // ผู้บริหาร / เลขาธิการ / รองเลขาธิการ
+    committee: "bg-light text-dark border", // คณะอนุกรรมการ / คณะกรรมการ ป.ป.ท.
+    done: "bg-success text-white",
+  };
+  const RETURNED_BADGE = "bg-danger text-white";
+  const SHORT_STATUS = {
+    /* ---- 10.1 ---- */
+    PENDING_DIRECTOR: ["ผอ.กอง พิจารณา", "director"],
+    PENDING_GROUP_DIRECTOR: ["ผอ.กลุ่ม พิจารณา", "group"],
+    DRAFTING_OPINION: ["นิติกร ทำความเห็น", "doer"],
+    PENDING_GROUP_REVIEW: ["ผอ.กลุ่ม ตรวจความเห็น", "group"],
+    PENDING_DIRECTOR_APPROVAL: ["ผอ.กอง ตรวจความเห็น", "director"],
+    PENDING_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
+    PENDING_DEPUTY_SG: ["ผู้บริหาร ลงนาม", "exec"],
+    FINAL_DISPATCHED: ["ลงนามแล้ว", "admin"],
+    PENDING_GROUP_RESOLUTION: ["ผอ.กลุ่ม พิจารณามติ", "group"],
+    PENDING_OFFICER_FINAL_DOC: ["นิติกร ทำหนังสือตามมติ", "doer"],
+    PENDING_GROUP_FINAL_REVIEW: ["ผอ.กลุ่ม ตรวจหนังสือ", "group"],
+    PENDING_DIRECTOR_FINAL_REVIEW: ["ผอ.กอง ตรวจหนังสือ", "director"],
+    PENDING_FINAL_DISPATCH_ROUND2: ["ธุรการ ออกเลขส่ง", "admin"],
+    SUBMITTED_TO_EXEC_ROUND2: ["ผู้บริหาร ลงนาม", "exec"],
+    RETURNED_FROM_EXEC: ["ธุรการ รับผลมติ", "admin"],
+    PENDING_ADMIN_SIGNED_RECEIVE: ["ธุรการ ตรวจรับหนังสือ", "admin"],
+    PENDING_OFFICER_EXTERNAL_DISPATCH: ["นิติกร ส่งหนังสือ", "doer"],
+    PENDING_ADMIN_OAG_VERDICT_INTAKE: ["ธุรการ รับผล อสส.", "admin"],
+    PENDING_DIRECTOR_OAG_VERDICT_REVIEW: ["ผอ.กอง ตรวจผล อสส.", "director"],
+    PENDING_GROUP_OAG_VERDICT_REVIEW: ["ผอ.กลุ่ม มอบหมายนิติกร", "group"],
+    PENDING_OFFICER_FINAL_NOTIFICATION: ["นิติกร บันทึกผล อสส.", "doer"],
+    COMPLETED_OAG_RESOLVED: ["คดีถึงที่สุดแล้ว", "done"],
+    /* ---- 10.2 ---- */
+    L2_PENDING_DIRECTOR_ASSIGN: ["ผอ.กอง สั่งการ", "director"],
+    L2_PENDING_GROUP_ASSIGN: ["ผอ.กลุ่ม ตรวจประเด็น", "group"],
+    L2_PENDING_SECRETARIAT_OPINION: ["เลขาฯ ทำรายงาน", "doer"],
+    L2_PENDING_GROUP_VERIFY: ["ผอ.กลุ่ม ตรวจความครบ", "group"],
+    L2_PENDING_AGENDA: ["เลขาฯ บรรจุวาระ", "doer"],
+    L2_PENDING_SUBCOMMITTEE: ["อนุกรรมการฯ พิจารณา", "committee"],
+    L2_PENDING_SECRETARIAT_DRAFT: ["เลขาฯ ทำบันทึกมติ", "doer"],
+    L2_PENDING_DIRLEGAL_OPINION: ["ผอ.กอง ให้ความเห็น", "director"],
+    L2_PENDING_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
+    L2_PENDING_SECGEN_OPINION: ["เลขาธิการ ลงนาม", "exec"],
+    L2_PENDING_DEPUTY_SG_OPINION: ["รองเลขาธิการ ลงนาม", "exec"],
+    L2_SECGEN_RESOLVED: ["เลขาธิการ ตอบกลับแล้ว", "admin"],
+    L2_DEPUTY_SG_RESOLVED: ["รองเลขาธิการ ตอบกลับแล้ว", "admin"],
+    L2_PENDING_RESOLUTION_DOC: ["ธุรการ รับเรื่อง", "admin"],
+    L2_PENDING_NOTICE_DRAFT: ["เลขาฯ ร่างหนังสือแจ้ง", "doer"],
+    L2_PENDING_NOTICE_GROUPDIR_REVIEW: ["ผอ.กลุ่ม ตรวจหนังสือแจ้ง", "group"],
+    L2_PENDING_NOTICE_SIGN: ["ผอ.กอง ลงนามหนังสือแจ้ง", "director"],
+    L2_PENDING_NOTICE_DISPATCH: ["ธุรการ ส่งหนังสือแจ้ง", "admin"],
+    L2_CASE_CLOSED_NOTICE_SENT: ["สิ้นสุด — แจ้งผู้ขอแล้ว", "done"],
+    L2_CASE_CLOSED_DISCLOSE_ASSIGNED: ["สิ้นสุด — ส่งกองเจ้าของสำนวน", "done"],
+    L2_CASE_CLOSED_DENY_ASSIGNED: ["สิ้นสุด — ส่งกองเจ้าของสำนวน", "done"],
+    L2_PENDING_DENY_MEMO: ["เลขาฯ ทำบันทึกไม่อนุญาต", "doer"],
+    L2_PENDING_DENY_PROPOSE: ["ผอ.กอง เสนอเลขาธิการ", "director"],
+    L2_PENDING_DENY_DISPATCH_COMMITTEE: ["ธุรการ ออกเลขส่ง", "admin"],
+    L2_PENDING_CLOSE_MEMO: ["เลขาฯ ทำบันทึก (คดีเสร็จ)", "doer"],
+    L2_PENDING_CLOSE_PROPOSE: ["ผอ.กอง เสนอเลขาธิการ", "director"],
+    L2_PENDING_CLOSE_DISPATCH_COMMITTEE: ["ธุรการ ออกเลขส่ง", "admin"],
+    L2_PENDING_COMMITTEE_MEMO_DRAFT: ["เลขาฯ ทำบันทึกเสนอเลขาธิการ", "doer"],
+    L2_PENDING_COMMITTEE_DIRECTOR_OPINION: ["ผอ.กอง ให้ความเห็น", "director"],
+    L2_PENDING_COMMITTEE_DIRECTOR_OPINION_APPROVED: ["ผอ.กอง ให้ความเห็น", "director"],
+    L2_PENDING_COMMITTEE_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
+    L2_READY_FOR_BOARD_ROUND2: ["รอมติบอร์ด (รอบ 2)", "committee"],
+    L2_BOARD_RESOLVED_ROUND2: ["ธุรการ รับมติบอร์ด", "admin"],
+    L2_PENDING_DIRLEGAL_BOARD_ACK: ["ผอ.กอง รับทราบมติ", "director"],
+    L2_PENDING_GROUPDIR_BOARD_ACK: ["ผอ.กลุ่ม รับทราบมติ", "group"],
+    /* ---- 10.2 อุทธรณ์ ---- */
+    L2_PENDING_APPEAL_INTAKE: ["ธุรการ กบค. รับอุทธรณ์", "admin"],
+    L2_PENDING_APPEAL_INTAKE_DISTRICT: ["เขต รับอุทธรณ์", "admin"],
+    L2_PENDING_CASE_OWNER_APPEAL_OPINION: ["นิติกร ทำความเห็นอุทธรณ์", "doer"],
+    L2_PENDING_APPEAL_RULING: ["อนุฯ อุทธรณ์ วินิจฉัย", "committee"],
+    L2_PENDING_APPEAL_MEMO: ["เลขาฯ อนุฯ ทำบันทึกเสนอบอร์ด", "doer"],
+    L2_PENDING_BUREAU_DIRECTOR_BOARD_PROPOSE: ["ผอ.กบค. เสนอบอร์ด", "director"],
+    L2_APPEAL_SUBMITTED_TO_BOARD: ["รอมติบอร์ด", "committee"],
+    L2_PENDING_APPEAL_NOTICE_DRAFT: ["เลขาฯ ติดตามคดี ทำหนังสือแจ้ง", "doer"],
+    L2_PENDING_APPEAL_CASE_OWNER_NOTIFY: ["นิติกร แจ้งผู้อุทธรณ์", "doer"],
+    L2_APPEAL_CASE_CLOSED_NOTIFIED: ["สิ้นสุด — แจ้งผู้อุทธรณ์แล้ว", "done"],
+  };
+  /* รหัสเดียวกันใช้ทั้งเรื่องเข้าใหม่และ "พิจารณาผลมติ" — แยกจากข้อความเดิมที่หน้าเขียนมา */
+  const RESOLUTION_VARIANT = {
+    PENDING_DIRECTOR: "ผอ.กอง พิจารณามติ",
+    PENDING_GROUP_DIRECTOR: "ผอ.กลุ่ม พิจารณามติ",
+  };
+
+  function withShortStatus(c) {
+    const entry = c && SHORT_STATUS[c.statusCode];
+    if (!entry) return c;
+    const old = String(c.status || "");
+    let text = entry[0];
+    if (RESOLUTION_VARIANT[c.statusCode] && /ผลมติ|พิจารณามติ/.test(old)) {
+      text = RESOLUTION_VARIANT[c.statusCode];
+    }
+    const progress =
+      c.statusCode === "PENDING_OFFICER_EXTERNAL_DISPATCH" && old.match(/\d+\/\d+/);
+    if (progress) text += " (" + progress[0] + ")";
+    /* ข้อความเดิมบอก "ส่งกลับ" (หน้า 10.1 ไม่ใช้ sendBackPatch) — จำรหัสไว้ เพราะข้อความใหม่ไม่บอกแล้ว */
+    const returnedCode = /ส่งกลับ/.test(old) ? c.statusCode : c.statusReturnedCode;
+    const isReturned =
+      returnedCode === c.statusCode ||
+      (!!c.lastSendBack && c.lastSendBack.toStatusCode === c.statusCode);
+    const badge = isReturned ? RETURNED_BADGE : STATUS_ROLE_BADGE[entry[1]];
+    if (
+      text === c.status &&
+      badge === c.statusBadge &&
+      returnedCode === c.statusReturnedCode
+    ) {
+      return c;
+    }
+    return Object.assign({}, c, {
+      status: text,
+      statusBadge: badge,
+      statusReturnedCode: returnedCode,
+    });
+  }
+
+  function applyShortStatus(cases) {
+    let changed = false;
+    const next = cases.map((c) => {
+      const n = withShortStatus(c);
+      if (n !== c) changed = true;
+      return n;
+    });
+    return { cases: next, changed: changed };
+  }
+
   function loadCases() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -4797,15 +4930,18 @@
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
           const m = migrateRemovedDirectorSteps(parsed);
-          if (m.changed) saveCases(m.cases);
-          return m.cases;
+          const s = applyShortStatus(m.cases);
+          if (m.changed || s.changed) saveCases(s.cases);
+          return s.cases;
         }
       }
     } catch (e) {
       console.warn("Failed to parse cases from localStorage", e);
     }
-    const seeded = migrateRemovedDirectorSteps(
-      migrateUserCasesFromOlderVersions(INITIAL_CASES),
+    const seeded = applyShortStatus(
+      migrateRemovedDirectorSteps(
+        migrateUserCasesFromOlderVersions(INITIAL_CASES),
+      ).cases,
     ).cases;
     saveCases(seeded);
     return seeded;
@@ -4820,7 +4956,6 @@
     "group_director",
     "case_group_director",
     "case_bureau_director",
-    "case_tracking_director",
   ];
   const ASSIGNED_ONLY_ROLES = [
     "legal_officer",
@@ -4842,7 +4977,9 @@
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify((cases || []).map(withAssignedLawyers)),
+        JSON.stringify(
+          (cases || []).map((c) => withShortStatus(withAssignedLawyers(c))),
+        ),
       );
     } catch (e) {
       console.warn("Failed to save cases to localStorage", e);
@@ -5474,6 +5611,16 @@
     },
 
     /* บทบาทสายกฎหมาย/ผู้บริหารที่เห็นสารบบ รายงาน และผลวิเคราะห์คำพิพากษา (รวมชื่อ login เดิมผ่าน ALERT_ROLE_ALIASES) */
+    /* บทบาทที่บันทึก/เพิ่มคำพิพากษาได้ (verdict-form / registry / เมนูข้าง) — 2026-10-27
+       นิติกร/นักสืบทุกบทบาท + นักสืบกองบริหารคดี (บทบาทนี้มีงานเพิ่มคำพิพากษาอย่างเดียว) */
+    VERDICT_EDIT_ROLES: [
+      "admin_legal",
+      "legal_officer",
+      "case_legal_officer",
+      "original_officer",
+      "case_bureau_investigator",
+    ],
+    VERDICT_ONLY_ROLES: ["case_bureau_investigator"],
     LEGAL_VIEW_ROLES: ["admin_legal", "dir_legal", "group_director", "case_group_director", "legal_officer", "deputy_sg", "secgen"],
     isLegalViewRole(roleId) {
       const r = (Activity10.ALERT_ROLE_ALIASES || {})[roleId] || roleId;
@@ -6347,6 +6494,7 @@
     /* TOR 10.3.4.1 ประเภทสถานะทางคดี */
     L3_CASE_STATUS: [
       { code: "FIRST_PENDING", name: "อยู่ระหว่างพิจารณาของศาลปกครองชั้นต้น" },
+      { code: "FIRST_JUDGED", name: "ศาลชั้นต้นมีคำพิพากษา" },
       { code: "SUPREME_PENDING", name: "อยู่ระหว่างพิจารณาของศาลปกครองสูงสุด" },
       { code: "FINAL", name: "คดีถึงที่สุด" },
       { code: "STRUCK_OUT", name: "จำหน่ายคดี" },
@@ -6632,7 +6780,8 @@
         const isFromResolution =
           item.statusCode === "PENDING_DIRECTOR_RESOLUTION" ||
           item.status === "ผอ.กองกฎหมายพิจารณาผลมติ" ||
-          item.status === "เสนอผลมติ ผอ.กองกฎหมาย";
+          item.status === "เสนอผลมติ ผอ.กองกฎหมาย" ||
+          item.status === RESOLUTION_VARIANT.PENDING_DIRECTOR;
         item.statusCode = "PENDING_GROUP_DIRECTOR";
         item.status = isFromResolution
           ? "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ"
@@ -7435,7 +7584,7 @@
       const item = cases.find((c) => c.id === id);
       if (item) {
         item.statusCode = "COMPLETED_OAG_RESOLVED";
-        item.status = "เสร็จสิ้นกระบวนงาน (คำวินิจฉัย อสส. ชี้ขาด)";
+        item.status = "คดีถึงที่สุดแล้ว";
         item.statusBadge = "bg-success text-white";
         item.assignedRole = null;
         item.workflowStep = 23;
