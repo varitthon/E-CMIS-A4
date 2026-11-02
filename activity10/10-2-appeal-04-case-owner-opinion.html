@@ -300,11 +300,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261101_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
-    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-shell.js?v=20261102_1"></script>
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
+    <script src="assets/ecmis-10-2-intake-edit.js?v=20261101_2"></script>
 
     <script>
       const STEP_CODE = "L2-APPEAL-CASE-OWNER-OPINION";
@@ -335,6 +336,10 @@
         ECMIS102.renderStepperV2("stepperPart1", "stepperPart2", STEP_CODE, currentCase, "stepperAppeal");
         ECMIS102.renderStatusBadges("statusBadges", currentCase);
         populate();
+        /* ผู้รับงานคนแรกแก้ข้อมูลรับเรื่องที่ธุรการกรอกได้ (ประวัติแบบพับ) */
+        if (window.ECMISIntake102Edit) {
+          ECMISIntake102Edit.mount({ profile: "appeal", kase: currentCase, onSaved: (c) => { currentCase = c; } });
+        }
       }
 
       function showPickedFile() {

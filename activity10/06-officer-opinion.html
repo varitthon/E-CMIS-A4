@@ -917,13 +917,15 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261101_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
 
-    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-shell.js?v=20261102_1"></script>
     <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
+    <script src="assets/ecmis-court-prosecutor-lists.js?v=20261022_1"></script>
+    <script src="assets/ecmis-intake-edit.js?v=20261030_3"></script>
     <script>
       let currentCase = null;
       let activeRecognition = null;
@@ -1247,10 +1249,23 @@
  `;
           }
         }
+
+        /* นิติกรแก้ข้อมูลรับเรื่องจากหน้า 02 ได้ก่อนเสนอความเห็น — บันทึกแล้วถ้อยคำมติอัยการต้องตามไปด้วย */
+        if (window.ECMISIntakeEdit) {
+          ECMISIntakeEdit.mount({
+            kase: currentCase,
+            submitted: !!isAlreadySubmitted,
+            onSaved: (saved) => {
+              currentCase = saved;
+              applyProsecutorOrderWording();
+            },
+          });
+        }
       }
 
       function submitOpinion() {
         if (!currentCase) return;
+        if (window.ECMISIntakeEdit && !ECMISIntakeEdit.requireTitle()) return;
 
         const isDissent = document.getElementById("op_dissent")?.checked;
         const isOther = document.getElementById("op_other")?.checked;

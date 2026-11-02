@@ -1892,6 +1892,15 @@
     return null;
   }
 
+  /* ?role=<id> ในลิงก์ (เช่นจาก playthrough-10x.html) → ตั้งบทบาทของแท็บนี้ก่อนหน้าโหลด
+     ใช้ได้ทั้ง localhost และ GitHub Pages เพราะแท็บใหม่ไม่ได้ sessionStorage จากหน้าเดิมเสมอไป */
+  try {
+    const urlRole = new URLSearchParams(location.search).get("role");
+    if (urlRole && /^[a-z_]+$/.test(urlRole)) sessionStorage.setItem("ecmis_role", urlRole);
+  } catch (e) {
+    /* ไม่มี location/sessionStorage (เช่น node test) — ข้าม */
+  }
+
   /* current role — เก็บใน sessionStorage เพื่อให้สลับข้ามหน้าได้ */
   function currentRoleId() {
     return sessionStorage.getItem("ecmis_role") || "admin_legal";
@@ -1916,8 +1925,6 @@
             c.statusCode === "INTAKE" ||
             c.statusCode === "REGISTERED" ||
             c.statusCode === "PENDING_DISPATCH" ||
-            c.statusCode === "RETURNED_FROM_EXEC" ||
-            c.statusCode === "PENDING_FINAL_DISPATCH" ||
             c.statusCode === "FORWARDED_DIVISION" ||
             (c.status &&
               (c.status.includes("ธุรการ") ||
@@ -1950,7 +1957,6 @@
           (c) =>
             c.statusCode === "PENDING_GROUP_DIRECTOR" ||
             c.statusCode === "PENDING_GROUP_REVIEW" ||
-            c.statusCode === "PENDING_GROUP_RESOLUTION" ||
             (c.status &&
               (c.status.includes("ผอ.กลุ่มงาน") ||
                 c.status.includes("มอบหมายนิติกร") ||
@@ -2029,21 +2035,9 @@
       visible: (role) => role.id === "group_director" || role.id === "Arnon.C",
     },
     {
-      href: "12-group-director-resolution.html",
-      icon: "fa-user-pen",
-      label: "พิจารณาผลมติและมอบหมายนิติกร",
-      visible: (role) => role.id === "group_director" || role.id === "Arnon.C",
-    },
-    {
       href: "09-legal-admin-dispatch.html",
       icon: "fa-paper-plane",
       label: "ออกเลขส่งและส่งต่อผู้บริหาร",
-      visible: (role) => role.id === "admin_legal" || role.id === "Kanda.R",
-    },
-    {
-      href: "10-legal-admin-resolution.html",
-      icon: "fa-file-signature",
-      label: "รับผลมติและส่งต่อ ผอ.กองกฎหมาย",
       visible: (role) => role.id === "admin_legal" || role.id === "Kanda.R",
     },
   ];

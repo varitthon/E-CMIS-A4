@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>คู่มือเดินตามขั้นตอน 10.x | E-CMIS</title>
+<link rel="icon" type="image/png" href="pacc_logo.png" />
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  :root { --bg:#f1f5f9; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b; --pri:#1e3a8a; --a1:#0e7490; --a2:#7c3aed; --a3:#1e3a8a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Sarabun",sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+  header { background:var(--pri); color:#fff; padding:14px 20px; position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  header h1 { font-size:18px; margin:0; font-weight:600; flex:1; }
+  header .hbtn { background:#fff; color:var(--pri); border:0; border-radius:6px; padding:6px 12px; font:inherit; cursor:pointer; }
+  header input { border:0; border-radius:6px; padding:6px 10px; font:inherit; min-width:220px; }
+  nav.tabs { display:flex; gap:6px; flex-wrap:wrap; padding:12px 16px 0; max-width:1200px; margin:0 auto; }
+  nav.tabs button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 14px; font:inherit; cursor:pointer; }
+  nav.tabs button.on { background:var(--pri); color:#fff; border-color:var(--pri); }
+  main { max-width:1200px; margin:0 auto; padding:12px 16px 40px; }
+  .help { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin-bottom:14px; color:var(--muted); line-height:1.7; }
+  .help b { color:var(--text); }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; font-size:12px; margin-top:6px; }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i.box { width:16px; height:12px; border:2px solid var(--pri); border-radius:3px; background:#eef2ff; display:inline-block; }
+  .legend i.dia { width:12px; height:12px; border:2px solid #b45309; background:#fef3c7; transform:rotate(45deg); display:inline-block; }
+  .legend i.ext { width:18px; height:12px; border:2px dashed #94a3b8; border-radius:8px; display:inline-block; }
+  .act { margin-bottom:26px; }
+  .act > h2 { font-size:17px; margin:6px 0 10px; display:flex; align-items:center; gap:8px; }
+  .act > h2 .dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:12px; overflow:hidden; }
+  .box > summary { padding:10px 14px; cursor:pointer; font-weight:600; display:flex; gap:8px; align-items:center; list-style:none; }
+  .box > summary::-webkit-details-marker { display:none; }
+  .box > summary .n { font-weight:400; font-size:12px; color:var(--muted); margin-left:auto; }
+  .box[open] > summary { border-bottom:1px solid var(--line); }
+  .graph { padding:10px; overflow:auto; text-align:center; max-height:780px; }
+  .graph svg { max-width:none !important; height:auto; }
+  .graph .node.clickable { cursor:pointer; }
+  ol { margin:0; padding:6px 14px 10px 14px; list-style:none; counter-reset:s; }
+  ol li { counter-increment:s; display:grid; grid-template-columns:30px 1fr auto; gap:10px; align-items:center; padding:7px 0; border-bottom:1px dashed var(--line); }
+  ol li:last-child { border-bottom:0; }
+  ol li::before { content:counter(s); width:26px; height:26px; border-radius:50%; background:#eef2ff; color:var(--pri); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; }
+  ol li.ext::before { background:#f1f5f9; color:#94a3b8; }
+  ol li.ext .step-t { color:var(--muted); font-style:italic; }
+  .step-t { font-weight:500; }
+  .step-r { font-size:12px; color:var(--muted); margin-top:2px; }
+  .step-r i { color:var(--pri); margin-right:4px; }
+  .step-p { font-family:ui-monospace,monospace; font-size:11px; color:#94a3b8; }
+  .go { border:1px solid var(--pri); background:#fff; color:var(--pri); border-radius:6px; padding:5px 12px; font:inherit; font-size:12px; cursor:pointer; white-space:nowrap; }
+  .go:hover { background:var(--pri); color:#fff; }
+  .sub { font-size:13px; font-weight:600; color:var(--muted); margin:10px 14px 0; }
+  .hide { display:none !important; }
+  @media (max-width:640px) { ol li { grid-template-columns:30px 1fr; } ol li .go { grid-column:2; justify-self:start; } }
+</style>
+</head>
+<body>
+<header>
+  <h1><i class="fa-solid fa-route"></i> คู่มือเดินตามขั้นตอน กิจกรรม 10.1 / 10.2 / 10.3</h1>
+  <input type="search" id="q" placeholder="ค้นหาชื่อขั้น / หน้า / บทบาท" oninput="filter()" />
+  <button type="button" class="hbtn" onclick="resetSamples()"><i class="fa-solid fa-rotate"></i> รีเซ็ตข้อมูลตัวอย่าง</button>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<main>
+  <div class="help">
+    <b>วิธีใช้:</b> ดู <b>แผนผัง</b> ว่าแยกทางที่ไหน แล้วเดินตามลำดับ · คลิกกล่องในแผนผัง หรือกด <b>เปิดหน้า</b> ในรายการ
+    = สลับเป็นบทบาทของขั้นนั้น เตรียมเคสตัวอย่างที่อยู่ขั้นนั้น แล้วเปิดหน้าในแท็บใหม่
+    (ใช้เคสตัวอย่างที่อยู่ขั้นนั้นอยู่แล้ว ถ้าไม่มีจะสร้างเคสสาธิต DEMO- ที่ย้ายมาอยู่ขั้นนั้นให้) ·
+    เคสที่ต้องทำอยู่ในเมนู <b>รายการงาน</b> ของบทบาทนั้น
+    <div class="legend">
+      <span><i class="box"></i> ขั้นในระบบ (คลิกได้)</span>
+      <span><i class="dia"></i> จุดแยกทาง / ส่งกลับ (คลิกได้)</span>
+      <span><i class="ext"></i> นอกระบบ (บอร์ด / ศาล / อัยการ)</span>
+    </div>
+  </div>
+  <div id="acts"></div>
+</main>
+<script src="assets/ecmis-app.js?v=20261028_role"></script>
+<script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+<script src="assets/ecmis-10-2.js"></script>
+<script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  /* คู่มือเดินตามขั้นตอน 10.x — แผนผังและรายการขั้นเขียนตาม docs/activity10-simple-flow.md
+     + การเปลี่ยนแปลงล่าสุด (ชื่อผลคำพิพากษาใหม่, 10-3v-00 โหมดศาลปกครองสูงสุด)
+     node: t = s (ขั้นในระบบ) | j (จุดแยก) | x (นอกระบบ) | e (จบ) · r = บทบาท · p = หน้า */
+  const ACTS = [
+    {
+      id: "101", name: "กิจกรรม 10.1 ความเห็นแย้งอัยการ", color: "var(--a1)",
+      graphs: [{
+        title: "10.1 ทั้งสาย",
+        nodes: {
+          a02: { t: "s", l: "02 ธุรการ รับเรื่อง ลงทะเบียน", r: "admin_legal", p: "02-board-intake.html", sc: "PENDING_BOARD_INTAKE" },
+          a03: { t: "s", l: "03 ผอ.กอง ดูเอกสารอัยการ", r: "dir_legal", p: "03-prosecutor-doc.html", sc: "PENDING_DIRECTOR" },
+          a04: { t: "s", l: "04 ผอ.กอง มอบหมาย ผอ.กลุ่ม", r: "dir_legal", p: "04-legal-director-review.html", sc: "PENDING_DIRECTOR" },
+          a05: { t: "s", l: "05 ผอ.กลุ่ม มอบหมายนิติกร", r: "group_director", p: "05-group-director-review.html", sc: "PENDING_GROUP_DIRECTOR" },
+          a06: { t: "s", l: "06 นิติกร บันทึกความเห็น", r: "legal_officer", p: "06-officer-opinion.html", sc: "DRAFTING_OPINION" },
+          a07: { t: "j", l: "07 ผอ.กลุ่ม ตรวจร่าง", r: "group_director", p: "07-group-director-approval.html", sc: "PENDING_GROUP_REVIEW" },
+          a08: { t: "j", l: "08 ผอ.กอง ตรวจพิจารณา", r: "dir_legal", p: "08-legal-director-approval.html", sc: "PENDING_DIRECTOR_APPROVAL" },
+          a09: { t: "s", l: "09 ธุรการ ออกเลขส่ง เสนอผู้บริหาร", r: "admin_legal", p: "09-legal-admin-dispatch.html", sc: "PENDING_DISPATCH" },
+          r1: { t: "s", l: "รองเลขาฯ ลงนามรอบ 1 (ปุ่มในรายการงาน)", r: "deputy_sg", p: "01-work-inbox.html" },
+          b1: { t: "x", l: "บอร์ดมีมติ (ป๊อปอัป B1)" },
+          a10: { t: "s", l: "10 ธุรการ บันทึกผลมติ", r: "admin_legal", p: "10-legal-admin-resolution.html", sc: "RETURNED_FROM_EXEC|PENDING_FINAL_DISPATCH" },
+          a12: { t: "s", l: "12 ผอ.กลุ่ม มอบหมายนิติกรตามมติ", r: "group_director", p: "12-group-director-resolution.html", sc: "PENDING_GROUP_RESOLUTION|PENDING_GROUP_DIRECTOR_RESOLUTION_ORDER" },
+          a13: { t: "s", l: "13 นิติกร ร่างหนังสือตามมติ", r: "legal_officer", p: "13-officer-final-doc.html", sc: "PENDING_OFFICER_FINAL_DOC" },
+          a14: { t: "s", l: "14 ผอ.กลุ่ม ตรวจร่าง", r: "group_director", p: "14-group-director-final-review.html", sc: "PENDING_GROUP_FINAL_REVIEW" },
+          a15: { t: "s", l: "15 ผอ.กอง ตรวจหนังสือ", r: "dir_legal", p: "15-legal-director-final-review.html", sc: "PENDING_DIRECTOR_FINAL_REVIEW" },
+          a16: { t: "s", l: "16 ธุรการ ออกเลขส่ง", r: "admin_legal", p: "16-legal-admin-final-dispatch.html", sc: "PENDING_FINAL_DISPATCH_ROUND2" },
+          r2: { t: "s", l: "รองเลขาฯ ลงนามรอบ 2 (ปุ่มในรายการงาน)", r: "deputy_sg", p: "01-work-inbox.html" },
+          a17: { t: "s", l: "17 ธุรการ รับหนังสือที่ลงนาม ส่งนิติกร", r: "admin_legal", p: "17-legal-admin-external-dispatch-receive.html", sc: "PENDING_ADMIN_SIGNED_RECEIVE|SUBMITTED_TO_EXEC_ROUND2" },
+          a18: { t: "s", l: "18 นิติกร ส่งหนังสือถึงอัยการ/อสส.", r: "legal_officer", p: "18-officer-external-dispatch.html", sc: "PENDING_OFFICER_EXTERNAL_DISPATCH|PENDING_OFFICER_FINAL_ACTION" },
+          x1: { t: "x", l: "อสส. วินิจฉัยชี้ขาด" },
+          a19: { t: "s", l: "19 ธุรการ รับผลคำวินิจฉัย อสส.", r: "admin_legal", p: "19-legal-admin-oag-verdict-intake.html", sc: "PENDING_ADMIN_OAG_VERDICT_INTAKE" },
+          a20: { t: "s", l: "20 ผอ.กอง ตรวจสอบ สั่งการ", r: "dir_legal", p: "20-legal-director-oag-verdict-review.html", sc: "PENDING_DIRECTOR_OAG_VERDICT_REVIEW" },
+          a21: { t: "s", l: "21 ผอ.กลุ่ม มอบหมายนิติกร", r: "group_director", p: "21-group-director-oag-verdict-review.html", sc: "PENDING_GROUP_OAG_VERDICT_REVIEW" },
+          a22: { t: "s", l: "22 นิติกร บันทึกผล แจ้ง ปิดเรื่อง", r: "legal_officer", p: "22-officer-case-closed-notify.html", sc: "PENDING_OFFICER_FINAL_NOTIFICATION" },
+          end: { t: "e", l: "จบ" },
+        },
+        edges: [
+          "a02-->a03", "a03-->a04", "a04-->a05", "a05-->a06", "a06-->a07",
+          "a07-- เห็นชอบ -->a08", "a07-. ส่งกลับ .->a06", "a08-- เห็นชอบ -->a09", "a08-. ไม่เห็นชอบ .->a06",
+          "a09-->r1", "r1-->b1", "b1-->a10", "a10-->a12", "a12-->a13", "a13-->a14", "a14-->a15", "a15-->a16",
+          "a16-->r2", "r2-->a17", "a17-->a18", "a18-->x1", "x1-->a19", "a19-->a20", "a20-->a21", "a21-->a22", "a22-->end",
+        ],
+      }],
+    },
+    {
+      id: "102", name: "กิจกรรม 10.2 คำขอเปิดเผยข้อมูลข่าวสาร", color: "var(--a2)",
+      graphs: [{
+        title: "10.2 สายหลัก และ 3 ทางหลังรับผลมติ",
+        nodes: {
+          c02: { t: "s", l: "02 ธุรการ รับคำขอ", r: "admin_legal", p: "02-board-intake.html" },
+          c01: { t: "s", l: "10-2-01 ผอ.กอง มอบหมาย", r: "dir_legal", p: "10-2-01-legal-director-assign.html" },
+          c02b: { t: "s", l: "10-2-02 ผอ.กลุ่ม มอบหมาย", r: "group_director", p: "10-2-02-group-director-assign.html" },
+          c03: { t: "s", l: "10-2-03 ฝ่ายเลขาฯ รายงานความเห็น", r: "sub_secretariat", p: "10-2-03-secretariat-opinion.html" },
+          c04: { t: "s", l: "10-2-04 ผอ.กลุ่ม ตรวจความครบถ้วน", r: "group_director", p: "10-2-04-group-director-verify.html" },
+          c05: { t: "s", l: "10-2-05 ฝ่ายเลขาฯ บรรจุวาระ", r: "sub_secretariat", p: "10-2-05-secretariat-agenda.html" },
+          c06: { t: "s", l: "10-2-06 คณะอนุฯ มีมติ", r: "subcommittee_screen", p: "10-2-06-subcommittee-resolution.html" },
+          c33: { t: "s", l: "10-2-33 ธุรการ รับเรื่อง", r: "admin_legal", p: "10-2-33-legal-admin-comment.html" },
+          c07: { t: "s", l: "10-2-07 ฝ่ายเลขาฯ บันทึกผลมติ", r: "sub_secretariat", p: "10-2-07-secretariat-resolution-doc.html" },
+          c08: { t: "s", l: "10-2-08 ผอ.กอง ความเห็น (๕)", r: "dir_legal", p: "10-2-08-legal-director-propose.html" },
+          c09: { t: "j", l: "10-2-09 ธุรการ ออกเลขส่ง เลือกผู้บริหาร", r: "admin_legal", p: "10-2-09-legal-admin-dispatch.html" },
+          c32: { t: "s", l: "10-2-32 รองเลขาฯ ความเห็น (๖)", r: "deputy_sg", p: "10-2-32-deputy-sg-opinion-sign.html" },
+          c31: { t: "s", l: "10-2-31 เลขาฯ ความเห็น (๗)", r: "secgen", p: "10-2-31-secgen-opinion-sign.html" },
+          c10: { t: "j", l: "10-2-10 ธุรการ รับทราบมติ แยกทาง", r: "admin_legal", p: "10-2-10-legal-admin-receive-outcome.html" },
+          d15: { t: "s", l: "10-2-15 ฝ่ายเลขาฯ บันทึกไม่อนุญาต", r: "sub_secretariat", p: "10-2-15-secretariat-deny-memo.html" },
+          d16: { t: "s", l: "10-2-16 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-2-16-legal-director-deny-propose.html" },
+          d17: { t: "s", l: "10-2-17 ธุรการ ออกเลขส่ง แจ้งผล", r: "admin_legal", p: "10-2-17-legal-admin-deny-dispatch-committee.html" },
+          e22: { t: "s", l: "10-2-22 ฝ่ายเลขาฯ บันทึกเปิดเผย", r: "sub_secretariat", p: "10-2-22-secretariat-close-memo.html" },
+          e23: { t: "s", l: "10-2-23 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-2-23-legal-director-close-propose.html" },
+          e24: { t: "s", l: "10-2-24 ธุรการ ออกเลขส่ง แจ้งผล", r: "admin_legal", p: "10-2-24-legal-admin-close-dispatch.html" },
+          f25: { t: "s", l: "10-2-25 ฝ่ายเลขาฯ บันทึกเสนอเลขาธิการ", r: "sub_secretariat", p: "10-2-25-secretariat-committee-memo-draft.html" },
+          f27: { t: "s", l: "10-2-27 ผอ.กลุ่ม อนุมัติ", r: "group_director", p: "10-2-27-group-director-committee-approve.html" },
+          f26: { t: "s", l: "10-2-26 ผอ.กอง ความเห็น", r: "dir_legal", p: "10-2-26-legal-director-committee-opinion.html" },
+          f29: { t: "s", l: "10-2-29 ธุรการ ออกเลขส่ง เสนอรองเลขาฯ", r: "admin_legal", p: "10-2-29-legal-admin-committee-dispatch.html" },
+          b2: { t: "x", l: "บอร์ดมีมติรอบ 2 (ป๊อปอัป B2)" },
+          f30: { t: "s", l: "10-2-30 ธุรการ รับมติบอร์ด", r: "admin_legal", p: "10-2-30-legal-admin-receive-board-round2.html" },
+          f35: { t: "s", l: "10-2-35 ผอ.กอง รับทราบมติ", r: "dir_legal", p: "10-2-35-legal-director-board-ack.html" },
+          f36: { t: "s", l: "10-2-36 ผอ.กลุ่ม รับทราบมติ", r: "group_director", p: "10-2-36-group-director-board-ack.html" },
+          g11: { t: "s", l: "10-2-11 ฝ่ายเลขาฯ ร่างหนังสือแจ้งมติ", r: "sub_secretariat", p: "10-2-11-secretariat-disclose-partial-notice-draft.html" },
+          g37: { t: "s", l: "10-2-37 ผอ.กลุ่ม ความเห็น ลงนาม", r: "group_director", p: "10-2-37-group-director-notice-review.html" },
+          g13: { t: "s", l: "10-2-13 ผอ.กอง ตรวจ ลงนาม", r: "dir_legal", p: "10-2-13-legal-director-disclose-partial-notice-sign.html" },
+          g14: { t: "s", l: "10-2-14 ธุรการ ออกเลขส่ง แจ้งผู้ยื่นคำขอ", r: "admin_legal", p: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html" },
+          end: { t: "e", l: "จบ (อุทธรณ์ได้ ดูแผนผังอุทธรณ์)" },
+        },
+        edges: [
+          "c02-->c01", "c01-->c02b", "c02b-->c03", "c03-->c04", "c04-->c05", "c05-->c06", "c06-->c33", "c33-->c07", "c07-->c08", "c08-->c09",
+          "c09-- รองเลขาฯ -->c32", "c09-- เลขาธิการ -->c31", "c32-->c10", "c31-->c10",
+          "c10-- ไม่อนุญาต -->d15", "d15-->d16", "d16-->d17", "d17-->end",
+          "c10-- เปิดเผย และคดีเสร็จสิ้น -->e22", "e22-->e23", "e23-->e24", "e24-->end",
+          "c10-- เปิดเผย และอยู่ระหว่างไต่สวน -->f25", "f25-->f27", "f27-->f26", "f26-->f29", "f29-->b2", "b2-->f30", "f30-->f35", "f35-->f36",
+          "f36-->g11", "g11-->g37", "g37-->g13", "g13-->g14", "g14-->end",
+        ],
+      }, {
+        title: "10.2 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล",
+        nodes: {
+          h0: { t: "j", l: "รับเรื่องอุทธรณ์ (เลือก 1 สาย)" },
+          h01: { t: "s", l: "appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง)", r: "case_bureau_admin", p: "10-2-appeal-01-legal-admin-intake.html" },
+          h01b: { t: "s", l: "appeal-01b เจ้าหน้าที่เขต (สายเขต)", r: "district_admin", p: "10-2-appeal-01b-district-intake.html" },
+          h04: { t: "s", l: "appeal-04 นิติกรเจ้าของสำนวน ทำความเห็น", r: "original_officer", p: "10-2-appeal-04-case-owner-opinion.html" },
+          h06: { t: "s", l: "appeal-06 คณะอนุฯ วินิจฉัยอุทธรณ์", r: "appeal_ruling_subcommittee", p: "10-2-appeal-06-subcommittee-ruling.html" },
+          h07: { t: "s", l: "appeal-07 ฝ่ายเลขาคณะอนุฯ บันทึกเสนอ", r: "appeal_subcommittee_secretariat", p: "10-2-appeal-07-secretariat-memo.html" },
+          h09: { t: "s", l: "appeal-09 ผอ.กองบริหารคดี เสนอบอร์ด", r: "case_bureau_director", p: "10-2-appeal-09-case-bureau-director-board-propose.html" },
+          b4: { t: "x", l: "บอร์ดมีมติต่อคำอุทธรณ์ (ป๊อปอัป B4)" },
+          h12: { t: "s", l: "appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล", r: "case_tracking_secretary", p: "10-2-appeal-12-tracking-secretary-notice-draft.html" },
+          h13: { t: "s", l: "appeal-13 นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์", r: "original_officer", p: "10-2-appeal-13-case-owner-notify-appellant.html" },
+          end: { t: "e", l: "จบ" },
+        },
+        edges: ["h0-- ส่วนกลาง -->h01", "h0-- เขต -->h01b", "h01-->h04", "h01b-->h04", "h04-->h06", "h06-->h07", "h07-->h09", "h09-->b4", "b4-->h12", "h12-->h13", "h13-->end"],
+      }],
+    },
+    {
+      id: "103", name: "กิจกรรม 10.3 คดีปกครอง", color: "var(--a3)",
+      graphs: [{
+        title: "10.3 รับคำฟ้อง คำให้การ และคัดค้านทุเลา (เคสลูก -B)",
+        nodes: {
+          m02: { t: "s", l: "02 ธุรการ รับคดีปกครอง", r: "admin_legal", p: "02-board-intake.html" },
+          m3a: { t: "s", l: "10-3-02 ผอ.กอง มอบหมาย", r: "dir_legal", p: "10-3-02-legal-director-assign.html" },
+          m3b: { t: "s", l: "10-3-03 ผอ.กลุ่มงานคดี มอบหมายนิติกร", r: "case_group_director", p: "10-3-03-group-director-assign.html" },
+          m04: { t: "j", l: "10-3-04 นิติกร ตรวจคำฟ้อง ทำความเห็น", r: "case_legal_officer", p: "10-3-04-lawyer-review-complaint.html" },
+          m07: { t: "s", l: "10-3-07 ผอ.กลุ่มงานคดี เห็นชอบ", r: "case_group_director", p: "10-3-07-group-director-approve.html" },
+          m08: { t: "s", l: "10-3-08 ผอ.กอง ลงนามผ่าน", r: "dir_legal", p: "10-3-08-legal-director-sign.html" },
+          m09: { t: "s", l: "10-3-09 ธุรการ เสนอมติตามลำดับชั้น", r: "admin_legal", p: "10-3-09-legal-admin-dispatch.html" },
+          b3: { t: "x", l: "บอร์ดมีมติมอบอำนาจ (ป๊อปอัป B3)" },
+          m13: { t: "s", l: "10-3-13 นิติกร ขยายเวลา ร่างคำให้การ", r: "case_legal_officer", p: "10-3-13-lawyer-request-extension.html" },
+          m15: { t: "s", l: "10-3-15 ผอ.กลุ่มงานคดี ตรวจร่าง", r: "case_group_director", p: "10-3-15-group-director-review-answer.html" },
+          m16: { t: "s", l: "10-3-16 ผอ.กอง ตรวจร่าง", r: "dir_legal", p: "10-3-16-legal-director-review-answer.html" },
+          m17: { t: "s", l: "10-3-17 ธุรการ ออกเลข", r: "admin_legal", p: "10-3-17-legal-admin-internal-dispatch-answer.html" },
+          m23: { t: "s", l: "10-3-23 นิติกร ส่งเอกสารถึงอัยการ", r: "case_legal_officer", p: "10-3-23-lawyer-collect-documents.html" },
+          x6: { t: "x", l: "ศาลปกครองชั้นต้นพิพากษา" },
+          tov: { t: "e", l: "ไปแผนผังคำพิพากษา (10-3v-00)" },
+          s01: { t: "s", l: "10-3b-01 นิติกร ร่างคำชี้แจงคัดค้าน", r: "case_legal_officer", p: "10-3b-01-lawyer-draft-stay-objection.html" },
+          s1a: { t: "j", l: "10-3b-01a ผอ.กลุ่มงานคดี ตรวจร่าง", r: "case_group_director", p: "10-3b-01a-group-director-review-stay-objection.html" },
+          s1b: { t: "j", l: "10-3b-01b ผอ.กอง ตรวจร่าง พิมพ์เสนอประธานฯ", r: "dir_legal", p: "10-3b-01b-legal-director-review-stay-objection.html" },
+          s03: { t: "j", l: "10-3b-03 นิติกร ส่งคำชี้แจงต่อศาล", r: "case_legal_officer", p: "10-3b-03-lawyer-dispatch-stay-objection.html" },
+          xs: { t: "x", l: "ศาลมีคำสั่งเรื่องทุเลา" },
+          s04: { t: "s", l: "10-3b-04 นิติกร รับคำสั่งศาล", r: "case_legal_officer", p: "10-3b-04-lawyer-court-order-intake.html" },
+          send: { t: "e", l: "จบ (เคสลูก)" },
+        },
+        edges: [
+          "m02-->m3a", "m3a-->m3b", "m3b-->m04", "m04-->m07", "m07-->m08", "m08-->m09", "m09-->b3", "b3-->m13",
+          "m13-->m15", "m15-->m16", "m16-->m17", "m17-->m23", "m23-->x6", "x6-->tov",
+          "m04-. มีคำขอทุเลา สร้างเคสลูก .->s01", "s01-->s1a", "s1a-. ส่งกลับ .->s01", "s1a-->s1b", "s1b-. ส่งกลับ .->s1a",
+          "s1b-->s03", "s03-. ประธานฯ ไม่ลงนาม .->s01", "s03-->xs", "xs-->s04", "s04-->send",
+        ],
+      }, {
+        title: "10.3 คำพิพากษา และทางอุทธรณ์",
+        nodes: {
+          v00: { t: "j", l: "10-3v-00 ธุรการ รับคำพิพากษา (เลือกชั้นศาล)", r: "admin_legal", p: "10-3v-00-legal-admin-verdict-intake.html" },
+          v02: { t: "s", l: "10-3v-02 ผอ.กอง มอบหมาย", r: "dir_legal", p: "10-3v-02-legal-director-assign.html" },
+          v03: { t: "s", l: "10-3v-03 ผอ.กลุ่มงานคดี มอบหมายนิติกร", r: "case_group_director", p: "10-3v-03-group-director-assign.html" },
+          v04: { t: "s", l: "10-3v-04 นิติกร วิเคราะห์ผล (บันทึกร่างได้)", r: "case_legal_officer", p: "10-3v-04-lawyer-verdict-analysis.html" },
+          v05: { t: "j", l: "10-3v-05 ผอ.กลุ่มงานคดี เห็นชอบ", r: "case_group_director", p: "10-3v-05-group-director-approve.html" },
+          v06: { t: "j", l: "10-3v-06 ผอ.กอง กำหนดแนวทาง", r: "dir_legal", p: "10-3v-06-legal-director-decide.html" },
+          v07: { t: "s", l: "10-3v-07 นิติกร ปิดสำนวน", r: "case_legal_officer", p: "10-3v-07-lawyer-close-case.html" },
+          v08: { t: "s", l: "10-3v-08 ธุรการ รับหนังสือคำแก้อุทธรณ์", r: "admin_legal", p: "10-3v-08-legal-admin-appeal-intake.html" },
+          v10: { t: "s", l: "10-3v-10 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-10-group-director-assign.html" },
+          v11: { t: "s", l: "10-3v-11 นิติกร ร่างคำแก้อุทธรณ์", r: "case_legal_officer", p: "10-3v-11-lawyer-draft-appeal-reply.html" },
+          v12: { t: "s", l: "10-3v-12 ผอ.กลุ่มงานคดี เห็นชอบ", r: "case_group_director", p: "10-3v-12-group-director-approve.html" },
+          v13: { t: "s", l: "10-3v-13 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-13-legal-director-sign.html" },
+          v14: { t: "s", l: "10-3v-14 ธุรการ ออกเลขส่ง", r: "admin_legal", p: "10-3v-14-legal-admin-dispatch.html" },
+          v15: { t: "s", l: "10-3v-15 นิติกร ส่งคำแก้อุทธรณ์ (บันทึกผลศาลสูงสุดได้)", r: "case_legal_officer", p: "10-3v-15-lawyer-send-appeal-reply.html" },
+          v18: { t: "s", l: "10-3v-18 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-18-group-director-assign1.html" },
+          v19: { t: "s", l: "10-3v-19 นิติกร ลงทะเบียน เสนอความเห็น", r: "case_legal_officer", p: "10-3v-19-lawyer-register.html" },
+          v20: { t: "j", l: "10-3v-20 ผอ.กลุ่มงานคดี ยืนยันความเห็น", r: "case_group_director", p: "10-3v-20-group-director-approve1.html" },
+          v22: { t: "s", l: "10-3v-22 ผอ.กลุ่มงานคดี ตรวจร่างคำอุทธรณ์", r: "case_group_director", p: "10-3v-22-group-director-review-appeal.html" },
+          v23: { t: "s", l: "10-3v-23 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-23-legal-director-sign-appeal.html" },
+          v24: { t: "s", l: "10-3v-24 ธุรการ ออกเลขส่ง", r: "admin_legal", p: "10-3v-24-legal-admin-dispatch.html" },
+          v25: { t: "s", l: "10-3v-25 นิติกร ส่งคำอุทธรณ์ (บันทึกผลศาลสูงสุดได้)", r: "case_legal_officer", p: "10-3v-25-lawyer-send-appeal.html" },
+          v26: { t: "s", l: "10-3v-26 ผอ.กลุ่มงานคดี เห็นชอบเสนอบอร์ด", r: "case_group_director", p: "10-3v-26-group-director-board-approve.html" },
+          v27: { t: "s", l: "10-3v-27 ผอ.กอง เห็นชอบ", r: "dir_legal", p: "10-3v-27-legal-director-board-approve.html" },
+          v28: { t: "s", l: "10-3v-28 ธุรการ เสนอมติตามลำดับชั้น", r: "admin_legal", p: "10-3v-28-legal-admin-board-propose.html" },
+          b5: { t: "x", l: "บอร์ดมีมติ (ป๊อปอัป B5)" },
+          v29: { t: "s", l: "10-3v-29 ธุรการ รับมติให้อุทธรณ์", r: "admin_legal", p: "10-3v-29-legal-admin-board-appeal-intake.html" },
+          v31: { t: "s", l: "10-3v-31 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-31-group-director-assign2.html" },
+          v32: { t: "s", l: "10-3v-32 นิติกร ร่างคำอุทธรณ์", r: "case_legal_officer", p: "10-3v-32-lawyer-draft-appeal2.html" },
+          v33: { t: "s", l: "10-3v-33 ผอ.กลุ่มงานคดี เห็นชอบ (ไม่ลงนาม)", r: "case_group_director", p: "10-3v-33-group-director-review-appeal2.html" },
+          v34: { t: "s", l: "10-3v-34 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-34-legal-director-sign-appeal2.html" },
+          v35: { t: "s", l: "10-3v-35 ธุรการ ออกเลขส่ง", r: "admin_legal", p: "10-3v-35-legal-admin-dispatch2.html" },
+          v36: { t: "s", l: "10-3v-36 นิติกร ส่งคำอุทธรณ์ ดาวน์โหลดเอกสาร", r: "case_legal_officer", p: "10-3v-36-lawyer-send-appeal2.html" },
+          v37: { t: "s", l: "10-3v-37 ธุรการ รับมติไม่อุทธรณ์", r: "admin_legal", p: "10-3v-37-legal-admin-no-appeal-intake.html" },
+          v39: { t: "s", l: "10-3v-39 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-39-group-director-assign3.html" },
+          v40: { t: "s", l: "10-3v-40 นิติกร จัดทำหนังสือ", r: "case_legal_officer", p: "10-3v-40-lawyer-no-appeal-intake.html" },
+          v45: { t: "s", l: "10-3v-45 ผอ.กลุ่มงานคดี ตรวจหนังสือ", r: "case_group_director", p: "10-3v-45-group-director-review3.html" },
+          v46: { t: "s", l: "10-3v-46 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-46-legal-director-sign3.html" },
+          v47: { t: "s", l: "10-3v-47 ธุรการ ออกเลข", r: "admin_legal", p: "10-3v-47-legal-admin-dispatch3.html" },
+          v48: { t: "s", l: "10-3v-48 นิติกร ส่งหนังสือ ปิดสำนวน", r: "case_legal_officer", p: "10-3v-48-lawyer-send-close.html" },
+          xsup: { t: "x", l: "ศาลปกครองสูงสุดพิพากษา" },
+          fin: { t: "e", l: "คดีถึงที่สุด" },
+          end: { t: "e", l: "จบ ปิดสำนวน" },
+        },
+        edges: [
+          "v00-- ศาลปกครองสูงสุด -->fin",
+          "v00-- ชั้นต้น -->v02", "v02-->v03", "v03-->v04", "v04-->v05", "v05-. ส่งกลับ .->v04", "v05-->v06", "v06-. ส่งกลับ .->v05",
+          "v06-- ยกฟ้อง ไม่มีผู้อุทธรณ์ -->v07", "v07-->end",
+          "v06-- ยกฟ้อง ผู้ฟ้องอุทธรณ์ -->v08", "v08-->v10", "v10-->v11", "v11-->v12", "v12-->v13", "v13-->v14", "v14-->v15", "v15-->xsup",
+          "v06-- เพิกถอนคำสั่ง หรือคำพิพากษาอื่น -->v18", "v18-->v19", "v19-->v20",
+          "v20-- เห็นควรอุทธรณ์ -->v22", "v22-->v23", "v23-->v24", "v24-->v25", "v25-->xsup",
+          "v20-- เห็นควรไม่อุทธรณ์ -->v26", "v26-->v27", "v27-->v28", "v28-->b5",
+          "b5-- ให้อุทธรณ์ -->v29", "v29-->v31", "v31-->v32", "v32-->v33", "v33-->v34", "v34-->v35", "v35-->v36", "v36-->xsup",
+          "b5-- ไม่อุทธรณ์ -->v37", "v37-->v39", "v39-->v40", "v40-->v45", "v45-->v46", "v46-->v47", "v47-->v48", "v48-->end",
+          "xsup-->fin",
+        ],
+      }],
+    },
+  ];
+
+  const ROLES = (window.ECMIS && window.ECMIS.ROLES) || [];
+  const roleText = (id) => {
+    const r = ROLES.find((x) => x.id === id);
+    return r ? r.title + (r.name ? " (" + r.name + ")" : "") : id || "";
+  };
+  const roleShort = (id) => {
+    const r = ROLES.find((x) => x.id === id);
+    return r ? r.title : id || "";
+  };
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[m]);
+  /* ข้อความในกล่อง mermaid — ตัดอักขระที่ทำให้ไวยากรณ์พัง */
+  const mm = (s) => String(s || "").replace(/["<>]/g, "");
+
+  /* node id ของ mermaid ต้องไม่ซ้ำข้ามแผนผัง — เติม prefix ตามลำดับแผนผัง */
+  const NODE_INDEX = {};
+  function mermaidText(g, gi) {
+    const pre = "g" + gi + "_";
+    const lines = ["flowchart TD"];
+    Object.keys(g.nodes).forEach((id) => {
+      const n = g.nodes[id];
+      const label = mm(n.l) + (n.r ? "<br/><small>" + mm(roleShort(n.r)) + "</small>" : "");
+      const nid = pre + id;
+      if (n.t === "j") lines.push("  " + nid + '{{"' + label + '"}}');
+      else if (n.t === "x") lines.push("  " + nid + '(["' + label + '"])');
+      else if (n.t === "e") lines.push("  " + nid + '((" ' + mm(n.l) + ' "))');
+      else lines.push("  " + nid + '["' + label + '"]');
+      lines.push("  class " + nid + " " + ({ s: "st", j: "jn", x: "ex", e: "en" })[n.t]);
+      if (n.p) {
+        NODE_INDEX[nid] = Object.assign({ act: g.act }, n);
+        lines.push("  click " + nid + " goNode");
+      }
+    });
+    g.edges.forEach((e) => {
+      lines.push("  " + e.replace(/^(\w+)/, pre + "$1").replace(/(-->|\.->)(\w+)$/, "$1" + pre + "$2"));
+    });
+    lines.push("  classDef st fill:#eef2ff,stroke:#1e3a8a,stroke-width:1.5px,color:#0f172a");
+    lines.push("  classDef jn fill:#fef3c7,stroke:#b45309,stroke-width:1.5px,color:#0f172a");
+    lines.push("  classDef ex fill:#fff,stroke:#94a3b8,stroke-dasharray:4 3,color:#64748b");
+    lines.push("  classDef en fill:#dcfce7,stroke:#16a34a,color:#166534");
+    return lines.join("\n");
+  }
+
+  /* ---- เตรียมเคสตัวอย่างให้อยู่ขั้นของกล่องที่คลิก ---- */
+  const A = window.Activity10;
+  const STEP_APIS = { "102": window.Activity102, "103": window.Activity103 };
+  const isStepList = (v) => Array.isArray(v) && v.length && v.every((s) => s && typeof s === "object" && s.page);
+  /* สถานะที่ "รอ" หน้านี้ (สถานะของขั้นก่อนหน้า หรือ entryStatus) จากตารางขั้นของ Activity102/103 */
+  function entriesFor(page, actId) {
+    const api = STEP_APIS[actId];
+    const out = [];
+    if (!api) return out;
+    const scan = (arr) => arr.forEach((s, i) => {
+      if (s.page !== page) return;
+      if (s.entryStatus) out.push(s.entryStatus);
+      else if (i > 0 && arr[i - 1].statusCode) out.push(arr[i - 1].statusCode);
+    });
+    Object.keys(api).forEach((k) => {
+      const v = api[k];
+      if (isStepList(v)) scan(v);
+      else if (v && typeof v === "object" && !Array.isArray(v)) Object.values(v).forEach((x) => { if (isStepList(x)) scan(x); });
+    });
+    if (api.ROUTES) Object.keys(api.ROUTES).forEach((code) => { if (api.ROUTES[code] === page) out.push(code); });
+    return out.filter((c, i, all) => c && all.indexOf(c) === i);
+  }
+  /* เคสประเภทไหนใช้กับหน้านี้ */
+  function kindOf(page, actId) {
+    const cat = (c) => String(c.category || "");
+    if (actId === "101") return (c) => (A.isCase101 ? A.isCase101(c) : cat(c).indexOf("10.1") === 0);
+    if (actId === "102") return (c) => cat(c).indexOf("10.2") === 0;
+    if (/^10-3b-/.test(page)) return (c) => !!c.l3ParentCaseId;
+    if (/^10-3v-/.test(page)) return (c) => c.l3CaseType === "verdict";
+    return (c) => cat(c).indexOf("10.3") === 0 && c.l3CaseType !== "verdict" && !c.l3ParentCaseId;
+  }
+  /* หน้ารับเรื่อง / หน้ารายการงาน ไม่ต้องมีเคส */
+  const NO_CASE = /^(01-work-inbox|02-board-intake|10-3v-00-legal-admin-verdict-intake)\.html$/;
+
+  function prepareCase(n) {
+    if (!A || NO_CASE.test(n.p)) return null;
+    const entries = n.sc ? n.sc.split("|") : entriesFor(n.p, n.act);
+    if (!entries.length) return null;
+    const ok = kindOf(n.p, n.act);
+    const all = A.getCases();
+    const found = all.find((c) => entries.indexOf(c.statusCode) !== -1 && ok(c));
+    if (found) return found.id;
+    /* ไม่มีเคสที่ขั้นนี้ → สร้างเคสสาธิตจากเคสตัวอย่างประเภทเดียวกัน แล้วย้ายมาขั้นนี้ */
+    const tpl = all.find((c) => ok(c) && !/^DEMO-/.test(c.id));
+    if (!tpl) return null;
+    const id = "DEMO-" + n.p.replace(/\.html$/, "") + "/2569";
+    const demo = Object.assign({}, tpl, {
+      id: id,
+      statusCode: entries[0],
+      status: "สาธิต: " + n.l,
+      assignedRole: n.r,
+      l3DocDraft: undefined,
+    });
+    A.saveCases(all.filter((c) => c.id !== id).concat([demo]));
+    return id;
+  }
+
+  /* ลิงก์แบบ relative (./หน้า.html?id=…&role=…) — ใช้ได้ทั้ง localhost และ GitHub Pages
+     หน้าปลายทางตั้งบทบาทจาก ?role= เอง (ecmis-app.js) ไม่ต้องพึ่ง sessionStorage ข้ามแท็บ */
+  function stepUrl(n) {
+    const id = prepareCase(n);
+    const q = [];
+    if (id) q.push("id=" + encodeURIComponent(id));
+    if (n.r) q.push("role=" + encodeURIComponent(n.r));
+    return "./" + n.p + (q.length ? "?" + q.join("&") : "");
+  }
+  function openStep(n) {
+    window.open(stepUrl(n), "_blank");
+  }
+  window.goNode = function (nid) {
+    const n = NODE_INDEX[nid];
+    if (n) openStep(n);
+  };
+  window.resetSamples = function () {
+    if (!confirm("คืนข้อมูลเคสทั้งหมดเป็นข้อมูลตัวอย่างตั้งต้น และลบเคสสาธิต DEMO- ?")) return;
+    if (A && A.resetData) A.resetData();
+    alert("รีเซ็ตแล้ว");
+  };
+
+  function listHtml(g, gi) {
+    return "<ol>" + Object.keys(g.nodes).map((id) => {
+      const n = g.nodes[id];
+      if (n.t === "e") return "";
+      const q = esc([n.l, n.p, roleText(n.r)].join(" ").toLowerCase());
+      if (!n.p) return '<li class="ext" data-q="' + q + '"><div><div class="step-t">' + esc(n.l) + '</div><div class="step-r">นอกระบบ</div></div><span></span></li>';
+      return '<li data-q="' + q + '"><div><div class="step-t">' + esc(n.l) + '</div>' +
+        '<div class="step-r"><i class="fa-solid fa-user"></i>' + esc(roleText(n.r)) + ' <span class="step-p">' + esc(n.p) + "</span></div></div>" +
+        '<a class="go" target="_blank" href="./' + esc(n.p) + (n.r ? "?role=" + esc(n.r) : "") + '" data-nid="g' + gi + "_" + id + '"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดหน้า</a></li>';
+    }).join("") + "</ol>";
+  }
+
+  let gi = 0;
+  function render() {
+    document.getElementById("tabs").innerHTML =
+      '<button type="button" class="on" data-act="">ทั้งหมด</button>' +
+      ACTS.map((a) => '<button type="button" data-act="' + a.id + '">' + esc(a.name.split(" ")[0] + " " + a.name.split(" ")[1]) + "</button>").join("");
+    document.getElementById("acts").innerHTML = ACTS.map((a) =>
+      '<section class="act" data-act="' + a.id + '"><h2><span class="dot" style="background:' + a.color + '"></span>' + esc(a.name) + "</h2>" +
+      a.graphs.map((g) => {
+        const idx = gi++;
+        g.act = a.id;
+        const steps = Object.values(g.nodes).filter((n) => n.p).length;
+        return '<details class="box" open><summary><i class="fa-solid fa-diagram-project"></i> แผนผัง: ' + esc(g.title) +
+          '<span class="n">' + steps + ' ขั้นในระบบ</span></summary><div class="graph"><pre class="mermaid">' + esc(mermaidText(g, idx)) + "</pre></div></details>" +
+          '<details class="box lane"><summary><i class="fa-solid fa-list-ol"></i> รายการขั้น: ' + esc(g.title) +
+          '<span class="n">' + steps + " ขั้น</span></summary>" + listHtml(g, idx) + "</details>";
+      }).join("") + "</section>").join("");
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: false, securityLevel: "loose", theme: "base", flowchart: { htmlLabels: true, curve: "basis" },
+        themeVariables: { fontFamily: "Sarabun, sans-serif", fontSize: "13px" } });
+      /* ใช้ขนาดจริงของแผนผัง (ไม่ยืดเต็มความกว้าง) — สายยาวเลื่อนดูได้ในกรอบ */
+      mermaid.run({ querySelector: "pre.mermaid" }).then(() => {
+        document.querySelectorAll(".graph svg").forEach((svg) => {
+          const vb = (svg.getAttribute("viewBox") || "").split(/\s+/).map(Number);
+          if (vb.length === 4 && vb[2]) {
+            svg.style.width = vb[2] + "px";
+            svg.style.maxWidth = "none";
+            svg.removeAttribute("height");
+          }
+        });
+      });
+    }
+  }
+  function filter() {
+    const q = document.getElementById("q").value.trim().toLowerCase();
+    document.querySelectorAll(".lane").forEach((lane) => {
+      let any = false;
+      lane.querySelectorAll("li").forEach((li) => {
+        const hit = !q || li.dataset.q.includes(q);
+        li.classList.toggle("hide", !hit);
+        any = any || hit;
+      });
+      lane.classList.toggle("hide", !!q && !any);
+      if (q && any) lane.open = true;
+    });
+  }
+  document.addEventListener("click", (e) => {
+    const go = e.target.closest(".go");
+    if (go) {
+      /* เตรียมเคสแล้วใส่ ?id= ในลิงก์ก่อนเบราว์เซอร์เปิด (เปิดแท็บใหม่ตาม target ของ <a>) */
+      const n = NODE_INDEX[go.dataset.nid];
+      if (n) go.href = stepUrl(n);
+      return;
+    }
+    const tab = e.target.closest("#tabs [data-act]");
+    if (tab) {
+      document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b === tab));
+      document.querySelectorAll("section.act").forEach((s) => s.classList.toggle("hide", !!tab.dataset.act && s.dataset.act !== tab.dataset.act));
+    }
+  });
+  render();
+</script>
+</body>
+</html>

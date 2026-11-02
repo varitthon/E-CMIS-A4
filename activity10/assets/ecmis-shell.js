@@ -495,7 +495,10 @@
     + '.role-switch-text{min-width:0;flex:1;line-height:1.3}'
     + '.role-switch-name{display:block;font-weight:700;font-size:.86em;color:var(--text-title)}'
     + '.role-switch-role{display:block;font-size:.76em;color:#64748b}'
-    + '.role-switch-check{color:#2563eb;font-size:.85em}';
+    + '.role-switch-check{color:#2563eb;font-size:.85em}'
+    + '.role-switch-link{display:flex;align-items:center;gap:6px;border:1px solid var(--border-color);background:var(--bg-body);border-radius:8px;padding:7px 10px;margin-bottom:6px;font-size:.8em;font-weight:700;color:var(--text-title);text-decoration:none}'
+    + '.role-switch-link:hover,.role-switch-link:focus-visible{border-color:#2563eb;outline:none;color:#1e3a8a}'
+    + '.role-switch-link .fa-arrow-up-right-from-square{margin-left:auto;color:#64748b;font-size:.9em}';
 
   function roleInitial(name) {
     return String(name || '').replace(/^(นางสาว|นาง|นาย|พ\.ต\.ท\.)/, '').trim().charAt(0) || '?';
@@ -568,7 +571,10 @@
     box.innerHTML = '<button type="button" class="role-switch-title" aria-controls="roleSwitchList">'
       + '<i class="fa-solid fa-user-gear"></i><span>สลับบทบาท <span style="font-weight:400;color:#64748b">· ' + escHtml(cur.role) + '</span></span>'
       + '<i class="fa-solid fa-chevron-down role-switch-chev"></i></button>'
-      + '<div class="role-switch-list" id="roleSwitchList" role="list">' + groups + '</div>';
+      + '<div class="role-switch-list" id="roleSwitchList" role="list">' + groups + '</div>'
+      + '<a class="role-switch-link" href="playthrough-10x.html" target="_blank" rel="noopener" title="เปิดคู่มือเดินตามขั้นตอน 10.x ในแท็บใหม่">'
+      + '<i class="fa-solid fa-route"></i><span>คู่มือเดินตามขั้นตอน 10.x (Playthrough)</span>'
+      + '<i class="fa-solid fa-arrow-up-right-from-square"></i></a>';
     setRoleListOpen(isRoleListOpen());
     const note = body.querySelector('.profile-note');
     if (note) note.style.display = 'none';

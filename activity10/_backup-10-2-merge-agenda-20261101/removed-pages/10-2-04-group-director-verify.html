@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร
-      บรรจุวาระและนัดหมายประชุม | E-CMIS กิจกรรมที่ 10.2
+      ผอ.กลุ่มงานความเห็นแย้ง ตรวจสอบความครบถ้วน | E-CMIS กิจกรรมที่ 10.2
     </title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -261,6 +260,44 @@
         display: none !important;
       }
 
+      /* Verify decision cards (same visual pattern as 07-group-director-approval.html's .decision-card) */
+      .verify-decision-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .verify-decision-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+      }
+      .verify-decision-card:hover {
+        border-color: #93c5fd;
+        background: rgba(37, 99, 235, 0.02);
+      }
+      .verify-decision-card.active-complete {
+        border-color: #16a34a;
+        background: rgba(22, 163, 74, 0.05);
+      }
+      .verify-decision-card.active-revise {
+        border-color: #dc2626;
+        background: rgba(220, 38, 38, 0.05);
+      }
+      @media (max-width: 1024px) {
+        .verify-decision-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* Speech to Text microphone button (same treatment as the 10.1 pages) */
       .btn-mic {
         background: var(--bg-card);
@@ -323,7 +360,7 @@
           <div class="breadcrumb">
             <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คำขอเปิดเผยข้อมูลข่าวสาร</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >บรรจุวาระ นัดหมายและจัดส่งเอกสาร</span
+              >ตรวจสอบความครบถ้วนของประเด็นกฎหมาย</span
             >
           </div>
         </div>
@@ -464,95 +501,73 @@
             </div>
           </div>
 
+          <div class="form-card" data-prev-step="รายงานความเห็นของฝ่ายเลขานุการ">
+            <div class="form-card-header">
+              <span
+                ><i class="fa-solid fa-file-lines text-primary me-2"></i
+                >รายงานความเห็นของฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
+              >
+            </div>
+            <div class="form-card-body">
+              <div class="form-group">
+                <label>ความคิดเห็น</label>
+                <div
+                  class="read-box read-box-textarea"
+                  id="f_secretariatOpinion"
+                >
+                  -
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ไฟล์แนบรายงานความเห็น</label>
+                <div class="read-box" id="f_opinionFile">-</div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
               style="background: rgba(30, 58, 138, 0.05)"
             >
               <span
-                ><i class="fa-solid fa-calendar-days text-primary me-2"></i
-                >บรรจุเข้าวาระการประชุมและนัดหมายคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร</span
+                ><i
+                  class="fa-solid fa-clipboard-check me-2"
+                  style="color: #1e3a8a"
+                ></i
+                >ผลการตรวจสอบความครบถ้วน</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-pen me-1"></i
-                >ฝ่ายเลขานุการคณะอนุกรรมการฯ</span
+                ><i class="fa-solid fa-user-gear me-1"></i
+                >ผอ.กลุ่มงานความเห็นแย้ง</span
               >
             </div>
             <div class="form-card-body">
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >การประชุมครั้งที่
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_meetingNo"
-                    class="form-control font-monospace"
-                    style="font-weight: 600"
-                    placeholder="เช่น 8/2569"
-                    value="8/2569"
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >เมื่อวันที่ <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="date"
-                    id="in_meetingDate"
-                    class="form-control font-monospace"
-                    style="font-weight: 600"
-                  />
-                </div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label
-                    >ณ ห้องประชุม <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_meetingVenue"
-                    class="form-control"
-                    placeholder="เช่น ห้องประชุม 1 ชั้น 28"
-                    value="ห้องประชุม 1 ชั้น 28 สำนักงาน ป.ป.ท."
-                  />
-                </div>
-                <div class="form-group">
-                  <label
-                    >ระเบียบวาระที่ <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="in_agendaNo"
-                    class="form-control font-monospace"
-                    style="font-weight: 600"
-                    placeholder="เช่น 4.1"
-                    value="4.1"
-                  />
-                </div>
+              <div class="form-group">
+                <label
+                  >ผลการตรวจสอบ <span style="color: #dc2626">*</span></label
+                >
+                <div class="verify-decision-grid" id="verifyChoices"></div>
               </div>
               <div class="form-group">
                 <label>
                   <span
-                    >หมายเหตุการจัดส่งเอกสารประกอบการประชุม
-                    <span class="l2-optional">(ไม่บังคับ)</span>
+                    >ความเห็นประกอบการตรวจสอบ
                     <button
                       type="button"
                       class="btn-mic"
-                      id="btnMicAgenda"
-                      onclick="toggleSpeechToText('in_agendaNotes', this)"
+                      id="btnMicVerify"
+                      onclick="toggleSpeechToText('in_verifyNotes', this)"
                       title="คลิกเพื่อพูด (พิมพ์ด้วยเสียง Speech-to-Text)"
                     >
                       <i class="fa-solid fa-microphone"></i></button
                   ></span>
                 </label>
                 <textarea
-                  id="in_agendaNotes"
+                  id="in_verifyNotes"
                   class="form-control"
-                  rows="3"
-                  placeholder="ระบุรายการเอกสารที่จัดส่งให้คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร..."
+                  rows="4"
+                  placeholder="ระบุความเห็นประกอบการตรวจสอบ..."
                 ></textarea>
               </div>
             </div>
@@ -563,8 +578,7 @@
                 class="btn btn-primary"
                 onclick="submitForm()"
               >
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ
-                นัดหมายคณะอนุกรรมการฯ
+                <i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ บันทึกผล
               </button>
             </div>
           </div>
@@ -574,18 +588,18 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261030_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261030_2"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261030_2"></script>
+    <script src="assets/ecmis-activity10.js?v=20261030_2"></script>
     <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
 
     <script>
-      const STEP_CODE = "LAW0042-0043";
+      const STEP_CODE = "LAW0041";
       const STEP = Activity102.stepByCode(STEP_CODE);
       let currentCase = null;
 
@@ -659,62 +673,108 @@
 
       /* ---- page specific ---- */
 
+      const VERIFY_OPTIONS = [
+        {
+          value: "COMPLETE",
+          label: "ครบถ้วน — ส่งฝ่ายเลขานุการฯ บรรจุวาระ",
+          hint: "ไปขั้นตอน: เลขานุการฯ บรรจุวาระ",
+          icon: "fa-circle-check",
+          color: "#16a34a",
+          activeClass: "active-complete",
+        },
+        {
+          value: "REVISE",
+          label: "ให้แก้ไข — ส่งกลับฝ่ายเลขานุการฯ",
+          hint: "ย้อนกลับขั้นตอน: เลขานุการฯ จัดทำความเห็น",
+          icon: "fa-rotate-left",
+          color: "#dc2626",
+          activeClass: "active-revise",
+        },
+      ];
+      let verifyResult = "COMPLETE";
+
       function populate() {
         populateCommon();
-        const d = new Date();
-        d.setDate(d.getDate() + 7);
-        document.getElementById("in_meetingDate").value = d
-          .toISOString()
-          .split("T")[0];
+        ECMIS102.setText(
+          "f_secretariatOpinion",
+          currentCase.l2SecretariatOpinion,
+        );
+        ECMIS102.setText(
+          "f_opinionFile",
+          currentCase.l2SecretariatOpinionFile || "ไม่มีไฟล์แนบ",
+        );
+        document.getElementById("in_verifyNotes").value = "-";
+        renderVerifyChoices();
+      }
+
+      function renderVerifyChoices() {
+        document.getElementById("verifyChoices").innerHTML = VERIFY_OPTIONS.map(
+          (o) =>
+            '<label class="verify-decision-card" style="justify-content: flex-start;"' +
+            (o.value === verifyResult ? " " + o.activeClass : "") +
+            '" onclick="selectVerify(\'' +
+            o.value +
+            "')\">" +
+            '<input type="radio" name="verifyResult" value="' +
+            o.value +
+            '"' +
+            (o.value === verifyResult ? " checked" : "") +
+            ' style="accent-color: ' +
+            o.color +
+            '; width: 18px; height: 18px" />' +
+            '<div style="display: flex; flex-direction: column">' +
+            '<div style="font-weight: 700; color: ' +
+            o.color +
+            '; font-size: 0.92em">' +
+            '<i class="fa-solid ' +
+            o.icon +
+            ' me-1"></i>' +
+            o.label +
+            "</div>" +
+            '<div style="font-size: 0.78em; color: #64748b">' +
+            o.hint +
+            "</div></div></label>",
+        ).join("");
+      }
+
+      function selectVerify(value) {
+        verifyResult = value;
+        renderVerifyChoices();
       }
 
       function submitForm() {
-        const meetingNo = requireText(
-          "in_meetingNo",
-          "กรุณาระบุการประชุมครั้งที่",
-        );
-        if (!meetingNo) return;
-        const venue = requireText("in_meetingVenue", "กรุณาระบุห้องประชุม");
-        if (!venue) return;
-        const agendaNo = requireText("in_agendaNo", "กรุณาระบุระเบียบวาระที่");
-        if (!agendaNo) return;
-        const meetingDate = document.getElementById("in_meetingDate").value;
+        const notes =
+          document.getElementById("in_verifyNotes").value.trim() || "-";
+        const complete = verifyResult === "COMPLETE";
 
-        Swal.fire({
-          icon: "question",
-          title: "ยืนยันการบรรจุวาระและนัดหมาย?",
-          html:
-            '<div class="emd-summary">' +
-            "<p><strong>การประชุมครั้งที่:</strong> " +
-            meetingNo +
-            "</p>" +
-            "<p><strong>วันที่ประชุม:</strong> " +
-            ECMIS102.formatThaiDate(meetingDate) +
-            "</p>" +
-            "<p><strong>ระเบียบวาระที่:</strong> " +
-            agendaNo +
-            "</p>" +
-            "<p><strong>ขั้นตอนต่อไป:</strong> คณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร พิจารณาและมีมติ</p></div>",
-          showCancelButton: true,
-          confirmButtonText: "ยืนยัน",
-          cancelButtonText: "ยกเลิก",
-          confirmButtonColor: "#1e3a8a",
-          cancelButtonColor: "#64748b",
-        }).then((res) => {
-          if (!res.isConfirmed) return;
-          Activity102.advance(currentCase.id, STEP_CODE, {
-            l2MeetingNo: meetingNo,
-            l2MeetingDate: meetingDate,
-            l2MeetingVenue: venue,
-            l2AgendaNo: agendaNo,
-            l2AgendaNotes: document
-              .getElementById("in_agendaNotes")
-              .value.trim(),
-            assignedRole: "subcommittee_screen",
-            officer: ECMIS102.signerLabel("subcommittee_screen"),
-          });
-          doneAndBack("บรรจุวาระและจัดส่งเอกสารประกอบการประชุมเรียบร้อยแล้ว");
-        });
+        ECMIS102.openSignatureModal(
+          {
+            title: "ลงนามผลการตรวจสอบความครบถ้วน",
+            signer: ECMIS102.signerLabel("group_director"),
+            certId: "PACC-GROUPDIR-2569-102",
+          },
+          (image) => {
+            Activity102.sign(currentCase.id, STEP_CODE, image);
+            if (complete) {
+              Activity102.advance(currentCase.id, STEP_CODE, {
+                l2VerifyResult: verifyResult,
+                l2VerifyNotes: notes,
+                assignedRole: "sub_secretariat",
+                officer: ECMIS102.signerLabel("sub_secretariat"),
+              });
+              doneAndBack("ส่งฝ่ายเลขานุการฯ บรรจุวาระการประชุมเรียบร้อยแล้ว");
+            } else {
+              /* ส่งกลับให้ฝ่ายเลขานุการฯ แก้ไขรายงานความเห็น (ย้อนไป LAW0040) */
+              Activity102.advance(currentCase.id, "LAW0039", {
+                l2VerifyResult: verifyResult,
+                l2VerifyNotes: notes,
+                assignedRole: "sub_secretariat",
+                officer: ECMIS102.signerLabel("sub_secretariat"),
+              });
+              doneAndBack("ส่งกลับฝ่ายเลขานุการฯ เพื่อแก้ไขรายงานความเห็นแล้ว");
+            }
+          },
+        );
       }
 
       /* ---- shell chrome (theme / font size / dropdown) ---- */

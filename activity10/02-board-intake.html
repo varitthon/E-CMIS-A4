@@ -532,7 +532,7 @@
                   >
                     <!-- สามหมวดแรกเข้าสายงาน 10.1 เหมือนกัน (value เดียวกัน) ต่างกันที่ชื่อหมวด
                          ที่บันทึกลงสำนวน (categoryName = ข้อความของตัวเลือกโดยตัดรหัส "10.x " หน้าชื่อออก) -->
-                    <option value="10.1">คดียุติธรรม</option>
+                    <option value="10.1">คดีศาลยุติธรรม</option>
                     <option value="10.1">คดีอาญาทุจริต</option>
                     <option value="10.1">คดีประพฤติมิชอบ</option>
                     <option value="10.2.1">การขอเปิดเผยข้อมูลข่าวสาร</option>
@@ -769,7 +769,7 @@
               <div class="form-group" id="div_prosecutorCaseType">
                 <label
                   >กรณีความเห็น/คำสั่งพนักงานอัยการ
-                  <span style="color: #dc2626">*</span></label
+                 </label
                 >
                 <select
                   id="in_prosecutorCaseType"
@@ -809,7 +809,7 @@
                       margin-bottom: 4px;
                     "
                     >ระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ)
-                    <span style="color: #dc2626">*</span></label
+                   </label
                   >
                   <input
                     type="text"
@@ -863,7 +863,7 @@
                 />
               </div>
               <div class="form-group" id="grp_prosecutorLevel">
-                <label>ระดับศาล <span style="color: #dc2626">*</span></label>
+                <label>ระดับศาล</label>
                 <select
                   id="in_prosecutorLevel"
                   class="form-control"
@@ -890,7 +890,7 @@
                       margin-bottom: 4px;
                     "
                     >ระบุระดับศาล (อื่นๆ)
-                    <span style="color: #dc2626">*</span></label
+                   </label
                   >
                   <input
                     type="text"
@@ -904,8 +904,8 @@
               <div class="form-group span-2" id="grp_source" style="grid-column: 1 / -1">
                 <label
                   ><span style="display: inline-flex; gap: 6px; align-items: center"
-                    ><span id="lbl_source">หน่วยงานอัยการต้นทาง</span><span style="color: #dc2626">*</span
-                    ><span class="autofill-tag"><i class="fa-solid fa-link"></i>เติมจากสำนวนเดิม</span></span
+                    ><span id="lbl_source">หน่วยงานอัยการต้นทาง</span>
+                    <span class="autofill-tag"><i class="fa-solid fa-link"></i>เติมจากสำนวนเดิม</span></span
                   ></label
                 >
                 <textarea
@@ -950,7 +950,7 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-group" id="grp_crimPlaintiffs">
-                  <label>ผู้ฟ้องคดี <span style="color: #dc2626">*</span></label>
+                  <label>ผู้ฟ้องคดี</label>
                   <div id="crimPlaintiffList"></div>
                   <button
                     type="button"
@@ -963,7 +963,7 @@
                 </div>
                 <div class="form-group" id="grp_crimDefendants">
                   <label
-                    >ผู้ถูกฟ้องคดี <span style="color: #dc2626">*</span>
+                    >ผู้ถูกฟ้องคดี
                     <span class="autofill-tag" title="เติมเฉพาะเมื่อยังว่าง"><i class="fa-solid fa-link"></i>เติมจากสำนวนเดิม</span></label
                   >
                   <div id="crimDefendantList"></div>
@@ -1817,7 +1817,7 @@
               <label
                 ><span
                   >ชื่อเรื่องกล่าวหา / สำนวนคดี
-                  <span style="color: #dc2626">*</span>
+                 
                   <span class="autofill-tag"><i class="fa-solid fa-link"></i>เติมจากสำนวนเดิม</span>
                   <button
                     type="button"
@@ -1944,15 +1944,8 @@
               </div>
             </div>
 
-            <!-- ========== ส่วน บันทึกผลคำพิพากษา (ทุกหมวด ยกเว้นคดีปกครอง 10.3, ไม่บังคับ) ==========
-                 หัวข้อเป็นส่วนพับได้ของ ecmis-intake-accordion.js; เนื้อหาเรนเดอร์โดย assets/ecmis-verdict-intake.js
-                 (ซ่อนทั้งส่วนเมื่อเลือกคดีปกครอง) -->
-            <div class="acc-head" data-acc-head id="head_verdictRecord">
-              <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
-              <span>บันทึกผลคำพิพากษา</span>
-              <span style="font-weight: 400; font-size: 0.82em; color: #64748b">(ไม่บังคับ)</span>
-            </div>
-            <div id="div_verdictRecord"></div>
+            <!-- 2026-11-01 ตัดการ์ด "บันทึกผลคำพิพากษา" ออกจากการรับเรื่อง — ไม่บันทึกผลคำพิพากษาตอนรับเรื่อง
+                 (assets/ecmis-verdict-*.js ไม่ถูกโหลดที่หน้านี้แล้ว; โค้ดที่เรียก ECMISVerdictIntake มี guard window.ECMISVerdictIntake) -->
 
             <!-- ส่วนกรอกเลขรับกองกฎหมาย -->
             <div class="sys-reg-section" id="legalReceiveCard" data-acc-stop data-acc-box>
@@ -2051,23 +2044,17 @@
     <!-- Scripts -->
     <script src="assets/ecmis-th-datepicker.js?v=20261014_3"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261101_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
     <script src="assets/ecmis-case-search.js?v=20261022_legacy"></script>
     <script src="assets/ecmis-offense-basis.js?v=20260904_2"></script>
-    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-shell.js?v=20261102_1"></script>
     <script src="assets/ecmis-10-2.js?v=20261022_docno"></script>
     <script src="assets/ecmis-export.js?v=20261018_1"></script>
     <script src="assets/ecmis-court-prosecutor-lists.js?v=20261022_1"></script>
     <script src="assets/ecmis-prosecutor-source.js?v=20261022_1"></script>
     <script src="assets/ecmis-intake-accordion.js?v=20261021_2"></script>
-    <script src="assets/ecmis-verdict-lists.js?v=20261027_causes"></script>
-    <script src="assets/ecmis-verdict-record.js?v=20261027_causes"></script>
-    <script src="assets/ecmis-verdict-doc.js?v=20261022_1"></script>
-    <script src="assets/ecmis-verdict-form.js?v=20261022_3"></script>
-    <script src="assets/ecmis-verdict-tabs.js?v=20261021_7"></script>
-    <script src="assets/ecmis-verdict-intake.js?v=20261022_1"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const roleId = ECMIS.currentRoleId
@@ -3696,63 +3683,9 @@
          — กรณีความเห็น/คำสั่งพนักงานอัยการ และ ระดับศาล
          ทั้งสองช่องมีเครื่องหมาย * จึงต้องบังคับกรอกเมื่อเลือก "อื่นๆ" */
       function validateProsecutorFields() {
-        /* 10.1: ผู้ฟ้องคดี / ผู้ถูกฟ้องคดี อย่างน้อยฝ่ายละ 1 ราย */
-        const partyChecks = [
-          [crimPlaintiffs, "crimPlaintiffList", "กรุณาระบุผู้ฟ้องคดีอย่างน้อย 1 รายการ"],
-          [crimDefendants, "crimDefendantList", "กรุณาระบุผู้ถูกฟ้องคดีอย่างน้อย 1 รายการ"],
-        ];
-        for (const [list, listId, msg] of partyChecks) {
-          if (!list.some((x) => String(x || "").trim())) {
-            Swal.fire({
-              icon: "warning",
-              title: "ข้อมูลไม่ครบถ้วน",
-              text: msg,
-              confirmButtonColor: "#1e3a8a",
-            });
-            const first = document.querySelector("#" + listId + " input");
-            if (first) first.focus();
-            return false;
-          }
-        }
-
-        const caseTypeSel = document.getElementById("in_prosecutorCaseType");
-        if (
-          caseTypeSel &&
-          (caseTypeSel.value === "9" || caseTypeSel.value === "11")
-        ) {
-          const otherText = document.getElementById("in_prosecutorOtherText");
-          if (!otherText || !otherText.value.trim()) {
-            Swal.fire({
-              icon: "warning",
-              title: "ข้อมูลไม่ครบถ้วน",
-              text: "กรุณาระบุกรณีความเห็น/คำสั่งพนักงานอัยการ (อื่นๆ)",
-              confirmButtonColor: "#1e3a8a",
-            });
-            if (otherText) otherText.focus();
-            return false;
-          }
-        }
-
-        if (!validateOffenseBasisRows()) return false;
-
-        const levelSel = document.getElementById("in_prosecutorLevel");
-        if (levelSel && levelSel.value === "9") {
-          const levelOtherText = document.getElementById(
-            "in_prosecutorLevelOtherText",
-          );
-          if (!levelOtherText || !levelOtherText.value.trim()) {
-            Swal.fire({
-              icon: "warning",
-              title: "ข้อมูลไม่ครบถ้วน",
-              text: "กรุณาระบุระดับศาล (อื่นๆ)",
-              confirmButtonColor: "#1e3a8a",
-            });
-            if (levelOtherText) levelOtherText.focus();
-            return false;
-          }
-        }
-
-        return true;
+        /* ธุรการบังคับกรอกเฉพาะเลขที่เอกสาร — ผู้ฟ้อง/ผู้ถูกฟ้อง มติ และระดับศาล (รวมช่อง "อื่นๆ")
+           ไม่บังคับแล้ว นิติกรแก้ไขต่อที่หน้า 06 ยังตรวจเฉพาะแถวฐานความผิดที่กรอกไม่ครบ */
+        return validateOffenseBasisRows();
       }
 
       function submitReceiveAndForward() {
@@ -3767,22 +3700,8 @@
         /* อัยการต้นทาง (10.1) ต้องเลือก/ระบุ — ช่องข้อความถูกซ่อนเมื่อเลือกจาก dropdown จึงตรวจที่นี่ */
         const sourceEl = document.getElementById("in_source");
         const sourceGroup = document.getElementById("grp_source");
-        if (
-          document.getElementById("in_category").value === "10.1" &&
-          sourceEl &&
-          !sourceEl.value.trim() &&
-          sourceGroup &&
-          sourceGroup.style.display !== "none"
-        ) {
-          if (window.ECMISIntakeAccordion) ECMISIntakeAccordion.reveal(sourceEl);
-          Swal.fire({
-            icon: "warning",
-            title: "กรุณาเลือกหน่วยงานอัยการต้นทาง",
-            text: "เลือกประเภทอัยการและชื่อสำนักงานอัยการ (หรือ อื่นๆ แล้วระบุชื่อ)",
-            confirmButtonColor: "#1e3a8a",
-          });
-          return;
-        }
+        /* 10.1: ธุรการบังคับกรอกเฉพาะเลขที่เอกสาร (ตรวจที่ missingCore ด้านล่าง)
+           หน่วยงานอัยการต้นทางและข้อมูลอื่นนิติกรแก้ไขต่อได้ที่หน้า 06 */
         if (verdictErrors.length) {
           Swal.fire({
             icon: "warning",
@@ -3830,7 +3749,9 @@
                 : prosecutorLevel === "3"
                   ? "ศาลฎีกา"
                   : prosecutorLevel === "9"
-                    ? `อื่นๆ (${prosecutorLevelOtherInput ? prosecutorLevelOtherInput.value.trim() : ""})`
+                    ? prosecutorLevelOtherInput && prosecutorLevelOtherInput.value.trim()
+                      ? `อื่นๆ (${prosecutorLevelOtherInput.value.trim()})`
+                      : "อื่นๆ"
                     : "ไม่ระบุ";
         let prosecutorCaseTypeName = "";
         if (
@@ -3892,7 +3813,7 @@
         const missingCore =
           isDisclosure || isCourtCase
             ? !centralSarabanNo || !lawReceiveNo
-            : !title || !docNo || !centralSarabanNo || !lawReceiveNo;
+            : !docNo || !centralSarabanNo || !lawReceiveNo;
 
         if (missingCore) {
           Swal.fire({
@@ -3901,7 +3822,7 @@
             text:
               isDisclosure || isCourtCase
                 ? "ต้องมี เลขสารบรรณ และเลขรับกองกฎหมาย"
-                : "ต้องมี เลขสารบรรณ, เลขหนังสืออัยการ, เลขรับกองกฎหมาย และชื่อเรื่อง",
+                : "ต้องมี เลขสารบรรณ, เลขหนังสืออัยการ และเลขรับกองกฎหมาย",
             confirmButtonColor: "#1e3a8a",
           });
           return;
@@ -3940,11 +3861,14 @@
             const courtCaseTitle = isCourtCase
               ? `${l3Fields.plaintiffs.join(", ") || "-"} (ผู้ฟ้องคดี) ยื่นฟ้อง ${l3Fields.defendants.join(", ") || "-"} (ผู้ถูกฟ้องคดี)`
               : "";
+            /* 10.1: ธุรการไม่ต้องกรอกชื่อเรื่อง — ใช้ชื่อชั่วคราวจากเลขที่หนังสืออัยการ
+               แล้วตั้ง titlePending ให้นิติกรกรอกชื่อจริงที่หน้า 06 ก่อนเสนอความเห็น */
+            const titlePending = !isDisclosure && !isCourtCase && !title;
             const finalTitle = isDisclosure
               ? l2Fields.title
               : isCourtCase
                 ? courtCaseTitle
-                : title;
+                : title || "เรื่องรับใหม่ (หนังสืออัยการเลขที่ " + docNo + ")";
             /* 10.2.2 คำอุทธรณ์ที่ยื่นเป็นเรื่องใหม่ (10.2.1.1(2)) เข้าคิวรับเรื่องอุทธรณ์
                ของธุรการกองบริหารคดี (10-2-appeal-01) โดยตรง ไม่ผ่านสาย 10.2.1 */
             const routing = isAppealIntake
@@ -4005,6 +3929,7 @@
                 return opt ? opt.text.trim().replace(/^10\.\d+(\.\d+)?\s+/, "") : "";
               })(),
               title: finalTitle,
+              titlePending: titlePending,
               source: source,
               docNo: docNo,
               prosecutorCaseTypeNo: prosecutorCaseTypeNo,

@@ -4684,13 +4684,19 @@
   const G3_DIRECTOR = "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)";
   const SECRETARIAT =
     "นางสาวพิมพ์ชนก ธรรมรักษ์ (ฝ่ายเลขานุการคณะอนุกรรมการพิจารณากลั่นกรองการเปิดเผยข้อมูลข่าวสาร)";
-  const G1_RESOLUTION = {
-    statusCode: "PENDING_GROUP_RESOLUTION",
-    status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ",
-    statusBadge: "bg-info text-dark",
-    assignedRole: "group_director",
-    officer: G1_DIRECTOR,
-    workflowStep: 11,
+  /* 2026-10-30 ตัดหน้า 10 และ 12 — ลงนามรอบ 1 แล้วเรื่องเข้าคิวนิติกรเจ้าของสำนวนโดยตรง
+     นิติกรบันทึกผลมติบอร์ดที่หน้า 13 ก่อนจัดทำหนังสือ เคสที่ค้างที่ธุรการ/ผอ.กลุ่มงานย้ายมาที่นี่
+     (fixOfficer = ถ้าผู้ถือเรื่องเป็นธุรการ/ผอ. ให้ใช้นิติกรเริ่มต้นแทน) */
+  const DEFAULT_LEGAL_OFFICER = "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
+  const NON_OFFICER_HOLDER = /ธุรการ|กานดา|อานนท์|นภัส|ผู้อำนวยการ|ผอ\./;
+  const RESOLUTION_TO_OFFICER = {
+    statusCode: "PENDING_OFFICER_FINAL_DOC",
+    status: "นิติกรจัดทำหนังสือความเห็นตามมติ",
+    statusBadge: "bg-warning text-dark",
+    assignedRole: "legal_officer",
+    workflowStep: 12,
+    keepOfficer: true,
+    fixOfficer: true,
   };
   /* 2026-10-21 นำขั้น ผอ.กองกฎหมาย มอบหมาย ของเรื่องเข้าใหม่กลับมา (04 / 10-2-01 /
      10-3-02 / 10-3v-02) — PENDING_DIRECTOR, L2_PENDING_DIRECTOR_ASSIGN,
@@ -4702,15 +4708,26 @@
     assignedRole: "case_legal_officer",
     keepOfficer: true,
   };
+  /* 2026-11-01 10.2 ตัด 10-2-04/05/07/33 — เคสที่ค้างอยู่ที่ขั้นเหล่านั้นไปหน้า 10-2-06 (เลขานุการฯ บันทึกมติ
+     และทำบันทึกผลมติเลขาในหน้าเดียว) */
+  const L2_TO_SECRETARIAT_RESOLUTION = {
+    statusCode: "L2_PENDING_SUBCOMMITTEE",
+    status: "ฝ่ายเลขานุการฯ บันทึกมติที่ประชุมคณะอนุกรรมการฯ",
+    assignedRole: "sub_secretariat",
+    officer: SECRETARIAT,
+  };
   const REMOVED_DIRECTOR_STATUS = {
-    PENDING_DIRECTOR_RESOLUTION: G1_RESOLUTION,
-    PENDING_DIRECTOR_RESOLUTION_ORDER: G1_RESOLUTION,
-    L2_PENDING_DIRLEGAL_PRECOMMENT: {
-      statusCode: "L2_PENDING_SECRETARIAT_DRAFT",
-      status: "ฝ่ายเลขานุการฯ ทำบันทึกผลมติเลขา",
-      assignedRole: "sub_secretariat",
-      officer: SECRETARIAT,
-    },
+    L2_PENDING_GROUP_VERIFY: L2_TO_SECRETARIAT_RESOLUTION,
+    L2_PENDING_AGENDA: L2_TO_SECRETARIAT_RESOLUTION,
+    L2_PENDING_RESOLUTION_DOC: L2_TO_SECRETARIAT_RESOLUTION,
+    L2_PENDING_SECRETARIAT_DRAFT: L2_TO_SECRETARIAT_RESOLUTION,
+    PENDING_DIRECTOR_RESOLUTION: RESOLUTION_TO_OFFICER,
+    PENDING_DIRECTOR_RESOLUTION_ORDER: RESOLUTION_TO_OFFICER,
+    RETURNED_FROM_EXEC: RESOLUTION_TO_OFFICER,
+    PENDING_FINAL_DISPATCH: RESOLUTION_TO_OFFICER,
+    PENDING_GROUP_RESOLUTION: RESOLUTION_TO_OFFICER,
+    PENDING_GROUP_DIRECTOR_RESOLUTION_ORDER: RESOLUTION_TO_OFFICER,
+    L2_PENDING_DIRLEGAL_PRECOMMENT: L2_TO_SECRETARIAT_RESOLUTION,
     /* 2026-10-21 ตัด 10-3-10/10-3-12 — เคสที่ค้างไปนิติกร (10-3-13) โดยคง officer (นิติกร) เดิม */
     L3_PENDING_DIRECTOR_RESOLUTION_ASSIGN: L3_TO_LAWYER,
     L3_PENDING_GROUP_RESOLUTION_APPROVE: L3_TO_LAWYER,
@@ -4777,12 +4794,15 @@
       if (!to) return c;
       changed = true;
       const isCourt = /^L(3V?|7|8|9A|9B)_/.test(c.statusCode);
-      const { keepOfficer, ...target } = to;
+      const { keepOfficer, fixOfficer, ...target } = to;
       return Object.assign(
         {},
         c,
         isCourt && !keepOfficer
           ? { assignedRole: "case_group_director", officer: G3_DIRECTOR }
+          : {},
+        fixOfficer && (!c.officer || NON_OFFICER_HOLDER.test(c.officer))
+          ? { officer: DEFAULT_LEGAL_OFFICER }
           : {},
         target,
       );
@@ -4814,13 +4834,11 @@
     PENDING_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
     PENDING_DEPUTY_SG: ["ผู้บริหาร ลงนาม", "exec"],
     FINAL_DISPATCHED: ["ลงนามแล้ว", "admin"],
-    PENDING_GROUP_RESOLUTION: ["ผอ.กลุ่ม พิจารณามติ", "group"],
     PENDING_OFFICER_FINAL_DOC: ["นิติกร ทำหนังสือตามมติ", "doer"],
     PENDING_GROUP_FINAL_REVIEW: ["ผอ.กลุ่ม ตรวจหนังสือ", "group"],
     PENDING_DIRECTOR_FINAL_REVIEW: ["ผอ.กอง ตรวจหนังสือ", "director"],
     PENDING_FINAL_DISPATCH_ROUND2: ["ธุรการ ออกเลขส่ง", "admin"],
     SUBMITTED_TO_EXEC_ROUND2: ["ผู้บริหาร ลงนาม", "exec"],
-    RETURNED_FROM_EXEC: ["ธุรการ รับผลมติ", "admin"],
     PENDING_ADMIN_SIGNED_RECEIVE: ["ธุรการ ตรวจรับหนังสือ", "admin"],
     PENDING_OFFICER_EXTERNAL_DISPATCH: ["นิติกร ส่งหนังสือ", "doer"],
     PENDING_ADMIN_OAG_VERDICT_INTAKE: ["ธุรการ รับผล อสส.", "admin"],
@@ -4832,17 +4850,13 @@
     L2_PENDING_DIRECTOR_ASSIGN: ["ผอ.กอง สั่งการ", "director"],
     L2_PENDING_GROUP_ASSIGN: ["ผอ.กลุ่ม ตรวจประเด็น", "group"],
     L2_PENDING_SECRETARIAT_OPINION: ["เลขาฯ ทำรายงาน", "doer"],
-    L2_PENDING_GROUP_VERIFY: ["ผอ.กลุ่ม ตรวจความครบ", "group"],
-    L2_PENDING_AGENDA: ["เลขาฯ บรรจุวาระ", "doer"],
-    L2_PENDING_SUBCOMMITTEE: ["อนุกรรมการฯ พิจารณา", "committee"],
-    L2_PENDING_SECRETARIAT_DRAFT: ["เลขาฯ ทำบันทึกมติ", "doer"],
+    L2_PENDING_SUBCOMMITTEE: ["เลขาฯ บันทึกมติ+ผลมติเลขา", "doer"],
     L2_PENDING_DIRLEGAL_OPINION: ["ผอ.กอง ให้ความเห็น", "director"],
     L2_PENDING_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
     L2_PENDING_SECGEN_OPINION: ["เลขาธิการ ลงนาม", "exec"],
     L2_PENDING_DEPUTY_SG_OPINION: ["รองเลขาธิการ ลงนาม", "exec"],
     L2_SECGEN_RESOLVED: ["เลขาธิการ ตอบกลับแล้ว", "admin"],
     L2_DEPUTY_SG_RESOLVED: ["รองเลขาธิการ ตอบกลับแล้ว", "admin"],
-    L2_PENDING_RESOLUTION_DOC: ["ธุรการ รับเรื่อง", "admin"],
     L2_PENDING_NOTICE_DRAFT: ["เลขาฯ ร่างหนังสือแจ้ง", "doer"],
     L2_PENDING_NOTICE_GROUPDIR_REVIEW: ["ผอ.กลุ่ม ตรวจหนังสือแจ้ง", "group"],
     L2_PENDING_NOTICE_SIGN: ["ผอ.กอง ลงนามหนังสือแจ้ง", "director"],
@@ -6981,73 +6995,6 @@
       return item;
     },
 
-    submitLegalAdminResolutionIntake(id, notes) {
-      const cases = loadCases();
-      const item = cases.find((c) => c.id === id);
-      if (item) {
-        /* ขั้น ผอ.กองกฎหมายสั่งการตามผลมติ (11) ถูกตัดออก 2026-10-14 — ส่งตรงถึง ผอ.กลุ่มงาน */
-        item.statusCode = "PENDING_GROUP_RESOLUTION";
-        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ";
-        item.statusBadge = "bg-info text-dark";
-        item.assignedRole = "group_director";
-        item.directorResolutionTarget = "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)";
-        item.workflowStep = 11;
-        item.adminResolutionIntakeNotes = notes || "";
-        item.adminResolutionIntakeDate = formatDisplayDate(new Date());
-        item.finalDispatchNotes = notes || "";
-        item.adminResolutionNotes = notes || "";
-        item.adminForwardedToDirectorDate = formatDisplayDate(new Date());
-        item.finalDispatchedAt = formatDisplayDate(new Date());
-        saveCases(cases);
-      }
-      return item;
-    },
-
-    submitDirectorResolutionOrder(id, target, notes) {
-      const cases = loadCases();
-      const item = cases.find((c) => c.id === id);
-      if (item) {
-        item.statusCode = "PENDING_GROUP_RESOLUTION";
-        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ";
-        item.statusBadge = "bg-info text-dark";
-        item.assignedRole = "group_director";
-        item.workflowStep = 11;
-        item.directorResolutionTarget =
-          target || "นายอานนท์ ชินประชา (ผู้อำนวยการกลุ่มงานความเห็นแย้ง)";
-        item.directorResolutionOrderNotes = notes || "";
-        item.directorResolutionOrder =
-          "มอบ ผอ.กลุ่มงานความเห็นแย้ง ดำเนินการตามมติ";
-        item.directorResolutionOrderedDate = formatDisplayDate(new Date());
-        item.directorResolutionOrderDate = item.directorResolutionOrderedDate;
-        saveCases(cases);
-      }
-      return item;
-    },
-
-    submitGroupDirectorResolutionOrder(id, target, notes) {
-      const cases = loadCases();
-      const item = cases.find((c) => c.id === id);
-      if (item) {
-        item.statusCode = "PENDING_OFFICER_FINAL_DOC";
-        item.status = "นิติกรจัดทำหนังสือความเห็นตามมติ";
-        item.statusBadge = "bg-warning text-dark";
-        item.assignedRole = "legal_officer";
-        item.workflowStep = 12;
-        item.groupDirectorResolutionTarget =
-          target || "นายณัฐพล บัวทุม (นิติกรชำนาญการพิเศษ)";
-        item.groupDirectorResolutionOfficer =
-          item.groupDirectorResolutionTarget;
-        item.groupDirectorResolutionOrderNotes = notes || "";
-        item.groupDirectorResolutionOrder =
-          "มอบหมายนิติกรจัดทำหนังสือแจ้งความเห็นตามผลมติ";
-        item.groupDirectorResolutionOrderedDate = formatDisplayDate(new Date());
-        item.groupDirectorResolutionOrderDate =
-          item.groupDirectorResolutionOrderedDate;
-        saveCases(cases);
-      }
-      return item;
-    },
-
     forwardToLegalDirectorAfterReview(id, reviewNotes, isApproved = true) {
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
@@ -7135,58 +7082,6 @@
             "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)";
           item.adminDispatchNotes = dispatchData.notes || "";
         }
-        saveCases(cases);
-      }
-      return item;
-    },
-
-    finalDispatchByLegalAdmin(id, finalDispatchData) {
-      const cases = loadCases();
-      const item = cases.find((c) => c.id === id);
-      if (item) {
-        item.statusCode = "PENDING_GROUP_RESOLUTION";
-        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ";
-        item.statusBadge = "bg-info text-dark";
-        item.assignedRole = "group_director";
-        item.workflowStep = 11;
-        if (finalDispatchData) {
-          item.finalDispatchNo =
-            finalDispatchData.dispatchNo ||
-            `อส 0025/${Math.floor(1000 + Math.random() * 9000)}`;
-          item.finalDispatchDate =
-            finalDispatchData.dispatchDate ||
-            new Date().toISOString().split("T")[0];
-          item.finalDispatchOfficer =
-            finalDispatchData.officer ||
-            "นางกานดา รักษ์ธรรม (เจ้าหน้าที่ธุรการชำนาญงาน)";
-          item.finalDispatchNotes = finalDispatchData.notes || "";
-          item.adminResolutionNotes = finalDispatchData.notes || "";
-        }
-        item.adminForwardedToDirectorDate = formatDisplayDate(new Date());
-        item.finalDispatchedAt = formatDisplayDate(new Date());
-        saveCases(cases);
-      }
-      return item;
-    },
-
-    orderResolutionByLegalDirector(id, orderData) {
-      const cases = loadCases();
-      const item = cases.find((c) => c.id === id);
-      if (item) {
-        item.statusCode = "PENDING_GROUP_RESOLUTION";
-        item.status = "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ";
-        item.statusBadge = "bg-info text-dark";
-        item.assignedRole = "group_director";
-        item.workflowStep = 8;
-        if (orderData) {
-          item.directorResolutionOrder =
-            orderData.orderText ||
-            "มอบ ผอ.กลุ่มงานความเห็นแย้ง ดำเนินการตามมติ";
-          item.directorResolutionTarget =
-            orderData.targetGroup || "กลุ่มงานความเห็นแย้ง";
-          item.directorResolutionNotes = orderData.notes || "";
-        }
-        item.directorResolutionOrderedDate = formatDisplayDate(new Date());
         saveCases(cases);
       }
       return item;
@@ -7319,16 +7214,21 @@
       const cases = loadCases();
       const item = cases.find((c) => c.id === id);
       if (item) {
-        item.statusCode = "RETURNED_FROM_EXEC";
-        item.status = "ธุรการรับผลมติ";
-        item.statusBadge = "bg-success text-white";
-        item.assignedRole = "admin_legal";
-        item.workflowStep = 10;
+        /* 2026-10-30 ตัดหน้า 10 และ 12 — ลงนามแล้วเข้าคิวนิติกรเจ้าของสำนวน (คนเดิมที่ทำความเห็น)
+           นิติกรบันทึกผลมติบอร์ดที่หน้า 13 ก่อนจัดทำหนังสือตามมติ */
+        item.statusCode = "PENDING_OFFICER_FINAL_DOC";
+        item.status = "นิติกรจัดทำหนังสือความเห็นตามมติ";
+        item.statusBadge = "bg-warning text-dark";
+        item.assignedRole = "legal_officer";
+        item.workflowStep = 12;
+        if (!item.officer || NON_OFFICER_HOLDER.test(item.officer)) {
+          item.officer = DEFAULT_LEGAL_OFFICER;
+        }
         item.signedBy =
           "นายสุรพงษ์ วัฒนา (รองเลขาธิการ ป.ป.ท. ปฏิบัติราชการแทนเลขาธิการ ป.ป.ท.)";
         item.signedDate = formatDisplayDate(new Date());
         /* P12: ลงนามเสนอ คกก. ป.ป.ท. เท่านั้น — ไม่เขียนผลมติตายตัว (ครั้งที่ประชุม/มติ/ข้อสั่งการ)
-           ผลมติมาจากกิจกรรมที่ 7 (ป๊อปอัป B1 หลังลงนาม หรือธุรการบันทึกที่หน้า 10);
+           ผลมติมาจากกิจกรรมที่ 7 ที่นิติกรตรวจ/แก้ไขที่หน้า 13 ก่อนจัดทำหนังสือ;
            เคสตัวอย่างที่มีมติอยู่แล้วคงค่าเดิม */
         item.executiveSignNotesRound1 =
           signedNotes ||

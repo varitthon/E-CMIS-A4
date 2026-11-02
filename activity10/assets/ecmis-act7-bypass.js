@@ -55,14 +55,16 @@
         opt("OTHER", "อื่นๆ"),
       ],
       required: ["decision", "meetingNo", "meetingDate"],
-      show: ["noticeNo", "noticeDate", "agendaNo", "detail", "files", "notes"],
+      show: ["noticeNo", "noticeDate", "agendaNo", "detail", "files"],
       labels: { meetingNo: "ครั้งที่ประชุม", agendaNo: "วาระที่" },
-      waitingStatuses: ["RETURNED_FROM_EXEC", "PENDING_FINAL_DISPATCH"],
-      senderRoles: ["admin_legal"],
+      /* 2026-10-30 ตัดหน้า 10 และ 12 — นิติกรเจ้าของสำนวนตรวจ/แก้ผลมติที่หน้า 13 (ไม่มีสถานะค้างรอบอร์ด
+         และไม่เปิดป๊อปอัปหลังผู้บริหารลงนาม) */
+      waitingStatuses: ["PENDING_OFFICER_FINAL_DOC"],
+      senderRoles: ["legal_officer"],
       requiresSwitch: false,
       popup: true,
-      promptAfterOutbound: true,
-      page: "10-legal-admin-resolution.html",
+      promptAfterOutbound: false,
+      page: "13-officer-final-doc.html",
     },
     B2: {
       id: "B2",
@@ -354,24 +356,13 @@
         boardNoticeDocNo: f.noticeNo,
         boardNoticeDate: f.noticeDate,
       });
-      /* P12 ขาออก (รองเลขาธิการเสนอ คกก.แล้วบันทึกผลทันที): เติมผลมติอย่างเดียว คงสถานะ
-         RETURNED_FROM_EXEC/admin_legal — ธุรการรับที่หน้า 10 (เติมผลไว้แล้ว) และส่งต่อ ผอ.เอง */
-      const patch = outbound
-        ? resultFields
-        : Object.assign({}, resultFields, {
-            statusCode: "PENDING_GROUP_RESOLUTION",
-            status: "ผอ.กลุ่มงานความเห็นแย้งพิจารณาผลมติ",
-            statusBadge: "bg-info text-dark",
-            assignedRole: "group_director",
-          });
+      /* 2026-10-30 ตัดหน้า 10 และ 12 — เติมผลมติอย่างเดียว คงสถานะ PENDING_OFFICER_FINAL_DOC/legal_officer
+         นิติกรตรวจ/แก้ที่หน้า 13 แล้วจัดทำหนังสือต่อด้วยปุ่มของหน้านั้นเอง */
+      const patch = resultFields;
       if (!patch.boardResolutionFiles.length && kase && kase.boardResolutionFiles) {
         patch.boardResolutionFiles = kase.boardResolutionFiles;
       }
-      return {
-        patch: patch,
-        advance: null,
-        submit: outbound ? null : "submitLegalAdminResolutionIntake",
-      };
+      return { patch: patch, advance: null, submit: null };
     },
 
     B2: function (link, kase, f) {
@@ -625,7 +616,6 @@
   /* สถานะหลังขาออก: later = ค้างรอกิจกรรมที่ 7 (waitingStatuses[0]), now = สถานะขาเข้าหลังบันทึกผลทันที
      (B1 คงสถานะเดิมแต่ธุรการรับที่หน้า 10 พร้อมผลที่เติมแล้ว) */
   const OUTBOUND_NOW_STATUS = {
-    B1: "RETURNED_FROM_EXEC",
     B2: "L2_PENDING_DIRLEGAL_BOARD_ACK",
     B3: "L3_PENDING_LAWYER_EXTENSION",
     B4: "L2_PENDING_APPEAL_NOTICE_DRAFT",
@@ -694,9 +684,6 @@
       d.agendaNo = c.boardAgendaNo || "";
       d.detail = c.boardResolutionDetail || "";
       d.noticeNo = c.boardNoticeDocNo || "";
-      d.notes =
-        "ได้รับผลมติการประชุมคณะกรรมการ ป.ป.ท. เรียบร้อยแล้ว จึงกราบเรียนเสนอ ผอ.กองกฎหมาย " +
-        "เพื่อโปรดพิจารณาและมีคำสั่งการมอบหมายกลุ่มงานความเห็นแย้งดำเนินการตามมติต่อไป";
     } else if (linkId === "B2") {
       d.decision = c.l2ResolutionType || "";
     } else if (linkId === "B3") {

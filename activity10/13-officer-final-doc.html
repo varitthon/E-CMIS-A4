@@ -660,44 +660,11 @@
                 </button>
               </div>
             </div>
-
-            <!-- Directives from Group Director -->
-            <div
-              style="
-                background: #eff6ff;
-                border: 1px solid #bfdbfe;
-                border-radius: 8px;
-                padding: 14px 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  margin-bottom: 6px;
-                "
-              >
-                <span
-                  style="font-weight: 700; color: #1e3a8a; font-size: 0.9em"
-                >
-                  <i class="fa-solid fa-user-gear me-2 text-primary"></i
-                  >ข้อสั่งการจาก ผอ.กลุ่มงานความเห็นแย้ง (นายอานนท์ ชินประชา)
-                </span>
-                <span class="badge" style="background: #dbeafe; color: #1e40af"
-                  >ข้อสั่งการ</span
-                >
-              </div>
-              <div
-                class="read-box font-monospace"
-                style="background: #fff; font-size: 0.88em"
-                id="f_groupDirectorResolutionNotes"
-              >
-                โปรดดำเนินการจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป
-              </div>
-            </div>
           </div>
         </div>
+
+        <!-- ผลมติคณะกรรมการ ป.ป.ท. (ส่งมาจากกิจกรรมที่ 7) — นิติกรตรวจ/แก้ไขก่อนจัดทำหนังสือ (ย้ายมาจากหน้า 10/12 เดิม) -->
+        <div id="boardResultHost"></div>
 
         <!-- Card 2: Form for Legal Officer to draft final opinion letter -->
         <div id="officerFormContainer">
@@ -1039,14 +1006,16 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
+    <script src="assets/ecmis-app.js?v=20261101_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
     <script src="assets/ecmis-legacy-data.js?v=20261022_3"></script>
-    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-app.js?v=20261022_actref"></script>
-    <script src="assets/ecmis-activity10.js?v=20261022_stay1"></script>
-    <script src="assets/ecmis-shell.js?v=20261022_actref"></script>
+    <script src="assets/ecmis-shell.js?v=20261102_1"></script>
+    <script src="assets/ecmis-app.js?v=20261101_1"></script>
+    <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
+    <script src="assets/ecmis-shell.js?v=20261102_1"></script>
     <script src="assets/ecmis-10-1-extras.js?v=20261018_1"></script>
+    <script src="assets/ecmis-act7-bypass.js?v=20261030_2"></script>
+    <script src="assets/ecmis-board-result-edit.js?v=20261030_1"></script>
 
     <script>
            let currentCase = null;
@@ -1173,11 +1142,6 @@
                "f_signedDocFile",
                currentCase.signedDocFile || "หนังสือผลมติ_2569_006.pdf",
              );
-             setElText(
-               "f_groupDirectorResolutionNotes",
-               currentCase.groupDirectorResolutionNotes ||
-                 "มอบหมายนิติกรเจ้าของสำนวนจัดทำหนังสือนำส่งความเห็นแย้งคำสั่งไม่ฟ้องของพนักงานอัยการเสนอตามขั้นตอนต่อไป",
-             );
 
              const subjInput = document.getElementById("in_finalDocSubject");
              if (subjInput && currentCase.title) {
@@ -1190,6 +1154,16 @@
                currentCase.statusCode !== "PENDING_OFFICER_FINAL_DOC" &&
                (currentCase.finalDocSubmittedDate ||
                  (currentCase.workflowStep && currentCase.workflowStep > 13));
+             if (window.ECMISBoardResult) {
+               ECMISBoardResult.mount({
+                 host: document.getElementById("boardResultHost"),
+                 kase: currentCase,
+                 submitted: !!isAlreadySubmitted,
+                 onSaved: (saved) => {
+                   currentCase = saved;
+                 },
+               });
+             }
              const container = document.getElementById("officerFormContainer");
              if (container && isAlreadySubmitted) {
                container.innerHTML = `
@@ -1274,6 +1248,8 @@
 
            function submitOfficerFinalDocForm() {
              if (!currentCase) return;
+             /* ผลมติที่เห็นอยู่ (ส่งมาแล้วหรือที่แก้ไข) ต้องบันทึกลงเคสก่อน — ร่างหนังสืออ่านมติจากเคส */
+             if (window.ECMISBoardResult && !ECMISBoardResult.ensureSaved()) return;
 
       const isDissent = document.getElementById('op_dissent')?.checked;
       const isOther = document.getElementById('op_other')?.checked;
