@@ -616,7 +616,7 @@
   /* สถานะหลังขาออก: later = ค้างรอกิจกรรมที่ 7 (waitingStatuses[0]), now = สถานะขาเข้าหลังบันทึกผลทันที
      (B1 คงสถานะเดิมแต่ธุรการรับที่หน้า 10 พร้อมผลที่เติมแล้ว) */
   const OUTBOUND_NOW_STATUS = {
-    B2: "L2_PENDING_DIRLEGAL_BOARD_ACK",
+    B2: "L2_PENDING_NOTICE_DRAFT",
     B3: "L3_PENDING_LAWYER_EXTENSION",
     B4: "L2_PENDING_APPEAL_NOTICE_DRAFT",
     B5: BOARD_APPEAL_STATUS.APPEAL.statusCode,

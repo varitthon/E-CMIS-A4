@@ -253,6 +253,41 @@
             </div>
           </div>
 
+          <div class="form-card" style="border: 2px solid #1e3a8a" id="receiptNoticeCard">
+            <div class="form-card-header" style="background: rgba(30,58,138,0.05)">
+              <span><i class="fa-solid fa-envelope-circle-check text-primary me-2"></i>แจ้งผู้อุทธรณ์ว่ารับอุทธรณ์แล้ว (ชีท D 7.3)</span>
+              <span class="badge" style="background: #1e3a8a; color: #fff"><i class="fa-solid fa-user-tie me-1"></i>นิติกรเจ้าของสำนวน</span>
+            </div>
+            <div class="form-card-body">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>ช่องทางแจ้ง <span style="color: #dc2626">*</span></label>
+                  <select id="in_noticeChannel" class="form-control">
+                    <option value="ส่วนกลาง">แจ้งที่ส่วนกลาง</option>
+                    <option value="เขต">แจ้งผ่านเขต</option>
+                    <option value="ไปรษณีย์">ไปรษณีย์</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>วันที่แจ้งผู้อุทธรณ์ <span style="color: #dc2626">*</span></label>
+                  <input type="date" id="in_noticeDate" class="form-control font-monospace" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>เลขส่งหนังสือภายนอก <span style="color: #dc2626">*</span></label>
+                <input type="text" id="in_noticeDocNo" class="form-control font-monospace" style="font-weight: 600" placeholder="เช่น ปป 0001/2569" />
+              </div>
+              <div class="form-group">
+                <label><span>สำเนาหนังสือแจ้งผู้อุทธรณ์ <span style="color: #dc2626">*</span></span></label>
+                <div class="l2-file">
+                  <i class="fa-solid fa-paperclip" style="color: #64748b"></i>
+                  <input type="file" id="in_noticeFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onchange="showPickedNoticeFile()" multiple />
+                </div>
+                <div id="f_pickedNoticeFile" class="l2-optional" style="margin-top: 6px"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-card" style="border: 2px solid #1e3a8a">
             <div class="form-card-header" style="background: rgba(30,58,138,0.05)">
               <span><i class="fa-solid fa-comment-dots text-primary me-2"></i>แจ้งผู้อุทธรณ์และบันทึกความเห็น</span>
@@ -349,6 +384,13 @@
         label.textContent = names.length ? "ไฟล์ที่เลือก: " + names.join(", ") : "";
       }
 
+      function showPickedNoticeFile() {
+        const input = document.getElementById("in_noticeFile");
+        const label = document.getElementById("f_pickedNoticeFile");
+        const names = input.files ? Array.from(input.files).map((f) => f.name) : [];
+        label.textContent = names.length ? "ไฟล์ที่เลือก: " + names.join(", ") : "";
+      }
+
       function showPickedUrgentLetterFile() {
         const input = document.getElementById("in_urgentLetterFile");
         const label = document.getElementById("f_pickedUrgentLetterFile");
@@ -391,6 +433,10 @@
         document.getElementById("in_opinion").value = "-";
         document.getElementById("in_opinionFile").value = "";
         document.getElementById("f_pickedFile").textContent = "";
+        document.getElementById("in_noticeDate").value = "";
+        document.getElementById("in_noticeDocNo").value = "";
+        document.getElementById("in_noticeFile").value = "";
+        document.getElementById("f_pickedNoticeFile").textContent = "";
         document.getElementById("in_urgentLetterFile").value = "";
         document.getElementById("f_pickedUrgentLetterFile").textContent = "";
         document.getElementById("in_boardProposalMemoFile").value = "";
@@ -411,6 +457,21 @@
         const boardProposalMemoFileNames = boardProposalMemoInput.files
           ? Array.from(boardProposalMemoInput.files).map((f) => f.name)
           : [];
+
+        const noticeChannel = document.getElementById("in_noticeChannel").value;
+        const noticeDate = document.getElementById("in_noticeDate").value;
+        const noticeDocNo = document.getElementById("in_noticeDocNo").value.trim();
+        const noticeInput = document.getElementById("in_noticeFile");
+        const noticeFileNames = noticeInput.files ? Array.from(noticeInput.files).map((f) => f.name) : [];
+        if (!noticeDate || !noticeDocNo || !noticeFileNames.length) {
+          Swal.fire({
+            icon: "warning",
+            title: "ยังไม่ได้แจ้งผู้อุทธรณ์",
+            text: "กรุณากรอกวันที่แจ้ง เลขส่งหนังสือภายนอก และแนบสำเนาหนังสือแจ้งผู้อุทธรณ์ว่ารับอุทธรณ์แล้ว",
+            confirmButtonColor: "#1e3a8a",
+          });
+          return;
+        }
 
         if (!urgentLetterFileNames.length || !boardProposalMemoFileNames.length) {
           Swal.fire({
@@ -437,6 +498,10 @@
               l2AppealCaseOwnerAttachmentFileNames: attachmentNames,
               l2AppealUrgentLetterFileNames: urgentLetterFileNames,
               l2AppealBoardProposalMemoFileNames: boardProposalMemoFileNames,
+              l2AppealReceiptNoticeChannel: noticeChannel,
+              l2AppealReceiptNoticeDate: noticeDate,
+              l2AppealReceiptNoticeDocNo: noticeDocNo,
+              l2AppealReceiptNoticeFileNames: noticeFileNames,
               assignedRole: "appeal_subcommittee_secretariat",
               officer: ECMIS102.signerLabel("appeal_subcommittee_secretariat"),
             });

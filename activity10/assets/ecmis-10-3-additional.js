@@ -101,7 +101,11 @@
     return (
       '<div style="text-align:left">' +
       '<div class="form-group"><label for="ad_type">ประเภทเรื่อง <span style="color:#dc2626">*</span></label>' +
-      '<select id="ad_type" class="form-control">' + opts + "</select></div>" +
+      '<select id="ad_type" class="form-control">' + opts + "</select>" +
+      '<div id="ad_stayHint" class="l3-note l3-note-info" style="margin-top:8px" hidden>' +
+      '<i class="fa-solid fa-circle-info"></i><div><strong>คำขอทุเลาการบังคับคดี — เดินสายเคสลูก (-B)</strong><br />' +
+      "ระบบจะสร้างเคสลูกแยกต่างหาก ส่งนิติกรจัดทำคำชี้แจงคัดค้านที่ 10-3b-01 → ผอ.กลุ่มงานคดีตรวจ (01a) → ผอ.กองตรวจและพิมพ์เสนอประธานฯ (01b) → ประธานฯ ลงนามนอกระบบ → นิติกรส่งศาล (03) → รับคำสั่งศาล (04) · คดีหลักไม่ถูกหยุด<br />" +
+      '<a href="10-3b-01-lawyer-draft-stay-objection.html" target="_blank" rel="noopener" style="font-weight:600">ดูหน้าเริ่มสายทุเลา (10-3b-01)</a></div></div></div>' +
       '<div class="form-group" id="ad_otherGroup" hidden><label for="ad_typeOther">ระบุ <span style="color:#dc2626">*</span></label>' +
       '<input type="text" id="ad_typeOther" class="form-control" placeholder="เช่น ให้ส่งพยานหลักฐานเพิ่มเติม" /></div>' +
       '<div class="form-grid-2">' +
@@ -157,6 +161,7 @@
     const type = document.getElementById("ad_type");
     type.addEventListener("change", function () {
       document.getElementById("ad_otherGroup").hidden = type.value !== "OTHER";
+      document.getElementById("ad_stayHint").hidden = type.value !== "STAY";
     });
     const input = document.getElementById("ad_files");
     input.addEventListener("change", function () {
@@ -256,13 +261,25 @@
     });
     const kid = global.Activity103.spawnStayObjectionCase(findCase(c.id));
     if (kid) A10.updateCase(kid.id, { l3StayDueDate: v.dueDate });
+    /* นิติกรเปิดเคสลูกต่อได้ทันที (ธุรการไม่มีสิทธิ์ที่ 10-3b-01 จึงมีแค่ข้อความ) */
+    const canOpen = !!kid && roleId() === WORK_ROLE;
     global.Swal.fire({
       icon: "success",
       title: "สร้างเรื่องคำชี้แจงคัดค้านแล้ว",
-      text: "เคสลูก " + (kid ? kid.id : "-") + " — ส่งนิติกรจัดทำคำชี้แจงคัดค้าน (สายคำขอทุเลาเดิม)",
-      timer: 2000,
-      showConfirmButton: false,
-    }).then(function () { location.reload(); });
+      text: "เคสลูก " + (kid ? kid.id : "-") + " — ส่งนิติกรจัดทำคำชี้แจงคัดค้านที่ 10-3b-01 (สายคำขอทุเลาเดิม)",
+      showCancelButton: canOpen,
+      showConfirmButton: canOpen,
+      confirmButtonText: "เปิดเคสลูก -B (10-3b-01)",
+      cancelButtonText: "อยู่หน้านี้",
+      confirmButtonColor: "#1e3a8a",
+      timer: canOpen ? undefined : 2000,
+    }).then(function (r) {
+      if (canOpen && r.isConfirmed) {
+        location.href = "10-3b-01-lawyer-draft-stay-objection.html?id=" + encodeURIComponent(kid.id) + "&role=" + WORK_ROLE;
+        return;
+      }
+      location.reload();
+    });
   }
 
   /* ---------------------------------------------------------------- การ์ดบนหน้า 10-3-xx */

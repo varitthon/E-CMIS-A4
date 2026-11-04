@@ -34,6 +34,15 @@
     <link rel="stylesheet" href="assets/ecmis-10-3-paper.css?v=20261022_stamp" />
 
     <style>
+      #stayDocView.l3-split-preview {
+        position: static;
+        max-height: none;
+        overflow: visible;
+      }
+      #stayDocView .l3-doc-pageframe {
+        min-height: 480px;
+        max-height: 760px;
+      }
       h1,
       h2,
       h3,
@@ -445,7 +454,8 @@
               <span class="badge" style="background: #dbeafe; color: #1e3a8a" id="f_draftVersion">-</span>
             </div>
             <div class="form-card-body">
-                            <div class="form-group d-none" id="legacyDocGroup">
+              <div id="stayDocView" style="margin-bottom: 16px"></div>
+              <div class="form-group d-none" id="legacyDocGroup">
                 <label>คำชี้แจงคัดค้าน (ไฟล์แนบ — สำนวนเดิม)</label>
                 <div id="f_stayObjectionFiles"></div>
               </div>
@@ -500,29 +510,6 @@
             </div>
           </div>
 
-          <div class="form-card" id="printCard">
-            <div class="form-card-header">
-              <span
-                ><i class="fa-solid fa-print text-primary me-2"></i
-                >ฉบับจริงสำหรับลงนาม</span
-              >
-              <span class="badge" style="background: #e0e7ff; color: #1e3a8a" id="f_lockBadge"
-                ><i class="fa-solid fa-lock-open me-1"></i>ล็อกเมื่อ ผอ.กองกฎหมาย เห็นชอบ</span
-              >
-            </div>
-            <div class="form-card-body">
-              <div class="l3-note l3-note-info" style="margin-bottom: 12px">
-                <i class="fa-solid fa-circle-info"></i>
-                <div>
-                  คำชี้แจงคัดค้านยื่นต่อศาลปกครอง ต้องลงนามด้วยหมึกบนแบบฟอร์มทางการ —
-                  เมื่อเห็นชอบ ระบบจะล็อกเอกสารเป็นฉบับจริง พิมพ์ฉบับนี้เสนอประธานกรรมการ ป.ป.ท. ลงนาม
-                  (ช่องลงนามเว้นว่าง ไม่มีลายเซ็นอิเล็กทรอนิกส์) แล้วนิติกรเจ้าของสำนวนแนบสแกนฉบับลงนามจริงก่อนส่งศาล
-                </div>
-              </div>
-              <div id="printDocs"></div>
-            </div>
-          </div>
-
           <div class="form-card" id="actionCard" style="border: 2px solid #1e3a8a">
             <div
               class="form-card-header"
@@ -546,7 +533,7 @@
                       <div class="l3-decision-title" style="color: #1e3a8a">
                         <i class="fa-solid fa-circle-check text-success me-1"></i>เห็นชอบ
                       </div>
-                      <div class="l3-decision-sub">(ล็อกฉบับจริง พิมพ์เสนอประธานกรรมการ ป.ป.ท. ลงนามด้วยหมึก)</div>
+                      <div class="l3-decision-sub">(ล็อกฉบับ ส่งธุรการออกเลขหนังสือและพิมพ์ฉบับจริง)</div>
                     </div>
                   </label>
                   <label class="l3-decision-card" id="card_return" onclick="selectDecision('RETURN')">
@@ -596,7 +583,8 @@
 
     <script>
       /* 2026-10-15 (docs/wet-sign/plan.md Lane 2 แบบ B) — ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน
-         เห็นชอบ = ล็อกฉบับจริง (ECMISWetSign.lockDocs) + พิมพ์แบบฟอร์มทางการ → นิติกรแนบฉบับลงนามจริงและส่งศาล 3b-03
+         เห็นชอบ = ล็อกฉบับ (ECMISWetSign.lockDocs) → ธุรการออกเลข 3b-02 (พิมพ์ฉบับจริงที่ 3b-02 ตั้งแต่ 2026-11-03 sheet D)
+         → เลขาธิการ 3b-02a → ประธานฯ ลงนามจริงนอกระบบ → นิติกร 3b-03 แนบฉบับลงนามจริงและส่งศาล
          ส่งกลับ → ผอ.กลุ่มงานคดี 3b-01a (STAY_SENDBACK.GROUP) */
       const STEP_CODE = "LAW0097B";
       const STEP = Activity103.stepByCode(STEP_CODE);
@@ -670,12 +658,19 @@
         populateExtra();
       }
 
-      /* สำนวนเดิม (ไม่มีเอกสารสด) — แสดงไฟล์แนบเดิม; เอกสารสดแสดงในการ์ดฉบับจริงสำหรับลงนาม */
+      /* สำนวนเดิม (ไม่มีเอกสารสด) — แสดงไฟล์แนบเดิม; เอกสารสดอ่านอย่างเดียว (พิมพ์ฉบับจริงที่ 3b-02 หลังธุรการออกเลข) */
       function renderDoc() {
         const c = currentCase;
         const live = hasLiveDoc(c);
         document.getElementById("legacyDocGroup").classList.toggle("d-none", live);
         if (!live) ECMIS103.renderAttachments("f_stayObjectionFiles", c.l3StayObjectionAttachments);
+        const models = ECMISWetSign.buildPrintModels(c);
+        if (!live || !models || !models.stayObjection) return;
+        const viewer = ECMIS103Docs.createViewer("stayDocView", {
+          title: DOC_LABEL,
+          fileName: DOC_LABEL + " " + (c.blackCaseNo || ""),
+        });
+        if (viewer) viewer.render(models.stayObjection);
       }
 
       function populateExtra() {
@@ -689,20 +684,6 @@
         if (gSig && gSig.image) {
           gImg.src = gSig.image;
           gImg.classList.remove("d-none");
-        }
-        renderPrintCard();
-      }
-
-      /* ฉบับจริงสำหรับลงนาม — พรีวิวอ่านอย่างเดียว + พิมพ์แบบฟอร์มทางการ (เหมือน 10-3-16) */
-      function renderPrintCard() {
-        const c = currentCase;
-        ECMISWetSign.renderPrintDocs("printDocs", c, {
-          docs: [{ docKey: DOC_KEY, label: DOC_LABEL, fileName: DOC_LABEL + " " + (c.blackCaseNo || "") }],
-        });
-        const lock = (c.l3DocLock || {})[DOC_KEY];
-        if (lock) {
-          document.getElementById("f_lockBadge").innerHTML =
-            '<i class="fa-solid fa-lock me-1"></i>ล็อกฉบับจริงครั้งที่ ' + esc(lock.version) + " — " + esc(lock.lockedAt);
         }
       }
 
@@ -719,7 +700,7 @@
         ECMIS103.setText("f_forwardTo", back ? sendBackTarget() : ECMIS103.signerLabel(STEP.nextRole));
         document.getElementById("btnSubmit").innerHTML = back
           ? '<i class="fa-solid fa-rotate-left me-1"></i>ยืนยันในระบบ และ ส่งกลับ ผอ.กลุ่มงานคดี'
-          : '<i class="fa-solid fa-circle-check me-1"></i>ยืนยันในระบบ (เห็นชอบ ล็อกฉบับจริง) และ ส่งนิติกร';
+          : '<i class="fa-solid fa-circle-check me-1"></i>ยืนยันในระบบ (เห็นชอบ ล็อกฉบับ) และ ส่งธุรการออกเลข';
       }
 
       function submitForm() {
@@ -736,7 +717,7 @@
         const forwardTo = back ? sendBackTarget() : ECMIS103.signerLabel(STEP.nextRole);
         Swal.fire({
           icon: back ? "warning" : "question",
-          title: back ? "ยืนยันส่งกลับแก้ไข?" : "ยืนยันเห็นชอบและล็อกฉบับจริง?",
+          title: back ? "ยืนยันส่งกลับแก้ไข?" : "ยืนยันเห็นชอบและล็อกฉบับ?",
           html: `
  <div class="emd-summary">
  <p><strong>คดี:</strong> ${esc(currentCase.id)} (${esc(currentCase.blackCaseNo || "-")})</p>
@@ -759,7 +740,7 @@
             {
               title: back
                 ? "ยืนยันในระบบ — ส่งกลับร่างคำชี้แจงคัดค้าน (ผอ.กองกฎหมาย)"
-                : "ยืนยันในระบบ — เห็นชอบร่างคำชี้แจงคัดค้านและล็อกฉบับจริง (ผอ.กองกฎหมาย)",
+                : "ยืนยันในระบบ — เห็นชอบร่างคำชี้แจงคัดค้านและล็อกฉบับ (ผอ.กองกฎหมาย)",
               signer: reviewer,
               certId: "PACC-DIRLEGAL-2569-103B",
             },
@@ -775,7 +756,7 @@
               Activity103.advance(currentCase.id, STEP_CODE, back ? sendBackPatch(review) : approvePatch(review));
               Swal.fire({
                 icon: "success",
-                title: back ? "ส่งกลับแก้ไขสำเร็จ!" : "เห็นชอบและล็อกฉบับจริงสำเร็จ!",
+                title: back ? "ส่งกลับแก้ไขสำเร็จ!" : "เห็นชอบและล็อกฉบับสำเร็จ!",
                 text: (back ? "ส่งกลับให้ " : "ส่งต่อให้ ") + forwardTo + " เรียบร้อยแล้ว",
                 timer: 2000,
                 showConfirmButton: false,
@@ -805,7 +786,7 @@
         };
       }
 
-      /* เห็นชอบ → ล็อกเอกสารสดเป็นฉบับจริง (ฉบับที่ n) แล้วส่งนิติกร (assignedRole จาก STEP.nextRole) */
+      /* เห็นชอบ → ล็อกเอกสารสดเป็นฉบับจริง (ฉบับที่ n) แล้วส่งธุรการออกเลข (assignedRole จาก STEP.nextRole) */
       function approvePatch(review) {
         return Object.assign(
           {

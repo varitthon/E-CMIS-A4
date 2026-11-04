@@ -13,10 +13,10 @@
 | หน้า | บทบาท | ทำอะไร | LAW ref |
 | --- | --- | --- | --- |
 | [10-2-10-legal-admin-receive-outcome.html](../10-2-10-legal-admin-receive-outcome.html) | ธุรการกองกฎหมาย (`admin_legal`) | รับมติที่เลขาธิการ/คณะกรรมการ ป.ป.ท. เห็นชอบกลับมาจากกิจกรรมที่ 7 บันทึกเลขที่หนังสือ/วันที่ แล้วส่งต่อฝ่ายเลขานุการฯ — เป็นจุดเริ่มต้นร่วมของ Part 2 ทุกสาย | LAW0049 / LAW0053 / LAW0058 (ในโค้ดปัจจุบันหน้านี้ทำหน้าที่เป็นจุดเริ่มต้นของทั้ง 3 สาย แต่ตามผังเดิมควรแยกเป็นคนละหน้ากันตามสถานะคดี — ดูหมายเหตุ "แก้ไข" ด้านบน) |
-| [10-2-11-secretariat-disclose-partial-notice-draft.html](../10-2-11-secretariat-disclose-partial-notice-draft.html) | ฝ่ายเลขานุการฯ (`sub_secretariat`) | ร่างหนังสือแจ้งมติเสนอผู้ยื่นคำขอ ระบบดึงชื่อผู้ยื่นคำขอ/มติมาอัตโนมัติ — ถ้ามติ PARTIAL ไปขั้นปกปิดข้อมูลต่อ ถ้า DISCLOSE ไปขั้นลงนามได้เลย | ≈ LAW0054 |
+| [10-2-11-secretariat-disclose-partial-notice-draft.html](../10-2-11-secretariat-disclose-partial-notice-draft.html) | ฝ่ายเลขานุการฯ (`sub_secretariat`) | ร่างหนังสือแจ้งมติเสนอกอง/สำนักที่ส่งคำร้อง ระบบดึงชื่อกอง/สำนักที่ส่งคำร้อง/มติมาอัตโนมัติ — ถ้ามติ PARTIAL ไปขั้นปกปิดข้อมูลต่อ ถ้า DISCLOSE ไปขั้นลงนามได้เลย | ≈ LAW0054 |
 | [10-2-12-secretariat-partial-redaction.html](../10-2-12-secretariat-partial-redaction.html) | ฝ่ายเลขานุการฯ (`sub_secretariat`) | ปกปิดข้อมูลส่วนบุคคลที่อ่อนไหวในเอกสารแนบ — **เฉพาะกรณี PARTIAL เท่านั้น** | ≈ LAW0056 |
-| [10-2-13-legal-director-disclose-partial-notice-sign.html](../10-2-13-legal-director-disclose-partial-notice-sign.html) | ผอ.กองกฎหมาย (`dir_legal`) | ตรวจและลงนามหนังสือแจ้งมติผู้ยื่นคำขอ (อ่านอย่างเดียว + ลงนาม) | ไม่มี (เพิ่มใหม่) |
-| [10-2-14-legal-admin-disclose-partial-notice-dispatch.html](../10-2-14-legal-admin-disclose-partial-notice-dispatch.html) | ธุรการกองกฎหมาย (`admin_legal`) | ออกเลขหนังสือส่งและแจ้งผลผู้ยื่นคำขอ — **จบคำร้อง** (`L2_CASE_CLOSED_NOTICE_SENT`) | ≈ LAW0057 |
+| [10-2-13-legal-director-disclose-partial-notice-sign.html](../10-2-13-legal-director-disclose-partial-notice-sign.html) | ผอ.กองกฎหมาย (`dir_legal`) | ตรวจและลงนามหนังสือแจ้งมติกอง/สำนักที่ส่งคำร้อง (อ่านอย่างเดียว + ลงนาม) | ไม่มี (เพิ่มใหม่) |
+| [10-2-14-legal-admin-disclose-partial-notice-dispatch.html](../10-2-14-legal-admin-disclose-partial-notice-dispatch.html) | ธุรการกองกฎหมาย (`admin_legal`) | ออกเลขหนังสือส่งและแจ้งผลกอง/สำนักที่ส่งคำร้อง — **จบคำร้อง** (`L2_CASE_CLOSED_NOTICE_SENT`) | ≈ LAW0057 |
 
 ## สายไม่อนุญาตเปิดเผย (DENY)
 

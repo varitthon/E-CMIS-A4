@@ -45,35 +45,72 @@ t("2026-10-22 ไม่มี 3-18 / 3-19 / 3-22 — 3-17 (ธุรการ) �
   assert.equal(s.statusCode, "L3_PENDING_LAWYER_COLLECT_DOCS");
   assert.equal(A3.ROUTES[s.statusCode], "10-3-23-lawyer-collect-documents.html");
 });
-t("ผู้บริหารไม่ใช่ผู้ทำงานในระบบของสายคำให้การ/คัดค้านทุเลาอีกต่อไป", () => {
-  const exec = ["chairman", "secgen", "deputy_sg"];
-  A3.ANSWER_STEPS.concat(A3.STAY_STEPS).forEach((s) =>
+t("ประธาน/รองเลขาธิการไม่ใช่ผู้ทำงานในระบบของสายคำให้การ/คัดค้านทุเลา (เลขาธิการตรวจที่ 3b-02a ได้ — 2026-11-03 sheet D)", () => {
+  const exec = ["chairman", "deputy_sg"];
+  A3.ANSWER_STEPS.concat(A3.STAY_STEPS, A3.COURT_ORDER_STEPS).forEach((s) =>
     assert.ok(!exec.includes(s.role), s.code + " " + s.role),
   );
+  assert.ok(!A3.ANSWER_STEPS.some((s) => s.role === "secgen"));
+  assert.deepEqual(A3.STAY_STEPS.filter((s) => s.role === "secgen").map((s) => s.code), ["LAW0097D"]);
 });
 
 console.log("สายคัดค้านทุเลา (แบบ B)");
-t("3b-01 → 3b-01a → 3b-01b → 3b-03 (นิติกรแนบฉบับลงนามจริง)", () => {
+t("3b-01 → 01a → 01b → 02 (ธุรการออกเลข) → 02a (เลขาธิการ) → 03 (นิติกรแนบฉบับลงนามจริง)", () => {
   const pages = A3.STAY_STEPS.map((s) => s.page);
   assert.deepEqual(pages, [
     "10-3b-01-lawyer-draft-stay-objection.html",
     "10-3b-01a-group-director-review-stay-objection.html",
     "10-3b-01b-legal-director-review-stay-objection.html",
+    "10-3b-02-legal-admin-number-stay-objection.html",
+    "10-3b-02a-secgen-review-stay-objection.html",
     "10-3b-03-lawyer-dispatch-stay-objection.html",
   ]);
   assert.equal(A3.ROUTES.L3B_PENDING_LAWYER_DRAFT, pages[0]);
   assert.equal(A3.ROUTES.L3B_PENDING_GROUP_REVIEW, pages[1]);
   assert.equal(A3.ROUTES.L3B_PENDING_DIRECTOR_REVIEW, pages[2]);
-  assert.equal(A3.ROUTES.L3B_PENDING_LAWYER_DISPATCH, pages[3]);
-  assert.equal(A3.STAY_STEPS[2].nextRole, "case_legal_officer");
-  assert.ok(!A3.stepByCode("LAW0098"), "ตัด LAW0098 (3b-02) แล้ว");
+  assert.equal(A3.ROUTES.L3B_PENDING_ADMIN_NUMBER, pages[3]);
+  assert.equal(A3.ROUTES.L3B_PENDING_SECGEN_REVIEW, pages[4]);
+  assert.equal(A3.ROUTES.L3B_PENDING_LAWYER_DISPATCH, pages[5]);
+  assert.equal(A3.STAY_STEPS[2].nextRole, "admin_legal");
+  assert.equal(A3.STAY_STEPS[3].role, "admin_legal");
+  assert.equal(A3.STAY_STEPS[3].nextRole, "secgen");
+  assert.equal(A3.STAY_STEPS[4].role, "secgen");
+  assert.equal(A3.STAY_STEPS[4].nextRole, "case_legal_officer");
+  assert.equal(A3.STAY_STEPS[5].statusCode, "L3B_CLOSED");
+  assert.ok(!A3.stepByCode("LAW0098"), "ตัด LAW0098 (3b-02 เดิม ธุรการบันทึกผลลงนามจริง) แล้ว");
 });
-t("ส่งกลับ 1 ขั้น: LAWYER → 3b-01, GROUP → 3b-01a", () => {
+t("ส่งกลับ 1 ขั้น: LAWYER → 3b-01, GROUP → 3b-01a, DIRECTOR → 3b-01b", () => {
   const sb = A3.STAY_SENDBACK;
   assert.equal(A3.ROUTES[sb.LAWYER.statusCode], "10-3b-01-lawyer-draft-stay-objection.html");
   assert.equal(sb.LAWYER.assignedRole, "case_legal_officer");
   assert.equal(A3.ROUTES[sb.GROUP.statusCode], "10-3b-01a-group-director-review-stay-objection.html");
   assert.equal(sb.GROUP.assignedRole, "case_group_director");
+  assert.equal(A3.ROUTES[sb.DIRECTOR.statusCode], "10-3b-01b-legal-director-review-stay-objection.html");
+  assert.equal(sb.DIRECTOR.assignedRole, "dir_legal");
+});
+t("อุทธรณ์คำสั่งทุเลา: 3b-04 (ธุรการ) → 05 → 06 → 07 → 08 จบที่ L3B2_APPEAL_FILED", () => {
+  const steps = A3.COURT_ORDER_STEPS;
+  assert.deepEqual(steps.map((s) => s.page), [
+    "10-3b-04-legal-admin-court-order-intake.html",
+    "10-3b-05-lawyer-draft-stay-appeal.html",
+    "10-3b-06-group-director-review-stay-appeal.html",
+    "10-3b-07-legal-director-sign-stay-appeal.html",
+    "10-3b-08-lawyer-file-stay-appeal.html",
+  ]);
+  assert.deepEqual(steps.map((s) => s.role), ["admin_legal", "case_legal_officer", "case_group_director", "dir_legal", "case_legal_officer"]);
+  assert.equal(A3.ROUTES.L3B_CLOSED, steps[0].page);
+  assert.equal(A3.COURT_ORDER_BRANCHES.GRANTED.statusCode, "L3B2_PENDING_APPEAL_DRAFT");
+  assert.equal(A3.COURT_ORDER_BRANCHES.GRANTED.assignedRole, "case_legal_officer");
+  assert.equal(A3.COURT_ORDER_BRANCHES.DENIED.statusCode, "L3B2_CLOSED");
+  assert.equal(A3.ROUTES.L3B2_PENDING_APPEAL_DRAFT, steps[1].page);
+  assert.equal(A3.ROUTES.L3B2_PENDING_GROUP_REVIEW, steps[2].page);
+  assert.equal(A3.ROUTES.L3B2_PENDING_DIRECTOR_SIGN, steps[3].page);
+  assert.equal(A3.ROUTES.L3B2_PENDING_LAWYER_FILE, steps[4].page);
+  assert.equal(A3.ROUTES.L3B2_APPEAL_FILED, undefined);
+  assert.equal(A3.ROUTES.L3B2_CLOSED, undefined);
+  const sb = A3.COURT_ORDER_SENDBACK;
+  assert.equal(A3.ROUTES[sb.LAWYER.statusCode], steps[1].page);
+  assert.equal(A3.ROUTES[sb.GROUP.statusCode], steps[2].page);
 });
 
 console.log("advance — ไม่ทับชื่อนิติกรเจ้าของสำนวน");

@@ -660,6 +660,27 @@
                 >
               </div>
               <!-- มูลเหตุ เลือกได้หลายข้อ (ECMIS103VerdictLink.mountCauses) เก็บบนเคสเป็น l3Causes -->
+              <div class="form-group" id="boardRouteGroup">
+                <label>การเสนอบอร์ด <span style="color: #dc2626">*</span></label>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap">
+                  <label class="l3-checkbox-row" style="gap: 6px">
+                    <input type="radio" name="boardRoute" value="YES" checked onchange="onBoardRouteChange()" />
+                    เสนอบอร์ด (07 → 08 → 09)
+                  </label>
+                  <label class="l3-checkbox-row" style="gap: 6px">
+                    <input type="radio" name="boardRoute" value="NO" onchange="onBoardRouteChange()" />
+                    ไม่เสนอบอร์ด — ไป 10-3-13 ทันที
+                  </label>
+                </div>
+                <div id="boardSkipWrap" hidden style="margin-top: 8px">
+                  <label>เหตุผลที่ไม่เสนอบอร์ด <span style="color: #dc2626">*</span></label>
+                  <textarea id="in_boardSkipReason" class="form-control" rows="2" placeholder="ระบุเหตุผลที่ไม่เสนอบอร์ด..."></textarea>
+                  <div class="helper-text" style="margin-top: 6px; font-size: 0.82em; color: #64748b">
+                    ข้ามขั้น ผอ.กลุ่มงาน เห็นชอบ (07) → ผอ.กอง ลงนามผ่านเรื่อง (08) → ธุรการเสนอมติ (09) และการบันทึกมติมอบอำนาจ —
+                    ร่างคำให้การที่ 10-3-13 ยังผ่านการตรวจของ ผอ.กลุ่มงานคดี (15) และ ผอ.กอง (16) ตามเดิม
+                  </div>
+                </div>
+              </div>
               <div id="causesHost"></div>
               <div class="form-group">
                 <div class="l3-checkbox-row">
@@ -1175,6 +1196,14 @@
 
       /* ---- page specific ---- */
 
+      /* ไม่เสนอบอร์ด: ซ่อนเอกสาร 1 (บันทึกเสนอบอร์ด) และแสดงช่องเหตุผล */
+      function onBoardRouteChange() {
+        const noBoard = document.querySelector('input[name="boardRoute"]:checked').value === "NO";
+        document.getElementById("boardSkipWrap").hidden = !noBoard;
+        const blk = document.querySelector('[data-prev-step="เอกสาร 1 — บันทึกเสนอเข้าบอร์ดเพื่อมีมติ"]');
+        [blk, blk && blk.closest("details")].forEach((el) => { if (el) el.style.display = noBoard ? "none" : ""; });
+      }
+
       function submitForm() {
         const causes = ECMIS103VerdictLink.collectCauses("cs_");
         const causesMissing = ECMIS103VerdictLink.validateCauses(causes);
@@ -1182,8 +1211,14 @@
           Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: causesMissing, confirmButtonColor: "#1e3a8a" });
           return;
         }
-        const missing = missingBoardMemo();
-        if (missing || !bmSignedFile) {
+        const noBoard = document.querySelector('input[name="boardRoute"]:checked').value === "NO";
+        const skipReason = document.getElementById("in_boardSkipReason").value.trim();
+        if (noBoard && !skipReason) {
+          Swal.fire({ icon: "warning", title: "ข้อมูลไม่ครบถ้วน", text: "กรุณาระบุเหตุผลที่ไม่เสนอบอร์ด", confirmButtonColor: "#1e3a8a" });
+          return;
+        }
+        const missing = noBoard ? "" : missingBoardMemo();
+        if (!noBoard && (missing || !bmSignedFile)) {
           Swal.fire({
             icon: "warning",
             title: "ข้อมูลไม่ครบถ้วน",
@@ -1205,7 +1240,10 @@
         Swal.fire({
           icon: "question",
           title: "ยืนยันบันทึกผลตรวจสอบและความเห็น",
-          html: hasStayRequest
+          html: noBoard
+            ? "บันทึกและส่งต่อ <strong>10-3-13 นิติกรขอขยายเวลา/ร่างคำให้การ</strong> โดยไม่เสนอบอร์ด" +
+              (hasStayRequest ? "<br/><strong style='color:#d97706'>พร้อมสร้างเรื่องคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี (เคสลูก -B)</strong>" : "")
+            : hasStayRequest
             ? "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ<br/><strong style='color:#d97706'>พร้อมสร้างเรื่องคำชี้แจงคัดค้านคำขอทุเลาการบังคับคดี (เคสลูก -B)</strong>"
             : "บันทึกและส่งต่อให้ ผอ.กลุ่มงานพิจารณาเห็นชอบ",
           showCancelButton: true,
@@ -1215,16 +1253,23 @@
           cancelButtonColor: "#64748b",
         }).then((res) => {
           if (!res.isConfirmed) return;
-          Activity103.advance(currentCase.id, STEP_CODE, {
+          Activity103.advance(currentCase.id, STEP_CODE, Object.assign({
             l3ReviewNotes: reviewNotes,
             l3Causes: causes,
             l3HasStayRequest: hasStayRequest,
             l3RelatedCaseNo: relatedCaseNo,
             l3OpinionText: opinionText,
             l3OpinionAttachments: opinionAttachedFiles.map((f) => f.name),
-            l3BoardMemo: collectBoardMemo(),
-            l3BoardMemoSignedFile: bmSignedFile.name,
-          });
+            l3BoardMemo: noBoard ? null : collectBoardMemo(),
+            l3BoardMemoSignedFile: noBoard ? "" : bmSignedFile.name,
+            l3BoardSkipped: noBoard,
+            l3BoardSkipReason: noBoard ? skipReason : "",
+          }, noBoard ? {
+            /* ไม่เสนอบอร์ด — ข้าม 07/08/09 ไปรอนิติกรที่ 10-3-13 (สถานะเดียวกับที่ป๊อปอัป B3 ส่งมา) */
+            statusCode: "L3_PENDING_LAWYER_EXTENSION",
+            status: "นิติกรขอขยายเวลา/ร่างคำให้การ (ไม่เสนอบอร์ด)",
+            assignedRole: "case_legal_officer",
+          } : {}));
           ECMIS103Docs.clearDraft(currentCase.id, STEP_CODE);
           if (hasStayRequest) {
             Activity103.spawnStayObjectionCase(currentCase);

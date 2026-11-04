@@ -114,6 +114,49 @@
           "</div>",
       );
     },
+    /* 2026-11-03 sheet D 3.4/3.5 — เลขหนังสือที่ธุรการออก + ผลตรวจของเลขาธิการ */
+    stayNumbers: function (c) {
+      return card(
+        "เลขหนังสือที่ธุรการออก",
+        '<div class="form-grid-2">' +
+          box("หนังสือขอให้ดำเนินการแก้ต่างคดีปกครอง (ส่งออก)", [c.l3bExternalDocNo, thaiDate(c.l3bExternalDocDate)].filter(Boolean).join(" ลงวันที่ "), "font-monospace") +
+          box("บันทึกเสนอร่างคำคัดค้านคำขอทุเลา (ภายใน)", [c.l3bInternalDocNo, thaiDate(c.l3bInternalDocDate)].filter(Boolean).join(" ลงวันที่ "), "font-monospace") +
+          "</div>",
+      );
+    },
+    staySecgen: function (c) {
+      return card("ผลการตรวจของเลขาธิการ ป.ป.ท.", box("เลขาธิการ", reviewLine(c.l3StaySecgenReview), "read-box-textarea"));
+    },
+    /* 2026-11-03 sheet D 4.1-4.4 — คำสั่งศาลเรื่องทุเลา + ร่างคำอุทธรณ์ + ผลตรวจ */
+    stayCourtOrder: function (c) {
+      return card(
+        "คำสั่งศาลเรื่องทุเลาการบังคับคดี (ธุรการบันทึก)",
+        '<div class="form-grid-2">' +
+          box("เลขที่คำสั่งศาล", c.l3CourtStayOrderNo, "font-monospace") +
+          box("วันที่มีคำสั่ง", thaiDate(c.l3CourtStayOrderDate)) +
+          box("ผลคำสั่งศาล", c.l3CourtStayResult === "GRANTED" ? "ศาลมีคำสั่งให้ทุเลาการบังคับคดี" : c.l3CourtStayResult === "DENIED" ? "ศาลยกคำขอทุเลา" : "") +
+          slot("คำวินิจฉัย/คำสั่งศาล", "pv_courtOrderFiles") +
+          "</div>" + box("หมายเหตุ", c.l3CourtStayIntakeNotes, "read-box-textarea"),
+      );
+    },
+    stayAppealDraft: function (c) {
+      return card(
+        "ร่างคำอุทธรณ์คำสั่งทุเลา (นิติกร)",
+        '<div class="form-grid-2">' +
+          slot("ร่างคำอุทธรณ์คำสั่งทุเลา", "pv_appealDraftFiles") +
+          slot("เอกสารประกอบ", "pv_appealSupportingFiles") +
+          "</div>" + box("หมายเหตุนิติกร", c.l3StayAppealDraftNotes, "read-box-textarea"),
+      );
+    },
+    stayAppealReviews: function (c) {
+      return card(
+        "ผลการตรวจร่างคำอุทธรณ์ตามลำดับชั้น",
+        '<div class="form-grid-2">' +
+          box("ผอ.กลุ่มงานคดี", reviewLine(c.l3StayAppealGroupReview), "read-box-textarea") +
+          box("ผอ.กองกฎหมาย (ลงนาม)", reviewLine(c.l3StayAppealDirectorReview), "read-box-textarea") +
+          "</div>",
+      );
+    },
     staySigned: function () {
       return card("คำชี้แจงคัดค้าน — ฉบับลงนามจริง (ประธานกรรมการ ป.ป.ท.)", '<div id="pv_staySigned"></div>');
     },
@@ -147,6 +190,9 @@
     files("pv_stayMemo", c.l3StayObjectionMemoAttachments);
     files("pv_staySupporting", c.l3StayObjectionSupportingAttachments);
     files("pv_stayDocCopies", c.l3StayDispatchDocCopies);
+    files("pv_courtOrderFiles", c.l3CourtStayOrderFileNames);
+    files("pv_appealDraftFiles", c.l3CourtStayAppealAttachments);
+    files("pv_appealSupportingFiles", c.l3CourtStayAppealSupportingAttachments);
     const signed = document.getElementById("pv_staySigned");
     if (signed && global.ECMISWetSign && c.l3WetSign && c.l3WetSign.stayObjection) {
       ECMISWetSign.renderSignedView("pv_staySigned", c, "stayObjection", "คำชี้แจงคัดค้านคำขอทุเลาการบังคับ");
@@ -251,7 +297,7 @@
       const s = p.l3AnswerShipping || {};
       const nos = (s.evidenceNos || []).filter(Boolean).join(", ");
       return card(
-        "คดีเดิม · ส่งเอกสารถึงอัยการ (นิติกร)",
+        "คดีเดิม · ส่งเอกสารถึงสำนักงานคดีปกครอง (นิติกร)",
         '<div class="form-grid-2">' +
           box("วิธีส่ง / เลข EMS", [String(s.method || "").toUpperCase(), nos].filter(clean).join(" ")) +
           box("บันทึกหลักฐานเมื่อ", thaiDate(s.savedAt)) +
@@ -278,7 +324,7 @@
           box("เคสลูก", k.id, "font-monospace") +
           box("สถานะ", k.status) +
           box("ส่งต่อศาล", k.l3StayDispatchMethod ? (k.l3StayDispatchMethod === "hand" ? "ส่งด้วยตนเอง " + thaiDate(k.l3StayHandDeliveryDate) : "ไปรษณีย์ " + thaiDate(k.l3StayDispatchDate)) : "") +
-          box("คำสั่งศาลเรื่องทุเลา", k.statusCode === "L3B2_APPEAL_FILED" ? "ศาลให้ทุเลา — ทำคำอุทธรณ์แล้ว" : k.statusCode === "L3B2_CLOSED" ? "ศาลยกคำขอ" : "") +
+          box("คำสั่งศาลเรื่องทุเลา", k.statusCode === "L3B2_APPEAL_FILED" ? "ศาลให้ทุเลา — ส่งคำอุทธรณ์แล้ว" : k.statusCode === "L3B2_CLOSED" ? "ศาลยกคำขอ" : k.l3CourtStayResult === "GRANTED" ? "ศาลให้ทุเลา — อยู่ระหว่างจัดทำคำอุทธรณ์" : "") +
           "</div>",
       );
     },

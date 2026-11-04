@@ -1066,6 +1066,9 @@
           <div class="form-actions" id="actionBar">
             <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
             <div class="l3-actions-right">
+              <button type="button" class="btn btn-secondary d-none" id="btnBackToBoard" onclick="switchToBoard()">
+                <i class="fa-solid fa-rotate-left me-1"></i>เปลี่ยนเป็นเสนอบอร์ด (กลับ 10-3-04)
+              </button>
               <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
                 <i class="fa-solid fa-paper-plane me-1"></i>เสนอ ผอ.กลุ่มงานคดี
               </button>
@@ -1212,8 +1215,42 @@
         return iso ? ECMIS103.formatThaiDate(iso) : "-";
       }
 
+      /* เคสที่นิติกรเลือก "ไม่เสนอบอร์ด" ที่ 10-3-04 — แสดงเหตุผล และให้เปลี่ยนกลับไปเสนอบอร์ดได้ */
+      function showBoardSkipInfo(c) {
+        if (!c.l3BoardSkipped) return;
+        const note = document.createElement("div");
+        note.className = "l3-note l3-note-info";
+        note.innerHTML = "<i class=\"fa-solid fa-circle-info\"></i><div><strong>ไม่เสนอบอร์ด</strong> — เหตุผล: " +
+          (c.l3BoardSkipReason || "-") + " (ร่างคำให้การยังต้องผ่าน ผอ.กลุ่มงานคดี และ ผอ.กอง)</div>";
+        document.getElementById("pageBody").prepend(note);
+        document.getElementById("btnBackToBoard").classList.remove("d-none");
+      }
+
+      function switchToBoard() {
+        Swal.fire({
+          icon: "question",
+          title: "เปลี่ยนเป็นเสนอบอร์ด?",
+          text: "เรื่องจะกลับไปที่ 10-3-04 เพื่อจัดทำบันทึกเสนอบอร์ด แล้วเดินสาย 07 → 08 → 09 ตามปกติ",
+          showCancelButton: true,
+          confirmButtonText: "ยืนยัน",
+          cancelButtonText: "ยกเลิก",
+          confirmButtonColor: "#1e3a8a",
+        }).then((r) => {
+          if (!r.isConfirmed) return;
+          Activity103.advance(currentCase.id, STEP_CODE, {
+            statusCode: "L3_PENDING_LAWYER_REVIEW",
+            status: "นิติกรตรวจสอบคำฟ้อง (เปลี่ยนเป็นเสนอบอร์ด)",
+            assignedRole: "case_legal_officer",
+            l3BoardSkipped: false,
+            l3BoardSkipReason: "",
+          });
+          ECMIS103.goInbox ? ECMIS103.goInbox() : (window.location.href = "01-work-inbox.html");
+        });
+      }
+
       function populate() {
         const c = currentCase;
+        showBoardSkipInfo(c);
         const r = c.l3BoardResolution || {};
         const sigs = c.l3Signatures || {};
 

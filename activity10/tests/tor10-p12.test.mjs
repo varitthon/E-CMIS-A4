@@ -99,15 +99,15 @@ t("B1 ขาเข้า (ไม่ระบุ stage) เปลี่ยนเ�
   assert.equal(r.patch.statusCode, "PENDING_GROUP_RESOLUTION");
   assert.equal(r.submit, "submitLegalAdminResolutionIntake");
 });
-t("B2 บันทึกผลทันที: advance L2-RECEIVE-BOARD-ROUND2 → L2_PENDING_DIRLEGAL_BOARD_ACK", () => {
+t("B2 บันทึกผลทันที: advance L2-RECEIVE-BOARD-ROUND2 → L2_PENDING_NOTICE_DRAFT", () => {
   const r = buildAct7Patch(
     "B2", {},
     { decision: "DENY", noticeNo: "ปป 1/2", noticeDate: "2026-10-01" },
     SENDER, AT, { stage: "outbound" },
   );
   assert.deepEqual(r.advance, { module: "Activity102", stepCode: "L2-RECEIVE-BOARD-ROUND2" });
-  assert.equal(A2.stepByCode("L2-RECEIVE-BOARD-ROUND2").statusCode, "L2_PENDING_DIRLEGAL_BOARD_ACK");
-  assert.equal(act7OutboundStages("B2").now, "L2_PENDING_DIRLEGAL_BOARD_ACK");
+  assert.equal(A2.stepByCode("L2-RECEIVE-BOARD-ROUND2").statusCode, "L2_PENDING_NOTICE_DRAFT");
+  assert.equal(act7OutboundStages("B2").now, "L2_PENDING_NOTICE_DRAFT");
 });
 t("B3 บันทึกผลทันที: ส่งตรงนิติกร L3_PENDING_LAWYER_EXTENSION (10-3-13), ไม่มีลายเซ็นธุรการ", () => {
   const r = buildAct7Patch(

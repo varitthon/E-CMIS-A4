@@ -79,15 +79,15 @@ COURT_INTAKE.forEach(([code, status, page, dirCode, dirStatus, groupPage]) => {
 /* รับกลับจากกิจกรรม 7 / หนังสือศาลระหว่างสาย → ผอ.กลุ่มงานคดี โดยตรง */
 const COURT = [
   ["LAW0131", "L7_PENDING_GROUP_ASSIGN", "10-3v-10-group-director-assign.html"],
-  ["L9A_INTAKE", "L9A_PENDING_GROUP_APPROVE", "10-3v-31-group-director-assign2.html"],
-  ["L9B_INTAKE", "L9B_PENDING_GROUP_ASSIGN1", "10-3v-39-group-director-assign3.html"],
+  ["L9A_INTAKE", "L9A_PENDING_LAWYER_DRAFT", "10-3v-32-lawyer-draft-appeal2.html", "case_legal_officer"],
+  ["L9B_INTAKE", "L9B_PENDING_LAWYER_INTAKE", "10-3v-40-lawyer-no-appeal-intake.html", "case_legal_officer"],
 ];
-COURT.forEach(([code, status, page]) => {
+COURT.forEach(([code, status, page, nextRole = "case_group_director"]) => {
   t(`10.3: ${code} → ${page}`, () => {
     const step = A3.stepByCode(code);
     assert.ok(step, code);
     assert.equal(step.statusCode, status);
-    assert.equal(step.nextRole, "case_group_director");
+    assert.equal(step.nextRole, nextRole);
     assert.equal(A3.ROUTES[status], page);
   });
 });

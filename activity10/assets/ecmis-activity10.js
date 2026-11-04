@@ -1141,7 +1141,7 @@
       l2BoardApprovalDate: getDateWithOffset(-3),
       l2ReceiveNotes: "",
       statusCode: "L2_PENDING_NOTICE_DRAFT",
-      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอผู้ยื่นคำขอ",
+      status: "ฝ่ายเลขานุการฯ จัดทำหนังสือแจ้งมติเสนอกอง/สำนักที่ส่งคำร้อง",
       assignedRole: "sub_secretariat",
       officer: "น.ส.พิมพ์ชนก ทองดี",
     },
@@ -1282,7 +1282,7 @@
       l2NoticeBody:
         "ตามที่ท่านได้ยื่นคำร้องขอเปิดเผยข้อมูลข่าวสารนั้น คณะกรรมการ ป.ป.ท. ได้พิจารณาแล้วมีมติอนุญาตเปิดเผย",
       statusCode: "L2_PENDING_NOTICE_DISPATCH",
-      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลผู้ยื่นคำขอ",
+      status: "ธุรการกองกฎหมายออกเลขส่งและแจ้งผลกอง/สำนักที่ส่งคำร้อง",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
@@ -1497,7 +1497,7 @@
       l2OriginalCaseOfficer: "นายประดิษฐ์ ไต่สวนเก่ง",
       l2OriginalCaseOfficerOrg: "กองปราบปรามการทุจริตในภาครัฐ 1",
       statusCode: "L2_CASE_CLOSED_NOTICE_SENT",
-      status: "สิ้นสุด — แจ้งผลผู้ยื่นคำขอแล้ว",
+      status: "สิ้นสุด — แจ้งผลกอง/สำนักที่ส่งคำร้องแล้ว",
       assignedRole: "admin_legal",
       officer: "นางกานดา รักษ์ธรรม",
     },
@@ -4739,13 +4739,21 @@
       statusCode: "L8_PENDING_GROUP_ASSIGN1",
       status: "ผอ.กลุ่มงานพิจารณามอบหมายนิติกรลงทะเบียน",
     },
+    L9A_PENDING_GROUP_APPROVE: {
+      statusCode: "L9A_PENDING_LAWYER_DRAFT",
+      status: "นิติกรร่างคำอุทธรณ์",
+    },
+    L9B_PENDING_GROUP_ASSIGN1: {
+      statusCode: "L9B_PENDING_LAWYER_INTAKE",
+      status: "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
+    },
     L9A_PENDING_DIRECTOR_ASSIGN: {
-      statusCode: "L9A_PENDING_GROUP_APPROVE",
-      status: "ผอ.กลุ่มงานคดีพิจารณาและเห็นชอบ (ดำเนินการอุทธรณ์)",
+      statusCode: "L9A_PENDING_LAWYER_DRAFT",
+      status: "นิติกรร่างคำอุทธรณ์",
     },
     L9B_PENDING_DIRECTOR_ASSIGN1: {
-      statusCode: "L9B_PENDING_GROUP_ASSIGN1",
-      status: "ผอ.กลุ่มงานคดีพิจารณาและมอบหมายนิติกร (แจ้งไม่อุทธรณ์)",
+      statusCode: "L9B_PENDING_LAWYER_INTAKE",
+      status: "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
     },
   };
 
@@ -4765,7 +4773,7 @@
      เคสที่ค้างรอบันทึกผลลงนาม/รวบรวมฉบับจริง ไปนิติกรรวบรวมเอกสาร (10-3-23) ทันที คงนิติกรเจ้าของสำนวน */
   const TO_LAWYER_COLLECT = {
     statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
-    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง และแนบหลักฐานการส่ง",
     assignedRole: "case_legal_officer",
     keepOfficer: true,
   };
@@ -4775,7 +4783,7 @@
   REMOVED_DIRECTOR_STATUS.L3_PENDING_ADMIN_COLLECT_ORIGINALS = TO_LAWYER_COLLECT;
   /* 2026-10-22 รวม 10-3-24 (ส่งไปรษณีย์) / 10-3-25 (ติดตามสถานะ) เข้า 10-3-23 — เคสค้างกลับไปหน้ารวม */
   REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_POST_TO_PROSECUTOR = Object.assign({}, TO_LAWYER_COLLECT, {
-    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
+    status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง และแนบหลักฐานการส่ง",
   });
   REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_TRACK_STATUS = REMOVED_DIRECTOR_STATUS.L3_PENDING_LAWYER_POST_TO_PROSECUTOR;
 
@@ -4861,7 +4869,7 @@
     L2_PENDING_NOTICE_GROUPDIR_REVIEW: ["ผอ.กลุ่ม ตรวจหนังสือแจ้ง", "group"],
     L2_PENDING_NOTICE_SIGN: ["ผอ.กอง ลงนามหนังสือแจ้ง", "director"],
     L2_PENDING_NOTICE_DISPATCH: ["ธุรการ ส่งหนังสือแจ้ง", "admin"],
-    L2_CASE_CLOSED_NOTICE_SENT: ["สิ้นสุด — แจ้งผู้ขอแล้ว", "done"],
+    L2_CASE_CLOSED_NOTICE_SENT: ["สิ้นสุด — แจ้งกอง/สำนักแล้ว", "done"],
     L2_CASE_CLOSED_DISCLOSE_ASSIGNED: ["สิ้นสุด — ส่งกองเจ้าของสำนวน", "done"],
     L2_CASE_CLOSED_DENY_ASSIGNED: ["สิ้นสุด — ส่งกองเจ้าของสำนวน", "done"],
     L2_PENDING_DENY_MEMO: ["เลขาฯ ทำบันทึกไม่อนุญาต", "doer"],
@@ -4876,8 +4884,6 @@
     L2_PENDING_COMMITTEE_DISPATCH: ["ธุรการ ออกเลขส่ง", "admin"],
     L2_READY_FOR_BOARD_ROUND2: ["รอมติบอร์ด (รอบ 2)", "committee"],
     L2_BOARD_RESOLVED_ROUND2: ["ธุรการ รับมติบอร์ด", "admin"],
-    L2_PENDING_DIRLEGAL_BOARD_ACK: ["ผอ.กอง รับทราบมติ", "director"],
-    L2_PENDING_GROUPDIR_BOARD_ACK: ["ผอ.กลุ่ม รับทราบมติ", "group"],
     /* ---- 10.2 อุทธรณ์ ---- */
     L2_PENDING_APPEAL_INTAKE: ["ธุรการ กบค. รับอุทธรณ์", "admin"],
     L2_PENDING_APPEAL_INTAKE_DISTRICT: ["เขต รับอุทธรณ์", "admin"],

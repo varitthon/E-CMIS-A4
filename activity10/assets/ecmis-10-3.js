@@ -138,28 +138,53 @@
       stepName: "ผอ.กลุ่มงาน ตรวจร่าง",
     },
     {
-      /* ผอ.กองเห็นชอบ = ล็อกฉบับและพิมพ์ฉบับจริงให้ประธานฯ ลงนามบนกระดาษ
-         2026-10-22 ตัด 10-3b-02 (ธุรการบันทึกผลลงนาม) — ส่งตรงนิติกร 3b-03 แนบสแกนฉบับลงนามจริงเอง
-         (เคสค้าง L3B_PENDING_CHAIRMAN_SIGN ย้ายมา 3b-03 ที่ ecmis-activity10.js) */
+      /* ผอ.กองเห็นชอบ = ล็อกฉบับ แล้วส่งธุรการออกเลข (2026-11-03 sheet D — ไม่พิมพ์ฉบับจริงที่หน้านี้แล้ว) */
       code: "LAW0097B",
       seq: 3,
       page: "10-3b-01b-legal-director-review-stay-objection.html",
       role: "dir_legal",
       roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "ธุรการออกเลขหนังสือคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_ADMIN_NUMBER",
+      nextRole: "admin_legal",
+      label: "ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน และล็อกฉบับส่งธุรการออกเลข",
+      stepName: "ผอ.กอง ตรวจร่าง",
+    },
+    {
+      /* 2026-11-03 sheet D 3.4 — ธุรการออกเลขหนังสือส่งออก + บันทึกเสนอ แล้วพิมพ์ฉบับจริงมีเลข */
+      code: "LAW0097C",
+      seq: 4,
+      page: "10-3b-02-legal-admin-number-stay-objection.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      status: "เลขาธิการตรวจร่างคำชี้แจงคัดค้าน",
+      statusCode: "L3B_PENDING_SECGEN_REVIEW",
+      nextRole: "secgen",
+      label: "ธุรการ ออกเลขหนังสือและบันทึกเสนอ พิมพ์ฉบับจริงเสนอเลขาธิการ",
+      stepName: "ธุรการ ออกเลข/พิมพ์",
+    },
+    {
+      /* 2026-11-03 sheet D 3.5 — เลขาธิการตรวจ (ไม่มอบรองเลขาธิการ) ประธานฯ ลงนามจริงบนกระดาษนอกระบบ */
+      code: "LAW0097D",
+      seq: 5,
+      page: "10-3b-02a-secgen-review-stay-objection.html",
+      role: "secgen",
+      roleTitle: "เลขาธิการคณะกรรมการ ป.ป.ท.",
       status: "นิติกรส่งคำชี้แจงคัดค้านต่อศาล",
       statusCode: "L3B_PENDING_LAWYER_DISPATCH",
       nextRole: "case_legal_officer",
-      label: "ผอ.กองกฎหมาย ตรวจร่างคำชี้แจงคัดค้าน และพิมพ์ฉบับจริงเสนอประธานฯ ลงนาม",
-      stepName: "ผอ.กอง ตรวจร่าง/พิมพ์",
+      label: "เลขาธิการ ตรวจร่างคำชี้แจงคัดค้าน เสนอประธานฯ ลงนามจริง (นอกระบบ)",
+      stepName: "เลขาธิการ ตรวจร่าง",
     },
     {
       code: "LAW0099",
-      seq: 4,
+      seq: 6,
       page: "10-3b-03-lawyer-dispatch-stay-objection.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
       status: "ส่งคำชี้แจงคัดค้านต่อศาลแล้ว",
       statusCode: "L3B_CLOSED",
+      nextRole: "admin_legal",
       label: "นิติกร ส่งคำชี้แจงคัดค้านต่อศาลปกครอง",
       stepName: "นิติกร ส่งคำชี้แจง",
     },
@@ -182,6 +207,13 @@
       assignedRole: "case_group_director",
       officer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
     },
+    /* 2026-11-03 — จาก 3b-02 (ธุรการ) และ 3b-02a (เลขาธิการ) กลับ ผอ.กอง 3b-01b */
+    DIRECTOR: {
+      label: "ส่งกลับ ผอ.กองกฎหมาย",
+      status: "ผอ.กองกฎหมายทบทวนร่างคำชี้แจงคัดค้าน (ส่งกลับ)",
+      statusCode: "L3B_PENDING_DIRECTOR_REVIEW",
+      assignedRole: "dir_legal",
+    },
   };
 
   /* ------------------------------------------------------------- PART 3
@@ -195,30 +227,95 @@
      เปลี่ยนหน้า — เลือก "ศาลยกคำขอ" ไม่ต้องเซ็น ปิดจบทันที (LAW0102) */
   const COURT_ORDER_STEPS = [
     {
-      /* หน้าเดียวรวม LAW0100 (รับคำสั่ง+จำแนก 2 ทาง) + LAW0101 (ทำคำอุทธรณ์
-         เมื่อเลือกทาง GRANTED) — statusCode ที่นี่เป็นแค่ค่าตั้งต้น (เหมือน
-         VERDICT_STEPS LAW0127/10-3v-06) สถานะจริงที่เขียนมาจาก
-         COURT_ORDER_BRANCHES ตามที่นิติกรเลือก */
+      /* 2026-11-03 sheet D 4.1 — ธุรการรับคำสั่งศาล + จำแนก 2 ทาง; statusCode ที่นี่เป็นแค่ค่าตั้งต้น
+         สถานะจริงมาจาก COURT_ORDER_BRANCHES (GRANTED → นิติกรร่างคำอุทธรณ์ / DENIED → ปิด) */
       code: "LAW0100_0101",
       seq: 1,
-      page: "10-3b-04-lawyer-court-order-intake.html",
+      page: "10-3b-04-legal-admin-court-order-intake.html",
+      role: "admin_legal",
+      roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
+      entryStatus: "L3B_CLOSED",
+      status: "นิติกรร่างคำอุทธรณ์คำสั่งทุเลา",
+      statusCode: "L3B2_PENDING_APPEAL_DRAFT",
+      nextRole: "case_legal_officer",
+      label: "ธุรการ รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี",
+      stepName: "ธุรการ รับคำสั่งศาล",
+    },
+    {
+      code: "LAW0101A",
+      seq: 2,
+      page: "10-3b-05-lawyer-draft-stay-appeal.html",
       role: "case_legal_officer",
       roleTitle: "นิติกร กลุ่มงานคดี",
-      entryStatus: "L3B_CLOSED",
-      status: "จัดทำคำอุทธรณ์คัดค้านคำสั่งศาลแล้ว",
+      status: "ผอ.กลุ่มงานคดีตรวจร่างคำอุทธรณ์คำสั่งทุเลา",
+      statusCode: "L3B2_PENDING_GROUP_REVIEW",
+      nextRole: "case_group_director",
+      label: "นิติกร ร่างคำอุทธรณ์คำสั่งทุเลาการบังคับคดี",
+      stepName: "นิติกร ร่างคำอุทธรณ์",
+    },
+    {
+      /* ผอ.กลุ่ม ไม่ลงนาม — ตรวจแล้วเสนอ ผอ.กอง */
+      code: "LAW0101B",
+      seq: 3,
+      page: "10-3b-06-group-director-review-stay-appeal.html",
+      role: "case_group_director",
+      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
+      status: "ผอ.กองกฎหมายลงนามคำอุทธรณ์คำสั่งทุเลา",
+      statusCode: "L3B2_PENDING_DIRECTOR_SIGN",
+      nextRole: "dir_legal",
+      label: "ผอ.กลุ่มงานคดี ตรวจร่างคำอุทธรณ์คำสั่งทุเลา และเสนอ ผอ.กอง",
+      stepName: "ผอ.กลุ่ม ตรวจร่าง",
+    },
+    {
+      code: "LAW0101C",
+      seq: 4,
+      page: "10-3b-07-legal-director-sign-stay-appeal.html",
+      role: "dir_legal",
+      roleTitle: "ผู้อำนวยการกองกฎหมาย",
+      status: "นิติกรส่งคำอุทธรณ์คำสั่งทุเลาต่อศาล",
+      statusCode: "L3B2_PENDING_LAWYER_FILE",
+      nextRole: "case_legal_officer",
+      label: "ผอ.กองกฎหมาย ลงนามคำอุทธรณ์คำสั่งทุเลาการบังคับคดี",
+      stepName: "ผอ.กอง ลงนาม",
+    },
+    {
+      code: "LAW0101D",
+      seq: 5,
+      page: "10-3b-08-lawyer-file-stay-appeal.html",
+      role: "case_legal_officer",
+      roleTitle: "นิติกร กลุ่มงานคดี",
+      status: "ส่งคำอุทธรณ์คำสั่งทุเลาต่อศาลปกครองแล้ว",
       statusCode: "L3B2_APPEAL_FILED",
-      label: "นิติกร รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี",
-      stepName: "นิติกร รับคำสั่งศาล/ดำเนินการ",
+      label: "นิติกร ส่งคำอุทธรณ์คำสั่งทุเลาต่อศาลปกครอง",
+      stepName: "นิติกร ส่งอุทธรณ์",
     },
   ];
+
+  /* ส่งกลับในสายอุทธรณ์คำสั่งทุเลา — 1 ขั้น ต้องระบุเหตุผลเสมอ
+     LAWYER: กลับนิติกร 3b-05 (จาก 3b-06) / GROUP: กลับ ผอ.กลุ่ม 3b-06 (จาก 3b-07) */
+  const COURT_ORDER_SENDBACK = {
+    LAWYER: {
+      label: "ส่งกลับนิติกร",
+      status: "นิติกรแก้ไขร่างคำอุทธรณ์คำสั่งทุเลา (ส่งกลับ)",
+      statusCode: "L3B2_PENDING_APPEAL_DRAFT",
+      assignedRole: "case_legal_officer",
+    },
+    GROUP: {
+      label: "ส่งกลับ ผอ.กลุ่มงาน",
+      status: "ผอ.กลุ่มงานคดีทบทวนร่างคำอุทธรณ์คำสั่งทุเลา (ส่งกลับ)",
+      statusCode: "L3B2_PENDING_GROUP_REVIEW",
+      assignedRole: "case_group_director",
+    },
+  };
 
   /* LAW0100 — 2 ทางหลังนิติกรจำแนกคำสั่งศาล (ยึด docs/10.3 mockup/flow-page-03.md)
      ทั้งสองทางเป็น terminal โดยตรง (ไม่มีหน้าถัดไปแยกต่างหากแล้ว) */
   const COURT_ORDER_BRANCHES = {
     GRANTED: {
       label: "ศาลมีคำสั่งให้ทุเลาการบังคับคดี",
-      status: "จัดทำคำอุทธรณ์คัดค้านคำสั่งศาลแล้ว",
-      statusCode: "L3B2_APPEAL_FILED",
+      status: "นิติกรร่างคำอุทธรณ์คำสั่งทุเลา",
+      statusCode: "L3B2_PENDING_APPEAL_DRAFT",
+      assignedRole: "case_legal_officer",
     },
     DENIED: {
       label: "ศาลยกคำขอทุเลาการบังคับคดี",
@@ -275,7 +372,7 @@
       /* 2026-10-22 ตัด 10-3-18 / 10-3-19 / 10-3-22 (ธุรการบันทึกผลลงนามจริง) — ฉบับลงนามจริงแนบครบที่ 10-3-13
          ธุรการออกเลขส่งภายใน + เลขส่งออก และบันทึกผู้ลงนามหนังสือนำส่ง แล้วส่งนิติกรรวบรวมเอกสาร (10-3-23) ทันที */
       autoExternalDocNo: true,
-      status: "นิติกรส่งเอกสารถึงอัยการ",
+      status: "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง",
       statusCode: "L3_PENDING_LAWYER_COLLECT_DOCS",
       label: "ธุรการกองกฎหมาย ออกเลขหนังสือส่งภายใน/ส่งออก และบันทึกผู้ลงนาม",
       stepName: "ธุรการ ออกเลขส่งภายใน",
@@ -289,8 +386,8 @@
       /* 2026-10-22 รวม 10-3-23 / 10-3-24 / 10-3-25 เป็นหน้าเดียว — แนบสแกนชุดเอกสาร + หลักฐานการส่ง (EMS) แล้วปิดขั้นตอน */
       status: "รอศาลมีคำพิพากษา",
       statusCode: "L3_AWAITING_JUDGMENT",
-      label: "นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง",
-      stepName: "นิติกร ส่งเอกสารถึงอัยการ",
+      label: "นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง และแนบหลักฐานการส่ง",
+      stepName: "นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง",
     },
   ];
 
@@ -715,26 +812,17 @@
       page: "10-3v-29-legal-admin-board-appeal-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กลุ่มงานเห็นชอบ (อุทธรณ์)",
-      statusCode: "L9A_PENDING_GROUP_APPROVE",
-      nextRole: "case_group_director",
-      nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+      status: "นิติกรร่างคำอุทธรณ์",
+      statusCode: "L9A_PENDING_LAWYER_DRAFT",
+      nextRole: "case_legal_officer",
+      nextOfficer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
       label: "ธุรการ รับหนังสือแจ้งมติบอร์ดเห็นชอบให้อุทธรณ์",
       stepName: "ธุรการ รับเรื่อง",
     },
     /* 10-3v-30-legal-director-assign2.html (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 — ขั้นก่อนหน้าส่งตรงถึง
        ผอ.กลุ่มงาน ดู docs/remove-dir-legal-assign/plan.md */
-    {
-      code: "LAW0154",
-      seq: 2,
-      page: "10-3v-31-group-director-assign2.html",
-      role: "case_group_director",
-      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "นิติกรร่างคำอุทธรณ์",
-      statusCode: "L9A_PENDING_LAWYER_DRAFT",
-      label: "ผอ.กลุ่มงานคดี พิจารณาเห็นชอบและมอบหมายนิติกรดำเนินการ",
-      stepName: "ผอ.กลุ่มงาน เห็นชอบ/มอบหมาย",
-    },
+    /* 2026-11-04 ตัด 10-3v-31 (ผอ.กลุ่มงาน เห็นชอบ/มอบหมาย) — ธุรการส่งนิติกรที่ 10-3v-32 ตรง
+       เก็บไฟล์ไว้ที่ _backup-remove-3v-31-39-20261104 */
     {
       code: "LAW0153_0156",
       seq: 3,
@@ -824,26 +912,17 @@
       page: "10-3v-37-legal-admin-no-appeal-intake.html",
       role: "admin_legal",
       roleTitle: "เจ้าหน้าที่ธุรการกองกฎหมาย",
-      status: "ผอ.กลุ่มงานมอบหมายนิติกร (ไม่อุทธรณ์)",
-      statusCode: "L9B_PENDING_GROUP_ASSIGN1",
-      nextRole: "case_group_director",
-      nextOfficer: "นายพิชัย เรืองศรี (ผู้อำนวยการกลุ่มงานคดี)",
+      status: "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
+      statusCode: "L9B_PENDING_LAWYER_INTAKE",
+      nextRole: "case_legal_officer",
+      nextOfficer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
       label: "ธุรการ รับหนังสือแจ้งมติบอร์ดเห็นชอบไม่อุทธรณ์",
       stepName: "ธุรการ รับเรื่อง",
     },
     /* 10-3v-38-legal-director-assign3.html (ผอ.กองกฎหมาย มอบหมาย) ถูกตัดออก 2026-10-14 — ขั้นก่อนหน้าส่งตรงถึง
        ผอ.กลุ่มงาน ดู docs/remove-dir-legal-assign/plan.md */
-    {
-      code: "L9B_GROUP_ASSIGN1",
-      seq: 2,
-      page: "10-3v-39-group-director-assign3.html",
-      role: "case_group_director",
-      roleTitle: "ผู้อำนวยการกลุ่มงานคดี",
-      status: "นิติกรจัดทำหนังสือแจ้งไม่อุทธรณ์",
-      statusCode: "L9B_PENDING_LAWYER_INTAKE",
-      label: "ผอ.กลุ่มงานคดี พิจารณาและมอบหมายนิติกรดำเนินการ",
-      stepName: "ผอ.กลุ่มงาน มอบหมาย",
-    },
+    /* 2026-11-04 ตัด 10-3v-39 (ผอ.กลุ่มงาน มอบหมาย) — ธุรการส่งนิติกรที่ 10-3v-40 ตรง
+       เก็บไฟล์ไว้ที่ _backup-remove-3v-31-39-20261104 */
     {
       code: "LAW0164_0167",
       seq: 3,
@@ -997,6 +1076,7 @@
     ROUTES[step.entryStatus || courtOrderPrevStatus] = step.page;
     courtOrderPrevStatus = step.statusCode;
   });
+  /* 2026-11-03 — 4.2-4.5 ต่อกันเป็นสายจาก 3b-04 (GRANTED); L3B2_APPEAL_FILED ปลายทางไม่มี route */
 
   let answerPrevStatus = STEPS[STEPS.length - 1].statusCode;
   ANSWER_STEPS.forEach(function (step) {
@@ -1123,7 +1203,6 @@
   /* หน้าสาย Branch A (มติบอร์ดเห็นชอบให้อุทธรณ์) ที่สร้างแล้วจริง */
   const BOARD_APPROVED_APPEAL_BUILT_PAGES = [
     "10-3v-29-legal-admin-board-appeal-intake.html",
-    "10-3v-31-group-director-assign2.html",
     "10-3v-32-lawyer-draft-appeal2.html",
     "10-3v-33-group-director-review-appeal2.html",
     "10-3v-34-legal-director-sign-appeal2.html",
@@ -1181,7 +1260,6 @@
   /* หน้าสาย Branch B (มติบอร์ดเห็นชอบไม่อุทธรณ์) ที่สร้างแล้วจริง */
   const BOARD_NO_APPEAL_BUILT_PAGES = [
     "10-3v-37-legal-admin-no-appeal-intake.html",
-    "10-3v-39-group-director-assign3.html",
     "10-3v-40-lawyer-no-appeal-intake.html",
     "10-3v-45-group-director-review3.html",
     "10-3v-46-legal-director-sign3.html",
@@ -1213,6 +1291,7 @@
     return [
       STEPS,
       STAY_STEPS,
+      COURT_ORDER_STEPS,
       ANSWER_STEPS,
       VERDICT_STEPS,
       APPEAL_STEPS,
@@ -1526,6 +1605,7 @@
     STEPS: STEPS,
     COURT_ORDER_STEPS: COURT_ORDER_STEPS,
     COURT_ORDER_BRANCHES: COURT_ORDER_BRANCHES,
+    COURT_ORDER_SENDBACK: COURT_ORDER_SENDBACK,
     ANSWER_STEPS: ANSWER_STEPS,
     STAY_STEPS: STAY_STEPS,
     COVER_SIGNER_ROUTES: COVER_SIGNER_ROUTES,
@@ -2858,7 +2938,7 @@
   const RENAMED_STATUS_TEXT = {
       "ธุรการออกเลขส่งและเสนอบอร์ด": "ธุรการเสนอมติตามลำดับชั้น",
       "ประธานกรรมการ ป.ป.ท. ลงนามคำชี้แจงคัดค้าน (บนกระดาษ) — นิติกรแนบฉบับลงนามจริงและส่งต่อศาล": "นิติกรส่งคำชี้แจงคัดค้านต่อศาล",
-      "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง (อัยการ) และแนบหลักฐานการส่ง": "นิติกรส่งเอกสารถึงอัยการ",
+      "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง และแนบหลักฐานการส่ง": "นิติกรส่งเอกสารถึงสำนักงานคดีปกครอง",
       "ส่งคำให้การแล้ว รอศาลปกครองมีคำพิพากษา": "รอศาลมีคำพิพากษา",
       "ผอ.กลุ่มงานพิจารณามอบหมายนิติกร (พิจารณาความเห็นควรอุทธรณ์)": "ผอ.กลุ่มงานมอบหมายนิติกร (พิจารณาอุทธรณ์)",
       "รอปิดสำนวน (LAW0163)": "รอปิดสำนวน",

@@ -32,6 +32,7 @@
   .box { background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:12px; overflow:hidden; }
   .box > summary { padding:10px 14px; cursor:pointer; font-weight:600; display:flex; gap:8px; align-items:center; list-style:none; }
   .box > summary::-webkit-details-marker { display:none; }
+  .box.flash { box-shadow:0 0 0 3px #f59e0b; transition:box-shadow .3s; }
   .box > summary .n { font-weight:400; font-size:12px; color:var(--muted); margin-left:auto; }
   .box[open] > summary { border-bottom:1px solid var(--line); }
   .graph { padding:10px; overflow:auto; text-align:center; max-height:780px; }
@@ -84,7 +85,7 @@
     <div style="margin-top:8px;font-size:.92em">
       <b>ปรับล่าสุด (พ.ย. 2569):</b>
       10.1 — ตัดหน้า 10/11/12, ผลมติบอร์ดเป็นช่องกรอกที่ค่าตั้งต้นมาให้ในหน้า 13 (แก้ได้ มีประวัติ) หลังผู้บริหารลงนามเข้าคิวนิติกรโดยตรง ·
-      10.2 — 10-2-03 เลือกบรรจุวาระ/ไม่บรรจุวาระ (ไม่บรรจุ = ไปสาขาเลย), 10-2-06 ให้เลขาฯ บันทึกมติรวมบันทึกผลมติเลขา, ตัด 04/05/07/33 ·
+      10.2 — 10-2-03 เลือกบรรจุวาระ/ไม่บรรจุวาระ (ไม่บรรจุ = ไปสาขาเลย และลงนามแล้วเปิดหน้าถัดไปทันที 15/22/25), ตัดหน้า 10-2-35/36 (ธุรการรับมติบอร์ดแล้วไป 10-2-11 → 37 → 13 → 14, หนังสือแจ้งส่งถึงกอง/สำนักที่ส่งคำร้อง), 10-3-04 เลือกเสนอบอร์ด/ไม่เสนอบอร์ด (ไม่เสนอ = ข้าม 07/08/09 และ B3 ไป 10-3-13, กด "เปลี่ยนเป็นเสนอบอร์ด" กลับ 04 ได้), รับเรื่องเพิ่มเติมเลือกคำขอทุเลามีลิงก์ไป 10-3b-01 และมีปุ่มเปิดเคสลูก -B, 10-2-06 ให้เลขาฯ บันทึกมติรวมบันทึกผลมติเลขา, ตัด 04/05/07/33 ·
       ทุกกิจกรรม — ผู้รับงานคนแรก (นิติกร / เลขาฯ) แก้ข้อมูลที่ธุรการกรอกตอนรับเรื่องได้ · ลิงก์หน้านี้อยู่ในเมนูสลับบทบาท
     </div>
     <div class="legend">
@@ -149,7 +150,7 @@
           c02: { t: "s", l: "02 ธุรการ รับคำขอ", r: "admin_legal", p: "02-board-intake.html" },
           c01: { t: "s", l: "10-2-01 ผอ.กอง มอบหมาย", r: "dir_legal", p: "10-2-01-legal-director-assign.html" },
           c02b: { t: "s", l: "10-2-02 ผอ.กลุ่ม มอบหมาย", r: "group_director", p: "10-2-02-group-director-assign.html" },
-          c03: { t: "s", l: "10-2-03 ฝ่ายเลขาฯ รายงานความเห็น + เลือกบรรจุวาระ (แก้ข้อมูลรับเรื่องได้)", r: "sub_secretariat", p: "10-2-03-secretariat-opinion.html" },
+          c03: { t: "s", l: "10-2-03 ฝ่ายเลขาฯ รายงานความเห็น + เลือกบรรจุวาระ (แก้ข้อมูลรับเรื่องได้) · ไม่บรรจุ+ลงนาม = เปิดหน้าถัดไปทันที (15/22/25) ไม่กลับกล่องงาน", r: "sub_secretariat", p: "10-2-03-secretariat-opinion.html" },
           c06: { t: "s", l: "10-2-06 ฝ่ายเลขาฯ บันทึกมติ + บันทึกผลมติเลขา", r: "sub_secretariat", p: "10-2-06-subcommittee-resolution.html" },
           c08: { t: "s", l: "10-2-08 ผอ.กอง ความเห็น (๕)", r: "dir_legal", p: "10-2-08-legal-director-propose.html" },
           c09: { t: "j", l: "10-2-09 ธุรการ ออกเลขส่ง เลือกผู้บริหาร", r: "admin_legal", p: "10-2-09-legal-admin-dispatch.html" },
@@ -168,12 +169,10 @@
           f29: { t: "s", l: "10-2-29 ธุรการ ออกเลขส่ง เสนอรองเลขาฯ", r: "admin_legal", p: "10-2-29-legal-admin-committee-dispatch.html" },
           b2: { t: "x", l: "บอร์ดมีมติรอบ 2 (ป๊อปอัป B2)" },
           f30: { t: "s", l: "10-2-30 ธุรการ รับมติบอร์ด", r: "admin_legal", p: "10-2-30-legal-admin-receive-board-round2.html" },
-          f35: { t: "s", l: "10-2-35 ผอ.กอง รับทราบมติ", r: "dir_legal", p: "10-2-35-legal-director-board-ack.html" },
-          f36: { t: "s", l: "10-2-36 ผอ.กลุ่ม รับทราบมติ", r: "group_director", p: "10-2-36-group-director-board-ack.html" },
           g11: { t: "s", l: "10-2-11 ฝ่ายเลขาฯ ร่างหนังสือแจ้งมติ", r: "sub_secretariat", p: "10-2-11-secretariat-disclose-partial-notice-draft.html" },
           g37: { t: "s", l: "10-2-37 ผอ.กลุ่ม ความเห็น ลงนาม", r: "group_director", p: "10-2-37-group-director-notice-review.html" },
           g13: { t: "s", l: "10-2-13 ผอ.กอง ตรวจ ลงนาม", r: "dir_legal", p: "10-2-13-legal-director-disclose-partial-notice-sign.html" },
-          g14: { t: "s", l: "10-2-14 ธุรการ ออกเลขส่ง แจ้งผู้ยื่นคำขอ", r: "admin_legal", p: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html" },
+          g14: { t: "s", l: "10-2-14 ธุรการ ออกเลขส่ง แจ้งกอง/สำนักที่ส่งคำร้อง", r: "admin_legal", p: "10-2-14-legal-admin-disclose-partial-notice-dispatch.html" },
           end: { t: "e", l: "จบ (อุทธรณ์ได้ ดูแผนผังอุทธรณ์)" },
         },
         edges: [
@@ -181,8 +180,7 @@
           "c09-- รองเลขาฯ -->c32", "c09-- เลขาธิการ -->c31", "c32-->c10", "c31-->c10",
           "c10-- ไม่อนุญาต -->d15", "d15-->d16", "d16-->d17", "d17-->end",
           "c10-- เปิดเผย และคดีเสร็จสิ้น -->e22", "e22-->e23", "e23-->e24", "e24-->end",
-          "c10-- เปิดเผย และอยู่ระหว่างไต่สวน -->f25", "f25-->f27", "f27-->f26", "f26-->f29", "f29-->b2", "b2-->f30", "f30-->f35", "f35-->f36",
-          "f36-->g11", "g11-->g37", "g37-->g13", "g13-->g14", "g14-->end",
+          "c10-- เปิดเผย และอยู่ระหว่างไต่สวน -->f25", "f25-->f27", "f27-->f26", "f26-->f29", "f29-->b2", "b2-->f30", "f30-->g11", "g11-->g37", "g37-->g13", "g13-->g14", "g14-->end",
         ],
       }, {
         title: "10.2 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล",
@@ -205,10 +203,11 @@
     {
       id: "103", name: "กิจกรรม 10.3 คดีปกครอง", color: "var(--a3)",
       graphs: [{
-        title: "10.3 รับคำฟ้อง คำให้การ และคัดค้านทุเลา (เคสลูก -B)",
+        key: "103main",
+        title: "10.3 รับคำฟ้อง และคำให้การ (สายหลัก)",
         nodes: {
           m02: { t: "s", l: "02 ธุรการ รับคดีปกครอง", r: "admin_legal", p: "02-board-intake.html" },
-          m3a: { t: "s", l: "10-3-02 ผอ.กอง มอบหมาย", r: "dir_legal", p: "10-3-02-legal-director-assign.html" },
+          m3a: { t: "s", l: "10-3-02 ผอ.กอง ลงนามมอบหมาย", r: "dir_legal", p: "10-3-02-legal-director-assign.html" },
           m3b: { t: "s", l: "10-3-03 ผอ.กลุ่มงานคดี มอบหมายนิติกร", r: "case_group_director", p: "10-3-03-group-director-assign.html" },
           m04: { t: "j", l: "10-3-04 นิติกร ตรวจคำฟ้อง ทำความเห็น", r: "case_legal_officer", p: "10-3-04-lawyer-review-complaint.html" },
           m07: { t: "s", l: "10-3-07 ผอ.กลุ่มงานคดี เห็นชอบ", r: "case_group_director", p: "10-3-07-group-director-approve.html" },
@@ -219,24 +218,57 @@
           m15: { t: "s", l: "10-3-15 ผอ.กลุ่มงานคดี ตรวจร่าง", r: "case_group_director", p: "10-3-15-group-director-review-answer.html" },
           m16: { t: "s", l: "10-3-16 ผอ.กอง ตรวจร่าง", r: "dir_legal", p: "10-3-16-legal-director-review-answer.html" },
           m17: { t: "s", l: "10-3-17 ธุรการ ออกเลข", r: "admin_legal", p: "10-3-17-legal-admin-internal-dispatch-answer.html" },
-          m23: { t: "s", l: "10-3-23 นิติกร ส่งเอกสารถึงอัยการ", r: "case_legal_officer", p: "10-3-23-lawyer-collect-documents.html" },
+          m23: { t: "s", l: "10-3-23 นิติกร ส่งเอกสารถึงสำนักงานคดีปกครอง", r: "case_legal_officer", p: "10-3-23-lawyer-collect-documents.html" },
           x6: { t: "x", l: "ศาลปกครองชั้นต้นพิพากษา" },
           tov: { t: "e", l: "ไปแผนผังคำพิพากษา (10-3v-00)" },
+          tst: { t: "e", l: "ไปแผนผัง ทุเลา (เคสลูก -B) — คลิก", go: "103stay" },
+          tad: { t: "e", l: "ไปแผนผัง รับเรื่องเพิ่มเติม — คลิก", go: "103add" },
+        },
+        edges: [
+          "m02-->m3a", "m3a-->m3b", "m3b-->m04", "m04-- เสนอบอร์ด -->m07", "m07-->m08", "m08-->m09", "m09-->b3", "b3-->m13",
+          "m13-->m15", "m15-->m16", "m16-->m17", "m17-->m23", "m23-->x6", "x6-->tov",
+          "m04-. มีคำขอทุเลา สร้างเคสลูก .->tst", "m04-. ไม่เสนอบอร์ด (ข้าม 07-09 + B3) .->m13", "m13-. เปลี่ยนเป็นเสนอบอร์ด .->m04",
+          "m04-. รับเรื่องเพิ่มเติมได้ทุกขั้นก่อนพิพากษา .->tad",
+        ],
+      }, {
+        key: "103stay",
+        title: "10.3 ทุเลา — คัดค้านคำขอ และอุทธรณ์คำสั่งทุเลา (เคสลูก -B)",
+        nodes: {
+          sfrom: { t: "e", l: "กลับแผนผังสายหลัก (จาก 10-3-04 มีคำขอทุเลา → สร้างเคสลูก) — คลิก", go: "103main" },
           s01: { t: "s", l: "10-3b-01 นิติกร ร่างคำชี้แจงคัดค้าน", r: "case_legal_officer", p: "10-3b-01-lawyer-draft-stay-objection.html" },
           s1a: { t: "j", l: "10-3b-01a ผอ.กลุ่มงานคดี ตรวจร่าง", r: "case_group_director", p: "10-3b-01a-group-director-review-stay-objection.html" },
-          s1b: { t: "j", l: "10-3b-01b ผอ.กอง ตรวจร่าง พิมพ์เสนอประธานฯ", r: "dir_legal", p: "10-3b-01b-legal-director-review-stay-objection.html" },
+          s1b: { t: "j", l: "10-3b-01b ผอ.กอง ตรวจร่าง", r: "dir_legal", p: "10-3b-01b-legal-director-review-stay-objection.html" },
+          s02: { t: "s", l: "10-3b-02 ธุรการ ออกเลข (ส่งออก ปป0001 + บันทึกเสนอ ปป0002) พิมพ์ฉบับจริง", r: "admin_legal", p: "10-3b-02-legal-admin-number-stay-objection.html" },
+          s2a: { t: "j", l: "10-3b-02a เลขาธิการ ตรวจร่าง (ไม่มอบรองเลขาธิการ)", r: "secgen", p: "10-3b-02a-secgen-review-stay-objection.html" },
+          xc: { t: "x", l: "ประธาน ป.ป.ท. ลงนามจริงบนกระดาษ (นอกระบบ)" },
           s03: { t: "j", l: "10-3b-03 นิติกร ส่งคำชี้แจงต่อศาล", r: "case_legal_officer", p: "10-3b-03-lawyer-dispatch-stay-objection.html" },
           xs: { t: "x", l: "ศาลมีคำสั่งเรื่องทุเลา" },
-          s04: { t: "s", l: "10-3b-04 นิติกร รับคำสั่งศาล", r: "case_legal_officer", p: "10-3b-04-lawyer-court-order-intake.html" },
+          s04: { t: "s", l: "10-3b-04 ธุรการ รับคำสั่งศาล (ศาลให้ทุเลา/ยกคำขอ)", r: "admin_legal", p: "10-3b-04-legal-admin-court-order-intake.html" },
+          s05: { t: "s", l: "10-3b-05 นิติกร ร่างคำอุทธรณ์คำสั่งทุเลา", r: "case_legal_officer", p: "10-3b-05-lawyer-draft-stay-appeal.html" },
+          s06: { t: "j", l: "10-3b-06 ผอ.กลุ่ม ตรวจร่าง เสนอ ผอ.กอง (ไม่ลงนาม)", r: "case_group_director", p: "10-3b-06-group-director-review-stay-appeal.html" },
+          s07: { t: "j", l: "10-3b-07 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3b-07-legal-director-sign-stay-appeal.html" },
+          s08: { t: "s", l: "10-3b-08 นิติกร ส่งคำอุทธรณ์ต่อศาลปกครอง", r: "case_legal_officer", p: "10-3b-08-lawyer-file-stay-appeal.html" },
           send: { t: "e", l: "จบ (เคสลูก)" },
         },
         edges: [
-          "m02-->m3a", "m3a-->m3b", "m3b-->m04", "m04-->m07", "m07-->m08", "m08-->m09", "m09-->b3", "b3-->m13",
-          "m13-->m15", "m15-->m16", "m16-->m17", "m17-->m23", "m23-->x6", "x6-->tov",
-          "m04-. มีคำขอทุเลา สร้างเคสลูก .->s01", "s01-->s1a", "s1a-. ส่งกลับ .->s01", "s1a-->s1b", "s1b-. ส่งกลับ .->s1a",
-          "s1b-->s03", "s03-. ประธานฯ ไม่ลงนาม .->s01", "s03-->xs", "xs-->s04", "s04-->send",
+          "sfrom-->s01", "s01-->s1a", "s1a-. ส่งกลับ .->s01", "s1a-->s1b", "s1b-. ส่งกลับ .->s1a",
+          "s1b-->s02", "s02-. ส่งกลับ .->s1b", "s02-->s2a", "s2a-. ส่งกลับ .->s1b", "s2a-->xc", "xc-->s03", "s03-. ประธานฯ ไม่ลงนาม .->s01", "s03-->xs", "xs-->s04",
+          "s04-->s05", "s04-. ศาลยกคำขอ .->send", "s05-->s06", "s06-. ส่งกลับ .->s05", "s06-->s07", "s07-. ส่งกลับ .->s06", "s07-->s08", "s08-->send",
         ],
       }, {
+        key: "103add",
+        title: "10.3 รับเรื่องเพิ่มเติม (ศาลสั่งให้ทำเอกสารเพิ่มเติม)",
+        nodes: {
+          afrom: { t: "e", l: "กลับแผนผังสายหลัก (รับได้ทุกขั้นก่อนพิพากษา สถานะ L3_*) — คลิก", go: "103main" },
+          ai: { t: "s", l: "10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม", r: "admin_legal", p: "10-3-add-intake.html" },
+          aa: { t: "s", l: "10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง", r: "case_legal_officer", p: "10-3-add-additional.html" },
+          aend: { t: "e", l: "จบ กลับเคสหลัก" },
+        },
+        edges: [
+          "afrom-->ai", "ai-->aa", "aa-->aend",
+        ],
+      }, {
+        key: "103verdict",
         title: "10.3 คำพิพากษา และทางอุทธรณ์",
         nodes: {
           v00: { t: "j", l: "10-3v-00 ธุรการ รับคำพิพากษา (เลือกชั้นศาล)", r: "admin_legal", p: "10-3v-00-legal-admin-verdict-intake.html" },
@@ -265,14 +297,12 @@
           v28: { t: "s", l: "10-3v-28 ธุรการ เสนอมติตามลำดับชั้น", r: "admin_legal", p: "10-3v-28-legal-admin-board-propose.html" },
           b5: { t: "x", l: "บอร์ดมีมติ (ป๊อปอัป B5)" },
           v29: { t: "s", l: "10-3v-29 ธุรการ รับมติให้อุทธรณ์", r: "admin_legal", p: "10-3v-29-legal-admin-board-appeal-intake.html" },
-          v31: { t: "s", l: "10-3v-31 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-31-group-director-assign2.html" },
           v32: { t: "s", l: "10-3v-32 นิติกร ร่างคำอุทธรณ์", r: "case_legal_officer", p: "10-3v-32-lawyer-draft-appeal2.html" },
           v33: { t: "s", l: "10-3v-33 ผอ.กลุ่มงานคดี เห็นชอบ (ไม่ลงนาม)", r: "case_group_director", p: "10-3v-33-group-director-review-appeal2.html" },
           v34: { t: "s", l: "10-3v-34 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-34-legal-director-sign-appeal2.html" },
           v35: { t: "s", l: "10-3v-35 ธุรการ ออกเลขส่ง", r: "admin_legal", p: "10-3v-35-legal-admin-dispatch2.html" },
           v36: { t: "s", l: "10-3v-36 นิติกร ส่งคำอุทธรณ์ ดาวน์โหลดเอกสาร", r: "case_legal_officer", p: "10-3v-36-lawyer-send-appeal2.html" },
           v37: { t: "s", l: "10-3v-37 ธุรการ รับมติไม่อุทธรณ์", r: "admin_legal", p: "10-3v-37-legal-admin-no-appeal-intake.html" },
-          v39: { t: "s", l: "10-3v-39 ผอ.กลุ่มงานคดี มอบหมาย", r: "case_group_director", p: "10-3v-39-group-director-assign3.html" },
           v40: { t: "s", l: "10-3v-40 นิติกร จัดทำหนังสือ", r: "case_legal_officer", p: "10-3v-40-lawyer-no-appeal-intake.html" },
           v45: { t: "s", l: "10-3v-45 ผอ.กลุ่มงานคดี ตรวจหนังสือ", r: "case_group_director", p: "10-3v-45-group-director-review3.html" },
           v46: { t: "s", l: "10-3v-46 ผอ.กอง ลงนาม", r: "dir_legal", p: "10-3v-46-legal-director-sign3.html" },
@@ -290,8 +320,8 @@
           "v06-- เพิกถอนคำสั่ง หรือคำพิพากษาอื่น -->v18", "v18-->v19", "v19-->v20",
           "v20-- เห็นควรอุทธรณ์ -->v22", "v22-->v23", "v23-->v24", "v24-->v25", "v25-->xsup",
           "v20-- เห็นควรไม่อุทธรณ์ -->v26", "v26-->v27", "v27-->v28", "v28-->b5",
-          "b5-- ให้อุทธรณ์ -->v29", "v29-->v31", "v31-->v32", "v32-->v33", "v33-->v34", "v34-->v35", "v35-->v36", "v36-->xsup",
-          "b5-- ไม่อุทธรณ์ -->v37", "v37-->v39", "v39-->v40", "v40-->v45", "v45-->v46", "v46-->v47", "v47-->v48", "v48-->end",
+          "b5-- ให้อุทธรณ์ -->v29", "v29-->v32", "v32-->v33", "v33-->v34", "v34-->v35", "v35-->v36", "v36-->xsup",
+          "b5-- ไม่อุทธรณ์ -->v37", "v37-->v40", "v40-->v45", "v45-->v46", "v46-->v47", "v47-->v48", "v48-->end",
           "xsup-->fin",
         ],
       }],
@@ -313,6 +343,15 @@
 
   /* node id ของ mermaid ต้องไม่ซ้ำข้ามแผนผัง — เติม prefix ตามลำดับแผนผัง */
   const NODE_INDEX = {};
+  const JUMP_INDEX = {};
+  window.jumpTo = function (nid) {
+    const el = document.getElementById("gr-" + JUMP_INDEX[nid]);
+    if (!el) return;
+    el.open = true;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.classList.add("flash");
+    setTimeout(() => el.classList.remove("flash"), 1600);
+  };
   function mermaidText(g, gi) {
     const pre = "g" + gi + "_";
     const lines = ["flowchart TD"];
@@ -328,6 +367,10 @@
       if (n.p) {
         NODE_INDEX[nid] = Object.assign({ act: g.act }, n);
         lines.push("  click " + nid + " goNode");
+      } else if (n.go) {
+        /* กล่องลิงก์ข้ามแผนผัง (main ↔ sub) — คลิกแล้วเลื่อนไปการ์ดแผนผังปลายทาง */
+        JUMP_INDEX[nid] = n.go;
+        lines.push("  click " + nid + " jumpTo");
       }
     });
     g.edges.forEach((e) => {
@@ -444,7 +487,7 @@
         g.act = a.id;
         GRAPHS[idx] = g;
         const steps = Object.values(g.nodes).filter((n) => n.p).length;
-        return '<details class="box" open><summary><i class="fa-solid fa-diagram-project"></i> แผนผัง: ' + esc(g.title) +
+        return '<details class="box"' + (g.key ? ' id="gr-' + g.key + '"' : "") + ' open><summary><i class="fa-solid fa-diagram-project"></i> แผนผัง: ' + esc(g.title) +
           '<span class="n">' + steps + ' ขั้นในระบบ</span></summary><div class="graph"><pre class="mermaid">' + esc(mermaidText(g, idx)) + "</pre></div></details>" +
           '<details class="box lane"><summary><i class="fa-solid fa-list-ol"></i> รายการขั้น: ' + esc(g.title) +
           '<span class="n">' + steps + " ขั้น</span></summary>" + listHtml(g, idx) + "</details>";

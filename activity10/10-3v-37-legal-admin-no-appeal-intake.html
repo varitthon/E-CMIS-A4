@@ -189,7 +189,7 @@
             <div class="form-actions">
               <a href="01-work-inbox.html" class="btn btn-secondary">ยกเลิก</a>
               <button type="button" class="btn btn-primary" onclick="submitForm()">
-                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ ผอ.กลุ่มงานคดี
+                <i class="fa-solid fa-paper-plane me-1"></i>บันทึก และ ส่งต่อ นิติกร
               </button>
             </div>
           </div>
@@ -298,8 +298,8 @@
 
         Swal.fire({
           icon: "question",
-          title: "ยืนยัน และ เสนอ ผอ.กลุ่มงานคดี",
-          text: "บันทึกรับเรื่อง และส่งต่อ ผอ.กลุ่มงานคดีพิจารณามอบหมายนิติกร",
+          title: "ยืนยัน และ ส่งต่อนิติกร",
+          text: "บันทึกรับเรื่อง และส่งต่อนิติกรดำเนินการต่อทันที",
           showCancelButton: true,
           confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
@@ -308,11 +308,13 @@
         }).then((res) => {
           if (!res.isConfirmed) return;
           Activity103.advance(currentCase.id, STEP_CODE, {
+            assignedRole: "case_legal_officer",
+            officer: "นายกิตติศักดิ์ แสงทอง (นิติกร กลุ่มงานคดี)",
             l9bReceiveNo: receiveNo,
             l9bReceiveDate: receiveDate,
             l9bIntakeNotes: notes,
           });
-          doneAndBack("บันทึกและส่งเสนอ ผอ.กลุ่มงานคดีเรียบร้อยแล้ว");
+          doneAndBack("บันทึกและส่งต่อนิติกรเรียบร้อยแล้ว");
         });
       }
 

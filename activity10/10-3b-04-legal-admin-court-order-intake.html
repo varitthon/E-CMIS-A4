@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>นิติกร รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3</title>
+    <title>ธุรการ รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี | E-CMIS กิจกรรมที่ 10.3</title>
     <link rel="icon" type="image/png" href="pacc_logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -328,7 +328,7 @@
           <div class="breadcrumb">
             <span><i class="fa-solid fa-house" aria-hidden="true"></i> หน้าแรก</span> / <span>คดีปกครอง</span> /
             <span style="color: var(--text-title); font-weight: 600"
-              >นิติกร รับคำสั่งศาลเรื่องทุเลาการบังคับคดี</span
+              >ธุรการ รับคำสั่งศาลเรื่องทุเลาการบังคับคดี</span
             >
           </div>
         </div>
@@ -471,7 +471,7 @@
                 >รับคำวินิจฉัย/คำสั่งศาลปกครองเรื่องทุเลาการบังคับคดี</span
               >
               <span class="badge" style="background: #1e3a8a; color: #fff"
-                ><i class="fa-solid fa-user-tie me-1"></i>นิติกร</span
+                ><i class="fa-solid fa-user-tie me-1"></i>ธุรการกองกฎหมาย</span
               >
             </div>
             <div class="form-card-body">
@@ -558,7 +558,7 @@
                         >ศาลมีคำสั่งให้ทุเลาการบังคับคดี
                       </div>
                       <div style="font-size: 0.78em; color: #64748b">
-                        → ทำคำอุทธรณ์คัดค้านคำสั่งศาล
+                        → ส่งนิติกรร่างคำอุทธรณ์คำสั่งทุเลา
                       </div>
                     </div>
                   </label>
@@ -590,65 +590,6 @@
                       </div>
                     </div>
                   </label>
-                </div>
-              </div>
-
-              <div id="grp_appealFields" class="d-none">
-                <div
-                  class="l3-note l3-note-warn"
-                  style="margin-bottom: 16px"
-                >
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                  <div>
-                    ศาลมีคำสั่งให้ทุเลาการบังคับคดี — กรุณาแนบหนังสืออุทธรณ์
-                    คัดค้านคำสั่งศาล และลงนามเพื่อยื่นอุทธรณ์
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label
-                    >แนบหนังสืออุทธรณ์คัดค้านคำสั่งศาล
-                    <span style="color: #dc2626">*</span></label
-                  >
-                  <div class="upload-box">
-                    <input
-                      type="file"
-                      id="in_appealDoc"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                      multiple
-                      onchange="handleAppealDocChange(this)"
-                    />
-                  </div>
-                  <div id="appealDocList" style="margin-top: 8px"></div>
-                  <div
-                    class="info-box"
-                    style="margin-top: 10px; margin-bottom: 0"
-                  >
-                    <div>
-                      <b>ข้อกำหนดการแนบไฟล์:</b><br />
-                      • ประเภทไฟล์ที่รองรับ: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG<br />
-                      • ขนาดไฟล์สูงสุด: ไม่เกิน 100 MB ต่อไฟล์
-                      (แนบได้หลายไฟล์)
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label
-                    >แนบเอกสารประกอบ
-                    <span style="font-weight: 400; color: #64748b"
-                      >(ถ้ามี)</span
-                    ></label
-                  >
-                  <div class="upload-box">
-                    <input
-                      type="file"
-                      id="in_appealSupporting"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                      multiple
-                      onchange="handleAppealSupportingChange(this)"
-                    />
-                  </div>
-                  <div id="appealSupportingList" style="margin-top: 8px"></div>
                 </div>
               </div>
 
@@ -700,8 +641,6 @@
       const STEP = Activity103.stepByCode(STEP_CODE);
       let currentCase = null;
       let orderFiles = [];
-      let appealDocFiles = [];
-      let appealSupportingFiles = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         ECMIS103.initUserProfile();
@@ -716,7 +655,9 @@
         });
       });
 
-      /* ขั้นก่อนหน้าคือ LAW0099 (นิติกร ส่งศาล/ปิดสำนวน ที่ 10-3b-03) เข้าที่
+      /* 2026-11-03 sheet D 4.1 — ธุรการรับคำสั่งศาลและจำแนกผล (เดิมนิติกร); ไม่มีช่องแนบคำอุทธรณ์/ลงนามแล้ว
+         GRANTED → นิติกรร่างคำอุทธรณ์ 3b-05, DENIED → ปิด (L3B2_CLOSED)
+         ขั้นก่อนหน้าคือ LAW0099 (นิติกร ส่งศาล/ปิดสำนวน ที่ 10-3b-03) เข้าที่
          L3B_CLOSED — เหมือนหน้าอื่นใน STAY_STEPS/COURT_ORDER_STEPS ระบุ
          statusCode ของขั้นก่อนหน้าตรงๆ */
       function loadCase() {
@@ -822,93 +763,11 @@
         document.getElementById("label_branch_denied").className =
           key === "DENIED" ? "decision-card active-denied" : "decision-card";
 
-        document
-          .getElementById("grp_appealFields")
-          .classList.toggle("d-none", key !== "GRANTED");
         document.getElementById("btnSubmit").innerHTML =
           key === "GRANTED"
-            ? '<i class="fa-solid fa-pen-nib me-1"></i>ลงนาม และ ยื่นคำอุทธรณ์'
+            ? '<i class="fa-solid fa-paper-plane me-1"></i>บันทึกผล และ ส่งนิติกรร่างคำอุทธรณ์'
             : '<i class="fa-solid fa-paper-plane me-1"></i>บันทึกผลคำสั่งศาล';
       }
-
-      function makeAttachHandler(arrRef, listElId) {
-        return function (input) {
-          if (!input.files || !input.files.length) return;
-          const maxSizeBytes = 100 * 1024 * 1024;
-          const allowedExts = ["pdf", "doc", "docx", "xls", "xlsx", "png", "jpg", "jpeg"];
-          Array.from(input.files).forEach((file) => {
-            const ext = file.name.split(".").pop().toLowerCase();
-            if (!allowedExts.includes(ext)) {
-              Swal.fire({
-                icon: "warning",
-                title: "ชนิดไฟล์ไม่ถูกต้อง",
-                text: `ไฟล์ "${file.name}" ไม่ใช่ชนิดที่รองรับ (PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG)`,
-                confirmButtonColor: "#1e3a8a",
-              });
-              return;
-            }
-            if (file.size > maxSizeBytes) {
-              const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2);
-              Swal.fire({
-                icon: "warning",
-                title: "ขนาดไฟล์เกินกำหนด",
-                text: `ไฟล์ "${file.name}" มีขนาด ${fileSizeMb} MB เกินกำหนดสูงสุด 100 MB`,
-                confirmButtonColor: "#1e3a8a",
-              });
-              return;
-            }
-            arrRef.push(file);
-          });
-          input.value = "";
-          renderAttachList(arrRef, listElId);
-        };
-      }
-
-      function renderAttachList(arrRef, listElId) {
-        const listEl = document.getElementById(listElId);
-        if (!listEl) return;
-        if (!arrRef.length) {
-          listEl.innerHTML = "";
-          return;
-        }
-        listEl.innerHTML = arrRef
-          .map((file, idx) => {
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            return (
-              '<div class="l3-attachment-row">' +
-              '<div class="l3-attachment-name"><i class="fa-solid fa-paperclip me-2"></i>' +
-              file.name +
-              ' <span style="color: #94a3b8">(' +
-              sizeMb +
-              ' MB)</span></div>' +
-              '<button type="button" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 0.8em" onclick="removeAppealAttach(\'' +
-              listElId +
-              "', " +
-              idx +
-              ')"><i class="fa-solid fa-trash-can"></i></button>' +
-              "</div>"
-            );
-          })
-          .join("");
-      }
-
-      function removeAppealAttach(listElId, index) {
-        const arrRef =
-          listElId === "appealDocList"
-            ? appealDocFiles
-            : appealSupportingFiles;
-        arrRef.splice(index, 1);
-        renderAttachList(arrRef, listElId);
-      }
-
-      const handleAppealDocChange = makeAttachHandler(
-        appealDocFiles,
-        "appealDocList",
-      );
-      const handleAppealSupportingChange = makeAttachHandler(
-        appealSupportingFiles,
-        "appealSupportingList",
-      );
 
       function doneAndBack(text) {
         Swal.fire({
@@ -969,45 +828,6 @@
           l3CourtStayIntakeNotes: notes,
         };
 
-        if (selectedBranchKey === "GRANTED") {
-          if (!appealDocFiles.length) {
-            Swal.fire({
-              icon: "warning",
-              title: "ข้อมูลไม่ครบถ้วน",
-              text: "กรุณาแนบหนังสืออุทธรณ์คัดค้านคำสั่งศาล",
-              confirmButtonColor: "#1e3a8a",
-            });
-            return;
-          }
-          ECMIS103.openSignatureModal(
-            {
-              title: "ลงนามยื่นคำอุทธรณ์คัดค้านคำสั่งศาล",
-              signer: ECMIS103.signerLabel("case_legal_officer"),
-              certId: "PACC-CASELEGAL-2569-103B2",
-            },
-            (image) => {
-              Activity103.sign(currentCase.id, STEP_CODE, image);
-              Activity103.advance(
-                currentCase.id,
-                STEP_CODE,
-                Object.assign({}, intakePatch, {
-                  status: branch.status,
-                  statusCode: branch.statusCode,
-                  l3CourtStayAppealAttachments: appealDocFiles.map(
-                    (f) => f.name,
-                  ),
-                  l3CourtStayAppealSupportingAttachments:
-                    appealSupportingFiles.map((f) => f.name),
-                }),
-              );
-              doneAndBack(
-                "ลงนามและยื่นคำอุทธรณ์คัดค้านคำสั่งศาลเรียบร้อยแล้ว — จบขั้นตอนของกิจกรรมที่ 10.3 (สายมีคำสั่งทุเลา)",
-              );
-            },
-          );
-          return;
-        }
-
         Swal.fire({
           icon: "question",
           title: "ยืนยันบันทึกผลคำสั่งศาล",
@@ -1030,9 +850,14 @@
             Object.assign({}, intakePatch, {
               status: branch.status,
               statusCode: branch.statusCode,
+              assignedRole: branch.assignedRole || "admin_legal",
             }),
           );
-          doneAndBack("บันทึกผลคำสั่งศาลเรียบร้อยแล้ว — สถานะ: " + branch.status);
+          doneAndBack(
+            selectedBranchKey === "GRANTED"
+              ? "บันทึกผลคำสั่งศาลเรียบร้อยแล้ว — ส่งนิติกรร่างคำอุทธรณ์คำสั่งทุเลา"
+              : "บันทึกผลคำสั่งศาลเรียบร้อยแล้ว — สถานะ: " + branch.status,
+          );
         });
       }
 
