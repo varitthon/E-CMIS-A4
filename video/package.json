@@ -1,0 +1,21 @@
+{
+  "name": "ecmis-demo-video",
+  "private": true,
+  "description": "Playwright scripts that record client demo videos of the E-CMIS activity10 flows (see docs/activity10-flow-*.md)",
+  "type": "commonjs",
+  "scripts": {
+    "record:10.1": "node flows/run-10.1.js",
+    "record:10.2": "node flows/run-10.2.js",
+    "record:10.2-appeal": "node flows/run-10.2-appeal.js",
+    "record:10.3": "node flows/run-10.3.js",
+    "captions:10.3": "node -e \"process.env.DEMO_CAPTIONS='1';require('./flows/run-10.3.js')\"",
+    "dry:10.3": "node -e \"Object.assign(process.env,{DEMO_FAST:'1',DEMO_NOVIDEO:'1',DEMO_SHOTS:'1'});process.argv[2]=process.argv[2]||'all';require('./flows/run-10.3.js')\"",
+    "deliver": "node deliver.js",
+    "capture": "node tools/capture-screens.js"
+  },
+  "devDependencies": {
+    "markdown-it": "^14.3.2",
+    "mermaid": "^11.17.2",
+    "playwright": "^1.63.0"
+  }
+}

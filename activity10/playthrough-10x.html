@@ -66,7 +66,43 @@
   .lane.hovering li.hl { background:#fffbeb; box-shadow:inset 3px 0 0 #f59e0b; }
   .lane.hovering li.nx { background:#fffdf5; box-shadow:inset 3px 0 0 #fcd34d; }
   .hide { display:none !important; }
-  @media (max-width:640px) { ol li { grid-template-columns:30px 1fr; } ol li .go { grid-column:2; justify-self:start; } }
+  /* ---- ภาพหน้าจอต่อขั้น (screenshots/manifest.js) ---- */
+  .row-r { display:flex; align-items:center; gap:8px; }
+  .shot-thumb { display:block; width:120px; aspect-ratio:16/9; padding:0; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#f8fafc; cursor:zoom-in; transition:transform .15s, box-shadow .15s, border-color .15s; }
+  .shot-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .shot-thumb:hover, .shot-thumb:focus-visible { transform:translateY(-1px); border-color:var(--pri); box-shadow:0 4px 12px rgba(30,58,138,.18); outline:none; }
+  .shot-btn { border:1px solid var(--line); background:#f8fafc; color:var(--text); border-radius:6px; padding:5px 10px; font:inherit; font-size:12px; cursor:pointer; white-space:nowrap; }
+  .shot-btn:hover, .shot-btn:focus-visible { border-color:var(--pri); color:var(--pri); outline:none; }
+  .shot-btn .c { display:inline-block; min-width:18px; margin-left:4px; padding:0 5px; border-radius:999px; background:#e0e7ff; color:var(--pri); font-size:11px; font-weight:700; text-align:center; }
+  .shot-hover { position:fixed; z-index:20; width:340px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 32px rgba(15,23,42,.22); padding:6px; pointer-events:none; opacity:0; transform:translateY(4px); transition:opacity .12s, transform .12s; }
+  .shot-hover.on { opacity:1; transform:none; }
+  .shot-hover img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:6px; }
+  .shot-hover .cap { font-size:12px; color:var(--muted); padding:5px 2px 1px; display:flex; justify-content:space-between; gap:8px; }
+  .shot-hover .cap b { color:var(--text); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  dialog.shot-box { width:min(1500px, 96vw); max-height:96vh; padding:0; border:0; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.4); }
+  dialog.shot-box::backdrop { background:rgba(15,23,42,.72); }
+  .sb-head { display:flex; align-items:flex-start; gap:12px; padding:10px 14px; background:var(--pri); color:#fff; }
+  .sb-head .t { flex:1; min-width:0; }
+  .sb-head .t b { display:block; font-size:15px; font-weight:600; }
+  .sb-head .t span { font-size:12px; opacity:.85; }
+  .sb-head a, .sb-head button { color:#fff; background:rgba(255,255,255,.14); border:0; border-radius:6px; padding:6px 10px; font:inherit; font-size:12px; cursor:pointer; text-decoration:none; white-space:nowrap; }
+  .sb-head a:hover, .sb-head button:hover, .sb-head a:focus-visible, .sb-head button:focus-visible { background:rgba(255,255,255,.28); outline:none; }
+  .sb-tabs { display:flex; flex-wrap:wrap; gap:6px; padding:8px 14px; border-bottom:1px solid var(--line); background:#f8fafc; }
+  .sb-tabs button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:4px 12px; font:inherit; font-size:12px; cursor:pointer; max-width:360px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sb-tabs button.on { background:var(--pri); border-color:var(--pri); color:#fff; }
+  .sb-tabs button:focus-visible { outline:2px solid #f59e0b; outline-offset:1px; }
+  .sb-stage { position:relative; background:#0f172a; }
+  .sb-stage img { display:block; width:100%; max-height:calc(96vh - 150px); object-fit:contain; }
+  .sb-nav { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.88); color:var(--pri); font-size:16px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  .sb-nav:hover, .sb-nav:focus-visible { background:#fff; outline:2px solid #f59e0b; }
+  .sb-nav:disabled { opacity:.3; cursor:default; }
+  .sb-nav.prev { left:12px; } .sb-nav.next { right:12px; }
+  .sb-foot { display:flex; justify-content:space-between; gap:10px; padding:7px 14px; font-size:12px; color:var(--muted); }
+  @media (max-width:640px) {
+    ol li { grid-template-columns:30px 1fr; } ol li .row-r { grid-column:2; justify-self:start; } .shot-thumb { width:96px; }
+    .sb-head { flex-wrap:wrap; } .sb-head .t { flex-basis:100%; } .sb-head .t span { word-break:break-all; }
+    .sb-nav { width:34px; height:34px; } .sb-foot span:last-child { display:none; }
+  }
 </style>
 </head>
 <body>
@@ -81,7 +117,8 @@
     <b>วิธีใช้:</b> ดู <b>แผนผัง</b> ว่าแยกทางที่ไหน แล้วเดินตามลำดับ · คลิกกล่องในแผนผัง หรือกด <b>เปิดหน้า</b> ในรายการ
     = สลับเป็นบทบาทของขั้นนั้น เตรียมเคสตัวอย่างที่อยู่ขั้นนั้น แล้วเปิดหน้าในแท็บใหม่
     (ใช้เคสตัวอย่างที่อยู่ขั้นนั้นอยู่แล้ว ถ้าไม่มีจะสร้างเคสสาธิต DEMO- ที่ย้ายมาอยู่ขั้นนั้นให้) ·
-    เคสที่ต้องทำอยู่ในเมนู <b>รายการงาน</b> ของบทบาทนั้น
+    เคสที่ต้องทำอยู่ในเมนู <b>รายการงาน</b> ของบทบาทนั้น ·
+    <b>ภาพหน้าจอ</b>: ชี้กล่องในแผนผังเพื่อดูภาพตัวอย่าง หรือกดภาพเล็ก / <b>ดูภาพ</b> ในรายการขั้น (มีภาพแยกตามทางเลือกในฟอร์ม)
     <div style="margin-top:8px;font-size:.92em">
       <b>ปรับล่าสุด (พ.ย. 2569):</b>
       10.1 — ตัดหน้า 10/11/12, ผลมติบอร์ดเป็นช่องกรอกที่ค่าตั้งต้นมาให้ในหน้า 13 (แก้ได้ มีประวัติ) หลังผู้บริหารลงนามเข้าคิวนิติกรโดยตรง ·
@@ -96,11 +133,30 @@
   </div>
   <div id="acts"></div>
 </main>
+<div class="shot-hover" id="shotHover" aria-hidden="true"><img alt="" /><div class="cap"><b></b><span></span></div></div>
+<dialog class="shot-box" id="shotBox" aria-labelledby="sbTitle">
+  <div class="sb-head">
+    <div class="t"><b id="sbTitle"></b><span id="sbSub"></span></div>
+    <a id="sbOpenPage" target="_blank" href="#"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดหน้า</a>
+    <a id="sbFull" target="_blank" href="#"><i class="fa-solid fa-image"></i> เปิด PNG เต็ม</a>
+    <button type="button" data-sb="close" aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="sb-tabs" id="sbTabs" role="tablist" aria-label="ทางเลือกในฟอร์ม"></div>
+  <div class="sb-stage">
+    <img id="sbImg" alt="" />
+    <button type="button" class="sb-nav prev" data-sb="prev" aria-label="ภาพก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+    <button type="button" class="sb-nav next" data-sb="next" aria-label="ภาพถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="sb-foot"><span id="sbPos"></span><span>← → เลื่อนภาพ · Esc ปิด</span></div>
+</dialog>
 <script src="assets/ecmis-app.js?v=20261101_1"></script>
 <script src="assets/ecmis-activity10.js?v=20261101_1"></script>
 <script src="assets/ecmis-10-2.js"></script>
 <script src="assets/ecmis-10-3.js?v=20261027_causes"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<!-- ภาพหน้าจอต่อขั้น (สร้างด้วย video/tools/capture-screens.js) — ไม่มีไฟล์ = ไม่แสดงภาพ -->
+<script>window.SHOT_MANIFEST = {};</script>
+<script src="screenshots/manifest.js"></script>
 <script>
   /* คู่มือเดินตามขั้นตอน 10.x — แผนผังและรายการขั้นเขียนตาม docs/activity10-simple-flow.md
      + การเปลี่ยนแปลงล่าสุด (ชื่อผลคำพิพากษาใหม่, 10-3v-00 โหมดศาลปกครองสูงสุด, 10.1 ตัดหน้า 10-12, 10.2 รวม 03/05 และ 06/07)
@@ -365,7 +421,7 @@
       else lines.push("  " + nid + '["' + label + '"]');
       lines.push("  class " + nid + " " + ({ s: "st", j: "jn", x: "ex", e: "en" })[n.t]);
       if (n.p) {
-        NODE_INDEX[nid] = Object.assign({ act: g.act }, n);
+        NODE_INDEX[nid] = Object.assign({ act: g.act, key: g.skey + "." + id }, n);
         lines.push("  click " + nid + " goNode");
       } else if (n.go) {
         /* กล่องลิงก์ข้ามแผนผัง (main ↔ sub) — คลิกแล้วเลื่อนไปการ์ดแผนผังปลายทาง */
@@ -452,6 +508,125 @@
   function openStep(n) {
     window.open(stepUrl(n), "_blank");
   }
+
+  /* ---- key ภาพหน้าจอต่อกล่อง: <กิจกรรม>.<key แผนผัง | ลำดับในกิจกรรม>.<กล่อง> (ไม่ขึ้นกับลำดับรวมของแผนผัง) ---- */
+  const STEP_BY_KEY = {};
+  ACTS.forEach((a) => a.graphs.forEach((g, i) => {
+    g.skey = a.id + "." + (g.key || i);
+    Object.keys(g.nodes).forEach((id) => {
+      const n = g.nodes[id];
+      if (n.p) STEP_BY_KEY[g.skey + "." + id] = Object.assign({ act: a.id, key: g.skey + "." + id, nid: id, graph: g.title }, n);
+    });
+  }));
+  const shotsOf = (key) => (window.SHOT_MANIFEST || {})[key] || null;
+  /* ให้ capture-screens.js อ่านรายการขั้น และเตรียมเคส/ลิงก์แบบเดียวกับปุ่ม «เปิดหน้า» */
+  window.PLAYTHROUGH = {
+    steps: () => Object.values(STEP_BY_KEY).map((n) => ({ key: n.key, act: n.act, nid: n.nid, graph: n.graph, label: n.l, role: n.r || "", page: n.p })),
+    stepUrl: (key) => (STEP_BY_KEY[key] ? stepUrl(STEP_BY_KEY[key]) : null),
+  };
+
+  /* ---- ภาพหน้าจอ: thumb ในรายการขั้น · ปุ่ม «ดูภาพ» · ป๊อปอัปดูภาพ · ภาพตัวอย่างตอนชี้กล่องในแผนผัง ---- */
+  const shotSrc = (f) => "screenshots/" + String(f).split("/").map(encodeURIComponent).join("/");
+  function shotControls(key, label) {
+    const e = shotsOf(key);
+    if (!e || !e.shots || !e.shots.length) return "";
+    const first = e.shots[0];
+    return '<button type="button" class="shot-thumb" data-shot="' + esc(key) + '" aria-label="ดูภาพหน้าจอ: ' + esc(label) + '">' +
+      '<img loading="lazy" src="' + esc(shotSrc(first.thumb)) + '" alt="" /></button>' +
+      '<button type="button" class="shot-btn" data-shot="' + esc(key) + '"><i class="fa-regular fa-images"></i> ดูภาพ<span class="c">' + e.shots.length + "</span></button>";
+  }
+  /* กลุ่มภาพตามทางเลือก: ค่าเริ่มต้นก่อน แล้วตามลำดับที่ถ่าย */
+  function shotGroups(e) {
+    const order = [];
+    const map = {};
+    e.shots.forEach((s, i) => {
+      const b = s.branch || "";
+      if (!map[b]) { map[b] = { branch: b, label: b ? s.label || b : "ค่าเริ่มต้น", first: i }; order.push(map[b]); }
+    });
+    return order;
+  }
+  const SB = { key: null, e: null, i: 0, groups: [] };
+  const $ = (id) => document.getElementById(id);
+  function sbShow(i) {
+    const e = SB.e;
+    SB.i = Math.max(0, Math.min(e.shots.length - 1, i));
+    const s = e.shots[SB.i];
+    const parts = e.shots.filter((x) => (x.branch || "") === (s.branch || ""));
+    $("sbImg").src = shotSrc(s.file);
+    $("sbImg").alt = (e.label || "") + " — " + (s.branch ? s.label : "ค่าเริ่มต้น") + " ส่วนที่ " + s.part;
+    $("sbFull").href = shotSrc(s.file);
+    $("sbPos").textContent = "ภาพ " + (SB.i + 1) + "/" + e.shots.length + " · " + (s.branch ? s.label : "ค่าเริ่มต้น") +
+      (parts.length > 1 ? " · ส่วน " + s.part + "/" + parts.length : "");
+    $("sbTabs").querySelectorAll("button").forEach((b) => {
+      const on = b.dataset.branch === (s.branch || "");
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelector(".sb-nav.prev").disabled = SB.i === 0;
+    document.querySelector(".sb-nav.next").disabled = SB.i === e.shots.length - 1;
+  }
+  function openShots(key) {
+    const e = shotsOf(key);
+    const n = STEP_BY_KEY[key];
+    if (!e || !e.shots.length) return;
+    Object.assign(SB, { key, e, groups: shotGroups(e) });
+    $("sbTitle").textContent = e.label || (n && n.l) || key;
+    $("sbSub").textContent = [roleText(e.role), e.page, e.caseId ? "เคส " + e.caseId : "", e.capturedAt ? "ถ่าย " + new Date(e.capturedAt).toLocaleString("th-TH") : ""].filter(Boolean).join(" · ");
+    $("sbOpenPage").dataset.key = key;
+    $("sbOpenPage").href = "./" + e.page + (e.role ? "?role=" + encodeURIComponent(e.role) : "");
+    $("sbTabs").innerHTML = SB.groups.map((g) =>
+      '<button type="button" role="tab" data-branch="' + esc(g.branch) + '" data-sb-go="' + g.first + '" title="' + esc(g.label) + '">' + esc(g.label) + "</button>").join("");
+    $("sbTabs").classList.toggle("hide", SB.groups.length < 2);
+    const box = $("shotBox");
+    if (!box.open) box.showModal();
+    sbShow(0);
+  }
+  document.addEventListener("keydown", (ev) => {
+    if (!$("shotBox").open) return;
+    if (ev.key === "ArrowLeft") { ev.preventDefault(); sbShow(SB.i - 1); }
+    if (ev.key === "ArrowRight") { ev.preventDefault(); sbShow(SB.i + 1); }
+  });
+  $("shotBox").addEventListener("click", (ev) => {
+    const box = $("shotBox");
+    if (ev.target === box) { box.close(); return; } /* คลิกพื้นหลัง = ปิด */
+    const go = ev.target.closest("[data-sb-go]");
+    if (go) { sbShow(Number(go.dataset.sbGo)); return; }
+    const act = ev.target.closest("[data-sb]");
+    if (!act) return;
+    if (act.dataset.sb === "close") box.close();
+    if (act.dataset.sb === "prev") sbShow(SB.i - 1);
+    if (act.dataset.sb === "next") sbShow(SB.i + 1);
+  });
+  $("sbOpenPage").addEventListener("click", (ev) => {
+    /* เปิดหน้าแบบเดียวกับปุ่ม «เปิดหน้า» (เตรียมเคส + ?id=) */
+    const n = STEP_BY_KEY[ev.currentTarget.dataset.key];
+    if (n) ev.currentTarget.href = stepUrl(n);
+  });
+  /* ภาพตัวอย่างลอยตอนชี้กล่องในแผนผัง */
+  let hoverTimer = null;
+  function hoverShot(key, x, y) {
+    const tip = $("shotHover");
+    const e = key && shotsOf(key);
+    clearTimeout(hoverTimer);
+    if (!e || !e.shots.length) { tip.classList.remove("on"); return; }
+    const place = () => {
+      const w = 352;
+      const h = 230;
+      const left = x + 18 + w > innerWidth ? x - 18 - w : x + 18;
+      const top = Math.min(Math.max(8, y - h / 2), innerHeight - h - 8);
+      tip.style.left = Math.max(8, left) + "px";
+      tip.style.top = top + "px";
+    };
+    if (tip.dataset.key === key && tip.classList.contains("on")) { place(); return; }
+    hoverTimer = setTimeout(() => {
+      tip.dataset.key = key;
+      tip.querySelector("img").src = shotSrc(e.shots[0].thumb);
+      tip.querySelector("b").textContent = e.label || key;
+      tip.querySelector(".cap span").textContent = e.shots.length + " ภาพ · คลิกเปิดหน้า";
+      place();
+      tip.classList.add("on");
+    }, 250);
+  }
   window.goNode = function (nid) {
     const n = NODE_INDEX[nid];
     if (n) openStep(n);
@@ -470,7 +645,8 @@
       if (!n.p) return '<li class="ext" data-nid="g' + gi + "_" + id + '" data-q="' + q + '"><div><div class="step-t">' + esc(n.l) + '</div><div class="step-r">นอกระบบ</div></div><span></span></li>';
       return '<li data-nid="g' + gi + "_" + id + '" data-q="' + q + '"><div><div class="step-t">' + esc(n.l) + '</div>' +
         '<div class="step-r"><i class="fa-solid fa-user"></i>' + esc(roleText(n.r)) + ' <span class="step-p">' + esc(n.p) + "</span></div></div>" +
-        '<a class="go" target="_blank" href="./' + esc(n.p) + (n.r ? "?role=" + esc(n.r) : "") + '" data-nid="g' + gi + "_" + id + '"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดหน้า</a></li>';
+        '<div class="row-r">' + shotControls(g.skey + "." + id, n.l) +
+        '<a class="go" target="_blank" href="./' + esc(n.p) + (n.r ? "?role=" + esc(n.r) : "") + '" data-nid="g' + gi + "_" + id + '"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดหน้า</a></div></li>';
     }).join("") + "</ol>";
   }
 
@@ -610,7 +786,12 @@
         const nid = node && nodeIdOf(node);
         if (nid) light(nid); else clear();
       });
-      box.addEventListener("mouseleave", clear);
+      box.addEventListener("mousemove", (e) => {
+        const node = e.target.closest(".node");
+        const nid = node && nodeIdOf(node);
+        hoverShot(nid && NODE_INDEX[nid] ? NODE_INDEX[nid].key : null, e.clientX, e.clientY);
+      });
+      box.addEventListener("mouseleave", () => { clear(); hoverShot(null); });
       if (lane) {
         lane.addEventListener("mouseover", (e) => {
           const li = e.target.closest("li[data-nid]");
@@ -634,6 +815,8 @@
     });
   }
   document.addEventListener("click", (e) => {
+    const shot = e.target.closest("[data-shot]");
+    if (shot) { openShots(shot.dataset.shot); return; }
     const go = e.target.closest(".go");
     if (go) {
       /* เตรียมเคสแล้วใส่ ?id= ในลิงก์ก่อนเบราว์เซอร์เปิด (เปิดแท็บใหม่ตาม target ของ <a>) */
