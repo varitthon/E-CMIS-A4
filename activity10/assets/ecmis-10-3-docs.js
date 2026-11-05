@@ -776,7 +776,33 @@
     ];
   }
 
+  /* แคชผลตัดหน้า — ตัดใหม่เฉพาะเมื่อเนื้อหาเปลี่ยน (คีย์ = HTML ของทุกบล็อก + ธง keep/split)
+     ล้างแคชเมื่อฟอนต์โหลดเสร็จ เพราะความสูงบรรทัดเปลี่ยน */
+  const PAGE_CACHE_MAX = 12;
+  const pageCache = new Map();
+  if (global.document && document.fonts && document.fonts.addEventListener) {
+    document.fonts.addEventListener("loadingdone", function () { pageCache.clear(); });
+  }
+
+  function paginationKey(model) {
+    return model.blocks
+      .map(function (b) {
+        if (typeof b === "string") return b;
+        return (b.keep ? "k|" : "") + (b.split ? "s|" : "") + b.html;
+      })
+      .join("\u0001");
+  }
+
   function paginate(model) {
+    const key = paginationKey(model);
+    if (pageCache.has(key)) return pageCache.get(key);
+    const pages = paginateUncached(model);
+    if (pageCache.size >= PAGE_CACHE_MAX) pageCache.delete(pageCache.keys().next().value);
+    pageCache.set(key, pages);
+    return pages;
+  }
+
+  function paginateUncached(model) {
     const m = measurer();
     const queue = model.blocks.map(function (b) {
       return typeof b === "string" ? { html: b } : b;
@@ -819,8 +845,261 @@
     return first.length > 14 ? first.slice(0, 14) : first;
   }
 
+  /* ----------------------------------------------------------- SPLIT DIVIDER
+     ใช้เมื่อ host อยู่ใน .l3-split.l3-split--doc และมี .l3-split-form ข้าง ๆ
+     ลากเส้นแบ่งเพื่อปรับขนาด (แต่ละฝั่งกว้างอย่างน้อย 380px) / ดับเบิลคลิก = กลับครึ่ง-ครึ่ง
+     ปุ่ม « » บนเส้นแบ่ง = ขยายเอกสาร/ฟอร์มเต็มความกว้าง (กดอีกฝั่งเพื่อกลับสองฝั่ง)
+     จอ ≤1024px ซ่อนเส้นแบ่ง (CSS) และวางซ้อนเหมือนเดิม */
+  const SPLIT_MIN_PX = 380;
+  const SPLIT_KEY_STEP_PX = 24;
+
+  function enhanceSplit(host) {
+    const split = host.parentElement;
+    if (!split || !split.matches(".l3-split.l3-split--doc") || split.dataset.l3Resizable) return;
+    const form = Array.prototype.find.call(split.children, function (el) {
+      return el.classList.contains("l3-split-form");
+    });
+    if (!form) return;
+    split.dataset.l3Resizable = "1";
+    split.classList.add("is-resizable");
+
+    const divider = document.createElement("div");
+    divider.className = "l3-split-divider";
+    divider.innerHTML =
+      '<div class="l3-split-divider-btns">' +
+      '<button type="button" data-split="doc" title="ขยายเอกสารเต็มจอ" aria-label="ขยายเอกสารเต็มจอ"><i class="fa-solid fa-angles-left"></i></button>' +
+      '<span class="l3-split-grip" role="separator" aria-orientation="vertical" aria-label="ลากเพื่อปรับขนาดฟอร์ม/เอกสาร" tabindex="0"></span>' +
+      '<button type="button" data-split="form" title="ขยายฟอร์มเต็มจอ" aria-label="ขยายฟอร์มเต็มจอ"><i class="fa-solid fa-angles-right"></i></button>' +
+      "</div>";
+    split.insertBefore(divider, host);
+
+    function setMode(mode) {
+      split.classList.toggle("is-full-doc", mode === "doc");
+      split.classList.toggle("is-full-form", mode === "form");
+    }
+
+    function setLeft(px) {
+      const rect = split.getBoundingClientRect();
+      const max = rect.width - divider.offsetWidth - SPLIT_MIN_PX;
+      if (max < SPLIT_MIN_PX) return;
+      split.style.setProperty("--l3-split-left", Math.round(Math.min(max, Math.max(SPLIT_MIN_PX, px))) + "px");
+    }
+
+    divider.addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-split]");
+      if (!btn) return;
+      const want = btn.dataset.split;
+      const full = split.classList.contains("is-full-doc") ? "doc" : split.classList.contains("is-full-form") ? "form" : "";
+      setMode(full ? "" : want);
+    });
+
+    divider.addEventListener("dblclick", function (e) {
+      if (e.target.closest("button")) return;
+      setMode("");
+      split.style.removeProperty("--l3-split-left");
+    });
+
+    divider.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || e.target.closest("button")) return;
+      if (split.classList.contains("is-full-doc") || split.classList.contains("is-full-form")) return;
+      e.preventDefault();
+      divider.setPointerCapture(e.pointerId);
+      split.classList.add("is-dragging");
+      const left = split.getBoundingClientRect().left;
+      const move = function (ev) { setLeft(ev.clientX - left - divider.offsetWidth / 2); };
+      const up = function () {
+        split.classList.remove("is-dragging");
+        divider.removeEventListener("pointermove", move);
+        divider.removeEventListener("pointerup", up);
+        divider.removeEventListener("pointercancel", up);
+      };
+      divider.addEventListener("pointermove", move);
+      divider.addEventListener("pointerup", up);
+      divider.addEventListener("pointercancel", up);
+    });
+
+    divider.querySelector(".l3-split-grip").addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      const delta = e.key === "ArrowLeft" ? -SPLIT_KEY_STEP_PX : SPLIT_KEY_STEP_PX;
+      setLeft(form.getBoundingClientRect().width + delta);
+    });
+  }
+
+  /* ------------------------------------------------------- TWO-WAY SYNC
+     ผูกค่าในกระดาษกับช่องในฟอร์ม (หาจากข้อความ — แม่แบบไม่ต้องรู้ id ช่อง)
+       sync = { fields: [id ช่องกรอก], editors: [id กล่อง TipTap] }
+     กระดาษ → ฟอร์ม : คลิกค่าบนกระดาษ → เลื่อนไปช่องนั้น + โฟกัส + กระพริบ
+     ฟอร์ม → กระดาษ : โฟกัสช่อง → ไฮไลต์ค่าบนกระดาษ + เปิดหน้าที่มีค่า + กระพริบ
+     ตกแต่ง DOM หลัง render เท่านั้น — pagesHTML (ใช้ดาวน์โหลด) ไม่ถูกแตะ */
+  const SYNC_MIN_LEN = 2;
+  const SYNC_PARA_PROBE = 24;
+  const SYNC_FLASH_MS = 1200;
+
+  function normText(s) {
+    return th(String(s || "")).replace(/\s+/g, " ").trim();
+  }
+
+  function needlesFor(el) {
+    const raw = [];
+    const v = String(el.value || "").trim();
+    if (el.type === "date") {
+      if (v) raw.push(thaiLongDate(v));
+    } else if (el.tagName === "SELECT") {
+      const opt = el.options[el.selectedIndex];
+      if (opt && opt.value) raw.push(opt.text, opt.value);
+    } else {
+      v.split(/\n+/).forEach(function (line) { raw.push(line); });
+    }
+    const out = [];
+    raw.forEach(function (r) {
+      [String(r).trim(), normText(r)].forEach(function (n) {
+        if (n.length >= SYNC_MIN_LEN && out.indexOf(n) < 0) out.push(n);
+      });
+    });
+    return out;
+  }
+
+  function editorParas(id) {
+    const box = document.getElementById(id);
+    if (!box) return [];
+    return Array.prototype.map
+      .call(box.querySelectorAll(".ProseMirror p, .ProseMirror li"), function (p) { return normText(p.textContent); })
+      .filter(function (t) { return t.length >= SYNC_MIN_LEN; });
+  }
+
+  function flashFormControl(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const target = el.closest(".form-group") || el;
+    target.classList.remove("l3-sync-flash");
+    void target.offsetWidth;
+    target.classList.add("l3-sync-flash");
+    setTimeout(function () { target.classList.remove("l3-sync-flash"); }, SYNC_FLASH_MS);
+  }
+
+  function wrapMatches(stack, pairs) {
+    const walker = document.createTreeWalker(stack, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        return n.parentElement.closest(".l3p-bind") || !n.nodeValue.trim()
+          ? NodeFilter.FILTER_REJECT
+          : NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (node) {
+      let cur = node;
+      while (cur) {
+        const text = cur.nodeValue;
+        let hit = null;
+        for (let i = 0; i < pairs.length; i++) {
+          const at = text.indexOf(pairs[i].needle);
+          if (at >= 0 && (!hit || at < hit.at)) hit = { at: at, pair: pairs[i] };
+        }
+        if (!hit) break;
+        const mid = cur.splitText(hit.at);
+        const rest = mid.splitText(hit.pair.needle.length);
+        const span = document.createElement("span");
+        span.className = "l3p-bind";
+        span.dataset.bind = hit.pair.id;
+        mid.parentNode.replaceChild(span, mid);
+        span.appendChild(mid);
+        cur = rest;
+      }
+    });
+  }
+
+  function markEditorBlocks(stack, editors) {
+    const lists = editors.map(function (id) { return { id: id, paras: editorParas(id) }; });
+    stack.querySelectorAll(".l3p-content p, .l3p-content li").forEach(function (blk) {
+      const t = normText(blk.textContent);
+      if (t.length < SYNC_MIN_LEN) return;
+      const probe = t.slice(0, SYNC_PARA_PROBE);
+      const owner = lists.find(function (l) {
+        return l.paras.some(function (p) { return p.indexOf(probe) >= 0 || t.indexOf(p.slice(0, SYNC_PARA_PROBE)) >= 0; });
+      });
+      if (!owner) return;
+      blk.classList.add("l3p-bind-block");
+      blk.dataset.bind = owner.id;
+    });
+  }
+
+  function createSync(host, stack, frame, sync, goToPage) {
+    const fields = (sync.fields || []).filter(function (id) { return document.getElementById(id); });
+    const editors = sync.editors || [];
+    const bound = fields.concat(editors);
+    let activeId = "";
+
+    function decorate() {
+      const pairs = [];
+      fields.forEach(function (id) {
+        needlesFor(document.getElementById(id)).forEach(function (n) { pairs.push({ id: id, needle: n }); });
+      });
+      pairs.sort(function (a, b) { return b.needle.length - a.needle.length; });
+      if (editors.length) markEditorBlocks(stack, editors);
+      if (pairs.length) wrapMatches(stack, pairs);
+      if (activeId) highlight(activeId, false);
+    }
+
+    function nodesFor(id) {
+      return Array.prototype.filter.call(stack.querySelectorAll("[data-bind]"), function (n) { return n.dataset.bind === id; });
+    }
+
+    function bringIntoPane(node) {
+      const pages = Array.prototype.slice.call(stack.querySelectorAll(".l3p-page"));
+      const idx = pages.indexOf(node.closest(".l3p-page"));
+      if (idx >= 0) goToPage(idx);
+      const nr = node.getBoundingClientRect();
+      const fr = frame.getBoundingClientRect();
+      if (nr.top < fr.top || nr.bottom > fr.bottom) frame.scrollTop += nr.top - fr.top - frame.clientHeight / 3;
+    }
+
+    function highlight(id, flash) {
+      stack.querySelectorAll(".is-linked").forEach(function (n) { n.classList.remove("is-linked", "is-flash"); });
+      const nodes = nodesFor(id);
+      nodes.forEach(function (n) { n.classList.add("is-linked"); });
+      if (!flash || !nodes.length) return;
+      bringIntoPane(nodes[0]);
+      nodes.forEach(function (n) {
+        n.classList.add("is-flash");
+        setTimeout(function () { n.classList.remove("is-flash"); }, SYNC_FLASH_MS);
+      });
+    }
+
+    function controlIdOf(el) {
+      if (!el || !el.closest) return "";
+      if (el.id && bound.indexOf(el.id) >= 0) return el.id;
+      const box = el.closest("[id]");
+      return box && editors.indexOf(box.id) >= 0 ? box.id : "";
+    }
+
+    document.addEventListener("focusin", function (e) {
+      const id = controlIdOf(e.target);
+      if (!id || host.offsetParent === null) return;
+      activeId = id;
+      highlight(id, true);
+    });
+    document.addEventListener("focusout", function (e) {
+      if (controlIdOf(e.target) !== activeId) return;
+      activeId = "";
+      stack.querySelectorAll(".is-linked").forEach(function (n) { n.classList.remove("is-linked", "is-flash"); });
+    });
+
+    stack.addEventListener("click", function (e) {
+      const node = e.target.closest("[data-bind]");
+      if (!node) return;
+      const id = node.dataset.bind;
+      if (global.ECMIS103 && ECMIS103.focusFirstField) ECMIS103.focusFirstField(id);
+      flashFormControl(id);
+    });
+
+    return { decorate: decorate };
+  }
+
   /* ---------------------------------------------------------------- VIEWER
-     host = คอลัมน์ขวาของ .l3-split--doc ; opts = { title, editTarget, fileName, zoom } */
+     host = คอลัมน์ขวาของ .l3-split--doc
+     opts = { title, editTarget, fileName, zoom, sync: { fields, editors } } */
   function createViewer(hostId, opts) {
     const host = document.getElementById(hostId);
     if (!host) return null;
@@ -890,7 +1169,17 @@
       });
       stack.innerHTML = state.pagesHTML.join("");
       showPage(false);
+      if (sync) sync.decorate();
     }
+
+    function goToPage(idx) {
+      if (idx === state.page) return;
+      state.page = idx;
+      showPage(true);
+    }
+
+    enhanceSplit(host);
+    const sync = o.sync ? createSync(host, stack, frame, o.sync, goToPage) : null;
 
     host.addEventListener("click", function (e) {
       const btn = e.target.closest("button");

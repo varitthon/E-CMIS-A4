@@ -60,6 +60,136 @@
   }
 }
 
+/* ------------------------------------------- resizable split (ecmis-10-3-docs.js enhanceSplit) */
+.l3-split.l3-split--doc.is-resizable {
+  grid-template-columns: var(--l3-split-left, minmax(0, 1fr)) 14px minmax(0, 1fr);
+  column-gap: 4px;
+}
+.l3-split--doc.is-resizable.is-full-doc {
+  grid-template-columns: 14px minmax(0, 1fr);
+}
+.l3-split--doc.is-resizable.is-full-form {
+  grid-template-columns: minmax(0, 1fr) 14px;
+}
+.l3-split--doc.is-full-doc > .l3-split-form,
+.l3-split--doc.is-full-form > .l3-split-preview {
+  display: none;
+}
+.l3-split--doc.is-dragging {
+  cursor: col-resize;
+  user-select: none;
+}
+.l3-split-divider {
+  align-self: stretch;
+  position: relative;
+  border-radius: 7px;
+  cursor: col-resize;
+  touch-action: none;
+  background: linear-gradient(to right, transparent 6px, rgba(30, 58, 138, 0.18) 6px, rgba(30, 58, 138, 0.18) 8px, transparent 8px);
+  transition: background-color 0.15s;
+}
+.l3-split-divider:hover,
+.l3-split--doc.is-dragging .l3-split-divider {
+  background-color: rgba(30, 58, 138, 0.08);
+}
+.l3-split-divider-btns {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+.l3-split-divider-btns button {
+  width: 24px;
+  height: 24px;
+  margin-left: -5px;
+  border: 1px solid rgba(30, 58, 138, 0.25);
+  border-radius: 50%;
+  background: #fff;
+  color: #1e3a8a;
+  font-size: 0.7rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+}
+.l3-split-divider-btns button:hover,
+.l3-split-divider-btns button:focus-visible {
+  background: #1e3a8a;
+  color: #fff;
+  outline: none;
+}
+.l3-split--doc.is-full-doc [data-split="doc"],
+.l3-split--doc.is-full-form [data-split="form"] {
+  display: none;
+}
+.l3-split-grip {
+  width: 6px;
+  height: 40px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(to bottom, #1e3a8a 0 2px, transparent 2px 5px);
+  opacity: 0.45;
+}
+.l3-split-grip:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  opacity: 1;
+}
+@media (max-width: 1024px) {
+  .l3-split.l3-split--doc.is-resizable,
+  .l3-split--doc.is-resizable.is-full-doc,
+  .l3-split--doc.is-resizable.is-full-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .l3-split-divider {
+    display: none;
+  }
+  .l3-split--doc.is-full-doc > .l3-split-form,
+  .l3-split--doc.is-full-form > .l3-split-preview {
+    display: flex;
+  }
+}
+
+/* --------------------------------------- two-way sync (ecmis-10-3-docs.js createSync) */
+.l3p-bind,
+.l3p-bind-block {
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.l3p-bind:hover,
+.l3p-bind-block:hover {
+  background: rgba(245, 158, 11, 0.16);
+}
+.l3p-bind.is-linked,
+.l3p-bind-block.is-linked {
+  background: rgba(245, 158, 11, 0.26);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.7);
+}
+.l3p-bind.is-flash,
+.l3p-bind-block.is-flash {
+  animation: l3p-sync-flash 1.2s ease-out;
+}
+@keyframes l3p-sync-flash {
+  0% { background: rgba(245, 158, 11, 0.8); }
+  100% { background: rgba(245, 158, 11, 0.26); }
+}
+.l3-sync-flash {
+  border-radius: 8px;
+  animation: l3-form-flash 1.2s ease-out;
+}
+@keyframes l3-form-flash {
+  0% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.8); }
+  100% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l3p-bind.is-flash,
+  .l3p-bind-block.is-flash,
+  .l3-sync-flash {
+    animation: none;
+  }
+}
+
 /* ------------------------------------------------------------ viewer control bar */
 .l3-doc-controlbar {
   display: flex;
