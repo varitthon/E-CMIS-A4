@@ -21,8 +21,37 @@ const OVERLAP = 80; // px repeated between parts of a long form
 const PAD = 12; // px gap above the form card
 const MAX_PARTS = 10;
 const SETTLE_MS = 450;
-/* real screens that are not steps in the playthrough — one plain 16:9 shot each */
+/* real app screens that are not steps in the playthrough — whole page, 16:9 parts → screenshots/pages/ */
 const OTHER_PAGES = ["board-report", "dasdbord", "login", "notices", "registry", "search-case", "verdict-form"];
+/* page title is only "E-CMIS" on some pages → name from the sidebar menu */
+const PAGE_NAMES = { dasdbord: "แดชบอร์ดสถิติ" };
+/* sample data so list pages are not empty — written through the app's own API (localStorage only) */
+const PAGE_PREP = {
+  notices: {
+    before: (pg) => pg.evaluate(() => {
+      const A = window.Activity10;
+      const unit = typeof window.ecmisCurrentUnit === "function" ? window.ecmisCurrentUnit() : "";
+      if (!A || !unit) return "no unit";
+      const cases = A.getCases().filter((c) => !/^DEMO-/.test(c.id));
+      const has = cases.some((c) => (c.internalNotices || []).some((n) => (n.units || []).some((u) => A.unitMatches(u, unit))));
+      if (has) return "already";
+      const today = new Date().toISOString().slice(0, 10);
+      [
+        { subject: "แจ้งผลการพิจารณาของคณะกรรมการ ป.ป.ท. (ตัวอย่าง)", docNo: "ปท 0011/1234", detail: "แจ้งเพื่อทราบและดำเนินการในส่วนที่เกี่ยวข้อง" },
+        { subject: "ขอให้จัดส่งเอกสารประกอบสำนวนเพิ่มเติม (ตัวอย่าง)", docNo: "ปท 0011/1250", detail: "โปรดจัดส่งภายใน 15 วัน" },
+      ].forEach((n, i) => cases[i] && A.addInternalNotice(cases[i].id, Object.assign({ units: [unit], date: today }, n), "ข้อมูลตัวอย่าง"));
+      return "added";
+    }),
+  },
+  "search-case": {
+    after: async (pg) => {
+      /* the search needs a keyword — "2569" (case year) matches the seed cases */
+      await pg.locator('.content input[type="text"]:visible, .content input[type="search"]:visible').first().fill("2569", { timeout: 3000 }).catch(() => {});
+      await pg.getByRole("button", { name: /ค้นหาสำนวน/ }).first().click({ timeout: 3000 }).catch(() => {});
+      await sleep(SETTLE_MS);
+    },
+  },
+};
 /* pages that open without a case (same list as NO_CASE in the playthrough) */
 const NO_CASE = /^(01-work-inbox|02-board-intake|10-3v-00-legal-admin-verdict-intake)\.html$/;
 
@@ -155,6 +184,14 @@ async function formGeometry(pg, plain) {
     let S = cards[0] ? cards[0].parentElement : null;
     while (S && S !== document.body && !scrollable(S)) S = S.parentElement;
     if (!S || S === document.body || !scrollable(S)) S = se;
+    if (plain) {
+      /* whole page: scroll the box with the most hidden content (window or the app's main panel) */
+      S = se;
+      document.querySelectorAll("body *").forEach((el) => {
+        if (!blocked(el) && scrollable(el) && el.clientHeight > innerHeight * 0.5 &&
+          el.scrollHeight - el.clientHeight > S.scrollHeight - S.clientHeight) S = el;
+      });
+    }
     document.querySelectorAll("[data-shot-scroller]").forEach((e) => e.removeAttribute("data-shot-scroller"));
     S.scrollTop = 0;
     const isWin = S === se;
@@ -171,6 +208,7 @@ async function formGeometry(pg, plain) {
     const visH = sr.bottom - cover;
     const offset = cover - sr.top;
     S.setAttribute("data-shot-scroller", "1");
+    if (plain) return { hasForm: true, isWin, start: 0, end: S.scrollHeight, visH: sr.bottom - sr.top, maxScroll: S.scrollHeight - S.clientHeight };
     if (!cards.length) return { hasForm: false, isWin, start: 0, end: 0, visH, maxScroll: S.scrollHeight - S.clientHeight };
     const top = abs(cards[0], "top");
     const bottom = Math.max(...ends.map((e) => abs(e, "bottom")));
@@ -229,8 +267,9 @@ async function makeThumbs(tp, shots) {
 
 const branchSlug = (o, gi, oi) => (/^[a-z0-9_-]{1,30}$/i.test(o.value) ? o.value : "b" + (gi + 1) + "-" + (oi + 1));
 
-async function captureStep(pg, url, relBase, plain, errors) {
+async function captureStep(pg, url, relBase, plain, errors, after) {
   await load(pg, url);
+  if (after) await after(pg);
   let shots = await captureParts(pg, relBase, { branch: null, label: "ค่าเริ่มต้น" }, plain);
   if (plain) return shots;
   const groups = await radioGroups(pg);
@@ -317,7 +356,10 @@ async function main() {
   await pt.waitForFunction(() => window.PLAYTHROUGH && window.Activity10);
   if (!filter) await pt.evaluate(() => window.Activity10.resetData && window.Activity10.resetData());
   const steps = (await pt.evaluate(() => window.PLAYTHROUGH.steps())).filter((s) => matches(s.key, filter));
-  const others = filter ? OTHER_PAGES.filter((p) => matches("other." + p, filter)) : OTHER_PAGES;
+  const others = filter ? OTHER_PAGES.filter((p) => matches("pages." + p, filter)) : OTHER_PAGES;
+  /* old layout (other/ + "other.*" keys) → drop it */
+  Object.keys(manifest).filter((k) => k.startsWith("other.")).forEach((k) => { removeShots(manifest[k]); delete manifest[k]; });
+  fs.rmSync(path.join(OUT, "other"), { recursive: true, force: true });
   console.log("steps:", steps.length, "· other pages:", others.length);
 
   const t0 = Date.now();
@@ -351,23 +393,30 @@ async function main() {
   }
 
   for (const p of others) {
-    const key = "other." + p;
+    const key = "pages." + p;
     removeShots(manifest[key]);
-    fs.mkdirSync(path.join(OUT, "other"), { recursive: true });
+    fs.mkdirSync(path.join(OUT, "pages"), { recursive: true });
     const errors = [];
     pageErrors = [];
     let shots = [];
+    let title = "";
     const pg = await freshPage();
+    const prep = PAGE_PREP[p] || {};
     try {
-      shots = await captureStep(pg, fileUrl(p + ".html"), path.join("other", p), true, errors);
+      if (prep.before) {
+        await load(pg, fileUrl(p + ".html"));
+        console.log("  prep", p + ":", await prep.before(pg));
+      }
+      shots = await captureStep(pg, fileUrl(p + ".html"), path.join("pages", p), true, errors, prep.after);
+      title = (await pg.title().catch(() => "")).replace(/\s*\|.*$/, "").trim();
       await makeThumbs(tp, shots);
     } catch (e) {
       errors.push("capture failed: " + String(e.message).split("\n")[0]);
     }
     await pg.close().catch(() => {});
     errors.push(...Array.from(new Set(pageErrors)));
-    manifest[key] = { act: "other", graph: "", label: p, page: p + ".html", role: "", caseId: null, shots, errors, capturedAt: new Date().toISOString() };
-    console.log(`[other] ${p} → ${shots.length} shot(s)${errors.length ? " ⚠ " + errors.join("; ") : ""}`);
+    manifest[key] = { act: "pages", graph: "หน้าอื่นๆ (นอก flow)", label: (title && title !== "E-CMIS" ? title : PAGE_NAMES[p]) || p, page: p + ".html", role: "", caseId: null, shots, errors, capturedAt: new Date().toISOString() };
+    console.log(`[pages] ${p} → ${shots.length} shot(s)${errors.length ? " ⚠ " + errors.join("; ") : ""}`);
   }
 
   await browser.close();

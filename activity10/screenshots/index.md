@@ -91,7 +91,7 @@
 | `102.0.g37` | 10-2-37 ผอ.กลุ่ม ความเห็น ลงนาม | 10-2-37-group-director-notice-review.html | group_director | ค่าเริ่มต้น | [01](102/g37_10-2-37-group-director-notice-review_01.png) |  |
 |  |  |  |  | เห็นชอบ ให้ความเห็นและลงนาม ส่งต่อ ผอ.กองกฎหมาย | [01](102/g37_10-2-37-group-director-notice-review__APPROVE_01.png) |  |
 |  |  |  |  | ส่งกลับฝ่ายเลขานุการฯ แก้ไขร่างหนังสือแจ้งมติ | [01](102/g37_10-2-37-group-director-notice-review__SENDBACK_01.png) |  |
-| `102.1.h01` | appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง) | 10-2-appeal-01-legal-admin-intake.html | case_bureau_admin | ค่าเริ่มต้น | [01](102/h01_10-2-appeal-01-legal-admin-intake_01.png) | no .form-card (top of page captured) |
+| `102.1.h01` | appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง) | 10-2-appeal-01-legal-admin-intake.html | case_bureau_admin | ค่าเริ่มต้น | [01](102/h01_10-2-appeal-01-legal-admin-intake_01.png) [02](102/h01_10-2-appeal-01-legal-admin-intake_02.png) [03](102/h01_10-2-appeal-01-legal-admin-intake_03.png) |  |
 | `102.1.h01b` | appeal-01b เจ้าหน้าที่เขต (สายเขต) | 10-2-appeal-01b-district-intake.html | district_admin | ค่าเริ่มต้น | [01](102/h01b_10-2-appeal-01b-district-intake_01.png) [02](102/h01b_10-2-appeal-01b-district-intake_02.png) |  |
 | `102.1.h04` | appeal-04 นิติกรเจ้าของสำนวน ทำความเห็น (แก้ข้อมูลรับอุทธรณ์ได้) | 10-2-appeal-04-case-owner-opinion.html | original_officer | ค่าเริ่มต้น | [01](102/h04_10-2-appeal-04-case-owner-opinion_01.png) [02](102/h04_10-2-appeal-04-case-owner-opinion_02.png) [03](102/h04_10-2-appeal-04-case-owner-opinion_03.png) |  |
 | `102.1.h06` | appeal-06 คณะอนุฯ วินิจฉัยอุทธรณ์ | 10-2-appeal-06-subcommittee-ruling.html | appeal_ruling_subcommittee | ค่าเริ่มต้น | [01](102/h06_10-2-appeal-06-subcommittee-ruling_01.png) |  |
@@ -99,10 +99,11 @@
 |  |  |  |  | กลับคำสั่งบางส่วน (ให้เปิดเผยบางส่วน) | [01](102/h06_10-2-appeal-06-subcommittee-ruling__REVERSE_PARTIAL_01.png) |  |
 | `102.1.h07` | appeal-07 ฝ่ายเลขาคณะอนุฯ บันทึกเสนอ | 10-2-appeal-07-secretariat-memo.html | appeal_subcommittee_secretariat | ค่าเริ่มต้น | [01](102/h07_10-2-appeal-07-secretariat-memo_01.png) |  |
 | `102.1.h09` | appeal-09 ผอ.กองบริหารคดี เสนอบอร์ด | 10-2-appeal-09-case-bureau-director-board-propose.html | case_bureau_director | ค่าเริ่มต้น | [01](102/h09_10-2-appeal-09-case-bureau-director-board-propose_01.png) |  |
-| `102.1.h12` | appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล | 10-2-appeal-12-tracking-secretary-notice-draft.html | case_tracking_secretary | ค่าเริ่มต้น | [01](102/h12_10-2-appeal-12-tracking-secretary-notice-draft_01.png) | no .form-card (top of page captured) |
+| `102.1.h12` | appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล | 10-2-appeal-12-tracking-secretary-notice-draft.html | case_tracking_secretary | ค่าเริ่มต้น | [01](102/h12_10-2-appeal-12-tracking-secretary-notice-draft_01.png) [02](102/h12_10-2-appeal-12-tracking-secretary-notice-draft_02.png) |  |
 | `102.1.h13` | appeal-13 นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์ | 10-2-appeal-13-case-owner-notify-appellant.html | original_officer | ค่าเริ่มต้น | [01](102/h13_10-2-appeal-13-case-owner-notify-appellant_01.png) |  |
-| `103.103add.aa` | 10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง | 10-3-add-additional.html | case_legal_officer | ค่าเริ่มต้น | [01](103/aa_10-3-add-additional_01.png) | no case prepared (page opened without ?id=); no .form-card (top of page captured) |
-| `103.103add.ai` | 10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม | 10-3-add-intake.html | admin_legal | ค่าเริ่มต้น | [01](103/ai_10-3-add-intake_01.png) | no case prepared (page opened without ?id=); no .form-card (top of page captured) |
+| `103.103add.aa` | 10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง | 10-3-add-additional.html | case_legal_officer | ค่าเริ่มต้น | [01](103/aa_10-3-add-additional_01.png) [02](103/aa_10-3-add-additional_02.png) [03](103/aa_10-3-add-additional_03.png) |  |
+|  |  |  |  | แบบที่ 5 — บันทึกเสนอ (เรื่องเดิม / ข้อเท็จจริง / ข้อเสนอ) + หนังสือถึงอธิบดีอัย | [01](103/aa_10-3-add-additional__5_01.png) [02](103/aa_10-3-add-additional__5_02.png) [03](103/aa_10-3-add-additional__5_03.png) |  |
+| `103.103add.ai` | 10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม | 10-3-add-intake.html | admin_legal | ค่าเริ่มต้น | [01](103/ai_10-3-add-intake_01.png) |  |
 | `103.103main.m02` | 02 ธุรการ รับคดีปกครอง | 02-board-intake.html | admin_legal | ค่าเริ่มต้น | [01](103/m02_02-board-intake_01.png) [02](103/m02_02-board-intake_02.png) [03](103/m02_02-board-intake_03.png) |  |
 |  |  |  |  | ศาลคดีทุจริต | [01](103/m02_02-board-intake__CORRUPTION_01.png) [02](103/m02_02-board-intake__CORRUPTION_02.png) [03](103/m02_02-board-intake__CORRUPTION_03.png) |  |
 |  |  |  |  | ศาลแขวง | [01](103/m02_02-board-intake__DISTRICT_01.png) [02](103/m02_02-board-intake__DISTRICT_02.png) [03](103/m02_02-board-intake__DISTRICT_03.png) |  |
@@ -220,10 +221,10 @@
 |  |  |  |  | ไม่เห็นชอบ (ส่งกลับให้ ผอ.กลุ่มงานคดีตรวจสอบใหม่) | [01](103/v46_10-3v-46-legal-director-sign3__b1-2_01.png) |  |
 | `103.103verdict.v47` | 10-3v-47 ธุรการ ออกเลข | 10-3v-47-legal-admin-dispatch3.html | admin_legal | ค่าเริ่มต้น | [01](103/v47_10-3v-47-legal-admin-dispatch3_01.png) |  |
 | `103.103verdict.v48` | 10-3v-48 นิติกร ส่งหนังสือ ปิดสำนวน | 10-3v-48-lawyer-send-close.html | case_legal_officer | ค่าเริ่มต้น | [01](103/v48_10-3v-48-lawyer-send-close_01.png) |  |
-| `other.board-report` | board-report | board-report.html |  | ค่าเริ่มต้น | [01](other/board-report_01.png) |  |
-| `other.dasdbord` | dasdbord | dasdbord.html |  | ค่าเริ่มต้น | [01](other/dasdbord_01.png) |  |
-| `other.login` | login | login.html |  | ค่าเริ่มต้น | [01](other/login_01.png) |  |
-| `other.notices` | notices | notices.html |  | ค่าเริ่มต้น | [01](other/notices_01.png) |  |
-| `other.registry` | registry | registry.html |  | ค่าเริ่มต้น | [01](other/registry_01.png) |  |
-| `other.search-case` | search-case | search-case.html |  | ค่าเริ่มต้น | [01](other/search-case_01.png) |  |
-| `other.verdict-form` | verdict-form | verdict-form.html |  | ค่าเริ่มต้น | [01](other/verdict-form_01.png) |  |
+| `pages.board-report` | E-CMIS - รายงานผลตามมติคณะกรรมการ | board-report.html |  | ค่าเริ่มต้น | [01](pages/board-report_01.png) |  |
+| `pages.dasdbord` | แดชบอร์ดสถิติ | dasdbord.html |  | ค่าเริ่มต้น | [01](pages/dasdbord_01.png) [02](pages/dasdbord_02.png) [03](pages/dasdbord_03.png) [04](pages/dasdbord_04.png) |  |
+| `pages.login` | เข้าสู่ระบบ | login.html |  | ค่าเริ่มต้น | [01](pages/login_01.png) [02](pages/login_02.png) |  |
+| `pages.notices` | E-CMIS - หนังสือแจ้งจากหน่วยงานอื่น | notices.html |  | ค่าเริ่มต้น | [01](pages/notices_01.png) |  |
+| `pages.registry` | E-CMIS - สารบบคำวินิจฉัย/คำพิพากษา | registry.html |  | ค่าเริ่มต้น | [01](pages/registry_01.png) [02](pages/registry_02.png) |  |
+| `pages.search-case` | E-CMIS - ค้นหาสำนวน | search-case.html |  | ค่าเริ่มต้น | [01](pages/search-case_01.png) [02](pages/search-case_02.png) |  |
+| `pages.verdict-form` | E-CMIS - บันทึกผลคำพิพากษา | verdict-form.html |  | ค่าเริ่มต้น | [01](pages/verdict-form_01.png) |  |

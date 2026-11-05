@@ -242,14 +242,14 @@
         title: "10.2 อุทธรณ์คำสั่งไม่เปิดเผยข้อมูล",
         nodes: {
           h0: { t: "j", l: "รับเรื่องอุทธรณ์ (เลือก 1 สาย)" },
-          h01: { t: "s", l: "appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง)", r: "case_bureau_admin", p: "10-2-appeal-01-legal-admin-intake.html" },
+          h01: { t: "s", l: "appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง)", r: "case_bureau_admin", p: "10-2-appeal-01-legal-admin-intake.html", sc: "L2_PENDING_APPEAL_INTAKE" },
           h01b: { t: "s", l: "appeal-01b เจ้าหน้าที่เขต (สายเขต)", r: "district_admin", p: "10-2-appeal-01b-district-intake.html" },
           h04: { t: "s", l: "appeal-04 นิติกรเจ้าของสำนวน ทำความเห็น (แก้ข้อมูลรับอุทธรณ์ได้)", r: "original_officer", p: "10-2-appeal-04-case-owner-opinion.html" },
           h06: { t: "s", l: "appeal-06 คณะอนุฯ วินิจฉัยอุทธรณ์", r: "appeal_ruling_subcommittee", p: "10-2-appeal-06-subcommittee-ruling.html" },
           h07: { t: "s", l: "appeal-07 ฝ่ายเลขาคณะอนุฯ บันทึกเสนอ", r: "appeal_subcommittee_secretariat", p: "10-2-appeal-07-secretariat-memo.html" },
           h09: { t: "s", l: "appeal-09 ผอ.กองบริหารคดี เสนอบอร์ด", r: "case_bureau_director", p: "10-2-appeal-09-case-bureau-director-board-propose.html" },
           b4: { t: "x", l: "บอร์ดมีมติต่อคำอุทธรณ์ (ป๊อปอัป B4)" },
-          h12: { t: "s", l: "appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล", r: "case_tracking_secretary", p: "10-2-appeal-12-tracking-secretary-notice-draft.html" },
+          h12: { t: "s", l: "appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล", r: "case_tracking_secretary", p: "10-2-appeal-12-tracking-secretary-notice-draft.html", sc: "L2_PENDING_APPEAL_NOTICE_DRAFT" },
           h13: { t: "s", l: "appeal-13 นิติกรเจ้าของสำนวน แจ้งผู้อุทธรณ์", r: "original_officer", p: "10-2-appeal-13-case-owner-notify-appellant.html" },
           end: { t: "e", l: "จบ" },
         },
@@ -316,8 +316,8 @@
         title: "10.3 รับเรื่องเพิ่มเติม (ศาลสั่งให้ทำเอกสารเพิ่มเติม)",
         nodes: {
           afrom: { t: "e", l: "กลับแผนผังสายหลัก (รับได้ทุกขั้นก่อนพิพากษา สถานะ L3_*) — คลิก", go: "103main" },
-          ai: { t: "s", l: "10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม", r: "admin_legal", p: "10-3-add-intake.html" },
-          aa: { t: "s", l: "10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง", r: "case_legal_officer", p: "10-3-add-additional.html" },
+          ai: { t: "s", l: "10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม", r: "admin_legal", p: "10-3-add-intake.html", sc: "L3_AWAITING_JUDGMENT" },
+          aa: { t: "s", l: "10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง", r: "case_legal_officer", p: "10-3-add-additional.html", sc: "L3_AWAITING_JUDGMENT", item: true },
           aend: { t: "e", l: "จบ กลับเคสหลัก" },
         },
         edges: [
@@ -496,6 +496,22 @@
     return id;
   }
 
+  /* หน้า 10-3-add-additional ต้องมีรายการรับเรื่องเพิ่มเติม (?item=) — ไม่มีก็เพิ่มรายการตัวอย่าง 1 รายการให้เคสนั้น */
+  function ensureAdditionalItem(caseId) {
+    const c = A.getCases().find((x) => x.id === caseId) || {};
+    const items = c.l3AdditionalItems || [];
+    if (items.length) return items[0].id;
+    const now = new Date();
+    const day = (d) => new Date(now.getTime() + d * 864e5).toISOString().slice(0, 10);
+    const item = {
+      id: "ADD-DEMO-1", type: "EXPLAIN_MORE", typeOther: "", orderNo: "คส. 123/2569", orderDate: day(0), dueDate: day(15),
+      files: [], note: "ศาลสั่งให้ทำคำชี้แจงเพิ่มเติม (ข้อมูลตัวอย่าง)", recordedBy: "ธุรการกองกฎหมาย", recordedRole: "admin_legal",
+      recordedAt: now.toISOString(), status: "RECEIVED",
+    };
+    A.updateCase(caseId, { l3AdditionalItems: items.concat([item]) });
+    return item.id;
+  }
+
   /* ลิงก์แบบ relative (./หน้า.html?id=…&role=…) — ใช้ได้ทั้ง localhost และ GitHub Pages
      หน้าปลายทางตั้งบทบาทจาก ?role= เอง (ecmis-app.js) ไม่ต้องพึ่ง sessionStorage ข้ามแท็บ */
   function stepUrl(n) {
@@ -503,6 +519,7 @@
     const q = [];
     if (id) q.push("id=" + encodeURIComponent(id));
     if (n.r) q.push("role=" + encodeURIComponent(n.r));
+    if (id && n.item) q.push("item=" + encodeURIComponent(ensureAdditionalItem(id)));
     return "./" + n.p + (q.length ? "?" + q.join("&") : "");
   }
   function openStep(n) {
@@ -650,6 +667,23 @@
     }).join("") + "</ol>";
   }
 
+  /* หน้าที่ไม่อยู่ใน flow (รายการงาน/รายงาน/ค้นหา ฯลฯ) — มาจาก screenshots/manifest.js key "pages.<ชื่อหน้า>" */
+  const PAGE_KEYS = Object.keys(window.SHOT_MANIFEST || {}).filter((k) => k.indexOf("pages.") === 0).sort();
+  function pagesSectionHtml() {
+    if (!PAGE_KEYS.length) return "";
+    const rows = PAGE_KEYS.map((key) => {
+      const e = shotsOf(key);
+      const label = String(e.label || e.page).replace(/^E-CMIS\s*-\s*/, "") || e.page;
+      const q = esc([label, e.page].join(" ").toLowerCase());
+      return '<li data-q="' + q + '"><div><div class="step-t">' + esc(label) + '</div><div class="step-r"><span class="step-p">' + esc(e.page) + "</span></div></div>" +
+        '<div class="row-r">' + shotControls(key, label) +
+        '<a class="go" target="_blank" href="./' + esc(e.page) + '"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดหน้า</a></div></li>';
+    }).join("");
+    return '<section class="act" data-act="pages"><h2><span class="dot" style="background:#64748b"></span>หน้าอื่นๆ (นอก flow)</h2>' +
+      '<details class="box lane" open><summary><i class="fa-solid fa-table-list"></i> หน้าจอที่ไม่ใช่ขั้นในแผนผัง (ภาพทั้งหน้า)' +
+      '<span class="n">' + PAGE_KEYS.length + " หน้า</span></summary><ol>" + rows + "</ol></details></section>";
+  }
+
   let gi = 0;
   const GRAPHS = [];
   function render() {
@@ -667,7 +701,8 @@
           '<span class="n">' + steps + ' ขั้นในระบบ</span></summary><div class="graph"><pre class="mermaid">' + esc(mermaidText(g, idx)) + "</pre></div></details>" +
           '<details class="box lane"><summary><i class="fa-solid fa-list-ol"></i> รายการขั้น: ' + esc(g.title) +
           '<span class="n">' + steps + " ขั้น</span></summary>" + listHtml(g, idx) + "</details>";
-      }).join("") + "</section>").join("");
+      }).join("") + "</section>").join("") + pagesSectionHtml();
+    if (PAGE_KEYS.length) document.getElementById("tabs").insertAdjacentHTML("beforeend", '<button type="button" data-act="pages">หน้าอื่นๆ</button>');
     if (window.mermaid) {
       mermaid.initialize({ startOnLoad: false, securityLevel: "loose", theme: "base", flowchart: { htmlLabels: true, curve: "basis" },
         themeVariables: { fontFamily: "Sarabun, sans-serif", fontSize: "13px" } });

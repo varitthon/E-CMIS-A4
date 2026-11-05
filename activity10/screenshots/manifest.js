@@ -1748,7 +1748,7 @@ window.SHOT_MANIFEST = {
   "label": "appeal-01 ธุรการกองบริหารคดี (ส่วนกลาง)",
   "page": "10-2-appeal-01-legal-admin-intake.html",
   "role": "case_bureau_admin",
-  "caseId": "คำร้อง-100050/2569",
+  "caseId": "คำร้อง-100032/2569",
   "shots": [
    {
     "part": 1,
@@ -1756,12 +1756,24 @@ window.SHOT_MANIFEST = {
     "thumb": "102/h01_10-2-appeal-01-legal-admin-intake_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "102/h01_10-2-appeal-01-legal-admin-intake_02.png",
+    "thumb": "102/h01_10-2-appeal-01-legal-admin-intake_02.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 3,
+    "file": "102/h01_10-2-appeal-01-legal-admin-intake_03.png",
+    "thumb": "102/h01_10-2-appeal-01-legal-admin-intake_03.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
    }
   ],
-  "errors": [
-   "no .form-card (top of page captured)"
-  ],
-  "capturedAt": "2026-11-05T07:04:28.377Z"
+  "errors": [],
+  "capturedAt": "2026-11-05T07:34:44.548Z"
  },
  "102.1.h01b": {
   "act": "102",
@@ -1901,7 +1913,7 @@ window.SHOT_MANIFEST = {
   "label": "appeal-12 เลขาฯ ติดตามคดี ทำหนังสือแจ้งผล",
   "page": "10-2-appeal-12-tracking-secretary-notice-draft.html",
   "role": "case_tracking_secretary",
-  "caseId": "คำร้อง-100042/2569",
+  "caseId": "คำร้อง-100043/2569",
   "shots": [
    {
     "part": 1,
@@ -1909,12 +1921,17 @@ window.SHOT_MANIFEST = {
     "thumb": "102/h12_10-2-appeal-12-tracking-secretary-notice-draft_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "102/h12_10-2-appeal-12-tracking-secretary-notice-draft_02.png",
+    "thumb": "102/h12_10-2-appeal-12-tracking-secretary-notice-draft_02.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
    }
   ],
-  "errors": [
-   "no .form-card (top of page captured)"
-  ],
-  "capturedAt": "2026-11-05T07:04:55.993Z"
+  "errors": [],
+  "capturedAt": "2026-11-05T07:34:46.005Z"
  },
  "102.1.h13": {
   "act": "102",
@@ -3036,7 +3053,7 @@ window.SHOT_MANIFEST = {
   "label": "10-3-add-intake ธุรการ / นิติกร รับเรื่องเพิ่มเติม",
   "page": "10-3-add-intake.html",
   "role": "admin_legal",
-  "caseId": null,
+  "caseId": "DEMO-10-3-add-intake/2569",
   "shots": [
    {
     "part": 1,
@@ -3046,11 +3063,8 @@ window.SHOT_MANIFEST = {
     "label": "ค่าเริ่มต้น"
    }
   ],
-  "errors": [
-   "no case prepared (page opened without ?id=)",
-   "no .form-card (top of page captured)"
-  ],
-  "capturedAt": "2026-11-05T07:08:20.566Z"
+  "errors": [],
+  "capturedAt": "2026-11-05T07:34:47.148Z"
  },
  "103.103add.aa": {
   "act": "103",
@@ -3058,7 +3072,7 @@ window.SHOT_MANIFEST = {
   "label": "10-3-add-additional นิติกร จัดทำ บันทึกเสนอ + หนังสือนำส่ง ลงนามจริง แนบสแกน ออกเลข ส่ง",
   "page": "10-3-add-additional.html",
   "role": "case_legal_officer",
-  "caseId": null,
+  "caseId": "DEMO-10-3-add-intake/2569",
   "shots": [
    {
     "part": 1,
@@ -3066,13 +3080,48 @@ window.SHOT_MANIFEST = {
     "thumb": "103/aa_10-3-add-additional_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "103/aa_10-3-add-additional_02.png",
+    "thumb": "103/aa_10-3-add-additional_02.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 3,
+    "file": "103/aa_10-3-add-additional_03.png",
+    "thumb": "103/aa_10-3-add-additional_03.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 1,
+    "file": "103/aa_10-3-add-additional__5_01.png",
+    "thumb": "103/aa_10-3-add-additional__5_01.thumb.jpg",
+    "branch": "5",
+    "label": "แบบที่ 5 — บันทึกเสนอ (เรื่องเดิม / ข้อเท็จจริง / ข้อเสนอ) + หนังสือถึงอธิบดีอัย",
+    "group": "in_template"
+   },
+   {
+    "part": 2,
+    "file": "103/aa_10-3-add-additional__5_02.png",
+    "thumb": "103/aa_10-3-add-additional__5_02.thumb.jpg",
+    "branch": "5",
+    "label": "แบบที่ 5 — บันทึกเสนอ (เรื่องเดิม / ข้อเท็จจริง / ข้อเสนอ) + หนังสือถึงอธิบดีอัย",
+    "group": "in_template"
+   },
+   {
+    "part": 3,
+    "file": "103/aa_10-3-add-additional__5_03.png",
+    "thumb": "103/aa_10-3-add-additional__5_03.thumb.jpg",
+    "branch": "5",
+    "label": "แบบที่ 5 — บันทึกเสนอ (เรื่องเดิม / ข้อเท็จจริง / ข้อเสนอ) + หนังสือถึงอธิบดีอัย",
+    "group": "in_template"
    }
   ],
-  "errors": [
-   "no case prepared (page opened without ?id=)",
-   "no .form-card (top of page captured)"
-  ],
-  "capturedAt": "2026-11-05T07:08:23.923Z"
+  "errors": [],
+  "capturedAt": "2026-11-05T07:34:51.774Z"
  },
  "103.103verdict.v00": {
   "act": "103",
@@ -4153,137 +4202,179 @@ window.SHOT_MANIFEST = {
   "errors": [],
   "capturedAt": "2026-11-05T07:12:14.906Z"
  },
- "other.board-report": {
-  "act": "other",
-  "graph": "",
-  "label": "board-report",
+ "pages.board-report": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "E-CMIS - รายงานผลตามมติคณะกรรมการ",
   "page": "board-report.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/board-report_01.png",
-    "thumb": "other/board-report_01.thumb.jpg",
+    "file": "pages/board-report_01.png",
+    "thumb": "pages/board-report_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:16.007Z"
+  "capturedAt": "2026-11-05T07:31:13.932Z"
  },
- "other.dasdbord": {
-  "act": "other",
-  "graph": "",
-  "label": "dasdbord",
+ "pages.dasdbord": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "แดชบอร์ดสถิติ",
   "page": "dasdbord.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/dasdbord_01.png",
-    "thumb": "other/dasdbord_01.thumb.jpg",
+    "file": "pages/dasdbord_01.png",
+    "thumb": "pages/dasdbord_01.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "pages/dasdbord_02.png",
+    "thumb": "pages/dasdbord_02.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 3,
+    "file": "pages/dasdbord_03.png",
+    "thumb": "pages/dasdbord_03.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 4,
+    "file": "pages/dasdbord_04.png",
+    "thumb": "pages/dasdbord_04.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:17.654Z"
+  "capturedAt": "2026-11-05T07:36:19.929Z"
  },
- "other.login": {
-  "act": "other",
-  "graph": "",
-  "label": "login",
+ "pages.login": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "เข้าสู่ระบบ",
   "page": "login.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/login_01.png",
-    "thumb": "other/login_01.thumb.jpg",
+    "file": "pages/login_01.png",
+    "thumb": "pages/login_01.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "pages/login_02.png",
+    "thumb": "pages/login_02.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:19.009Z"
+  "capturedAt": "2026-11-05T07:31:18.228Z"
  },
- "other.notices": {
-  "act": "other",
-  "graph": "",
-  "label": "notices",
+ "pages.notices": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "E-CMIS - หนังสือแจ้งจากหน่วยงานอื่น",
   "page": "notices.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/notices_01.png",
-    "thumb": "other/notices_01.thumb.jpg",
+    "file": "pages/notices_01.png",
+    "thumb": "pages/notices_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:19.973Z"
+  "capturedAt": "2026-11-05T07:34:53.398Z"
  },
- "other.registry": {
-  "act": "other",
-  "graph": "",
-  "label": "registry",
+ "pages.registry": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "E-CMIS - สารบบคำวินิจฉัย/คำพิพากษา",
   "page": "registry.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/registry_01.png",
-    "thumb": "other/registry_01.thumb.jpg",
+    "file": "pages/registry_01.png",
+    "thumb": "pages/registry_01.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "pages/registry_02.png",
+    "thumb": "pages/registry_02.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:21.017Z"
+  "capturedAt": "2026-11-05T07:31:20.576Z"
  },
- "other.search-case": {
-  "act": "other",
-  "graph": "",
-  "label": "search-case",
+ "pages.search-case": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "E-CMIS - ค้นหาสำนวน",
   "page": "search-case.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/search-case_01.png",
-    "thumb": "other/search-case_01.thumb.jpg",
+    "file": "pages/search-case_01.png",
+    "thumb": "pages/search-case_01.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "pages/search-case_02.png",
+    "thumb": "pages/search-case_02.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:22.035Z"
+  "capturedAt": "2026-11-05T07:35:26.727Z"
  },
- "other.verdict-form": {
-  "act": "other",
-  "graph": "",
-  "label": "verdict-form",
+ "pages.verdict-form": {
+  "act": "pages",
+  "graph": "หน้าอื่นๆ (นอก flow)",
+  "label": "E-CMIS - บันทึกผลคำพิพากษา",
   "page": "verdict-form.html",
   "role": "",
   "caseId": null,
   "shots": [
    {
     "part": 1,
-    "file": "other/verdict-form_01.png",
-    "thumb": "other/verdict-form_01.thumb.jpg",
+    "file": "pages/verdict-form_01.png",
+    "thumb": "pages/verdict-form_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:12:22.981Z"
+  "capturedAt": "2026-11-05T07:31:22.631Z"
  }
 };
