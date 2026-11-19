@@ -27,6 +27,15 @@ const OTHER_PAGES = ["board-report", "dasdbord", "login", "notices", "registry",
 const PAGE_NAMES = { dasdbord: "แดชบอร์ดสถิติ" };
 /* sample data so list pages are not empty — written through the app's own API (localStorage only) */
 const PAGE_PREP = {
+  /* verdict form shows "ไม่พบสำนวน 10.1 ที่ระบุ" without ?id= — open it on the first real 10.1 case (2026-11-17) */
+  "verdict-form": {
+    query: (pg) => pg.evaluate(() => {
+      const A = window.Activity10;
+      if (!A) return "";
+      const k = A.getCases().find((c) => !/^DEMO-/.test(c.id) && (!A.isCase101 || A.isCase101(c)));
+      return k ? "id=" + encodeURIComponent(k.id) : "";
+    }),
+  },
   notices: {
     before: (pg) => pg.evaluate(() => {
       const A = window.Activity10;
@@ -407,7 +416,14 @@ async function main() {
         await load(pg, fileUrl(p + ".html"));
         console.log("  prep", p + ":", await prep.before(pg));
       }
-      shots = await captureStep(pg, fileUrl(p + ".html"), path.join("pages", p), true, errors, prep.after);
+      /* pages that need a case in the URL (e.g. verdict-form?id=) — prep.query returns "id=..." */
+      let qs = "";
+      if (prep.query) {
+        await load(pg, fileUrl(p + ".html"));
+        qs = (await prep.query(pg)) || "";
+        console.log("  query", p + ":", qs || "(none)");
+      }
+      shots = await captureStep(pg, fileUrl(p + ".html" + (qs ? "?" + qs : "")), path.join("pages", p), true, errors, prep.after);
       title = (await pg.title().catch(() => "")).replace(/\s*\|.*$/, "").trim();
       await makeThumbs(tp, shots);
     } catch (e) {

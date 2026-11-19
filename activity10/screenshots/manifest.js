@@ -2713,20 +2713,6 @@ window.SHOT_MANIFEST = {
     "label": "ค่าเริ่มต้น"
    },
    {
-    "part": 3,
-    "file": "103/s02_10-3b-02-legal-admin-number-stay-objection_03.png",
-    "thumb": "103/s02_10-3b-02-legal-admin-number-stay-objection_03.thumb.jpg",
-    "branch": null,
-    "label": "ค่าเริ่มต้น"
-   },
-   {
-    "part": 4,
-    "file": "103/s02_10-3b-02-legal-admin-number-stay-objection_04.png",
-    "thumb": "103/s02_10-3b-02-legal-admin-number-stay-objection_04.thumb.jpg",
-    "branch": null,
-    "label": "ค่าเริ่มต้น"
-   },
-   {
     "part": 1,
     "file": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_01.png",
     "thumb": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_01.thumb.jpg",
@@ -2741,26 +2727,10 @@ window.SHOT_MANIFEST = {
     "branch": "RETURN",
     "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
     "group": "in_decision"
-   },
-   {
-    "part": 3,
-    "file": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_03.png",
-    "thumb": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_03.thumb.jpg",
-    "branch": "RETURN",
-    "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
-    "group": "in_decision"
-   },
-   {
-    "part": 4,
-    "file": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_04.png",
-    "thumb": "103/s02_10-3b-02-legal-admin-number-stay-objection__RETURN_04.thumb.jpg",
-    "branch": "RETURN",
-    "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
-    "group": "in_decision"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:07:29.377Z"
+  "capturedAt": "2026-11-17T03:32:19.843Z"
  },
  "103.103stay.s2a": {
   "act": "103",
@@ -2785,27 +2755,6 @@ window.SHOT_MANIFEST = {
     "label": "ค่าเริ่มต้น"
    },
    {
-    "part": 3,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection_03.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection_03.thumb.jpg",
-    "branch": null,
-    "label": "ค่าเริ่มต้น"
-   },
-   {
-    "part": 4,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection_04.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection_04.thumb.jpg",
-    "branch": null,
-    "label": "ค่าเริ่มต้น"
-   },
-   {
-    "part": 5,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection_05.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection_05.thumb.jpg",
-    "branch": null,
-    "label": "ค่าเริ่มต้น"
-   },
-   {
     "part": 1,
     "file": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_01.png",
     "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_01.thumb.jpg",
@@ -2820,34 +2769,10 @@ window.SHOT_MANIFEST = {
     "branch": "RETURN",
     "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
     "group": "in_decision"
-   },
-   {
-    "part": 3,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_03.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_03.thumb.jpg",
-    "branch": "RETURN",
-    "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
-    "group": "in_decision"
-   },
-   {
-    "part": 4,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_04.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_04.thumb.jpg",
-    "branch": "RETURN",
-    "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
-    "group": "in_decision"
-   },
-   {
-    "part": 5,
-    "file": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_05.png",
-    "thumb": "103/s2a_10-3b-02a-secgen-review-stay-objection__RETURN_05.thumb.jpg",
-    "branch": "RETURN",
-    "label": "ส่งกลับ ผอ.กองกฎหมาย (ส่งกลับ ผอ.กองกฎหมายทบทวนร่าง — ต้องระบุเหตุผล)",
-    "group": "in_decision"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:07:39.338Z"
+  "capturedAt": "2026-11-17T03:32:26.787Z"
  },
  "103.103stay.s03": {
   "act": "103",
@@ -4372,9 +4297,16 @@ window.SHOT_MANIFEST = {
     "thumb": "pages/verdict-form_01.thumb.jpg",
     "branch": null,
     "label": "ค่าเริ่มต้น"
+   },
+   {
+    "part": 2,
+    "file": "pages/verdict-form_02.png",
+    "thumb": "pages/verdict-form_02.thumb.jpg",
+    "branch": null,
+    "label": "ค่าเริ่มต้น"
    }
   ],
   "errors": [],
-  "capturedAt": "2026-11-05T07:31:22.631Z"
+  "capturedAt": "2026-11-17T04:03:20.848Z"
  }
 };
