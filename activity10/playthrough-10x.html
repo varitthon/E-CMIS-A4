@@ -38,6 +38,18 @@
   .graph { padding:10px; overflow:auto; text-align:center; max-height:780px; }
   .graph svg { max-width:none !important; height:auto; }
   .graph .node.clickable { cursor:pointer; }
+  /* ---- ภาพรวม: แถบช่องทาง (swimlane) แบบ drawio — ชื่อช่องทางแนวตั้งด้านซ้าย ---- */
+  .ov-lanes { margin:10px; border:1px solid #334155; }
+  .ov-lane { display:grid; grid-template-columns:44px minmax(0,1fr); background:var(--lane-bg); }
+  .ov-lane + .ov-lane { border-top:1px solid #334155; }
+  .ov-name { background:var(--lane-bar); border-right:1px solid #334155; display:flex; align-items:center; justify-content:center; }
+  .ov-name span { writing-mode:vertical-rl; transform:rotate(180deg); font-weight:700; color:var(--lane-ink); white-space:nowrap; }
+  .ov-body { min-width:0; padding:4px 0; }
+  .ov-title { font-weight:700; margin:8px 14px 0; }
+  .graph.ov { max-height:none; text-align:left; padding:6px 14px; }
+  .graph.ov svg { max-width:100% !important; }
+  .graph.ov .node.clickable:hover rect, .graph.ov .node.clickable:hover polygon { stroke:#f59e0b !important; stroke-width:3px !important; }
+  @media (max-width:640px) { .ov-lane { grid-template-columns:30px minmax(0,1fr); } .ov-lanes { margin:6px 0; } .graph.ov svg { max-width:none !important; } }
   ol { margin:0; padding:6px 14px 10px 14px; list-style:none; counter-reset:s; }
   ol li { counter-increment:s; display:grid; grid-template-columns:30px 1fr auto; gap:10px; align-items:center; padding:7px 0; border-bottom:1px dashed var(--line); }
   ol li:last-child { border-bottom:0; }
@@ -121,6 +133,7 @@
     <b>ภาพหน้าจอ</b>: ชี้กล่องในแผนผังเพื่อดูภาพตัวอย่าง หรือกดภาพเล็ก / <b>ดูภาพ</b> ในรายการขั้น (มีภาพแยกตามทางเลือกในฟอร์ม)
     <div style="margin-top:8px;font-size:.92em">
       <b>ปรับล่าสุด (พ.ย. 2569):</b>
+      แท็บ <b>ภาพรวม</b> — แผนผังภาพรวมกิจกรรม 10 ตามผังกระบวนงานภาพรวม (เล่ม 4) คลิกกล่องเพื่อไปแผนผังละเอียดและไฮไลต์ขั้นในข้อนั้น ·
       10.1 — ตัดหน้า 10/11/12, ผลมติบอร์ดเป็นช่องกรอกที่ค่าตั้งต้นมาให้ในหน้า 13 (แก้ได้ มีประวัติ) หลังผู้บริหารลงนามเข้าคิวนิติกรโดยตรง ·
       10.2 — 10-2-03 เลือกบรรจุวาระ/ไม่บรรจุวาระ (ไม่บรรจุ = ไปสาขาเลย และลงนามแล้วเปิดหน้าถัดไปทันที 15/22/25), ตัดหน้า 10-2-35/36 (ธุรการรับมติบอร์ดแล้วไป 10-2-11 → 37 → 13 → 14, หนังสือแจ้งส่งถึงกอง/สำนักที่ส่งคำร้อง), 10-3-04 เลือกเสนอบอร์ด/ไม่เสนอบอร์ด (ไม่เสนอ = ข้าม 07/08/09 และ B3 ไป 10-3-13, กด "เปลี่ยนเป็นเสนอบอร์ด" กลับ 04 ได้), รับเรื่องเพิ่มเติมเลือกคำขอทุเลามีลิงก์ไป 10-3b-01 และมีปุ่มเปิดเคสลูก -B, 10-2-06 ให้เลขาฯ บันทึกมติรวมบันทึกผลมติเลขา, ตัด 04/05/07/33 ·
       ทุกกิจกรรม — ผู้รับงานคนแรก (นิติกร / เลขาฯ) แก้ข้อมูลที่ธุรการกรอกตอนรับเรื่องได้ · ลิงก์หน้านี้อยู่ในเมนูสลับบทบาท
@@ -383,6 +396,100 @@
       }],
     },
   ];
+
+  /* ---- ภาพรวมกิจกรรม 10 — ตาม docs/main-doc/เล่ม 4 …/01 ผังกระบวนงานภาพรวม/กิจกรรมที่ 10 ผังกระบวนงานภาพรวม.drawio
+     (3 ช่องทาง: กองกฎหมาย / กลุ่มงานความเห็นแย้ง / กลุ่มงานคดี) · คลิกกล่อง = ไปแผนผังละเอียด + ไฮไลต์ขั้นที่อยู่ในข้อนั้น ---- */
+  /* แต่ละช่องทาง = แถบแนวนอน (เรียงตาม drawio) · แต่ละส่วนในแถบ = แผนผัง mermaid ของตัวเอง (ไม่มีเส้นข้ามแถบ ใช้กล่อง "ไป/จาก เรื่องใด?" แทน) */
+  const OV_LANES = [
+    {
+      name: "กองกฎหมาย", bg: "#f5f3ff", bar: "#e9e3fb", ink: "#4c1d95",
+      parts: [{
+        title: "",
+        lines: [
+          'ov_s((" เริ่ม ")) --> ov_t0["ธุรการกองกฎหมายรับเรื่อง<br/>ผอ.กองกฎหมาย มอบหมาย"] --> ov_g0{{"เรื่องใด?"}}',
+          'ov_g0 -->|"10.1 ความเห็นอัยการ"| ov_to1>"ไป 10.1 (กลุ่มงานความเห็นแย้ง)"]',
+          'ov_g0 -->|"10.2 เปิดเผยข้อมูล"| ov_to2>"ไป 10.2 (กลุ่มงานความเห็นแย้ง)"]',
+          'ov_g0 -->|"10.3 คดีปกครอง"| ov_to3>"ไป 10.3 (กลุ่มงานคดี)"]',
+          "class ov_to1,ov_to2,ov_to3 lk",
+        ],
+      }],
+    },
+    {
+      name: "กลุ่มงานความเห็นแย้ง", bg: "#f0fdf4", bar: "#d5f2dc", ink: "#14532d",
+      parts: [{
+        title: "10.1 สำนวนคดีในชั้นอัยการและชั้นศาล",
+        lines: [
+          'ov_in1>"เรื่องใด? = 10.1"] --> ov_101_1["1. รับเรื่องจากอัยการ เสนอเลขาธิการ/<br/>คณะกรรมการ ป.ป.ท."] --> ov_101_2["2. รับผลมติร่าง และส่งหนังสือ<br/>ถึงอัยการ/อสส."] --> ov_101_3["3. รับคำวินิจฉัย<br/>อัยการสูงสุดคดีถึงที่สุด"] --> ov_101_e((" สิ้นสุด "))',
+          "class ov_in1 lk",
+        ],
+      }, {
+        title: "10.2 คำขอเปิดเผยข้อมูลข่าวสาร",
+        lines: [
+          'ov_in2>"เรื่องใด? = 10.2"] --> ov_102_1["1. รับคำขอพิจารณามีมติ<br/>เสนอผู้บริหาร"] --> ov_102_j1{{"ผลการพิจารณา?"}}',
+          'ov_102_j1 -->|"ไม่บรรจุวาระ / ไม่เปิดเผย /<br/>เปิดเผย คดีแล้วเสร็จ"| ov_102_3["3. แจ้งผลกอง/<br/>สำนักที่ส่งคำร้อง"]',
+          'ov_102_j1 -->|"เปิดเผยอยู่<br/>ระหว่างไต่สวน"| ov_102_2["2. เสนอคณะกรรมการ ป.ป.ท.<br/>กรณีเปิดเผยอยู่ระหว่างไต่สวน"] --> ov_102_3',
+          'ov_102_3 --> ov_102_j2{{"ผู้ยื่นอุทธรณ์?"}}',
+          'ov_102_j2 -->|"อุทธรณ์"| ov_102_4["4. รับอุทธรณ์<br/>แจ้งผลอุทธรณ์"] --> ov_102_e((" สิ้นสุด "))',
+          'ov_102_j2 -->|"ไม่อุทธรณ์"| ov_102_e',
+          "class ov_in2 lk",
+        ],
+      }],
+    },
+    {
+      name: "กลุ่มงานคดี", bg: "#fdf2f8", bar: "#f7dcea", ink: "#831843",
+      parts: [{
+        title: "10.3 คดีปกครอง",
+        lines: [
+          'ov_in3>"เรื่องใด? = 10.3"] --> ov_103_1["1. รับหมายเรียกทำ<br/>คำให้การ/ คำชี้แจง"] -->|"รอคำพิพากษา"| ov_103_3["3. รับคำพิพากษากำหนด<br/>แนวทางและคำแก้อุทธรณ์"] --> ov_103_j{{"ผลคดี?"}}',
+          'ov_103_j -->|"เพิกถอนคำสั่ง<br/>หรือคำพิพากษาอื่น"| ov_103_4["4. พิจารณาและยื่นอุทธรณ์<br/>/ แจ้งไม่อุทธรณ์"] --> ov_103_e2((" สิ้นสุด "))',
+          'ov_103_j -->|"ยกฟ้อง (ปิดสำนวน /<br/>คำแก้อุทธรณ์ในข้อ 3)"| ov_103_e1((" สิ้นสุด "))',
+          "class ov_in3 lk",
+        ],
+      }, {
+        title: "กระบวนงานย่อย - ก่อนมีคำพิพากษา (เริ่มได้ระหว่างข้อ 1–3)",
+        lines: [
+          'ov_sub_s((" เริ่ม ")) --> ov_103_2["2. เรื่องระหว่างคดี<br/>(ทุเลา / เพิ่มเติม)"] --> ov_sub_e((" สิ้นสุด "))',
+        ],
+      }],
+    },
+  ];
+  /* ชนิดกล่องตาม id: ov_*_e / ov_s = จุดเริ่ม/จบ · j = จุดแยก · ที่เหลือที่คลิกได้ = ขั้น */
+  const OV_DEFS = [
+    "classDef st fill:#eef2ff,stroke:#1e3a8a,stroke-width:1.5px,color:#0f172a",
+    "classDef jn fill:#fef3c7,stroke:#b45309,stroke-width:1.5px,color:#0f172a",
+    "classDef en fill:#dcfce7,stroke:#16a34a,color:#166534",
+    "classDef lk fill:#fff,stroke:#94a3b8,stroke-dasharray:4 3,color:#475569",
+  ];
+  function ovPartMermaid(part) {
+    const text = part.lines.join("\n");
+    const ids = Array.from(new Set(text.match(/\bov_\w+/g) || []));
+    const out = ["flowchart LR"].concat(part.lines.map((l) => "  " + l), OV_DEFS.map((l) => "  " + l));
+    ids.forEach((id) => {
+      if (/^ov_(s|sub_s)$|_e\d?$/.test(id)) out.push("  class " + id + " en");
+      else if (/_j\d?$|^ov_g0$/.test(id)) out.push("  class " + id + " jn");
+      else if (!/^ov_(in|to)\d$/.test(id)) out.push("  class " + id + " st");
+      if (OV_TARGETS[id]) out.push("  click " + id + " ovGo");
+    });
+    return out.join("\n");
+  }
+  /* กล่องภาพรวม → แผนผังละเอียด: act = แท็บที่เปิด ("" = ทั้งหมด) · on = [[skey แผนผัง, [กล่อง] | "*" ทั้งแผนผัง]] */
+  const OV_TARGETS = {
+    ov_t0: { act: "", on: [["101.0", ["a02", "a03", "a04"]], ["102.0", ["c02", "c01"]], ["103.103main", ["m02", "m3a"]]] },
+    ov_101_1: { act: "101", on: [["101.0", ["a02", "a03", "a04", "a05", "a06", "a07", "a08", "a09", "r1"]]] },
+    ov_101_2: { act: "101", on: [["101.0", ["a13", "a14", "a15", "a16", "r2", "a17", "a18"]]] },
+    ov_101_3: { act: "101", on: [["101.0", ["x1", "a19", "a20", "a21", "a22", "end"]]] },
+    ov_102_1: { act: "102", on: [["102.0", ["c02", "c01", "c02b", "c03", "c06", "c08", "c09", "c32", "c31", "c10"]]] },
+    ov_102_j1: { act: "102", on: [["102.0", ["c03", "c10"]]] },
+    ov_102_2: { act: "102", on: [["102.0", ["f25", "f27", "f26", "f29", "b2", "f30"]]] },
+    ov_102_3: { act: "102", on: [["102.0", ["d15", "d16", "d17", "e22", "e23", "e24", "g11", "g37", "g13", "g14", "end"]]] },
+    ov_102_j2: { act: "102", on: [["102.0", ["end"]], ["102.1", ["h0"]]] },
+    ov_102_4: { act: "102", on: [["102.1", "*"]] },
+    ov_103_1: { act: "103", on: [["103.103main", ["m02", "m3a", "m3b", "m04", "m07", "m08", "m09", "b3", "m13", "m15", "m16", "m17", "m23", "x6"]]] },
+    ov_103_2: { act: "103", on: [["103.103stay", "*"], ["103.103add", "*"]] },
+    ov_103_3: { act: "103", on: [["103.103verdict", ["v00", "v02", "v03", "v04", "v05", "v06", "v07", "v08", "v10", "v11", "v12", "v13", "v14", "v15", "xsup", "fin"]]] },
+    ov_103_j: { act: "103", on: [["103.103verdict", ["v06"]]] },
+    ov_103_4: { act: "103", on: [["103.103verdict", ["v18", "v19", "v20", "v22", "v23", "v24", "v25", "v26", "v27", "v28", "b5", "v29", "v32", "v33", "v34", "v35", "v36", "v37", "v40", "v45", "v46", "v47", "v48", "end"]]] },
+  };
 
   const ROLES = (window.ECMIS && window.ECMIS.ROLES) || [];
   const roleText = (id) => {
@@ -684,13 +791,74 @@
       '<span class="n">' + PAGE_KEYS.length + " หน้า</span></summary><ol>" + rows + "</ol></details></section>";
   }
 
+  function overviewHtml() {
+    return '<section class="act" data-act="overview"><h2><span class="dot" style="background:var(--pri)"></span>ภาพรวมกระบวนงาน กิจกรรมที่ 10</h2>' +
+      '<details class="box" open><summary><i class="fa-solid fa-sitemap"></i> แผนผัง: ภาพรวมกิจกรรม 10 (ตามผังกระบวนงานภาพรวม เล่ม 4)' +
+      '<span class="n">คลิกกล่อง = ไปแผนผังละเอียด + ไฮไลต์ขั้นในข้อนั้น</span></summary>' +
+      '<div class="ov-lanes">' + OV_LANES.map((lane) =>
+        '<div class="ov-lane" style="--lane-bg:' + lane.bg + ";--lane-bar:" + lane.bar + ";--lane-ink:" + lane.ink + '">' +
+        '<div class="ov-name"><span>' + esc(lane.name) + "</span></div><div class=\"ov-body\">" +
+        lane.parts.map((part) => (part.title ? '<div class="ov-title">' + esc(part.title) + "</div>" : "") +
+          '<div class="graph ov"><pre class="mermaid">' + esc(ovPartMermaid(part)) + "</pre></div>").join("") +
+        "</div></div>").join("") + "</div></details></section>";
+  }
+  /* คลิกกล่องภาพรวม → สลับแท็บ เปิดแผนผังละเอียด ไฮไลต์กล่อง/เส้นของข้อนั้น (ค้างไว้จนกว่าจะชี้แผนผังนั้น) */
+  function clearFocus() {
+    document.querySelectorAll(".graph[data-gi].hovering").forEach((box) => {
+      box.classList.remove("hovering");
+      box.querySelectorAll(".hl, .nx, .self").forEach((el) => el.classList.remove("hl", "nx", "self"));
+    });
+  }
+  function focusGraph(skey, ids) {
+    const idx = GRAPHS.findIndex((g) => g && g.skey === skey);
+    const box = idx < 0 ? null : document.querySelector('.graph[data-gi="' + idx + '"]');
+    if (!box) return null;
+    const g = GRAPHS[idx];
+    const set = new Set((ids === "*" ? Object.keys(g.nodes) : ids).map((id) => "g" + idx + "_" + id));
+    box.classList.add("hovering");
+    box.querySelectorAll(".node").forEach((el) => { if (set.has(nodeIdOf(el))) el.classList.add("hl"); });
+    const labelEls = box.querySelectorAll(".edgeLabels > .edgeLabel");
+    box.querySelectorAll("path.flowchart-link").forEach((el, i) => {
+      const cls = Array.from(el.classList);
+      const s = (cls.find((c) => c.indexOf("LS-") === 0) || "").slice(3);
+      const t = (cls.find((c) => c.indexOf("LE-") === 0) || "").slice(3);
+      if (set.has(s) && set.has(t)) {
+        el.classList.add("hl");
+        if (labelEls[i]) labelEls[i].classList.add("hl");
+      }
+    });
+    const det = box.closest("details");
+    det.open = true;
+    /* แผนผังยาวเลื่อนในกรอบ — เลื่อนกรอบไปให้เห็นกล่องแรกที่ไฮไลต์ */
+    const lit = box.querySelector(".node.hl");
+    if (lit) {
+      const br = box.getBoundingClientRect();
+      const nr = lit.getBoundingClientRect();
+      box.scrollTop += nr.top - br.top - 40;
+      box.scrollLeft += nr.left - br.left - (box.clientWidth - nr.width) / 2;
+    }
+    det.classList.add("flash");
+    setTimeout(() => det.classList.remove("flash"), 1600);
+    return det;
+  }
+  window.ovGo = function (nid) {
+    const t = OV_TARGETS[nid];
+    if (!t) return;
+    const tab = document.querySelector('#tabs [data-act="' + t.act + '"]');
+    if (tab) tab.click();
+    clearFocus();
+    const first = t.on.map(([skey, ids]) => focusGraph(skey, ids)).filter(Boolean)[0];
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   let gi = 0;
   const GRAPHS = [];
   function render() {
     document.getElementById("tabs").innerHTML =
+      '<button type="button" data-act="overview">ภาพรวม</button>' +
       '<button type="button" class="on" data-act="">ทั้งหมด</button>' +
       ACTS.map((a) => '<button type="button" data-act="' + a.id + '">' + esc(a.name.split(" ")[0] + " " + a.name.split(" ")[1]) + "</button>").join("");
-    document.getElementById("acts").innerHTML = ACTS.map((a) =>
+    document.getElementById("acts").innerHTML = overviewHtml() + ACTS.map((a) =>
       '<section class="act" data-act="' + a.id + '"><h2><span class="dot" style="background:' + a.color + '"></span>' + esc(a.name) + "</h2>" +
       a.graphs.map((g) => {
         const idx = gi++;
@@ -698,7 +866,7 @@
         GRAPHS[idx] = g;
         const steps = Object.values(g.nodes).filter((n) => n.p).length;
         return '<details class="box"' + (g.key ? ' id="gr-' + g.key + '"' : "") + ' open><summary><i class="fa-solid fa-diagram-project"></i> แผนผัง: ' + esc(g.title) +
-          '<span class="n">' + steps + ' ขั้นในระบบ</span></summary><div class="graph"><pre class="mermaid">' + esc(mermaidText(g, idx)) + "</pre></div></details>" +
+          '<span class="n">' + steps + ' ขั้นในระบบ</span></summary><div class="graph" data-gi="' + idx + '"><pre class="mermaid">' + esc(mermaidText(g, idx)) + "</pre></div></details>" +
           '<details class="box lane"><summary><i class="fa-solid fa-list-ol"></i> รายการขั้น: ' + esc(g.title) +
           '<span class="n">' + steps + " ขั้น</span></summary>" + listHtml(g, idx) + "</details>";
       }).join("") + "</section>").join("") + pagesSectionHtml();
@@ -768,7 +936,8 @@
   }
   const nodeIdOf = (el) => { const m = /^flowchart-(.+)-\d+$/.exec(el.id || ""); return m ? m[1] : null; };
   function bindHover() {
-    document.querySelectorAll(".graph").forEach((box, idx) => {
+    document.querySelectorAll(".graph[data-gi]").forEach((box) => {
+      const idx = Number(box.dataset.gi);
       const g = GRAPHS[idx];
       if (!g) return;
       const model = graphModel(g, idx);
